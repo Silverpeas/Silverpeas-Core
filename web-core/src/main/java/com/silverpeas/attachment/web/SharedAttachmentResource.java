@@ -31,7 +31,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -79,7 +79,7 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     File folderToZip = FileUtils.getFile(
         FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
     while (tokenizer.hasMoreTokens()) {
-      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(tokenizer.nextToken()), null)
           .getLastPublicVersion();
       if (!isFileReadable(attachment)) {
@@ -88,7 +88,7 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
       OutputStream out = null;
       try {
         out = FileUtils.openOutputStream(FileUtils.getFile(folderToZip, attachment.getFilename()));
-        AttachmentServiceFactory.getAttachmentService()
+        AttachmentServiceProvider.getAttachmentService()
             .getBinaryContent(out, attachment.getPk(), null);
       } catch (IOException e) {
         throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);

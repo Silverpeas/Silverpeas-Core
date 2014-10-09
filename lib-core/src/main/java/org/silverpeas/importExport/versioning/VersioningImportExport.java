@@ -22,6 +22,7 @@ package org.silverpeas.importExport.versioning;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
@@ -32,7 +33,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -93,7 +93,7 @@ public class VersioningImportExport {
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(pubPK, null);
     for (AttachmentDetail attachment : attachments) {
       InputStream content = attachmentImportExport.getAttachmentContent(attachment);
@@ -103,11 +103,11 @@ public class VersioningImportExport {
       SimpleDocument document = isDocumentExist(documents, attachment);
       if (document != null) {
         document.edit(attachment.getAuthor());
-        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), attachment
+        AttachmentServiceProvider.getAttachmentService().lock(document.getId(), attachment
             .getAuthor(), null);
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, indexIt,
+        AttachmentServiceProvider.getAttachmentService().updateAttachment(document, content, indexIt,
             true);
-        AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),
+        AttachmentServiceProvider.getAttachmentService().unlock(new UnlockContext(document.getId(),
             attachment.getAuthor(), null));
       } else {
         if (attachment.getCreationDate() == null) {
@@ -120,7 +120,7 @@ public class VersioningImportExport {
             getXmlForm()));
         version.setPublicDocument((versionType == DocumentVersion.TYPE_PUBLIC_VERSION));
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-        AttachmentServiceFactory.getAttachmentService().createAttachment(version,
+        AttachmentServiceProvider.getAttachmentService().createAttachment(version,
             content, indexIt);
       }
 
@@ -161,14 +161,14 @@ public class VersioningImportExport {
     List<SimpleDocument> importedDocs = new ArrayList<SimpleDocument>(documents.size());
 
     // get existing documents of object
-    List<SimpleDocument> existingDocuments = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> existingDocuments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(objectPK, null);
     FormTemplateImportExport xmlIE = null;
     for (Document document : documents) {
       SimpleDocument existingDocument = null;
       if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
           && !"-1".equals(document.getPk().getId())) {
-        existingDocument = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        existingDocument = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
             new SimpleDocumentPK("", document.getPk()), null);
       }
       if (existingDocument == null) {
@@ -238,7 +238,7 @@ public class VersioningImportExport {
             simpleDocument.setContentType(version.getMimeType());
             simpleDocument.setSize(version.getSize());
             simpleDocument.setFilename(version.getLogicalName());
-            simpleDocument = AttachmentServiceFactory.getAttachmentService().createAttachment(
+            simpleDocument = AttachmentServiceProvider.getAttachmentService().createAttachment(
                 simpleDocument, content, indexIt);
             IOUtils.closeQuietly(content);
           } else {
@@ -295,14 +295,14 @@ public class VersioningImportExport {
     if (xmlContent != null) {
       existingDocument.setXmlFormId(xmlContent.getName());
     }
-    AttachmentServiceFactory.getAttachmentService().
+    AttachmentServiceProvider.getAttachmentService().
         lock(existingDocument.getId(), "" + userId, existingDocument.getLanguage());
-    AttachmentServiceFactory.getAttachmentService().updateAttachment(existingDocument,
+    AttachmentServiceProvider.getAttachmentService().updateAttachment(existingDocument,
         getVersionContent(version), indexIt, launchCallback);
-    AttachmentServiceFactory.getAttachmentService().
+    AttachmentServiceProvider.getAttachmentService().
         unlock(new UnlockContext(existingDocument.getId(), "" + userId, existingDocument.
         getLanguage()));
-    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(existingDocument.
+    return AttachmentServiceProvider.getAttachmentService().searchDocumentById(existingDocument.
         getPk(), existingDocument.getLanguage());
   }
 

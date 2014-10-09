@@ -36,7 +36,7 @@ import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -158,7 +158,7 @@ public class UploadedFile {
     SimpleDocument document = retrieveSimpleDocument(resourcePk, contributionLanguage);
 
     // Create attachment (please read the method documentation ...)
-    AttachmentServiceFactory.getAttachmentService().createAttachment(document, getFile(), indexIt);
+    AttachmentServiceProvider.getAttachmentService().createAttachment(document, getFile(), indexIt);
 
     // Delete the original content from its original location.
     markAsProcessed();

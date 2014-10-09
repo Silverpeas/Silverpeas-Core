@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.SilverpeasFile;
@@ -105,7 +105,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     String size = restRequest.getElementValue("size");
     SilverpeasFile file = SilverpeasFile.NO_FILE;
     if (StringUtil.isDefined(attachmentId)) {
-      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
@@ -130,7 +130,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     SilverpeasFile file = SilverpeasFile.NO_FILE;
     if (StringUtil.isDefined(documentId)) {
       String versionId = restRequest.getElementValue("versionId");
-      SimpleDocument version = AttachmentServiceFactory.getAttachmentService().
+      SimpleDocument version = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(versionId), null);
       if (version != null) {
         if (isUserAuthorized(restRequest, componentId, version)) {

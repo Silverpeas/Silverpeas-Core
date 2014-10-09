@@ -23,13 +23,11 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.annotation.Service;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.apache.commons.io.FileUtils;
@@ -40,12 +38,13 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.attachment.notification.AttachmentEventNotifier;
 import org.silverpeas.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.attachment.repository.DocumentRepository;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 import org.silverpeas.jcr.JcrSession;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.process.annotation.SimulationActionProcess;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -65,7 +64,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.BufferedInputStream;
@@ -88,16 +86,16 @@ import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
  *
  * @author ehugonnet
  */
-@Service
 public class SimpleDocumentService implements AttachmentService {
 
   private static final int STEP = 5;
   @Inject
-  @Named("webdavRepository")
   private WebdavRepository webdavRepository;
   @Inject
-  @Named("documentRepository")
   private DocumentRepository repository;
+  @Inject
+  private AttachmentEventNotifier notificationService;
+
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
 
@@ -259,22 +257,19 @@ public class SimpleDocumentService implements AttachmentService {
    * @param content the binary content of the document.
    * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
    * otherwhise.
-   * @param invokeCallback <code>true</code> if the callback methods of the components must be
-   * called, <code>false</code> for ignoring thoose callbacks.
+   * @param notify <code>true</code> to notify about the creation of an attachment,
+   * <code>false</code> otherwise.
    * @return the stored document.
    */
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
   public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
-      InputStream content, boolean indexIt, boolean invokeCallback) {
+      InputStream content, boolean indexIt, boolean notify) {
     try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
-      if (invokeCallback && StringUtil.isDefined(document.getCreatedBy())) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
-            parseInt(document.getCreatedBy()), document.getInstanceId(),
-            document.getForeignId());
+      if (notify && StringUtil.isDefined(document.getCreatedBy())) {
+        notificationService.notifyEventOn(ResourceEvent.Type.CREATION, document);
       }
       session.save();
       SimpleDocument createdDocument = repository.findDocumentById(session, docPk, document.
@@ -307,20 +302,20 @@ public class SimpleDocumentService implements AttachmentService {
    * Delete a given attachment.
    *
    * @param document the attachmentDetail object to deleted.
-   * @param invokeCallback   <code>true</code> if the callback methods of the components must be
-   * called, <code>false</code> for ignoring those callbacks.
+   * @param notify <code>true</code> to notify about the deletion of an attachment,
+   * <code>false</code> otherwise.</code>
    */
   @Override
-  public void deleteAttachment(SimpleDocument document, boolean invokeCallback) {
+  public void deleteAttachment(SimpleDocument document, boolean notify) {
     try(JcrSession session = openSystemSession()) {
-      deleteAttachment(session, document, invokeCallback);
+      deleteAttachment(session, document, notify);
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
 
-  private void deleteAttachment(Session session, SimpleDocument document, boolean invokeCallback)
+  private void deleteAttachment(Session session, SimpleDocument document, boolean notify)
       throws RepositoryException {
     repository.fillNodeName(session, document);
     repository.deleteDocument(session, document.getPk());
@@ -330,10 +325,8 @@ public class SimpleDocumentService implements AttachmentService {
     if (document.isOpenOfficeCompatible()) {
       webdavRepository.deleteAttachmentNode(session, document);
     }
-    if (invokeCallback) {
-      AttachmentNotificationService notificationService = AttachmentNotificationService
-          .getService();
-      notificationService.notifyOnDeletionOf(document);
+    if (notify) {
+      notificationService.notifyEventOn(ResourceEvent.Type.DELETION, document);
     }
   }
 
@@ -381,7 +374,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Action(ActionType.UPDATE)
   @Override
   public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, boolean indexIt,
-      boolean invokeCallback) {
+      boolean notify) {
     try(JcrSession session = openSystemSession()) {
       SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
           document.getLanguage());
@@ -398,11 +391,11 @@ public class SimpleDocumentService implements AttachmentService {
           }
         }
       }
+
+
       String userId = document.getUpdatedBy();
-      if ((userId != null) && (userId.length() > 0) && invokeCallback) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-            document.getInstanceId(), document.getForeignId());
+      if ((userId != null) && (userId.length() > 0) && notify) {
+        notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
       }
       if (indexIt) {
         createIndex(document);
@@ -419,7 +412,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Action(ActionType.UPDATE)
   @Override
   public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, InputStream in,
-      boolean indexIt, boolean invokeCallback) {
+      boolean indexIt, boolean notify) {
     try(JcrSession session = openSystemSession()) {
       String owner = document.getEditedBy();
       if (!StringUtil.isDefined(owner)) {
@@ -439,10 +432,8 @@ public class SimpleDocumentService implements AttachmentService {
       }
       repository.duplicateContent(document, finalDocument);
       String userId = finalDocument.getUpdatedBy();
-      if (StringUtil.isDefined(userId) && invokeCallback && finalDocument.isPublic()) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-            finalDocument.getInstanceId(), finalDocument.getForeignId());
+      if (StringUtil.isDefined(userId) && notify && finalDocument.isPublic()) {
+        notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
       }
       if (indexIt) {
         createIndex(finalDocument);
@@ -456,7 +447,7 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public void removeContent(SimpleDocument document, String lang, boolean invokeCallback) {
+  public void removeContent(SimpleDocument document, String lang, boolean notifiy) {
     try(JcrSession session = openSystemSession()) {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
@@ -464,13 +455,11 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.deleteAttachmentContentNode(session, document, lang);
       }
       String userId = document.getCreatedBy();
-      if ((userId != null) && (userId.length() > 0) && invokeCallback) {
+      if ((userId != null) && (userId.length() > 0) && notifiy) {
         if (existsOtherContents) {
-          CallBackManager callBackManager = CallBackManager.get();
-          callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-              document.getInstanceId(), document.getForeignId());
+          notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
         } else {
-          AttachmentNotificationService.getService().notifyOnDeletionOf(document);
+          notificationService.notifyEventOn(ResourceEvent.Type.DELETION, document);
         }
       }
       deleteIndex(document, document.getLanguage());
@@ -652,11 +641,11 @@ public class SimpleDocumentService implements AttachmentService {
   @Action(ActionType.UPDATE)
   @Override
   public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, File content,
-      boolean indexIt, boolean invokeCallback) {
+      boolean indexIt, boolean notify) {
     InputStream in = null;
     try {
       in = new BufferedInputStream(new FileInputStream(content));
-      updateAttachment(document, in, indexIt, invokeCallback);
+      updateAttachment(document, in, indexIt, notify);
     } catch (FileNotFoundException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -697,11 +686,11 @@ public class SimpleDocumentService implements AttachmentService {
   @Action(ActionType.CREATE)
   @Override
   public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
-      File content, boolean indexIt, boolean invokeCallback) {
+      File content, boolean indexIt, boolean notify) {
     InputStream in = null;
     try {
       in = new BufferedInputStream(new FileInputStream(content));
-      return createAttachment(document, in, indexIt, invokeCallback);
+      return createAttachment(document, in, indexIt, notify);
     } catch (FileNotFoundException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
@@ -746,12 +735,12 @@ public class SimpleDocumentService implements AttachmentService {
         return false;
       }
 
-      boolean invokeCallback = false;
+      boolean notify = false;
       if (context.isWebdav() || context.isUpload()) {
         String workerId = document.getEditedBy();
         document.setUpdated(new Date());
         document.setUpdatedBy(workerId);
-        invokeCallback = true;
+        notify = true;
       }
       document.setPublicDocument(context.isPublicVersion());
       document.setComment(context.getComment());
@@ -772,10 +761,8 @@ public class SimpleDocumentService implements AttachmentService {
       session.save();
       if (document.isPublic()) {
         String userId = context.getUserId();
-        if (StringUtil.isDefined(userId) && invokeCallback) {
-          CallBackManager callBackManager = CallBackManager.get();
-          callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-              finalDocument.getInstanceId(), finalDocument.getForeignId());
+        if (StringUtil.isDefined(userId) && notify) {
+          notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
         }
       }
     } catch (IOException e) {
@@ -821,7 +808,7 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   private void updateAttachment(Session session, SimpleDocument document, boolean indexIt,
-      boolean invokeCallback) throws RepositoryException, IOException {
+      boolean notify) throws RepositoryException, IOException {
     SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
         document.getLanguage());
     repository.updateDocument(session, document);
@@ -834,10 +821,8 @@ public class SimpleDocumentService implements AttachmentService {
       }
     }
     String userId = document.getCreatedBy();
-    if (StringUtil.isDefined(userId) && invokeCallback) {
-      CallBackManager callBackManager = CallBackManager.get();
-      callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
-          document.getInstanceId(), document.getForeignId());
+    if (StringUtil.isDefined(userId) && notify) {
+      notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
     }
     if (indexIt) {
       createIndex(document);

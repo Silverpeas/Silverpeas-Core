@@ -52,14 +52,7 @@ public class CallBackManager {
   public final static int ACTION_AFTER_CREATE_COMPONENT = 6; // [componentId(ex: 59),,]
   public final static int ACTION_BEFORE_REMOVE_COMPONENT = 7; // [componentId(ex: 59),,]
   public final static int ACTION_ON_WYSIWYG = 8;
-  public final static int ACTION_ATTACHMENT_ADD = 9;
-  public final static int ACTION_ATTACHMENT_UPDATE = 10;
-  public final static int ACTION_ATTACHMENT_REMOVE = 11;
-  public final static int ACTION_VERSIONING_ADD = 12;
   public final static int ACTION_VERSIONING_UPDATE = 13;
-  public final static int ACTION_VERSIONING_REMOVE = 14;
-  public final static int ACTION_COMMENT_ADD = 15;
-  public final static int ACTION_COMMENT_REMOVE = 16;
   public final static int ACTION_CUTANDPASTE = 17;
   public final static int ACTION_XMLCONTENT_CREATE = 18;
   public final static int ACTION_XMLCONTENT_UPDATE = 19;
@@ -175,23 +168,8 @@ public class CallBackManager {
       case ACTION_ON_WYSIWYG:
         sb.append("ACTION_ON_WYSIWYG");
         break;
-      case ACTION_ATTACHMENT_ADD:
-        sb.append("ACTION_ATTACHMENT_ADD");
-        break;
-      case ACTION_ATTACHMENT_UPDATE:
-        sb.append("ACTION_ATTACHMENT_UPDATE");
-        break;
-      case ACTION_VERSIONING_ADD:
-        sb.append("ACTION_VERSIONING_ADD");
-        break;
       case ACTION_VERSIONING_UPDATE:
         sb.append("ACTION_VERSIONING_UPDATE");
-        break;
-      case ACTION_COMMENT_ADD:
-        sb.append("ACTION_COMMENT_ADD");
-        break;
-      case ACTION_COMMENT_REMOVE:
-        sb.append("ACTION_COMMENT_REMOVE");
         break;
       case ACTION_CUTANDPASTE:
         sb.append("ACTION_CUTANDPASTE");

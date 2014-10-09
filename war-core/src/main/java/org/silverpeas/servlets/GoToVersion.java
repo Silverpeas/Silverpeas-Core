@@ -21,7 +21,7 @@
 package org.silverpeas.servlets;
 
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.permalinks.PermalinkServiceFactory;
@@ -41,7 +41,7 @@ public class GoToVersion extends GoToDocument {
       document = PermalinkServiceFactory.getPermalinkCompatibilityService().
           findDocumentVersionByOldId(Integer.parseInt(objectId));
     } else {
-      document = AttachmentServiceFactory.getAttachmentService()
+      document = AttachmentServiceProvider.getAttachmentService()
           .searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     }
     if (document != null) {

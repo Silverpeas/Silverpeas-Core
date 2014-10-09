@@ -46,7 +46,6 @@ import java.util.regex.Pattern;
 
 import static org.silverpeas.jcr.util.JcrConstants.*;
 
-@Named("webdavRepository")
 public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override

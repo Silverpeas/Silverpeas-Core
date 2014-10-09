@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,27 +23,30 @@
  */
 package org.silverpeas.attachment;
 
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.notification.ResourceEvent;
+
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.jcr.RepositoryException;
 
 /**
+ * Clean the JCR repository for all documents concerning the specified component instance
+ * identifier.
  *
  * @author ehugonnet
  */
-public class AttachmentServiceFactory {
+@Singleton
+public class ComponentInstanceReferenceInJCRRemover {
 
   @Inject
-  private AttachmentService service;
+  private AttachmentService attachmentService;
 
-  private AttachmentServiceFactory() {
+  public void cleanUpJCRReferences(@Observes ResourceEvent<ComponentInst> event)
+      throws RepositoryException {
+    if (event.isOnDeletion()) {
+      attachmentService.deleteAllAttachments(event.getResource().getId());
+    }
   }
-  private static final AttachmentServiceFactory factory = new AttachmentServiceFactory();
-
-  public static AttachmentServiceFactory getInstance() {
-    return factory;
-  }
-
-  public static AttachmentService getAttachmentService() {
-    return factory.service;
-  }
-
 }

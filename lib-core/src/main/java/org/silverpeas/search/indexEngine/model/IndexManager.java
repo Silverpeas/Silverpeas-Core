@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
@@ -457,7 +457,7 @@ public class IndexManager {
     }
 
     if (StringUtil.isDefined(indexEntry.getObjectId())) {
-      AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+      AttachmentServiceProvider.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
     }
 
     List<FileDescription> list2 = indexEntry.getFileContentList();

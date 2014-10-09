@@ -24,7 +24,7 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.portlet.GenericPortlet;
@@ -48,7 +48,7 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
 
     Iterator<SimpleDocument> attachments = null;
     try {
-      attachments = AttachmentServiceFactory.getAttachmentService().listDocumentsLockedByUser(
+      attachments = AttachmentServiceProvider.getAttachmentService().listDocumentsLockedByUser(
           sessionController.getUserId(), sessionController.getFavoriteLanguage()).iterator();
     } catch (AttachmentException e) {
       SilverTrace.error("portlet", "MyCheckOutFiles", "portlet.ERROR", e);

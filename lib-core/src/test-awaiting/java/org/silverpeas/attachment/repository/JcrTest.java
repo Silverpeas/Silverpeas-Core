@@ -32,7 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.tika.mime.MimeTypes;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -176,7 +176,7 @@ public abstract class JcrTest {
       assertThat(document.getLanguage(), is(language));
       assertThat(physicalContent.exists(), is(true));
       ByteArrayOutputStream content = new ByteArrayOutputStream();
-      AttachmentServiceFactory.getAttachmentService()
+      AttachmentServiceProvider.getAttachmentService()
           .getBinaryContent(content, document.getPk(), language);
       assertThat(content.toString(org.apache.commons.io.Charsets.UTF_8.name()),
           is(expectedContent));

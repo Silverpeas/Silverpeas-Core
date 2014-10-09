@@ -104,7 +104,7 @@ public class HistorisedAttachmentServiceTest {
 
   @Before
   public void setUpJcr() throws RepositoryException, ParseException, IOException, SQLException {
-    instance = AttachmentServiceFactory.getAttachmentService();
+    instance = AttachmentServiceProvider.getAttachmentService();
     Session session = null;
     try {
       session = repository.login(new SilverpeasSystemCredentials());

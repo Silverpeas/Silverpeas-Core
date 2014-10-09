@@ -23,7 +23,7 @@ package org.silverpeas.servlets;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.SilverpeasFile;
@@ -68,7 +68,7 @@ public class OnlineFileServer extends AbstractFileSender {
       String versionId = req.getParameter("VersionId");
       SimpleDocumentPK versionPK = new SimpleDocumentPK(versionId, componentId);
       SimpleDocument version =
-          AttachmentServiceFactory.getAttachmentService().searchDocumentById(versionPK, language);
+          AttachmentServiceProvider.getAttachmentService().searchDocumentById(versionPK, language);
 
       if (version != null) {
         ref =
@@ -78,7 +78,7 @@ public class OnlineFileServer extends AbstractFileSender {
     }
     if (ref == null && StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
-      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
           .searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
         ref = new SilverpeasFileDescriptor(attachment.getInstanceId())

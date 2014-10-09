@@ -23,6 +23,7 @@ package org.silverpeas.attachment.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
@@ -30,8 +31,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.UserPriviledgeValidation;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.WebdavServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -99,7 +99,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteDocument() {
     SimpleDocument document = getSimpleDocument(null);
-    AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+    AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
   }
 
   /**
@@ -112,7 +112,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteContent(final @PathParam("lang") String lang) {
     SimpleDocument document = getSimpleDocument(lang);
-    AttachmentServiceFactory.getAttachmentService().removeContent(document, lang, false);
+    AttachmentServiceProvider.getAttachmentService().removeContent(document, lang, false);
   }
 
   /**
@@ -198,7 +198,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
           document.edit(getUserDetail().getId());
         }
 
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
+        AttachmentServiceProvider.getAttachmentService().updateAttachment(document, content, true,
             true);
         content.close();
         FileUtils.deleteQuietly(tempFile);
@@ -209,15 +209,15 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         if (document.isVersioned()) {
           isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
           File content = new File(document.getAttachmentPath());
-          AttachmentServiceFactory.getAttachmentService()
+          AttachmentServiceProvider.getAttachmentService()
               .lock(document.getId(), getUserDetail().getId(), document.getLanguage());
-          AttachmentServiceFactory.getAttachmentService()
+          AttachmentServiceProvider.getAttachmentService()
               .updateAttachment(document, content, true, true);
         } else {
           if (isWebdav) {
-            WebdavServiceFactory.getWebdavService().updateDocumentContent(document);
+            WebdavServiceProvider.getWebdavService().updateDocumentContent(document);
           }
-          AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+          AttachmentServiceProvider.getAttachmentService().updateAttachment(document, true, true);
         }
       }
       UnlockContext unlockContext =
@@ -231,7 +231,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       if (!isPublic) {
         unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
       }
-      AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+      AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
       document = getSimpleDocument(uploadData.getLanguage());
       URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
           getLanguage()).build();
@@ -299,7 +299,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       @Override
       public void write(OutputStream output) throws WebApplicationException {
         try {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(output,
+          AttachmentServiceProvider.getAttachmentService().getBinaryContent(output,
               new SimpleDocumentPK(getSimpleDocumentId()), language);
         } catch (Exception e) {
           throw new WebApplicationException(e);
@@ -321,7 +321,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("lock/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
   public String lock(@PathParam("lang") final String language) {
-    boolean result = AttachmentServiceFactory.getAttachmentService().lock(getSimpleDocumentId(),
+    boolean result = AttachmentServiceProvider.getAttachmentService().lock(getSimpleDocumentId(),
         getUserDetail().getId(), language);
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
@@ -332,7 +332,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    */
   private List<SimpleDocument> getListDocuments(SimpleDocument document) {
     List<SimpleDocument> docs =
-        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(
+        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
             new ForeignPK(document.getForeignId(), getComponentId()), document.getDocumentType(), defaultLanguage);
     return docs;
   }
@@ -342,7 +342,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return
    */
   private String reorderDocuments(List<SimpleDocument> docs) {
-    AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
+    AttachmentServiceProvider.getAttachmentService().reorderDocuments(docs);
     return MessageFormat.format("'{'\"status\":{0}}", true);
   }
 
@@ -410,7 +410,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     if (privateVersion) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
-    boolean result = AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+    boolean result = AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         result, document.getOldSilverpeasId(), document.getId());
   }
@@ -434,8 +434,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     if (document.isVersioned() && useMajor) {
       pk = document.getLastPublicVersion().getPk();
     }
-    pk = AttachmentServiceFactory.getAttachmentService().changeVersionState(pk, comment);
-    document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
+    pk = AttachmentServiceProvider.getAttachmentService().changeVersionState(pk, comment);
+    document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
         defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
@@ -452,7 +452,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     // Performing the request
     SimpleDocument document = getSimpleDocument(null);
-    AttachmentServiceFactory.getAttachmentService()
+    AttachmentServiceProvider.getAttachmentService()
         .switchAllowingDownloadForReaders(document.getPk(), allowed);
 
     // JSON Response.
@@ -468,7 +468,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    */
   private SimpleDocument getSimpleDocument(String lang) {
     String language = (lang == null ? defaultLanguage : lang);
-    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
     if (attachment == null) {
       throw new WebApplicationException(Status.NOT_FOUND);

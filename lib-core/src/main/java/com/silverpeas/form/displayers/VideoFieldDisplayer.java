@@ -31,7 +31,7 @@ import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -118,7 +118,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
       if (attachmentId.startsWith("/")) {
         videoURL = attachmentId;
       } else {
-        SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+        SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
             .searchDocumentById(new SimpleDocumentPK(attachmentId, pageContext.getComponentId()),
             pageContext.getContentLanguage());
         if (attachment != null) {

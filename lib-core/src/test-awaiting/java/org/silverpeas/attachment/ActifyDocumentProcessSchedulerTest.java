@@ -83,7 +83,7 @@ public class ActifyDocumentProcessSchedulerTest {
   public void setUpTest() {
     springCtx = new ClassPathXmlApplicationContext("/spring-actify.xml");
 
-    attachmentService = AttachmentServiceFactory.getAttachmentService();
+    attachmentService = AttachmentServiceProvider.getAttachmentService();
     assertThat(attachmentService, not(nullValue()));
     assertThat(attachmentService.getClass().getName(), is(AttachmentServiceMockWrapper.class.
         getName()));

@@ -25,6 +25,7 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -44,7 +45,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ScheduledReservedFile implements SchedulerEventListener {
+public class ScheduledReservedFile implements SchedulerEventListener, Initialization {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
   private ResourceLocator resources =
@@ -52,7 +53,8 @@ public class ScheduledReservedFile implements SchedulerEventListener {
   private ResourceLocator generalMessage =
       new ResourceLocator("org.silverpeas.multilang.generalMultilang", "");
 
-  public void initialize() {
+  @Override
+  public void init() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
       Logger.getLogger(getClass().getSimpleName())
@@ -89,7 +91,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
 
-      Collection<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+      Collection<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
           listExpiringDocuments(expiryDate, null);
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
@@ -114,7 +116,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "alertDate = " + alertDate.toString());
 
-      documents = AttachmentServiceFactory.getAttachmentService()
+      documents = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsRequiringWarning(alertDate, null);
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
@@ -143,7 +145,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
           "root.MSG_GEN_PARAM_VALUE", "libDate = " + libDate.toString());
 
       documents =
-          AttachmentServiceFactory.getAttachmentService().listDocumentsToUnlock(libDate, null);
+          AttachmentServiceProvider.getAttachmentService().listDocumentsToUnlock(libDate, null);
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
 
@@ -163,7 +165,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
         messageBody_en = new StringBuilder();
 
         document.unlock();
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, false, false);
+        AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
       }
     } catch (Exception e) {
       throw new AttachmentException("ScheduledReservedFile.doScheduledReservedFile()",

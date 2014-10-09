@@ -35,7 +35,7 @@ import java.util.Map;
  * The interceptor to indicate on EJB method services while CDI is not fully used.
  * @author Yohann Chastagnier
  */
-public class SimulationActionProcessAnnotationEJBInterceptor
+public class SimulationActionProcessAnnotationInterceptor
     extends AbstractSimulationActionProcessAnnotationInterceptor<InvocationContext> {
 
   @AroundInvoke

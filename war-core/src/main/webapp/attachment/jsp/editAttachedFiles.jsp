@@ -34,7 +34,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
@@ -77,7 +77,7 @@
 <c:set var="i18n"><%=I18NHelper.isI18N%></c:set>
 <c:set var="i18n" value="${view:booleanValue(i18n) && !view:booleanValue(param.notI18n)}" />
 <%
-  List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+  List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));

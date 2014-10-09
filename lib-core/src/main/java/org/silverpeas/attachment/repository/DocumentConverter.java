@@ -61,7 +61,7 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
  */
 class DocumentConverter extends AbstractJcrConverter {
 
-  final SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
+  private SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
 
   /**
    * Builds from the root version node and from a language the object representation of a

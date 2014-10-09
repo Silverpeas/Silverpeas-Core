@@ -27,7 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -1148,11 +1148,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           ForeignPK fromPK = new ForeignPK(instanceId, modelId);
           ForeignPK toPK = new ForeignPK("Step" + step.getId(), modelId);
 
-          List<SimpleDocument> attachments = AttachmentServiceFactory
+          List<SimpleDocument> attachments = AttachmentServiceProvider
               .getAttachmentService().listDocumentsByForeignKey(fromPK, null);
           for (SimpleDocument attachment : attachments) {
             if (attachmentId.equals(attachment.getId())) {
-              SimpleDocumentPK pk = AttachmentServiceFactory
+              SimpleDocumentPK pk = AttachmentServiceProvider
                   .getAttachmentService().copyDocument(attachment, toPK);
               updatedField.setStringValue(pk.getId());
               break;

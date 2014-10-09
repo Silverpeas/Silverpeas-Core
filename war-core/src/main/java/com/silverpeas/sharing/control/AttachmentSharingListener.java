@@ -24,48 +24,45 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.notification.DefaultNotificationSubscriber;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import org.silverpeas.attachment.notification.AttachmentDeletionNotification;
+import org.silverpeas.attachment.notification.AttachmentEvent;
 import org.silverpeas.attachment.notification.AttachmentRef;
+import org.silverpeas.notification.JMSResourceEventListener;
+import org.silverpeas.util.exception.DecodingException;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
 import javax.inject.Inject;
-import javax.inject.Named;
-
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
 
 /**
  * @author neysseri
  */
-@Named
-public class AttachmentSharingListener extends DefaultNotificationSubscriber {
+@MessageDriven(name = "SharedAttachmentEventListener", activationConfig = {
+    @ActivationConfigProperty(propertyName = "destinationLookup",
+        propertyValue = "topic/attachments"),
+    @ActivationConfigProperty(propertyName = "destinationType",
+        propertyValue = "javax.jms.Topic"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode",
+        propertyValue = "Auto-acknowledge")})
+public class AttachmentSharingListener extends JMSResourceEventListener<AttachmentEvent> {
 
   @Inject
   private SharingTicketService service;
 
   @Override
-  public void subscribeOnTopics() {
-    subscribeForNotifications(onTopic(ATTACHMENT_TOPIC.getTopicName()));
+  protected AttachmentEvent decodeResourceEventFrom(final TextMessage message)
+      throws JMSException, DecodingException {
+    return AttachmentEvent.fromMessage(message);
   }
 
   @Override
-  public void unsubscribeOnTopics() {
-    unsubscribeForNotifications(onTopic(ATTACHMENT_TOPIC.getTopicName()));
-  }
-
-  @Override
-  public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
-    if (ATTACHMENT_TOPIC.getTopicName().equals(onTopic.getName()) &&
-        notification instanceof AttachmentDeletionNotification) {
-      AttachmentDeletionNotification deletion = (AttachmentDeletionNotification) notification;
-      AttachmentRef attachment = deletion.getAttachment();
-      if (attachment != null) {
-        service.deleteTicketsForSharedObject(attachment.getOldSilverpeasId(), Ticket.FILE_TYPE);
-      }
+  public void onDeletion(final AttachmentEvent event) throws Exception {
+    AttachmentRef attachment = event.getResource();
+    if (attachment != null) {
+      service.deleteTicketsForSharedObject(attachment.getOldSilverpeasId(), Ticket.FILE_TYPE);
     }
   }
 }

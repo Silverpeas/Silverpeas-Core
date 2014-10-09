@@ -43,7 +43,7 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.*;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -213,7 +213,7 @@ public class VersionFileAccessControlTest {
     attachment.setPK(pk);
     attachment.setAttachment(file);
     attachment.setForeignId("12");
-    return AttachmentServiceFactory.getAttachmentService().createAttachment(attachment,
+    return AttachmentServiceProvider.getAttachmentService().createAttachment(attachment,
         new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8)));
 
   }

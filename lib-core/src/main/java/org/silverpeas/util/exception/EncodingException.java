@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -18,24 +18,33 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+package org.silverpeas.util.exception;
 
-public class AttachmentInitialize implements IInitialize {
-
-  public AttachmentInitialize() {
+/**
+ * A runtime exception that is thrown when an error occurres while encoding a bean into a
+ * serialized representation.
+ * @author mmoquillon
+ */
+public class EncodingException extends RuntimeException {
+  public EncodingException() {
+    super();
   }
 
-  @Override
-  public boolean Initialize() {
-    try {
-      new ActifyDocumentProcessScheduler().initialize();
-      new ScheduledReservedFile().initialize();
-    } catch (Exception e) {
-      SilverTrace.error("Attachment", "AttachmentInitialize.Initialize()", "", e);
-    }
-    return true;
+  public EncodingException(final String message) {
+    super(message);
+  }
+
+  public EncodingException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public EncodingException(final Throwable cause) {
+    super(cause);
+  }
+
+  protected EncodingException(final String message, final Throwable cause,
+      final boolean enableSuppression, final boolean writableStackTrace) {
+    super(message, cause, enableSuppression, writableStackTrace);
   }
 }

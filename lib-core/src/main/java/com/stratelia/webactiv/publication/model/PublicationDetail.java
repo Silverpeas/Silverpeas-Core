@@ -48,7 +48,7 @@ import com.stratelia.webactiv.publication.control.PublicationBm;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.accesscontrol.NodeAccessControl;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -901,7 +901,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
             // case of an image provided by a gallery
             fieldValue = attachmentId;
           } else {
-            SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+            SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(attachmentId, getPK().getInstanceId()),
                     language);
             if (attachment != null) {
@@ -958,7 +958,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     SilverTrace.
         info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
             "foreignKey = " + foreignKey.toString());
-    Collection<SimpleDocument> attachmentList = AttachmentServiceFactory.getAttachmentService().
+    Collection<SimpleDocument> attachmentList = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
     SilverTrace.
         info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",

@@ -34,7 +34,7 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
-<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
@@ -182,7 +182,7 @@
   </c:choose>
   <c:set var="componentId" value="${param.ComponentId}" />
 <%
-  List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+  List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));

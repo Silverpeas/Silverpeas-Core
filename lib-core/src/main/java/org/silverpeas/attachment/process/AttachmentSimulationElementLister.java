@@ -24,7 +24,7 @@
 package org.silverpeas.attachment.process;
 
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.process.annotation.SimulationElementLister;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -45,7 +45,7 @@ public class AttachmentSimulationElementLister extends SimulationElementLister {
 
   @Override
   public void listElements(final WAPrimaryKey sourcePK, final String language) {
-    for (SimpleDocument document : AttachmentServiceFactory.getAttachmentService()
+    for (SimpleDocument document : AttachmentServiceProvider.getAttachmentService()
         .listAllDocumentsByForeignKey(sourcePK, language)) {
       addElement(new SimpleDocumentSimulationElement(document));
     }
@@ -60,7 +60,7 @@ public class AttachmentSimulationElementLister extends SimulationElementLister {
         return;
       }
       if (getActionType().isUpdate()) {
-        SimpleDocument oldDocument = AttachmentServiceFactory.getAttachmentService()
+        SimpleDocument oldDocument = AttachmentServiceProvider.getAttachmentService()
             .searchDocumentById(document.getPk(), language);
         addElement(new SimpleDocumentSimulationElement(oldDocument).setOld());
       }

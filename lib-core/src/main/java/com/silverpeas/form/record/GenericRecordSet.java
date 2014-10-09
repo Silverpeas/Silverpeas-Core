@@ -35,7 +35,7 @@ import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -213,10 +213,10 @@ public class GenericRecordSet implements RecordSet, Serializable {
       WysiwygFCKFieldDisplayer.removeContents(foreignPK);
 
       // remove form documents registred into JCR
-      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+      List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(foreignPK, DocumentType.form, null);
       for (SimpleDocument doc : documents) {
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+        AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
       }
 
       List<String> languages =
@@ -247,10 +247,10 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
     
     // move files, images and video of form
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
     for (SimpleDocument doc : documents) {
-      AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toPK);
+      AttachmentServiceProvider.getAttachmentService().moveDocument(doc, toPK);
     }
     
     // update data stored in database
@@ -280,11 +280,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
     // copy files, images and videos
     Map<String, String> ids = new HashMap<>();
     try {
-      List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
+      List<SimpleDocument> originals = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
       for (SimpleDocument original : originals) {
         SimpleDocumentPK clonePk =
-            AttachmentServiceFactory.getAttachmentService().copyDocument(original, toPK);
+            AttachmentServiceProvider.getAttachmentService().copyDocument(original, toPK);
         ids.put(original.getId(), clonePk.getId());
       }
     } catch (AttachmentException e) {
@@ -329,13 +329,13 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
     // clone images and videos
     try {
-      List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
+      List<SimpleDocument> originals = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
-      originals.addAll(AttachmentServiceFactory.getAttachmentService()
+      originals.addAll(AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.video, null));
       Map<String, String> ids = new HashMap<>(originals.size());
       for (SimpleDocument original : originals) {
-        SimpleDocumentPK clonePk = AttachmentServiceFactory.getAttachmentService().cloneDocument(
+        SimpleDocumentPK clonePk = AttachmentServiceProvider.getAttachmentService().cloneDocument(
             original, cloneExternalId);
         ids.put(original.getId(), clonePk.getId());
       }
@@ -368,9 +368,9 @@ public class GenericRecordSet implements RecordSet, Serializable {
     ForeignPK fromPK = new ForeignPK(fromExternalId, fromComponentId);
     ForeignPK toPK = new ForeignPK(toExternalId, toComponentId);
     try {
-      Map<String, String> ids = AttachmentServiceFactory.getAttachmentService().mergeDocuments(toPK,
+      Map<String, String> ids = AttachmentServiceProvider.getAttachmentService().mergeDocuments(toPK,
           fromPK, DocumentType.form);
-      Map<String, String> videoIds = AttachmentServiceFactory.getAttachmentService().mergeDocuments(
+      Map<String, String> videoIds = AttachmentServiceProvider.getAttachmentService().mergeDocuments(
           toPK, fromPK, DocumentType.video);
       ids.putAll(videoIds);
       replaceIds(ids, fromRecord, toExternalId);

@@ -32,7 +32,7 @@ import com.silverpeas.form.fieldType.FileField;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -78,7 +78,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     document.setDocumentType(DocumentType.form);
     InputStream in = item.getInputStream();
     try {
-      return AttachmentServiceFactory.getAttachmentService().createAttachment(document, in, false);
+      return AttachmentServiceProvider.getAttachmentService().createAttachment(document, in, false);
     } finally {
       IOUtils.closeQuietly(in);
     }
@@ -95,10 +95,10 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
         "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId + ", componentId = "
         + pageContext.getComponentId());
     SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
-    SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
+    SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
         pageContext.getContentLanguage());
     if (doc != null) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
     }
   }
 

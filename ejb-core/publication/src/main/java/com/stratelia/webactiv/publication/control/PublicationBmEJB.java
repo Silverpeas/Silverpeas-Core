@@ -55,7 +55,7 @@ import com.stratelia.webactiv.publication.model.PublicationI18N;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.publication.model.ValidationStep;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.publication.notification.PublicationNotificationService;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -76,7 +76,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -1328,7 +1327,7 @@ public class PublicationBmEJB implements PublicationBm {
         updateIndexEntryWithWysiwygContent(indexEntry, publi);
         updateIndexEntryWithXMLFormContent(indexEntry, publi);
       }
-      AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+      AttachmentServiceProvider.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
     return indexEntry;

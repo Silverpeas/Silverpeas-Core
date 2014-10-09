@@ -67,7 +67,7 @@ import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
@@ -653,7 +653,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public void copyWysiwygImageForExport(String pubId, String componentId,
       String exportPublicationPath) {
     ForeignPK foreignKey = new ForeignPK(pubId, componentId);
-    Collection<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    Collection<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument attDetail : documents) {
       try {

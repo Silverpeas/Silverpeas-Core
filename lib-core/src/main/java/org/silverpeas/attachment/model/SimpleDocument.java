@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
-import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.WebdavServiceProvider;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.*;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -373,7 +373,7 @@ public class SimpleDocument implements Serializable {
         // The method has not been called yet.
         // Firstly searching through Webdav services the information.
         webdavContentEditionLanguage =
-            WebdavServiceFactory.getWebdavService().getContentEditionLanguage(getVersionMaster());
+            WebdavServiceProvider.getWebdavService().getContentEditionLanguage(getVersionMaster());
       }
       // If null, it indicates that the document does not exists into webdav repository.
       // The class attribute is initialized to empty value.

@@ -20,6 +20,7 @@
  */
 package org.silverpeas.wysiwyg.control;
 
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
@@ -28,7 +29,6 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -1736,7 +1736,7 @@ public class WysiwygControllerTest {
                 "imageDescription", 0, MimeTypes.PLAIN_TEXT_MIME_TYPE, "1", new Date(), null)
         );
     image.setDocumentType(DocumentType.image);
-    return AttachmentServiceFactory.getAttachmentService()
+    return AttachmentServiceProvider.getAttachmentService()
         .createAttachment(image, new ByteArrayInputStream("ImageContent".getBytes()));
   }
 
@@ -1762,7 +1762,7 @@ public class WysiwygControllerTest {
         String content = WysiwygController.load(componentId, messageId, language);
         assertThat(content, is(expectedContent));
         List<SimpleDocument> lockedFiles =
-            AttachmentServiceFactory.getAttachmentService().listDocumentsLockedByUser(userId, null);
+            AttachmentServiceProvider.getAttachmentService().listDocumentsLockedByUser(userId, null);
         assertThat(lockedFiles, is(notNullValue()));
         assertThat(lockedFiles, hasSize(0));
 
@@ -1783,25 +1783,25 @@ public class WysiwygControllerTest {
   }
 
   private SimpleDocumentList<SimpleDocument> listWysiwygs(ForeignPK foreignPK) {
-    return AttachmentServiceFactory.getAttachmentService()
+    return AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.wysiwyg, null);
   }
 
   private SimpleDocumentList<SimpleDocument> listImages(ForeignPK foreignPK) {
-    return AttachmentServiceFactory.getAttachmentService()
+    return AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.image, null);
   }
 
   private SimpleDocumentList<SimpleDocument> listWysiwygsWithNoLanguageFallback(ForeignPK foreignPK,
       String language) {
-    return AttachmentServiceFactory.getAttachmentService()
+    return AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.wysiwyg, language)
         .removeLanguageFallbacks();
   }
 
   private SimpleDocumentList<SimpleDocument> listImagesWithNoLanguageFallback(ForeignPK foreignPK,
       String language) {
-    return AttachmentServiceFactory.getAttachmentService()
+    return AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.image, language)
         .removeLanguageFallbacks();
   }
@@ -1827,7 +1827,7 @@ public class WysiwygControllerTest {
         String content = WysiwygController.load(componentId, messageId, language);
         assertThat(content, is(expectedContent));
         List<SimpleDocument> lockedFiles =
-            AttachmentServiceFactory.getAttachmentService().listDocumentsLockedByUser(userId, null);
+            AttachmentServiceProvider.getAttachmentService().listDocumentsLockedByUser(userId, null);
         assertThat(lockedFiles, is(notNullValue()));
         assertThat(lockedFiles, hasSize(0));
 
@@ -2037,7 +2037,7 @@ public class WysiwygControllerTest {
         assertThat(WysiwygController.load(componentId, messageId, "fr"), is("FR_Content"));
         assertThat(WysiwygController.load(componentId, messageId, "en"), is("EN_Content"));
 
-        AttachmentServiceFactory.getAttachmentService()
+        AttachmentServiceProvider.getAttachmentService()
             .changeVersionState(wysiwygs.get(0).getPk(), "Versioned test");
 
         expectedContent = "FR_Content_updated";

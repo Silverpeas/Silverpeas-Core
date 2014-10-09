@@ -20,19 +20,60 @@
  */
 package org.silverpeas.attachment.notification;
 
-import java.io.Serializable;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.JSONCodec;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+
+/**
+ * It represents a reference to an attachment that was either created, updated or deleted. The
+ * attachment is represented by a {@code org.silverpeas.attachment.model.SimpleDocument} instance.
+ * Instead of a such instance to be transmitted within a notification, it is a reference to it,
+ * more simple and independent of other specific properties.
+ */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AttachmentRef implements Serializable {
 
   private static final long serialVersionUID = -3675788384425272201L;
-  private String id;
-  private String instanceId;
-  private String foreignId;
-  private long oldSilverpeasId;
-  private String name;
-  private boolean versioned;
 
+  @XmlElement
+  private String id;
+  @XmlElement
+  private String instanceId;
+  @XmlElement
+  private String foreignId;
+  @XmlElement
+  private long oldSilverpeasId;
+  @XmlElement
+  private String name;
+  @XmlElement
+  private boolean versioned;
+  @XmlElement
+  private String userId;
+
+  /**
+   * Constructs an <code>AttachmentRef</code> instance from the specified JSON representation of
+   * a such instance.
+   * @param json a JSON representation of an attachment reference.
+   * @return an <code>AttachmentRef</code> instance.
+   */
+  public static final AttachmentRef fromJSON(String json) {
+    return JSONCodec.decode(json, AttachmentRef.class);
+  }
+
+  protected AttachmentRef() {
+
+  }
+
+  /**
+   * Constructs a new attachment reference referring the specified document.
+   * @param document a document.
+   */
   public AttachmentRef(SimpleDocument document) {
     this.id = document.getId();
     this.instanceId = document.getInstanceId();
@@ -40,6 +81,10 @@ public class AttachmentRef implements Serializable {
     this.oldSilverpeasId = document.getOldSilverpeasId();
     this.name = document.getFilename();
     this.versioned = document.isVersioned();
+    this.userId = document.getUpdatedBy();
+    if (userId == null || userId.trim().isEmpty()) {
+      userId = document.getCreatedBy();
+    }
   }
 
   public String getId() {
@@ -64,5 +109,17 @@ public class AttachmentRef implements Serializable {
 
   public boolean isVersioned() {
     return versioned;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  /**
+   * Build a JSON representation from this attachment reference.
+   * @return a <code>String</code> embedding the JSON representation of this object.
+   */
+  public String toJSON() {
+    return JSONCodec.encode(this);
   }
 }

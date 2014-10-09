@@ -30,6 +30,6 @@
 
   <ctx:annotation-config/>
   <bean id="webdavServiceMock" class="org.silverpeas.attachment.mock.WebdavServiceMockWrapper"/>
-  <bean id="webdavServiceFactory" class="org.silverpeas.attachment.WebdavServiceFactory"
+  <bean id="webdavServiceFactory" class="org.silverpeas.attachment.WebdavServiceProvider"
         factory-method="getInstance"/>
 </beans>

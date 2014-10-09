@@ -26,7 +26,7 @@ import com.silverpeas.sharing.security.ShareableVersionDocument;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -64,7 +64,7 @@ public class VersionFileTicket extends Ticket {
     try {
       SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
       pk.setOldSilverpeasId(getSharedObjectId());
-      return (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
+      return (HistorisedDocument) AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(pk, null);
     } catch (AttachmentException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
@@ -77,7 +77,7 @@ public class VersionFileTicket extends Ticket {
     try {
       SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
       pk.setOldSilverpeasId(getSharedObjectId());
-      HistorisedDocument doc = (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
+      HistorisedDocument doc = (HistorisedDocument) AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(pk, null);
       if(doc != null) {
         return new ShareableVersionDocument(getToken(),

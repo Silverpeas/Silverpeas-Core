@@ -35,7 +35,7 @@ import static org.silverpeas.jcr.util.JcrConstants.*;
  *
  * @author ehugonnet
  */
-public class SimpleAttachmentConverter extends AbstractJcrConverter {
+class SimpleAttachmentConverter extends AbstractJcrConverter {
 
   public SimpleAttachment convertNode(Node node) throws RepositoryException {
     SimpleAttachment attachment = new SimpleAttachment();

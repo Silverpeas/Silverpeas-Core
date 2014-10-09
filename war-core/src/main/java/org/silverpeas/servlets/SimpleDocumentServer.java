@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.CharEncoding;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -68,7 +68,7 @@ public class SimpleDocumentServer extends GoTo {
       pk.setOldSilverpeasId(Long.parseLong(objectId));
     }
 
-    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(pk, language);
     if (attachment == null) {
       return null;

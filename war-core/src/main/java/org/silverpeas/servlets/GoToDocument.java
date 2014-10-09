@@ -27,7 +27,7 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.permalinks.PermalinkServiceFactory;
@@ -49,7 +49,7 @@ public class GoToDocument extends GoTo {
       document = PermalinkServiceFactory.getPermalinkCompatibilityService().
           findVersionnedDocumentByOldId(Integer.parseInt(objectId));
     } else {
-      document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+      document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
           new SimpleDocumentPK(objectId), getContentLanguage(req));
     }
     if (document != null) {

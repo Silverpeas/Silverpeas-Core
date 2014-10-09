@@ -33,7 +33,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -137,7 +137,7 @@ public class AttachmentImportExport {
       AttachmentDetail attachment, InputStream input, boolean indexIt) {
     SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
     ForeignPK foreignKey = new ForeignPK(pubId, componentId);
-    List<SimpleDocument> existingAttachments = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> existingAttachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment,
         attachment.getLanguage());
 
@@ -169,7 +169,7 @@ public class AttachmentImportExport {
         getTitle(), attachment.getInfo(), attachment.getSize(),
         FileUtil.getMimeType(attachment.getPhysicalName()), userId, creationDate, attachment.
         getXmlForm()));
-    return AttachmentServiceFactory.getAttachmentService().createAttachment(ad_toCreate, input,
+    return AttachmentServiceProvider.getAttachmentService().createAttachment(ad_toCreate, input,
         indexIt);
   }
 
@@ -195,7 +195,7 @@ public class AttachmentImportExport {
           return computeUniqueName(attachment, incrementSuffixe, existingAttachments, uniqueName,
               updateRule);
         } else {// on efface l'ancien fichier joint et on stoppe la boucle
-          AttachmentServiceFactory.getAttachmentService().deleteAttachment(ad_toCreate);
+          AttachmentServiceProvider.getAttachmentService().deleteAttachment(ad_toCreate);
           return uniqueName;
         }
       }
@@ -216,7 +216,7 @@ public class AttachmentImportExport {
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
-    Collection<SimpleDocument> listAttachment = AttachmentServiceFactory.getAttachmentService()
+    Collection<SimpleDocument> listAttachment = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(pk, null);
     List<AttachmentDetail> listToReturn = new ArrayList<AttachmentDetail>(listAttachment.size());
     if (!listAttachment.isEmpty()) {
@@ -257,7 +257,7 @@ public class AttachmentImportExport {
   private void copyAttachment(SimpleDocument attDetail, String exportPath) {
     String fichierJointExport = exportPath + File.separatorChar + FileServerUtils.
         replaceAccentChars(attDetail.getFilename());
-    AttachmentServiceFactory.getAttachmentService().getBinaryContent(new File(fichierJointExport),
+    AttachmentServiceProvider.getAttachmentService().getBinaryContent(new File(fichierJointExport),
         attDetail.getPk(), null);
   }
 

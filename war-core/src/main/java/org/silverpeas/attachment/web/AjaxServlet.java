@@ -20,10 +20,10 @@
  */
 package org.silverpeas.attachment.web;
 
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -91,7 +91,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     String idAttachment = req.getParameter("Id");
     String userId = getUserId(req);
     String fileLanguage = req.getParameter("FileLanguage");
-    boolean checkOutOK = AttachmentServiceFactory.getAttachmentService().lock(idAttachment, userId,
+    boolean checkOutOK = AttachmentServiceProvider.getAttachmentService().lock(idAttachment, userId,
         fileLanguage);
     if (checkOutOK) {
       return "ok";
@@ -105,7 +105,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
       context.addOption(UnlockOption.WEBDAV);
     }
-    SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
+    SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(new SimpleDocumentPK(req.getParameter("Id")),
             req.getParameter("FileLanguage"));
     if (!doc.isPublic()) {
@@ -115,7 +115,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
         req).getCurrentUserDetail().isAccessAdmin()) {
       context.addOption(UnlockOption.FORCE);
     }
-    if (!AttachmentServiceFactory.getAttachmentService().unlock(context)) {
+    if (!AttachmentServiceProvider.getAttachmentService().unlock(context)) {
       return "locked";
     }
     return "ok";
@@ -134,17 +134,17 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
         String lang = tokenizer.nextToken();
         if ("all".equals(lang)) {
           // suppresion de l'objet
-          SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
+          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
               .searchDocumentById(atPK, null);
-          AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+          AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
           return "attachmentRemoved";
         } else {
-          SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
+          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
               .searchDocumentById(atPK, lang);
 
           boolean hasMoreTranslations = true;
           while (hasMoreTranslations) {
-            AttachmentServiceFactory.getAttachmentService().removeContent(doc, lang, indexIt);
+            AttachmentServiceProvider.getAttachmentService().removeContent(doc, lang, indexIt);
             hasMoreTranslations = tokenizer.hasMoreTokens();
             if (hasMoreTranslations) {
               lang = tokenizer.nextToken();
@@ -153,9 +153,9 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
           return "translationsRemoved";
         }
       } else {
-        SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
+        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
             .searchDocumentById(atPK, null);
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+        AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
         return "attachmentRemoved";
       }
     } catch (Exception e) {
@@ -178,9 +178,9 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
         pk = new SimpleDocumentPK(id, componentId);
       }
       attachments.
-          add(AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk, null));
+          add(AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk, null));
     }
-    AttachmentServiceFactory.getAttachmentService().reorderDocuments(attachments);
+    AttachmentServiceProvider.getAttachmentService().reorderDocuments(attachments);
     return "ok";
   }
 

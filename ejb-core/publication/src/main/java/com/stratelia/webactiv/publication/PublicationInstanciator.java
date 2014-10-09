@@ -33,11 +33,13 @@ package com.stratelia.webactiv.publication;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.notation.ejb.RatingServiceProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.attachment.SimpleDocumentInstanciator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -76,15 +78,6 @@ public class PublicationInstanciator extends SQLRequest {
 
     deleteDataOfInstance(con, componentId, "publicationfather");
     deleteDataOfInstance(con, componentId, "Publication");
-    
-    try {
-      // Delete the attachments directory on the server disk
-      deleteAttachmentsAndImagesDirectory(spaceId, componentId);
-    } catch (Exception e) {
-      // No exceptions are throwed still attachments directory is no more used
-      // throw new InstanciationException("PublicationInstanciator.delete()",
-      // SilverpeasException.ERROR, "root.EX_CANT_DELETE_FILE", e);
-    }
 
     try {
       // Delete the notations
@@ -99,15 +92,6 @@ public class PublicationInstanciator extends SQLRequest {
 
     SilverTrace.info("publication", "PublicationInstanciator.delete()",
         "root.root.MSG_GEN_EXIT_METHOD");
-  }
-
-  private void deleteAttachmentsAndImagesDirectory(String spaceId,
-      String componentId) throws java.lang.Exception {
-    SilverTrace.info("publication",
-        "PublicationInstanciator.deleteAttachmentsAndImagesDirectory()",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    new SimpleDocumentInstanciator().delete(componentId);
   }
 
   /**

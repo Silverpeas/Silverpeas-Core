@@ -35,7 +35,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -112,7 +112,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
           attachmentUrl = fieldValue;
           fieldValue = null;
         } else {
-          SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+          SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
               .searchDocumentById(new SimpleDocumentPK(fieldValue, getComponentId()), lang);
           if (attachment != null) {
             attachmentId = fieldValue;

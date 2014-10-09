@@ -47,7 +47,7 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -662,11 +662,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     List<SimpleDocument> images =
-        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(fromPK,
+        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(fromPK,
             DocumentType.image, null);
     for (SimpleDocument image : images) {
       SimpleDocumentPK imageCopyPk =
-          AttachmentServiceFactory.getAttachmentService().copyDocument(image, toPK);
+          AttachmentServiceProvider.getAttachmentService().copyDocument(image, toPK);
       oldAndNewFileIds.put(image.getId(), imageCopyPk.getId());
     }
 

@@ -29,7 +29,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.WebdavServiceProvider;
 import org.silverpeas.attachment.mock.WebdavServiceMockWrapper;
 import org.silverpeas.attachment.webdav.WebdavService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -156,7 +156,7 @@ public class SimpleDocumentTest {
     ClassPathXmlApplicationContext appContext =
         new ClassPathXmlApplicationContext("spring-mock-webdav.xml");
     try {
-      assertThat("Spring initialization failed", WebdavServiceFactory.getWebdavService(),
+      assertThat("Spring initialization failed", WebdavServiceProvider.getWebdavService(),
           notNullValue());
       WebdavService mock = appContext.getBean(WebdavServiceMockWrapper.class).getMock();
 
@@ -217,7 +217,7 @@ public class SimpleDocumentTest {
     ClassPathXmlApplicationContext appContext =
         new ClassPathXmlApplicationContext("spring-mock-webdav.xml");
     try {
-      assertThat("Spring initialization failed", WebdavServiceFactory.getWebdavService(),
+      assertThat("Spring initialization failed", WebdavServiceProvider.getWebdavService(),
           notNullValue());
       WebdavService mock = appContext.getBean(WebdavServiceMockWrapper.class).getMock();
 

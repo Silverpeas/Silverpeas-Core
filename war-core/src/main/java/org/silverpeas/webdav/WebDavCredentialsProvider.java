@@ -21,28 +21,40 @@
 
 package org.silverpeas.webdav;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
+import org.silverpeas.cache.service.EhCacheService;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.text.MessageFormat;
 
 /** A provider of WebDav credentials for the WebDAV servlet.
  * @author mmoquillon
  */
 public class WebDavCredentialsProvider implements CredentialsProvider {
+
+  private static final String USERID_TEMPLATE = "{0}@domain{1}";
+  private static final String USERID_TOKEN_ATTRIBUTE = "UserID";
+
+  @Inject
+  private EhCacheService cacheService;
+
   @Override
   public Credentials getCredentials(final HttpServletRequest request)
       throws LoginException, ServletException {
     Credentials credentials;
     String authToken = request.getParameter("_");
-    if (StringUtil.isDefined(authToken)) {
-      byte[] userID = StringUtil.fromBase64(authToken);
+    UserDetail user = cacheService.get(authToken, UserDetail.class);
+    if (user != null) {
+      String userID = MessageFormat.format(USERID_TEMPLATE, user.getLogin(), user.getDomainId());
       credentials = new TokenCredentials(authToken);
-      ((TokenCredentials)credentials).setAttribute("UserID", new String(userID));
+      ((TokenCredentials)credentials).setAttribute(USERID_TOKEN_ATTRIBUTE, userID);
     } else {
       throw new LoginException("Bad credentials!");
     }

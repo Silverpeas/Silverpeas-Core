@@ -27,7 +27,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Date;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.UuidPk;
@@ -73,7 +73,7 @@ public class SimpleFileTicket extends Ticket {
   public ShareableResource<SimpleDocument> getResource() {
     SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
     pk.setOldSilverpeasId(getSharedObjectId());
-    SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
+    SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
         null);
     if (doc != null) {
       return new ShareableAttachment(getToken(), doc.getLastPublicVersion());

@@ -34,7 +34,7 @@ import com.silverpeas.form.fieldType.FileField;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.EncodeHelper;
@@ -84,7 +84,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
-      attachment = AttachmentServiceFactory.getAttachmentService().
+      attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
         defaultOperation = Operation.UPDATE;

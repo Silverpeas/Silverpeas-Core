@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -63,7 +63,7 @@ public class ActifyToAttachment extends HttpServlet {
         String logicalName = req.getParameter("LogicalName");
         boolean indexIt = false;
         // Get AttachmentDetail Object
-        SimpleDocument ad = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        SimpleDocument ad = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
             new SimpleDocumentPK(attachmentId), null);
         if (ad != null) {
           // Remove string "HIDDEN" from the beginning of the instanceId
@@ -71,7 +71,7 @@ public class ActifyToAttachment extends HttpServlet {
           ad.getPk().setComponentName(instanceId);
           ad.setSize(size);
           ad.setFilename(logicalName);
-          AttachmentServiceFactory.getAttachmentService().updateAttachment(ad, indexIt, false);
+          AttachmentServiceProvider.getAttachmentService().updateAttachment(ad, indexIt, false);
           // Copy 3D file converted from Actify Work directory to Silverpeas workspaces
           String actifyWorkingPath = ActifyDocumentProcessor.getActifyResultPath();
           String srcFile = actifyWorkingPath + File.separator + logicalName;

@@ -59,7 +59,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -306,7 +306,7 @@ public class PublicationsTypeManager {
           String imageId = value.substring(value.indexOf('_') + 1, value.length());
           SimpleDocument attachment = null;
           try {
-            attachment = AttachmentServiceFactory.getAttachmentService()
+            attachment = AttachmentServiceProvider.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(imageId, publicationPk.getInstanceId()),
                     null);
           } catch (RuntimeException e1) {
@@ -331,7 +331,7 @@ public class PublicationsTypeManager {
 
           SimpleDocument attachment = null;
           try {
-            attachment = AttachmentServiceFactory.getAttachmentService()
+            attachment = AttachmentServiceProvider.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(fileId, publicationPk.getInstanceId()),
                     null);
           } catch (RuntimeException e1) {

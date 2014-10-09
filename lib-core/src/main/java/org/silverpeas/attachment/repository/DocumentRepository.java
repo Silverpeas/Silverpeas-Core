@@ -82,7 +82,6 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
  *
  * @author ehugonnet
  */
-@Named("documentRepository")
 public class DocumentRepository {
 
   private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";

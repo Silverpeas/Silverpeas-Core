@@ -39,7 +39,7 @@
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
   the actual scheduling backend -->
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider"
         factory-method="getInstance"/>
 
 </beans>

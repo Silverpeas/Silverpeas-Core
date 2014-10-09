@@ -73,12 +73,15 @@
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   -->
 
+  <!--
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
         factory-method="getInstance" />
+        -->
 
+  <!--
   <bean id="webdavServiceFactory" class="org.silverpeas.attachment.WebdavServiceFactory"
         factory-method="getInstance" />
-
+  -->
 
   <!-- Node -->
   <!--

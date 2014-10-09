@@ -28,7 +28,6 @@ import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
-import com.silverpeas.scheduler.simple.SimpleScheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -65,7 +64,6 @@ public class ScheduledDBReset implements SchedulerEventListener {
    * of these peas that have the "timeout" states actives are read to check if timeout interval has
    * been reached. In that case, the administrator can be notified, the active state and the
    * instance are marked as timeout.
-   * @see SimpleScheduler for parameters,
    */
   public void doDBReset() {
     if (adminController == null) {

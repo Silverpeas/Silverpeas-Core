@@ -21,6 +21,9 @@
 package org.silverpeas.attachment.web;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheService;
+import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.EhCacheService;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -30,14 +33,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
+import java.util.Random;
+import java.util.UUID;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,12 +47,8 @@ import org.apache.commons.lang3.CharEncoding;
  */
 public class LaunchWebdavEdition extends HttpServlet {
 
-  private final static byte[] KEY = new byte[]{-23, -75, -2, -17, 79, -94, -125, -14};
-  private final static String DIGITS = "0123456789abcdef";
   private static final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
-  private static final String ALGORITHME = "DES";
-  private static final long serialVersionUID = 1L;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -78,32 +72,17 @@ public class LaunchWebdavEdition extends HttpServlet {
         return;
       }
       UserDetail user = mainSessionController.getCurrentUserDetail();
-      String userID = user.getLogin() + "@ " + user.getDomainId();
-      String encodedUserID = StringUtil.asBase64(userID.getBytes("UTF-8"));
-      prepareJNLP(request, out, user.getLogin(), encodedUserID);
+      String token = generateAuthToken();
+      CacheService cacheService = CacheServiceFactory.getApplicationCacheService();
+      cacheService.put(token, user); // 12h by default of TTL
+      prepareJNLP(request, out, user.getLogin(), token);
     } finally {
       out.close();
     }
   }
 
-  /**
-   * Return length many bytes of the passed in byte array as a hex string.
-   *
-   * @param data the bytes to be converted.
-   * @return a hex representation of length bytes of data.
-   */
-  String toHex(byte[] data) {
-    StringBuilder buf = new StringBuilder(data.length);
-    for (int i = 0; i != data.length; i++) {
-      int v = data[i] & 0xff;
-      buf.append(DIGITS.charAt(v >> 4));
-      buf.append(DIGITS.charAt(v & 0xf));
-    }
-    return buf.toString();
-  }
-
   private void prepareJNLP(HttpServletRequest request, PrintWriter out, String login,
-      String encodedUserID)
+      String token)
       throws UnsupportedEncodingException {
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     out.print("<jnlp spec=\"1.0+\" codebase=\"");
@@ -151,7 +130,7 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.print(login);
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(encodedUserID);
+    out.print(token);
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(resources.getBoolean("disconnectedMode", false));
@@ -196,5 +175,10 @@ public class LaunchWebdavEdition extends HttpServlet {
   @Override
   public String getServletInfo() {
     return "Generating the JNLP for direct edition";
+  }
+
+  private static String generateAuthToken() {
+    String[] parts = UUID.randomUUID().toString().split("-");
+    return StringUtil.asBase64(parts[parts.length - 1].getBytes());
   }
 }

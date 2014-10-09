@@ -138,7 +138,7 @@ public class AttachmentServiceTest {
         session.logout();
       }
     }
-    instance = AttachmentServiceFactory.getAttachmentService();
+    instance = AttachmentServiceProvider.getAttachmentService();
   }
 
   private Node getComponentRootJcrNode() {

@@ -31,6 +31,7 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import java.io.File;
@@ -57,12 +58,13 @@ import org.silverpeas.attachment.util.SimpleDocumentList;
  *
  * @author mmoquillon
  */
-public class ActifyDocumentProcessScheduler implements SchedulerEventListener {
+public class ActifyDocumentProcessScheduler implements SchedulerEventListener, Initialization {
 
   private static final Logger logger = Logger.getLogger(ActifyDocumentProcessScheduler.class.
       getSimpleName());
 
-  public void initialize() {
+  @Override
+  public void init() {
     if (ActifyDocumentProcessor.isActifySupportEnabled()) {
       try {
         String cronScheduleProcess = ActifyDocumentProcessor.getCRONForActifyImport();
@@ -121,7 +123,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener {
         String componentId;
 
         long now = new Date().getTime();
-        AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+        AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
 
         String resultActifyPath = ActifyDocumentProcessor.getActifyResultPath();
         int delayBeforeProcess = ActifyDocumentProcessor.getDelayBeforeImport();
@@ -227,7 +229,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener {
 
   private SimpleDocument getSourceDocument(String filename, ForeignPK publication) {
     SimpleDocument source = null;
-    SimpleDocumentList<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+    SimpleDocumentList<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(publication, null);
     for (SimpleDocument aDocument : documents) {
       String destfile = FilenameUtils.getBaseName(filename);

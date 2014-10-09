@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,29 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.attachment;
 
-package org.silverpeas.attachment.notification;
-
-import com.silverpeas.notification.SilverpeasNotificationCause;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.notification.NotificationSource;
-import com.silverpeas.notification.SilverpeasNotification;
-
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * Notification about the deletion of an attachment in a given component instance.
+ * @author ehugonnet
  */
-public class AttachmentDeletionNotification extends SilverpeasNotification {
+public class AttachmentServiceProvider {
 
-  private static final long serialVersionUID = 3354035649186264026L;
-
-  protected AttachmentDeletionNotification(final SimpleDocument attachment) {
-    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()),
-        SilverpeasNotificationCause.DELETION, new AttachmentRef(attachment));
+  private AttachmentServiceProvider() {
   }
 
-  public AttachmentRef getAttachment() {
-    return (AttachmentRef) getObject();
+  public static AttachmentService getAttachmentService() {
+    return ServiceProvider.getService(AttachmentService.class);
   }
+
 }

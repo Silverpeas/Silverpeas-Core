@@ -26,7 +26,7 @@ package org.silverpeas.attachment.webdav;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import org.junit.Test;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.WebdavServiceFactory;
+import org.silverpeas.attachment.WebdavServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.repository.JcrTest;
@@ -121,7 +121,7 @@ public class WebdavServiceTest {
     @Override
     public void run() throws Exception {
       webdavRepository = (WebdavDocumentRepository) getAppContext().getBean("webdavRepository");
-      webdavService = WebdavServiceFactory.getWebdavService();
+      webdavService = WebdavServiceProvider.getWebdavService();
       Session session = BasicDaoFactory.getSystemSession();
       try {
         run(webdavService);

@@ -20,45 +20,46 @@
  */
 package org.silverpeas.attachment.notification;
 
-import javax.inject.Inject;
-
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
 
-import com.silverpeas.notification.NotificationPublisher;
-
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.jms.JMSContext;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
+import javax.jms.JMSProducer;
+import javax.jms.Topic;
 
 /**
  * A service to notify about the events which occurs on attachment. It provides an easy access to
  * the underlying messaging system used in the notification.
  */
-public class AttachmentNotificationService {
-
-  private static final AttachmentNotificationService instance = new AttachmentNotificationService();
-
-  /**
-   * Gets an instance of the service.
-   *
-   * @return an AttachmentNotificationService instance.
-   */
-  public static AttachmentNotificationService getService() {
-    return instance;
-  }
+@JMSDestinationDefinitions(
+    value = {@JMSDestinationDefinition(
+        name = "java:/topic/attachments",
+        interfaceName = "javax.jms.Topic",
+        destinationName = "AttachmentEventNotification")})
+public class AttachmentEventNotifier implements ResourceEventNotifier<AttachmentEvent> {
 
   @Inject
-  private NotificationPublisher publisher;
+  private JMSContext jms;
 
-  /**
-   * Notifies the registered beans a given node (with and its children) comes to be deleted.
-   *
-   * @param attachment the document that is deleted.
-   */
-  public void notifyOnDeletionOf(final SimpleDocument attachment) {
-    AttachmentDeletionNotification deletion = new AttachmentDeletionNotification(attachment);
-    publisher.publish(deletion, onTopic(ATTACHMENT_TOPIC));
+  @Resource(lookup = "java:/topic/attachments")
+  private Topic topic;
+
+  protected AttachmentEventNotifier() {
   }
 
-  private AttachmentNotificationService() {
+  @Override
+  public void notify(final AttachmentEvent event) {
+    JMSProducer producer = jms.createProducer();
+    producer.send(topic, event.toText());
+  }
+
+  @Override
+  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
+    notify(new AttachmentEvent(type, (SimpleDocument) resource));
   }
 }

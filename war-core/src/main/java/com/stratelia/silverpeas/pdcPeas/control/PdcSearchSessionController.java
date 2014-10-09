@@ -111,7 +111,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.StringTokenizer;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.PlainSearchResult;
@@ -1568,7 +1568,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String language = gsr.getAttachmentLanguage();
 
     SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
+    SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(documentPk, language);
 
     // check if attachment is previewable and viewable
@@ -1612,7 +1612,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String documentId = gsr.getAttachmentId();
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
+    SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(new SimpleDocumentPK(documentId, componentId), null);
     SimpleDocument version = document.getLastPublicVersion();
 

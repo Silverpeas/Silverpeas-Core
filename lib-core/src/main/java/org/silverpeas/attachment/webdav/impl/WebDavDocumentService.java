@@ -35,11 +35,9 @@ import java.io.IOException;
 
 import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
 
-@Named("webdavService")
 public class WebDavDocumentService implements WebdavService {
 
   @Inject
-  @Named("webdavRepository")
   private WebdavRepository webdavRepository;
 
   @Override

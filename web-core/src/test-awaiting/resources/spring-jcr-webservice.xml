@@ -62,7 +62,7 @@
   </bean>
 
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider" factory-method="getInstance" />
 
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="jcrAccessManager" scope="prototype" class="com.silverpeas.jcrutil.security.impl.SimpleAccessManager" />

@@ -33,7 +33,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -102,7 +102,7 @@ public class VersionedDragAndDrop extends HttpServlet {
             documentPK.setId(documentId);
           }
         }
-        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
             findExistingDocument(documentPK, fileName, new ForeignPK(foreignId, componentId), lang);
         boolean needCreation = document == null;
         if (needCreation) {
@@ -114,18 +114,18 @@ public class VersionedDragAndDrop extends HttpServlet {
         document.setPublicDocument(publicDocument);
         try {
           if (needCreation) {
-            AttachmentServiceFactory.getAttachmentService().createAttachment(document,
+            AttachmentServiceProvider.getAttachmentService().createAttachment(document,
                 item.getInputStream(), bIndexIt, publicDocument);
           } else {
             document.edit("" + userId);
-            AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
+            AttachmentServiceProvider.getAttachmentService().updateAttachment(document,
                 item.getInputStream(), bIndexIt, publicDocument);
             UnlockContext unlockContext = new UnlockContext(document.getId(), "" + userId, lang, "");
             unlockContext.addOption(UnlockOption.UPLOAD);
             if (!publicDocument) {
               unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
             }
-            AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+            AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
           }
           // Specific case: 3d file to convert by Actify Publisher
           ActifyDocumentProcessor.getProcessor().process(document);

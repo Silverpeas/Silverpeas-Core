@@ -56,7 +56,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -223,7 +223,7 @@ public class SimpleFileAccessControlTest {
     attachment.setPK(pk);
     attachment.setAttachment(file);
     attachment.setForeignId("12");
-    return AttachmentServiceFactory.getAttachmentService().createAttachment(attachment,
+    return AttachmentServiceProvider.getAttachmentService().createAttachment(attachment,
         new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8)));
 
   }

@@ -41,7 +41,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
@@ -417,9 +417,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
         "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = " + foreignPK);
     List<SimpleDocument> attachments =
-        AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(foreignPK, null);
+        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignPK, null);
     for (SimpleDocument attachment : attachments) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(attachment);
+      AttachmentServiceProvider.getAttachmentService().deleteAttachment(attachment);
     }
 
     // delete folder

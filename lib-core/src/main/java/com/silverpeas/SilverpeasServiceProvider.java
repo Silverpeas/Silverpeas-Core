@@ -23,7 +23,7 @@ package com.silverpeas;
 
 import com.silverpeas.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceProvider;
@@ -51,7 +51,7 @@ public class SilverpeasServiceProvider {
   }
 
   public static AttachmentService getAttachmentService() {
-    return AttachmentServiceFactory.getAttachmentService();
+    return AttachmentServiceProvider.getAttachmentService();
   }
 
   private SilverpeasServiceProvider() {

@@ -26,7 +26,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ClientBrowserUtil;
 import org.apache.commons.codec.CharEncoding;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -43,7 +43,7 @@ public class GoToFile extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     if (attachment == null) {
       return null;

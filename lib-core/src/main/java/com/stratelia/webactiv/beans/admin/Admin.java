@@ -29,9 +29,6 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.notification.AdminNotificationService;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
@@ -49,12 +46,9 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -65,7 +59,15 @@ import org.silverpeas.quota.model.Quota;
 import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ListSlice;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -75,6 +77,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
+import static org.silverpeas.notification.ResourceEvent.Type.*;
 
 /**
  * The class Admin is the main class of the Administrator.<BR/> The role of the administrator is to
@@ -1311,6 +1314,9 @@ public final class Admin {
       // indexation du composant
       createComponentIndex(component);
 
+      ComponentInstanceEventNotifier notifier = ComponentInstanceEventNotifier.getNotifier();
+      notifier.notifyEventOn(CREATION, componentInst);
+
       return componentId;
     } catch (Exception e) {
       try {
@@ -1404,6 +1410,9 @@ public final class Admin {
             componentInst.getLabel() + Admin.basketSuffix, userId);
       } else {
         connectionProd = openConnection(false);
+
+        ComponentInstanceEventNotifier notifier = ComponentInstanceEventNotifier.getNotifier();
+        notifier.notifyEventOn(DELETION, componentInst);
 
         // Uninstantiate the components
         String componentName = componentInst.getName();
@@ -1538,6 +1547,10 @@ public final class Admin {
       component.setId(componentClientId);
       // indexation du composant
       createComponentIndex(componentClientId);
+
+      ComponentInstanceEventNotifier notifier = ComponentInstanceEventNotifier.getNotifier();
+      notifier.notifyEventOn(UPDATE, component);
+
       return componentClientId;
     } catch (Exception e) {
       rollback();

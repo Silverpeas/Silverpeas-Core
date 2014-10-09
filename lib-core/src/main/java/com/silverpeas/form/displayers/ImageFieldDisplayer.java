@@ -36,7 +36,7 @@ import com.silverpeas.form.fieldType.FileField;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.FileServerUtils;
@@ -94,7 +94,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
         imageURL = attachmentId;
         originalOperation = Operation.UPDATE;
       } else {
-        attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        attachment = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
             attachmentPk, language);
         if (attachment != null) {
           originalOperation = Operation.UPDATE;

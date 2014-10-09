@@ -37,21 +37,18 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.stratelia.silverpeas.silverpeasinitialize.CallBackManager
-    .ACTION_XMLCONTENT_CREATE;
-import static com.stratelia.silverpeas.silverpeasinitialize.CallBackManager
-    .ACTION_XMLCONTENT_UPDATE;
 
 public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTemplateSessionController> {
 
@@ -210,14 +207,11 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
 
-    int callbackAction = ACTION_XMLCONTENT_UPDATE;
-
     DataRecord data = set.getRecord(objectId, objectLanguage);
     if (data == null) {
       data = set.getEmptyRecord();
       data.setId(objectId);
       data.setLanguage(objectLanguage);
-      callbackAction = ACTION_XMLCONTENT_CREATE;
     }
 
     PagesContext context = new PagesContext("myForm", "3", controller.getLanguage(), false,
@@ -228,16 +222,16 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
     form.update(items, data, context);
     set.save(data);
 
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("ObjectId", objectId);
-    params.put("ObjectType", objectType);
-    params.put("ObjectLanguage", objectLanguage);
-    params.put("XMLFormName", xmlFormShortName);
+    SimpleDocumentPK pk;
+    if (StringUtil.isLong(objectId)) {
+      long oldSilverpeasId = Long.parseLong(objectId);
+      pk = new SimpleDocumentPK(null, componentId);
+      pk.setOldSilverpeasId(oldSilverpeasId);
+    } else {
+      pk = new SimpleDocumentPK(objectId, componentId);
+    }
+    attachXmlForm(xmlFormShortName, pk, objectLanguage);
 
-    // launch event
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(callbackAction, Integer.parseInt(controller.getUserId()),
-        componentId, params);
     request.setAttribute("ReloadOpener", controller.getReloadOpener());
     request.setAttribute("urlToReload", controller.getUrlToReload());
     return "/form/jsp/close.jsp";
@@ -255,5 +249,19 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
 
   private String getXmlFormShortName(final String xmlFormName) {
     return xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+  }
+
+  private void attachXmlForm(String xmlFormName, SimpleDocumentPK pk, String language) {
+    SimpleDocument doc =
+        AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk, language);
+    pk = doc.getPk();
+    try {
+      doc.setXmlFormId(xmlFormName);
+      AttachmentServiceProvider.getAttachmentService().addXmlForm(pk, language, xmlFormName);
+    } catch (AttachmentException e) {
+      SilverTrace.error("attachment", getClass().getSimpleName() + ".attachXmlForm",
+          "root.MSG_GEN_PARAM_VALUE", e);
+    }
+    AttachmentServiceProvider.getAttachmentService().createIndex(doc);
   }
 }

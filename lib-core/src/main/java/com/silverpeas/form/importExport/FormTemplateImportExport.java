@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -110,7 +110,7 @@ public class FormTemplateImportExport {
           pk.getId(), 0, false, new SimpleAttachment(fileName, I18NHelper.defaultLanguage, fileName,
           "", image.length(), FileUtil.getMimeType(fileName), userId, new Date(), null));
       document.setDocumentType(type);
-      fieldValue = AttachmentServiceFactory.getAttachmentService().createAttachment(document, image,
+      fieldValue = AttachmentServiceProvider.getAttachmentService().createAttachment(document, image,
           true).getId();
     }
     else {

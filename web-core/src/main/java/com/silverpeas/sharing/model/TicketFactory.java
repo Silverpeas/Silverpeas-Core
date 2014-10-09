@@ -33,7 +33,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.accesscontrol.NodeAccessControl;
 import org.silverpeas.accesscontrol.PublicationAccessControl;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -80,7 +80,7 @@ public class TicketFactory {
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       pk.setOldSilverpeasId(sharedObjectId);
       SimpleDocument doc =
-          AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk, null);
+          AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk, null);
       return doc.isSharingAllowedForRolesFrom(UserDetail.getById(creatorId));
     } else if (Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
       AccessController<NodePK> nodeAccessController = AccessControllerProvider

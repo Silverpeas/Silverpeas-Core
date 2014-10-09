@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.silverpeas.notification.asynchronous;
+
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
+import org.silverpeas.notification.util.TestResource;
+import org.silverpeas.notification.util.TestResourceEvent;
+
+import javax.annotation.Resource;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.jms.JMSContext;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
+import javax.jms.JMSProducer;
+import javax.jms.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * @author mmoquillon
+ */
+@JMSDestinationDefinitions(
+    value = {@JMSDestinationDefinition(
+        name = "java:/queue/notification",
+        interfaceName = "javax.jms.Queue",
+        destinationName = "EventNotification")})
+public class JMSQueueTestResourceEventNotifier implements ResourceEventNotifier<TestResourceEvent> {
+
+  @Inject
+  private JMSContext jms;
+
+  @Resource(lookup = "java:/queue/notification")
+  private Queue queue;
+
+  @Override
+  public void notify(final TestResourceEvent event) {
+    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Event sending...");
+    JMSProducer producer = jms.createProducer();
+    producer.send(queue, event.toText());
+  }
+
+  @Override
+  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
+    notify(new TestResourceEvent(type, (TestResource) resource));
+  }
+
+  public void onTestResourceEvent(@Observes TestResourceEvent event) {
+    notify(event);
+  }
+}

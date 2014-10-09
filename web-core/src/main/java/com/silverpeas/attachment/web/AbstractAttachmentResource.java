@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -48,7 +48,7 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
   }
   
   protected Response getFileContent(String attachmentId) {
-    final SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+    final SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
     if (!isFileReadable(attachment)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
@@ -57,7 +57,7 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
       @Override
       public void write(OutputStream output) throws WebApplicationException {
         try {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(
+          AttachmentServiceProvider.getAttachmentService().getBinaryContent(
               output, attachment.getPk(), attachment.getLanguage());
         } catch (Exception e) {
           throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);

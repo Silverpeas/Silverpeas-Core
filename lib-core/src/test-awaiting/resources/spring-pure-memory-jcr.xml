@@ -64,8 +64,8 @@
   </bean>
 
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
-  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
-  <bean id="webdavServiceFactory" class="org.silverpeas.attachment.WebdavServiceFactory" factory-method="getInstance" />
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceProvider" factory-method="getInstance" />
+  <bean id="webdavServiceFactory" class="org.silverpeas.attachment.WebdavServiceProvider" factory-method="getInstance" />
   <bean id="organizationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory" factory-method="getFactory" />
 
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
@@ -73,5 +73,5 @@
   <bean id="jcrLoginModule" scope="prototype" class="com.silverpeas.jcrutil.security.impl.BasicLoginModule" />
 
   <bean id="attachmentNotificationService" factory-method="getService"
-        class="org.silverpeas.attachment.notification.AttachmentNotificationService" />
+        class="org.silverpeas.attachment.notification.AttachmentEventNotifier" />
 </beans>

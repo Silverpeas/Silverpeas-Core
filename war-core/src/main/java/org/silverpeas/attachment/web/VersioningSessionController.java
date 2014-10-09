@@ -37,7 +37,7 @@ import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -103,7 +103,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return SimpleDocument
    */
   public SimpleDocument getDocument(SimpleDocumentPK documentPK) {
-    return AttachmentServiceFactory.getAttachmentService()
+    return AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(documentPK, getContentLanguage());
   }
 
@@ -114,7 +114,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return List<SimpleDocument>
    */
   public List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
-    return (List)((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
+    return (List)((HistorisedDocument) AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(documentPK, getContentLanguage())).getFunctionalHistory();
   }
 
@@ -125,7 +125,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return List<SimpleDocument>
    */
   public List<SimpleDocument> getPublicDocumentVersions(SimpleDocumentPK documentPK) {
-    SimpleDocument currentDoc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+    SimpleDocument currentDoc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
         documentPK, getContentLanguage());
     if (currentDoc.isVersioned()) {
       return ((HistorisedDocument) currentDoc).getPublicVersions();

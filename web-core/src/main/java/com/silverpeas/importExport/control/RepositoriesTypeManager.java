@@ -44,7 +44,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -238,7 +238,7 @@ public class RepositoriesTypeManager {
       }
       document.setForeignId(pubDetailToCreate.getPK().getId());
       document.setContentType(FileUtil.getMimeType(file.getName()));
-      AttachmentServiceFactory.getAttachmentService()
+      AttachmentServiceProvider.getAttachmentService()
             .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
       reportManager.addNumberOfFilesProcessed(1);
       reportManager.addImportedFileSize(document.getSize(), componentId);

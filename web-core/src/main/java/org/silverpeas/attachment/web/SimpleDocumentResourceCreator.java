@@ -34,7 +34,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -169,7 +169,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         boolean needCreation = true;
         boolean publicDocument = true;
         if (uploadData.getVersionType() != null) {
-          document = AttachmentServiceFactory.getAttachmentService()
+          document = AttachmentServiceProvider.getAttachmentService()
               .findExistingDocument(pk, uploadedFilename,
                   new ForeignPK(uploadData.getForeignId(), getComponentId()), lang);
           publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
@@ -196,19 +196,19 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         document.setSize(tempFile.length());
         InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
         if (needCreation) {
-          document = AttachmentServiceFactory.getAttachmentService()
+          document = AttachmentServiceProvider.getAttachmentService()
               .createAttachment(document, content, uploadData.getIndexIt(), publicDocument);
         } else {
           document.edit(userId);
-          AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, lang);
-          AttachmentServiceFactory.getAttachmentService()
+          AttachmentServiceProvider.getAttachmentService().lock(document.getId(), userId, lang);
+          AttachmentServiceProvider.getAttachmentService()
               .updateAttachment(document, content, uploadData.getIndexIt(), true);
           UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
           unlockContext.addOption(UnlockOption.UPLOAD);
           if (!publicDocument) {
             unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
           }
-          AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+          AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
         }
         content.close();
         FileUtils.deleteQuietly(tempFile);

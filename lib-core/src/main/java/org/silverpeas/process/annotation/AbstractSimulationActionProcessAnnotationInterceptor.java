@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstracttion of interceptors that handle a simulation of actions performed by a caller.
+ * Abstraction of interceptors that handle a simulation of actions performed by a caller.
  * More precisely, the simulation focuses on file manipulations.
  * In the future this kind of interceptor will be transformed in a CDI one.
  * That is why, callers have to specify it with a second one :

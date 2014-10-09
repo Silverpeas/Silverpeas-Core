@@ -38,8 +38,10 @@
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
   <ctx:component-scan base-package="org.silverpeas.permalinks" />
 
+  <!--
   <bean id="attachmentNotificationService" class="org.silverpeas.attachment.notification.AttachmentNotificationService"
         factory-method="getService"/>
+        -->
   
   <bean id="permalinkServiceFactory" class="org.silverpeas.permalinks.PermalinkServiceFactory"
         factory-method="getInstance"/>
