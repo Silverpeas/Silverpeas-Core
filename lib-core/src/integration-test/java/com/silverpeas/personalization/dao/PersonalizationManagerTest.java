@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.test.LibCoreTestArchiveDeploymentBuilder;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.DBUtil;
 
 import javax.annotation.Resource;
@@ -90,18 +90,11 @@ public class PersonalizationManagerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return LibCoreTestArchiveDeploymentBuilder
-        // Initializing the configuration
-        .initialize()
-            // Configuring JAR library
-        .onJar()
-            // Adding Persistence
+    return WarBuilder4LibCore.onWar()
         .addPersistenceFeatures()
-            // Tested packages / classes
-        .apply(
-            (context) -> context.getContainer().addPackages(true, "com.silverpeas.personalization"))
-            // Builds the final WAR
-        .buildWar();
+        .testFocusedOn(
+            (warBuilder) -> warBuilder.addPackages(true, "com.silverpeas.personalization"))
+        .build();
   }
 
   @Test

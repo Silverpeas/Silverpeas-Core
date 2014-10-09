@@ -42,7 +42,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.LibCoreTestArchiveDeploymentBuilder;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -90,24 +90,15 @@ public class PersonalizationServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return LibCoreTestArchiveDeploymentBuilder
-        // Initializing the configuration
-        .initialize()
-            // Configuring JAR library
-        .onJar()
-            // Adding Persistence
+    return WarBuilder4LibCore.onWar()
         .addPersistenceFeatures()
-            // Tested packages / classes
-        .apply(
-            (context) -> context.getContainer().addPackages(true, "com.silverpeas.personalization"))
-            // Configuring WAR archive
-        .onWar()
-            // Tested resources
-        .apply((context) -> context.getContainer().addAsResource(
-            "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings" +
-                ".properties"))
-            // Builds the final WAR
-        .buildWar();
+        .testFocusedOn((warBuilder) -> {
+          warBuilder.addPackages(true, "com.silverpeas.personalization");
+          warBuilder.addAsResource(
+              "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings" +
+                  ".properties");
+            })
+        .build();
   }
 
 

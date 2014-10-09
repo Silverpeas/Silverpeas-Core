@@ -38,7 +38,7 @@ import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.persistence.repository.OperationContext;
 import org.silverpeas.persistence.repository.jpa.JpaEntityServiceTest;
 import org.silverpeas.persistence.repository.jpa.model.Person;
-import org.silverpeas.test.LibCoreTestArchiveDeploymentBuilder;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.ServiceProvider;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -124,18 +124,11 @@ public class TransactionTest extends RepositoryBasedTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return LibCoreTestArchiveDeploymentBuilder
-        // Initializing the configuration
-        .initialize()
-            // Configuring full Web Archive
-        .onWar()
-            // Adding Persistence
+    return WarBuilder4LibCore.onWar()
         .addPersistenceFeatures()
-            // Tested packages / classes
-        .apply((context) -> context.getContainer()
+        .testFocusedOn((warBuilder) -> warBuilder
             .addPackages(true, "org.silverpeas.persistence.repository.jpa"))
-            // Builds the final WAR
-        .buildWar();
+        .build();
   }
 
   @Test
