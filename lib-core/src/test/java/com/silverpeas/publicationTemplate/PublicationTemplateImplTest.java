@@ -23,8 +23,10 @@
  */
 package com.silverpeas.publicationTemplate;
 
-import java.io.FileInputStream;
-
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.record.GenericRecordTemplate;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.BeforeClass;
@@ -32,26 +34,30 @@ import org.junit.Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.record.GenericRecordTemplate;
+import java.io.FileInputStream;
 
 import static com.silverpeas.publicationTemplate.Assertion.assertEquals;
-import static com.silverpeas.util.PathTestUtil.SEPARATOR;
-import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static java.io.File.separatorChar;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 /**
- *
  * @author ehugonnet
  */
 public class PublicationTemplateImplTest {
+  private static String TARGET_DIR = "";
+  private static final char SEPARATOR = separatorChar;
 
-  public static final String MAPPINGS_PATH = TARGET_DIR
-          + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping";
-  public static final String TEMPLATES_PATH = TARGET_DIR + "test-classes" + SEPARATOR + "templateRepository";
+  static {
+    TARGET_DIR =
+        PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
+            .getFile();
+  }
+
+  public static final String MAPPINGS_PATH =
+      TARGET_DIR + "templateRepository" + SEPARATOR + "mapping";
+  public static final String TEMPLATES_PATH = TARGET_DIR + "templateRepository";
 
   public PublicationTemplateImplTest() {
   }
@@ -64,6 +70,8 @@ public class PublicationTemplateImplTest {
   @Test
   public void testGetRecordTemplateSimple() throws Exception {
     String xmlFileName = "template" + SEPARATOR + "data.xml";
+    // Pay attention to not declare com.silverpeas.form.displayers.PdcPositionsFieldDisplayer
+    // inside types.properties cause this class is not available inside lib-core project
     RecordTemplate expectedTemplate = getExpectedRecordTemplate(xmlFileName);
     PublicationTemplateImpl instance = new PublicationTemplateImpl();
     instance.setDataFileName(xmlFileName);
@@ -77,7 +85,7 @@ public class PublicationTemplateImplTest {
 
   /**
    * Gets the expected record template from the specified file in which it is serialized in XML.
-   * @param XmlFileName the name of the file in which is serialized the record template.
+   * @param xmlFileName the name of the file in which is serialized the record template.
    * @return the record template that is serialized in the specified XML file.
    * @throws Exception if the record template cannot be deserialized.
    */
@@ -85,8 +93,8 @@ public class PublicationTemplateImplTest {
     Mapping mapping = new Mapping();
     mapping.loadMapping(MAPPINGS_PATH + SEPARATOR + "templateMapping.xml");
     Unmarshaller unmarshaller = new Unmarshaller(mapping);
-    RecordTemplate template = (GenericRecordTemplate) unmarshaller.unmarshal(new InputSource(
-            new FileInputStream(TEMPLATES_PATH + SEPARATOR + xmlFileName)));
+    RecordTemplate template = (GenericRecordTemplate) unmarshaller
+        .unmarshal(new InputSource(new FileInputStream(TEMPLATES_PATH + SEPARATOR + xmlFileName)));
     return template;
   }
 

@@ -270,7 +270,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   private Form getForm(String fileName, String fileType) throws PublicationTemplateException {
-    Form form = null;
+    Form form;
     RecordTemplate templateForm;
     String currentFileName = fileName;
 
@@ -585,7 +585,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   /**
-   * @param resultTemplateFileName the resultTemplateFileName to set
+   * @param searchResultFileName the search result template file name to set
    */
   public void setSearchResultFileName(String searchResultFileName) {
     this.searchResultFileName = searchResultFileName;
@@ -654,7 +654,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   @Override
   public List<String> getFieldsForFacets() {
-    List<String> fieldNames = new ArrayList<String>();
+    List<String> fieldNames = new ArrayList<>();
     try {
       FieldTemplate[] fieldTemplates = getRecordTemplate().getFieldTemplates();
       for (FieldTemplate fieldTemplate : fieldTemplates) {

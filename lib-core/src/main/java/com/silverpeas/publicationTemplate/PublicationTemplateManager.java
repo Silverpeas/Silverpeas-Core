@@ -70,12 +70,10 @@ public class PublicationTemplateManager {
   // PublicationTemplates instances associated to silverpeas components. Theses templates should
   // already exist and be loaded.
   // map externalId -> PublicationTemplate
-  private final Map<String, PublicationTemplate> externalTemplates =
-      new HashMap<String, PublicationTemplate>();
+  private final Map<String, PublicationTemplate> externalTemplates = new HashMap<>();
   // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
-  private final Map<String, PublicationTemplateImpl> templates =
-      new HashMap<String, PublicationTemplateImpl>();
+  private final Map<String, PublicationTemplateImpl> templates = new HashMap<>();
   public static String templateDir = null;
   public static String defaultTemplateDir = null;
   private static JAXBContext JAXB_CONTEXT = null;
@@ -235,7 +233,6 @@ public class PublicationTemplateManager {
    * @param template the PublicationTemplate to save
    * @throws PublicationTemplateException
    * @throws CryptoException 
-   * @throws FormException 
    */
   public void savePublicationTemplate(PublicationTemplate template) throws
       PublicationTemplateException, CryptoException {
@@ -283,7 +280,7 @@ public class PublicationTemplateManager {
    */
   public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
       throws PublicationTemplateException {
-    List<PublicationTemplate> publicationTemplates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> publicationTemplates = new ArrayList<>();
     Collection<File> templateNames;
     try {
       templateNames = FileFolderManager.getAllFile(templateDir);
@@ -336,7 +333,7 @@ public class PublicationTemplateManager {
     if (globalContext == null) {
       return theTemplates;
     }
-    List<PublicationTemplate> allowedTemplates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> allowedTemplates = new ArrayList<>();
     for (PublicationTemplate template : theTemplates) {
       if (isPublicationTemplateVisible(template, globalContext)) {
         allowedTemplates.add(template);
@@ -423,7 +420,7 @@ public class PublicationTemplateManager {
    */
   public List<PublicationTemplate> getSearchablePublicationTemplates()
       throws PublicationTemplateException {
-    List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> searchableTemplates = new ArrayList<>();
 
     List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
     for (PublicationTemplate template : publicationTemplates) {
@@ -448,7 +445,7 @@ public class PublicationTemplateManager {
    */
   public List<PublicationTemplate> getCryptedPublicationTemplates()
       throws PublicationTemplateException {
-    List<PublicationTemplate> cryptedTemplates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> cryptedTemplates = new ArrayList<>();
 
     List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
     for (PublicationTemplate template : publicationTemplates) {
@@ -466,7 +463,7 @@ public class PublicationTemplateManager {
   public void removePublicationTemplateFromCaches(String fileName) {
     SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
         "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
-    List<String> externalIdsToRemove = new ArrayList<String>();
+    List<String> externalIdsToRemove = new ArrayList<>();
     Collection<PublicationTemplate> publicationTemplates = externalTemplates.values();
     for (PublicationTemplate template : publicationTemplates) {
       if (template.getFileName().equals(fileName)) {

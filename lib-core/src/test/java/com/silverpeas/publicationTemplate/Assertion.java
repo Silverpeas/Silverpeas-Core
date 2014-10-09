@@ -41,7 +41,7 @@ public final class Assertion {
       Assert.assertEquals(Arrays.asList(expected.getFieldTemplates()),
               Arrays.asList(actual.getFieldTemplates()));
     } catch (FormException ex) {
-      org.junit.Assert.fail(ex.getMessage());
+      Assert.fail(ex.getMessage());
     }
   }
 
