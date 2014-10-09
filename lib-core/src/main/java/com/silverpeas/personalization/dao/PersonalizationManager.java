@@ -25,7 +25,7 @@
 package com.silverpeas.personalization.dao;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.persistence.model.identifier.ForeignStringIdentifier;
+import org.silverpeas.persistence.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.persistence.repository.BasicEntityRepository;
 
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author Yohann Chastagnier
  */
 public interface PersonalizationManager
-    extends BasicEntityRepository<UserPreferences, ForeignStringIdentifier> {
+    extends BasicEntityRepository<UserPreferences, ExternalStringIdentifier> {
 
   List<UserPreferences> findByDefaultSpace(String space);
 }

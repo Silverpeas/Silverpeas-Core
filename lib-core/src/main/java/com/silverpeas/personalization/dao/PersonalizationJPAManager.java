@@ -25,7 +25,7 @@
 package com.silverpeas.personalization.dao;
 
 import com.silverpeas.personalization.UserPreferences;
-import org.silverpeas.persistence.model.identifier.ForeignStringIdentifier;
+import org.silverpeas.persistence.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 
 import javax.inject.Singleton;
@@ -36,7 +36,7 @@ import java.util.List;
  */
 @Singleton
 public class PersonalizationJPAManager
-    extends JpaBasicEntityManager<UserPreferences, ForeignStringIdentifier>
+    extends JpaBasicEntityManager<UserPreferences, ExternalStringIdentifier>
     implements PersonalizationManager {
 
   public List<UserPreferences> findByDefaultSpace(final String space) {

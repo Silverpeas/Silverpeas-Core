@@ -25,17 +25,17 @@ package org.silverpeas.persistence.model.identifier;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.persistence.model.EntityIdentifier;
-import org.silverpeas.persistence.model.ForeignEntityIdentifier;
+import org.silverpeas.persistence.model.ExternalEntityIdentifier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
+ * This identifier implementation handles external one with string type.
  * @author Yohann Chastagnier
  */
 @Embeddable
-public class ForeignStringIdentifier implements ForeignEntityIdentifier {
+public class ExternalStringIdentifier implements ExternalEntityIdentifier {
 
   @Column(name = "id")
   private String id;
@@ -54,7 +54,7 @@ public class ForeignStringIdentifier implements ForeignEntityIdentifier {
   }
 
   @Override
-  public ForeignStringIdentifier fromString(final String id) {
+  public ExternalStringIdentifier fromString(final String id) {
     this.id = id;
     return this;
   }
@@ -72,7 +72,7 @@ public class ForeignStringIdentifier implements ForeignEntityIdentifier {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final ForeignStringIdentifier other = (ForeignStringIdentifier) obj;
+    final ExternalStringIdentifier other = (ExternalStringIdentifier) obj;
     return new EqualsBuilder().append(getId(), other.getId()).isEquals();
   }
 }

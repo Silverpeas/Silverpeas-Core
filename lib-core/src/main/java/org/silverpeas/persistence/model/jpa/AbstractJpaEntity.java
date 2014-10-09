@@ -26,7 +26,7 @@ package org.silverpeas.persistence.model.jpa;
 import org.silverpeas.persistence.model.AbstractEntity;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
-import org.silverpeas.persistence.model.ForeignEntityIdentifier;
+import org.silverpeas.persistence.model.ExternalEntityIdentifier;
 import org.silverpeas.util.StringUtil;
 
 import javax.persistence.*;
@@ -152,9 +152,9 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
   @SuppressWarnings("unchecked")
   @PrePersist
   private void beforePersist() {
-    boolean isForeignIdentifier =
-        getEntityIdentifierClass().isAssignableFrom(ForeignEntityIdentifier.class);
-    if (!isForeignIdentifier) {
+    boolean isExternalIdentifier =
+        getEntityIdentifierClass().isAssignableFrom(ExternalEntityIdentifier.class);
+    if (!isExternalIdentifier) {
       if (this.id != null && StringUtil.isDefined(this.id.asString())) {
         Logger.getLogger(this.getClass().getName())
             .warning("As the entity identifier is not a ForeignEntityIdentifier one, " +

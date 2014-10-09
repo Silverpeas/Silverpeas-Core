@@ -24,18 +24,19 @@
 package org.silverpeas.persistence.model;
 
 /**
- * Entity identifier implementing this interface never generate automatically a new identifier
- * value on persist operations.
- * As a consequence, the value of the identifier must be set explicitly before save operations.
+ * When the primary identifier of an entity corresponds to an identifier of another entity,
+ * then the identifier must implement this interface.
+ * Indeed, if identifier implements this interface no identifier value will be automatically
+ * generated on persist operations.
  * @author Yohann Chastagnier
  */
-public interface ForeignEntityIdentifier extends EntityIdentifier {
+public interface ExternalEntityIdentifier extends EntityIdentifier {
 
   /**
    * No identifier value is generated and returning null explicitly in order to get an
    * NullPointerException in case of wrong code development.
    */
-  default ForeignEntityIdentifier generateNewId(final String tableName,
+  default ExternalEntityIdentifier generateNewId(final String tableName,
       final String tableColumnIdName) {
     return null;
   }

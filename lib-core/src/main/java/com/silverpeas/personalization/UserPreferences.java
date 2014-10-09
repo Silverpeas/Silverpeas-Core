@@ -25,7 +25,7 @@
 package com.silverpeas.personalization;
 
 import com.silverpeas.personalization.service.PersonalizationService;
-import org.silverpeas.persistence.model.identifier.ForeignStringIdentifier;
+import org.silverpeas.persistence.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 import org.silverpeas.util.StringUtil;
 
@@ -41,7 +41,7 @@ import java.io.Serializable;
 @NamedQueries({@NamedQuery(name = "UserPreferences.findByDefaultSpace",
     query = "from UserPreferences p WHERE p.collaborativeWorkSpaceId = :space")})
 public class UserPreferences
-    extends AbstractJpaIdentifiableEntity<UserPreferences, ForeignStringIdentifier>
+    extends AbstractJpaIdentifiableEntity<UserPreferences, ExternalStringIdentifier>
     implements Serializable {
   private static final long serialVersionUID = 9192830552642027995L;
 
