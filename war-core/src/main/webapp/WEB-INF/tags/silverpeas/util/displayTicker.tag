@@ -42,7 +42,7 @@ function __getTime(news) {
   var nbDays = news.publishedForNbDays;
   var label = hour + ":" + minute;
   if (nbDays == 1) {
-    label = $.i18n.prop("lookSilverpeasV5.ticker.date.yesterday") + label;
+    label = $.i18n.prop("lookSilverpeasV5.ticker.date.yesterday") + " " + label;
   } else if (nbDays > 1) {
     label = $.i18n.prop("lookSilverpeasV5.ticker.date.daysAgo", [nbDays]);
   }

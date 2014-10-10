@@ -71,8 +71,6 @@ display: none;
 </c:if>
 -->
 </style>
-<c:url value="/util/javaScript/animation.js" var="jsAnimation"/>
-<script type="text/javascript" src="${jsAnimation}"></script>
 <script type="text/javascript">
 function updateThumbnail() {
   	$("#thumbnailInputs").css("display", "block");
@@ -140,11 +138,11 @@ function updateThumbnail() {
   
   var galleryWindow = window;
 
-  function choixGallery(liste) {
+  function openGallery(liste) {
     index = liste.selectedIndex;
     var componentId = liste.options[index].value;
 	if (index != 0) {
-      url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}";
+      url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}&FieldName=Thumbnail";
       windowName = "galleryWindow";
       larg = "820";
       haut = "600";
@@ -156,7 +154,7 @@ function updateThumbnail() {
     }
   }
 
-  function choixImageInGallery(url) {
+  function choixImageInGalleryThumbnail(url) {
     $("#thumbnailPreviewAndActions").css("display", "block");
     $("#thumbnailActions").css("display", "none");
     $("#thumbnail").attr("src", url);
@@ -193,7 +191,7 @@ function updateThumbnail() {
 			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
 			<c:if test="${not empty galleries}">
 				<span class="txtsublibform"> <fmt:message key="GML.or" bundle="${generalBundle}"/> </span><input type="hidden" id="valueImageGallery" name="valueImageGallery"/>
-				<select id="galleries" name="galleries" onchange="choixGallery(this);this.selectedIndex=0;">
+				<select id="galleries" name="galleries" onchange="openGallery(this);this.selectedIndex=0;">
 					<option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
 				    <c:forEach items="${galleries}" var="gallery">
 				    	<option value="${gallery.id()}">${gallery.label}</option>
