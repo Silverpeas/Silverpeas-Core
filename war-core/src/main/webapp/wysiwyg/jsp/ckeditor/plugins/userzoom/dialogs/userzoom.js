@@ -32,45 +32,45 @@ CKEDITOR.dialog.add( 'userzoom', function( editor ) {
 				    id: 'info',
 				    elements: [
 				      {
-				        id: 'userId',
+				        id: 'zoomUserId',
 				        type: 'text',
 				        label: editor.lang.userzoom.userId,
 				        width: '50px',
 				        setup: function( widget ) {
-				          this.setValue( widget.data.userId );
+				          this.setValue( widget.data.zoomUserId );
 				        },
 				        commit: function( widget ) {
-				          widget.setData( 'userId', this.getValue() );
+				          widget.setData( 'zoomUserId', this.getValue() );
 				        }		
 				      },
 				      {
-				        id: 'userName',
+				        id: 'zoomUserName',
 				        type: 'text',
 				        label: editor.lang.userzoom.userName,
 				        width: '50px',
 				        setup: function( widget ) {
-				          this.setValue( widget.data.userName );
+				          this.setValue( widget.data.zoomUserName );
 				        },
 				        commit: function( widget ) {
-				          widget.setData( 'userName', this.getValue() );
+				          widget.setData( 'zoomUserName', this.getValue() );
 				        }
 				      },
 				      {
 				        type : 'html',
-				        html : '<form name="myForm"><label title="user" class="txtlibform cke_dialog_ui_labeled_label cke_required" for="user">'+editor.lang.userzoom.user+'</label><div class="fieldInput"><input type="hidden" value="" name="user" id="user"><input type="text" value="" name="user$$name" id="user_name" disabled="disabled"/>&nbsp;<a onclick="javascript:SP_openWindow(\'/silverpeas/RselectionPeasWrapper/jsp/open?formName=myForm&amp;elementId=user&amp;elementName=user_name&amp;selectedUser=\',\'selectUser\',800,600,\'\');" class="cke_dialog_ui_button" href="#"> <span class="cke_dialog_ui_button" > <img width="15" border="0" style="vertical-align:middle;" height="15" title="'+editor.lang.userzoom.select+'" alt="'+editor.lang.userzoom.select+'" src="/silverpeas/util/icons/user.gif"/> '+editor.lang.userzoom.select+'</span></a></div></form>',
+				        html : '<form name="myForm"><label title="user" class="txtlibform cke_dialog_ui_labeled_label cke_required" for="user">'+editor.lang.userzoom.user+'</label><div class="fieldInput"><input type="hidden" value="" name="user" id="zoomUser"><input type="text" value="" name="user$$name" id="zoomUserName"/>&nbsp;<a onclick="javascript:SP_openWindow(\'/silverpeas/RselectionPeasWrapper/jsp/open?formName=myForm&amp;elementId=zoomUser&amp;elementName=zoomUserName&amp;selectedUser=\',\'selectUser\',800,600,\'\');" class="cke_dialog_ui_button" href="#"> <span class="cke_dialog_ui_button" > <img width="15" border="0" style="vertical-align:middle;" height="15" title="'+editor.lang.userzoom.select+'" alt="'+editor.lang.userzoom.select+'" src="/silverpeas/util/icons/user.gif"/> '+editor.lang.userzoom.select+'</span></a></div></form>',
 				        setup: function( widget ) {
 				          const document = this.getElement().getDocument();
-				          var element = document.getById('user');
-				          element.setValue(widget.data.userId);
-				          if (widget.data.userId) {
+				          var element = document.getById('zoomUser');
+				          element.setValue(widget.data.zoomUserId);
+				          if (widget.data.zoomUserId) {
 				            $.ajax({
 				              type: "GET",
-				              url: "/silverpeas/services/profile/users/" + widget.data.userId,
+				              url: "/silverpeas/services/profile/users/" + widget.data.zoomUserId,
 				              dataType: "json",
 				              cache: false,
 				              success: function (user, status, jqXHR) {
-				                document.getById('user_name').setValue(user.firstName + " " + user.lastName);
-				              },
+				                $("#zoomUserName").val(user.firstName + " " + user.lastName);
+              },
 				              error: function (jqXHR, status) {
 				                // error handler
 				                alert('error');
@@ -81,14 +81,14 @@ CKEDITOR.dialog.add( 'userzoom', function( editor ) {
 				        commit: function( widget ) {							
 				          var document = this.getElement().getDocument();
 				          var element = document.getById('user');
-				          widget.setData( 'userId', element.getValue());
-				          widget.setData( 'userName', document.getById('user_name').getValue());
+				          widget.setData( 'zoomUserId', element.getValue());
+				          widget.setData( 'zoomUserName', document.getById('zoomUserName').getValue());
 				        }
 				      }]
 			    }		],
 			    onLoad : function() {
-			      this.getContentElement("info", "userId").getElement().setAttribute("hidden", true);
-			      this.getContentElement("info", "userName").getElement().setAttribute("hidden", true);
+			      this.getContentElement("info", "zoomUserId").getElement().setAttribute("hidden", true);
+			      this.getContentElement("info", "zoomUserName").getElement().setAttribute("hidden", true);
 			    }
 	  };
 });

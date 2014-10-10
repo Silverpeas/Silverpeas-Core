@@ -22,33 +22,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function activateIDCards() {
+  jQuery('.user-card').each(function() {
+    var $this = jQuery(this);
+    $.ajax({
+      type : "GET",
+      url : '/silverpeas/services/profile/users/' + $this.attr('rel') + '?extended=true',
+      dataType : "json",
+      cache : false,
+      success : function(user, status, jqXHR) {
+        $this.find('.userToZoom').text(user.firstName + ' ' + user.lastName);
+        jQuery.each(user, function(key, val) {
+          if (key == 'avatar') {
+            $this.find('.' + key + ' img:first').get(0).setAttribute('src', val);
+          } else if (key == 'moreData') {
+            jQuery.each(val, function(keyMore, valMore) {
+              $this.find('.' + keyMore).text(valMore);
+            });
+          } else  {
+            $this.find('.' + key).text(val);
+          }
+        });
+      },
+      error : function(jqXHR, status) {
+        // do nothing
+      }
+    });
+  })
+}
+
 /**
  * Populate all identity card in page.
  */
 jQuery(document).ready(function() {
-	  jQuery('.user-card').each(function(index, value) {
-	    $.ajax({
-	      type : "GET",
-	      url : '/silverpeas/services/profile/users/' + $(value).attr('rel') + '?extended=true',
-	      dataType : "json",
-	      cache : false,
-	      success : function(user, status, jqXHR) {
-	        $(value).find('.userToZoom').text(user.firstName + ' ' + user.lastName);
-	        jQuery.each(user, function(key, val) {
-	          if (key == 'avatar') {
-	            $(value).find('.' + key + ' img:first').get(0).setAttribute('src', val);
-	          } else if (key == 'moreData') {
-	            jQuery.each(val, function(keyMore, valMore) {
-	              $(value).find('.' + keyMore).text(valMore);
-	            });
-	          } else  {
-	            $(value).find('.' + key).text(val);
-	          }
-	        });
-	      },
-	      error : function(jqXHR, status) {
-	        // do nothing
-	      }
-	    });
-	  })
+	  activateIDCards();
 });
