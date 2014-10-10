@@ -82,7 +82,7 @@
     </head>
     <body>
     <view:browseBar path="<fmt:message key='message' />"/>
-    <view:window>
+    <view:window popup="true" browseBarVisible="false">
     <div class="popup-read-notification">
     <div class="entete">
         <div class="from">

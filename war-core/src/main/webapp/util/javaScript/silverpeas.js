@@ -69,8 +69,8 @@ function SP_openUserPanel(page, name, options) {
 function currentPopupResize() {
   // Resizing
   var $document = $(document.body);
-  window.resizeTo($document.width(),
-      Math.min((screen.height - 200), ($document.height() + 85)));
+  window.resizeTo($document.width() + 30,
+      Math.min((screen.height - 150), ($document.height() + 85)));
   // Positioning
   var $window = $(window);
   var top = (screen.height - $window.height() - 85) / 2;

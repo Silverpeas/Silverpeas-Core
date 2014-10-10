@@ -276,12 +276,7 @@
 
 })(jQuery);
 
-
-/**
- * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
- * javascript plugin.
- */
-jQuery(document).ready(function() {
+function activateUserZoom() {
   jQuery('.userToZoom').each(function() {
     var $this = jQuery(this);
     if (!$this.data('userZoom')) {
@@ -290,4 +285,12 @@ jQuery(document).ready(function() {
       });
     }
   });
+}
+
+/**
+ * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+ * javascript plugin.
+ */
+jQuery(document).ready(function() {
+  activateUserZoom();
 });

@@ -272,8 +272,8 @@ $(document).ready(function() {
                             <div class="portlet-content slideshow" data-transition="crossfade" data-loop="true" data-skip="false">
 								<ul class="carousel">
 									<% for (PublicationDetail aNews : news) { %>
-										<li class="slide">
-                      					<h4 class="title-quickInfo"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></h4>
+										<li class="slide" onclick="javascript:location.href='<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, aNews.getId())%>'">
+                      					<h4 class="title-quickInfo"><a href="<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, aNews.getId())%>"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></a></h4>
                       					<% if (aNews.getThumbnail() != null) { %>
 											<img src="<%=aNews.getThumbnail().getURL()%>" alt=""/>
 										<% } %>
