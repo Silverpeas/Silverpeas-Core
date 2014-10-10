@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.portlets.FormNames"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -55,7 +56,7 @@
         </a>
       </li>
     </c:if>
-    <c:if test="${portlet.minimized==false}">
+    <c:if test="${portlet.minimized==false && portlet.maximized==false}">
       <li>
         <a href="<c:out value="${portlet.minimizedURL}"/>">
           <img src="/silverpeas/portlet/jsp/jsr/images/set2/minimize_button.gif" alt="<fmt:message key="portlets.window.minimize"/>" title="<fmt:message key="portlets.window.minimize"/>"/>
@@ -112,6 +113,9 @@
     <c:when test="${portlet.minimized==false}">
       <div class="portlet-content">
         <c:out value="${portlet.content}" escapeXml="false"/>
+        <c:if test="${portlet.currentMode == 'help'}">
+        <div class="portlet-backFromHelp"><input class="portlet-form-button" name="<%=FormNames.SUBMIT_FINISHED%>" type="submit" onclick="location.href='<c:out value="${portlet.viewURL}"/>'" value="<fmt:message key="GML.back"/>"/></div>
+        </c:if>
       </div>
       <!-- closes portlet-content -->
     </c:when>
