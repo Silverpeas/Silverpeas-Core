@@ -361,7 +361,7 @@ button,
 	font-family:"texgyreadventor","Century Gothic","Trebuchet MS",Arial, sans serif;
 }
 
-.spaceHome #spaceQuiskInfo li.slide > h4 ,
+.spaceHome #spaceQuiskInfo li.slide > h4 a ,
 .spaceHome #publication li a b,
 .spaceHome #publication .header h4{
 	font-size: 11.5pt;
@@ -557,7 +557,11 @@ color:#1C94D4;
      color: #1C94D4;
 }
 
-.spaceHome #spaceQuiskInfo li.slide > h4 {
+.spaceHome #spaceQuiskInfo li.slide {
+  cursor: pointer;
+}
+
+.spaceHome #spaceQuiskInfo li.slide > h4 a {
      color: #EC7501;
      font-weight: 100;
      line-height: 120%;

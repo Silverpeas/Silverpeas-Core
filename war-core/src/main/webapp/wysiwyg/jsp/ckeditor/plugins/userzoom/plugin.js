@@ -59,13 +59,13 @@ CKEDITOR.plugins.add( 'userzoom', {
 	      init: function() {
 	        var userId = this.element.getAttribute( 'rel' );
 	        var userName = this.element.getHtml();
-			        this.setData( 'userId', userId );				
-			        this.setData( 'userName', userName );
+			        this.setData( 'zoomUserId', userId );				
+			        this.setData( 'zoomUserName', userName );
 	      },
 
 	      data: function() {
-	        this.element.setAttribute("rel",this.data.userId);
-	        this.element.setHtml(this.data.userName);
+	        this.element.setAttribute("rel",this.data.zoomUserId);
+	        this.element.setHtml(this.data.zoomUserName);
 	      }
 	    });
 
