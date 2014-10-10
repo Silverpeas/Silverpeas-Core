@@ -34,10 +34,12 @@ import org.junit.Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
 
+import java.io.File;
 import java.io.FileInputStream;
 
 import static com.silverpeas.publicationTemplate.Assertion.assertEquals;
 import static java.io.File.separatorChar;
+import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -46,25 +48,24 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 public class PublicationTemplateImplTest {
-  private static String TARGET_DIR = "";
+  private static File TARGET_DIR;
   private static final char SEPARATOR = separatorChar;
 
   static {
-    TARGET_DIR =
+    TARGET_DIR = getFile(
         PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile();
+            .getFile());
   }
 
-  public static final String MAPPINGS_PATH =
-      TARGET_DIR + "templateRepository" + SEPARATOR + "mapping";
-  public static final String TEMPLATES_PATH = TARGET_DIR + "templateRepository";
+  public static final File MAPPINGS_PATH = getFile(TARGET_DIR, "templateRepository", "mapping");
+  public static final File TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
 
   public PublicationTemplateImplTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH;
+    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
   }
 
   @Test
@@ -91,10 +92,10 @@ public class PublicationTemplateImplTest {
    */
   private RecordTemplate getExpectedRecordTemplate(final String xmlFileName) throws Exception {
     Mapping mapping = new Mapping();
-    mapping.loadMapping(MAPPINGS_PATH + SEPARATOR + "templateMapping.xml");
+    mapping.loadMapping(getFile(MAPPINGS_PATH, "templateMapping.xml").getPath());
     Unmarshaller unmarshaller = new Unmarshaller(mapping);
     RecordTemplate template = (GenericRecordTemplate) unmarshaller
-        .unmarshal(new InputSource(new FileInputStream(TEMPLATES_PATH + SEPARATOR + xmlFileName)));
+        .unmarshal(new InputSource(new FileInputStream(getFile(TEMPLATES_PATH, xmlFileName))));
     return template;
   }
 
