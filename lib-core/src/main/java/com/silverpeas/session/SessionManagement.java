@@ -27,7 +27,7 @@ import java.util.Collection;
 
 /**
  * It defines the contract the session management implementation in Silverpeas should implement. It
- * should have only one activated implementation in Sivlerpeas and it should be managed by an IoC
+ * should have only one activated implementation in Silverpeas and it should be managed by an IoC
  * container under the name 'sessionManager'.
  */
 public interface SessionManagement {

@@ -41,7 +41,7 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
-<%@ page import="com.silverpeas.session.SessionManagementFactory" %>
+<%@ page import="com.silverpeas.session.SessionManagementProvider" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
@@ -73,7 +73,7 @@
           lookHelper.getSettings("displayConnectedUsers", true);
   if (displayConnectedUsers) {
     SessionManagement sessionManagement =
-        SessionManagementFactory.getFactory().getSessionManagement();
+        SessionManagementProvider.getSessionManagement();
     nbConnectedUsers =
         sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
     if (nbConnectedUsers <= 1) {

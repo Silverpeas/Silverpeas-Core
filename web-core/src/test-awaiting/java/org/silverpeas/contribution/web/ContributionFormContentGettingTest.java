@@ -24,7 +24,7 @@
 package org.silverpeas.contribution.web;
 
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class ContributionFormContentGettingTest
   public void prepareTestResources() {
     sessionKey = authenticate(aUser());
     sessionInfo =
-        SessionManagementFactory.getFactory().getSessionManagement().getSessionInfo(sessionKey);
+        SessionManagementProvider.getFactory().getSessionManagement().getSessionInfo(sessionKey);
     lastUserAccessTime = sessionInfo.getLastAccessTimestamp();
   }
 

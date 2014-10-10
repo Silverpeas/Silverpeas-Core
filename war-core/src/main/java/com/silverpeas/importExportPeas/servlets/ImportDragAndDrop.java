@@ -32,7 +32,7 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -100,8 +100,7 @@ public class ImportDragAndDrop extends HttpServlet {
       String topicId = request.getParameter("TopicId");
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
-        SessionManagementFactory factory = SessionManagementFactory.getFactory();
-        SessionManagement sessionManagement = factory.getSessionManagement();
+        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo session = sessionManagement.getSessionInfo(sessionId);
         topicId = session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }

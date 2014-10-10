@@ -23,6 +23,7 @@ package com.silverpeas.session;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
+import org.silverpeas.cache.service.SimpleCacheService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -196,7 +197,7 @@ public class SessionInfo {
    * Provides a cache associated to the current session.
    * @return
    */
-  public InMemoryCacheService getCache() {
+  public SimpleCacheService getCache() {
     return cache;
   }
 }

@@ -23,28 +23,21 @@
 */
 package com.silverpeas.session;
 
+import org.silverpeas.util.ServiceProvider;
+
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
 * Factory of objects aiming to manage the user sessions with Silverpeas.
 * This factory wraps the concrete implementation of the session management.
 */
-public class SessionManagementFactory {
+public class SessionManagementProvider {
   
-  @Inject
-  private SessionManagement sessionManagement;
-  private static SessionManagementFactory instance = new SessionManagementFactory();
-  
-  public static SessionManagementFactory getFactory() {
-    return instance;
+  public static SessionManagement getSessionManagement() {
+    return ServiceProvider.getService(SessionManagement.class);
   }
   
-  public SessionManagement getSessionManagement() {
-    return sessionManagement;
-  }
-  
-  private SessionManagementFactory() {
+  private SessionManagementProvider() {
     
   }
 }

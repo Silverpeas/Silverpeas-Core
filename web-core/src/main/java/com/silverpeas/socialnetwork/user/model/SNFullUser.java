@@ -30,7 +30,7 @@ package com.silverpeas.socialnetwork.user.model;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
@@ -65,8 +65,7 @@ public class SNFullUser {
       profilPhoto = "/directory/jsp/icons/Photo_profil.jpg";
 
     }
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().getId().equals(userId)) {

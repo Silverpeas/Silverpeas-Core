@@ -110,9 +110,9 @@
         class="org.silverpeas.authentication.AuthenticationService"/>
 
   <!-- The session management factory -->
-  <bean id="sessionManagementFactory"
-        class="com.silverpeas.session.SessionManagementFactory"
-        factory-method="getFactory"/>
+  <!--<bean id="sessionManagementFactory"
+        class="com.silverpeas.session.SessionManagementProvider"
+        factory-method="getFactory"/>-->
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"

@@ -26,7 +26,7 @@ package org.silverpeas.web.token;
 import com.silverpeas.calendar.DateTime;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -244,8 +244,7 @@ public class SynchronizerTokenService {
     if (token == null) {
       String sessionId = request.getHeader(UserPriviledgeValidation.HTTP_SESSIONKEY);
       if (StringUtil.isDefined(sessionId)) {
-        SessionManagement sessionManagement = SessionManagementFactory.getFactory().
-            getSessionManagement();
+        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionId);
         if (sessionInfo.isDefined()) {
           token = sessionInfo.getAttribute(tokenId);

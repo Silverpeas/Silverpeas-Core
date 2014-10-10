@@ -26,7 +26,7 @@ package com.silverpeas.directory.model;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.util.StringUtil;
@@ -47,8 +47,7 @@ public class Member {
   private String duration;
 
   private void refreshStatus() {
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().equals(userDetail)) {

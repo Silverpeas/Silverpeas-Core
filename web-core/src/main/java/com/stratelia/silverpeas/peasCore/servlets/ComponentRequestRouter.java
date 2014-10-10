@@ -22,7 +22,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -257,8 +257,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   public void updateSessionManagement(HttpSession session, String destination) {
     SilverTrace.info("peasCore", "ComponentRequestRouter.updateSessionManagement",
         "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.validateSession(session.getId());
   }
 

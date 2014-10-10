@@ -28,7 +28,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -150,8 +150,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   public Collection<SessionInfo> getConnectedUsersList() {
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     return sessionManagement.getConnectedUsersList();
   }
 
@@ -572,8 +571,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   public void KickSession(String sessionId) {
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.closeSession(sessionId);
   }
 

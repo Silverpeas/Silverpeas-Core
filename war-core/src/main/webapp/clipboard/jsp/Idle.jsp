@@ -40,7 +40,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
-<%@ page import="com.silverpeas.session.SessionManagementFactory" %>
+<%@ page import="com.silverpeas.session.SessionManagementProvider" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
@@ -62,7 +62,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
     String connectedUsers = message.getString("connectedUsers");
     if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) {
-        SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         nbConnectedUsers = sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
         if (nbConnectedUsers <= 1) {
           connectedUsers = message.getString("connectedUser");

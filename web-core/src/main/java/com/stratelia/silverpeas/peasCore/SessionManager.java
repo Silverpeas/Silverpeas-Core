@@ -56,6 +56,7 @@ import org.silverpeas.servlets.LogoutServlet;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
@@ -70,13 +71,14 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 /**
- * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user
- * log in, ComponentRequestRouter : when the user access a component. It provides functions to
- * manage the sessions, to write a log journal and getFactory informations about the logged users.
+ * Implementation of the {@code com.silverpeas.session.SessionManagement} interface.
+ * It extends the session management performed by the underlying application service by adding
+ * useful session-related features like statistics about the connection time of each user or like
+ * the actual number of connected users.
  *
  * @author Nicolas Eysseric
  */
-@Named("sessionManagement")
+@Singleton
 public class SessionManager implements SchedulerEventListener, SessionManagement {
 
   private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
@@ -210,16 +212,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       throw new SchedulerException(ex.getMessage(), ex);
     }
     scheduler.scheduleJob(manageSession(), trigger, this);
-  }
-
-  /**
-   * Remove a session and log session's data.
-   *
-   * @param sessionId identifier
-   * @see LogoutServlet
-   */
-  public void removeSession(String sessionId) {
-    closeSession(sessionId);
   }
 
   @Override

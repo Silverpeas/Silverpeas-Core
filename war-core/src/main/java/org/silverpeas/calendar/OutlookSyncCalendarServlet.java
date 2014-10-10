@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -181,7 +181,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
     String userId = null;
     for (CalendarEntry element : headers) {
       if (userId == null) {
-        SessionInfo info = SessionManagementFactory.getFactory().getSessionManagement()
+        SessionInfo info = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(element.getDelegatorId());
         userId = info.getUserDetail().getId();
       }

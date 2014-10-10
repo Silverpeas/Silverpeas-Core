@@ -20,7 +20,7 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.ResourceLocator;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -38,7 +38,7 @@ public class LogoutServlet extends HttpServlet {
     // Get the session
     HttpSession session = request.getSession(false);
     if (session != null) {
-      SessionManagementFactory.getFactory().getSessionManagement().closeSession(session.getId());
+      SessionManagementProvider.getSessionManagement().closeSession(session.getId());
     }
     StringBuilder buffer = new StringBuilder(512);
     buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');

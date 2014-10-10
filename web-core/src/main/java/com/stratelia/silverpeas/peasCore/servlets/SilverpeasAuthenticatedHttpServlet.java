@@ -25,7 +25,7 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.authentication.SilverpeasSessionOpener;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -105,7 +105,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
    * @param request
    */
   protected void renewSessionSecurityToken(final HttpServletRequest request) {
-    SessionInfo sessionInfo = SessionManagementFactory.getFactory().getSessionManagement()
+    SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
         .getSessionInfo(getMainSessionController(request).getSessionId());
     SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(sessionInfo);
   }

@@ -25,7 +25,7 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
@@ -74,8 +74,8 @@ public class SynchronizerTokenServiceTest {
 
     SessionManagement sessionManagement = mock(SessionManagement.class);
     when(sessionManagement.getSessionInfo(anyString())).thenReturn(SessionInfo.NoneSession);
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    Field attr = SessionManagementFactory.class.getDeclaredField("sessionManagement");
+    SessionManagementProvider factory = SessionManagementProvider.getFactory();
+    Field attr = SessionManagementProvider.class.getDeclaredField("sessionManagement");
     attr.setAccessible(true);
     attr.set(factory, sessionManagement);
   }

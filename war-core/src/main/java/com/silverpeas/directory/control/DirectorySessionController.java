@@ -43,7 +43,7 @@ import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -480,8 +480,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
-    SessionManagement sessionManagement = SessionManagementFactory.getFactory().
-        getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     Collection<SessionInfo> sessions = sessionManagement.getDistinctConnectedUsersList(
         getUserDetail());
     for (SessionInfo session : sessions) {

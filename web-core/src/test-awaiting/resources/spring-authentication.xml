@@ -36,7 +36,7 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.web.mock"/>
 
-  <bean id="sessionManagementFactory" class="com.silverpeas.session.SessionManagementFactory"
+  <bean id="sessionManagementFactory" class="com.silverpeas.session.SessionManagementProvider"
         factory-method="getFactory"/>
 
 </beans>

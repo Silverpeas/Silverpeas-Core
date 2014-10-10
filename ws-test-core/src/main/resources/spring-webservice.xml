@@ -48,9 +48,11 @@
   <bean id="userPriviledgeValidationFactory" class="com.silverpeas.web.UserPriviledgeValidationFactory"
         factory-method="getFactory"/>
 
+  <!--
   <bean id="sessionManagementFactory"
-        class="com.silverpeas.session.SessionManagementFactory"
+        class="com.silverpeas.session.SessionManagementProvider"
         factory-method="getFactory" />
+   -->
 
   <!-- YCH <bean name="personalizationServiceFactory"-->
         <!--class="com.silverpeas.personalization.service.PersonalizationServiceProviderr" factory-method="getFactory"/>-->

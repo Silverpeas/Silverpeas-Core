@@ -26,10 +26,9 @@ package org.silverpeas.servlets;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.cache.service.InMemoryCacheService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -82,7 +81,7 @@ public class SilverListener
       HttpServletRequest httpRequest = (HttpServletRequest) request;
       HttpSession httpSession = httpRequest.getSession(false);
       if (httpSession != null) {
-        SessionInfo sessionInfo = SessionManagementFactory.getFactory().getSessionManagement()
+        SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(httpSession.getId());
         if (sessionInfo != null) {
           CacheServiceFactory.getRequestCacheService()
@@ -94,8 +93,7 @@ public class SilverListener
 
   // Clear session informations
   private void remove(HttpSessionEvent event) {
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.closeSession(event.getSession().getId());
     SilverTrace
         .info("peasCore", "SilverListener.sessionDestroyed", "peasCore.MSG_END_OF_HTTPSESSION",

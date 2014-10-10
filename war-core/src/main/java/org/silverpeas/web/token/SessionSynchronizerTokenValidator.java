@@ -25,7 +25,7 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPriviledgeValidation;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -126,8 +126,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
       boolean isAuthenticated = false;
       HttpSession session = request.getSession(false);
       if (session != null) {
-        SessionManagement sessionManagement = SessionManagementFactory.getFactory().
-            getSessionManagement();
+        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
         isAuthenticated = sessionInfo.isDefined();
       }

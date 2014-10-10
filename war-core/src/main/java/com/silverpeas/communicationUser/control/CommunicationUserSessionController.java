@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.communicationUser.CommunicationUserException;
@@ -84,7 +84,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @return
    */
   public int getNbConnectedUsersList() {
-    SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     return sessionManagement.getNbConnectedUsersList(getUserDetail());
   }
 
@@ -94,7 +94,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @return Collection of connected Users
    */
   public Collection<SessionInfo> getDistinctConnectedUsersList() {
-    SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     return sessionManagement.getDistinctConnectedUsersList(getUserDetail());
   }
 

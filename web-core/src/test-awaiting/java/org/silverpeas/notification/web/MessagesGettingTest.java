@@ -24,7 +24,7 @@
 package org.silverpeas.notification.web;
 
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.web.ResourceGettingTest;
 import org.junit.After;
 import org.junit.Before;
@@ -63,7 +63,7 @@ public class MessagesGettingTest extends ResourceGettingTest<NotificationTestRes
   public void prepareTestResources() {
     sessionKey = authenticate(aUser());
     sessionInfo =
-        SessionManagementFactory.getFactory().getSessionManagement().getSessionInfo(sessionKey);
+        SessionManagementProvider.getFactory().getSessionManagement().getSessionInfo(sessionKey);
     lastUserAccessTime = sessionInfo.getLastAccessTimestamp();
     MessageManager.initialize();
     registredKeyOfMessages = MessageManager.getRegistredKey();

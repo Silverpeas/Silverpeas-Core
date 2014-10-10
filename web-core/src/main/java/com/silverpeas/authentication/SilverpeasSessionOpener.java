@@ -22,7 +22,7 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -91,8 +91,7 @@ public class SilverpeasSessionOpener {
     try {
       SilverTrace.info("peasCore", "SilverpeasSessionOpenener.openSession()",
           "peasCore.MSG_START_OF_HTTPSESSION");
-      SessionManagementFactory factory = SessionManagementFactory.getFactory();
-      SessionManagement sessionManagement = factory.getSessionManagement();
+      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       // is the current session is valid? If it is valid, then the information about the session
       // is updated with, for example, the timestamp of the last access (this one), and then it
       // is returned.
@@ -164,8 +163,7 @@ public class SilverpeasSessionOpener {
    */
   public void closeSession(HttpSession session) {
     if (session != null) {
-      SessionManagementFactory factory = SessionManagementFactory.getFactory();
-      SessionManagement sessionManagement = factory.getSessionManagement();
+      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       sessionManagement.closeSession(session.getId());
     }
   }

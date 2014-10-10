@@ -22,7 +22,7 @@ package com.stratelia.silverpeas.clipboardPeas.servlets;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController;
@@ -183,8 +183,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
   public void updateSessionManagement(HttpSession session, String destination) {
     SilverTrace.info("clipboardPeas", "ClipboardRequestRouter.updateSessionManagement",
         "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
+    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
     if (sessionInfo.isDefined()) {
       if (destination.startsWith("/clipboard/jsp/Idle")) {
