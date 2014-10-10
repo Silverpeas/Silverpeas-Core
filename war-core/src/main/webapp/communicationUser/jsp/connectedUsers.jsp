@@ -35,12 +35,13 @@
   Collection cResultData = (Collection) request.getAttribute("ConnectedUsersList");
 %>
 
-<HTML>
-<HEAD>
-  <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title><%=resources.getString("GML.popupTitle")%></title>
   <view:looknfeel/>
   <!--[ JAVASCRIPT ]-->
-  <SCRIPT LANGUAGE="JAVASCRIPT">
+  <script type="text/javascript">
     <!--
     //--------------------------------------------------------------------------------------DoIdle
     ID = window.setTimeout("DoIdle();", <%=settings.getString("refreshList")%> * 1000);
@@ -61,15 +62,11 @@
     }
 
     //-->
-  </SCRIPT>
-
-</HEAD>
-<BODY>
-<view:window popup="true">
-<view:frame>
-<CENTER>
+  </script>
+</head>
+<body>
+<view:window popup="true" browseBarVisible="false">
   <%
-
     String icoMonitor = m_context + "/util/icons/monitor.gif";
     String icoNotify = m_context + "/util/icons/talk2user.gif";
 
@@ -81,7 +78,9 @@
       arrayColumn1 = arrayPane.addArrayColumn(resources.getString("language"));
       arrayColumn1.setSortable(true);
     }
-    arrayColumn1 = arrayPane.addArrayColumn("");
+    if (settings.getBoolean("displayColumnChat", true)) {
+      arrayColumn1 = arrayPane.addArrayColumn("");
+    }
     if (cResultData != null) {
       Iterator iter = cResultData.iterator();
       while (iter.hasNext()) {
@@ -99,9 +98,10 @@
           if (settings.getBoolean("displayColumnLanguage", false)) {
             arrayLine.addArrayCellText(preferences.getLanguage());
           }
-
-          arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString(
+          if (settings.getBoolean("displayColumnChat", true)) {
+          arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img alt=\"" + resources.getString(
               "notifyUser") + "\" src=\"" + icoNotify + "\" border=\"0\" onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></a></div>");
+          }
         }
       }
       out.println(arrayPane.print());
@@ -109,8 +109,6 @@
     out.println(resources.getString("refreshedTime") + "&nbsp;" + settings.getString(
         "refreshList") + "&nbsp;" + resources.getString("seconds") + "<br/>");
   %>
-</CENTER>
-</view:frame>
 </view:window>
-</BODY>
-</HTML>
+</body>
+</html>

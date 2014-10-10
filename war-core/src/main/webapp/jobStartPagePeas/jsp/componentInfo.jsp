@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.apache.commons.lang3.BooleanUtils"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -50,7 +51,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		out.println("<td align=\"left\" width=\"15\">&nbsp;</td>");
 	}
 
-	out.println("<td class=\"textePetitBold\" nowrap valign=\"center\">");
+	out.println("<td class=\"textePetitBold\" nowrap=\"nowrap\" valign=\"center\">");
 	out.println(parameter.getLabel() +" : ");
 	out.println("</td>");
 	out.println("<td align=\"left\" valign=\"top\">");
@@ -60,9 +61,9 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	if (parameter.isCheckbox()) {
 		String checked = "";
 		if (StringUtil.getBooleanValue(parameter.getValue())){
-			checked = "checked";
+			checked = "checked=\"checked\"";
         }
-		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" disabled/>");
+		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" disabled=\"disabled\"/>");
 	}
 	else if (isSelect)
 	{
@@ -92,9 +93,9 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 				String value = radio.getValue();
 				String checked = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0) {
-					checked = "checked";
+					checked = "checked=\"checked\"";
                 }
-				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+" disabled/>");
+				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+" disabled=\"disabled\"/>");
 				out.println(name+"&nbsp;");
 			}		
 		}
@@ -111,11 +112,12 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 <%
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
-List 			parameters 			= (List) request.getAttribute("Parameters");
+List<LocalizedParameter> parameters = (List<LocalizedParameter>) request.getAttribute("Parameters");
 List<ProfileInst> m_Profiles 		= (List<ProfileInst>) request.getAttribute("Profiles");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 int				scope				= ((Integer) request.getAttribute("Scope")).intValue();
 int	 			maintenanceState 	= (Integer) request.getAttribute("MaintenanceState");
+boolean			popupMode			= BooleanUtils.toBoolean((Boolean) request.getAttribute("PopupMode"));
 
 if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
   //use default breadcrumb
@@ -155,7 +157,9 @@ for (ProfileInst theProfile : m_Profiles) {
 	}
 	
 	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
-}	
+}
+
+window.setPopup(popupMode);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -215,14 +219,11 @@ function clipboardCut() {
 </script>
 </head>
 <body id="admin-component">
-<form id="infoInstance" name="infoInstance" action="" method="post">
-  <input id="ComponentNum" name="ComponentNum" type="hidden"/>
-  <input id="Translation"  name="Translation"  type="hidden"/>
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());
-out.println(frame.printBefore());
 %>
+<view:frame>
 <% if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) { %>
 	<div class="inlineMessage">
 		<%=resource.getString("JSPP.maintenanceStatus."+maintenanceState)%>
@@ -230,6 +231,9 @@ out.println(frame.printBefore());
 	<br clear="all"/>
 <% } %>
 <view:board>
+<form id="infoInstance" name="infoInstance" action="" method="post">
+  <input id="ComponentNum" name="ComponentNum" type="hidden"/>
+  <input id="Translation"  name="Translation"  type="hidden"/>
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr>
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.type") %> :</td>
@@ -299,7 +303,7 @@ out.println(frame.printBefore());
 		out.println("<table border=\"0\" width=\"100%\">");
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (LocalizedParameter) parameters.get(nI);
+			parameter = parameters.get(nI);
 			if (nI%2 == 0)
 				out.println("<tr>");
 
@@ -320,7 +324,7 @@ out.println(frame.printBefore());
 	} else {
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (LocalizedParameter) parameters.get(nI);
+			parameter = parameters.get(nI);
 
 			out.println("<tr>");
 			displayParameter(parameter, resource, out);
@@ -330,11 +334,11 @@ out.println(frame.printBefore());
 %>	
 	</tr>
 	</table>
+	</form>
 </view:board>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</form>
 </body>
 </html>
