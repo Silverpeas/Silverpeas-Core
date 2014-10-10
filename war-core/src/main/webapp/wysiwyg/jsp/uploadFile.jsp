@@ -122,6 +122,7 @@ function returnHtmlEditor() {
 <body>
 <%
   Window window = gef.getWindow();
+  window.setPopup(true);
   BrowseBar browseBar = window.getBrowseBar();
   browseBar.setDomainName(spaceName);
   browseBar.setComponentName(componentName);

@@ -490,6 +490,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         destination = "/admin/jsp/accessForbidden.jsp";
       } else {
         jobStartPageSC.init();
+        request.setAttribute("PopupMode", true);
         destination = getDestination("GoToComponent", jobStartPageSC, request);
       }
     }
