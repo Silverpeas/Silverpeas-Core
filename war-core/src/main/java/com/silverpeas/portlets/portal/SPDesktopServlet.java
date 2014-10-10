@@ -650,12 +650,15 @@ public class SPDesktopServlet extends HttpServlet {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
       
+      String defaultSpaceHomepageURL = getDefaultSpaceHomepageURL(request);
+      if (StringUtil.isDefined(defaultSpaceHomepageURL)) {
+        defaultSpaceHomepageURL =
+            URLManager.getApplicationURL() + defaultSpaceHomepageURL + "?SpaceId=" + spaceId;
+      }
+      
       // Default home page
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
-        String defaultSpaceHomepageURL = getDefaultSpaceHomepageURL(request);
-        if (StringUtil.isDefined(defaultSpaceHomepageURL)) {
-          return URLManager.getApplicationURL() + defaultSpaceHomepageURL + "?SpaceId=" + spaceId;
-        }
+        return defaultSpaceHomepageURL;
       }
 
       // Home page = one app
@@ -664,6 +667,10 @@ public class SPDesktopServlet extends HttpServlet {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailable(componentId, userId)) {
           return URLManager.getApplicationURL() + URLManager.getURL("useless", componentId) + "Main";
+        } else {
+          // component does not exist anymore or component is not available to current user
+          // so default page is used
+          return defaultSpaceHomepageURL;
         }
       }
 

@@ -1374,7 +1374,7 @@ public final class Admin {
    * @throws com.stratelia.webactiv.beans.admin.AdminException if an error occurs while deleting the
    * component instance.
    */
-  public String deleteComponentInst(String userId, String componentId, boolean definitive,
+  private String deleteComponentInst(String userId, String componentId, boolean definitive,
       boolean startNewTransaction) throws AdminException {
     Connection connectionProd = null;
     SilverTrace.spy(MODULE_ADMIN, "Admin.deleteComponentInst()", "ACP", componentId, "", userId,
@@ -1395,6 +1395,15 @@ public final class Admin {
 
       // Get the father id
       String sFatherClientId = componentInst.getDomainFatherId();
+      
+      // Check if component is used as space homepage
+      SpaceInst space = getSpaceInstById(sFatherClientId);
+      if (space.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST &&
+          space.getFirstPageExtraParam().equals(componentId)) {
+        space.setFirstPageType(SpaceInst.FP_TYPE_STANDARD);
+        space.setFirstPageExtraParam(null);
+        updateSpaceInst(space);
+      }
 
       if (!definitive) {
         // delete the profiles instance
