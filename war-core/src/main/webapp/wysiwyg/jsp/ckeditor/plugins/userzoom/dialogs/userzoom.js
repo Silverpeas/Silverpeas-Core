@@ -80,7 +80,7 @@ CKEDITOR.dialog.add( 'userzoom', function( editor ) {
 				        },
 				        commit: function( widget ) {							
 				          var document = this.getElement().getDocument();
-				          var element = document.getById('user');
+				          var element = document.getById('zoomUser');
 				          widget.setData( 'zoomUserId', element.getValue());
 				          widget.setData( 'zoomUserName', document.getById('zoomUserName').getValue());
 				        }
