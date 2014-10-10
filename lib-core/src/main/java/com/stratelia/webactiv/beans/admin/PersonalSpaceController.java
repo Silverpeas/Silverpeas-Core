@@ -113,7 +113,7 @@ public class PersonalSpaceController {
     if (space != null) {
       ComponentInst component = getComponent(space, componentId);
       if (component != null) {
-        getAdminService().deleteComponentInst(userId, componentId, true, true);
+        getAdminService().deleteComponentInst(userId, componentId, true);
         return component.getName();
       }
     }
