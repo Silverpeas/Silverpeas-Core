@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -38,7 +39,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.subscription.SubscriptionContext;
 
@@ -488,11 +488,11 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   public Collection<SilverpeasRole> getSilverpeasUserRoles() {
     String currentKey = getComponentId() + "_user_roles";
     Collection<SilverpeasRole> roles =
-        (Collection<SilverpeasRole>) CacheServiceFactory.getRequestCacheService().get(currentKey);
+        (Collection<SilverpeasRole>) CacheServiceProvider.getRequestCacheService().get(currentKey);
     if (roles == null) {
       roles = SilverpeasRole.from(context.getCurrentProfile());
       roles.remove(SilverpeasRole.Manager);
-      CacheServiceFactory.getRequestCacheService().put(currentKey, roles);
+      CacheServiceProvider.getRequestCacheService().put(currentKey, roles);
     }
     return roles;
   }

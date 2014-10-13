@@ -21,7 +21,7 @@
 package com.silverpeas.session;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.cache.service.SimpleCacheService;
 
@@ -56,7 +56,7 @@ public class SessionInfo {
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
     this.idleTimestamp = 0;
     this.cache.put(UserDetail.CURRENT_REQUESTER_KEY, user);
-    CacheServiceFactory.getRequestCacheService().put("@SessionCache@", cache);
+    CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
   }
 
   /**

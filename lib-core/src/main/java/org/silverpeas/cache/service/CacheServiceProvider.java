@@ -28,9 +28,9 @@ import org.silverpeas.util.GeneralPropertiesManager;
 /**
  * @author Yohann Chastagnier
  */
-public class CacheServiceFactory {
+public class CacheServiceProvider {
 
-  private static final CacheServiceFactory instance = new CacheServiceFactory();
+  private static final CacheServiceProvider instance = new CacheServiceProvider();
   private final SimpleCacheService threadCacheService;
   private final SimpleCacheService requestCacheService;
   private final CacheService cacheService;
@@ -38,7 +38,7 @@ public class CacheServiceFactory {
   /**
    * Initialization of service instances
    */
-  private CacheServiceFactory() {
+  private CacheServiceProvider() {
 
     // Thread cache
     threadCacheService = new ThreadCacheService();
@@ -59,14 +59,14 @@ public class CacheServiceFactory {
    * Gets an instance of this CacheServiceFactory class.
    * @return a CacheServiceFactory instance.
    */
-  private static CacheServiceFactory getInstance() {
+  private static CacheServiceProvider getInstance() {
     return instance;
   }
 
   /**
    * Gets a useful volatile cache : after the end of the current thread execution, the associated
    * cache is trashed.
-   * BE VERY VERE VERY CAREFULLY : into web application with thread pool management,
+   * BE VERY VERY VERY CAREFULLY : into web application with thread pool management,
    * the thread is never killed and this cache is never cleared. If you want the cache cleared
    * after a end of request, please use {@link #getRequestCacheService()}.
    * @return a cache associated to the current thread

@@ -24,10 +24,10 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletResponse;
@@ -90,7 +90,7 @@ public class WebComponentManager {
 
     // If the request is already managed, then bypassing the treatment of this method. This
     // avoids to override the context of subcalls of HTTP servlet methods.
-    if (CacheServiceFactory.getRequestCacheService()
+    if (CacheServiceProvider.getRequestCacheService()
         .get(WebComponentRequestContext.class.getName()) == null) {
 
       // Getting the manager associated to the type of the given resource.
@@ -135,7 +135,7 @@ public class WebComponentManager {
         webComponentContext.setHttpMethodClass(httpMethodClass);
         webComponentContext.setRequest(request);
         webComponentContext.setResponse(response);
-        CacheServiceFactory.getRequestCacheService()
+        CacheServiceProvider.getRequestCacheService()
             .put(WebComponentRequestContext.class.getName(), webComponentContext);
       } catch (Exception e) {
         throw new IllegalArgumentException(
@@ -351,7 +351,7 @@ public class WebComponentManager {
 
     // Retrieving the web component request context
     WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext =
-        (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceFactory.getRequestCacheService()
+        (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService()
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 

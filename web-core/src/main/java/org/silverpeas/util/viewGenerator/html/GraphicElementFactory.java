@@ -23,7 +23,7 @@ package org.silverpeas.util.viewGenerator.html;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -211,12 +211,12 @@ public class GraphicElementFactory {
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
-    CacheServiceFactory.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService()
         .put(REQUEST_EXTERNAL_STYLESHEET, externalStylesheet);
   }
 
   public String getExternalStylesheet() {
-    return CacheServiceFactory.getRequestCacheService()
+    return CacheServiceProvider.getRequestCacheService()
         .get(REQUEST_EXTERNAL_STYLESHEET, String.class);
   }
 
@@ -640,11 +640,11 @@ public class GraphicElementFactory {
   }
 
   public void setComponentIdForCurrentRequest(String componentId) {
-    CacheServiceFactory.getRequestCacheService().put(REQUEST_COMPONENT_ID, componentId);
+    CacheServiceProvider.getRequestCacheService().put(REQUEST_COMPONENT_ID, componentId);
   }
 
   public String getComponentIdOfCurrentRequest() {
-    return CacheServiceFactory.getRequestCacheService().get(REQUEST_COMPONENT_ID, String.class);
+    return CacheServiceProvider.getRequestCacheService().get(REQUEST_COMPONENT_ID, String.class);
   }
 
   public MainSessionController getMainSessionController() {
@@ -656,12 +656,12 @@ public class GraphicElementFactory {
     boolean isComponentMainPage =
         request.getRequestURI().endsWith("/Main") && !request.getRequestURI().
             endsWith("/jsp/Main");
-    CacheServiceFactory.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService()
         .put(REQUEST_IS_COMPONENT_MAIN_PAGE, isComponentMainPage);
   }
 
   public boolean isComponentMainPage() {
-    Boolean isComponentMainPage = CacheServiceFactory.getRequestCacheService()
+    Boolean isComponentMainPage = CacheServiceProvider.getRequestCacheService()
         .get(REQUEST_IS_COMPONENT_MAIN_PAGE, Boolean.class);
     return isComponentMainPage != null && isComponentMainPage;
   }
@@ -670,14 +670,14 @@ public class GraphicElementFactory {
    * @return the space identifier
    */
   public String getSpaceIdOfCurrentRequest() {
-    return CacheServiceFactory.getRequestCacheService().get(REQUEST_SPACE_ID, String.class);
+    return CacheServiceProvider.getRequestCacheService().get(REQUEST_SPACE_ID, String.class);
   }
 
   /**
    * @param spaceId the space identifier to set (full identifier with WA + number)
    */
   public void setSpaceIdForCurrentRequest(String spaceId) {
-    CacheServiceFactory.getRequestCacheService().put(REQUEST_SPACE_ID, spaceId);
+    CacheServiceProvider.getRequestCacheService().put(REQUEST_SPACE_ID, spaceId);
   }
 
   /**

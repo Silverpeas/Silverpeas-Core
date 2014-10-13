@@ -25,8 +25,8 @@ package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToNavigationStep;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.viewGenerator.html.browseBars.BrowseBarTag;
-import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -72,10 +72,10 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
       WEB_COMPONENT_REQUEST_CONTEXT context) {
     String cacheKey = "NavigationContext@" + context.getComponentUriBase();
     NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext =
-        CacheServiceFactory.getSessionCacheService().get(cacheKey, NavigationContext.class);
+        CacheServiceProvider.getSessionCacheService().get(cacheKey, NavigationContext.class);
     if (navigationContext == null) {
       navigationContext = new NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT>(context);
-      CacheServiceFactory.getSessionCacheService().put(cacheKey, navigationContext);
+      CacheServiceProvider.getSessionCacheService().put(cacheKey, navigationContext);
     } else {
       navigationContext.webComponentRequestContext = context;
     }

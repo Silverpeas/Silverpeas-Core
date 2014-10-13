@@ -23,10 +23,10 @@
  */
 package com.silverpeas.accesscontrol;
 
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.cache.service.CacheServiceFactory;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -58,11 +58,11 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
   public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId, T object) {
     String cacheKey = buildUserRoleCacheKey(context, userId, object);
     Set<SilverpeasRole> userRoles =
-        CacheServiceFactory.getRequestCacheService().get(cacheKey, Set.class);
+        CacheServiceProvider.getRequestCacheService().get(cacheKey, Set.class);
     if (userRoles == null) {
       userRoles = EnumSet.noneOf(SilverpeasRole.class);
       fillUserRoles(userRoles, context, userId, object);
-      CacheServiceFactory.getRequestCacheService().put(cacheKey, userRoles);
+      CacheServiceProvider.getRequestCacheService().put(cacheKey, userRoles);
     }
     return userRoles;
   }

@@ -23,9 +23,9 @@
  */
 package org.silverpeas.persistence.repository;
 
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.AssertArgument;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.persistence.model.Entity;
 
 /**
@@ -80,7 +80,7 @@ public class OperationContext {
    * @return
    */
   public static OperationContext getFromCache() {
-    return CacheServiceFactory.getRequestCacheService().get(CACHE_KEY, OperationContext.class);
+    return CacheServiceProvider.getRequestCacheService().get(CACHE_KEY, OperationContext.class);
   }
 
   /**
@@ -143,7 +143,7 @@ public class OperationContext {
    * The call of this method is automatically done by technical JPA tools.
    */
   public void putIntoCache() {
-    CacheServiceFactory.getRequestCacheService().put(CACHE_KEY, this);
+    CacheServiceProvider.getRequestCacheService().put(CACHE_KEY, this);
   }
 
   /**

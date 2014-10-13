@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets.control;
 
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -31,7 +32,6 @@ import com.stratelia.silverpeas.peasCore.servlets.Navigation;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -313,7 +313,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
 
   @Override
   protected void onInstantiation(final TestWebComponentRequestContext context) {
-    Object called = CacheServiceFactory.getSessionCacheService().get("onInstantiationCalled");
+    Object called = CacheServiceProvider.getSessionCacheService().get("onInstantiationCalled");
     if (called == null) {
       context.getNavigationContext()
           .addListener(new AbstractNavigationContextListener<TestWebComponentRequestContext>() {
@@ -386,7 +386,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
               }
             }
           });
-      CacheServiceFactory.getSessionCacheService().put("onInstantiationCalled", true);
+      CacheServiceProvider.getSessionCacheService().put("onInstantiationCalled", true);
     }
   }
 

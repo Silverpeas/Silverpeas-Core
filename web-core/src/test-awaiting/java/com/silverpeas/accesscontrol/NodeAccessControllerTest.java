@@ -29,6 +29,7 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.accesscontrol.NodeAccessController;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
@@ -43,7 +44,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.Collections;
@@ -70,7 +70,7 @@ public class NodeAccessControllerTest {
 
   @Before
   public void setup() {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     componentAccessController = mockComponentAccessController();
   }
 

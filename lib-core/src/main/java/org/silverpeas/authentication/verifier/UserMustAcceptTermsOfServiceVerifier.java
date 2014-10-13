@@ -23,11 +23,11 @@
  */
 package org.silverpeas.authentication.verifier;
 
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.termsOfService.constant.TermsOfServiceAcceptanceFrequency;
 
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +86,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
       throws AuthenticationUserMustAcceptTermsOfService {
     if (isTermsOfServiceAcceptanceDateIsExpired()) {
       // Caching for 10 minutes
-      tosToken = CacheServiceFactory.getApplicationCacheService().add(this, LIVE_10_MINUTES);
+      tosToken = CacheServiceProvider.getApplicationCacheService().add(this, LIVE_10_MINUTES);
       throw new AuthenticationUserMustAcceptTermsOfService();
     }
     return this;
@@ -134,7 +134,8 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    * @return
    */
   protected static synchronized UserMustAcceptTermsOfServiceVerifier get(String tosToken) {
-    UserMustAcceptTermsOfServiceVerifier verifier = CacheServiceFactory.getApplicationCacheService()
+    UserMustAcceptTermsOfServiceVerifier verifier = CacheServiceProvider
+        .getApplicationCacheService()
         .get(tosToken, UserMustAcceptTermsOfServiceVerifier.class);
     if (verifier == null) {
       verifier = new UserMustAcceptTermsOfServiceVerifier(null);
@@ -148,7 +149,7 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
    */
   private static synchronized void clearCache(String tosToken) {
     if (tosToken != null) {
-      CacheServiceFactory.getApplicationCacheService().remove(tosToken);
+      CacheServiceProvider.getApplicationCacheService().remove(tosToken);
     }
   }
 }

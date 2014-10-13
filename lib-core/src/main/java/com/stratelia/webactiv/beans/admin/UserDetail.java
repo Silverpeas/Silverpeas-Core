@@ -25,6 +25,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.socialnetwork.status.StatusService;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -35,7 +36,6 @@ import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
@@ -99,7 +99,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the detail about the user above described.
    */
   public static UserDetail getCurrentRequester() {
-    return CacheServiceFactory.getSessionCacheService()
+    return CacheServiceProvider.getSessionCacheService()
         .get(CURRENT_REQUESTER_KEY, UserDetail.class);
   }
 

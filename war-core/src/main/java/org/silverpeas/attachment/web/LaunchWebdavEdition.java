@@ -22,8 +22,7 @@ package org.silverpeas.attachment.web;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheService;
-import org.silverpeas.cache.service.CacheServiceFactory;
-import org.silverpeas.cache.service.EhCacheService;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -33,9 +32,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Random;
 import java.util.UUID;
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +70,7 @@ public class LaunchWebdavEdition extends HttpServlet {
       }
       UserDetail user = mainSessionController.getCurrentUserDetail();
       String token = generateAuthToken();
-      CacheService cacheService = CacheServiceFactory.getApplicationCacheService();
+      CacheService cacheService = CacheServiceProvider.getApplicationCacheService();
       cacheService.put(token, user); // 12h by default of TTL
       prepareJNLP(request, out, user.getLogin(), token);
     } finally {

@@ -24,6 +24,7 @@
 package org.silverpeas.process.annotation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.ActionType;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.annotation.Action;
@@ -32,7 +33,6 @@ import org.silverpeas.util.annotation.Language;
 import org.silverpeas.util.annotation.SourcePK;
 import org.silverpeas.util.annotation.TargetObject;
 import org.silverpeas.util.annotation.TargetPK;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.management.ProcessExecutionContext;
 
@@ -58,7 +58,7 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
       Map<Class<Annotation>, List<Object>> annotedParametersValues) throws Exception {
 
     // Simulation is processed only if no simulation is already working
-    if (CacheServiceFactory.getRequestCacheService().get(SIMULATION_PROCESS_PERFORMED) == null) {
+    if (CacheServiceProvider.getRequestCacheService().get(SIMULATION_PROCESS_PERFORMED) == null) {
       try {
 
         // Master annotation
@@ -127,7 +127,7 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
           }
 
           // Indicating that a functional check has been performed
-          CacheServiceFactory.getRequestCacheService().put(SIMULATION_PROCESS_PERFORMED, true);
+          CacheServiceProvider.getRequestCacheService().put(SIMULATION_PROCESS_PERFORMED, true);
         }
 
         // Invoking finally the proxy method initially called
@@ -141,7 +141,7 @@ public abstract class AbstractSimulationActionProcessAnnotationInterceptor<C> {
 
         // Removing the flag indicating that a functional check has been performed (out of the
         // service)
-        CacheServiceFactory.getRequestCacheService().remove(SIMULATION_PROCESS_PERFORMED);
+        CacheServiceProvider.getRequestCacheService().remove(SIMULATION_PROCESS_PERFORMED);
       }
     }
 

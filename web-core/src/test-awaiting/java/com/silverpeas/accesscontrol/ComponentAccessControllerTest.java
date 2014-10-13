@@ -38,7 +38,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.HashMap;
@@ -416,7 +416,7 @@ public class ComponentAccessControllerTest {
    */
   private void assertGetUserRolesAndIsUserAuthorized(String instanceId,
       boolean expectedUserAuthorization, SilverpeasRole... expectedUserRoles) {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     Set<SilverpeasRole> componentUserRole =
         instance.getUserRoles(accessControlContext, userId, instanceId);
     if (expectedUserRoles.length > 0) {

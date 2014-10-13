@@ -199,8 +199,8 @@
 
   <!-- the factory of cache services.
   It wraps and provides an access to different service instances relative to cache handling -->
-  <bean id="cacheServiceFactory" class="org.silverpeas.cache.service.CacheServiceFactory"
-        factory-method="getInstance"/>
+  <!-- YCH <bean id="cacheServiceFactory" class="org.silverpeas.cache.service.CacheServiceFactory"-->
+        <!--factory-method="getInstance"/>-->
 
   <!-- the factory of thumbnail services.
   It wraps and provides an access to different service instances relative to thumbnail handling -->

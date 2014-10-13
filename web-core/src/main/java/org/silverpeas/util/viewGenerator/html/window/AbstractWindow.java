@@ -25,7 +25,7 @@
 package org.silverpeas.util.viewGenerator.html.window;
 
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -404,7 +404,7 @@ public abstract class AbstractWindow implements Window {
       result.append("</td></tr></table>");
     } else {
       Object includePopupResizeJsDone =
-          CacheServiceFactory.getRequestCacheService().get("@includePopupResizeJsDone@");
+          CacheServiceProvider.getRequestCacheService().get("@includePopupResizeJsDone@");
       if (includePopupResizeJsDone == null) {
         StringBuilder popupResizeJs = new StringBuilder();
         popupResizeJs.append("$(document.body).ready(");
@@ -413,7 +413,7 @@ public abstract class AbstractWindow implements Window {
         popupResizeJs.append("});");
         result.append(new script().setType("text/javascript").addElement(popupResizeJs.toString())
             .toString());
-        CacheServiceFactory.getRequestCacheService().put("@includePopupResizeJsDone@", true);
+        CacheServiceProvider.getRequestCacheService().put("@includePopupResizeJsDone@", true);
       }
     }
     if (StringUtil.isDefined(contextualDiv)) {

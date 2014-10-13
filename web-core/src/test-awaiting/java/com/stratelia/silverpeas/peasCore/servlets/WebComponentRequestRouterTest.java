@@ -32,12 +32,12 @@ import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -77,7 +77,7 @@ public class WebComponentRequestRouterTest {
     SilverStatisticsManager.setInstanceForTest(mock(SilverStatisticsManager.class));
 
     WebComponentManager.managedWebComponentRouters.clear();
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     reset(getOrganisationController(),
         AbstractTestWebComponentGenericController.getResourceLocatorMock());
   }
@@ -238,10 +238,10 @@ public class WebComponentRequestRouterTest {
 
     @SuppressWarnings("unchecked")
     public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
-      InMemoryCacheService sessionCache = CacheServiceFactory.getRequestCacheService()
+      InMemoryCacheService sessionCache = CacheServiceProvider.getRequestCacheService()
           .get("@SessionCache@", InMemoryCacheService.class);
-      CacheServiceFactory.getRequestCacheService().clear();
-      CacheServiceFactory.getRequestCacheService().put("@SessionCache@",
+      CacheServiceProvider.getRequestCacheService().clear();
+      CacheServiceProvider.getRequestCacheService().put("@SessionCache@",
           (sessionCache != null ? sessionCache : new InMemoryCacheService()));
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
@@ -263,7 +263,7 @@ public class WebComponentRequestRouterTest {
                 response);
       }
       WEB_COMPONENT_REQUEST_CONTEXT requestContext =
-          (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceFactory.getRequestCacheService()
+          (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService()
               .get(WebComponentRequestContext.class.getName());
       assertThat(requestContext, notNullValue());
       assertThat(requestContext.getHttpMethodClass().getName(), Matchers.endsWith(httpMethod));

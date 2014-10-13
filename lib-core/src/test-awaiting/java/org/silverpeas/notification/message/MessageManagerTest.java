@@ -23,12 +23,12 @@
  */
 package org.silverpeas.notification.message;
 
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.ResourceLocator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -59,8 +59,8 @@ public class MessageManagerTest {
    */
   public void initialize() {
     String registredKey =
-        CacheServiceFactory.getApplicationCacheService().add(new MessageContainer());
-    CacheServiceFactory.getRequestCacheService().put(MessageManager.class, registredKey);
+        CacheServiceProvider.getApplicationCacheService().add(new MessageContainer());
+    CacheServiceProvider.getRequestCacheService().put(MessageManager.class, registredKey);
     assertThat(getMessageContainer().getMessages(), emptyIterable());
   }
 
@@ -68,7 +68,7 @@ public class MessageManagerTest {
    * Clear out the thread cache the registred key referenced.
    */
   public void destroy() {
-    CacheServiceFactory.getRequestCacheService().remove(MessageManager.class);
+    CacheServiceProvider.getRequestCacheService().remove(MessageManager.class);
   }
 
   @Test

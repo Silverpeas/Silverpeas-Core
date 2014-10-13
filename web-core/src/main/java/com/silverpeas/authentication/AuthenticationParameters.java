@@ -28,6 +28,7 @@ import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -35,7 +36,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.spnego.SpnegoPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -203,8 +203,8 @@ public class AuthenticationParameters {
   private UserDetail getUserByInternalAuthToken(HttpServletRequest request) {
     String internalAuthToken = (String) request.getAttribute("internalAuthToken");
     if (StringUtil.isDefined(internalAuthToken)) {
-      if (CacheServiceFactory.getApplicationCacheService().get(internalAuthToken) instanceof UserDetail) {
-        return (UserDetail) CacheServiceFactory.getApplicationCacheService().remove(internalAuthToken);
+      if (CacheServiceProvider.getApplicationCacheService().get(internalAuthToken) instanceof UserDetail) {
+        return (UserDetail) CacheServiceProvider.getApplicationCacheService().remove(internalAuthToken);
       }
     }
     return null;

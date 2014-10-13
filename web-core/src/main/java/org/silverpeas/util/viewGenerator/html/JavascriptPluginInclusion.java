@@ -23,6 +23,7 @@
  */
 package org.silverpeas.util.viewGenerator.html;
 
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -31,7 +32,6 @@ import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreatio
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.util.security.SecuritySettings;
 
@@ -203,23 +203,23 @@ public class JavascriptPluginInclusion {
 
   public static ElementContainer includeRating(final ElementContainer xhtml) {
     Object includeRatingDone =
-        CacheServiceFactory.getRequestCacheService().get("@includeRatingDone@");
+        CacheServiceProvider.getRequestCacheService().get("@includeRatingDone@");
     if (includeRatingDone == null) {
       xhtml.addElement(link(jqueryPath + RATEIT_CSS));
       xhtml.addElement(script(jqueryPath + RATEIT_JS));
       xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-rating.js"));
       xhtml.addElement(script(angularjsServicesPath + "silverpeas-rating.js"));
-      CacheServiceFactory.getRequestCacheService().put("@includeRatingDone@", true);
+      CacheServiceProvider.getRequestCacheService().put("@includeRatingDone@", true);
     }
     return xhtml;
   }
 
   public static ElementContainer includeToggle(final ElementContainer xhtml) {
     Object includeRatingDone =
-        CacheServiceFactory.getRequestCacheService().get("@includeToggleDone@");
+        CacheServiceProvider.getRequestCacheService().get("@includeToggleDone@");
     if (includeRatingDone == null) {
       xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-toggle.js"));
-      CacheServiceFactory.getRequestCacheService().put("@includeToggleDone@", true);
+      CacheServiceProvider.getRequestCacheService().put("@includeToggleDone@", true);
     }
     return xhtml;
   }
