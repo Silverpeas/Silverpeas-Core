@@ -760,6 +760,22 @@ public class AdminController implements java.io.Serializable {
       return null;
     }
   }
+  
+  /**
+  * All the node profiles to which the user belongs
+  * @return an array of profile IDs
+  */
+    public String[] getNodeProfileIds(String sUserId) {
+      SilverTrace.info("admin", "AdminController.getNodeProfileIds",
+          "root.MSG_GEN_ENTER_METHOD");
+      try {
+        return getAdminService().getNodeProfileIds(sUserId);
+      } catch (Exception e) {
+        SilverTrace.error("admin", "AdminController.getNodeProfileIds",
+            "admin.MSG_ERR_GET_USERPROFILE", e);
+        return null;
+      }
+    }
 
   // ----------------------------------------------
   // Group Profile related functions
@@ -780,6 +796,22 @@ public class AdminController implements java.io.Serializable {
       return null;
     }
   }
+  
+  /**
+  * All the node profiles to which the group belongs
+  * @return an array of profile IDs
+  */
+    public String[] getNodeProfileIdsOfGroup(String sGroupId) {
+      SilverTrace.info("admin", "AdminController.getNodeProfileIdsOfGroup",
+          "root.MSG_GEN_ENTER_METHOD");
+      try {
+        return getAdminService().getNodeProfileIdsOfGroup(sGroupId);
+      } catch (Exception e) {
+        SilverTrace.error("admin", "AdminController.getNodeProfileIdsOfGroup",
+            "admin.MSG_ERR_GET_USERPROFILE", e);
+        return null;
+      }
+    }
 
   // ----------------------------------------------
   // User related functions

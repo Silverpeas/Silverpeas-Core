@@ -142,6 +142,9 @@
           buttons: {
             "<fmt:message key="GML.ok"/>": function() {
             	if (isCorrectForm()) {
+            		if(!document.rightsForm.checkNodeAssignRights.checked) {
+            			document.rightsForm.nodeAssignRights.value = "false";
+            		}
                 	document.rightsForm.action = "AssignRights";
                 	document.rightsForm.submit();
             	}
@@ -522,6 +525,13 @@
 			        &nbsp;<img src="${context}${mandatoryIcon}" width="5" height="5" border="0"/>
 			        <input type="hidden" name="sourceRightsId" id="sourceRightsId" value=""/>
 			        <input type="hidden" name="sourceRightsType" id="sourceRightsType" value=""/>   
+	          	</td>
+	        </tr>
+	        <tr>
+	        	<td></td>
+	          	<td>
+			        <input type="checkbox" name="checkNodeAssignRights" id="checkNodeAssignRights" checked="checked"/><fmt:message key="JOP.nodeAssignRights"/>
+			        <input type="hidden" name="nodeAssignRights" id="nodeAssignRights" value="true"/>
 	          	</td>
 	        </tr>
 		</table>

@@ -5082,7 +5082,7 @@ public final class Admin {
    */
   public String[] getProfileIds(String sUserId) throws AdminException {
     try {
-      // Get the component instance from cache
+      // Get the profile ids from cache
       String[] asProfilesIds = cache.getProfileIds(sUserId);
 
       if (asProfilesIds == null) {
@@ -5097,7 +5097,32 @@ public final class Admin {
 
       return asProfilesIds;
     } catch (Exception e) {
-      throw new AdminException("Admin.getProfiles", SilverpeasException.ERROR,
+      throw new AdminException("Admin.getProfileIds", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
+    }
+  }
+  
+  /**
+   * Get all the node profiles Id for the given user
+   */
+  public String[] getNodeProfileIds(String sUserId) throws AdminException {
+    try {
+      // Get the node profile ids from cache
+      String[] asProfilesIds = cache.getNodeProfileIds(sUserId);
+
+      if (asProfilesIds == null) {
+        // retrieve value from database
+        asProfilesIds = profileManager.getNodeProfileIdsOfUser(sUserId, getAllGroupsOfUser(sUserId));
+
+        // store values in cache
+        if (asProfilesIds != null) {
+          cache.putNodeProfileIds(sUserId, asProfilesIds);
+        }
+      }
+
+      return asProfilesIds;
+    } catch (Exception e) {
+      throw new AdminException("Admin.getNodeProfileIds", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_PROFILES", "user Id : '" + sUserId + "'", e);
     }
   }
@@ -5111,6 +5136,20 @@ public final class Admin {
       return profileManager.getProfileIdsOfGroup(sGroupId);
     } catch (Exception e) {
       throw new AdminException("Admin.getProfileIdsOfGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
+          "group Id : '" + sGroupId + "'", e);
+    }
+  }
+  
+  /**
+   * Get all the profiles Id for the given group
+   */
+  public String[] getNodeProfileIdsOfGroup(String sGroupId) throws AdminException {
+    try {
+      // retrieve value from database
+      return profileManager.getNodeProfileIdsOfGroup(sGroupId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.getNodeProfileIdsOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP_PROFILES",
           "group Id : '" + sGroupId + "'", e);
     }

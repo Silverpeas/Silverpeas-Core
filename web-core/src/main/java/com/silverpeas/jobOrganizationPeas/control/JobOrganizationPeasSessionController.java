@@ -451,9 +451,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
   
   /*
-   * Add target profiles (space and components)
+   * Add target profiles (space, components, nodes)
    */
-  private void addTargetProfiles(String[] sourceSpaceProfileIds, String[] sourceProfileIds) {
+  private void addTargetProfiles(String[] sourceSpaceProfileIds, String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) {
     
     //Add space rights (and sub-space and components, by inheritance)
     for (String spaceProfileId : sourceSpaceProfileIds) {
@@ -468,7 +468,25 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     }
     
     //Add component rights
-    for (String profileId : sourceProfileIds) {
+    for (String profileId : sourceComponentProfileIds) {
+      ProfileInst currentSourceProfile = getAdminController().getProfileInst(profileId);
+      ComponentInst currentComponent = getAdminController().getComponentInst(
+          currentSourceProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
+     
+      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        if (getCurrentUserId() != null) {//target is a user
+          currentSourceProfile.addUser(getCurrentUserId());
+        } else if (getCurrentGroupId() != null) {//target is a group
+          currentSourceProfile.addGroup(getCurrentGroupId());
+        }
+        getAdminController().updateProfileInst(currentSourceProfile, getUserId());
+      }
+    }
+    
+    //Add nodes rights
+    for (String profileId : sourceNodeProfileIds) {
       ProfileInst currentSourceProfile = getAdminController().getProfileInst(profileId);
       ComponentInst currentComponent = getAdminController().getComponentInst(
           currentSourceProfile.getComponentFatherId());
@@ -489,12 +507,13 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   /*
    * Assign rights to current selected user or group
    */
-  public void assignRights(String choiceAssignRights, String sourceRightsId, String sourceRightsType) {
+  public void assignRights(String choiceAssignRights, String sourceRightsId, String sourceRightsType, String nodeAssignRights) {
     if (JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights) || 
         JobOrganizationPeasSessionController.ADD_RIGHTS.equals(choiceAssignRights)) {
       
       String[] sourceSpaceProfileIds = new String[0];
-      String[] sourceProfileIds = new String[0];
+      String[] sourceComponentProfileIds = new String[0];
+      String[] sourceNodeProfileIds = new String[0];
       boolean targetSameSource = false;
       
       if(StringUtil.isDefined(sourceRightsId)) {
@@ -503,14 +522,20 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
             targetSameSource = true;
           } else {
             sourceSpaceProfileIds = getAdminController().getSpaceProfileIds(sourceRightsId);
-            sourceProfileIds = getAdminController().getProfileIds(sourceRightsId);
+            sourceComponentProfileIds = getAdminController().getProfileIds(sourceRightsId);
+            if("true".equals(nodeAssignRights)) {
+              sourceNodeProfileIds = getAdminController().getNodeProfileIds(sourceRightsId);
+            }
           }
         } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
           if (getCurrentGroupId() != null && sourceRightsId.equals(getCurrentGroupId())) {//target = source
             targetSameSource = true;
           } else {
             sourceSpaceProfileIds = getAdminController().getSpaceProfileIdsOfGroup(sourceRightsId);
-            sourceProfileIds = getAdminController().getProfileIdsOfGroup(sourceRightsId);
+            sourceComponentProfileIds = getAdminController().getProfileIdsOfGroup(sourceRightsId);
+            if("true".equals(nodeAssignRights)) {
+              sourceNodeProfileIds = getAdminController().getNodeProfileIdsOfGroup(sourceRightsId);
+            }
           }
         }
       }
@@ -524,7 +549,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       }
       
       //Second : add rights
-      addTargetProfiles(sourceSpaceProfileIds, sourceProfileIds);
+      addTargetProfiles(sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
 
       if(!targetSameSource) {
         //force to refresh

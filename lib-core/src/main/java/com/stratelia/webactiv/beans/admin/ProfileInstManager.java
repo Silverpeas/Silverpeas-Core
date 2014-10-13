@@ -521,6 +521,35 @@ public class ProfileInstManager {
       DBUtil.close(con);
     }
   }
+  
+  /**
+   * Get all the node profiles Id for the given user and groups
+   * @param sUserId
+   * @param groupIds
+   * @return
+   * @throws AdminException
+   */
+  public String[] getNodeProfileIdsOfUser(String sUserId, List<String> groupIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserRoleRow> roles = RoleDAO.getNodeRoles(con, groupIds, Integer.parseInt(sUserId));
+      List<String> roleIds = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleIds.add(Integer.toString(role.id));
+      }
+
+      return roleIds.toArray(new String[roleIds.size()]);
+
+    } catch (Exception e) {
+      throw new AdminException("ProfiledObjectManager.getNodeProfileIdsOfUserAndGroups",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
   public String[] getProfileNamesOfUser(String sUserId, List<String> groupIds, int componentId)
       throws AdminException {
@@ -602,6 +631,36 @@ public class ProfileInstManager {
 
     } catch (Exception e) {
       throw new AdminException("ProfiledObjectManager.getProfileIdsOfGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all the node profiles Id for the given group
+   * @param sGroupId
+   * @return
+   * @throws AdminException
+   */
+  public String[] getNodeProfileIdsOfGroup(String sGroupId) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<String> groupIds = new ArrayList<String>();
+      groupIds.add(sGroupId);
+      List<UserRoleRow> roles = RoleDAO.getNodeRoles(con, groupIds, -1);
+      List<String> roleIds = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        roleIds.add(Integer.toString(role.id));
+      }
+
+      return roleIds.toArray(new String[roleIds.size()]);
+
+    } catch (Exception e) {
+      throw new AdminException("ProfiledObjectManager.getNodeProfileIdsOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
     } finally {
       DBUtil.close(con);

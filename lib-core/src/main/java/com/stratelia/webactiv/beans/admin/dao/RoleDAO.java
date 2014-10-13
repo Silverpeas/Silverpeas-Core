@@ -83,6 +83,34 @@ public class RoleDAO {
       DBUtil.close(rs, stmt);
     }
   }
+  
+  private final static String queryAllUserNodeRoles = "select " + USERROLE_COLUMNS
+      + " from st_userrole r, st_userrole_user_rel ur"
+      + " where r.id=ur.userroleid"
+      + " and r.objectId is not null "
+      + " and ur.userId = ? ";
+
+  private static List<UserRoleRow> getNodeRoles(Connection con, int userId)
+      throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = con.prepareStatement(queryAllUserNodeRoles);
+      stmt.setInt(1, userId);
+
+      rs = stmt.executeQuery();
+
+      while (rs.next()) {
+        roles.add(fetchUserRole(rs));
+      }
+
+      return roles;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
 
   private static List<UserRoleRow> getRoles(Connection con, List<String> groupIds)
       throws SQLException {
@@ -109,6 +137,32 @@ public class RoleDAO {
       DBUtil.close(rs, stmt);
     }
   }
+  
+  private static List<UserRoleRow> getNodeRoles(Connection con, List<String> groupIds)
+      throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+
+    String query = "select " + USERROLE_COLUMNS
+        + " from st_userrole r, st_userrole_group_rel gr"
+        + " where r.id=gr.userroleid"
+        + " and r.objectId is not null "
+        + " and gr.groupId IN (" + list2String(groupIds) + ")";
+
+    Statement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = con.createStatement();
+      rs = stmt.executeQuery(query);
+
+      while (rs.next()) {
+        roles.add(fetchUserRole(rs));
+      }
+
+      return roles;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
 
   public static List<UserRoleRow> getRoles(Connection con, List<String> groupIds, int userId)
       throws SQLException {
@@ -118,6 +172,18 @@ public class RoleDAO {
     }
     if (userId != -1) {
       roles.addAll(getRoles(con, userId));
+    }
+    return roles;
+  }
+  
+  public static List<UserRoleRow> getNodeRoles(Connection con, List<String> groupIds, int userId)
+      throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+    if (groupIds != null && groupIds.size() > 0) {
+      roles.addAll(getNodeRoles(con, groupIds));
+    }
+    if (userId != -1) {
+      roles.addAll(getNodeRoles(con, userId));
     }
     return roles;
   }
