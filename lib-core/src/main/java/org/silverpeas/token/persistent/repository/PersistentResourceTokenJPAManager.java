@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,23 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.token.persistent.repository;
 
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.token.persistent.PersistentResourceToken;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface PersistentResourceTokenRepository extends
-    JpaRepository<PersistentResourceToken, Long> {
+@Singleton
+public class PersistentResourceTokenJPAManager
+    extends JpaBasicEntityManager<PersistentResourceToken, UniqueLongIdentifier>
+    implements PersistentResourceTokenManager {
 
-  @Query("from PersistentResourceToken where resourceType = :type and resourceId = :resourceId")
-  PersistentResourceToken getByTypeAndResourceId(@Param("type") String type,
-      @Param("resourceId") String resourceId);
+  @Override
+  public PersistentResourceToken getByTypeAndResourceId(String type, String resourceId) {
+    return findOneByNamedQuery("PersistentResourceToken.getByTypeAndResourceId",
+        newNamedParameters().add("type", type).add("resourceId", resourceId));
+  }
 
-  @Query("from PersistentResourceToken where token = :token")
-  PersistentResourceToken getByToken(@Param("token") String token);
+  @Override
+  public PersistentResourceToken getByToken(String token) {
+    return findOneByNamedQuery("PersistentResourceToken.getByToken",
+        newNamedParameters().add("token", token));
+  }
 }

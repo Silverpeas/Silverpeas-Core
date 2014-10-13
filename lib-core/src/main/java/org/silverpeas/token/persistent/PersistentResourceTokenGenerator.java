@@ -46,7 +46,7 @@ public class PersistentResourceTokenGenerator implements TokenGenerator {
   /**
    * @param parameters both the identifier and the type of the resource the token to generate has to
    * be belong.
-   * @see TokenGenerator.
+   * @see {@link TokenGenerator}.
    */
   @Override
   public PersistentResourceToken generate(TokenGenerationParameter... parameters) {

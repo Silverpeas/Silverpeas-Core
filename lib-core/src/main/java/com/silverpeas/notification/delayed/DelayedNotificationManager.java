@@ -143,7 +143,7 @@ public class DelayedNotificationManager implements DelayedNotification {
           final List<DelayedNotificationData> exists =
               dnRepository.findDelayedNotification(delayedNotificationData);
           if (exists.size() == 1) {
-            delayedNotificationData.setId(Integer.parseInt(exists.get(0).getId()));
+            delayedNotificationData.setId(Long.valueOf(exists.get(0).getId()));
           } else {
             dnRepository.saveAndFlush(delayedNotificationData);
           }

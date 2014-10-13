@@ -23,28 +23,29 @@
  */
 package org.silverpeas.token.persistent;
 
-import org.silverpeas.util.StringUtil;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import org.silverpeas.EntityReference;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.annotation.TokenGenerator;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
-import org.silverpeas.token.persistent.service.TokenServiceFactory;
+import org.silverpeas.token.persistent.service.TokenServiceProvider;
+import org.silverpeas.util.StringUtil;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A persistent token used to identify uniquely a resource.
@@ -57,7 +58,13 @@ import org.silverpeas.token.persistent.service.TokenServiceFactory;
 @Entity
 @Table(name = "st_token")
 @TokenGenerator(PersistentResourceTokenGenerator.class)
-public class PersistentResourceToken implements Token {
+@NamedQueries({@NamedQuery(name = "PersistentResourceToken.getByTypeAndResourceId",
+    query = "from PersistentResourceToken where resourceType = :type and resourceId = :resourceId"),
+    @NamedQuery(name = "PersistentResourceToken.getByToken",
+        query = "from PersistentResourceToken where token = :token")})
+public class PersistentResourceToken
+    extends AbstractJpaIdentifiableEntity<PersistentResourceToken, UniqueLongIdentifier>
+    implements Token {
 
   private static final long serialVersionUID = 5956074363457906409L;
 
@@ -65,13 +72,6 @@ public class PersistentResourceToken implements Token {
    * Represents none token to replace in more typing way the null keyword.
    */
   public static final PersistentResourceToken NoneToken = new PersistentResourceToken();
-
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "st_token", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  @Column(name = "id")
-  private Long id;
 
   @Column(name = "tokenType", nullable = false)
   private String resourceType = EntityReference.UNKNOWN_TYPE;
@@ -117,7 +117,7 @@ public class PersistentResourceToken implements Token {
    */
   public static PersistentResourceToken createToken(final EntityReference resource) throws
       TokenException {
-    PersistentResourceTokenService service = TokenServiceFactory.getTokenService();
+    PersistentResourceTokenService service = TokenServiceProvider.getTokenService();
     return service.initialize(resource);
   }
 
@@ -133,7 +133,7 @@ public class PersistentResourceToken implements Token {
    */
   public static PersistentResourceToken getOrCreateToken(final EntityReference resource) throws
       TokenException {
-    PersistentResourceTokenService service = TokenServiceFactory.getTokenService();
+    PersistentResourceTokenService service = TokenServiceProvider.getTokenService();
     PersistentResourceToken token = service.get(resource);
     if (!token.isDefined()) {
       token = service.initialize(resource);
@@ -149,7 +149,7 @@ public class PersistentResourceToken implements Token {
    * @return the token that matches the specified value.
    */
   public static PersistentResourceToken getToken(String token) {
-    PersistentResourceTokenService service = TokenServiceFactory.getTokenService();
+    PersistentResourceTokenService service = TokenServiceProvider.getTokenService();
     return service.get(token);
   }
 
@@ -191,17 +191,10 @@ public class PersistentResourceToken implements Token {
   }
 
   /**
-   * @return the id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
    * @param id the id to set
    */
   public void setId(final Long id) {
-    this.id = id;
+    setId(String.valueOf(id));
   }
 
   /**

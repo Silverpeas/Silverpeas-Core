@@ -32,7 +32,8 @@ package org.silverpeas.token;
  * differ by their type and each type of token has their own generator.
  *
  * As a generator is mapped with a token type, it is expected that such generator is indicated by
- * the annotation {@link Generator} with a token class declaration.
+ * the annotation {@link org.silverpeas.token.annotation.TokenGenerator} with a token class
+ * declaration.
  *
  * @author mmoquillon
  */

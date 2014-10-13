@@ -23,17 +23,17 @@
  */
 package org.silverpeas.token.persistent.service;
 
-import com.silverpeas.annotation.Service;
-import javax.inject.Inject;
 import org.silverpeas.EntityReference;
 import org.silverpeas.token.TokenGenerationParameter;
 import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.persistent.PersistentResourceToken;
-import org.silverpeas.token.persistent.repository.PersistentResourceTokenRepository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.token.persistent.repository.PersistentResourceTokenManager;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 import static org.silverpeas.token.persistent.PersistentResourceTokenGenerator.RESOURCE_PARAM;
 
@@ -42,18 +42,19 @@ import static org.silverpeas.token.persistent.PersistentResourceTokenGenerator.R
  *
  * @author Yohann Chastagnier
  */
-@Service("persistentResourceTokenService")
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultTokenService implements PersistentResourceTokenService {
 
   @Inject
-  private PersistentResourceTokenRepository tokenRepository;
+  private PersistentResourceTokenManager tokenRepository;
 
   /**
    * @throws TokenException if an error occurs while initializing a token.
    * @see PersistentResourceTokenService#initialize(org.silverpeas.EntityReference)
    */
   @Override
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public PersistentResourceToken initialize(EntityReference resource) throws TokenException {
 
     // Checking that it does not exist a token with same key
@@ -97,7 +98,7 @@ public class DefaultTokenService implements PersistentResourceTokenService {
    * @see PersistentResourceTokenService#remove(org.silverpeas.EntityReference)
    */
   @Override
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void remove(final EntityReference resource) {
     final PersistentResourceToken token = get(resource);
     if (token.exists()) {
@@ -109,7 +110,7 @@ public class DefaultTokenService implements PersistentResourceTokenService {
    * @see PersistentResourceTokenService#remove(java.lang.String)
    */
   @Override
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void remove(String token) {
     PersistentResourceToken ptoken = get(token);
     if (ptoken.exists()) {

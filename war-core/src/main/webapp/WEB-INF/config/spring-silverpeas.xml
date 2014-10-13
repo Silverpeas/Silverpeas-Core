@@ -71,7 +71,7 @@
   <ctx:component-scan base-package="org.silverpeas.password"/>
   <ctx:component-scan base-package="org.silverpeas.viewer"/>
   <ctx:component-scan base-package="org.silverpeas.image.imagemagick"/>
-  <ctx:component-scan base-package="org.silverpeas.token"/>
+  <!-- YCH <ctx:component-scan base-package="org.silverpeas.token"/>-->
   <!-- MMO <ctx:component-scan base-package="org.silverpeas.util.data"/> -->
   <ctx:component-scan base-package="com.stratelia.silverpeas.peasCore"/>
   <!-- MMO <ctx:component-scan base-package="org.silverpeas.util.security"/> -->
@@ -179,8 +179,8 @@
 
   <!-- the factory of token services.
   It wraps and provides an access to different service instances relative to token handling -->
-  <bean id="tokenServiceFactory" class="org.silverpeas.token.persistent.service.TokenServiceFactory"
-        factory-method="getInstance"/>
+  <!-- YCH <bean id="tokenServiceFactory" class="org.silverpeas.token.persistent.service.TokenServiceProvider"-->
+        <!--factory-method="getInstance"/>-->
 
   <!-- the factory of password services.
   It wraps and provides an access to different service instances relative to password handling -->

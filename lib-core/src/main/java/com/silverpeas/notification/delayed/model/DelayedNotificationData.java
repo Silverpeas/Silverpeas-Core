@@ -124,7 +124,7 @@ public class DelayedNotificationData
     }
   }
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     setId(String.valueOf(id));
   }
 

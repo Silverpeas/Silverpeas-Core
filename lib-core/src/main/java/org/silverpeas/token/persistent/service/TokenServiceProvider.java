@@ -23,31 +23,19 @@
  */
 package org.silverpeas.token.persistent.service;
 
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * A factory of a {@link PersistentResourceTokenService} objects.
+ * A provider of a {@link PersistentResourceTokenService} instance.
  *
  * @author Yohann Chastagnier
  */
-public class TokenServiceFactory {
-
-  private static final TokenServiceFactory instance = new TokenServiceFactory();
-
-  @Inject
-  private PersistentResourceTokenService tokenService;
+public class TokenServiceProvider {
 
   /**
    * @return an instance of {@link PersistentResourceTokenService}.
    */
   public static PersistentResourceTokenService getTokenService() {
-    return getInstance().tokenService;
-  }
-
-  /**
-   * @return a TokenServiceFactory instance.
-   */
-  private static TokenServiceFactory getInstance() {
-    return instance;
+    return ServiceProvider.getService(PersistentResourceTokenService.class);
   }
 }

@@ -26,10 +26,16 @@ package com.silverpeas.notification.model;
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
-import javax.persistence.*;
 
 /**
  * @author Yohann Chastagnier
@@ -190,7 +196,7 @@ public class NotificationResourceData
     NotificationResourceData clone;
     try {
       clone = (NotificationResourceData) super.clone();
-      clone.setId(Long.MIN_VALUE);
+      clone.setId((Long) null);
     } catch (final CloneNotSupportedException e) {
       throw new RuntimeException(e.getCause());
     }

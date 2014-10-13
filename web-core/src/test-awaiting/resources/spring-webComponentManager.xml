@@ -43,6 +43,6 @@
         class="com.silverpeas.session.SessionManagementProvider"
         factory-method="getFactory" />
 
-  <bean name="tokenServiceFactory"
-        class="org.silverpeas.token.persistent.service.TokenServiceFactory" factory-method="getInstance"/>
+  <!-- YCH <bean name="tokenServiceFactory"-->
+        <!--class="org.silverpeas.token.persistent.service.TokenServiceProvider" factory-method="getInstance"/>-->
 </beans>
