@@ -21,40 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.socialnetwork.dao;
 
-package com.silverpeas.socialnetwork.provider;
+import com.silverpeas.socialnetwork.model.ExternalAccount;
+import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.springframework.data.repository.query.Param;
 
-import com.silverpeas.calendar.Date;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import org.silverpeas.util.exception.SilverpeasException;
 import java.util.List;
 
 /**
- * @author Bensalrm Nabil
+ * @author: ebonnet
  */
-public interface SocialPublicationsInterface {
-  /**
-   * get list of socialInformation according to number of Item and the first Index
-   * @param userId
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws SilverpeasException;
-
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts , number of Item
-   * and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
-
+public class ExternalAccountJpaManager
+    extends JpaBasicEntityManager<ExternalAccount, ExternalAccountIdentifier>
+    implements ExternalAccountManager {
+  @Override
+  public List<ExternalAccount> findBySilverpeasUserId(final String silverpeasUserId) {
+    return listFromNamedQuery("ExternalAccount.findBySilverpeasUserId",
+        newNamedParameters().add("silverpeasUserId", silverpeasUserId));
+  }
 }

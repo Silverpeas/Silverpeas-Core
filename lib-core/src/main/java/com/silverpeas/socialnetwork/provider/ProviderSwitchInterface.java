@@ -40,9 +40,9 @@ public interface ProviderSwitchInterface {
    * get my social Informations list according to the social information type and the UserId
    * @param socialInformationType
    * @param userId
-   * @param String classification
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param classification
+   * @param begin date
+   * @param end date
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
@@ -56,8 +56,8 @@ public interface ProviderSwitchInterface {
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param begin date
+   * @param end date
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
@@ -73,7 +73,7 @@ public interface ProviderSwitchInterface {
 
   /**
    * set SocialEvent providor (by using Inversion of Control Containers )
-   * @param socialGalleryInterface
+   * @param socialEventsInterface
    */
 
   public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface);
@@ -110,7 +110,7 @@ public interface ProviderSwitchInterface {
 
   /**
    * set SocialStatus providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialStatusInterface
    */
   public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface);
 
@@ -122,7 +122,7 @@ public interface ProviderSwitchInterface {
 
   /**
    * set SocialRelationShips providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialRelationShipsInterface
    */
   public void setSocialRelationShipsInterface(
       SocialRelationShipsInterface socialRelationShipsInterface);

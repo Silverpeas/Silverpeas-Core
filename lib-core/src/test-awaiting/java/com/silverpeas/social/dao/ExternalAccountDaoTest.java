@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.is;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import com.silverpeas.socialnetwork.dao.ExternalAccountManager;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -44,8 +45,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.silverpeas.socialnetwork.dao.ExternalAccountDao;
-import com.silverpeas.socialnetwork.model.AccountId;
+import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 
@@ -58,7 +58,7 @@ import com.silverpeas.socialnetwork.model.SocialNetworkID;
 public class ExternalAccountDaoTest {
 
   @Inject
-  private ExternalAccountDao dao;
+  private ExternalAccountManager dao;
   @Inject
   private DataSource dataSource;
 
@@ -78,7 +78,7 @@ public class ExternalAccountDaoTest {
   @Test
   @Transactional
   public void testReadByPrimaryKey() throws Exception {
-    ExternalAccount account = dao.findOne(new AccountId(SocialNetworkID.LINKEDIN, "1234"));
+    ExternalAccount account = dao.findOne(new ExternalAccountIdentifier(SocialNetworkID.LINKEDIN, "1234"));
     assertThat(account.getSilverpeasUserId(), is("11"));
   }
 

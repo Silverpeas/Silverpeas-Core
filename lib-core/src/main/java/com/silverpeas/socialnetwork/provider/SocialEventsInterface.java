@@ -38,8 +38,8 @@ public interface SocialEventsInterface {
    * @return List <SocialInformation>
    * @param userId
    * @param classification (private or public)
-   * @param limit
-   * @param offset
+   * @param begin date
+   * @param end date
    * @throws SilverpeasException
    */
   public List<SocialInformation> getSocialInformationsList(String userId, String classification,
@@ -50,8 +50,8 @@ public interface SocialEventsInterface {
    * @return: List <SocialInformation>
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @throws SilverpeasException
    */
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
@@ -62,8 +62,8 @@ public interface SocialEventsInterface {
    * @return: List <SocialInformation>
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @throws SilverpeasException
    */
   public List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId,
@@ -74,8 +74,8 @@ public interface SocialEventsInterface {
    * get the my last Events according to number of Item and the first Index
    * @return: List <SocialInformation>
    * @param myId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @throws SilverpeasException
    */
   public List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end)

@@ -25,9 +25,8 @@
 package com.silverpeas.socialnetwork.invitation;
 
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.UtilException;
-import java.sql.Connection;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -137,7 +136,7 @@ public class InvitationDao {
   public Invitation getInvitation(Connection connection, int senderId, int receiverId) throws
       SQLException {
     Invitation invitation = null;
-    ResultSet rs = null;
+    ResultSet rs;
     PreparedStatement pstmt = null;
     try {
       pstmt = connection.prepareStatement(SELECT_INVITATION);
@@ -170,7 +169,7 @@ public class InvitationDao {
 
   public Invitation getInvitation(Connection connection, int id) throws SQLException {
     Invitation invitation = null;
-    ResultSet rs = null;
+    ResultSet rs;
     PreparedStatement pstmt = null;
     try {
       pstmt = connection.prepareStatement(SELECT_INVITATION_BY_ID);
@@ -218,7 +217,7 @@ public class InvitationDao {
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    List<Invitation> invitations = new ArrayList<Invitation>();
+    List<Invitation> invitations = new ArrayList<>();
     try {
       pstmt = connection.prepareStatement(SELECT_ALL_INVITATIONS_SENT);
       pstmt.setInt(1, myId);
@@ -251,7 +250,7 @@ public class InvitationDao {
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    List<Invitation> invitations = new ArrayList<Invitation>();
+    List<Invitation> invitations = new ArrayList<>();
     try {
       pstmt = connection.prepareStatement(SELECT_ALL_INVITATIONS_RECEIVE);
       pstmt.setInt(1, myId);

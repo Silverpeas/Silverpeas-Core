@@ -24,22 +24,19 @@
 
 package com.silverpeas.socialnetwork.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
+import com.silverpeas.socialnetwork.dao.ExternalAccountManager;
+import com.silverpeas.socialnetwork.model.ExternalAccount;
+import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
+import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
-import com.silverpeas.socialnetwork.dao.ExternalAccountDao;
-import com.silverpeas.socialnetwork.model.AccountId;
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocialNetworkService {
   static private String AUTHORIZATION_TOKEN_SESSION_ATTR = "socialnetwork_authorization_token_";
@@ -54,7 +51,7 @@ public class SocialNetworkService {
   private SocialNetworkConnector linkedIn = null;
 
   @Inject
-  private ExternalAccountDao dao = null;
+  private ExternalAccountManager dao = null;
 
   private static SocialNetworkService instance = null;
 
@@ -104,7 +101,8 @@ public class SocialNetworkService {
   }
 
   public ExternalAccount getExternalAccount(SocialNetworkID networkId, String profileId) {
-    ExternalAccount externalAccount = dao.findOne(new AccountId(networkId, profileId));
+    ExternalAccount externalAccount =
+        dao.getById(new ExternalAccountIdentifier(networkId, profileId).asString());
     if (externalAccount != null) {
       UserDetail user = UserDetail.getById(externalAccount.getSilverpeasUserId());
       if (user == null || user.isDeletedState()) {
@@ -115,12 +113,11 @@ public class SocialNetworkService {
     return externalAccount;
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void createExternalAccount(SocialNetworkID networkId, String userId, String profileId) {
     ExternalAccount account = new ExternalAccount();
-    account.setNetworkId(networkId);
+    account.setId(networkId.name() + ExternalAccountIdentifier.COMPOSITE_SEPARATOR + profileId);
     account.setSilverpeasUserId(userId);
-    account.setProfileId(profileId);
 
     dao.saveAndFlush(account);
   }
@@ -129,7 +126,7 @@ public class SocialNetworkService {
     List<ExternalAccount> accounts = dao.findBySilverpeasUserId(userId);
 
     if (accounts == null) {
-      return new ArrayList<ExternalAccount>();
+      return new ArrayList<>();
     }
 
     return accounts;
@@ -164,7 +161,7 @@ public class SocialNetworkService {
     return networkId;
   }
 
-  @Transactional
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removeExternalAccount(String userId, SocialNetworkID networkId) {
     List<ExternalAccount> accounts = dao.findBySilverpeasUserId(userId);
 
@@ -176,6 +173,5 @@ public class SocialNetworkService {
         }
       }
     }
-
   }
 }

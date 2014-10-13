@@ -31,7 +31,7 @@ import javax.persistence.*;
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
 /**
  * @author Yohann Chastagnier
@@ -44,7 +44,7 @@ import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
     @NamedQuery(name = "DelayedNotificationUserSetting.findByUserIdAndChannel",
       query = "SELECT d FROM DelayedNotificationUserSetting d WHERE userId = :userId and channel = :channel")})
 public class DelayedNotificationUserSetting
-    extends AbstractJpaIdentifiableEntity<DelayedNotificationUserSetting, UniqueIntegerIdentifier>
+    extends AbstractJpaCustomEntity<DelayedNotificationUserSetting, UniqueIntegerIdentifier>
     implements Serializable {
   private static final long serialVersionUID = 3477090528448919931L;
 

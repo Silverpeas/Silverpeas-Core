@@ -172,8 +172,8 @@ public class RelationShipService {
    * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
    * the first Index
    * @param userId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
@@ -198,8 +198,8 @@ public class RelationShipService {
    * Item and the first Index
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */

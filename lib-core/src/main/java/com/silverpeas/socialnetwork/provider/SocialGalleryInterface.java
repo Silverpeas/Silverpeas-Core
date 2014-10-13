@@ -36,8 +36,8 @@ public interface SocialGalleryInterface {
   /**
    * get list of socialInformation according to number of Item and the first Index
    * @param userId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */
@@ -51,8 +51,8 @@ public interface SocialGalleryInterface {
    * and the first Index
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */

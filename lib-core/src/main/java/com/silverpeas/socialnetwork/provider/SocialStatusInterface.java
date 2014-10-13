@@ -35,8 +35,8 @@ public interface SocialStatusInterface {
   /**
    * get list of socialInformation according number of Item and the first Index
    * @param userId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */
@@ -47,10 +47,9 @@ public interface SocialStatusInterface {
   /**
    * get list of socialInformation of my contacts according to ids of my contacts , number of Item
    * and the first Index
-   * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */

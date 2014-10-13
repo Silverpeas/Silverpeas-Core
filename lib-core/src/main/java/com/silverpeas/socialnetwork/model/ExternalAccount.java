@@ -24,39 +24,38 @@
 
 package com.silverpeas.socialnetwork.model;
 
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
-// @IdClass(AccountId.class)
 @Table(name = "sb_sn_externalaccount")
 @NamedQueries( { @NamedQuery(name = "ExternalAccount.findBySilverpeasUserId", query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId") })
-public class ExternalAccount {
-
-  @EmbeddedId
-  private AccountId accountId = new AccountId();
+public class ExternalAccount  extends AbstractJpaCustomEntity<ExternalAccount, ExternalAccountIdentifier>
+    implements Serializable {
 
   @Column(name = "silverpeasUserId")
   private String silverpeasUserId = null;
 
-  public String getProfileId() {
-    return accountId.getProfileId();
-  }
-
-  public void setProfileId(String profileId) {
-    accountId.setProfileId(profileId);
+  public void setExternalId(SocialNetworkID socialNetworkID, String profileId) {
+    setId(socialNetworkID.name() + ExternalAccountIdentifier.COMPOSITE_SEPARATOR + profileId);
   }
 
   public SocialNetworkID getNetworkId() {
-    return accountId.getNetworkId();
+    return SocialNetworkID.from(getStringIds()[0]);
   }
 
-  public void setNetworkId(SocialNetworkID networkId) {
-    accountId.setNetworkId(networkId);
+  private String[] getStringIds() {
+    return getId().split(ExternalAccountIdentifier.COMPOSITE_SEPARATOR);
+  }
+
+  public String getProfileId() {
+    return getStringIds()[1];
   }
 
   public String getSilverpeasUserId() {
@@ -66,5 +65,4 @@ public class ExternalAccount {
   public void setSilverpeasUserId(String silverpeasUserId) {
     this.silverpeasUserId = silverpeasUserId;
   }
-
 }

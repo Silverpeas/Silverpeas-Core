@@ -24,21 +24,19 @@
 
 package org.silverpeas.core.admin;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * A factory of OrganizationController instances. This factory is managed by the IoC container used
  * in Silverpeas and it provides an access the managed OrganizationController instances for the
  * beans not taken in charge by the IoC container.
  */
+@Singleton
 public class OrganisationControllerFactory {
 
   private static OrganisationControllerFactory instance = new OrganisationControllerFactory();
-
-  @Inject
-  private OrganisationController organisationController;
 
   public static OrganisationControllerFactory getFactory() {
     return instance;
@@ -49,20 +47,10 @@ public class OrganisationControllerFactory {
   }
 
   private synchronized OrganisationController getController() {
-    if(organisationController == null) {
-      organisationController = new OrganizationController();
-    }
-    return organisationController;
+    return ServiceProvider.getService(OrganisationController.class);
   }
 
   private OrganisationControllerFactory() {
-    this.organisationController = new OrganizationController();
   }
 
-  /**
-   * For tests purpose ONLY.
-   */
-  public void clearFactory() {
-    this.organisationController = null;
-  }
 }

@@ -159,11 +159,11 @@ public abstract class AbstractSocialInformation implements SocialInformation {
   
   /**
    *Indicates whether some other SocialInformation date is before the date of this one.
-   * @param obj the reference object with which to compare.
+   * @param socialInfo the reference object with which to compare.
    * @return int
    */
   @Override
-  public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate()) * -1;
+  public int compareTo(SocialInformation socialInfo) {
+    return getDate().compareTo(socialInfo.getDate()) * -1;
   }
 }

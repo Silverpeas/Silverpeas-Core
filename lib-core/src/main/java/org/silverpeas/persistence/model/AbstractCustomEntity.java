@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 /**
  * @author ebonnet
  */
-public abstract class AbstractIdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY,
+public abstract class AbstractCustomEntity<ENTITY extends IdentifiableEntity<ENTITY,
     IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
     implements Cloneable, IdentifiableEntity<ENTITY, IDENTIFIER_TYPE> {
 

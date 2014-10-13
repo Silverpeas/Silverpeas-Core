@@ -42,8 +42,8 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
    * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
    * the first Index
    * @param userId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return List
    * @throws SilverpeasException
    */
@@ -63,8 +63,8 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
    * Item and the first Index
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */

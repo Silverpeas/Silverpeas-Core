@@ -21,18 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialnetwork.dao;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 
-import com.silverpeas.socialnetwork.model.AccountId;
+import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 
-public interface ExternalAccountDao extends JpaRepository<ExternalAccount, AccountId> {
-
-  List<ExternalAccount> findBySilverpeasUserId(@Param("silverpeasUserId") String silverpeasUserId);
+public interface ExternalAccountManager
+    extends BasicEntityRepository<ExternalAccount, ExternalAccountIdentifier> {
+  List<ExternalAccount> findBySilverpeasUserId(String silverpeasUserId);
 }

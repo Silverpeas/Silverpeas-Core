@@ -25,9 +25,10 @@
 package com.silverpeas.socialnetwork.model;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 public enum SocialNetworkID {
-  FACEBOOK, LINKEDIN;
+  FACEBOOK, LINKEDIN, UNKNOWN;
 
   private static ResourceLocator settings = new ResourceLocator("com.silverpeas.social.settings.socialNetworkSettings", "");
 
@@ -44,7 +45,7 @@ public enum SocialNetworkID {
     }
   }
 
-  static public boolean oneIsEnable() {
+  public static boolean oneIsEnable() {
     for (SocialNetworkID socialNetworkId : values()) {
       if (socialNetworkId.isEnabled()) {
         return true;
@@ -52,5 +53,15 @@ public enum SocialNetworkID {
     }
 
     return false;
+  }
+  public static SocialNetworkID from(String socialNetworkId) {
+    if (StringUtil.isDefined(socialNetworkId)) {
+      if (socialNetworkId.equalsIgnoreCase(FACEBOOK.name())) {
+        return FACEBOOK;
+      } else if (socialNetworkId .equalsIgnoreCase(LINKEDIN.name())) {
+        return LINKEDIN;
+      }
+    }
+    return UNKNOWN;
   }
 }

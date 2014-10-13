@@ -21,15 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialnetwork.model;
 
-import java.io.Serializable;
+import org.silverpeas.persistence.model.CompositeEntityIdentifier;
+import org.silverpeas.persistence.model.EntityIdentifier;
+import org.silverpeas.util.StringUtil;
 
+import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.io.Serializable;
 
-public class AccountId implements Serializable {
+@Embeddable
+public class ExternalAccountIdentifier implements CompositeEntityIdentifier, Serializable {
   private static final long serialVersionUID = -9044047461214852788L;
 
   @Enumerated(EnumType.STRING)
@@ -52,13 +56,13 @@ public class AccountId implements Serializable {
     this.networkId = networkId;
   }
 
-  public AccountId(SocialNetworkID networkId, String profileId) {
+  public ExternalAccountIdentifier(SocialNetworkID networkId, String profileId) {
     super();
     this.networkId = networkId;
     this.profileId = profileId;
   }
 
-  public AccountId() {
+  public ExternalAccountIdentifier() {
     super();
   }
 
@@ -81,21 +85,42 @@ public class AccountId implements Serializable {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
-    AccountId other = (AccountId) obj;
-    if (networkId != other.networkId)
+    }
+    ExternalAccountIdentifier other = (ExternalAccountIdentifier) obj;
+    if (networkId != other.networkId) {
       return false;
+    }
     if (profileId == null) {
-      if (other.profileId != null)
+      if (other.profileId != null) {
         return false;
-    } else if (!profileId.equals(other.profileId))
+      }
+    } else if (!profileId.equals(other.profileId)) {
       return false;
+    }
     return true;
+  }
+
+  @Override
+  public String asString() {
+    return networkId.name() + COMPOSITE_SEPARATOR + profileId;
+  }
+
+  @Override
+  public EntityIdentifier fromString(final String id) {
+    if (StringUtil.isDefined(id)) {
+      String[] accountIds = id.split(COMPOSITE_SEPARATOR);
+      this.networkId = SocialNetworkID.from(accountIds[0]);
+      this.profileId = accountIds[1];
+    }
+    return this;
   }
 
 }

@@ -31,9 +31,8 @@ import java.util.Date;
 import javax.persistence.*;
 
 import com.silverpeas.notification.model.NotificationResourceData;
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -53,7 +52,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
     @NamedQuery(name="DelayedNotificationData.deleteByIds", query= "delete from DelayedNotificationData where id in (:ids)")
 })
 public class DelayedNotificationData
-    extends AbstractJpaIdentifiableEntity<DelayedNotificationData, UniqueLongIdentifier>
+    extends AbstractJpaCustomEntity<DelayedNotificationData, UniqueLongIdentifier>
     implements Serializable {
   private static final long serialVersionUID = 3477090528448919931L;
 

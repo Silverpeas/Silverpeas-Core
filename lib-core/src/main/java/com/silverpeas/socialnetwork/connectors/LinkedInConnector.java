@@ -42,7 +42,7 @@ import com.silverpeas.socialnetwork.service.AccessToken;
 
 @Named("linkedInConnector")
 public class LinkedInConnector extends AbstractSocialNetworkConnector {
-  private Map<String, OAuthToken> requestTokens = new HashMap<String, OAuthToken>();
+  private Map<String, OAuthToken> requestTokens = new HashMap<>();
   private LinkedInConnectionFactory connectionFactory = null;
   private String consumerKey = null;
   private String secretKey = null;

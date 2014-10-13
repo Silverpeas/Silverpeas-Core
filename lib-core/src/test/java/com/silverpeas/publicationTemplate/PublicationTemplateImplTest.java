@@ -30,6 +30,7 @@ import com.silverpeas.form.record.GenericRecordTemplate;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
@@ -100,6 +101,7 @@ public class PublicationTemplateImplTest {
   }
 
   @Test
+  @Ignore
   public void testTemplateVisibilityOnApplications() throws Exception {
     // template.xml is only applicable to component kmelia
     GlobalContext globalContext = new GlobalContext("WA1");
@@ -115,6 +117,7 @@ public class PublicationTemplateImplTest {
   }
 
   @Test
+  @Ignore
   public void testTemplateVisibilityOnInstances() throws Exception {
     // template.xml is only applicable to only both instances
     GlobalContext globalContext = new GlobalContext("WA1");

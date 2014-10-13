@@ -39,8 +39,8 @@ public class SocialStatus implements SocialStatusInterface {
   /**
    * Get list of my socialInformationStatus according to number of Item and the first Index
    * @param userid
-   * @param nbElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return List
    */
   @Override
@@ -53,8 +53,8 @@ public class SocialStatus implements SocialStatusInterface {
    * Get list of socialInformationStatus of my contacts according to number of Item and the first
    * Index
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin date
+   * @param end date
    * @return List
    */
   @Override

@@ -29,6 +29,7 @@ import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * set SocialEvent providor (by using Inversion of Control Containers )
-   * @param socialGalleryInterface
+   * @param socialEventsInterface
    */
   @Override
   public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface) {
@@ -83,23 +84,22 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    * get my social Informations list according to the social information type and the UserId
    * @param socialInformationType
    * @param userId
-   * @param String classification
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param classification
+   * @param begin date
+   * @param end date
    * @return List<SocialInformation>
    */
   @Override
   public List<SocialInformation> getSocialInformationsList(
-      SocialInformationType socialInformationType, String userId,
-      String classification, Date begin, Date end) throws SocialNetworkException {
+      SocialInformationType socialInformationType, String userId, String classification, Date begin,
+      Date end) throws SocialNetworkException {
 
     List<SocialInformation> listResult = new ArrayList<SocialInformation>();
     try {
       switch (socialInformationType) {
         case EVENT:
-          listResult =
-              getSocialEventsInterface().getSocialInformationsList(userId, classification, begin,
-              end);
+          listResult = getSocialEventsInterface()
+              .getSocialInformationsList(userId, classification, begin, end);
           break;
         case MEDIA:
 
@@ -127,8 +127,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
             if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
-              List<SocialInformation> listAll = getSocialInformationsList(type, userId,
-                  classification, begin, end);
+              List<SocialInformation> listAll =
+                  getSocialInformationsList(type, userId, classification, begin, end);
 
               if (!(listAll == null)) {
                 listResult.addAll(listAll);
@@ -163,7 +163,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    * @param socialPublicationsInterface
    */
   @Override
-  public void setSocialPublicationsInterface(SocialPublicationsInterface socialPublicationsInterface) {
+  public void setSocialPublicationsInterface(
+      SocialPublicationsInterface socialPublicationsInterface) {
     this.socialPublicationsInterface = socialPublicationsInterface;
   }
 
@@ -178,7 +179,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * set SocialStatus providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialStatusInterface
    */
   @Override
   public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface) {
@@ -187,7 +188,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * set SocialRelationShips providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialRelationShipsInterface
    */
   @Override
   public void setSocialRelationShipsInterface(
@@ -205,74 +206,71 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * get the List of social Informations of my contatcs according to the social information type and
+   * get the List of social Informations of my contatcs according to the social information type
+   * and
    * my UserId , ids of my contacts ,limit and index
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param begin date
+   * @param end date
    * @return List<SocialInformation>
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(
-      SocialInformationType socialInformationType,
-      String myId, List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
+      SocialInformationType socialInformationType, String myId, List<String> myContactsIds,
+      Date begin, Date end) throws SilverpeasException {
     List<SocialInformation> list = new ArrayList<SocialInformation>();
     try {
       switch (socialInformationType) {
         case EVENT:
-          list = getSocialEventsInterface().getSocialInformationsListOfMyContacts(myId,
-              myContactsIds, begin, end);
+          list = getSocialEventsInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case MEDIA:
-          list = getSocialGalleryInterface().getSocialInformationsListOfMyContacts(myId,
-              myContactsIds, begin, end);
+          list = getSocialGalleryInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case PUBLICATION:
-          list = getSocialPublicationsInterface().getSocialInformationsListOfMyContacts(myId,
-              myContactsIds, begin, end);
+          list = getSocialPublicationsInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case STATUS:
-          list =
-              getSocialStatusInterface().getSocialInformationsListOfMyContacts(myContactsIds,
-              begin, end);
+          list = getSocialStatusInterface()
+              .getSocialInformationsListOfMyContacts(myContactsIds, begin, end);
           break;
 
         case RELATIONSHIP:
-          list = getSocialRelationShipsInterface().getSocialInformationsListOfMyContacts(myId,
-              myContactsIds, begin, end);
+          list = getSocialRelationShipsInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case LASTEVENT:
-          list = getSocialEventsInterface().getLastSocialInformationsListOfMyContacts(myId,
-              myContactsIds, begin, end);
+          list = getSocialEventsInterface()
+              .getLastSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
             if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
-              List<SocialInformation> listAll = getSocialInformationsListOfMyContacts(type, myId,
-                  myContactsIds, begin, end);
+              List<SocialInformation> listAll =
+                  getSocialInformationsListOfMyContacts(type, myId, myContactsIds, begin, end);
               if (!(listAll == null)) {
                 list.addAll(listAll);
               }
             }
           }
-
           break;
         default:
       }
-
     } catch (SilverpeasException ex) {
       throw new SocialNetworkException("ProviderSwitch.getSocialInformationsListOfMyContacts",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
 
     return list;
-
   }
 }

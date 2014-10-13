@@ -23,7 +23,7 @@
  */
 package org.silverpeas.persistence.model.jpa;
 
-import org.silverpeas.persistence.model.AbstractIdentifiableEntity;
+import org.silverpeas.persistence.model.AbstractCustomEntity;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.model.ExternalEntityIdentifier;
 import org.silverpeas.persistence.model.IdentifiableEntity;
@@ -61,9 +61,9 @@ import java.util.logging.Logger;
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY,
+public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity<ENTITY,
     IDENTIFIER_TYPE>, IDENTIFIER_TYPE extends EntityIdentifier>
-    extends AbstractIdentifiableEntity<ENTITY, IDENTIFIER_TYPE> {
+    extends AbstractCustomEntity<ENTITY, IDENTIFIER_TYPE> {
 
   @Transient
   private String tableName;
@@ -87,7 +87,6 @@ public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableE
    * Gets the identifier class of the entity.
    * @return
    */
-  @SuppressWarnings("unchecked")
   private void initializeEntityClasses() {
     if (entityIdentifierClass == null) {
       try {
@@ -111,7 +110,6 @@ public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableE
     return id == null ? null : id.asString();
   }
 
-  @SuppressWarnings("unchecked")
   protected IDENTIFIER_TYPE newIdentifierInstance() {
     try {
       return getEntityIdentifierClass().newInstance();
@@ -120,8 +118,7 @@ public abstract class AbstractJpaIdentifiableEntity<ENTITY extends IdentifiableE
     }
   }
 
-  @SuppressWarnings("unchecked")
-  protected ENTITY setId(final String id) {
+  public ENTITY setId(final String id) {
     if (StringUtil.isDefined(id)) {
       try {
         this.id = newIdentifierInstance();

@@ -88,7 +88,7 @@ public class RelationShip {
 
   /**
    * set the id of relationShip
-   * @param int id
+   * @param id
    */
   public void setId(int id) {
     this.idRelationShip = id;
@@ -96,7 +96,7 @@ public class RelationShip {
 
   /**
    * set the date of relationShip
-   * @param Date acceptanceDate
+   * @param acceptanceDate Date
    */
   public void setAcceptanceDate(Date acceptanceDate) {
     this.acceptanceDate = acceptanceDate;
@@ -104,7 +104,7 @@ public class RelationShip {
 
   /**
    * set the date of relationShip
-   * @param int typeRelationShipId
+   * @param typeRelationShipId int
    */
   public void setTypeRelationShipId(int typeRelationShipId) {
     this.typeRelationShipId = typeRelationShipId;
@@ -112,7 +112,7 @@ public class RelationShip {
 
   /**
    * set the first user of relationShip
-   * @param int user1Id
+   * @param user1Id int
    */
   public void setUser1Id(int user1Id) {
     this.user1Id = user1Id;
@@ -120,7 +120,7 @@ public class RelationShip {
 
   /**
    * set the second user of relationShip
-   * @param int user2Id
+   * @param user2Id int
    */
   public void setUser2Id(int user2Id) {
     this.user2Id = user2Id;
@@ -128,7 +128,7 @@ public class RelationShip {
 
   /**
    * set the inviter user
-   * @param int inviterId
+   * @param inviterId int
    */
   public void setInviterId(int inviterId) {
     this.inviterId = inviterId;

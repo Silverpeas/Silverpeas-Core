@@ -160,7 +160,7 @@ public class InvitationService {
    */
   public List<Invitation> getAllMyInvitationsSent(int userId) {
     Connection connection = null;
-    List<Invitation> invitations = new ArrayList<Invitation>();
+    List<Invitation> invitations = new ArrayList<>();
 
     try {
       connection = getConnection();
@@ -182,7 +182,7 @@ public class InvitationService {
    */
   public List<Invitation> getAllMyInvitationsReceive(int myId) {
     Connection connection = null;
-    List<Invitation> invitations = new ArrayList<Invitation>();
+    List<Invitation> invitations = new ArrayList<>();
 
     try {
       connection = getConnection();
@@ -198,9 +198,8 @@ public class InvitationService {
   }
 
   /**
-   * rturn invitation by her id
-   * @param senderId
-   * @param receiverId
+   * return invitation by her id
+   * @param id invitation identifier
    * @return Invitation
    */
   public Invitation getInvitation(int id) {
@@ -219,7 +218,7 @@ public class InvitationService {
   }
 
   /**
-   * rturn invitation between 2 users
+   * return invitation between 2 users
    * @param senderId
    * @param receiverId
    * @return Invitation
