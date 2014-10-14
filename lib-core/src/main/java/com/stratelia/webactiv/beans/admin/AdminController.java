@@ -33,6 +33,7 @@ import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.exception.QuotaException;
 
@@ -765,7 +766,7 @@ public class AdminController implements java.io.Serializable {
   * All the node profiles to which the user belongs
   * @return an array of profile IDs
   */
-    public String[] getNodeProfileIds(String sUserId) {
+  private String[] getNodeProfileIds(String sUserId) {
       SilverTrace.info("admin", "AdminController.getNodeProfileIds",
           "root.MSG_GEN_ENTER_METHOD");
       try {
@@ -801,7 +802,7 @@ public class AdminController implements java.io.Serializable {
   * All the node profiles to which the group belongs
   * @return an array of profile IDs
   */
-    public String[] getNodeProfileIdsOfGroup(String sGroupId) {
+  private String[] getNodeProfileIdsOfGroup(String sGroupId) {
       SilverTrace.info("admin", "AdminController.getNodeProfileIdsOfGroup",
           "root.MSG_GEN_ENTER_METHOD");
       try {
@@ -811,7 +812,313 @@ public class AdminController implements java.io.Serializable {
             "admin.MSG_ERR_GET_USERPROFILE", e);
         return null;
       }
+  }
+  
+  /*
+   * Delete target user profiles
+   */
+  private void deleteTargetUserProfiles(String targetUserId, String authorId) {
+    
+    String[] targetSpaceProfileIds = new String[0];
+    String[] targetProfileIds = new String[0];
+    
+    if (targetUserId != null) {//target is a user
+      targetSpaceProfileIds = getSpaceProfileIds(targetUserId);
+      targetProfileIds = getProfileIds(targetUserId);
     }
+    
+    //Delete space rights (and sub-space and components, by inheritance) for target
+    for (String spaceProfileId : targetSpaceProfileIds) {
+      SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
+      currentTargetSpaceProfile.removeUser(targetUserId);
+      updateSpaceProfileInst(currentTargetSpaceProfile, authorId);  
+    }
+    
+    //Delete component rights for target
+    for (String profileId : targetProfileIds) {
+      ProfileInst currentTargetProfile = getProfileInst(profileId);
+      ComponentInst currentComponent = getComponentInst(
+          currentTargetProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+     
+      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        currentTargetProfile.removeUser(targetUserId);
+        updateProfileInst(currentTargetProfile, authorId);
+      }
+    }
+  }
+  
+  /*
+   * Add target user profiles (space, components, nodes)
+   */
+  private void addTargetUserProfiles(String targetUserId, String authorId, String[] sourceSpaceProfileIds, String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) {
+    
+    if (targetUserId != null) {//target is a user
+      
+      //Add space rights (and sub-space and components, by inheritance)
+      for (String spaceProfileId : sourceSpaceProfileIds) {
+        SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
+        currentSourceSpaceProfile.addUser(targetUserId);
+        updateSpaceProfileInst(currentSourceSpaceProfile, authorId);
+      }
+      
+      //Add component rights
+      for (String profileId : sourceComponentProfileIds) {
+        ProfileInst currentSourceProfile = getProfileInst(profileId);
+        ComponentInst currentComponent = getComponentInst(
+            currentSourceProfile.getComponentFatherId());
+        String spaceId = currentComponent.getDomainFatherId();
+        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+       
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+            currentSourceProfile.addUser(targetUserId);
+            updateProfileInst(currentSourceProfile, authorId);
+        }
+      }
+      
+      //Add nodes rights
+      for (String profileId : sourceNodeProfileIds) {
+        ProfileInst currentSourceProfile = getProfileInst(profileId);
+        ComponentInst currentComponent = getComponentInst(
+            currentSourceProfile.getComponentFatherId());
+        String spaceId = currentComponent.getDomainFatherId();
+        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+       
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+            currentSourceProfile.addUser(targetUserId);
+            updateProfileInst(currentSourceProfile, authorId);
+        }
+      }
+    }
+  }
+  
+  /*
+   * Assign rights of a user to a user
+   * @param deleteTargetProfiles : true if you want to delete the target profiles before adding rights of user source to target user
+   * @param sourceUserId : the user id of the source user
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromUserToUser(boolean deleteTargetProfiles, String sourceUserId, 
+      String targetUserId, boolean nodeAssignRights, String authorId) {
+    
+      String[] sourceSpaceProfileIds = new String[0];
+      String[] sourceComponentProfileIds = new String[0];
+      String[] sourceNodeProfileIds = new String[0];
+      boolean targetSameSource = false;
+      
+      if(StringUtil.isDefined(sourceUserId)) {
+        if (targetUserId != null && sourceUserId.equals(targetUserId)) {//target = source
+          targetSameSource = true;
+        } else {
+          sourceSpaceProfileIds = getSpaceProfileIds(sourceUserId);
+          sourceComponentProfileIds = getProfileIds(sourceUserId);
+          if(nodeAssignRights) {
+            sourceNodeProfileIds = getNodeProfileIds(sourceUserId);
+          }
+        }
+      }
+      
+      //Replace rights : first, delete profiles of target user
+      if (StringUtil.isDefined(sourceUserId) && 
+          !targetSameSource && 
+          deleteTargetProfiles) {
+        
+        deleteTargetUserProfiles(targetUserId, authorId);
+      }
+      
+      //Second : add rights
+      addTargetUserProfiles(targetUserId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+  }
+  
+  /*
+   * Delete target group profiles
+   */
+  private void deleteTargetGroupProfiles(String targetGroupId, String authorId) {
+    
+    String[] targetSpaceProfileIds = new String[0];
+    String[] targetProfileIds = new String[0];
+    
+    if (targetGroupId != null) {//target is a group
+      targetSpaceProfileIds = getSpaceProfileIdsOfGroup(targetGroupId);
+      targetProfileIds = getProfileIdsOfGroup(targetGroupId);
+    }
+    
+    //Delete space rights (and sub-space and components, by inheritance) for target
+    for (String spaceProfileId : targetSpaceProfileIds) {
+      SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
+      currentTargetSpaceProfile.removeGroup(targetGroupId);
+      updateSpaceProfileInst(currentTargetSpaceProfile, authorId);  
+    }
+    
+    //Delete component rights for target
+    for (String profileId : targetProfileIds) {
+      ProfileInst currentTargetProfile = getProfileInst(profileId);
+      ComponentInst currentComponent = getComponentInst(
+          currentTargetProfile.getComponentFatherId());
+      String spaceId = currentComponent.getDomainFatherId();
+      SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+     
+      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        currentTargetProfile.removeGroup(targetGroupId);
+        updateProfileInst(currentTargetProfile, authorId);
+      }
+    }
+  }
+  
+  /*
+   * Add target group profiles (space, components, nodes)
+   */
+  private void addTargetGroupProfiles(String targeGroupId, String authorId, String[] sourceSpaceProfileIds, String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) {
+    
+    if (targeGroupId != null) {//target is a group
+      
+      //Add space rights (and sub-space and components, by inheritance)
+      for (String spaceProfileId : sourceSpaceProfileIds) {
+        SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
+        currentSourceSpaceProfile.addGroup(targeGroupId);
+        updateSpaceProfileInst(currentSourceSpaceProfile, authorId);       
+      }
+      
+      //Add component rights
+      for (String profileId : sourceComponentProfileIds) {
+        ProfileInst currentSourceProfile = getProfileInst(profileId);
+        ComponentInst currentComponent = getComponentInst(
+            currentSourceProfile.getComponentFatherId());
+        String spaceId = currentComponent.getDomainFatherId();
+        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+       
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+          currentSourceProfile.addGroup(targeGroupId);
+          updateProfileInst(currentSourceProfile, authorId);
+        }
+      }
+      
+      //Add nodes rights
+      for (String profileId : sourceNodeProfileIds) {
+        ProfileInst currentSourceProfile = getProfileInst(profileId);
+        ComponentInst currentComponent = getComponentInst(
+            currentSourceProfile.getComponentFatherId());
+        String spaceId = currentComponent.getDomainFatherId();
+        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+       
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+          currentSourceProfile.addGroup(targeGroupId);
+          updateProfileInst(currentSourceProfile, authorId);
+        }
+      }
+    }
+  }
+  
+  /*
+   * Assign rights of a user to a group
+   * @param deleteTargetProfiles : true if you want to delete the target profiles before adding rights of user source to target user
+   * @param sourceUserId : the user id of the source user
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromUserToGroup(boolean deleteTargetProfiles, String sourceUserId, 
+      String targetGroupId, boolean nodeAssignRights, String authorId) {
+    
+      String[] sourceSpaceProfileIds = new String[0];
+      String[] sourceComponentProfileIds = new String[0];
+      String[] sourceNodeProfileIds = new String[0];
+      
+      if(StringUtil.isDefined(sourceUserId)) {
+        sourceSpaceProfileIds = getSpaceProfileIds(sourceUserId);
+        sourceComponentProfileIds = getProfileIds(sourceUserId);
+        if(nodeAssignRights) {
+          sourceNodeProfileIds = getNodeProfileIds(sourceUserId);
+        }
+      }
+      
+      //Replace rights : first, delete profiles of target group
+      if (StringUtil.isDefined(sourceUserId) && 
+          deleteTargetProfiles) {
+        
+        deleteTargetGroupProfiles(targetGroupId, authorId);
+      }
+      
+      //Second : add rights
+      addTargetGroupProfiles(targetGroupId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+  }
+  
+  /*
+   * Assign rights of a group to a user
+   * @param deleteTargetProfiles : true if you want to delete the target profiles before adding rights of user source to target user
+   * @param sourceGroupId : the group id of the source group
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromGroupToUser(boolean deleteTargetProfiles, String sourceGroupId, 
+      String targetUserId, boolean nodeAssignRights, String authorId) {
+    
+      String[] sourceSpaceProfileIds = new String[0];
+      String[] sourceComponentProfileIds = new String[0];
+      String[] sourceNodeProfileIds = new String[0];
+      
+      if(StringUtil.isDefined(sourceGroupId)) {
+        sourceSpaceProfileIds = getSpaceProfileIdsOfGroup(sourceGroupId);
+        sourceComponentProfileIds = getProfileIdsOfGroup(sourceGroupId);
+        if(nodeAssignRights) {
+          sourceNodeProfileIds = getNodeProfileIdsOfGroup(sourceGroupId);
+        }
+      }
+      
+      //Replace rights : first, delete profiles of target user
+      if (StringUtil.isDefined(sourceGroupId) && 
+          deleteTargetProfiles) {
+        
+        deleteTargetUserProfiles(targetUserId, authorId);
+      }
+      
+      //Second : add rights
+      addTargetUserProfiles(targetUserId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+  }
+  
+  /*
+   * Assign rights of a group to a group
+   * @param deleteTargetProfiles : true if you want to delete the target profiles before adding rights of user source to target user
+   * @param sourceGroupId : the group id of the source group
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromGroupToGroup(boolean deleteTargetProfiles, String sourceGroupId, 
+      String targetGroupId, boolean nodeAssignRights, String authorId) {
+    
+      String[] sourceSpaceProfileIds = new String[0];
+      String[] sourceComponentProfileIds = new String[0];
+      String[] sourceNodeProfileIds = new String[0];
+      boolean targetSameSource = false;
+      
+      if(StringUtil.isDefined(sourceGroupId)) {
+        if (targetGroupId != null && sourceGroupId.equals(targetGroupId)) {//target = source
+          targetSameSource = true;
+        } else {
+          sourceSpaceProfileIds = getSpaceProfileIdsOfGroup(sourceGroupId);
+          sourceComponentProfileIds = getProfileIdsOfGroup(sourceGroupId);
+          if(nodeAssignRights) {
+            sourceNodeProfileIds = getNodeProfileIdsOfGroup(sourceGroupId);
+          }
+        }
+      }
+      
+      //Replace rights : first, delete profiles of target group
+      if (StringUtil.isDefined(sourceGroupId) && 
+          !targetSameSource && 
+          deleteTargetProfiles) {
+        
+        deleteTargetGroupProfiles(targetGroupId, authorId);
+      }
+      
+      //Second : add rights
+      addTargetGroupProfiles(targetGroupId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+  }
 
   // ----------------------------------------------
   // User related functions
@@ -1016,7 +1323,7 @@ public class AdminController implements java.io.Serializable {
    * All the space profiles to which the user belongs
    * @return an array of profile IDs
    */
-  public String[] getSpaceProfileIds(String sUserId) {
+  private String[] getSpaceProfileIds(String sUserId) {
     SilverTrace.info("admin", "AdminController.getSpaceProfileIds",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -1032,7 +1339,7 @@ public class AdminController implements java.io.Serializable {
    * All the space profiles to which the group belongs
    * @return an array of profile IDs
    */
-  public String[] getSpaceProfileIdsOfGroup(String groupId) {
+  private String[] getSpaceProfileIdsOfGroup(String groupId) {
     SilverTrace.info("admin", "AdminController.getSpaceProfileIdsOfGroup",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -1047,7 +1354,7 @@ public class AdminController implements java.io.Serializable {
   /**
 * Return the space profile Instance corresponding to the given space profile id
 */
-  public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
+  private SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
     SilverTrace.info("admin", "AdminController.getSpaceProfileInst",
         "root.MSG_GEN_ENTER_METHOD");
     try {

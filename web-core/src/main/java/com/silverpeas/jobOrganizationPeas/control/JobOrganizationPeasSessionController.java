@@ -406,152 +406,52 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
   
   /*
-   * Delete target profiles
-   */
-  private void deleteTargetProfiles() {
-    String[] targetSpaceProfileIds = new String[0];
-    String[] targetProfileIds = new String[0];
-    
-    if (getCurrentUserId() != null) {//target is a user
-      targetSpaceProfileIds = getAdminController().getSpaceProfileIds(getCurrentUserId());
-      targetProfileIds = getAdminController().getProfileIds(getCurrentUserId());
-    } else if (getCurrentGroupId() != null) {//target is a group
-      targetSpaceProfileIds = getAdminController().getSpaceProfileIdsOfGroup(getCurrentGroupId());
-      targetProfileIds = getAdminController().getProfileIdsOfGroup(getCurrentGroupId());
-    }
-    
-    //Delete space rights (and sub-space and components, by inheritance) for target
-    for (String spaceProfileId : targetSpaceProfileIds) {
-      SpaceProfileInst currentTargetSpaceProfile = getAdminController().getSpaceProfileInst(spaceProfileId);
-      if (getCurrentUserId() != null) {//target is a user
-        currentTargetSpaceProfile.removeUser(getCurrentUserId());
-      } else if (getCurrentGroupId() != null) {//target is a group
-        currentTargetSpaceProfile.removeGroup(getCurrentGroupId());
-      }
-      getAdminController().updateSpaceProfileInst(currentTargetSpaceProfile, getUserId());  
-    }
-    
-    //Delete component rights for target
-    for (String profileId : targetProfileIds) {
-      ProfileInst currentTargetProfile = getAdminController().getProfileInst(profileId);
-      ComponentInst currentComponent = getAdminController().getComponentInst(
-          currentTargetProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
-     
-      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        if (getCurrentUserId() != null) {//target is a user
-          currentTargetProfile.removeUser(getCurrentUserId());
-        } else if (getCurrentGroupId() != null) {//target is a group
-          currentTargetProfile.removeGroup(getCurrentGroupId());
-        }
-        getAdminController().updateProfileInst(currentTargetProfile, getUserId());
-      }
-    }
-  }
-  
-  /*
-   * Add target profiles (space, components, nodes)
-   */
-  private void addTargetProfiles(String[] sourceSpaceProfileIds, String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) {
-    
-    //Add space rights (and sub-space and components, by inheritance)
-    for (String spaceProfileId : sourceSpaceProfileIds) {
-      SpaceProfileInst currentSourceSpaceProfile = getAdminController().getSpaceProfileInst(spaceProfileId);
-      
-      if (getCurrentUserId() != null) {//target is a user
-        currentSourceSpaceProfile.addUser(getCurrentUserId());
-      } else if (getCurrentGroupId() != null) {//target is a group
-        currentSourceSpaceProfile.addGroup(getCurrentGroupId());
-      }
-      getAdminController().updateSpaceProfileInst(currentSourceSpaceProfile, getUserId());       
-    }
-    
-    //Add component rights
-    for (String profileId : sourceComponentProfileIds) {
-      ProfileInst currentSourceProfile = getAdminController().getProfileInst(profileId);
-      ComponentInst currentComponent = getAdminController().getComponentInst(
-          currentSourceProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
-     
-      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        if (getCurrentUserId() != null) {//target is a user
-          currentSourceProfile.addUser(getCurrentUserId());
-        } else if (getCurrentGroupId() != null) {//target is a group
-          currentSourceProfile.addGroup(getCurrentGroupId());
-        }
-        getAdminController().updateProfileInst(currentSourceProfile, getUserId());
-      }
-    }
-    
-    //Add nodes rights
-    for (String profileId : sourceNodeProfileIds) {
-      ProfileInst currentSourceProfile = getAdminController().getProfileInst(profileId);
-      ComponentInst currentComponent = getAdminController().getComponentInst(
-          currentSourceProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
-     
-      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        if (getCurrentUserId() != null) {//target is a user
-          currentSourceProfile.addUser(getCurrentUserId());
-        } else if (getCurrentGroupId() != null) {//target is a group
-          currentSourceProfile.addGroup(getCurrentGroupId());
-        }
-        getAdminController().updateProfileInst(currentSourceProfile, getUserId());
-      }
-    }
-  }
-  
-  /*
    * Assign rights to current selected user or group
    */
-  public void assignRights(String choiceAssignRights, String sourceRightsId, String sourceRightsType, String nodeAssignRights) {
+  public void assignRights(String choiceAssignRights, String sourceRightsId, 
+                            String sourceRightsType, boolean nodeAssignRights) {
+    
     if (JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights) || 
         JobOrganizationPeasSessionController.ADD_RIGHTS.equals(choiceAssignRights)) {
       
-      String[] sourceSpaceProfileIds = new String[0];
-      String[] sourceComponentProfileIds = new String[0];
-      String[] sourceNodeProfileIds = new String[0];
+      boolean deleteTargetProfiles = JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights);
       boolean targetSameSource = false;
       
       if(StringUtil.isDefined(sourceRightsId)) {
         if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
           if (getCurrentUserId() != null && sourceRightsId.equals(getCurrentUserId())) {//target = source
             targetSameSource = true;
-          } else {
-            sourceSpaceProfileIds = getAdminController().getSpaceProfileIds(sourceRightsId);
-            sourceComponentProfileIds = getAdminController().getProfileIds(sourceRightsId);
-            if("true".equals(nodeAssignRights)) {
-              sourceNodeProfileIds = getAdminController().getNodeProfileIds(sourceRightsId);
-            }
           }
         } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
           if (getCurrentGroupId() != null && sourceRightsId.equals(getCurrentGroupId())) {//target = source
             targetSameSource = true;
-          } else {
-            sourceSpaceProfileIds = getAdminController().getSpaceProfileIdsOfGroup(sourceRightsId);
-            sourceComponentProfileIds = getAdminController().getProfileIdsOfGroup(sourceRightsId);
-            if("true".equals(nodeAssignRights)) {
-              sourceNodeProfileIds = getAdminController().getNodeProfileIdsOfGroup(sourceRightsId);
-            }
           }
         }
       }
-      
-      //Replace rights : first, delete profiles of target user / group
-      if (StringUtil.isDefined(sourceRightsId) && 
-          !targetSameSource && 
-          JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights)) {
-        
-        deleteTargetProfiles();
-      }
-      
-      //Second : add rights
-      addTargetProfiles(sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
 
       if(!targetSameSource) {
+        if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+          if (getCurrentUserId() != null) {
+            getAdminController().assignRightsFromUserToUser(
+                deleteTargetProfiles, 
+                sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
+          } else if (getCurrentGroupId() != null) {
+            getAdminController().assignRightsFromUserToGroup(
+                deleteTargetProfiles, 
+                sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
+          }
+        } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+          if (getCurrentUserId() != null) {
+            getAdminController().assignRightsFromGroupToUser(
+                deleteTargetProfiles, 
+                sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
+          } else if (getCurrentGroupId() != null) {
+            getAdminController().assignRightsFromGroupToGroup(
+                deleteTargetProfiles, 
+                sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
+          }
+        }
+        
         //force to refresh
         currentProfiles = null;
       }

@@ -93,7 +93,7 @@ public class JobOrganizationPeasRequestRouter extends
         String choiceAssignRights = request.getParameter("choiceAssignRights"); //1 = replace rights | 2 = add rights
         String sourceRightsId = request.getParameter("sourceRightsId");
         String sourceRightsType = request.getParameter("sourceRightsType"); //Set | Element
-        String nodeAssignRights = request.getParameter("nodeAssignRights"); //true | false
+        boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights"); //true | false
         
         jobOrganizationSC.assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
         
