@@ -25,9 +25,9 @@ package org.silverpeas.initialization;
 
 /**
  * This is a markup interface. It qualifies the services that are dedicated to initialize some
- * resources or some others services. The initialization services has to be a singleton and to
- * implement the {@code Initialization#init()} method. The {@code Initialization#release()} method
- * is optional and does nothing by default.
+ * resources or some others services. The initialization services has to implement the {@code
+ * Initialization#init()} method. The {@code Initialization#release()} method is optional and
+ * does nothing by default.
  * @author mmoquillon
  */
 public interface Initialization {
@@ -46,5 +46,6 @@ public interface Initialization {
    * @throws java.lang.Exception if an error occurs during the shutdown process. In this case, a log
    * will be outputed and the shutdown goes one.
    */
-  public default void release() throws Exception {};
+  public default void release() throws Exception {
+  }
 }

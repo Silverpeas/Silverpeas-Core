@@ -6,6 +6,7 @@ import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.util.persistence.TypedParameter;
 import org.silverpeas.util.persistence.TypedParameterUtil;
 
+import javax.inject.Singleton;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * @author: ebonnet
  */
+@Singleton
 public class NotificationResourceDataJpaManager
     extends JpaBasicEntityManager<NotificationResourceData, UniqueLongIdentifier>
     implements NotificationResourceDataManager {

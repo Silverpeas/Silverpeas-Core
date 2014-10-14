@@ -4,11 +4,13 @@ import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * @author: ebonnet
  */
+@Singleton
 public class DelayedNotificationUserSettingJpaManager
     extends JpaBasicEntityManager<DelayedNotificationUserSetting, UniqueIntegerIdentifier>
     implements DelayedNotificationUserSettingManager {

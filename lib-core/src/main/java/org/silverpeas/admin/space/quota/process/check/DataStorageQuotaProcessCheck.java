@@ -23,12 +23,12 @@
  */
 package org.silverpeas.admin.space.quota.process.check;
 
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.core.admin.OrganisationController;
@@ -89,7 +89,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
       // Checking data storage quota on each space detected
       for (final SpaceInst space : indentifyHandledSpaces(processExecutionProcess, fileHandler)) {
         try {
-          SpaceServiceFactory.getDataStorageSpaceQuotaService()
+          SpaceServiceProvider.getDataStorageSpaceQuotaService()
               .verify(DataStorageSpaceQuotaKey.from(space),
                   SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
         } catch (final QuotaException quotaException) {

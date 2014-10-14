@@ -21,45 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.admin.space;
+package org.silverpeas.quota.repository;
 
-import javax.inject.Inject;
-
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaService;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaService;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
+import org.silverpeas.quota.model.Quota;
 
 /**
  * @author Yohann Chastagnier
  */
-public class SpaceServiceFactory {
+public interface QuotaManager extends BasicEntityRepository<Quota, UniqueLongIdentifier> {
 
-  private static final SpaceServiceFactory instance = new SpaceServiceFactory();
-
-  @Inject
-  private ComponentSpaceQuotaService componentSpaceQuotaService;
-
-  @Inject
-  private DataStorageSpaceQuotaService dataStorageSpaceQuotaService;
-
-  /**
-   * @return the componentSpaceQuotaService
-   */
-  public static ComponentSpaceQuotaService getComponentSpaceQuotaService() {
-    return getInstance().componentSpaceQuotaService;
-  }
-
-  /**
-   * Gets an instance of this SpaceServiceFactory class.
-   * @return a SpaceServiceFactory instance.
-   */
-  private static SpaceServiceFactory getInstance() {
-    return instance;
-  }
-
-  /**
-   * @return the dataStorageSpaceQuotaService
-   */
-  public static DataStorageSpaceQuotaService getDataStorageSpaceQuotaService() {
-    return getInstance().dataStorageSpaceQuotaService;
-  }
+  Quota getByTypeAndResourceId(String type, String resourceId);
 }

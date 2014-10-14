@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * @author: ebonnet
+ * @author ebonnet
  */
 public abstract class AbstractIdentifiableEntity<ENTITY extends IdentifiableEntity<ENTITY,
     IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
@@ -29,6 +29,7 @@ public abstract class AbstractIdentifiableEntity<ENTITY extends IdentifiableEnti
     return hash.toHashCode();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -49,4 +50,20 @@ public abstract class AbstractIdentifiableEntity<ENTITY extends IdentifiableEnti
     return false;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see java.lang.Object#clone()
+   */
+  @SuppressWarnings({"unchecked", "CloneDoesntDeclareCloneNotSupportedException"})
+  @Override
+  public ENTITY clone() {
+    AbstractIdentifiableEntity entity;
+    try {
+      entity = (AbstractIdentifiableEntity) super.clone();
+      entity.setId(null);
+    } catch (final CloneNotSupportedException e) {
+      entity = null;
+    }
+    return (ENTITY) entity;
+  }
 }

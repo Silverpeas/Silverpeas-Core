@@ -23,32 +23,38 @@
  */
 package org.silverpeas.quota.model;
 
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import static org.silverpeas.util.StringUtil.isDefined;
 import static java.util.EnumSet.of;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
  */
 @Entity
 @Table(name = "st_quota")
-public class Quota implements Serializable, Cloneable {
+@NamedQueries({@NamedQuery(name = "Quota.getByTypeAndResourceId",
+    query = "from Quota where type = :type and resourceId = :resourceId")})
+public class Quota extends AbstractJpaIdentifiableEntity<Quota, UniqueLongIdentifier>
+    implements Serializable, Cloneable {
   private static final long serialVersionUID = 6564633879921455848L;
-
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "st_quota", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  @Column(name = "id")
-  private Long id;
 
   @Column(name = "quotaType", nullable = false)
   private String type;
@@ -162,17 +168,10 @@ public class Quota implements Serializable, Cloneable {
   }
 
   /**
-   * @return the id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
    * @param id the id to set
    */
   public void setId(final Long id) {
-    this.id = id;
+    setId(String.valueOf(id));
   }
 
   /**
@@ -293,22 +292,6 @@ public class Quota implements Serializable, Cloneable {
    */
   public void setSaveDate(final Date saveDate) {
     this.saveDate = saveDate;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Object#clone()
-   */
-  @Override
-  public Quota clone() {
-    Quota quota;
-    try {
-      quota = (Quota) super.clone();
-      quota.setId(null);
-    } catch (final CloneNotSupportedException e) {
-      quota = null;
-    }
-    return quota;
   }
 
   @Override

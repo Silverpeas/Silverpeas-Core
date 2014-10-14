@@ -174,8 +174,8 @@
 
   <!-- the factory of space services.
   It wraps and provides an access to different service instances relative to space handling -->
-  <bean id="spaceServiceFactory" class="org.silverpeas.admin.space.SpaceServiceFactory"
-        factory-method="getInstance"/>
+  <!-- YCH <bean id="spaceServiceFactory" class="org.silverpeas.admin.space.SpaceServiceProvider"-->
+        <!--factory-method="getInstance"/>-->
 
   <!-- the factory of token services.
   It wraps and provides an access to different service instances relative to token handling -->

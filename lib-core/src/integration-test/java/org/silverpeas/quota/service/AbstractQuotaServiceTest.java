@@ -23,91 +23,91 @@
  */
 package org.silverpeas.quota.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
-
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
+import com.ninja_squad.dbsetup.Operations;
+import com.ninja_squad.dbsetup.operation.Operation;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaFullException;
 import org.silverpeas.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.quota.model.Quota;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import java.util.Date;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author Yohann Chastagnier
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-quota.xml", "/spring-quota-embedded-datasource.xml" })
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
-public class AbstractQuotaServiceTest {
-
-  private static ReplacementDataSet dataSet;
+@RunWith(Arquillian.class)
+public class AbstractQuotaServiceTest extends RepositoryBasedTest {
 
   private final TestQuotaKey dummyKey = new TestQuotaKey("dummy");
   private final TestQuotaKey existingKey = new TestQuotaKey("38");
   private final TestQuotaKey newKey = new TestQuotaKey("26");
 
-  @BeforeClass
-  public static void prepareDataSet() throws Exception {
-    final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet =
-        new ReplacementDataSet(builder.build(AbstractQuotaServiceTest.class
-            .getResourceAsStream("quota-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-    InitialContext ic = new InitialContext();
-    ic.rebind(JNDINames.SILVERPEAS_DATASOURCE, dataSource);
-    final IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    DBUtil.getInstanceForTest(connection.getConnection());
-    quotaService.setCount(100);
-  }
-
-  @After
-  public void tearDown() {
-    DBUtil.clearTestInstance();
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-  }
+  /**
+   * This integration test is one of the firsts that have been done. This dummy service exists here
+   * to verify the right behaviour of CDI injection according to generic type specifying.
+   */
+  @Inject
+  private QuotaService<TestQuotaKey> quotaServiceForInjectionVerification;
+  @Inject
+  private QuotaService<TestDummyQuotaKey> dummyQuotaServiceForInjectionVerification;
 
   @Inject
   private TestQuotaServiceWithAdditionalTools quotaService;
 
-  @Inject
-  @Named("jpaDataSource")
-  private DataSource dataSource;
+  public static final Operation TABLES_CREATION = Operations.sql(
+      "CREATE TABLE st_quota (id int8 PRIMARY KEY NOT NULL , quotaType varchar(50) NOT NULL , " +
+          "resourceId varchar(50) NOT NULL , minCount int8 NOT NULL , maxCount int8 NOT NULL , " +
+          "currentCount int8 NOT NULL , saveDate timestamp NOT NULL)",
+      "CREATE UNIQUE INDEX idx_uc_st_quota ON st_quota(quotaType, resourceId)",
+      "CREATE TABLE uniqueId ( maxId INT NOT NULL, tableName VARCHAR(100) NOT NULL )");
+  public static final Operation DROP_ALL =
+      Operations.sql("DROP TABLE IF EXISTS st_quota", "DROP TABLE IF EXISTS uniqueId");
+  public static final Operation QUOTA_SET_UP = Operations.insertInto("st_quota")
+      .columns("id", "quotaType", "resourceId", "minCount", "maxCount", "currentCount", "saveDate")
+      .values(4L, "TYPE_THAT_NO_EXISTS", "38", 0L, 100L, 10L, "2012-07-19 00:00:00.0")
+      .values(24L, "USERS_IN_DOMAIN", "38", 10L, 500L, 23L, "2012-07-19 00:00:00.0").build();
+  public static final Operation UNIQUE_ID_SET_UP =
+      Operations.insertInto("UniqueId").columns("maxId", "tableName").values(24, "st_quota")
+          .build();
+
+  @Override
+  protected Operation getDbSetupOperations() {
+    return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, QUOTA_SET_UP);
+  }
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWar().addSilverpeasExceptionBases().addPersistenceFeatures()
+        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.quota"))
+        .build();
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    assertThat(quotaServiceForInjectionVerification,
+        not(sameInstance(dummyQuotaServiceForInjectionVerification)));
+    assertThat(quotaServiceForInjectionVerification,
+        instanceOf(TestQuotaServiceWithAdditionalTools.class));
+    assertThat(dummyQuotaServiceForInjectionVerification,
+        instanceOf(TestDummyQuotaServiceWithAdditionalTools.class));
+    assertThat(quotaService, sameInstance(quotaServiceForInjectionVerification));
+    quotaService.setCount(100);
+  }
 
   @Test
   public void testGet() throws QuotaException {
@@ -150,12 +150,12 @@ public class AbstractQuotaServiceTest {
       final Date date = new Date();
       final Quota existingQuota = quotaService.get(existingKey);
       assertThat(existingQuota, notNullValue());
-      assertThat(existingQuota.getId(), is(24L));
+      assertThat(existingQuota.getId(), is("24"));
       assertThat(existingQuota.getMaxCount(), is(500L));
       quotaService.initialize(existingKey, 690);
       final Quota quota = quotaService.get(existingKey);
       assertThat(quota, notNullValue());
-      assertThat(quota.getId(), is(24L));
+      assertThat(quota.getId(), is("24"));
       assertThat(quota.getType(), is(existingKey.getQuotaType()));
       assertThat(quota.getResourceId(), is(existingKey.getResourceId()));
       assertThat(quota.getMinCount(), is(0L));
@@ -176,7 +176,7 @@ public class AbstractQuotaServiceTest {
       quotaService.initialize(newKey, 260);
       final Quota quota = quotaService.get(newKey);
       assertThat(quota, notNullValue());
-      assertThat(quota.getId(), is(25L));
+      assertThat(quota.getId(), is("25"));
       assertThat(quota.getType(), is(newKey.getQuotaType()));
       assertThat(quota.getResourceId(), is(newKey.getResourceId()));
       assertThat(quota.getMinCount(), is(0L));
@@ -197,7 +197,7 @@ public class AbstractQuotaServiceTest {
       quotaService.initialize(newKey, 100, 380);
       final Quota quota = quotaService.get(newKey);
       assertThat(quota, notNullValue());
-      assertThat(quota.getId(), is(25L));
+      assertThat(quota.getId(), is("25"));
       assertThat(quota.getType(), is(newKey.getQuotaType()));
       assertThat(quota.getResourceId(), is(newKey.getResourceId()));
       assertThat(quota.getMinCount(), is(100L));
@@ -241,6 +241,7 @@ public class AbstractQuotaServiceTest {
   public void testRemove() throws QuotaException {
     Quota quota = quotaService.get(existingKey);
     assertThat(quota, notNullValue());
+    assertThat(quota.exists(), is(true));
     quotaService.remove(existingKey);
     quota = quotaService.get(existingKey);
     assertThat(quota, notNullValue());

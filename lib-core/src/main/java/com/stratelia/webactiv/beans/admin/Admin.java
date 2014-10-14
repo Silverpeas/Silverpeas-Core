@@ -47,9 +47,8 @@ import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -1260,7 +1259,7 @@ public final class Admin {
       SpaceInst spaceInstFather = getSpaceInstById(componentInst.getDomainFatherId());
 
       // Verify the component space quota
-      SpaceServiceFactory.getComponentSpaceQuotaService().verify(
+      SpaceServiceProvider.getComponentSpaceQuotaService().verify(
           ComponentSpaceQuotaKey.from(spaceInstFather));
 
       // Create the component instance
@@ -7085,16 +7084,16 @@ public final class Admin {
       newSpaceId = addSpaceInst(pasteDetail.getUserId(), newSpace);
 
       // Copy space quota
-      Quota dataStorageQuota = SpaceServiceFactory.getDataStorageSpaceQuotaService()
+      Quota dataStorageQuota = SpaceServiceProvider.getDataStorageSpaceQuotaService()
           .get(DataStorageSpaceQuotaKey.from(oldSpace));
       if (dataStorageQuota.exists()) {
-        SpaceServiceFactory.getDataStorageSpaceQuotaService()
+        SpaceServiceProvider.getDataStorageSpaceQuotaService()
             .initialize(DataStorageSpaceQuotaKey.from(newSpace), dataStorageQuota);
       }
-      Quota componentQuota = SpaceServiceFactory.getComponentSpaceQuotaService()
+      Quota componentQuota = SpaceServiceProvider.getComponentSpaceQuotaService()
           .get(ComponentSpaceQuotaKey.from(oldSpace));
       if (componentQuota.exists()) {
-        SpaceServiceFactory.getComponentSpaceQuotaService()
+        SpaceServiceProvider.getComponentSpaceQuotaService()
             .initialize(ComponentSpaceQuotaKey.from(newSpace), componentQuota);
       }
 

@@ -33,53 +33,40 @@ import org.silverpeas.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.offset.SimpleQuotaCountingOffset;
-import org.silverpeas.quota.repository.QuotaRepository;
-import org.silverpeas.quota.service.dao.QuotaDAO;
-import org.silverpeas.quota.service.dao.jdbc.JDBCQuotaDAO;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.quota.repository.QuotaManager;
 
+import javax.enterprise.context.Initialized;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 /**
  * @author Yohann Chastagnier
  */
+@Transactional(Transactional.TxType.SUPPORTS)
 public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaService<T> {
 
   @Inject
-  private QuotaRepository quotaRepository;
+  private QuotaManager quotaRepository;
 
-  // This QuotaDAO is a workaround in the aim to deal with different transaction systems.
-  // That is why there is no injection at this level and just an Quota DAO Class instantiation.
-  // By this way, no Spring specification file is impacted.
-  private static QuotaDAO quotaDAO = new JDBCQuotaDAO();
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, int)
-   */
+  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota initialize(final T key, final long maxCount) throws QuotaException {
     return initialize(key, 0, maxCount);
   }
 
+  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota initialize(final T key, final Quota quota) throws QuotaException {
     return initialize(key, quota.getMinCount(), quota.getMaxCount());
   }
 
-  /*
-     * (non-Javadoc)
-     * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, int,
-     * int)
-     */
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota initialize(final T key, final long minCount, final long maxCount)
       throws QuotaException {
 
     // Checking that it does not exist a quota with same key
-    final Quota quota = getByQuotaKey(key, false);
+    final Quota quota = getByQuotaKey(key);
     if (!quota.exists()) {
 
       // If quota does not exist and maxCount is zero : stop
@@ -110,14 +97,10 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     return quota;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
-   */
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota get(final T key) throws QuotaException {
-    final Quota quota = getByQuotaKey(key, false);
+    final Quota quota = getByQuotaKey(key);
     if (quota.exists()) {
       final long currentCount = getCurrentCount(key);
       if (quota.getCount() != currentCount) {
@@ -130,19 +113,14 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
 
   /**
    * Private method to retrieve a Quota
-   * @param key
-   * @param jpaBypass
-   * @return
+   * @param key the key of the quota
+   * @return the quota corresponding to the key if any, a new empty quota otherwise
    */
-  private Quota getByQuotaKey(final T key, final boolean jpaBypass) {
+  private Quota getByQuotaKey(final T key) {
     Quota quota = null;
     if (key.isValid()) {
-      if (jpaBypass) {
-        quota = quotaDAO.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
-      } else {
         quota =
             quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
-      }
     }
     if (quota == null) {
       quota = new Quota();
@@ -150,10 +128,6 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     return quota;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#verify(org.silverpeas.quota.QuotaKey)
-   */
   @Override
   public Quota verify(final T key) throws QuotaException {
     if (!isActivated()) {
@@ -162,10 +136,6 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     return verify(key, SimpleQuotaCountingOffset.from(0));
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#verify(org.silverpeas.quota.QuotaKey, int)
-   */
   @Override
   public Quota verify(final T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
@@ -173,7 +143,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
       return new Quota();
     }
     // Returning the quota used by this verify process
-    return verify(key, getByQuotaKey(key, true), countingOffset);
+    return verify(key, getByQuotaKey(key), countingOffset);
   }
 
   /**
@@ -207,14 +177,10 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     return quota;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#remove(org.silverpeas.quota.QuotaKey)
-   */
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void remove(final T key) {
-    final Quota quota = getByQuotaKey(key, false);
+    final Quota quota = getByQuotaKey(key);
     if (quota.exists()) {
       quotaRepository.delete(quota);
     }
@@ -222,7 +188,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
 
   /**
    * Indicates if the type of quota is activated
-   * @return
+   * @return true if activated, false otherwise
    */
   abstract protected boolean isActivated();
 }

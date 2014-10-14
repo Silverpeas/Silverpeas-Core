@@ -23,25 +23,25 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryUnit;
 
+import javax.inject.Singleton;
 import java.io.File;
 
-import static org.silverpeas.util.FileRepositoryManager.getAbsolutePath;
 import static org.apache.commons.io.FileUtils.sizeOfDirectory;
+import static org.silverpeas.util.FileRepositoryManager.getAbsolutePath;
 
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Singleton
 public class DefaultDataStorageSpaceQuotaService
     extends AbstractSpaceQuotaService<DataStorageSpaceQuotaKey>
     implements DataStorageSpaceQuotaService {

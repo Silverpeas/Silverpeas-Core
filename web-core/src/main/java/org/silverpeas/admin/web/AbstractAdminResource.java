@@ -55,8 +55,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   private AdminPersonalWebDelegate adminPersonalDelegate;
 
-  @Inject @SpaceAccessControl
-  private AccessController<String> spaceAccessController;
+  @Inject
+  private @SpaceAccessControl AccessController<String> spaceAccessController;
 
   private LookWebDelegate lookDelegate;
 

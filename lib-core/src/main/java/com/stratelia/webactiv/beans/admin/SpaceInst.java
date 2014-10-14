@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
@@ -29,7 +30,6 @@ import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -609,7 +609,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return
    */
   public boolean isComponentSpaceQuotaReached() {
-    componentSpaceQuotaReached = SpaceServiceFactory.getComponentSpaceQuotaService()
+    componentSpaceQuotaReached = SpaceServiceProvider.getComponentSpaceQuotaService()
         .getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey.from(this));
     return componentSpaceQuotaReached.isReached();
   }
@@ -630,7 +630,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    */
   private void loadComponentSpaceQuota() {
     try {
-      componentSpaceQuota = SpaceServiceFactory.getComponentSpaceQuotaService()
+      componentSpaceQuota = SpaceServiceProvider.getComponentSpaceQuotaService()
           .get(ComponentSpaceQuotaKey.from(this));
     } catch (final QuotaException qe) {
       throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
@@ -664,7 +664,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return
    */
   public boolean isDataStorageQuotaReached() {
-    dataStorageQuotaReached = SpaceServiceFactory.getDataStorageSpaceQuotaService()
+    dataStorageQuotaReached = SpaceServiceProvider.getDataStorageSpaceQuotaService()
         .getQuotaReachedFromSpacePath(DataStorageSpaceQuotaKey.from(this));
     return dataStorageQuotaReached.isReached();
   }
@@ -684,7 +684,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    */
   private void loadDataStorageQuota() {
     try {
-      dataStorageQuota = SpaceServiceFactory.getDataStorageSpaceQuotaService().get(
+      dataStorageQuota = SpaceServiceProvider.getDataStorageSpaceQuotaService().get(
           DataStorageSpaceQuotaKey.from(this));
     } catch (final QuotaException qe) {
       throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,

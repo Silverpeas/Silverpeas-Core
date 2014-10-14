@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,23 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.quota.service;
 
-package org.silverpeas.quota.service.dao;
-
-import org.silverpeas.quota.model.Quota;
+import org.silverpeas.quota.QuotaKey;
+import org.silverpeas.quota.constant.QuotaType;
 
 /**
- * A Data Access Object that provides an access to Quota objects persisted within a data source.
- * The way the data source is accessed and the nature of the data source are wrapped by the
- * implementation of this interface.
+ * @author Yohann Chastagnier
  */
-public interface QuotaDAO {
+public class TestDummyQuotaKey implements QuotaKey {
+
+  final String resourceId;
+
+  public TestDummyQuotaKey(final String resourceId) {
+    this.resourceId = resourceId;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.quota.QuotaKey#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }
 
   /**
-   * Gets the quota that corresponds at all of given parameters
-   * @param type : criteria of the type of quota
-   * @param resourceId : criteria of the id of the resource
-   * @return the quota that corresponds at all of given parameters, null otherwise
+   * @return the resourceId
    */
-  Quota getByTypeAndResourceId(String type, String resourceId);
+  @Override
+  public String getResourceId() {
+    return resourceId;
+  }
+
+  @Override
+  public QuotaType getQuotaType() {
+    return QuotaType.USERS_IN_DOMAIN;
+  }
 }

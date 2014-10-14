@@ -69,11 +69,11 @@ public class UserPriviledgeValidation {
   @Inject
   private SessionManagement sessionManagement;
 
-  @Inject @ComponentAccessControl
-  private AccessController<String> componentAccessController;
+  @Inject
+  private @ComponentAccessControl AccessController<String> componentAccessController;
 
-  @Inject @SimpleDocumentAccessControl
-  private AccessController<SimpleDocument> documentAccessController;
+  @Inject
+  private @SimpleDocumentAccessControl AccessController<SimpleDocument> documentAccessController;
 
   @Inject
   private OrganisationController organisationController;

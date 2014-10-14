@@ -190,16 +190,4 @@ public class NotificationResourceData
   public void setComponentInstanceId(final String componentInstanceId) {
     this.componentInstanceId = componentInstanceId;
   }
-
-  @Override
-  public NotificationResourceData clone() {
-    NotificationResourceData clone;
-    try {
-      clone = (NotificationResourceData) super.clone();
-      clone.setId((Long) null);
-    } catch (final CloneNotSupportedException e) {
-      throw new RuntimeException(e.getCause());
-    }
-    return clone;
-  }
 }

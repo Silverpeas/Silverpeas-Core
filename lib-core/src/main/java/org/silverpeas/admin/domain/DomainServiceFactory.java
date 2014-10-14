@@ -25,11 +25,11 @@
 package org.silverpeas.admin.domain;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.service.QuotaService;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and so
@@ -48,7 +48,6 @@ public class DomainServiceFactory {
   private DomainService sqlDomainService;
 
   @Inject
-  @Named("userDomainQuotaService")
   private QuotaService<UserDomainQuotaKey> userDomainQuotaService;
 
   /**

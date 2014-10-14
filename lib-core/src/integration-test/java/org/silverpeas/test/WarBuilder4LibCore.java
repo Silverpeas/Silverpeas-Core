@@ -25,15 +25,20 @@
 package org.silverpeas.test;
 
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.util.*;
+import org.silverpeas.util.exception.FromModule;
 import org.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.pool.ConnectionPool;
 
 /**
@@ -53,7 +58,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public static WarBuilder4LibCore onWar() {
     WarBuilder4LibCore warBuilder = new WarBuilder4LibCore();
-    warBuilder.withServiceProviderFeatures();
+    warBuilder.addServiceProviderFeatures();
+    warBuilder.addSilverTraceFeatures();
     return warBuilder;
   }
 
@@ -65,7 +71,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * </ul>
    * @return the instance of the war builder.
    */
-  public <T extends Archive<T>> WarBuilder4LibCore addCacheFeatures() {
+  public WarBuilder4LibCore addCacheFeatures() {
     if (!contains("org.silverpeas.cache")) {
       addMavenDependencies("net.sf.ehcache:ehcache-core");
       addPackages(true, "org.silverpeas.cache");
@@ -91,6 +97,25 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(AssertArgument.class.getName())) {
       addClasses(AssertArgument.class);
+    }
+    return this;
+  }
+
+  /**
+   * Adds bases of Silverpeas exception classes:
+   * <ul>
+   * <li>{@link WithNested}</li>
+   * <li>{@link FromModule}</li>
+   * <li>{@link SilverpeasException}</li>
+   * <li>{@link SilverpeasRuntimeException}</li>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addSilverpeasExceptionBases() {
+    if (!contains(SilverpeasException.class.getName())) {
+      addClasses(WithNested.class);
+      addClasses(FromModule.class);
+      addClasses(SilverpeasException.class);
+      addClasses(SilverpeasRuntimeException.class);
     }
     return this;
   }
@@ -136,10 +161,20 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Sets manual CDI features.
    * @return the instance of the war builder.
    */
-  private WarBuilder4LibCore withServiceProviderFeatures() {
-    addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class).addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+  private WarBuilder4LibCore addServiceProviderFeatures() {
+    addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
+        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
             "META-INF/services/org.silverpeas.util.BeanContainer")
         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    return this;
+  }
+
+  /**
+   * Sets empty Silver trace implementation features.
+   * @return the instance of the war builder.
+   */
+  private WarBuilder4LibCore addSilverTraceFeatures() {
+    addClasses(SilverpeasTrace.class, TestSilverpeasTrace.class, SilverTrace.class);
     return this;
   }
 }

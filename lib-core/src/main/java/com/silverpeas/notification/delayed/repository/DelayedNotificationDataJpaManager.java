@@ -10,6 +10,7 @@ import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.util.persistence.TypedParameter;
 import org.silverpeas.util.persistence.TypedParameterUtil;
 
+import javax.inject.Singleton;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Set;
 /**
  * @author: ebonnet
  */
+@Singleton
 public class DelayedNotificationDataJpaManager
     extends JpaBasicEntityManager<DelayedNotificationData, UniqueLongIdentifier>
     implements DelayedNotificationDataManager {

@@ -23,16 +23,17 @@
  */
 package org.silverpeas.admin.domain.quota;
 
-import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.DomainDriverManagerFactory;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.service.AbstractQuotaService;
+import org.silverpeas.util.ResourceLocator;
+
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Singleton
 public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuotaKey> {
 
   private static final ResourceLocator settings =

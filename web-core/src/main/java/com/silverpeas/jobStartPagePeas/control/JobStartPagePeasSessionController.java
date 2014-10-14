@@ -35,6 +35,7 @@ import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
@@ -79,7 +80,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
@@ -680,7 +680,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public void initializeComponentSpaceQuota(final SpaceInst space) {
     if (isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
       try {
-        SpaceServiceFactory.getComponentSpaceQuotaService().initialize(
+        SpaceServiceProvider.getComponentSpaceQuotaService().initialize(
             ComponentSpaceQuotaKey.from(space), space.getComponentSpaceQuota().getMaxCount());
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
@@ -697,7 +697,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public void initializeDataStorageQuota(final SpaceInst space) {
     if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
       try {
-        SpaceServiceFactory.getDataStorageSpaceQuotaService().initialize(
+        SpaceServiceProvider.getDataStorageSpaceQuotaService().initialize(
             DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota().getMaxCount());
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),

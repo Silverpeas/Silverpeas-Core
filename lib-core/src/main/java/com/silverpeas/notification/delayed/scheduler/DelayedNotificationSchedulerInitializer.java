@@ -23,29 +23,26 @@
  */
 package com.silverpeas.notification.delayed.scheduler;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.notificationManager.AbstractNotification;
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.initialization.Initialization;
+
+import javax.inject.Inject;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("delayedNotificationSchedulerInitializer")
-public class DelayedNotificationSchedulerInitializer extends AbstractNotification {
+public class DelayedNotificationSchedulerInitializer extends AbstractNotification
+    implements Initialization {
 
   public static final String JOB_NAME = "DelayedNotificationJob";
 
   @Inject
   private Scheduler scheduler;
 
-  @PostConstruct
-  public void initialize() throws Exception {
+  public void init() throws Exception {
     final String cron = getNotificationResources().getString("cronDelayedNotificationSending");
     if (StringUtils.isNotBlank(cron)) {
       scheduler.scheduleJob(JOB_NAME, JobTrigger.triggerAt(cron), new DelayedNotificationListener());

@@ -21,18 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota.repository;
+package org.silverpeas.admin.space;
 
-import org.silverpeas.quota.model.Quota;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaService;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaService;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface QuotaRepository extends JpaRepository<Quota, Long> {
+public class SpaceServiceProvider {
 
-  @Query("from Quota where type = :type and resourceId = :resourceId")
-  Quota getByTypeAndResourceId(@Param("type") String type, @Param("resourceId") String resourceId);
+  /**
+   * @return the componentSpaceQuotaService
+   */
+  public static ComponentSpaceQuotaService getComponentSpaceQuotaService() {
+    return ServiceProvider.getService(ComponentSpaceQuotaService.class);
+  }
+
+  /**
+   * @return the dataStorageSpaceQuotaService
+   */
+  public static DataStorageSpaceQuotaService getDataStorageSpaceQuotaService() {
+    return ServiceProvider.getService(DataStorageSpaceQuotaService.class);
+  }
 }
