@@ -20,26 +20,37 @@
 */
 package com.stratelia.webactiv.beans.admin;
 
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.GroupRow;
+import org.silverpeas.admin.user.notification.GroupEvent;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
+import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ListSlice;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.silverpeas.util.ListSlice;
 
+@Singleton
 public class GroupManager {
 
-  private GroupDAO groupDao = new GroupDAO();
-  private UserDAO userDao = new UserDAO();
+  @Inject
+  private GroupDAO groupDao;
+  @Inject
+  private UserDAO userDao;
+  @Inject
+  private ResourceEventNotifier<GroupEvent> notifier;
 
   /**
    * Constructor
@@ -719,6 +730,8 @@ public class GroupManager {
       }
       ddManager.getOrganization().group.createGroup(gr);
       String sGroupId = idAsString(gr.id);
+      group.setId(sGroupId);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, group);
 
       // index group information
       ddManager.indexGroup(gr);
@@ -766,6 +779,7 @@ public class GroupManager {
       }
       // Delete the group node from Silverpeas
       ddManager.getOrganization().group.removeGroup(idAsInt(group.getId()));
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, group);
 
       // Delete index of group information
       ddManager.unindexGroup(group.getId());

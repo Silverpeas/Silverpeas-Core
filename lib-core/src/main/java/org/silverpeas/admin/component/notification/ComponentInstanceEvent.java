@@ -33,6 +33,9 @@ import org.silverpeas.util.ComponentHelper;
  */
 public class ComponentInstanceEvent extends AbstractResourceEvent<ComponentInst> {
 
+  protected ComponentInstanceEvent() {
+    super();
+  }
 
   /**
    * Creates an event about the specified life-cycle event of the referred component instance.

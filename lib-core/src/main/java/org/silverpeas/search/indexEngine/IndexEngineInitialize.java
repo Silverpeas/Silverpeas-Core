@@ -20,35 +20,28 @@
  */
 package org.silverpeas.search.indexEngine;
 
-import java.io.File;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.initialization.Initialization;
+import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.GeneralPropertiesManager;
+import java.io.File;
 
 /**
- * Class declaration
- *
- * @author
+ * Initializes the indexation engine of Silverpeas.
  */
-public class IndexEngineInitialize implements IInitialize {
+public class IndexEngineInitialize implements Initialization {
 
   public IndexEngineInitialize() {
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.silverpeas.silverpeasinitialize.IInitialize#Initialize()
-   */
   /**
    * Since version 1.3 of Lucene, lock files are stored in the java.io.tmpdir system's property By
-   * default on Windows, it's C:\Documents and Settings\neysseri\Local Settings\TEMP and /tmp on
+   * default on Windows, it's %USER_DIR%\Local Settings\TEMP and /tmp on
    * Unix
    */
   @Override
-  public boolean Initialize() {
+  public void init() {
     // Remove all remaining *.lock files in index path
     String indexPath = GeneralPropertiesManager.getString("uploadsIndexPath");
     String removeLocks = GeneralPropertiesManager.getString("removeLocksOnInit", "");
@@ -61,7 +54,6 @@ public class IndexEngineInitialize implements IInitialize {
       SilverTrace.debug("indexEngine", "IndexEngineInitialize.Initialize()",
           "Locks removed !");
     }
-    return true;
   }
 
   protected void removeLockFiles(File theFile) {

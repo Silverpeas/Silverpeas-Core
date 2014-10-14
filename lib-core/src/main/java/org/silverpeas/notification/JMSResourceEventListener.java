@@ -21,6 +21,7 @@
 
 package org.silverpeas.notification;
 
+import org.silverpeas.notification.util.TextMessageCodec;
 import org.silverpeas.util.exception.DecodingException;
 
 import javax.jms.JMSException;
@@ -33,20 +34,29 @@ import java.util.logging.Logger;
 /**
  * @author mmoquillon
  */
-public abstract class JMSResourceEventListener<T extends ResourceEvent> implements MessageListener {
+public abstract class JMSResourceEventListener<T extends ResourceEvent>
+    extends AbstractResourceEventListener<T> implements MessageListener {
 
   protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
   /**
-   * Decodes the event embbeded into the text of the specified message.
+   * Gets the class of the resource events listened by this listener.
+   * @return the class of the supported {@code org.silverpeas.notification.ResourceEvent}.
+   */
+  protected abstract Class<T> getResourceEventClass();
+
+  /**
+   * Unmarshalls the event embedded into the text of the specified message.
    * @param message the text message into which is encoded the event.
    * @return the event.
    * @throws JMSException if an error occurs while reading the text of the message.
    * @throws org.silverpeas.util.exception.DecodingException if an error occurs while decoding the
    * event from the text of the message.
    */
-  protected abstract T decodeResourceEventFrom(final TextMessage message) throws JMSException,
-      DecodingException;
+  protected T unmarshall(final TextMessage message)
+      throws JMSException, DecodingException {
+    return TextMessageCodec.decode(message.getText(), getResourceEventClass());
+  }
 
   /**
    * Should JMS retry to replay the message to the listener at failure? By default returns false.
@@ -62,38 +72,15 @@ public abstract class JMSResourceEventListener<T extends ResourceEvent> implemen
   }
 
   /**
-   * An event on the deletion of a resource has be listened. By default, this method does nothing.
-   * @param event the event on the deletion of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
-   */
-  public void onDeletion(final T event) throws Exception {
-  }
-
-  /**
-   * An event on the update of a resource has be listened. By default, this method does nothing.
-   * @param event the event on the update of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
-   */
-  public void onUpdate(final T event) throws Exception {
-  }
-
-  /**
-   * An event on the creation of a resource has be listened. By default, this method does nothing.
-   * @param event the event on the creation of a resource.
-   * @throws java.lang.Exception if an error occurs while treating the event.
-   */
-  public void onCreation(final T event) throws Exception{
-  }
-
-  /**
    * Listens for events related to a resource managed in Silverpeas.
    * <p>
    *   The event is decoded from the specified message and according to the type of the event,
    *   the adequate method is then invoked (
-   *   {@code org.silverpeas.notification.JMSResourceEventListener#onCreation},
-   *   {@code org.silverpeas.notification.JMSResourceEventListener#onUpdate},
-   *   {@code org.silverpeas.notification.JMSResourceEventListener#onDeletion}).
+   *   {@code org.silverpeas.notification.JMSResourceEventListener#onCreation(ResourceEvent},
+   *   {@code org.silverpeas.notification.JMSResourceEventListener#onUpdate(ResourceEvent},
+   *   {@code org.silverpeas.notification.JMSResourceEventListener#onDeletion(ResourceEvent}).
    * </p>
+   * @see org.silverpeas.notification.ResourceEventListener#dispatchEvent(ResourceEvent)
    * @param message the notification message in which is encoded the event. The message must be
    * a {@code javax.jms.TextMessage} instance.
    * @throws java.lang.RuntimeException if an error occurs while treating the event.
@@ -104,21 +91,8 @@ public abstract class JMSResourceEventListener<T extends ResourceEvent> implemen
     try {
       if (message instanceof TextMessage) {
         notification = (TextMessage) message;
-        T event = decodeResourceEventFrom(notification);
-        switch (event.getType()) {
-          case CREATION:
-            onCreation(event);
-            break;
-          case UPDATE:
-            onUpdate(event);
-            break;
-          case DELETION:
-            onDeletion(event);
-            break;
-          default:
-            logger.log(Level.WARNING, "Event type {0} not yet supported", event.getType());
-            break;
-        }
+        T event = unmarshall(notification);
+        dispatchEvent(event);
       } else {
         logger.log(Level.WARNING, "Invalid event notification received");
       }

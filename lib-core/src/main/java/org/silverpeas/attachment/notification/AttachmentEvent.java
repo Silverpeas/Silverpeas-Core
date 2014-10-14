@@ -40,15 +40,13 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mmoquillon
  */
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class AttachmentEvent implements ResourceEvent<AttachmentRef> {
+public class AttachmentEvent extends AbstractResourceEvent<AttachmentRef> {
 
   private static final long serialVersionUID = 7484300357092142528L;
 
-  @XmlElement
-  private Type type;
-  @XmlElement
-  private AttachmentRef attachmentRef;
+  protected AttachmentEvent() {
+    super();
+  }
 
   /**
    * Constructs a new instance representing the specified event type in relation to the specified
@@ -57,38 +55,7 @@ public class AttachmentEvent implements ResourceEvent<AttachmentRef> {
    * @param document the simple document related by the event.
    */
   public AttachmentEvent(final Type type, final SimpleDocument document) {
-    this.type = type;
-    this.attachmentRef = new AttachmentRef(document);
+    super(type, new AttachmentRef(document));
   }
 
-  /**
-   * Converts this instance in text. The text format in which the event is encoded is hidden by
-   * this method; it can be decoded only by using the
-   * {@code org.silverpeas.attachment.notification.AttachmentEvent#fromMessage} method.
-   * @return the text representation of this event.
-   */
-  public String toText() {
-    return JSONCodec.encode(this);
-  }
-
-  /**
-   * Creates an attachment event from the specified text message sent by JMS.
-   * This method is dedicated to {@code javax.jms.MessageListener} listening to messages by JMS.
-   * @param message the text that was sent by JMS.
-   * @return the attachment event corresponding to the text message.
-   * @throws javax.jms.JMSException if the text of the message cannot be fetched.
-   */
-  public static final AttachmentEvent fromMessage(TextMessage message) throws JMSException {
-    return JSONCodec.decode(message.getText(), AttachmentEvent.class);
-  }
-
-  @Override
-  public Type getType() {
-    return type;
-  }
-
-  @Override
-  public AttachmentRef getResource() {
-    return attachmentRef;
-  }
 }

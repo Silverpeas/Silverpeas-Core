@@ -32,9 +32,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.notification.ResourceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
 import org.silverpeas.util.ServiceProvider;
@@ -66,11 +64,10 @@ public class ComponentInstanceEventNotificationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            ResourceEvent.class, AbstractResourceEvent.class, ResourceEventNotifier.class,
             Translation.class, ComponentInstanceI18NRow.class,
             ComponentI18N.class, AbstractI18NBean.class, I18NBean.class, ComponentInst.class,
             ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
-            TestComponentInstanceEventObserver.class)
+            TestComponentInstanceEventObserver.class).addPackage("org.silverpeas.notification")
         .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
             "services/org.silverpeas.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");

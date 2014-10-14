@@ -53,9 +53,8 @@ public class AttachmentSharingListener extends JMSResourceEventListener<Attachme
   private SharingTicketService service;
 
   @Override
-  protected AttachmentEvent decodeResourceEventFrom(final TextMessage message)
-      throws JMSException, DecodingException {
-    return AttachmentEvent.fromMessage(message);
+  protected Class<AttachmentEvent> getResourceEventClass() {
+    return AttachmentEvent.class;
   }
 
   @Override

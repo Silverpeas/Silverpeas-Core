@@ -33,45 +33,41 @@ package com.stratelia.webactiv.publication;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.notation.ejb.RatingServiceProvider;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.wysiwyg.WysiwygInstanciator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class PublicationInstanciator extends SQLRequest {
-  private static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.publication.publicationSettings", "fr");
+  private static ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.publication.publicationSettings", "fr");
 
 
   public PublicationInstanciator(String fullPathName) {
     super("com.stratelia.webactiv.publication");
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("publication", "PublicationInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD");
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("publication", "PublicationInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
 
     // PCH le 8/6/2001
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator(
-        "com.stratelia.webactiv.publication");
+    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("com.stratelia.webactiv.publication");
     wysiwygI.create(con, spaceId, componentId, userId);
 
-    SilverTrace.info("publication", "PublicationInstanciator.create()",
-        "root.root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("publication", "PublicationInstanciator.create()", "root.root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("publication", "PublicationInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD");
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace
+        .info("publication", "PublicationInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -86,12 +82,11 @@ public class PublicationInstanciator extends SQLRequest {
       // No exceptions are throwed because of those informations are not sensible.
     }
 
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator(
-        "com.stratelia.webactiv.publication");
+    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("com.stratelia.webactiv.publication");
     wysiwygI.delete(con, spaceId, componentId, userId);
 
-    SilverTrace.info("publication", "PublicationInstanciator.delete()",
-        "root.root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("publication", "PublicationInstanciator.delete()", "root.root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -100,8 +95,8 @@ public class PublicationInstanciator extends SQLRequest {
    * @param componentId (String) the instance id of the Silverpeas component forum.
    * @param suffixName (String) the suffixe of a Forum table
    */
-  private void deleteDataOfInstance(Connection con, String componentId,
-      String suffixName) throws InstanciationException {
+  private void deleteDataOfInstance(Connection con, String componentId, String suffixName)
+      throws InstanciationException {
     Statement stmt = null;
 
     // get the delete query from the external file
@@ -112,15 +107,13 @@ public class PublicationInstanciator extends SQLRequest {
       stmt = con.createStatement();
       stmt.executeUpdate(deleteQuery);
     } catch (SQLException se) {
-      throw new InstanciationException(
-          "PublicationInstanciator.deleteDataOfInstance()",
+      throw new InstanciationException("PublicationInstanciator.deleteDataOfInstance()",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
-        SilverTrace.error("publication",
-            "PublicationInstanciator.deleteDataOfInstance()",
+        SilverTrace.error("publication", "PublicationInstanciator.deleteDataOfInstance()",
             "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
       }
     }

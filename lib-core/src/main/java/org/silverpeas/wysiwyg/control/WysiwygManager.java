@@ -23,38 +23,41 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.util.SimpleDocumentList;
+import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.notification.WysiwygEventNotifier;
 
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -78,25 +81,28 @@ public class WysiwygManager {
     // hidden constructor
   }
 
+  @Inject
+  private WysiwygEventNotifier notifier;
+
   public final static String WYSIWYG_CONTEXT = DocumentType.wysiwyg.name();
   public final static String WYSIWYG_IMAGES = "Images";
   public final static String WYSIWYG_WEBSITES = "webSites";
 
   /**
-   * This method loads the content of the wysiwyg file directly from the filesystem for backward
+   * This method loads the content of the WYSIWYG file directly from the filesystem for backward
    * compatibility.
    *
-   * @param foreignPK the primary key of the object to which this wysiwyg is attached.
-   * @param language the language of he wysiwyg content.
-   * @return the content of the wysiwyg.
+   * @param id the unique identifier of the contribution to which the WYSIWYG is related.
+   * @param language the language of he WYSIWYG content.
+   * @return the content of the WYSIWYG.
    */
-  private String loadFromFileSystemDirectly(ForeignPK foreignPK, String language) throws
-      IOException {
-    File wysiwygFile = new File(getLegacyWysiwygPath(WYSIWYG_CONTEXT, foreignPK.getInstanceId()),
-        getWysiwygFileName(foreignPK.getId(), language));
+  private String loadFromFileSystemDirectly(ContributionIdentifier id, String language)
+      throws IOException {
+    File wysiwygFile = new File(getLegacyWysiwygPath(WYSIWYG_CONTEXT, id.getComponentInstanceId()),
+        getWysiwygFileName(id.getLocalId(), language));
     if (!wysiwygFile.exists() || !wysiwygFile.isFile()) {
-      wysiwygFile = new File(getLegacyWysiwygPath(WYSIWYG_CONTEXT, foreignPK.getInstanceId()),
-          getOldWysiwygFileName(foreignPK.getId()));
+      wysiwygFile = new File(getLegacyWysiwygPath(WYSIWYG_CONTEXT, id.getComponentInstanceId()),
+          getOldWysiwygFileName(id.getLocalId()));
     }
     String content = null;
     if (wysiwygFile.exists() && wysiwygFile.isFile()) {
@@ -362,8 +368,8 @@ public class WysiwygManager {
     return objectId + WYSIWYG_CONTEXT + ".txt";
   }
 
-  public String getWysiwygFileName(String objectId, String currentLanguage) {
-    String language = I18NHelper.checkLanguage(currentLanguage);
+  public String getWysiwygFileName(String objectId, String lang) {
+    String language = I18NHelper.checkLanguage(lang);
     return objectId + WYSIWYG_CONTEXT + "_" + language + ".txt";
   }
 
@@ -401,77 +407,55 @@ public class WysiwygManager {
   /**
    * Creation of the file and its attachment.
    *
-   * @param textHtml String : contains the text published by the wysiwyg.
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param content the WYSIWYG content to create.
    * @param context the context images/wysiwyg....
-   * @param userId the user creating the wysiwyg.
-   * @param contentLanguage the language of the content of the wysiwyg.
    */
-  public void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
-      String context, String userId, String contentLanguage) {
-    createFileAndAttachment(textHtml, foreignKey, DocumentType.valueOf(context), userId,
-        contentLanguage, true, true);
+  public void createFileAndAttachment(final WysiwygContent content, String context) {
+    createFileAndAttachment(content, DocumentType.valueOf(context), true, true);
   }
 
-  private void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
-      DocumentType context, String userId, String contentLanguage, boolean indexIt,
-      boolean invokeCallback) {
-    String fileName = getWysiwygFileName(foreignKey.getId(), contentLanguage);
-    if (!StringUtil.isDefined(textHtml)) {
+  private void createFileAndAttachment(WysiwygContent content, DocumentType context,
+      boolean indexIt, boolean notify) {
+    if (!StringUtil.isDefined(content.getData())) {
       return;
     }
-    String language = I18NHelper.checkLanguage(contentLanguage);
-    SimpleDocumentPK docPk = new SimpleDocumentPK(null, foreignKey.getInstanceId());
-    SimpleDocument document = new SimpleDocument(docPk, foreignKey.getId(), 0, false, userId,
-        new SimpleAttachment(fileName, language, fileName, null, textHtml.length(),
-        MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
+    String fileName = getWysiwygFileName(content.getContributionId().getLocalId(),
+        content.getLanguage());
+    String language = I18NHelper.checkLanguage(content.getLanguage());
+    String textHtml = content.getData();
+    String userId = content.getAuthorId();
+    SimpleDocumentPK docPk =
+        new SimpleDocumentPK(null, content.getContributionId().getComponentInstanceId());
+    SimpleDocument document =
+        new SimpleDocument(docPk, content.getContributionId().getLocalId(), 0, false, userId,
+            new SimpleAttachment(fileName, language, fileName, null, textHtml.length(),
+                MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
     document.setDocumentType(context);
     AttachmentServiceProvider.getAttachmentService().createAttachment(document,
-        new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, invokeCallback);
-    if (invokeCallback) {
-      invokeCallback(userId, foreignKey);
+        new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, notify);
+    if (notify) {
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, content);
     }
     AttachmentServiceProvider.getAttachmentService()
         .unlock(new UnlockContext(document.getId(), userId, document.getLanguage()));
   }
 
-  private void invokeCallback(String userId, WAPrimaryKey objectPK) {
-    int iUserId = -1;
-    if (userId != null) {
-      iUserId = Integer.parseInt(userId);
-    }
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, objectPK.getInstanceId(),
-        objectPK.getId());
+  /**
+   * Creation of the file and its attachment.
+   *
+   * @param content the WYSIWYG content to create.
+   */
+  public void createFileAndAttachment(final WysiwygContent content) {
+    createFileAndAttachment(content, WYSIWYG_CONTEXT);
   }
 
   /**
-   * Method declaration creation of the file and its attachment.
+   * Creation of the file and its attachment but without indexing it.
    *
-   *
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey the id of object to which is attached the wysiwyg.
-   * @param userId the author of the content.
-   * @param contentLanguage the language of the content.
+   * @param content the WYSIWYG content to create.
    */
-  public void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
-      String userId, String contentLanguage) {
-    createFileAndAttachment(textHtml, foreignKey, WYSIWYG_CONTEXT, userId, contentLanguage);
-  }
-
-  /**
-   * Method declaration creation of the file and its attachment.
-   *
-   *
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey the id of object to which is attached the wysiwyg.
-   * @param userId the author of the content.
-   * @param contentLanguage the language of the content.
-   */
-  public void createUnindexedFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
-      String userId, String contentLanguage) {
-    createFileAndAttachment(textHtml, foreignKey, DocumentType.wysiwyg, userId, contentLanguage,
-        false, false);
+  public void createUnindexedFileAndAttachment(final WysiwygContent content) {
+    createFileAndAttachment(content, DocumentType.wysiwyg, false, false);
   }
 
   /**
@@ -500,62 +484,54 @@ public class WysiwygManager {
    * This method must be synchronized. Quick wysiwyg's saving can generate problems without
    * synchronization !!!
    *
-   * @param textHtml
-   * @param foreignKey the id of object to which is attached the wysiwyg.
-   * @param userId
+   * @param content the WYSIWYG content to save.
+   * @param indexIt should the content be indexed?
    */
-  private void saveFile(String textHtml, WAPrimaryKey foreignKey, String userId,
-      String language, boolean indexIt) {
-    String lang = I18NHelper.checkLanguage(language);
+  private void saveFile(final WysiwygContent content, boolean indexIt) {
+    String lang = I18NHelper.checkLanguage(content.getLanguage());
     DocumentType wysiwygType = DocumentType.wysiwyg;
-    String fileName = getWysiwygFileName(foreignKey.getId(), lang);
+    String fileName = getWysiwygFileName(content.getContributionId().getLocalId(), lang);
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
         "root.MSG_GEN_PARAM_VALUE",
-        "fileName=" + fileName + " context=" + wysiwygType + "objectId=" + foreignKey.getId());
-    SimpleDocument document = searchAttachmentDetail(foreignKey, wysiwygType, lang);
+        "fileName=" + fileName + " context=" + wysiwygType + "objectId=" +
+            content.getContributionId().getLocalId());
+    SimpleDocument document =
+        searchAttachmentDetail(content.getContributionId(), wysiwygType, lang);
     if (document != null) {
       if (!document.getLanguage().equals(lang)) {
         document.setFilename(fileName);
       }
       document.setLanguage(lang);
-      document.setSize(textHtml.getBytes(Charsets.UTF_8).length);
+      document.setSize(content.getData().getBytes(Charsets.UTF_8).length);
       document.setDocumentType(wysiwygType);
-      document.setUpdatedBy(userId);
+      document.setUpdatedBy(content.getAuthorId());
       if (document.getSize() > 0) {
-        AttachmentServiceProvider.getAttachmentService()
-            .updateAttachment(document, new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)),
-                indexIt, false);
-        invokeCallback(userId, foreignKey);
+        AttachmentServiceProvider.getAttachmentService().updateAttachment(document,
+            new ByteArrayInputStream(content.getData().getBytes(Charsets.UTF_8)), indexIt, false);
+        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, content);
       } else {
         AttachmentServiceProvider.getAttachmentService().removeContent(document, lang, true);
       }
     } else {
-      createFileAndAttachment(textHtml, foreignKey, wysiwygType, userId, lang, indexIt, true);
+      createFileAndAttachment(content, wysiwygType, indexIt, true);
     }
   }
 
   /**
-   * Method declaration remove and recreates the file attached
+   * Removes and recreates the file attached
    *
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param componentId String : the id of component.
-   * @param objectId String : for example the id of the publication.
-   * @param userId
-   * @param language the language of the content.
+   * @param content the updated WYSIWYG content.
    */
-  public void updateFileAndAttachment(String textHtml, String componentId,
-      String objectId, String userId, String language) {
-    updateFileAndAttachment(textHtml, componentId, objectId, userId, language, true);
+  public void updateFileAndAttachment(final WysiwygContent content) {
+    updateFileAndAttachment(content, true);
   }
 
-  public void updateFileAndAttachment(String textHtml, String componentId,
-      String objectId, String userId, String language, boolean indexIt) {
-    saveFile(textHtml, new ForeignPK(objectId, componentId), userId, language, indexIt);
+  public void updateFileAndAttachment(final WysiwygContent content, boolean indexIt) {
+    saveFile(content, indexIt);
   }
 
-  public void save(String textHtml, String componentId, String objectId, String userId,
-      String language, boolean indexIt) {
-    saveFile(textHtml, new ForeignPK(objectId, componentId), userId, language, indexIt);
+  public void save(final WysiwygContent content, boolean indexIt) {
+    saveFile(content, indexIt);
   }
 
   /**
@@ -649,18 +625,17 @@ public class WysiwygManager {
   /**
    * Load wysiwyg content.
    *
-   * @param componentId String : the id of component.
-   * @param objectId String : for example the id of the publication.
+   * @param id the unique identifier of the contribution to which the WYSIWYG is related.
    * @param language the language of the content.
-   * @return text : the contents of the file attached.
+   * @return the wysiwyg content.
    */
-  public String load(String componentId, String objectId, String language) {
-    String content = internalLoad(componentId, objectId, language);
+  public WysiwygContent load(final ContributionIdentifier id, String language) {
+    String content = internalLoad(id, language);
     if (I18NHelper.isI18nActivated() && content != null && StringUtil.isNotDefined(content)) {
       List<String> languages = new ArrayList<String>(I18NHelper.getAllSupportedLanguages());
       languages.remove(language);
       for (String lang : languages) {
-        content = internalLoad(componentId, objectId, lang);
+        content = internalLoad(id, lang);
         if (content == null || StringUtil.isDefined(content)) {
           break;
         }
@@ -669,32 +644,28 @@ public class WysiwygManager {
     if (content == null) {
       content = "";
     }
-    return content;
+    return new WysiwygContent(id, content);
   }
 
   /**
    * Load wysiwyg content.
-   * @param componentId String : the id of component.
-   * @param objectId String : for example the id of the publication.
+   * @param id the unique identifier of the contribution to which the WYSIWYG is related.
    * @param language the language of the content.
    * @return not empty string if a content exists, "" if it is empty,
    * null if empty guessed on language fallback.
    */
-  private String internalLoad(String componentId, String objectId, String language) {
+  private String internalLoad(ContributionIdentifier id, String language) {
     String currentLanguage = I18NHelper.checkLanguage(language);
     String finalLanguage = currentLanguage;
     String content = "";
-    SimpleDocument document =
-        searchAttachmentDetail(new ForeignPK(objectId, componentId), DocumentType.wysiwyg,
-            currentLanguage);
+    SimpleDocument document = searchAttachmentDetail(id, DocumentType.wysiwyg, currentLanguage);
     if (document != null) {
       content = loadContent(document, currentLanguage);
       finalLanguage = document.getLanguage();
     }
     if (!StringUtil.isDefined(content)) {
       try {
-        String contentFromSystem =
-            loadFromFileSystemDirectly(new ForeignPK(objectId, componentId), currentLanguage);
+        String contentFromSystem = loadFromFileSystemDirectly(id, currentLanguage);
         if (StringUtil.isDefined(contentFromSystem)) {
           content = contentFromSystem;
           finalLanguage = currentLanguage;
@@ -759,28 +730,28 @@ public class WysiwygManager {
     }
   }
 
-  public boolean haveGotWysiwygToDisplay(String componentId, String objectId,
-      String language) {
-    return haveGotWysiwyg(componentId, objectId, language);
+  public boolean haveGotWysiwygToDisplay(final ContributionIdentifier id, String language) {
+    return haveGotWysiwyg(id, language);
   }
 
-  public boolean haveGotWysiwyg(String componentId, String objectId, String language) {
-    String wysiwygContent = load(componentId, objectId, language);
-    return StringUtil.isDefined(wysiwygContent);
+  public boolean haveGotWysiwyg(final ContributionIdentifier id, String language) {
+    WysiwygContent wysiwygContent = load(id, language);
+    return !wysiwygContent.isEmpty();
   }
 
   /**
    * Search all file attached by primary key of customer object and context of file attached
    *
-   * @param foreignKey the id of the attached object.
+   * @param id the unique identifier of the contribution to which the WYSIWYG is related.
    * @param context String : for example wysiwyg.
    * @return SimpleDocument
    */
-  private SimpleDocument searchAttachmentDetail(WAPrimaryKey foreignKey,
-      DocumentType context, String lang) {
+  private SimpleDocument searchAttachmentDetail(ContributionIdentifier id, DocumentType context,
+      String lang) {
     String language = I18NHelper.checkLanguage(lang);
     SimpleDocumentList<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(foreignKey, context, language);
+        .listDocumentsByForeignKeyAndType(
+            new ForeignPK(id.getLocalId(), id.getComponentInstanceId()), context, language);
     if (!documents.isEmpty()) {
       return documents.orderByLanguageAndLastUpdate(lang).get(0);
     }

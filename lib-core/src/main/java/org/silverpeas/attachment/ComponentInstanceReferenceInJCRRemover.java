@@ -24,7 +24,10 @@
 package org.silverpeas.attachment;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.util.StringUtil;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -38,15 +41,19 @@ import javax.jcr.RepositoryException;
  * @author ehugonnet
  */
 @Singleton
-public class ComponentInstanceReferenceInJCRRemover {
+public class ComponentInstanceReferenceInJCRRemover
+    extends CDIResourceEventListener<ComponentInstanceEvent> {
 
   @Inject
   private AttachmentService attachmentService;
 
-  public void cleanUpJCRReferences(@Observes ResourceEvent<ComponentInst> event)
-      throws RepositoryException {
-    if (event.isOnDeletion()) {
-      attachmentService.deleteAllAttachments(event.getResource().getId());
+  @Override
+  public void onDeletion(final ComponentInstanceEvent event) throws Exception {
+    ComponentInst component = event.getResource();
+    String id = component.getId();
+    if (StringUtil.isInteger(id)) {
+      id = component.getName() + component.getId();
     }
+    attachmentService.deleteAllAttachments(id);
   }
 }

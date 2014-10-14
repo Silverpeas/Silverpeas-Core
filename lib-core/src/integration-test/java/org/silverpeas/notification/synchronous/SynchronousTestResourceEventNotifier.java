@@ -22,29 +22,20 @@
 package org.silverpeas.notification.synchronous;
 
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
+import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 /**
  * @author mmoquillon
  */
-public class SynchronousTestResourceEventNotifier implements
-    ResourceEventNotifier<TestResourceEvent> {
-
-  @Inject
-  private Event<TestResourceEvent> event;
+public class SynchronousTestResourceEventNotifier extends
+    CDIResourceEventNotifier<TestResourceEvent> {
 
   @Override
-  public void notify(final TestResourceEvent resourceEvent) {
-    event.fire(resourceEvent);
+  protected TestResourceEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Object resource) {
+    return new TestResourceEvent(type, (TestResource) resource);
   }
 
-  @Override
-  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
-    notify(new TestResourceEvent(type, (TestResource) resource));
-  }
 }

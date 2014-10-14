@@ -24,18 +24,20 @@
 
 package com.silverpeas.importExport.control;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import org.silverpeas.initialization.Initialization;
 
-public class ImportExportInitialize implements IInitialize {
+/**
+ * Initializes the export/import engine. It sets up the scheduler to automatically import data in
+ * Silverpeas.
+ */
+public class ImportExportInitialize implements Initialization {
 
   public ImportExportInitialize() {
   }
 
   @Override
-  public boolean Initialize() {
+  public void init() {
     ScheduledImport si = new ScheduledImport();
     si.initialize();
-
-    return true;
   }
 }

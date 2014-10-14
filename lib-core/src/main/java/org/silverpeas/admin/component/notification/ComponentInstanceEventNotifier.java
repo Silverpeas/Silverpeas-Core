@@ -23,8 +23,8 @@ package org.silverpeas.admin.component.notification;
 
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.enterprise.event.Event;
@@ -40,8 +40,8 @@ import javax.inject.Inject;
  * </p>
  * @author mmoquillon
  */
-public class ComponentInstanceEventNotifier implements
-    ResourceEventNotifier<ComponentInstanceEvent> {
+public class ComponentInstanceEventNotifier
+    extends CDIResourceEventNotifier<ComponentInstanceEvent> {
 
   /**
    * Gets an instance of this event notifier.
@@ -54,17 +54,10 @@ public class ComponentInstanceEventNotifier implements
   protected ComponentInstanceEventNotifier() {
   }
 
-  @Inject
-  private Event<ComponentInstanceEvent> event;
-
   @Override
-  public void notify(ComponentInstanceEvent eventPayload) {
-    event.fire(eventPayload);
-  }
-
-  @Override
-  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
-    notify(new ComponentInstanceEvent(type, (ComponentInst) resource));
+  protected ComponentInstanceEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Object resource) {
+    return new ComponentInstanceEvent(type, (ComponentInst) resource);
   }
 
 }

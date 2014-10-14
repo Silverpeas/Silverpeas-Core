@@ -22,24 +22,25 @@ package org.silverpeas.importExport.versioning;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.notification.AttachmentEventNotifier;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -179,7 +180,9 @@ public class VersioningImportExport {
         }
       }
 
+      ResourceEvent.Type type = ResourceEvent.Type.CREATION;
       if (existingDocument != null && existingDocument.isVersioned()) {
+        type = ResourceEvent.Type.UPDATE;
         List<DocumentVersion> versions = document.getVersionsType().getListVersions();
         for (DocumentVersion version : versions) {
           version.setInstanceId(objectPK.getInstanceId());
@@ -205,9 +208,9 @@ public class VersioningImportExport {
         // Il n'y a pas de document portant le même nom
         // On crée un nouveau document
         List<DocumentVersion> versions = document.getVersionsType().getListVersions();
-        SimpleDocument simpleDocument = null;
+        existingDocument = null;
         for (DocumentVersion version : versions) {
-          if (simpleDocument == null) {
+          if (existingDocument == null) {
             if (version.getCreationDate() == null) {
               version.setCreationDate(new Date());
             }
@@ -221,30 +224,30 @@ public class VersioningImportExport {
             if (xmlContent != null) {
               xmlFormId = xmlContent.getName();
             }
-            simpleDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
+            existingDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
                 getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
                 getLogicalName(), I18NHelper.defaultLanguage,
                 document.getName(), document.getDescription(), version.getSize(), version.
                 getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
 
-            simpleDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
+            existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
             boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
             if (isPublic) {
               launchCallback = true;
               userIdCallback = version.getAuthorId();
             }
-            simpleDocument.setPublicDocument(isPublic);
+            existingDocument.setPublicDocument(isPublic);
             InputStream content = getVersionContent(version);
-            simpleDocument.setContentType(version.getMimeType());
-            simpleDocument.setSize(version.getSize());
-            simpleDocument.setFilename(version.getLogicalName());
-            simpleDocument = AttachmentServiceProvider.getAttachmentService().createAttachment(
-                simpleDocument, content, indexIt);
+            existingDocument.setContentType(version.getMimeType());
+            existingDocument.setSize(version.getSize());
+            existingDocument.setFilename(version.getLogicalName());
+            existingDocument = AttachmentServiceProvider.getAttachmentService()
+                .createAttachment(existingDocument, content, indexIt);
             IOUtils.closeQuietly(content);
           } else {
-            simpleDocument = addVersion(version, simpleDocument, userId, indexIt);
+            existingDocument = addVersion(version, existingDocument, userId, indexIt);
           }
-          importedDocs.add(simpleDocument);
+          importedDocs.add(existingDocument);
           // Store xml content
           try {
             XMLModelContentType xmlContent = version.getXMLModelContentType();
@@ -262,10 +265,9 @@ public class VersioningImportExport {
           }
         }
       }
-      if (launchCallback) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE, userIdCallback, objectPK.
-            getInstanceId(), objectPK.getId());
+      if (launchCallback && existingDocument != null) {
+        AttachmentEventNotifier notifier = AttachmentEventNotifier.getNotifier();
+        notifier.notifyEventOn(type, existingDocument);
       }
     }
     return importedDocs;

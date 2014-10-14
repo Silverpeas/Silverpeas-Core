@@ -29,6 +29,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +38,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class UserDAO {
 
   static final private String USER_COLUMNS =

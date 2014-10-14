@@ -20,14 +20,15 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import org.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.wysiwyg.WysiwygException;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
@@ -40,30 +41,12 @@ public class WysiwygController {
   public final static String WYSIWYG_IMAGES = WysiwygManager.WYSIWYG_IMAGES;
   public final static String WYSIWYG_WEBSITES = WysiwygManager.WYSIWYG_WEBSITES;
 
-  private static WysiwygController instance = new WysiwygController();
-
-  @Inject
-  private WysiwygManager wysiwygManager;
-
   /**
    * Gets the manager.
    * @return
    */
-  protected WysiwygManager getManager() {
-    if (wysiwygManager == null) {
-      wysiwygManager = new WysiwygManager();
-    }
-    return wysiwygManager;
-  }
-
-  /**
-   * @return a WysiwygController instance.
-   */
-  public static WysiwygController getInstance() {
-    return instance;
-  }
-
-  protected WysiwygController() {
+  protected static WysiwygManager getManager() {
+    return ServiceProvider.getService(WysiwygManager.class);
   }
 
   /**
@@ -73,11 +56,11 @@ public class WysiwygController {
    * @return List<SimpleDocument>
    */
   public static List<SimpleDocument> getImages(String id, String componentId) {
-    return getInstance().getManager().getImages(id, componentId);
+    return getManager().getImages(id, componentId);
   }
 
   public static String getWebsiteRepository() {
-    return getInstance().getManager().getWebsiteRepository();
+    return getManager().getWebsiteRepository();
   }
 
   /**
@@ -90,7 +73,7 @@ public class WysiwygController {
    */
   public static String[][] getWebsiteImages(String path, String componentId)
       throws WysiwygException {
-    return getInstance().getManager().getWebsiteImages(path, componentId);
+    return getManager().getWebsiteImages(path, componentId);
   }
 
   /**
@@ -103,7 +86,7 @@ public class WysiwygController {
    */
   public static String[][] getWebsitePages(String path, String componentId)
       throws WysiwygException {
-    return getInstance().getManager().getWebsitePages(path, componentId);
+    return getManager().getWebsitePages(path, componentId);
   }
 
   /**
@@ -112,11 +95,11 @@ public class WysiwygController {
    * @return the name of the file
    */
   public static String getOldWysiwygFileName(String objectId) {
-    return getInstance().getManager().getOldWysiwygFileName(objectId);
+    return getManager().getOldWysiwygFileName(objectId);
   }
 
   public static String getWysiwygFileName(String objectId, String currentLanguage) {
-    return getInstance().getManager().getWysiwygFileName(objectId, currentLanguage);
+    return getManager().getWysiwygFileName(objectId, currentLanguage);
   }
 
   /**
@@ -125,15 +108,15 @@ public class WysiwygController {
    * @return fileName String : name of the file
    */
   public static String getImagesFileName(String objectId) {
-    return getInstance().getManager().getImagesFileName(objectId);
+    return getManager().getImagesFileName(objectId);
   }
 
   public static void deleteFileAndAttachment(String componentId, String id) {
-    getInstance().getManager().deleteFileAndAttachment(componentId, id);
+    getManager().deleteFileAndAttachment(componentId, id);
   }
 
   public static void deleteFile(String componentId, String objectId, String language) {
-    getInstance().getManager().deleteFile(componentId, objectId, language);
+    getManager().deleteFile(componentId, objectId, language);
   }
 
   /**
@@ -146,8 +129,10 @@ public class WysiwygController {
    */
   public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String context, String userId, String contentLanguage) {
-    getInstance().getManager()
-        .createFileAndAttachment(textHtml, foreignKey, context, userId, contentLanguage);
+    WysiwygContent content =
+        new WysiwygContent(ContributionIdentifier.from(foreignKey), textHtml).writtenBy(userId)
+            .inLanguage(contentLanguage);
+    getManager().createFileAndAttachment(content, context);
   }
 
   /**
@@ -159,8 +144,10 @@ public class WysiwygController {
    */
   public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String userId, String contentLanguage) {
-    getInstance().getManager()
-        .createFileAndAttachment(textHtml, foreignKey, userId, contentLanguage);
+    WysiwygContent content =
+        new WysiwygContent(ContributionIdentifier.from(foreignKey), textHtml).writtenBy(userId)
+            .inLanguage(contentLanguage);
+    getManager().createFileAndAttachment(content);
   }
 
   /**
@@ -172,8 +159,10 @@ public class WysiwygController {
    */
   public static void createUnindexedFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String userId, String contentLanguage) {
-    getInstance().getManager()
-        .createUnindexedFileAndAttachment(textHtml, foreignKey, userId, contentLanguage);
+    WysiwygContent content =
+        new WysiwygContent(ContributionIdentifier.from(foreignKey), textHtml).writtenBy(userId)
+            .inLanguage(contentLanguage);
+    getManager().createUnindexedFileAndAttachment(content);
   }
 
   /**
@@ -183,7 +172,7 @@ public class WysiwygController {
    * @param language the language.
    */
   public static void addToIndex(FullIndexEntry indexEntry, ForeignPK pk, String language) {
-    getInstance().getManager().addToIndex(indexEntry, pk, language);
+    getManager().addToIndex(indexEntry, pk, language);
   }
 
   /**
@@ -196,19 +185,26 @@ public class WysiwygController {
    */
   public static void updateFileAndAttachment(String textHtml, String componentId, String objectId,
       String userId, String language) {
-    getInstance().getManager()
-        .updateFileAndAttachment(textHtml, componentId, objectId, userId, language);
+    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
+    WysiwygContent content =
+        new WysiwygContent(id, textHtml).writtenBy(userId).inLanguage(language);
+    getManager().updateFileAndAttachment(content);
   }
 
   public static void updateFileAndAttachment(String textHtml, String componentId, String objectId,
       String userId, String language, boolean indexIt) {
-    getInstance().getManager()
-        .updateFileAndAttachment(textHtml, componentId, objectId, userId, language, indexIt);
+    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
+    WysiwygContent content =
+        new WysiwygContent(id, textHtml).writtenBy(userId).inLanguage(language);
+    getManager().updateFileAndAttachment(content, indexIt);
   }
 
   public static void save(String textHtml, String componentId, String objectId, String userId,
       String language, boolean indexIt) {
-    getInstance().getManager().save(textHtml, componentId, objectId, userId, language, indexIt);
+    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
+    WysiwygContent content =
+        new WysiwygContent(id, textHtml).writtenBy(userId).inLanguage(language);
+    getManager().save(content, indexIt);
   }
 
   /**
@@ -217,7 +213,7 @@ public class WysiwygController {
    * @param objectId String : for example the id of the publication.
    */
   public static void deleteWysiwygAttachments(String componentId, String objectId) {
-    getInstance().getManager().deleteWysiwygAttachments(componentId, objectId);
+    getManager().deleteWysiwygAttachments(componentId, objectId);
   }
 
   /**
@@ -230,7 +226,7 @@ public class WysiwygController {
    */
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
       String objectId) throws WysiwygException {
-    getInstance().getManager().deleteWysiwygAttachmentsOnly(spaceId, componentId, objectId);
+    getManager().deleteWysiwygAttachmentsOnly(spaceId, componentId, objectId);
   }
 
   /**
@@ -241,7 +237,8 @@ public class WysiwygController {
    * @return text : the contents of the file attached.
    */
   public static String load(String componentId, String objectId, String language) {
-    return getInstance().getManager().load(componentId, objectId, language);
+    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
+    return getManager().load(id, language).getData();
   }
 
   /**
@@ -250,7 +247,7 @@ public class WysiwygController {
    * @return
    */
   public static List<String> getEmbeddedAttachmentIds(String content) {
-    return getInstance().getManager().getEmbeddedAttachmentIds(content);
+    return getManager().getEmbeddedAttachmentIds(content);
   }
 
   /**
@@ -261,16 +258,18 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static String loadFileWebsite(String path, String fileName) throws WysiwygException {
-    return getInstance().getManager().loadFileWebsite(path, fileName);
+    return getManager().loadFileWebsite(path, fileName);
   }
 
   public static boolean haveGotWysiwygToDisplay(String componentId, String objectId,
       String language) {
-    return getInstance().getManager().haveGotWysiwygToDisplay(componentId, objectId, language);
+    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
+    return getManager().haveGotWysiwygToDisplay(id, language);
   }
 
   public static boolean haveGotWysiwyg(String componentId, String objectId, String language) {
-    return getInstance().getManager().haveGotWysiwyg(componentId, objectId, language);
+    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
+    return getManager().haveGotWysiwyg(id, language);
   }
 
   /**
@@ -283,7 +282,7 @@ public class WysiwygController {
    */
   public static void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier)
       throws WysiwygException {
-    getInstance().getManager().updateWebsite(cheminFichier, nomFichier, contenuFichier);
+    getManager().updateWebsite(cheminFichier, nomFichier, contenuFichier);
   }
 
   /**
@@ -297,31 +296,29 @@ public class WysiwygController {
    */
   public static Map<String, String> copy(String oldComponentId, String oldObjectId,
       String componentId, String objectId, String userId) {
-    return getInstance().getManager()
-        .copy(oldComponentId, oldObjectId, componentId, objectId, userId);
+    return getManager().copy(oldComponentId, oldObjectId, componentId, objectId, userId);
   }
 
   public static void move(String fromComponentId, String fromObjectId, String componentId,
       String objectId) {
-    getInstance().getManager().move(fromComponentId, fromObjectId, componentId, objectId);
+    getManager().move(fromComponentId, fromObjectId, componentId, objectId);
   }
 
   public static void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
       String newComponentId, String newObjectId) {
-    getInstance().getManager()
-        .wysiwygPlaceHaveChanged(oldComponentId, oldObjectId, newComponentId, newObjectId);
+    getManager().wysiwygPlaceHaveChanged(oldComponentId, oldObjectId, newComponentId, newObjectId);
   }
 
   public static String getWysiwygPath(String componentId, String objectId, String language) {
-    return getInstance().getManager().getWysiwygPath(componentId, objectId, language);
+    return getManager().getWysiwygPath(componentId, objectId, language);
   }
 
   public static String getWysiwygPath(String componentId, String objectId) {
-    return getInstance().getManager().getWysiwygPath(componentId, objectId);
+    return getManager().getWysiwygPath(componentId, objectId);
   }
 
   public static List<ComponentInstLight> getGalleries() {
-    return getInstance().getManager().getGalleries();
+    return getManager().getGalleries();
   }
 
   /**
@@ -330,7 +327,7 @@ public class WysiwygController {
    * @return a components list
    */
   public static List<ComponentInstLight> getStorageFile() {
-    return getInstance().getManager().getStorageFile();
+    return getManager().getStorageFile();
   }
 
   /**
@@ -340,7 +337,7 @@ public class WysiwygController {
    */
   public static void indexEmbeddedLinkedFiles(FullIndexEntry indexEntry,
       List<String> embeddedAttachmentIds) {
-    getInstance().getManager().indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+    getManager().indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
   }
 
   /**
@@ -350,6 +347,6 @@ public class WysiwygController {
    * @return the path.
    */
   public static String createPath(String componentId, String context) {
-    return getInstance().getManager().createPath(componentId, context);
+    return getManager().createPath(componentId, context);
   }
 }

@@ -21,10 +21,10 @@
 
 package org.silverpeas.notification.synchronous;
 
+import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -32,13 +32,28 @@ import javax.inject.Singleton;
  * @author mmoquillon
  */
 @Singleton
-public class SynchronousTestResourceEventListener {
+public class SynchronousTestResourceEventListener
+    extends CDIResourceEventListener<TestResourceEvent> {
 
   @Inject
   private TestResourceEventBucket bucket;
 
-  public void onTestResourceEvent(@Observes TestResourceEvent event) {
-    this.bucket.pour(event);
+  @Override
+  public void onDeletion(final TestResourceEvent event) throws Exception {
+    pourEvent(event);
   }
 
+  @Override
+  public void onUpdate(final TestResourceEvent event) throws Exception {
+    pourEvent(event);
+  }
+
+  @Override
+  public void onCreation(final TestResourceEvent event) throws Exception {
+    pourEvent(event);
+  }
+
+  private void pourEvent(final TestResourceEvent event) {
+    bucket.pour(event);
+  }
 }

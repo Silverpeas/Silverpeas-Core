@@ -24,39 +24,27 @@
 
 package com.stratelia.silverpeas.domains;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import org.silverpeas.initialization.Initialization;
 
 /**
- * Class declaration
- * @author
+ * Initializes the Administration layer of Silverpeas. It sets up the administration service.
  */
-public class AdminInitialize implements IInitialize {
+public class AdminInitialize implements Initialization {
 
-  /**
-   * Constructor declaration
-   * @see
-   */
   public AdminInitialize() {
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   @Override
-  public boolean Initialize() {
+  public void init() {
     // Initialize SilverTrace
     AdminController ac = new AdminController("");
     try {
       ac.startServer();
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminInitialize.Initialize()", "admin.MSG_ERR_GET_DOMAIN", e);
-      return false;
     }
-    return true;
   }
 
 }

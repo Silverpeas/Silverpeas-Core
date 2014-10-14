@@ -26,6 +26,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.admin.space.notification.SpaceEvent;
+import org.silverpeas.admin.space.notification.SpaceEventNotifier;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -37,10 +41,18 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class SpaceInstManager {
 
-  static ComponentInstManager componentInstManager = new ComponentInstManager();
-  static SpaceProfileInstManager spaceProfileInstManager = new SpaceProfileInstManager();
+  @Inject
+  private ComponentInstManager componentInstManager;
+  @Inject
+  private SpaceProfileInstManager spaceProfileInstManager;
+  @Inject
+  private ResourceEventNotifier<SpaceEvent> notifier;
 
   public SpaceInstManager() {
   }
@@ -117,6 +129,8 @@ public class SpaceInstManager {
       String sSpaceNodeId = "";
       ddManager.getOrganization().space.createSpace(newSpaceRow);
       sSpaceNodeId = idAsString(newSpaceRow.id);
+      spaceInst.setId(sSpaceNodeId);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, spaceInst);
       
       // duplicates existing translations
       Map<String, SpaceI18N> translations = spaceInst.getTranslations();
@@ -541,6 +555,7 @@ public class SpaceInstManager {
 
       // delete the space node
       ddManager.getOrganization().space.removeSpace(idAsInt(spaceInst.getId()));
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, spaceInst);
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.deleteSpaceInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACE",

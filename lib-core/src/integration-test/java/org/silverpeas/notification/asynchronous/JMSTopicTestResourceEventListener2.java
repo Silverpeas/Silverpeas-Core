@@ -49,9 +49,8 @@ public class JMSTopicTestResourceEventListener2 extends JMSResourceEventListener
   private TestResourceEventBucket bucket;
 
   @Override
-  protected TestResourceEvent decodeResourceEventFrom(final TextMessage message)
-      throws JMSException, DecodingException {
-    return TestResourceEvent.fromMessage(message);
+  protected Class<TestResourceEvent> getResourceEventClass() {
+    return TestResourceEvent.class;
   }
 
   @Override

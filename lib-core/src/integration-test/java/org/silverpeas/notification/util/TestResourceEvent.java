@@ -21,6 +21,7 @@
 
 package org.silverpeas.notification.util;
 
+import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.JSONCodec;
 
@@ -35,20 +36,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mmoquillon
  */
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class TestResourceEvent implements ResourceEvent<TestResource> {
-
-  @XmlElement
-  private Type type;
-  @XmlElement
-  private TestResource resource;
-
-  public static final TestResourceEvent fromMessage(final TextMessage message) throws JMSException {
-    return JSONCodec.decode(message.getText(), TestResourceEvent.class);
-  }
+public class TestResourceEvent extends AbstractResourceEvent<TestResource> {
 
   protected TestResourceEvent() {
-
+    super();
   }
 
   /**
@@ -58,49 +49,6 @@ public class TestResourceEvent implements ResourceEvent<TestResource> {
    * @param resource the resource related by the event.
    */
   public TestResourceEvent(final Type type, final TestResource resource) {
-    this.type = type;
-    this.resource = resource;
-  }
-
-  @Override
-  public Type getType() {
-    return this.type;
-  }
-
-  @Override
-  public TestResource getResource() {
-    return this.resource;
-  }
-
-  public String toText() {
-    return JSONCodec.encode(this);
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    final TestResourceEvent that = (TestResourceEvent) o;
-
-    if (!resource.equals(that.resource)) {
-      return false;
-    }
-    if (type != that.type) {
-      return false;
-    }
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = type.hashCode();
-    result = 31 * result + resource.hashCode();
-    return result;
+    super(type, resource);
   }
 }

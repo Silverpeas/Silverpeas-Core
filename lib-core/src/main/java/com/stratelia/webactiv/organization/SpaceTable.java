@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -47,10 +46,9 @@ public class SpaceTable extends Table<SpaceRow> {
     this.organization = organization;
   }
 
-  static final private String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy,"
-      + "firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,"
-      + "updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
-  private final CallBackManager callBackManager = CallBackManager.get();
+  static final private String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy," +
+      "firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus," +
+      "updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
 
   /**
    * Fetch the current space row from a resultSet.
@@ -136,8 +134,8 @@ public class SpaceTable extends Table<SpaceRow> {
     return null;
   }
 
-  static final private String SELECT_PERSONALSPACE = "select " + SPACE_COLUMNS
-      + " from ST_Space where isPersonal = ? and createdBy = ? ";
+  static final private String SELECT_PERSONALSPACE =
+      "select " + SPACE_COLUMNS + " from ST_Space where isPersonal = ? and createdBy = ? ";
 
   /**
    * Tests if a space with given space id exists
@@ -159,8 +157,8 @@ public class SpaceTable extends Table<SpaceRow> {
     return rows.toArray(new SpaceRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_SPACES = "select " + SPACE_COLUMNS
-      + " from ST_Space" + " order by orderNum";
+  static final private String SELECT_ALL_SPACES =
+      "select " + SPACE_COLUMNS + " from ST_Space" + " order by orderNum";
 
   /**
    * Returns all the Space ids.
@@ -172,8 +170,8 @@ public class SpaceTable extends Table<SpaceRow> {
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_SPACE_IDS = "select id from ST_Space"
-      + " order by orderNum";
+  static final private String SELECT_ALL_SPACE_IDS =
+      "select id from ST_Space" + " order by orderNum";
 
   /**
    * Returns all the root Space ids.
@@ -185,8 +183,8 @@ public class SpaceTable extends Table<SpaceRow> {
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE "
-      + "domainFatherId IS NULL AND spaceStatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
+  static final private String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE " +
+      "domainFatherId IS NULL AND spaceStatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
   /**
    * Returns all spaces which has been removed but not definitely deleted
@@ -198,9 +196,9 @@ public class SpaceTable extends Table<SpaceRow> {
     return rows.toArray(new SpaceRow[rows.size()]);
   }
 
-  static final private String SELECT_REMOVED_SPACES = "select " + SPACE_COLUMNS
-      + " from ST_Space" + " where spaceStatus = '" + SpaceInst.STATUS_REMOVED
-      + "'" + " order by removeTime desc";
+  static final private String SELECT_REMOVED_SPACES =
+      "select " + SPACE_COLUMNS + " from ST_Space" + " where spaceStatus = '" +
+          SpaceInst.STATUS_REMOVED + "'" + " order by removeTime desc";
 
   /**
    * Returns the Space of a given component instance.
@@ -212,8 +210,8 @@ public class SpaceTable extends Table<SpaceRow> {
     return getUniqueRow(SELECT_INSTANCE_SPACE, instanceId);
   }
 
-  static final private String SELECT_INSTANCE_SPACE = "select " + aliasColumns("s", SPACE_COLUMNS)
-      + " from ST_Space s, ST_ComponentInstance i where s.id = i.spaceId and i.id = ?";
+  static final private String SELECT_INSTANCE_SPACE = "select " + aliasColumns("s", SPACE_COLUMNS) +
+      " from ST_Space s, ST_ComponentInstance i where s.id = i.spaceId and i.id = ?";
 
   /**
    * Returns all the space ids having a given superSpace.
@@ -227,9 +225,9 @@ public class SpaceTable extends Table<SpaceRow> {
   }
 
   static final private String SELECT_SUBSPACE_IDS =
-      "select id from ST_Space where domainFatherId = ? "
-      + "and spaceStatus is null order by orderNum";
-  
+      "select id from ST_Space where domainFatherId = ? " +
+          "and spaceStatus is null order by orderNum";
+
   /**
    * Returns direct sub spaces of given space.
    * @param superSpaceId
@@ -239,10 +237,10 @@ public class SpaceTable extends Table<SpaceRow> {
   public List<SpaceRow> getDirectSubSpaces(int superSpaceId) throws AdminPersistenceException {
     return getRows(SELECT_SUBSPACES, superSpaceId);
   }
-  
+
   static final private String SELECT_SUBSPACES =
-    "select "+SPACE_COLUMNS+" from ST_Space where domainFatherId = ? "
-    + "and spaceStatus is null order by orderNum";
+      "select " + SPACE_COLUMNS + " from ST_Space where domainFatherId = ? " +
+          "and spaceStatus is null order by orderNum";
 
   /**
    * Inserts in the database a new space row.
@@ -260,17 +258,14 @@ public class SpaceTable extends Table<SpaceRow> {
       }
     }
     insertRow(INSERT_SPACE, space);
-
-    callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_SPACE, space.id,
-        null, null);
   }
 
-  static final private String INSERT_SPACE = "insert into" + " ST_Space(" + SPACE_COLUMNS + ")"
-      + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  static final private String INSERT_SPACE = "insert into" + " ST_Space(" + SPACE_COLUMNS + ")" +
+      " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   @Override
-  protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceRow row) throws
-      SQLException {
+  protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceRow row)
+      throws SQLException {
     if (row.id == -1) {
       row.id = getNextId();
     }
@@ -321,14 +316,14 @@ public class SpaceTable extends Table<SpaceRow> {
   }
 
   public void updateSpaceOrder(int spaceId, int orderNum) throws AdminPersistenceException {
-    int[] values = new int[] { orderNum, spaceId };
+    int[] values = new int[]{orderNum, spaceId};
     updateRelation(UPDATE_SPACE_ORDER, values);
   }
 
-  static final private String UPDATE_SPACE_INHERITANCE = "update ST_Space set "
-      + "isInheritanceBlocked = ? where id = ?";
-  static final private String UPDATE_SPACE_ORDER = "update ST_Space set"
-      + " orderNum = ? where id = ?";
+  static final private String UPDATE_SPACE_INHERITANCE =
+      "update ST_Space set " + "isInheritanceBlocked = ? where id = ?";
+  static final private String UPDATE_SPACE_ORDER =
+      "update ST_Space set" + " orderNum = ? where id = ?";
 
   /**
    * Updates a space row.
@@ -339,16 +334,16 @@ public class SpaceTable extends Table<SpaceRow> {
     updateRow(UPDATE_SPACE, space);
   }
 
-  static final private String UPDATE_SPACE = "update ST_Space set"
-      + " domainFatherId = ?," + " name = ?," + " description = ?,"
-      + " createdBy = ?," + " firstPageType = ?," + " firstPageExtraParam = ?,"
-      + " orderNum = ?, updateTime = ?," + " updatedBy = ?,"
-      + " spaceStatus = ?, lang = ?," + " isInheritanceBlocked = ?,"
-      + " look = ?," + " displaySpaceFirst = ?," + " isPersonal = ? " + " where id = ?";
+  static final private String UPDATE_SPACE =
+      "update ST_Space set" + " domainFatherId = ?," + " name = ?," + " description = ?," +
+          " createdBy = ?," + " firstPageType = ?," + " firstPageExtraParam = ?," +
+          " orderNum = ?, updateTime = ?," + " updatedBy = ?," + " spaceStatus = ?, lang = ?," +
+          " isInheritanceBlocked = ?," + " look = ?," + " displaySpaceFirst = ?," +
+          " isPersonal = ? " + " where id = ?";
 
   @Override
-  protected void prepareUpdate(String updateQuery, PreparedStatement update, SpaceRow row) throws
-      SQLException {
+  protected void prepareUpdate(String updateQuery, PreparedStatement update, SpaceRow row)
+      throws SQLException {
 
     if (row.domainFatherId == 0) {
       update.setNull(1, Types.INTEGER);
@@ -386,14 +381,16 @@ public class SpaceTable extends Table<SpaceRow> {
 
     update.setInt(16, row.id);
   }
-  
+
   public void moveSpace(int spaceId, int fatherId) throws AdminPersistenceException {
     int[] params = new int[2];
     params[0] = fatherId;
     params[1] = spaceId;
-    //callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, componentId, null, null);
+    //callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, componentId, null,
+    // null);
     updateRelation(MOVE_SPACE, params);
   }
+
   static final private String MOVE_SPACE = "update ST_SPACE set domainFatherId = ? where id = ?";
 
   /**
@@ -402,7 +399,6 @@ public class SpaceTable extends Table<SpaceRow> {
    * @throws AdminPersistenceException
    */
   public void removeSpace(int id) throws AdminPersistenceException {
-    callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_SPACE, id, null, null);
     SpaceRow space = getSpace(id);
     if (space == null) {
       return;
@@ -430,8 +426,8 @@ public class SpaceTable extends Table<SpaceRow> {
    * @param userId
    * @throws AdminPersistenceException
    */
-  public void sendSpaceToBasket(int id, String newName, String userId) throws
-      AdminPersistenceException {
+  public void sendSpaceToBasket(int id, String newName, String userId)
+      throws AdminPersistenceException {
     PreparedStatement statement = null;
     try {
       statement = organization.getStatement(SEND_SPACE_IN_BASKET);
@@ -442,8 +438,7 @@ public class SpaceTable extends Table<SpaceRow> {
       statement.setInt(5, id);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminPersistenceException("SpaceTable.sendSpaceToBasket",
-          SilverpeasException.ERROR,
+      throw new AdminPersistenceException("SpaceTable.sendSpaceToBasket", SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE", e);
     } finally {
       DBUtil.close(statement);
@@ -488,9 +483,9 @@ public class SpaceTable extends Table<SpaceRow> {
     return getUniqueRow(SELECT_SPACEUSERROLE_SPACE, spaceUserRoleId);
   }
 
-  static final private String SELECT_SPACEUSERROLE_SPACE = "select " + aliasColumns("i",
-      SPACE_COLUMNS)
-      + " from ST_Space i, ST_SpaceUserRole us" + " where i.id = us.spaceId and   us.id = ?";
+  static final private String SELECT_SPACEUSERROLE_SPACE =
+      "select " + aliasColumns("i", SPACE_COLUMNS) + " from ST_Space i, ST_SpaceUserRole us" +
+          " where i.id = us.spaceId and   us.id = ?";
 
   /**
    * Fetch the current space row from a resultSet.

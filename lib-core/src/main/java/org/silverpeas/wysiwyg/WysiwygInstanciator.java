@@ -27,9 +27,6 @@ package org.silverpeas.wysiwyg;
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
 
 import java.sql.Connection;
 

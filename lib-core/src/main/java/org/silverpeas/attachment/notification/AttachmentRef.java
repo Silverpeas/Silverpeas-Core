@@ -22,6 +22,7 @@ package org.silverpeas.attachment.notification;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -56,16 +57,6 @@ public class AttachmentRef implements Serializable {
   @XmlElement
   private String userId;
 
-  /**
-   * Constructs an <code>AttachmentRef</code> instance from the specified JSON representation of
-   * a such instance.
-   * @param json a JSON representation of an attachment reference.
-   * @return an <code>AttachmentRef</code> instance.
-   */
-  public static final AttachmentRef fromJSON(String json) {
-    return JSONCodec.decode(json, AttachmentRef.class);
-  }
-
   protected AttachmentRef() {
 
   }
@@ -81,9 +72,12 @@ public class AttachmentRef implements Serializable {
     this.oldSilverpeasId = document.getOldSilverpeasId();
     this.name = document.getFilename();
     this.versioned = document.isVersioned();
-    this.userId = document.getUpdatedBy();
-    if (userId == null || userId.trim().isEmpty()) {
-      userId = document.getCreatedBy();
+    this.userId = document.getEditedBy();
+    if (!StringUtil.isDefined(userId)) {
+      this.userId = document.getUpdatedBy();
+      if (!StringUtil.isDefined(userId)) {
+        userId = document.getCreatedBy();
+      }
     }
   }
 
@@ -113,13 +107,5 @@ public class AttachmentRef implements Serializable {
 
   public String getUserId() {
     return userId;
-  }
-
-  /**
-   * Build a JSON representation from this attachment reference.
-   * @return a <code>String</code> embedding the JSON representation of this object.
-   */
-  public String toJSON() {
-    return JSONCodec.encode(this);
   }
 }

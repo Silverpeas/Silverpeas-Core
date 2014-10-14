@@ -29,6 +29,9 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.organization.SpaceUserRoleRow;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class SpaceProfileInstManager {
 
   /**

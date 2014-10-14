@@ -21,6 +21,10 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Parameter;
+import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -31,15 +35,25 @@ import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.SpaceRow;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.notification.ResourceEvent.Type.DELETION;
+import static org.silverpeas.notification.ResourceEvent.Type.UPDATE;
+
+@Singleton
 public class ComponentInstManager {
 
-  final static ProfileInstManager profileInstManager = new ProfileInstManager();
+  @Inject
+  private ProfileInstManager profileInstManager;
+  @Inject
+  private ResourceEventNotifier<ComponentInstanceEvent> notifier;
 
   public ComponentInstManager() {
   }
@@ -105,6 +119,8 @@ public class ComponentInstManager {
       newInstance.spaceId = idAsInt(sFatherId);
       ddManager.getOrganization().instance.createComponentInstance(newInstance);
       String sComponentNodeId = idAsString(newInstance.id);
+      componentInst.setId(sComponentNodeId);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, componentInst);
 
       // duplicates existing translations
       Map<String, ComponentI18N> translations = componentInst.getTranslations();
@@ -369,6 +385,7 @@ public class ComponentInstManager {
 
       // delete the component node
       ddManager.getOrganization().instance.removeComponentInstance(idAsInt(componentInst.getId()));
+      notifier.notifyEventOn(DELETION, componentInst);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.deleteComponentInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_COMPONENT",
@@ -472,6 +489,7 @@ public class ComponentInstManager {
           }
         }
         ddManager.getOrganization().instance.updateComponentInstance(changedInstance);
+        notifier.notifyEventOn(UPDATE, changedInstance);
       }
 
       return idAsString(changedInstance.id);
@@ -489,8 +507,10 @@ public class ComponentInstManager {
       String componentId) throws AdminException {
     try {
       // Create the component node
+      ComponentInst componentInst = getComponentInst(ddManager, componentId, spaceId);
       ddManager.getOrganization().instance.moveComponentInstance(idAsInt(spaceId),
           idAsInt(componentId));
+      notifier.notifyEventOn(DELETION, componentInst);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.moveComponentInst",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",

@@ -21,27 +21,37 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.security.X509Factory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.UserRow;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.admin.user.notification.UserEvent;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.ResourceEventNotifier;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.security.X509Factory;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class UserManager {
 
-  private final UserDAO userDAO = new UserDAO();
+  @Inject
+  private UserDAO userDAO;
+
+  @Inject
+  private ResourceEventNotifier<UserEvent> notifier;
 
   public UserManager() {
   }
@@ -566,6 +576,8 @@ public class UserManager {
       ur = this.userDetail2UserRow(userDetail);
       ddManager.getOrganization().user.createUser(ur);
       String sUserId = idAsString(ur.id);
+      userDetail.setId(sUserId);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, userDetail);
 
       // index user information
       ddManager.indexUser(sUserId);
@@ -624,6 +636,7 @@ public class UserManager {
       SynchroReport.info("UserManager.deleteUser()", "Suppression de l'utilisateur " + user.
           getSpecificId() + " de la base...", null);
       ddManager.getOrganization().user.removeUser(idAsInt(user.getId()));
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, user);
 
       // Delete index of user information
       ddManager.unindexUser(user.getId());

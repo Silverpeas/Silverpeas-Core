@@ -46,14 +46,6 @@ public interface ResourceEvent<T> extends Serializable {
   public T getResource();
 
   /**
-   * Gets the author of this event, the user that is at the origin of this event.
-   * @return
-   */
-  public default String getAuthor() {
-    return null;
-  }
-
-  /**
    * Is the event on the creation of a resource.
    * @return true if the event is about a resource creation. False otherwise.
    */

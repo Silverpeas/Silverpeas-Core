@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.silverpeas.util.ListSlice;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class GroupDAO {
 
   static final private String GROUP_COLUMNS =

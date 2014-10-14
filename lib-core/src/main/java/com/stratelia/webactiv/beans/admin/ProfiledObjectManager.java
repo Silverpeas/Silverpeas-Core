@@ -29,12 +29,17 @@ import com.stratelia.webactiv.organization.UserRoleRow;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class ProfiledObjectManager {
-  static ProfileInstManager m_ProfileInstManager = new ProfileInstManager();
+
+  @Inject
+  private ProfileInstManager m_ProfileInstManager;
 
   /**
    * Constructor

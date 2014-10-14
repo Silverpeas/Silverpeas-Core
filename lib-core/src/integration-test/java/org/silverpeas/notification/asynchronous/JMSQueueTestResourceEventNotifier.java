@@ -21,6 +21,7 @@
 
 package org.silverpeas.notification.asynchronous;
 
+import org.silverpeas.notification.JMSResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.notification.util.TestResource;
@@ -29,6 +30,7 @@ import org.silverpeas.notification.util.TestResourceEvent;
 import javax.annotation.Resource;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.jms.Destination;
 import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
@@ -45,24 +47,20 @@ import java.util.logging.Logger;
         name = "java:/queue/notification",
         interfaceName = "javax.jms.Queue",
         destinationName = "EventNotification")})
-public class JMSQueueTestResourceEventNotifier implements ResourceEventNotifier<TestResourceEvent> {
-
-  @Inject
-  private JMSContext jms;
+public class JMSQueueTestResourceEventNotifier extends JMSResourceEventNotifier<TestResourceEvent> {
 
   @Resource(lookup = "java:/queue/notification")
   private Queue queue;
 
   @Override
-  public void notify(final TestResourceEvent event) {
-    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Event sending...");
-    JMSProducer producer = jms.createProducer();
-    producer.send(queue, event.toText());
+  protected Destination getDestination() {
+    return queue;
   }
 
   @Override
-  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
-    notify(new TestResourceEvent(type, (TestResource) resource));
+  protected TestResourceEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Object resource) {
+    return new TestResourceEvent(type, (TestResource) resource);
   }
 
   public void onTestResourceEvent(@Observes TestResourceEvent event) {

@@ -21,11 +21,15 @@
 
 package org.silverpeas.notification;
 
-import org.silverpeas.util.i18n.AbstractBean;
-
-import java.io.Serializable;
-
 /**
+ * A notifier of an event about a resource in Silverpeas. A notification can be either synchronous
+ * or asynchronous. For each of these two different notification way, an abstract class is defined:
+ * <ul>
+ *   <li>{@code org.silverpeas.notification.SynchronousResourceEventNotifier} for the synchronous
+ *   notification,</li>
+ *   <li>{@code org.silverpeas.notification.JMSResourceEventNotifier} for the asynchronous
+ *   notification.</li>
+ * </ul>
  * @author mmoquillon
  */
 public interface ResourceEventNotifier<T extends ResourceEvent> {

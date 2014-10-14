@@ -47,7 +47,6 @@ import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
 import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -76,7 +75,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
-import static org.silverpeas.notification.ResourceEvent.Type.*;
 
 /**
  * The class Admin is the main class of the Administrator.<BR/> The role of the administrator is to
@@ -104,13 +102,6 @@ public final class Admin {
   private static String m_groupSynchroCron = "";
   private static String m_domainSynchroCron = "";
   // Helpers
-  private static final SpaceInstManager spaceManager = new SpaceInstManager();
-  private static final ComponentInstManager componentManager = new ComponentInstManager();
-  private static final ProfileInstManager profileManager = new ProfileInstManager();
-  private static final SpaceProfileInstManager spaceProfileManager = new SpaceProfileInstManager();
-  private static final GroupManager groupManager = new GroupManager();
-  private static final UserManager userManager = new UserManager();
-  private static final ProfiledObjectManager profiledObjectManager = new ProfiledObjectManager();
   private static final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
   // Component instanciator
   private static Instanciateur componentInstanciator = null;
@@ -137,6 +128,21 @@ public final class Admin {
   @Inject
   @Named("adminNotificationService")
   AdminNotificationService adminNotificationService;
+
+  @Inject
+  private UserManager userManager;
+  @Inject
+  private GroupManager groupManager;
+  @Inject
+  private SpaceInstManager spaceManager;
+  @Inject
+  private ProfiledObjectManager profiledObjectManager;
+  @Inject
+  private ProfileInstManager profileManager;
+  @Inject
+  private ComponentInstManager componentManager;
+  @Inject
+  private SpaceProfileInstManager spaceProfileManager;
 
   static {
     // Load silverpeas admin resources
@@ -1313,9 +1319,6 @@ public final class Admin {
       // indexation du composant
       createComponentIndex(component);
 
-      ComponentInstanceEventNotifier notifier = ComponentInstanceEventNotifier.getNotifier();
-      notifier.notifyEventOn(CREATION, componentInst);
-
       return componentId;
     } catch (Exception e) {
       try {
@@ -1418,10 +1421,6 @@ public final class Admin {
             componentInst.getLabel() + Admin.basketSuffix, userId);
       } else {
         connectionProd = openConnection(false);
-
-        ComponentInstanceEventNotifier notifier = ComponentInstanceEventNotifier.getNotifier();
-        notifier.notifyEventOn(DELETION, componentInst);
-
         // Uninstantiate the components
         String componentName = componentInst.getName();
         String[] asCompoName = {componentName};
@@ -1555,9 +1554,6 @@ public final class Admin {
       component.setId(componentClientId);
       // indexation du composant
       createComponentIndex(componentClientId);
-
-      ComponentInstanceEventNotifier notifier = ComponentInstanceEventNotifier.getNotifier();
-      notifier.notifyEventOn(UPDATE, component);
 
       return componentClientId;
     } catch (Exception e) {

@@ -21,11 +21,14 @@
 package org.silverpeas.attachment.notification;
 
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.notification.JMSResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.ResourceEventNotifier;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.jms.Destination;
 import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
@@ -41,10 +44,11 @@ import javax.jms.Topic;
         name = "java:/topic/attachments",
         interfaceName = "javax.jms.Topic",
         destinationName = "AttachmentEventNotification")})
-public class AttachmentEventNotifier implements ResourceEventNotifier<AttachmentEvent> {
+public class AttachmentEventNotifier extends JMSResourceEventNotifier<AttachmentEvent> {
 
-  @Inject
-  private JMSContext jms;
+  public static AttachmentEventNotifier getNotifier() {
+    return ServiceProvider.getService(AttachmentEventNotifier.class);
+  }
 
   @Resource(lookup = "java:/topic/attachments")
   private Topic topic;
@@ -53,13 +57,13 @@ public class AttachmentEventNotifier implements ResourceEventNotifier<Attachment
   }
 
   @Override
-  public void notify(final AttachmentEvent event) {
-    JMSProducer producer = jms.createProducer();
-    producer.send(topic, event.toText());
+  protected Destination getDestination() {
+    return topic;
   }
 
   @Override
-  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
-    notify(new AttachmentEvent(type, (SimpleDocument) resource));
+  protected AttachmentEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Object resource) {
+    return new AttachmentEvent(type, (SimpleDocument) resource);
   }
 }

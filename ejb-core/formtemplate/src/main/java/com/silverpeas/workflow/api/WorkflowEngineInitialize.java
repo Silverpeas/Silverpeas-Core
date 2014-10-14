@@ -27,28 +27,19 @@
 
 package com.silverpeas.workflow.api;
 
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import org.silverpeas.initialization.Initialization;
 
 /**
- * Class declaration
+ * Initializes the workflow engine.
  */
-public class WorkflowEngineInitialize implements IInitialize {
+public class WorkflowEngineInitialize implements Initialization {
 
-  /**
-   * Constructor declaration
-   */
   public WorkflowEngineInitialize() {
   }
 
-  /**
-   * Method declaration
-   */
-  public boolean Initialize() {
-    // Initialize SilverTrace
-
+  @Override
+  public void init() {
     Workflow.initialize();
-
-    return true;
   }
 
 }

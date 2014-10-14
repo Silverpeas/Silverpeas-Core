@@ -21,18 +21,32 @@
 
 package org.silverpeas.notification;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * It is an abstract implementation of a resource event. It defines the common properties all
  * the concrete events should have. A concrete resource event can extend this class to inherit the
  * basic properties without to implement them by itself.
+ * <p>
+ * The properties of this abstract class are all annotated with JAXB annotations so that they are
+ * ready to be serialized into a text stream (in XML or in JSON).
+ * </p>
  * @author mmoquillon
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractResourceEvent<T> implements ResourceEvent<T> {
 
-  private final Type type;
-  private final T resource;
+  @XmlElement
+  private Type type;
+  @XmlElement
+  private T resource;
+
+  protected AbstractResourceEvent() {
+
+  }
 
   /**
    * Constructs a new instance representing the specified event type in relation to the specified
@@ -53,5 +67,33 @@ public abstract class AbstractResourceEvent<T> implements ResourceEvent<T> {
   @Override
   public T getResource() {
     return resource;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final AbstractResourceEvent that = (AbstractResourceEvent) o;
+
+    if (!resource.equals(that.resource)) {
+      return false;
+    }
+    if (type != that.type) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = type.hashCode();
+    result = 31 * result + resource.hashCode();
+    return result;
   }
 }
