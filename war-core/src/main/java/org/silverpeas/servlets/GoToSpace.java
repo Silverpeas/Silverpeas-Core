@@ -27,8 +27,8 @@ package org.silverpeas.servlets;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +41,7 @@ public class GoToSpace extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    SpaceInstLight space = OrganisationControllerFactory
+    SpaceInstLight space = OrganisationControllerProvider
         .getOrganisationController().getSpaceInstLightById(objectId);
     if (space != null && space.getShortId() != null) {
       HttpSession session = req.getSession(true);

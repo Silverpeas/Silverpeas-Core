@@ -25,13 +25,13 @@
 package org.silverpeas.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.viewGenerator.html.NeedWindowTag;
 import org.silverpeas.util.viewGenerator.html.window.Window;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.jsp.JspException;
 
@@ -91,7 +91,7 @@ public class BrowseBarTag extends NeedWindowTag {
       browseBar.setPath(path.toString());
     }
     if (StringUtil.isDefined(componentId)) {
-      ComponentInstLight component = OrganisationControllerFactory.getOrganisationController()
+      ComponentInstLight component = OrganisationControllerProvider.getOrganisationController()
           .getComponentInstLight(componentId);
       if (component == null) {
         browseBar.setComponentName(componentId);

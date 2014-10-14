@@ -21,6 +21,7 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.SilverpeasServiceProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -34,7 +35,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -104,7 +104,7 @@ public class NotificationSender implements java.io.Serializable {
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {
 
-    OrganisationController orgaController = OrganisationControllerFactory.
+    OrganisationController orgaController = OrganisationControllerProvider.
         getOrganisationController();
 
     // String[] allUsers;
@@ -226,7 +226,7 @@ public class NotificationSender implements java.io.Serializable {
 
   private boolean displayGroup(ResourceLocator settings, String groupId) {
     String threshold = settings.getString("notif.receiver.displayUser.threshold");
-    OrganisationController orgaController = OrganisationControllerFactory.
+    OrganisationController orgaController = OrganisationControllerProvider.
         getOrganisationController();
     Group group = orgaController.getGroup(groupId);
     int nbUsers = group.getNbUsers();
@@ -251,7 +251,7 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   private String addReceiverUsers(Set<UserRecipient> usersSet) {
-    OrganisationController orgaController = OrganisationControllerFactory.
+    OrganisationController orgaController = OrganisationControllerProvider.
         getOrganisationController();
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
@@ -268,7 +268,7 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   private String addReceiverGroups(Set<GroupRecipient> groupsSet) {
-    OrganisationController orgaController = OrganisationControllerFactory
+    OrganisationController orgaController = OrganisationControllerProvider
         .getOrganisationController();
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {

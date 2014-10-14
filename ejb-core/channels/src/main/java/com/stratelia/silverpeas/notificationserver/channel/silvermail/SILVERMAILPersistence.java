@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.LongText;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -34,8 +35,6 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -286,7 +285,7 @@ public class SILVERMAILPersistence {
     String result = "";
 
     try {
-      UserDetail ud =  OrganisationControllerFactory
+      UserDetail ud =  OrganisationControllerProvider
           .getOrganisationController().getUserDetail(Long.toString(userId));
       if (ud != null) {
         result = ud.getLogin();

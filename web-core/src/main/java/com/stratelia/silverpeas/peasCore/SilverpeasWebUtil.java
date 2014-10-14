@@ -27,10 +27,10 @@ package com.stratelia.silverpeas.peasCore;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -45,7 +45,7 @@ public class SilverpeasWebUtil {
   }
 
   public OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getOrganisationController();
+    return OrganisationControllerProvider.getOrganisationController();
   }
 
   /**

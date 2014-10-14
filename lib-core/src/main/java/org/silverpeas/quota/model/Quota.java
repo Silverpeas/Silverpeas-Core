@@ -24,7 +24,7 @@
 package org.silverpeas.quota.model;
 
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaIdentifiableEntity;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
@@ -52,7 +52,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
 @Table(name = "st_quota")
 @NamedQueries({@NamedQuery(name = "Quota.getByTypeAndResourceId",
     query = "from Quota where type = :type and resourceId = :resourceId")})
-public class Quota extends AbstractJpaIdentifiableEntity<Quota, UniqueLongIdentifier>
+public class Quota extends AbstractJpaCustomEntity<Quota, UniqueLongIdentifier>
     implements Serializable, Cloneable {
   private static final long serialVersionUID = 6564633879921455848L;
 
@@ -170,7 +170,7 @@ public class Quota extends AbstractJpaIdentifiableEntity<Quota, UniqueLongIdenti
   /**
    * @param id the id to set
    */
-  public void setId(final Long id) {
+  public void setQuotaId(final Long id) {
     setId(String.valueOf(id));
   }
 

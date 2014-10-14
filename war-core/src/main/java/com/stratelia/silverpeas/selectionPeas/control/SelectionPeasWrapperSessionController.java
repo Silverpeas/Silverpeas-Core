@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas.control;
 
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -33,7 +34,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.List;
 import java.util.StringTokenizer;
@@ -200,21 +200,21 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     if (isGroupSelectable()) {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedSets();
-        selectedGroups = OrganisationControllerFactory.getOrganisationController().getGroups(ids);
+        selectedGroups = OrganisationControllerProvider.getOrganisationController().getGroups(ids);
       } else {
         String id = sel.getFirstSelectedSet();
         if (StringUtil.isDefined(id)) {
-          selectedGroup = OrganisationControllerFactory.getOrganisationController().getGroup(id);
+          selectedGroup = OrganisationControllerProvider.getOrganisationController().getGroup(id);
         }
       }
     } else {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedElements();
-        selectedUsers = OrganisationControllerFactory.getOrganisationController().getUserDetails(ids);
+        selectedUsers = OrganisationControllerProvider.getOrganisationController().getUserDetails(ids);
       } else {
         String id = sel.getFirstSelectedElement();
         if (StringUtil.isDefined(id)) {
-          selectedUser = OrganisationControllerFactory.getOrganisationController().getUserDetail(id);
+          selectedUser = OrganisationControllerProvider.getOrganisationController().getUserDetail(id);
         }
       }
     }

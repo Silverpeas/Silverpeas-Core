@@ -37,7 +37,7 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.admin.mock"/>
 
-  <bean id="organizationControllerFactory"
-        class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="organizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerProvider"
+        factory-method="getFactory"/> -->
 </beans>

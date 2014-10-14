@@ -32,8 +32,8 @@ import com.silverpeas.look.LookHelper;
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
@@ -261,7 +261,7 @@ public class LookWebDelegate {
   private OrganisationController getOrganisationController() {
     if (organizationController == null) {
       organizationController =
-          OrganisationControllerFactory.getFactory().getOrganisationController();
+          OrganisationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

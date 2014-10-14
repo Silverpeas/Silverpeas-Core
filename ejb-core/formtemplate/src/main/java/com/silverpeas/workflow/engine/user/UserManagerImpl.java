@@ -40,7 +40,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import javax.inject.Singleton;
 import java.util.Arrays;
@@ -71,7 +71,7 @@ public class UserManagerImpl implements UserManager {
   @Override
   public User getUser(String userId) throws WorkflowException {
     UserImpl user = new UserImpl(getUserDetail(userId));
-    String[] groupIds =  OrganisationControllerFactory.getOrganisationController()
+    String[] groupIds =  OrganisationControllerProvider.getOrganisationController()
         .getAllGroupIdsOfUser(userId);
     if (groupIds != null) {
       user.setGroupIds(Arrays.asList(groupIds));
@@ -132,7 +132,7 @@ public class UserManagerImpl implements UserManager {
     try {
       // the modelId is the peasId.
       ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
-      userDetails =  OrganisationControllerFactory.getOrganisationController().getUsers(
+      userDetails =  OrganisationControllerProvider.getOrganisationController().getUsers(
           peas.getDomainFatherId(),
           modelId, roleName);
     } catch (AdminException e) {
@@ -148,7 +148,7 @@ public class UserManagerImpl implements UserManager {
 
   @Override
   public User[] getUsersInGroup(String groupId) {
-    UserDetail[] userDetails =  OrganisationControllerFactory.getOrganisationController()
+    UserDetail[] userDetails =  OrganisationControllerProvider.getOrganisationController()
         .getAllUsersOfGroup(groupId);
 
     if (userDetails == null) {
@@ -171,7 +171,7 @@ public class UserManagerImpl implements UserManager {
    * returns the userDetail of a userId.
    */
   private UserDetail getUserDetail(String userId) throws WorkflowException {
-    UserDetail userDetail =  OrganisationControllerFactory.getOrganisationController()
+    UserDetail userDetail =  OrganisationControllerProvider.getOrganisationController()
         .getUserDetail(userId);
     if (userDetail == null) {
       throw new UnknownUserException("UserManagerImpl.getUserDetail", userId);
@@ -186,7 +186,7 @@ public class UserManagerImpl implements UserManager {
     UserImpl[] users = new UserImpl[userDetails.length];
     for (int i = 0; i < userDetails.length; i++) {
       users[i] = new UserImpl(userDetails[i]);
-      String[] groupIds =  OrganisationControllerFactory.getOrganisationController()
+      String[] groupIds =  OrganisationControllerProvider.getOrganisationController()
           .getAllGroupIdsOfUser(userDetails[i].getId());
       if (groupIds != null) {
         users[i].setGroupIds(Arrays.asList(groupIds));

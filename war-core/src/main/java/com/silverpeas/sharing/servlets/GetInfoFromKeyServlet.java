@@ -34,10 +34,10 @@ import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -98,7 +98,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
 * @return the URL of the wallpaper.
 */
   private String getWallpaperFor(final Ticket ticket) {
-    ComponentInstLight component = OrganisationControllerFactory.getOrganisationController()
+    ComponentInstLight component = OrganisationControllerProvider.getOrganisationController()
         .getComponentInstLight(ticket.getComponentId());
     return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpaceOrDefaultOne(component.
         getDomainFatherId());

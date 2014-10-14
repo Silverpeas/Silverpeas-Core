@@ -23,7 +23,7 @@
   --%>
 <%@tag import="java.util.ArrayList"%>
 <%@tag import="org.silverpeas.util.StringUtil"%>
-<%@tag import="org.silverpeas.core.admin.OrganisationControllerFactory"%>
+<%@tag import="org.silverpeas.core.admin.OrganisationControllerProvider"%>
 <%@tag import="org.silverpeas.core.admin.OrganisationController"%>
 <%@tag import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@tag import="java.util.List"%>
@@ -42,7 +42,7 @@
 
 <%
 List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
-OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
+OrganisationController orgaController = OrganisationControllerProvider.getOrganisationController();
 String[] compoIds = orgaController.getCompoId("gallery");
 for (String compoId : compoIds) {
   if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {

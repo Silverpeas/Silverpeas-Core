@@ -29,6 +29,7 @@ import com.silverpeas.pdc.dao.PdcRightsDAO;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -51,7 +52,6 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 
 import javax.inject.Named;
@@ -876,7 +876,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
       if (!isManager) {
         // If not, check if at least one of his groups it is
-        String[] groupIds = OrganisationControllerFactory
+        String[] groupIds = OrganisationControllerProvider
             .getOrganisationController().getAllGroupIdsOfUser(userId);
 
         isManager = isGroupManager(groupIds);

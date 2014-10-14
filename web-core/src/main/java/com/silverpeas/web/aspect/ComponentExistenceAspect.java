@@ -25,7 +25,7 @@ package com.silverpeas.web.aspect;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -75,7 +75,7 @@ public class ComponentExistenceAspect {
     }
     if (isDefined(instanceId)) {
       OrganisationController controller =
-          OrganisationControllerFactory.getFactory().getOrganisationController();
+          OrganisationControllerProvider.getOrganisationController();
       if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
           !controller.isAdminTool(instanceId)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);

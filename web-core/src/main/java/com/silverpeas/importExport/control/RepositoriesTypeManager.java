@@ -30,6 +30,7 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -49,7 +50,6 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
@@ -109,7 +109,7 @@ public class RepositoriesTypeManager {
       reportManager.addMassiveReport(massiveReport, componentId);
       massiveReport.setRepositoryPath(sPath);
 
-      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
+      ComponentInst componentInst = OrganisationControllerProvider.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas

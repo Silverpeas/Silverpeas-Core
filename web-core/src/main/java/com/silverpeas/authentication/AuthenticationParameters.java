@@ -29,6 +29,7 @@ import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -36,7 +37,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.spnego.SpnegoPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -123,7 +123,7 @@ public class AuthenticationParameters {
       ExternalAccount account =
           SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
-      UserDetail user = OrganisationControllerFactory
+      UserDetail user = OrganisationControllerProvider
           .getOrganisationController().getUserDetail(account.getSilverpeasUserId());
       this.domainId = user.getDomainId();
       this.login = user.getLogin();

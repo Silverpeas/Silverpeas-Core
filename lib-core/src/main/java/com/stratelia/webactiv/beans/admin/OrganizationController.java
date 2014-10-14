@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
 
@@ -57,6 +59,7 @@ import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
  * container and published under the name 'organizationController' so that the initialization of the
  * static Admin instance can be performed correctly within the execution context of IoC container.
  */
+@Singleton
 public class OrganizationController implements OrganisationController {
 
   private static final long serialVersionUID = 3435241972671610107L;

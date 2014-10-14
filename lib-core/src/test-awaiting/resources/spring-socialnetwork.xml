@@ -46,9 +46,9 @@
         class="com.silverpeas.socialnetwork.service.SocialNetworkService"/>
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
-  <bean id="organizationControllerFactory"
-        class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="organizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerProvider"
+        factory-method="getFactory"/> -->
 
   <jpa:repositories base-package="com.silverpeas.socialnetwork.dao"
                     transaction-manager-ref="jpaTransactionManager"/>

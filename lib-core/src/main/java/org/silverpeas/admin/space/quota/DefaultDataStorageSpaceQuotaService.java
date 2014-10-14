@@ -24,7 +24,7 @@
 package org.silverpeas.admin.space.quota;
 
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
@@ -67,7 +67,7 @@ public class DefaultDataStorageSpaceQuotaService
     if (key.getSpace().isPersonalSpace()) {
       Quota quota = new Quota();
       // Setting a dummy id
-      quota.setId(-1L);
+      quota.setQuotaId(-1L);
       // The type
       quota.setType(key.getQuotaType());
       // The resource id
@@ -106,7 +106,7 @@ public class DefaultDataStorageSpaceQuotaService
     // space could be null if user space is performed
     if (key.getSpace() != null) {
       File file;
-      for (final String componentId : OrganisationControllerFactory.getOrganisationController()
+      for (final String componentId : OrganisationControllerProvider.getOrganisationController()
           .getAllComponentIdsRecur(key.getSpace().getId())) {
         file = new File(getAbsolutePath(componentId));
         if (file.exists()) {
@@ -132,7 +132,7 @@ public class DefaultDataStorageSpaceQuotaService
     if (isActivated() && key.isValid()) {
       if (key.getSpace().isPersonalSpace()) {
         // Setting a dummy id
-        quota.setId(-1L);
+        quota.setQuotaId(-1L);
         // The type
         quota.setType(key.getQuotaType());
         // The resource id

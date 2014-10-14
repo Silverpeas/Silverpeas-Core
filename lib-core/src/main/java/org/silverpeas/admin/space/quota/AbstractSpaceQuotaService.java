@@ -26,7 +26,7 @@ package org.silverpeas.admin.space.quota;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
@@ -99,7 +99,7 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
     }
     Quota quota = super.verify(key, countingOffset);
     while (key.isValid() && !key.getSpace().isRoot()) {
-      key = createKeyFrom(OrganisationControllerFactory.getOrganisationController()
+      key = createKeyFrom(OrganisationControllerProvider.getOrganisationController()
           .getSpaceInstById(key.getSpace().getDomainFatherId()));
       quota = super.verify(key, countingOffset);
     }

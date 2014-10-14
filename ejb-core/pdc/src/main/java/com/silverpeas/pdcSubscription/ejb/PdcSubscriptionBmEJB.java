@@ -38,9 +38,9 @@ import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -252,7 +252,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
         "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues + ", componentId = "
         + componentId + ", silverObjectid = " + silverObjectid);
 
-    OrganisationController organizationController = OrganisationControllerFactory
+    OrganisationController organizationController = OrganisationControllerProvider
         .getOrganisationController();
 
     try(Connection conn = DBUtil.openConnection()) {

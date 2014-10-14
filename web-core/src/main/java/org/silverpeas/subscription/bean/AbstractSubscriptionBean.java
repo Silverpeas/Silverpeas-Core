@@ -33,7 +33,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import java.util.Date;
 
@@ -147,7 +147,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
    */
   protected Group getGroup() {
     if (group == null) {
-      group = OrganisationControllerFactory.getOrganisationController()
+      group = OrganisationControllerProvider.getOrganisationController()
           .getGroup(getSubscriber().getId());
       if (group == null) {
         // Prevents from NullPointerException
@@ -163,7 +163,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
    */
   public ComponentInstLight getComponent() {
     if (component == null) {
-      component = OrganisationControllerFactory.getOrganisationController()
+      component = OrganisationControllerProvider.getOrganisationController()
           .getComponentInstLight(subscription.getResource().getInstanceId());
       if (component == null) {
         // Prevents from NullPointerException
@@ -179,7 +179,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
    */
   public SpaceInstLight getSpace() {
     if (space == null) {
-      space = OrganisationControllerFactory.getOrganisationController()
+      space = OrganisationControllerProvider.getOrganisationController()
           .getSpaceInstLightById(component.getDomainFatherId());
       if (space == null) {
         // Prevents from NullPointerException

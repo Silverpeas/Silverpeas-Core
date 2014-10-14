@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.sharing.bean.SharingNotificationVO;
 
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
@@ -85,7 +85,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     String userId = getUserId();
     getNotificationMetaData().addLanguage(language,
         getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
-    template.setAttribute("senderUser", OrganisationControllerFactory.getOrganisationController().
+    template.setAttribute("senderUser", OrganisationControllerProvider.getOrganisationController().
         getUserDetail(userId));
     template.setAttribute("attachmentUrl", fileSharingParam.getAttachmentUrl());
     if (StringUtil.isDefined(fileSharingParam.getAdditionalMessage())) {

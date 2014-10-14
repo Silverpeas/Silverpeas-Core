@@ -29,10 +29,10 @@ package com.stratelia.silverpeas.genericPanel;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Hashtable;
 
@@ -44,7 +44,8 @@ public class AllUserPanel extends PanelProvider {
   protected static final int COL_FIRSTNAME = 1;
   protected static final int COL_EMAIL = 2;
 
-  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganisationController();
+  protected OrganisationController m_oc =  OrganisationControllerProvider
+      .getOrganisationController();
 
   protected Hashtable<String, UserDetail> m_AllUserDetail = new Hashtable<String, UserDetail>();
 

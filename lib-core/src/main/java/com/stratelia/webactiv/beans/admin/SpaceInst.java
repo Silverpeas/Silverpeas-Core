@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
@@ -32,7 +33,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
@@ -711,7 +711,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       quotaReached.setCount(
           UnitUtil.convertTo(quotaReached.getCount(), MemoryUnit.B, MemoryUnit.MB));
     }
-    SpaceInstLight space = OrganisationControllerFactory.getOrganisationController()
+    SpaceInstLight space = OrganisationControllerProvider.getOrganisationController()
         .getSpaceInstLightById(quotaReached.getResourceId());
     final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "admin/space/quota");

@@ -36,6 +36,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -58,7 +59,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
@@ -360,7 +360,7 @@ public class PublicationTemplateManager {
         }
       } else {
         OrganisationController oc =
-            OrganisationControllerFactory.getOrganisationController();
+            OrganisationControllerProvider.getOrganisationController();
         boolean allowed = true;
         if (template.isRestrictedVisibilityToApplication()) {
           if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {

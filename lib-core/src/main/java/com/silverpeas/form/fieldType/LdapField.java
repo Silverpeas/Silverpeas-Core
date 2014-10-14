@@ -31,7 +31,7 @@ import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
@@ -166,7 +166,7 @@ public class LdapField extends TextField {
     // parsing filter -> dynamic variable
     if (filter.contains(VARIABLE_LOGIN)) {
       try {
-        String valueLogin = OrganisationControllerFactory.getOrganisationController()
+        String valueLogin = OrganisationControllerProvider.getOrganisationController()
             .getUserDetail(currentUserId).getLogin();
         filter = filter.replaceAll(VARIABLE_REGEX_LOGIN, valueLogin);
       } catch (Exception e) {

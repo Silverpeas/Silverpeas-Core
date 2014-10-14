@@ -24,6 +24,7 @@
 package org.silverpeas.util.viewGenerator.html;
 
 import com.silverpeas.look.SilverpeasLook;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -34,7 +35,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -135,7 +135,7 @@ public class WebCommonLookAndFeel {
     String specificComponentCSS = null;
     if (StringUtil.isDefined(componentId)) {
       ComponentInstLight component =
-          OrganisationControllerFactory.getOrganisationController().getComponentInstLight(
+          OrganisationControllerProvider.getOrganisationController().getComponentInstLight(
               componentId);
       if (component != null) {
         String componentName = component.getName();

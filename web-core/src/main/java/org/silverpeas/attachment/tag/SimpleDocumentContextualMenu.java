@@ -38,7 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import static org.silverpeas.util.StringUtil.newline;
-import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+import static org.silverpeas.core.admin.OrganisationControllerProvider.getOrganisationController;
 
 /**
  * @author ehugonnet

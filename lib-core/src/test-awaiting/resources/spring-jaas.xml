@@ -81,7 +81,7 @@
 
   <bean id="authenticator" class="org.silverpeas.authentication.AuthenticationService" />
 
-  <bean id="organizationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory" factory-method="getFactory" />
+  <!-- ebo <bean id="organizationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerProvider" factory-method="getFactory" /> -->
 
   <bean id="adminController" name="adminController" class="com.stratelia.webactiv.beans.admin.Admin" />
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />

@@ -120,7 +120,7 @@ public class QuotaTest {
 
   private Quota initializeQuota() {
     final Quota quota = new Quota();
-    quota.setId(26L);
+    quota.setQuotaId(26L);
     quota.setType(QuotaType.USERS_IN_DOMAIN);
     quota.setResourceId("26");
     quota.setMinCount(10);

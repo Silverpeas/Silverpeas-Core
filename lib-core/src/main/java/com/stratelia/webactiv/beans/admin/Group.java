@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -266,7 +266,7 @@ public class Group implements Serializable, Comparable<Group> {
   }
 
   protected static OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getFactory().getOrganisationController();
+    return OrganisationControllerProvider.getOrganisationController();
   }
 
   /**

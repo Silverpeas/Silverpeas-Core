@@ -34,23 +34,19 @@ import javax.inject.Singleton;
  * beans not taken in charge by the IoC container.
  */
 @Singleton
-public class OrganisationControllerFactory {
+public class OrganisationControllerProvider {
 
-  private static OrganisationControllerFactory instance = new OrganisationControllerFactory();
+  private static OrganisationControllerProvider instance = new OrganisationControllerProvider();
 
-  public static OrganisationControllerFactory getFactory() {
+  public static OrganisationControllerProvider getFactory() {
     return instance;
   }
 
   public static OrganisationController getOrganisationController() {
-    return instance.getController();
-  }
-
-  private synchronized OrganisationController getController() {
     return ServiceProvider.getService(OrganisationController.class);
   }
 
-  private OrganisationControllerFactory() {
+  private OrganisationControllerProvider() {
   }
 
 }

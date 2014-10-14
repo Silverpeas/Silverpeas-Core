@@ -23,6 +23,7 @@
  ---*/
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
@@ -40,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Class declaration
@@ -161,7 +161,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
         getLanguage());
     String source = m_Multilang.getString("UserNotification");
     if (StringUtil.isDefined(componentId)) {
-      OrganisationController orga = OrganisationControllerFactory.getOrganisationController();
+      OrganisationController orga = OrganisationControllerProvider.getOrganisationController();
       ComponentInst instance = orga.getComponentInst(componentId);
 
       // Sometimes, source could not be found

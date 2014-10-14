@@ -25,13 +25,13 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import java.util.Collection;
 import java.util.List;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Classe de gestion des importations unitaires de thèmes dans KMelia pour le moteur d'importExport
@@ -80,7 +80,7 @@ public class NodeTreesTypeManager {
         UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
         reportManager.addUnitReport(unitReport, componentId);
 
-        ComponentInst component = OrganisationControllerFactory
+        ComponentInst component = OrganisationControllerProvider
             .getOrganisationController().getComponentInst(componentId);
         if (component == null) {
           // le composant n'existe pas

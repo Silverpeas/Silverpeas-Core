@@ -33,7 +33,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.JNDINames;
@@ -275,14 +275,14 @@ public class ExplorerField extends AbstractField {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces = OrganisationControllerFactory.getOrganisationController()
+      List<SpaceInst> listSpaces = OrganisationControllerProvider.getOrganisationController()
           .getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
         path += space.getName(language) + " > ";
       }
 
       // Service
-      path += OrganisationControllerFactory.getOrganisationController().getComponentInstLight(
+      path += OrganisationControllerProvider.getOrganisationController().getComponentInstLight(
           componentId).getLabel(language);
 
       // Theme > SubTheme

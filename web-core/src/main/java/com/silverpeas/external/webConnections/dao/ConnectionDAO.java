@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
 import org.silverpeas.util.crypto.CipherKey;
@@ -225,7 +225,7 @@ public class ConnectionDAO {
     Map<String, String> param = new HashMap<String, String>();
     String login = rs.getString("paramLogin");
     byte[] password = rs.getBytes("paramPassword");
-    ComponentInst inst = OrganisationControllerFactory.getOrganisationController()
+    ComponentInst inst = OrganisationControllerProvider.getOrganisationController()
         .getComponentInst(connection.getComponentId());
     String nameLogin = inst.getParameterValue("login");
     String namePassword = inst.getParameterValue("password");
@@ -254,7 +254,7 @@ public class ConnectionDAO {
     prepStmt.setInt(1, id);
     prepStmt.setInt(2, Integer.parseInt(connection.getUserId()));
     prepStmt.setString(3, connection.getComponentId());
-    ComponentInst inst = OrganisationControllerFactory
+    ComponentInst inst = OrganisationControllerProvider
         .getOrganisationController().getComponentInst(connection.getComponentId());
     String login = connection.getParam().get(inst.getParameterValue("login"));
     String password = connection.getParam().get(inst.getParameterValue("password"));

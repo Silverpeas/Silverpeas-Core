@@ -33,6 +33,7 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -48,7 +49,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
@@ -161,7 +161,7 @@ public class ImportDragAndDrop extends HttpServlet {
         }
       }
       MassiveReport massiveReport = new MassiveReport();
-      UserDetail userDetail = OrganisationControllerFactory
+      UserDetail userDetail = OrganisationControllerProvider
           .getOrganisationController().getUserDetail(userId);
 
       try {

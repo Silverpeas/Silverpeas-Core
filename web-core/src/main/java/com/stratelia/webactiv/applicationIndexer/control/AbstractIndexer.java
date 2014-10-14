@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 
@@ -49,7 +49,7 @@ public abstract class AbstractIndexer {
     SilverTrace.info(silvertraceModule, "AbstractIndexer.index()", "root.MSG_GEN_ENTER_METHOD");
     if (currentSpaceId == null) {
       // index whole application
-      String[] spaceIds = OrganisationControllerFactory.getOrganisationController().getAllSpaceIds();
+      String[] spaceIds = OrganisationControllerProvider.getOrganisationController().getAllSpaceIds();
       SilverTrace.info(silvertraceModule, "AbstractIndexer.index()",
           "applicationIndexer.MSG_INDEXING_ALL_SPACES");
       for (String spaceId : spaceIds) {
@@ -86,14 +86,14 @@ public abstract class AbstractIndexer {
     admin.indexSpace(Integer.parseInt(currentSpaceId));
 
     // index components
-    String[] componentIds = OrganisationControllerFactory.getOrganisationController()
+    String[] componentIds = OrganisationControllerProvider.getOrganisationController()
         .getAllComponentIds(currentSpaceId);
     for (String componentId : componentIds) {
       indexComponent(currentSpaceId, componentId);
     }
 
     // index sub spaces
-    String[] subSpaceIds = OrganisationControllerFactory.getOrganisationController()
+    String[] subSpaceIds = OrganisationControllerProvider.getOrganisationController()
         .getAllSubSpaceIds(currentSpaceId);
     for (String subSpaceId : subSpaceIds) {
       indexSpace(subSpaceId);

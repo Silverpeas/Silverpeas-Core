@@ -36,7 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -58,7 +58,7 @@ public class SilverpeasWebUtilTest {
 
   @Before
   public void setUp() throws Exception {
-    OrganisationControllerFactory.getFactory().clearFactory();
+    OrganisationControllerProvider.getFactory().clearFactory();
 
     // Spring
     context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
@@ -68,7 +68,7 @@ public class SilverpeasWebUtilTest {
 
   @After
   public void tearDown() {
-    OrganisationControllerFactory.getFactory().clearFactory();
+    OrganisationControllerProvider.getFactory().clearFactory();
     SilverStatisticsManager.setInstanceForTest(null);
     context.close();
   }
@@ -82,7 +82,7 @@ public class SilverpeasWebUtilTest {
    */
   @Test
   public void checkDefaultOrganizationController() {
-    OrganisationControllerFactory.getFactory().clearFactory();
+    OrganisationControllerProvider.getFactory().clearFactory();
     SilverpeasWebUtil util = new SilverpeasWebUtil();
     assertEquals(OrganizationController.class.getName(), util.getOrganisationController().getClass().getName());
   }

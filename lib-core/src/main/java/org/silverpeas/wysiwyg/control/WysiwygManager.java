@@ -39,7 +39,7 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
@@ -48,7 +48,6 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -91,7 +90,6 @@ public class WysiwygManager {
   /**
    * This method loads the content of the WYSIWYG file directly from the filesystem for backward
    * compatibility.
-   *
    * @param id the unique identifier of the contribution to which the WYSIWYG is related.
    * @param language the language of he WYSIWYG content.
    * @return the content of the WYSIWYG.
@@ -127,7 +125,6 @@ public class WysiwygManager {
 
   /**
    * Turn over all the images attached according to the parameters id, componentId.
-   *
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
    * @return List<SimpleDocument>
@@ -136,9 +133,9 @@ public class WysiwygManager {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(new ForeignPK(id, componentId), DocumentType.image, null);
     Iterator<SimpleDocument> it = attachments.iterator();
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       SimpleDocument document = it.next();
-      if (! document.isContentImage()) {
+      if (!document.isContentImage()) {
         it.remove();
       }
     }
@@ -146,14 +143,13 @@ public class WysiwygManager {
   }
 
   public String getWebsiteRepository() {
-    ResourceLocator websiteSettings = new ResourceLocator(
-        "org.silverpeas.webSites.settings.webSiteSettings", "");
+    ResourceLocator websiteSettings =
+        new ResourceLocator("org.silverpeas.webSites.settings.webSiteSettings", "");
     return websiteSettings.getString("uploadsPath");
   }
 
   /**
    * Get images of the website.
-   *
    * @param path type String: for example of the directory
    * @param componentId
    * @return imagesList a table of string[N] with in logical index [N][0] = path name [N][1] =
@@ -167,13 +163,15 @@ public class WysiwygManager {
       Iterator<File> i = listImages.iterator();
       int nbImages = listImages.size();
       String[][] images = new String[nbImages][2];
-      SilverTrace.info("wysiwyg", "WysiwygController.getWebsiteImages()",
-          "root.MSG_GEN_PARAM_VALUE", "nbImages=" + nbImages + " path=" + path);
+      SilverTrace
+          .info("wysiwyg", "WysiwygController.getWebsiteImages()", "root.MSG_GEN_PARAM_VALUE",
+              "nbImages=" + nbImages + " path=" + path);
       File image;
       for (int j = 0; j < nbImages; j++) {
         image = i.next();
-        SilverTrace.info("wysiwyg", "WysiwygController.getWebsiteImages()",
-            "root.MSG_GEN_PARAM_VALUE", "image=" + image.getAbsolutePath());
+        SilverTrace
+            .info("wysiwyg", "WysiwygController.getWebsiteImages()", "root.MSG_GEN_PARAM_VALUE",
+                "image=" + image.getAbsolutePath());
         images[j][0] = finNode2(image.getAbsolutePath(), componentId).replace('\\', '/');
         images[j][1] = image.getName();
       }
@@ -186,7 +184,6 @@ public class WysiwygManager {
 
   /**
    * Method declaration Get html pages of the website
-   *
    * @param path type String: for example of the directory
    * @param componentId
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
@@ -200,13 +197,14 @@ public class WysiwygManager {
       Iterator<File> i = listPages.iterator();
       int nbPages = listPages.size();
       String[][] pages = new String[nbPages][2];
-      SilverTrace.info("wysiwyg", "WysiwygController.getWebsitePages()",
-          "root.MSG_GEN_PARAM_VALUE", "nbPages=" + nbPages + " path=" + path);
+      SilverTrace.info("wysiwyg", "WysiwygController.getWebsitePages()", "root.MSG_GEN_PARAM_VALUE",
+          "nbPages=" + nbPages + " path=" + path);
       File page;
       for (int j = 0; j < nbPages; j++) {
         page = i.next();
-        SilverTrace.info("wysiwyg", "WysiwygController.getWebsitePages()",
-            "root.MSG_GEN_PARAM_VALUE", "page=" + page.getAbsolutePath());
+        SilverTrace
+            .info("wysiwyg", "WysiwygController.getWebsitePages()", "root.MSG_GEN_PARAM_VALUE",
+                "page=" + page.getAbsolutePath());
         pages[j][0] = finNode2(page.getAbsolutePath(), componentId).replace('\\', '/');
         pages[j][1] = page.getName();
       }
@@ -220,7 +218,6 @@ public class WysiwygManager {
   /**
    * Returns the node path : for example ....webSite17\\id\\rep1\\rep2\\rep3 returns
    * id\rep1\rep2\rep3
-   *
    * @param componentId the component id.
    * @param path the full path.
    * @return the path for the nodes.
@@ -238,7 +235,6 @@ public class WysiwygManager {
   /**
    * Returns the node path without the id element : for example ....webSite17\\id\\rep1\\rep2\\rep3
    * returns rep1\rep2\rep3
-   *
    * @param componentId the component id.
    * @param path the full path.
    * @return the path for the nodes.
@@ -259,7 +255,6 @@ public class WysiwygManager {
    * Method declaration Get the node of the path of the root Website. For example
    * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\ should return
    * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3
-   *
    * @param currentPath the full path.
    * @param componentId the component id.
    * @return a String with the path of the node.
@@ -360,7 +355,6 @@ public class WysiwygManager {
 
   /**
    * Build the name of the file to be attached.
-   *
    * @param objectId: for example the id of the publication.
    * @return the name of the file
    */
@@ -375,7 +369,6 @@ public class WysiwygManager {
 
   /**
    * Method declaration built the name of the images to be attached.
-   *
    * @param objectId : for example the id of the publication.
    * @return fileName String : name of the file
    */
@@ -406,7 +399,6 @@ public class WysiwygManager {
 
   /**
    * Creation of the file and its attachment.
-   *
    * @param content the WYSIWYG content to create.
    * @param context the context images/wysiwyg....
    */
@@ -419,8 +411,8 @@ public class WysiwygManager {
     if (!StringUtil.isDefined(content.getData())) {
       return;
     }
-    String fileName = getWysiwygFileName(content.getContributionId().getLocalId(),
-        content.getLanguage());
+    String fileName =
+        getWysiwygFileName(content.getContributionId().getLocalId(), content.getLanguage());
     String language = I18NHelper.checkLanguage(content.getLanguage());
     String textHtml = content.getData();
     String userId = content.getAuthorId();
@@ -431,8 +423,9 @@ public class WysiwygManager {
             new SimpleAttachment(fileName, language, fileName, null, textHtml.length(),
                 MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
     document.setDocumentType(context);
-    AttachmentServiceProvider.getAttachmentService().createAttachment(document,
-        new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, notify);
+    AttachmentServiceProvider.getAttachmentService()
+        .createAttachment(document, new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)),
+            indexIt, notify);
     if (notify) {
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, content);
     }
@@ -442,7 +435,6 @@ public class WysiwygManager {
 
   /**
    * Creation of the file and its attachment.
-   *
    * @param content the WYSIWYG content to create.
    */
   public void createFileAndAttachment(final WysiwygContent content) {
@@ -451,7 +443,6 @@ public class WysiwygManager {
 
   /**
    * Creation of the file and its attachment but without indexing it.
-   *
    * @param content the WYSIWYG content to create.
    */
   public void createUnindexedFileAndAttachment(final WysiwygContent content) {
@@ -460,7 +451,6 @@ public class WysiwygManager {
 
   /**
    * Add all elements attached to object identified by the given index into the given index
-   *
    * @param indexEntry the index of the related resource.
    * @param pk the primary key of the container of the wysiwyg.
    * @param language the language.
@@ -483,7 +473,6 @@ public class WysiwygManager {
   /**
    * This method must be synchronized. Quick wysiwyg's saving can generate problems without
    * synchronization !!!
-   *
    * @param content the WYSIWYG content to save.
    * @param indexIt should the content be indexed?
    */
@@ -491,10 +480,10 @@ public class WysiwygManager {
     String lang = I18NHelper.checkLanguage(content.getLanguage());
     DocumentType wysiwygType = DocumentType.wysiwyg;
     String fileName = getWysiwygFileName(content.getContributionId().getLocalId(), lang);
-    SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "fileName=" + fileName + " context=" + wysiwygType + "objectId=" +
-            content.getContributionId().getLocalId());
+    SilverTrace
+        .info("wysiwyg", "WysiwygController.updateFileAndAttachment()", "root.MSG_GEN_PARAM_VALUE",
+            "fileName=" + fileName + " context=" + wysiwygType + "objectId=" +
+                content.getContributionId().getLocalId());
     SimpleDocument document =
         searchAttachmentDetail(content.getContributionId(), wysiwygType, lang);
     if (document != null) {
@@ -519,7 +508,6 @@ public class WysiwygManager {
 
   /**
    * Removes and recreates the file attached
-   *
    * @param content the updated WYSIWYG content.
    */
   public void updateFileAndAttachment(final WysiwygContent content) {
@@ -536,7 +524,6 @@ public class WysiwygManager {
 
   /**
    * Method declaration remove the file attached.
-   *
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    */
@@ -559,14 +546,13 @@ public class WysiwygManager {
   /**
    * La méthode deleteWysiwygAttachments efface tous les attachments de la publication donc pour
    * éviter une éventuelle régression, je crée une nouvelle méthode
-   *
    * @param spaceId
    * @param componentId
    * @param objectId
    * @throws org.silverpeas.wysiwyg.WysiwygException
    */
-  public void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
-      String objectId) throws WysiwygException {
+  public void deleteWysiwygAttachmentsOnly(String spaceId, String componentId, String objectId)
+      throws WysiwygException {
     try {
       ForeignPK foreignKey = new ForeignPK(objectId, componentId);
       List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService().
@@ -574,8 +560,8 @@ public class WysiwygManager {
       for (SimpleDocument wysiwygAttachment : docs) {
         AttachmentServiceProvider.getAttachmentService().deleteAttachment(wysiwygAttachment);
       }
-      docs = AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
-          foreignKey, DocumentType.image, null);
+      docs = AttachmentServiceProvider.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
       for (SimpleDocument document : docs) {
         AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
       }
@@ -624,7 +610,6 @@ public class WysiwygManager {
 
   /**
    * Load wysiwyg content.
-   *
    * @param id the unique identifier of the contribution to which the WYSIWYG is related.
    * @param language the language of the content.
    * @return the wysiwyg content.
@@ -682,7 +667,6 @@ public class WysiwygManager {
 
   /**
    * Get all Silverpeas Files linked by wysiwyg content
-   *
    * @param content
    * @return
    */
@@ -699,8 +683,8 @@ public class WysiwygManager {
       }
 
       // 2 - search url with format : /silverpeas/FileServer/....attachmentId=###...
-      attachmentLinkPattern = Pattern.compile(
-          "href=\\\"\\/silverpeas\\/FileServer\\/(.*?)attachmentId=(\\d*)");
+      attachmentLinkPattern =
+          Pattern.compile("href=\\\"\\/silverpeas\\/FileServer\\/(.*?)attachmentId=(\\d*)");
       linkMatcher = attachmentLinkPattern.matcher(content);
       while (linkMatcher.find()) {
         String fileId = linkMatcher.group(2);
@@ -713,7 +697,6 @@ public class WysiwygManager {
 
   /**
    * Method declaration return the contents of the file.
-   *
    * @param fileName String : name of the file
    * @param path String : the path of the file
    * @return text : the contents of the file attached.
@@ -725,8 +708,8 @@ public class WysiwygManager {
       return FileFolderManager.getCode(path, fileName);
     } catch (UtilException e) {
       // There is no document
-      throw new WysiwygException("WysiwygController.loadFileWebsite()",
-          SilverpeasException.WARNING, "wysiwyg.NO_WYSIWYG_DOCUMENT_ASSOCIATED");
+      throw new WysiwygException("WysiwygController.loadFileWebsite()", SilverpeasException.WARNING,
+          "wysiwyg.NO_WYSIWYG_DOCUMENT_ASSOCIATED");
     }
   }
 
@@ -741,7 +724,6 @@ public class WysiwygManager {
 
   /**
    * Search all file attached by primary key of customer object and context of file attached
-   *
    * @param id the unique identifier of the contribution to which the WYSIWYG is related.
    * @param context String : for example wysiwyg.
    * @return SimpleDocument
@@ -762,7 +744,6 @@ public class WysiwygManager {
    * updateWebsite : creation or update of a file of a website Param = cheminFichier =
    * c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
    * contenuFichier = code du fichier : "<HTML><TITLE>...."
-   *
    * @param cheminFichier
    * @param contenuFichier
    * @param nomFichier
@@ -777,7 +758,6 @@ public class WysiwygManager {
 
   /**
    * Creation or update of a file
-   *
    * @param cheminFichier the path to the directory containing the file.
    * @param nomFichier the name of the file.
    * @param contenuFichier the content of the file.
@@ -802,8 +782,8 @@ public class WysiwygManager {
    * @param userId
    * @see
    */
-  public Map<String, String> copy(String oldComponentId, String oldObjectId,
-      String componentId, String objectId, String userId) {
+  public Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
+      String objectId, String userId) {
     SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
@@ -861,9 +841,8 @@ public class WysiwygManager {
   public void move(String fromComponentId, String fromObjectId, String componentId,
       String objectId) {
     ForeignPK fromForeignPK = new ForeignPK(fromObjectId, fromComponentId);
-    List<SimpleDocument> documents =
-          AttachmentServiceProvider.getAttachmentService().listAllDocumentsByForeignKey(
-              fromForeignPK, null);
+    List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
+        .listAllDocumentsByForeignKey(fromForeignPK, null);
     ForeignPK toForeignPK = new ForeignPK(objectId, componentId);
     for (SimpleDocument document : documents) {
       AttachmentServiceProvider.getAttachmentService().moveDocument(document, toForeignPK);
@@ -876,15 +855,15 @@ public class WysiwygManager {
   String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,
       SimpleDocumentPK newPK) {
     String from = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getId() + "/";
-    String fromOldId = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK
-        .getOldSilverpeasId() + "/";
+    String fromOldId =
+        "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getOldSilverpeasId() +
+            "/";
     String to = "/componentId/" + newPK.getInstanceId() + "/attachmentId/" + newPK.getId() + "/";
     return wysiwygContent.replaceAll(from, to).replaceAll(fromOldId, to);
   }
 
   /**
    * Usefull to maintain forward compatibility (old URLs to images)
-   *
    * @param wysiwygContent
    * @param oldComponentId
    * @param oldObjectId
@@ -1005,8 +984,8 @@ public class WysiwygManager {
 
   public String getWysiwygPath(String componentId, String objectId, String language) {
     List<SimpleDocument> attachements = AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(new ForeignPK(objectId, componentId), DocumentType.wysiwyg,
-        language);
+        .listDocumentsByForeignKeyAndType(new ForeignPK(objectId, componentId),
+            DocumentType.wysiwyg, language);
     if (!attachements.isEmpty()) {
       return attachements.get(0).getAttachmentPath();
     }
@@ -1019,12 +998,12 @@ public class WysiwygManager {
 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
-    OrganisationController orgaController = OrganisationControllerFactory
-        .getOrganisationController();
+    OrganisationController orgaController =
+        OrganisationControllerProvider.getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
-      if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,
-          "viewInWysiwyg"))) {
+      if (StringUtil.getBooleanValue(
+          orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
         ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
         galleries.add(gallery);
       }
@@ -1034,18 +1013,18 @@ public class WysiwygManager {
 
   /**
    * Gets the components dedicated to file storage
-   *
    * @return a components list
    */
   public List<ComponentInstLight> getStorageFile() {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
-    OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
+    OrganisationController controller = OrganisationControllerProvider.getOrganisationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {
       // retain only the components considered as a file storage
-      if (StringUtil.getBooleanValue(controller.getComponentParameterValue(compoId, "publicFiles"))) {
+      if (StringUtil
+          .getBooleanValue(controller.getComponentParameterValue(compoId, "publicFiles"))) {
         ComponentInstLight component = controller.getComponentInstLight(compoId);
         components.add(component);
       }
@@ -1055,7 +1034,6 @@ public class WysiwygManager {
 
   /**
    * Index given embedded linked files
-   *
    * @param indexEntry index entry to update
    * @param embeddedAttachmentIds embedded linked files ids
    */
@@ -1072,16 +1050,14 @@ public class WysiwygManager {
         }
       } catch (Exception e) {
         SilverTrace.warn("wisiwyg", "WysiwygController", "root.MSG_GEN_PARAM_VALUE",
-            "Erreur dans l'indexation d'un fichier joint lié au contenu wysiwyg - attachmentId:"
-            + attachmentId);
+            "Erreur dans l'indexation d'un fichier joint lié au contenu wysiwyg - attachmentId:" +
+                attachmentId);
       }
     }
   }
 
   /**
    * To create path. Warning: the token separing the repertories is ",".
-   *
-   *
    * @param componentId : the name of component
    * @param context : string made up of the repertories separated by token ","
    * @return the path.
@@ -1103,7 +1079,6 @@ public class WysiwygManager {
   /**
    * Checks the specified path is valid according to some security rules. For example, check there
    * is no attempt to go up the path to access a forbidden resource.
-   *
    * @param path the patch to check.
    * @throws WysiwygException if the path breaks some security rules.
    */

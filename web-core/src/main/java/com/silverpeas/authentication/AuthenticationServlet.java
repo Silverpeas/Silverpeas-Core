@@ -20,6 +20,7 @@
  */
 package com.silverpeas.authentication;
 
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -49,7 +50,6 @@ import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
 
 /**
@@ -304,7 +304,7 @@ public class AuthenticationServlet extends HttpServlet {
     } else if (authParameters.isCasMode()) {
       return authSettings.getString("cas.authentication.domainId", "0");
     }
-    OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
+    OrganisationController controller = OrganisationControllerProvider.getOrganisationController();
     return controller.getDomain(request.getParameter("DomainId")).getId();
   }
 

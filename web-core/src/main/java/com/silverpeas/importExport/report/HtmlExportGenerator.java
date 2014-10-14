@@ -27,6 +27,7 @@ package com.silverpeas.importExport.report;
 import com.silverpeas.importExport.control.ImportExport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
@@ -39,7 +40,6 @@ import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
 import org.apache.ecs.xhtml.title;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -271,7 +271,7 @@ public class HtmlExportGenerator {
       }
 
       if (NodePK.ROOT_NODE_ID.equals(rootId)) {
-        String componentName = OrganisationControllerFactory.getOrganisationController()
+        String componentName = OrganisationControllerProvider.getOrganisationController()
             .getComponentInstLight(node.getNodePK().getInstanceId()).getLabel();
 
         // regarder si ce topic contient des publications

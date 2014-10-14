@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -642,7 +642,8 @@ public class SilverStatisticsPeasDAOAccesVolume {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Collection<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
-    OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
+    OrganisationController orgaController = OrganisationControllerProvider
+        .getOrganisationController();
     AdminController adminController = new AdminController(currentUserId);
     try {
       myCon = DBUtil.openConnection();

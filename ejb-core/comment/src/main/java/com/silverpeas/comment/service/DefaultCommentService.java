@@ -24,6 +24,7 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
@@ -34,7 +35,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -411,7 +411,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * @return an OrganizationController instance.
    */
   protected OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getOrganisationController();
+    return OrganisationControllerProvider.getOrganisationController();
   }
 
   @Override

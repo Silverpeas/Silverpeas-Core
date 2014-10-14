@@ -30,7 +30,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import com.silverpeas.components.model.AbstractTestDao;
 
@@ -55,8 +55,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
     indexDirectory = props.getProperty("uploadsIndexPath");
     assertEquals(org.silverpeas.search.indexEngine.IndexFileManager.getIndexUpLoadPath(),
         indexDirectory + separatorChar);
-    OrganisationControllerFactory.getFactory().clearFactory();
-    OrganisationControllerFactory.getOrganisationController().reloadAdminCache();
+    OrganisationControllerProvider.getFactory().clearFactory();
+    OrganisationControllerProvider.getOrganisationController().reloadAdminCache();
   }
 
   @Override

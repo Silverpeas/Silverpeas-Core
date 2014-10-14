@@ -27,13 +27,13 @@ package com.silverpeas.external.webConnections.servlets;
 import com.silverpeas.external.webConnections.control.WebConnectionsSessionController;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.look.LookHelper;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -171,7 +171,7 @@ public class WebConnectionsRequestRouter extends
     if (!StringUtil.isDefined(password)) {
       password = "";
     }
-    ComponentInst inst = OrganisationControllerFactory.getOrganisationController()
+    ComponentInst inst = OrganisationControllerProvider.getOrganisationController()
         .getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("URL");
@@ -205,7 +205,7 @@ public class WebConnectionsRequestRouter extends
       connection.setUserId(webConnectionsSC.getUserId());
     }
     request.setAttribute("Connection", connection);
-    ComponentInst inst = OrganisationControllerFactory
+    ComponentInst inst = OrganisationControllerProvider
         .getOrganisationController().getComponentInst(connection.getComponentId());
     request.setAttribute("ComponentInst", inst);
     request.setAttribute("IsAnonymousAccess", isAnonymousAccess(request));

@@ -31,6 +31,7 @@ import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.ResultDisplayerFactory;
 import com.silverpeas.search.ResultSearchRendererUtil;
 import com.silverpeas.search.SearchResultContentVO;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
@@ -41,7 +42,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -172,7 +172,7 @@ public class HtmlSearchResultTag extends TagSupport {
         || instanceId.startsWith("pdc"))) {
 
       // Check if this component has a specific template result
-      ComponentInstLight component = OrganisationControllerFactory
+      ComponentInstLight component = OrganisationControllerProvider
           .getOrganisationController().getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();

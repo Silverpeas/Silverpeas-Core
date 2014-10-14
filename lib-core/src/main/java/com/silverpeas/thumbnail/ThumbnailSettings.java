@@ -20,7 +20,7 @@
  */
 package com.silverpeas.thumbnail;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 
@@ -84,7 +84,7 @@ public class ThumbnailSettings {
   }
   
   private static String getComponentParameterValue(String parameterName, String componentId) {
-    return OrganisationControllerFactory.getOrganisationController().getComponentParameterValue(
+    return OrganisationControllerProvider.getOrganisationController().getComponentParameterValue(
         componentId, parameterName);
   }
   

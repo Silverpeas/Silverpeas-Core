@@ -33,6 +33,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -40,7 +41,6 @@ import org.junit.Before;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.cache.service.InMemoryCacheService;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -70,7 +70,7 @@ public class WebComponentRequestRouterTest {
 
   @Before
   public void setUp() throws Exception {
-    OrganisationControllerFactory.getFactory().clearFactory();
+    OrganisationControllerProvider.getFactory().clearFactory();
 
     // Spring
     context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
@@ -84,7 +84,7 @@ public class WebComponentRequestRouterTest {
 
   @After
   public void tearDown() {
-    OrganisationControllerFactory.getFactory().clearFactory();
+    OrganisationControllerProvider.getFactory().clearFactory();
     SilverStatisticsManager.setInstanceForTest(null);
     reset(getOrganisationController(),
         AbstractTestWebComponentGenericController.getResourceLocatorMock());

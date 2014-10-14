@@ -26,6 +26,7 @@ import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.socialnetwork.status.StatusService;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -37,7 +38,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.File;
 import java.io.Serializable;
@@ -611,7 +611,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
     if (isAnonymousUserExist()) {
-      anonymousUser = OrganisationControllerFactory.getOrganisationController().getUserDetail(
+      anonymousUser = OrganisationControllerProvider.getOrganisationController().getUserDetail(
           getAnonymousUserId());
     }
     return anonymousUser;
@@ -776,6 +776,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   protected static OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getFactory().getOrganisationController();
+    return OrganisationControllerProvider.getOrganisationController();
   }
 }

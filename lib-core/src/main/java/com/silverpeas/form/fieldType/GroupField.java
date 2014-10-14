@@ -29,7 +29,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 /**
  * A GroupField stores a group reference.
@@ -99,7 +99,7 @@ public class GroupField extends AbstractField {
       return "";
     }
 
-    Group group = OrganisationControllerFactory.getOrganisationController().getGroup(getGroupId());
+    Group group = OrganisationControllerProvider.getOrganisationController().getGroup(getGroupId());
 
     if (group == null) {
       return "group(" + getGroupId() + ")";
@@ -156,7 +156,7 @@ public class GroupField extends AbstractField {
       return null;
     }
 
-    return OrganisationControllerFactory.getOrganisationController().getGroup(getGroupId());
+    return OrganisationControllerProvider.getOrganisationController().getGroup(getGroupId());
   }
 
   /**

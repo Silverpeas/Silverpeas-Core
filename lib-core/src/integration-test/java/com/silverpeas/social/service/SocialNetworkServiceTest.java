@@ -12,19 +12,16 @@ import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.stratelia.webactiv.beans.admin.*;
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ServiceProvider;
 
@@ -33,13 +30,9 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 import javax.transaction.Transactional;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNotNull;
-import static org.mockito.Mockito.doAnswer;
 
 @RunWith(Arquillian.class)
 public class SocialNetworkServiceTest {
@@ -87,7 +80,7 @@ public class SocialNetworkServiceTest {
               UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, ProfileInst.class,
               ObjectType.class, ComponentSearchCriteria.class, SearchCriteria.class, Domain.class,
               CompoSpace.class, ListSlice.class, WAComponent.class,
-              OrganizationControllerMock.class, OrganisationControllerFactory.class);
+              OrganizationControllerMock.class, OrganisationControllerProvider.class);
           warBuilder.addPackages(true, "org.silverpeas.util.i18n");
           warBuilder
               .addAsResource("org/silverpeas/social/settings/socialNetworkSettings.properties");

@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.admin.web.tools.AbstractTool;
 import org.silverpeas.admin.web.tools.ToolDelegate;
 import org.silverpeas.core.admin.OrganisationController;
@@ -264,7 +264,7 @@ public class AdminPersonalWebDelegate {
   private OrganisationController getOrganisationController() {
     if (organizationController == null) {
       organizationController =
-          OrganisationControllerFactory.getFactory().getOrganisationController();
+          OrganisationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

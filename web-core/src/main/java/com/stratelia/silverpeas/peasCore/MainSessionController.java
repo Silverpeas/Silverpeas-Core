@@ -23,6 +23,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
@@ -54,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.subscription.SubscriptionContext;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
@@ -345,7 +345,7 @@ public class MainSessionController implements Clipboard {
   // ------------------- Other functions -----------------------------
   public OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = OrganisationControllerFactory.getOrganisationController();
+      organizationController = OrganisationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

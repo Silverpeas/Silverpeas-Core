@@ -36,10 +36,10 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
 
 <%@page import="java.util.Enumeration"%>
 <%@ page import="org.silverpeas.core.admin.OrganisationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationControllerFactory" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationControllerProvider" %>
 <html>
-  <head>
-    <view:looknfeel />
+<head>
+  <view:looknfeel />
     <script language="javascript">
       var connectionWindow = window;
 
@@ -80,7 +80,7 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
           ArrayLine line = arrayPane.addArrayLine();
           ConnectionDetail connection = (ConnectionDetail) it.next();
           line.addArrayCellText(connection.getComponentName());
-          ComponentInst inst = OrganisationControllerFactory
+          ComponentInst inst = OrganisationControllerProvider
               .getOrganisationController().getComponentInst(connection.getComponentId());
           String nameLogin = inst.getParameterValue("login");
           String name =  connection.getParam().get(nameLogin);

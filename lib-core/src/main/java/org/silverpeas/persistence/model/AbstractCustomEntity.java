@@ -57,9 +57,9 @@ public abstract class AbstractCustomEntity<ENTITY extends IdentifiableEntity<ENT
   @SuppressWarnings({"unchecked", "CloneDoesntDeclareCloneNotSupportedException"})
   @Override
   public ENTITY clone() {
-    AbstractIdentifiableEntity entity;
+    AbstractCustomEntity entity;
     try {
-      entity = (AbstractIdentifiableEntity) super.clone();
+      entity = (AbstractCustomEntity) super.clone();
       entity.setId(null);
     } catch (final CloneNotSupportedException e) {
       entity = null;

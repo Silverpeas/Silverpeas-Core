@@ -51,8 +51,8 @@
         factory-method="getFactory"/> -->
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
-  <bean id="organizationControllerFactory"
-        class="org.silverpeas.core.admin.OrganisationControllerFactory"
-        factory-method="getFactory" />
+  <!-- ebo <bean id="organizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerProvider"
+        factory-method="getFactory" /> -->
 
 </beans>
