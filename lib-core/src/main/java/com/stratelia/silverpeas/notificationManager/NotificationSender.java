@@ -86,15 +86,6 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   /**
-   * Indicates if the notification is manual (sent by a Silverpeas user) or automatic.
-   * @param metaData the notification metadata.
-   * @return true if the notification is sent by a Silverpeas user - false otherwise.
-   */
-  protected boolean isNotificationManual(NotificationMetaData metaData) {
-    return StringUtil.isInteger(metaData.getSender());
-  }
-
-  /**
    * Method declaration
    * @param aMediaType
    * @param metaData
@@ -197,7 +188,8 @@ public class NotificationSender implements java.io.Serializable {
       notificationManager.notifyExternals(params, metaData.getExternalRecipients());
     }
 
-    if (isNotificationManual(metaData)) {
+    if (metaData.isManual() &&
+        aMediaType != NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
       // save notification for history
       saveNotification(metaData, usersSet);
     }
@@ -296,7 +288,7 @@ public class NotificationSender implements java.io.Serializable {
       Set<GroupRecipient> groupsSet,
       Set<String> languages, NotificationMetaData metaData,
       OrganisationController orgaController) throws NotificationManagerException {
-    if (isNotificationManual(metaData)) {
+    if (metaData.isManual()) {
       if (settings.getBoolean("addReceiversInBody", false)) {
         for (String language : languages) {
           String newContent = addReceiversInContent(usersSet, groupsSet, metaData.getContent(

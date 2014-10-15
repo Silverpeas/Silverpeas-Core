@@ -35,6 +35,7 @@ import java.util.Set;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -547,5 +548,14 @@ public class NotificationMetaData implements java.io.Serializable {
 
   public NotificationResourceData getNotificationResourceData(final String lang) {
     return notificationResourceData.get(lang);
+  }
+  
+  /**
+   * Indicates if the notification is manual (sent by a Silverpeas user) or automatic.
+   *
+   * @return true if the notification is sent by a Silverpeas user - false otherwise.
+   */
+  public boolean isManual() {
+    return StringUtil.isInteger(getSender());
   }
 }
