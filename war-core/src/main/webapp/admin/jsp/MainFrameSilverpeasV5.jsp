@@ -63,7 +63,7 @@ if (m_MainSessionCtrl == null) {
 } else {
 	LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
 	if (helper == null) {
-		helper = new LookSilverpeasV5Helper(m_MainSessionCtrl, gef.getFavoriteLookSettings());
+		helper = new LookSilverpeasV5Helper(session);
 		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
 
 		session.setAttribute("Silverpeas_LookHelper", helper);
