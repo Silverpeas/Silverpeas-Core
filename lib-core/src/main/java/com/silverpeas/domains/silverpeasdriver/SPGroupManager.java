@@ -24,12 +24,11 @@
 
 package com.silverpeas.domains.silverpeasdriver;
 
-import java.util.List;
-
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.repository.BasicEntityRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * @author ehugonnet
