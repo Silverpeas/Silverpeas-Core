@@ -21,7 +21,10 @@
 
 package org.silverpeas.contribution.model;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.IdentifiableResource;
+
+import java.util.Date;
 
 /**
  * A contribution in Silverpeas. A contribution is an identifiable resource that is pushed by a
@@ -52,4 +55,47 @@ public interface Contribution extends IdentifiableResource {
   public default boolean hasContent() {
     return getContent() != null;
   }
+
+  /**
+   * Gets the user that has created this content.
+   * @return the detail about the user that has created this content.
+   */
+  public UserDetail getCreator();
+
+  /**
+   * Gets the date at which this content was created.
+   * @return the date at which this content was created.
+   */
+  public Date getCreationDate();
+
+  /**
+   * Gets the title of this contribution if any. By default returns an empty String.
+   * @return the contribution's title in the specified language.
+   * Can be empty if no title was set or no title is defined for a such contribution.
+   */
+  public default String getTitle(String language) {
+    return "";
+  }
+
+  /**
+   * Gets a description about this contribution if any. By default returns an empty String.
+   * @return the description on this contribution. Can be empty if no description was set or no
+   * description is defined for a such contribution.
+   */
+  public default String getDescription() {
+    return "";
+  }
+
+  /**
+   * Is the specified user can access this contribution?
+   * <p>
+   * A user can access a contribution if it has enough rights to access the application instance
+   * in which is managed this contribution. In the case the application instance distributes its
+   * contribution along of a categorization tree and the nodes of this tree support access rights,
+   * then the user must have also the rights to access the node to which belongs the content.
+   * </p>
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this content, false otherwise.
+   */
+  public boolean canBeAccessedBy(UserDetail user);
 }

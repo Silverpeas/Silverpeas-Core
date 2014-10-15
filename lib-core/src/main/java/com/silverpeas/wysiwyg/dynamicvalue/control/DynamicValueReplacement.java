@@ -24,12 +24,11 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue.control;
 
-import org.silverpeas.util.EncodeHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
-import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
+import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;
 
@@ -69,10 +68,7 @@ public class DynamicValueReplacement {
   public static String buildHTMLSelect(String language, String fieldName, String editorName) {
     // local variable initialization
     String HTMLCodeFramgment = "";
-    Connection conn = null;
-    try {
-      // get connection
-      conn = ConnectionPoolFactory.getConnection();
+    try (Connection conn = ConnectionFactory.getConnection()) {
       // get the list of valid DynamicValue object
       List<DynamicValue> list = DynamicValueDAO.getAllValidDynamicValue(conn);
 
@@ -114,8 +110,6 @@ public class DynamicValueReplacement {
     } catch (Exception e) {
       SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
           "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(conn);
     }
 
     return HTMLCodeFramgment;
@@ -124,24 +118,18 @@ public class DynamicValueReplacement {
 
   public String replaceKeyByValue(String wysiwygText) {
     // local variable initialization
-    Connection conn = null;
-
     updatedString = wysiwygText;
     // Compile regular expression
     Pattern pattern = Pattern.compile(REGEX);
     Matcher matcher = pattern.matcher(updatedString);
     // if a key has been found in the HTML code, we try to replace him by his value.
     if (matcher.find()) {
-      try {
-        // get connection
-        conn = ConnectionPoolFactory.getConnection();
+      try (Connection conn = ConnectionFactory.getConnection()) {
         // search/replace all each key by his value
         searchReplaceKeys(updatedString, conn, matcher, null);
       } catch (SQLException e) {
         SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
             "root.EX_SQL_QUERY_FAILED", e);
-      } finally {
-        DBUtil.close(conn);
       }
     }
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),

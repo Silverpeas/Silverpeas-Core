@@ -39,14 +39,4 @@ public interface ConnectionPool {
    */
   Connection getConnection() throws SQLException;
 
-  /**
-   * @return
-   */
-  ConnectionPoolInformation getPoolInformation();
-
-  /**
-   * @param poolInfo
-   */
-  void setPoolInformation(ConnectionPoolInformation poolInfo);
-
 }

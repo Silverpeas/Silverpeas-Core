@@ -33,7 +33,9 @@ import java.util.Date;
  * with a content (that can be empty); for example, a publication in Silverpeas is a content. This
  * interface defines the common properties the different type of content in Silverpeas has to
  * support.
+ * @deprecated please use instead {@code org.silverpeas.contribution.model.Contribution} interface.
  */
+@Deprecated
 public interface SilverpeasContent extends Serializable {
 
   /**

@@ -22,40 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.contentManager;
+package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
-import java.util.Iterator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.sql.Connection;
+import java.sql.SQLException;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.xml.Unmarshaller;
+import org.xml.sax.InputSource;
 
 /**
- * The interface for all the SilverContent (filebox+, ..)
- * @deprecated use instead {@code org.silverpeas.contribution.model.Contribution} and
- * {@code org.silverpeas.contribution.model.ContributionContent} interfaces.
+ * A factory of connections to the data source into which are stored the dynamic values to use
+ * in a WYSIWYG content.
+ * <p>This factory delegates to a {@code com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPool}
+ * object the opening of a such connection.</p>
+ * @ßee com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPool
+ *
  */
-public interface SilverContentInterface {
-  public String getName();
+public class ConnectionFactory {
 
-  public String getName(String language);
+  private ConnectionFactory() {
+  }
 
-  public String getDescription();
+  private static ConnectionPool getConnectionPool() {
+    return ServiceProvider.getService(ConnectionPool.class);
+  }
 
-  public String getDescription(String language);
-
-  public String getURL();
-
-  public String getId();
-
-  public String getInstanceId();
-
-  /*
-   * public String getTitle(); public String getTitle(String language);
+  /**
+   * @return
+   * @throws SQLException
    */
-  public String getDate();
-
-  public String getSilverCreationDate(); // added by ney. 16/05/2004.
-
-  public String getIconUrl();
-
-  public String getCreatorId();
-
-  public Iterator<String> getLanguages();
+  public static Connection getConnection() throws SQLException {
+    return getConnectionPool().getConnection();
+  }
 }

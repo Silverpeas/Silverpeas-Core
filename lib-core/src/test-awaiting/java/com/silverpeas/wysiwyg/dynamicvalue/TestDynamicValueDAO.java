@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO;
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
-import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
+import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionFactory;
 
 /**
  * class test for com.silverpeas.wysiwyg.dynamicvalue.dao.DynamicValueDAO
@@ -43,7 +43,7 @@ public class TestDynamicValueDAO extends AbstractBaseDynamicValue {
    */
   @Test
   public void testGetValidDynamicValue() throws Exception {
-    Connection connection = ConnectionPoolFactory.getConnection();
+    Connection connection = ConnectionFactory.getConnection();
     DynamicValue value = DynamicValueDAO.getValidDynamicValue(connection, "java_version");
     assertEquals("jdk1.6.0_17", value.getValue());
   }
@@ -56,7 +56,7 @@ public class TestDynamicValueDAO extends AbstractBaseDynamicValue {
    */
   @Test
   public void testGetAllValidDynamicValue() throws SQLException {
-    Connection connection = ConnectionPoolFactory.getConnection();
+    Connection connection = ConnectionFactory.getConnection();
     List<DynamicValue> list = DynamicValueDAO.getAllValidDynamicValue(connection);
     assertEquals(2, list.size());
     int i = 0;
@@ -80,7 +80,7 @@ public class TestDynamicValueDAO extends AbstractBaseDynamicValue {
    */
   @Test
   public void testSearchValidDynamicValue() throws SQLException {
-    Connection connection = ConnectionPoolFactory.getConnection();
+    Connection connection = ConnectionFactory.getConnection();
     List<DynamicValue> list = DynamicValueDAO.searchValidDynamicValue(connection, "ja");
     assertEquals(list.size(), 1);
     for (DynamicValue dynamicValue : list) {
