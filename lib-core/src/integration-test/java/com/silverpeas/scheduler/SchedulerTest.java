@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.AssertArgument;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
@@ -73,7 +74,6 @@ public class SchedulerTest {
   private MySchedulingEventListener eventHandler;
   private boolean isJobExecuted;
   private Scheduler scheduler = null;
-  private long time;
 
   public SchedulerTest() {
   }
@@ -89,29 +89,15 @@ public class SchedulerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    File[] quartzLibs = Maven.resolver().loadPomFromFile("pom.xml")
-        .resolve("org.quartz-scheduler:quartz", "com.jayway.awaitility:awaitility")
-        .withTransitivity().asFile();
-    File[] warLib = Maven.resolver().loadPomFromFile("pom.xml")
-        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-            "commons-codec:commons-codec", "commons-io:commons-io").withTransitivity().asFile();
-    JavaArchive testJar = ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml")
-        .addPackages(true, "com.silverpeas.scheduler");
-    // TODO only import the basic to make com.silverpeas.scheduler package works
-    testJar.addPackages(true, "org.silverpeas.initialization");
-    testJar.addPackages(true, "com.stratelia.silverpeas.silvertrace");
-    testJar.addPackages(true, "com.stratelia.silverpeas.silverpeasinitialize");
-    testJar.addPackages(true, "org.silverpeas.util");
-    WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war").addAsLibraries(testJar)
-        .addAsLibraries(quartzLibs).addAsLibraries(warLib).addAsResource(
-            "org/silverpeas/personalizationPeas/settings/personalizationPeasSettings.properties");
-    testWar.addClass(ServiceProvider.class).addClass(BeanContainer.class)
-        .addClass(CDIContainer.class)
-        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "META-INF/services/org.silverpeas.util.BeanContainer")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    return testWar;
+    return WarBuilder4LibCore.onWar().addQuartzSchedulerFeatures()
+        .addMavenDependencies("com.jayway.awaitility:awaitility")
+        .testFocusedOn((warBuilder) -> {
+          warBuilder.addPackages(true, "com.silverpeas.scheduler");
+          warBuilder.addPackages(true, "org.silverpeas.initialization");
+          warBuilder.addPackages(true, "com.stratelia.silverpeas.silvertrace");
+          warBuilder.addPackages(true, "com.stratelia.silverpeas.silverpeasinitialize");
+          warBuilder.addPackages(true, "org.silverpeas.util");
+        }).build();
   }
 
   @Before
@@ -313,13 +299,7 @@ public class SchedulerTest {
    * @return true if a job was fired.
    */
   private Callable<Boolean> jobIsFired() {
-    return new Callable<Boolean>() {
-
-      @Override
-      public Boolean call() throws Exception {
-        return eventHandler.isJobFired();
-      }
-    };
+    return () -> eventHandler.isJobFired();
   }
 
   /**
@@ -327,27 +307,7 @@ public class SchedulerTest {
    * @return true if a job was executed.
    */
   private Callable<Boolean> jobIsExecuted() {
-    return new Callable<Boolean>() {
-
-      @Override
-      public Boolean call() throws Exception {
-        return isJobExecuted();
-      }
-    };
-  }
-
-  /**
-   * Is a job was executed at a given time?
-   * @return true if a job was executed.
-   */
-  private Callable<Boolean> timeThresholdIsDone() {
-    return new Callable<Boolean>() {
-
-      @Override
-      public Boolean call() throws Exception {
-        return (System.currentTimeMillis() - time) >= 180000;
-      }
-    };
+    return () -> isJobExecuted();
   }
 
   /**

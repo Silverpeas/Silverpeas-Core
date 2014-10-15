@@ -177,4 +177,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(SilverpeasTrace.class, TestSilverpeasTrace.class, SilverTrace.class);
     return this;
   }
+
+  public WarBuilder4LibCore addQuartzSchedulerFeatures() {
+    return addMavenDependencies("org.quartz-scheduler:quartz");
+  }
 }
