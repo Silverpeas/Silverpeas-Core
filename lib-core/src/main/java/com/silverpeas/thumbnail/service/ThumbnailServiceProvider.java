@@ -23,36 +23,24 @@
  */
 package com.silverpeas.thumbnail.service;
 
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ThumbnailServiceFactory {
-
-  private static final ThumbnailServiceFactory instance = new ThumbnailServiceFactory();
-
-  @Inject
-  private ThumbnailService thumbnailService;
+public class ThumbnailServiceProvider {
 
   /**
    * Hidden constructor
    */
-  private ThumbnailServiceFactory() {
+  private ThumbnailServiceProvider() {
   }
 
   /**
    * @return the thumbnailService
    */
   public static ThumbnailService getThumbnailService() {
-    return getInstance().thumbnailService;
+    return ServiceProvider.getService(ThumbnailService.class);
   }
 
-  /**
-   * Gets an instance of this ThumbnailServiceFactory class.
-   * @return a ThumbnailServiceFactory instance.
-   */
-  private static ThumbnailServiceFactory getInstance() {
-    return instance;
-  }
 }

@@ -28,7 +28,7 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
-import com.silverpeas.thumbnail.service.ThumbnailServiceFactory;
+import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ImageUtil;
@@ -67,7 +67,7 @@ public class ThumbnailController {
   }
 
   private static ThumbnailService getThumbnailService() {
-    return ThumbnailServiceFactory.getThumbnailService();
+    return ThumbnailServiceProvider.getThumbnailService();
   }
   
   public static boolean processThumbnail(ForeignPK pk, String objectType, List<FileItem> parameters)

@@ -24,7 +24,6 @@
 
 package com.silverpeas.thumbnail.service;
 
-import com.silverpeas.annotation.Service;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDAO;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -32,10 +31,13 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@Service
+@Singleton
+@Default
 public class ThumbnailServiceImpl implements ThumbnailService {
 
   protected ThumbnailServiceImpl() {

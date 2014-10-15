@@ -80,7 +80,7 @@
   <ctx:component-scan base-package="org.silverpeas.contribution"/>
   <ctx:component-scan base-package="org.silverpeas.cache"/>
   <ctx:component-scan base-package="org.silverpeas.notification"/>
-  <ctx:component-scan base-package="com.silverpeas.thumbnail"/>
+  <!-- ebo <ctx:component-scan base-package="com.silverpeas.thumbnail"/> -->
   <ctx:component-scan base-package="org.silverpeas.thumbnail"/>
   <ctx:component-scan base-package="org.silverpeas.rating"/>
   <!-- YCH <ctx:component-scan base-package="org.silverpeas.persistence"/>-->
@@ -204,8 +204,8 @@
 
   <!-- the factory of thumbnail services.
   It wraps and provides an access to different service instances relative to thumbnail handling -->
-  <bean id="thumbnailServiceFactory" class="com.silverpeas.thumbnail.service.ThumbnailServiceFactory"
-        factory-method="getInstance"/>
+  <!-- ebo <bean id="thumbnailServiceFactory" class="com.silverpeas.thumbnail.service.ThumbnailServiceProvider"
+        factory-method="getInstance"/> -->
 
   <!-- the provider of the differnt access controllers available in Silverpeas -->
   <!-- YCH <bean id="accessControllerProvider" class="com.silverpeas.accesscontrol.AccessControllerProvider"-->
