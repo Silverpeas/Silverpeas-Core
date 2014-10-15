@@ -224,8 +224,8 @@ public class FileHandler extends AbstractFileHandler {
    */
   private Collection<File> mergeFileLists(final FileBasePath basePath,
       final Collection<File> sessionFiles, final Collection<File> realFiles) {
-    final Collection<File> listFiles = new LinkedList<File>();
-    final Set<String> filePaths = new HashSet<String>();
+    final Collection<File> listFiles = new LinkedList<>();
+    final Set<String> filePaths = new HashSet<>();
     if (sessionFiles != null) {
       for (final File sessionFile : sessionFiles) {
         listFiles.add(sessionFile);

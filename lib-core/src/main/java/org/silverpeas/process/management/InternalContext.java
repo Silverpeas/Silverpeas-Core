@@ -46,8 +46,8 @@ class InternalContext<C extends ProcessExecutionContext> {
 
   private final C processExecutionContext;
   private ProcessSession session;
-  private final List<SilverpeasProcess<C>> startedProcesses = new ArrayList<SilverpeasProcess<C>>();
-  private final Set<ProcessCheckType> checkTypesToProcess = new HashSet<ProcessCheckType>();
+  private final List<SilverpeasProcess<C>> startedProcesses = new ArrayList<>();
+  private final Set<ProcessCheckType> checkTypesToProcess = new HashSet<>();
 
   private boolean isFileTransactionInError = false;
   private SilverpeasProcess<?> processInError = null;
@@ -68,7 +68,6 @@ class InternalContext<C extends ProcessExecutionContext> {
    * Default unique constructor
    * @param previous
    * @param processExecutionContext
-   * @param session
    */
   protected InternalContext(final InternalContext<? extends ProcessExecutionContext> previous,
       final C processExecutionContext) {

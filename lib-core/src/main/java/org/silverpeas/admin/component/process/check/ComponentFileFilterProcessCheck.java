@@ -41,6 +41,7 @@ import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +49,6 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
-@Named
 public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
   @Inject
@@ -61,7 +61,7 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
    * .management.ProcessExecutionContext, org.silverpeas.process.io.file.FileHandler)
    */
   @Override
-  public void checkFiles(final ProcessExecutionContext processExecutionProcess,
+  public void checkFiles(final ProcessExecutionContext processExecutionContext,
       final FileHandler fileHandler) throws Exception {
 
     // Treatment on write only
@@ -69,7 +69,7 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
       // Loading all ComponentInst detected
       final Set<String> componentInstanceIds =
-          indentifyComponentInstances(processExecutionProcess, fileHandler);
+          indentifyComponentInstances(processExecutionContext, fileHandler);
 
       // Checking authorized and forbidden files on each component detected
       for (final String componentInstanceId : componentInstanceIds) {

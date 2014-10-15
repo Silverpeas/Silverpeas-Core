@@ -23,25 +23,31 @@
  */
 package org.silverpeas.process.annotation;
 
+import org.silverpeas.util.annotation.Action;
+
+import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to specify a service method that performs an action requesting simulation checks to
  * execute.
  * <p/>
- * User: Yohann Chastagnier
- * Date: 21/10/13
+ * This annotation is always used with the method annotation {@link Action} and
+ * @author Yohann Chastagnier
  */
 @Inherited
 @Documented
-@Target(METHOD)
+@Target({TYPE, METHOD})
 @Retention(RUNTIME)
+@InterceptorBinding
+@InterceptorBindingOfSimulationActionProcess
 public @interface SimulationActionProcess {
 
   /**

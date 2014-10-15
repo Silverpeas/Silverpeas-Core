@@ -23,9 +23,9 @@
  */
 package com.stratelia.webactiv.util.annotation;
 
+import org.junit.Test;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
-import org.junit.Test;
 import org.silverpeas.util.annotation.AnnotationUtil;
 import org.silverpeas.util.annotation.Language;
 import org.silverpeas.util.annotation.SourcePK;
@@ -47,10 +47,39 @@ import static org.hamcrest.Matchers.*;
 public class AnnotationUtilTest {
 
   @Test
+  public void getEngineParameterizedTypeFromAbstractHierarchy() {
+    Class engineType =
+        AnnotationUtil.searchParameterizedTypeFrom(Engine.class, AbstractWikispeed.class);
+    assertThat(engineType, notNullValue());
+    assertThat(engineType.getName(), is(ElectricEngine.class.getName()));
+  }
+
+  @Test
+  public void getEngineParameterizedTypeFromInterfaceHierarchy() {
+    Class engineType = AnnotationUtil.searchParameterizedTypeFrom(Engine.class, Wikispeed.class);
+    assertThat(engineType, notNullValue());
+    assertThat(engineType.getName(), is(ElectricEngine.class.getName()));
+  }
+
+  @Test
+  public void getModelParameterizedTypeFromAbstractHierarchy() {
+    Class engineType =
+        AnnotationUtil.searchParameterizedTypeFrom(Model.class, AbstractWikispeed.class);
+    assertThat(engineType, notNullValue());
+    assertThat(engineType.getName(), is(SedanModel.class.getName()));
+  }
+
+  @Test
+  public void getModelParameterizedTypeFromInterfaceHierarchy() {
+    Class engineType = AnnotationUtil.searchParameterizedTypeFrom(Model.class, Wikispeed.class);
+    assertThat(engineType, notNullValue());
+    assertThat(engineType.getName(), is(SedanModel.class.getName()));
+  }
+
+  @Test
   @SuppressWarnings("unchecked")
-  public void testGetAnnotedValues() {
-    Map<Class<Annotation>, List<Object>> annotationParameterValues =
-        new HashMap<Class<Annotation>, List<Object>>();
+  public void testGetAnnotatedValues() {
+    Map<Class<Annotation>, List<Object>> annotationParameterValues = new HashMap<>();
 
     // Prepare data
     annotationParameterValues.put((Class) Language.class, CollectionUtil.asList((Object) "fr"));
@@ -60,19 +89,20 @@ public class AnnotationUtilTest {
         CollectionUtil.asList((Object) new ForeignPK("1", "targetComponentId")));
 
     // Test
-    List<Object> test = AnnotationUtil.getAnnotedValues(annotationParameterValues, Language.class);
+    List<Object> test =
+        AnnotationUtil.getAnnotatedValues(annotationParameterValues, Language.class);
     assertThat(test, notNullValue());
     assertThat(test, hasItem("fr"));
 
-    test = AnnotationUtil.getAnnotedValues(annotationParameterValues, SourcePK.class);
+    test = AnnotationUtil.getAnnotatedValues(annotationParameterValues, SourcePK.class);
     assertThat(test, notNullValue());
     assertThat(test, hasSize(2));
 
-    test = AnnotationUtil.getAnnotedValues(annotationParameterValues, TargetPK.class);
+    test = AnnotationUtil.getAnnotatedValues(annotationParameterValues, TargetPK.class);
     assertThat(test, notNullValue());
     assertThat(test, hasSize(1));
 
-    test = AnnotationUtil.getAnnotedValues(annotationParameterValues, Inject.class);
+    test = AnnotationUtil.getAnnotatedValues(annotationParameterValues, Inject.class);
     assertThat(test, notNullValue());
     assertThat(test, hasSize(0));
   }

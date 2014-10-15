@@ -34,7 +34,7 @@ public abstract class AbstractSimulationElement<E> implements SimulationElement<
 
   /**
    * Default constructor.
-   * @param element
+   * @param element the source element.
    */
   public AbstractSimulationElement(final E element) {
     this.element = element;
@@ -42,7 +42,7 @@ public abstract class AbstractSimulationElement<E> implements SimulationElement<
 
   /**
    * Indicates the element as an old one
-   * @return
+   * @return the current instance of the element of the simulation.
    */
   public AbstractSimulationElement<E> setOld() {
     old = true;

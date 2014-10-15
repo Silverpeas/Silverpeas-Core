@@ -27,11 +27,13 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
+import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
 
@@ -44,28 +46,32 @@ import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * @author ehugonnet
  */
 public class PublicationTemplateImplTest {
-  private static File TARGET_DIR;
   private static final char SEPARATOR = separatorChar;
 
-  static {
-    TARGET_DIR = getFile(
-        PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-  }
-
-  public static final File MAPPINGS_PATH = getFile(TARGET_DIR, "templateRepository", "mapping");
-  public static final File TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
+  public File MAPPINGS_PATH;
+  public File TEMPLATES_PATH;
 
   public PublicationTemplateImplTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
+  @Before
+  public void setUpClass() throws Exception {
+    reset(TestBeanContainer.getMockedBeanContainer());
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
+        .thenReturn(mock(SilverpeasTrace.class));
+
+    final File targetDir = getFile(
+        PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
+            .getFile());
+    MAPPINGS_PATH = getFile(targetDir, "templateRepository", "mapping");
+    TEMPLATES_PATH = getFile(targetDir, "templateRepository");
+
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
   }
 

@@ -30,10 +30,8 @@ package org.silverpeas.process.session;
 public class DefaultProcessSession extends AbstractProcessSession {
 
   /**
-   * Instanciate an IO context from given user and component instance ID
-   * @param user
-   * @param componentInstanceId
-   * @return
+   * Instantiates an IO context from given user and component instance ID.
+   * @return an instance of a session for the process execution.
    */
   public static DefaultProcessSession create() {
     return new DefaultProcessSession();
@@ -41,9 +39,6 @@ public class DefaultProcessSession extends AbstractProcessSession {
 
   /**
    * Default constructor
-   * @param userId
-   * @param userDetail
-   * @param componentInstanceId
    */
   protected DefaultProcessSession() {
     super();

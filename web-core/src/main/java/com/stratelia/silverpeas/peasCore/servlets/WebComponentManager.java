@@ -24,11 +24,12 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.*;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.annotation.AnnotationUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -41,8 +42,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -53,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class handles all the route paths of Web Resources.
- * Fisrt time the manager is called by a resource, an initialization is done. It consits of
+ * First time the manager is called by a resource, an initialization is done. It consists of
  * scanning all the methods of the resource to extract these the can be associated to a route (URI
  * path).
  * @author Yohann Chastagnier
@@ -61,11 +60,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebComponentManager {
 
   static final Map<String, WebComponentManager> managedWebComponentRouters =
-      new ConcurrentHashMap<String, WebComponentManager>();
+      new ConcurrentHashMap<>();
 
   private com.stratelia.silverpeas.peasCore.servlets.Path defaultPath = null;
-  private Map<String, HttpMethodPaths> httpMethodPaths = new HashMap<String, HttpMethodPaths>();
-  private Map<String, Method> invokables = new HashMap<String, Method>();
+  private Map<String, HttpMethodPaths> httpMethodPaths = new HashMap<>();
+  private Map<String, Method> invokables = new HashMap<>();
 
   /**
    * This method must be called before all treatments in order to initilize the Web Component
@@ -80,9 +79,7 @@ public class WebComponentManager {
    * around
    * the component, the user, etc.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component request context.
-   * @return
    */
-  @SuppressWarnings("unchecked")
   public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
       WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> void manageRequestFor(
       Class<CONTROLLER> webComponentControllerClass, Class<? extends Annotation> httpMethodClass,
@@ -104,33 +101,12 @@ public class WebComponentManager {
       }
 
       // Retrieving the class of the web context associated to the given resource.
-      ParameterizedType webComponentRequestContextType = null;
-      Type superWebComponentControllerType = webComponentControllerClass;
-      while (webComponentRequestContextType == null) {
-        if (superWebComponentControllerType instanceof ParameterizedType) {
-          if (WebComponentRequestContext.class.isAssignableFrom(
-              (Class) ((ParameterizedType) superWebComponentControllerType)
-                  .getActualTypeArguments()[0]
-          )) {
-            webComponentRequestContextType = (ParameterizedType) superWebComponentControllerType;
-          } else {
-            superWebComponentControllerType =
-                ((ParameterizedType) superWebComponentControllerType).getRawType();
-          }
-        } else if (superWebComponentControllerType instanceof Class) {
-          superWebComponentControllerType =
-              ((Class) superWebComponentControllerType).getGenericSuperclass();
-        } else {
-          throw new IllegalArgumentException(
-              "Something is wrong or not handled in the specification of generic types");
-        }
-      }
-      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass =
-          ((Class<WEB_COMPONENT_REQUEST_CONTEXT>) webComponentRequestContextType
-              .getActualTypeArguments()[0]);
+      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass = AnnotationUtil
+          .searchParameterizedTypeFrom(WebComponentRequestContext.class,
+              webComponentControllerClass);
       try {
 
-        // Instanciating, and caching into the request, the web context.
+        // Instantiating, and caching into the request, the web context.
         WEB_COMPONENT_REQUEST_CONTEXT webComponentContext = webComponentContextClass.newInstance();
         webComponentContext.setHttpMethodClass(httpMethodClass);
         webComponentContext.setRequest(request);
@@ -145,11 +121,11 @@ public class WebComponentManager {
   }
 
   /**
-   * Initializes all the route paths from the method analizing of the given
+   * Initializes all the route paths from the method analyzing of the given
    * webComponentControllerClass instance.
    * The webComponentControllerClass must provide methods with only one parameter :
    * WebRouteContext.
-   * This methods can be annoted by :
+   * This methods can be annotated by :
    * <ul>
    * <li>{@link javax.ws.rs.GET}</li>
    * <li>{@link javax.ws.rs.POST}</li>
@@ -163,17 +139,16 @@ public class WebComponentManager {
    * <li>{@link com.stratelia.silverpeas.peasCore.servlets.annotation.Invokable} </li>
    * </ul>
    * The webComponentControllerClass methods must also return a {@link com.stratelia.silverpeas
-   * .peasCore.servlets.Navigation} instance or must be annoted by a @RedirectTo...
+   * .peasCore.servlets.Navigation} instance or must be annotated by a @RedirectTo...
    * @param webComponentControllerClass the webComponentControllerClass which exposes the method
    * that will be invoked.
    * @param <C> the type of the WebComponentController which exposes the method that will be
    * invoked.
-   * @return the manager initialized for the resoure.
+   * @return the manager initialized for the resource.
    */
   private static <C> WebComponentManager initialize(Class<C> webComponentControllerClass) {
     WebComponentManager webComponentManager = new WebComponentManager();
-    List<com.stratelia.silverpeas.peasCore.servlets.Path> allRegistredPaths =
-        new ArrayList<com.stratelia.silverpeas.peasCore.servlets.Path>();
+    List<com.stratelia.silverpeas.peasCore.servlets.Path> allRegisteredPaths = new ArrayList<>();
 
     // Scanning the methods of the resources
     for (Method resourceMethod : webComponentControllerClass.getMethods()) {
@@ -183,9 +158,8 @@ public class WebComponentManager {
       Class<?>[] parameterTypes = resourceMethod.getParameterTypes();
       if (parameterTypes.length == 1 &&
           WebComponentRequestContext.class.isAssignableFrom(parameterTypes[0])) {
-        Set<Class<? extends Annotation>> httpMethods =
-            new LinkedHashSet<Class<? extends Annotation>>();
-        Set<Path> paths = new LinkedHashSet<Path>();
+        Set<Class<? extends Annotation>> httpMethods = new LinkedHashSet<>();
+        Set<Path> paths = new LinkedHashSet<>();
         LowestRoleAccess lowestRoleAccess = null;
         boolean isDefaultPaths = false;
         Annotation redirectTo = null;
@@ -295,7 +269,7 @@ public class WebComponentManager {
               }
               webComponentManager.defaultPath = registredPaths.get(0);
             }
-            allRegistredPaths.addAll(registredPaths);
+            allRegisteredPaths.addAll(registredPaths);
           }
         }
 
@@ -314,7 +288,7 @@ public class WebComponentManager {
     }
 
     // Verifying method identifier invokation
-    for (com.stratelia.silverpeas.peasCore.servlets.Path path : allRegistredPaths) {
+    for (com.stratelia.silverpeas.peasCore.servlets.Path path : allRegisteredPaths) {
       for (String invokableIdentifier : path.getInvokeBeforeIdentifiers()) {
         if (!webComponentManager.invokables.containsKey(invokableIdentifier)) {
           throw new IllegalArgumentException("method behind '" + invokableIdentifier +
@@ -341,7 +315,7 @@ public class WebComponentManager {
    * @param path the path that must be matched in finding of the method to invoke.
    * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
-   * @return
+   * @return the resulting navigation.
    * @throws Exception
    */
   @SuppressWarnings({"unchecked", "ConstantConditions"})
@@ -355,7 +329,7 @@ public class WebComponentManager {
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 
-    // Just after the instanciation of the Web Controller
+    // Just after the instantiation of the Web Controller
     if (!webComponentController.onCreationCalled) {
       webComponentController.onInstantiation(webComponentRequestContext);
       webComponentController.onCreationCalled = true;

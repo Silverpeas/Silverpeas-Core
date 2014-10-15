@@ -57,7 +57,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.annotation.Action;
-import org.silverpeas.util.annotation.TargetObject;
+import org.silverpeas.util.annotation.SourceObject;
 import org.silverpeas.util.annotation.TargetPK;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -163,10 +163,7 @@ public class SimpleDocumentService implements AttachmentService {
           getPublicationTemplate(indexEntry.getComponent() + ":" + objectType + ":" + xmlFormName);
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
-    } catch (PublicationTemplateException e) {
-      SilverTrace.error("attachment",
-          "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
-    } catch (FormException e) {
+    } catch (PublicationTemplateException | FormException e) {
       SilverTrace.error("attachment",
           "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
     }
@@ -210,9 +207,7 @@ public class SimpleDocumentService implements AttachmentService {
       doc.setXmlFormId(xmlFormName);
       repository.updateDocument(session, doc);
       session.save();
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -228,7 +223,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+  public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       InputStream content) throws AttachmentException {
     return createAttachment(document, content, true);
   }
@@ -245,7 +240,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+  public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       InputStream content, boolean indexIt) {
     return createAttachment(document, content, indexIt, true);
   }
@@ -264,7 +259,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+  public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       InputStream content, boolean indexIt, boolean notify) {
     try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
@@ -281,9 +276,7 @@ public class SimpleDocumentService implements AttachmentService {
         createIndex(finalDocument);
       }
       return finalDocument;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -373,7 +366,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.UPDATE)
   @Override
-  public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, boolean indexIt,
+  public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, boolean indexIt,
       boolean notify) {
     try(JcrSession session = openSystemSession()) {
       SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
@@ -401,9 +394,7 @@ public class SimpleDocumentService implements AttachmentService {
         createIndex(document);
       }
       session.save();
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -411,7 +402,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.UPDATE)
   @Override
-  public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, InputStream in,
+  public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, InputStream in,
       boolean indexIt, boolean notify) {
     try(JcrSession session = openSystemSession()) {
       String owner = document.getEditedBy();
@@ -439,9 +430,7 @@ public class SimpleDocumentService implements AttachmentService {
         createIndex(finalDocument);
       }
       session.save();
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -481,9 +470,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
       FileUtils.deleteQuietly(fileToDelete);
       FileUtil.deleteEmptyDir(fileToDelete.getParentFile());
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -506,9 +493,7 @@ public class SimpleDocumentService implements AttachmentService {
       repository.setClone(session, original, clone);
       session.save();
       return clonePk;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -523,7 +508,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
-  public SimpleDocumentPK copyDocument(@TargetObject SimpleDocument original,
+  public SimpleDocumentPK copyDocument(@SourceObject SimpleDocument original,
       @TargetPK ForeignPK targetPk) {
     try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK copyPk;
@@ -541,9 +526,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
 
       return copyPk;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -603,9 +586,7 @@ public class SimpleDocumentService implements AttachmentService {
     try (JcrSession session = openSystemSession();
          InputStream in = repository.getContent(session, pk, lang)) {
       IOUtils.copyLarge(in, output, contentOffset, contentLength);
-    } catch (IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (RepositoryException ex) {
+    } catch (IOException | RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -640,7 +621,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.UPDATE)
   @Override
-  public void updateAttachment(@TargetObject @TargetPK SimpleDocument document, File content,
+  public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, File content,
       boolean indexIt, boolean notify) {
     InputStream in = null;
     try {
@@ -669,7 +650,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+  public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       File content) throws AttachmentException {
     return createAttachment(document, content, true);
   }
@@ -677,7 +658,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+  public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       File content, boolean indexIt) {
     return createAttachment(document, content, indexIt, true);
   }
@@ -685,7 +666,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.CREATE)
   @Override
-  public SimpleDocument createAttachment(@TargetObject @TargetPK SimpleDocument document,
+  public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       File content, boolean indexIt, boolean notify) {
     InputStream in = null;
     try {
@@ -765,10 +746,7 @@ public class SimpleDocumentService implements AttachmentService {
           notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
         }
       }
-    } catch (IOException e) {
-      throw new AttachmentException("AttachmentService.unlock()",
-          SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
-    } catch (RepositoryException e) {
+    } catch (IOException | RepositoryException e) {
       throw new AttachmentException("AttachmentService.unlock()",
           SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
     }
@@ -800,9 +778,7 @@ public class SimpleDocumentService implements AttachmentService {
       updateAttachment(session, document, false, false);
       session.save();
       return true;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -835,9 +811,7 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocumentPK updatedPk = repository.changeVersionState(session, pk, comment);
       session.save();
       return updatedPk;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -882,7 +856,7 @@ public class SimpleDocumentService implements AttachmentService {
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
-  public SimpleDocumentPK moveDocument(@TargetObject SimpleDocument document,
+  public SimpleDocumentPK moveDocument(@SourceObject SimpleDocument document,
       @TargetPK ForeignPK destination) {
     try(JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
@@ -893,9 +867,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
       session.save();
       return pk;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }
@@ -962,9 +934,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
       session.save();
       return ids;
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
 
@@ -997,9 +967,7 @@ public class SimpleDocumentService implements AttachmentService {
         }
       }
       session.save();
-    } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
   }

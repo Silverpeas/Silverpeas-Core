@@ -23,9 +23,6 @@
  */
 package org.silverpeas.process.check;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.silverpeas.process.management.ProcessCheckRegistration;
 
 /**
@@ -39,22 +36,22 @@ import org.silverpeas.process.management.ProcessCheckRegistration;
 public abstract class AbstractProcessCheck implements ProcessCheck {
 
   /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.check.Check#register()
+   * Just after Silverpeas server start, this method is called.
+   * The content of this method consists to register the class instance into
+   * <code>ProcessCheckRegistration</code>.
    */
   @Override
-  @PostConstruct
-  public void register() {
+  public void init() {
     ProcessCheckRegistration.register(this);
   }
 
   /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.check.Check#unregister()
+   * Just before Silverpeas server stop, this method is called.
+   * The content of this method consists to unregister the class instance from
+   * <code>ProcessCheckRegistration</code>.
    */
   @Override
-  @PreDestroy
-  public void unregister() {
+  public void release() {
     ProcessCheckRegistration.unregister(this);
   }
 }

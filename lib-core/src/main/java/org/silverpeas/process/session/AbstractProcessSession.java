@@ -34,25 +34,21 @@ import java.util.Map;
 public abstract class AbstractProcessSession implements ProcessSession {
 
   private final String id;
-  private final Map<String, Object> attributes = new HashMap<String, Object>();
+  private final Map<String, Object> attributes = new HashMap<>();
 
   /**
    * Default constructor
-   * @param userId
-   * @param userDetail
-   * @param componentInstanceId
    */
   protected AbstractProcessSession() {
     id = buildSessionId();
   }
 
   /**
-   * Builds an unique identifier
-   * @return
+   * Builds an unique identifier.
+   * @return a string that represents an unique identifier.
    */
   protected String buildSessionId() {
-    return new StringBuilder().append(System.currentTimeMillis()).append("-")
-        .append(System.identityHashCode(this)).toString();
+    return String.valueOf(System.currentTimeMillis()) + "-" + System.identityHashCode(this);
   }
 
   /**
@@ -87,6 +83,7 @@ public abstract class AbstractProcessSession implements ProcessSession {
    * @see org.silverpeas.process.session.ProcessSession#getAttribute(java.lang.String,
    * java.lang.Class)
    */
+  @SuppressWarnings("unchecked")
   @Override
   public <C> C getAttribute(final String name, final Class<C> expectedReturnedClass) {
     return (C) attributes.get(name);

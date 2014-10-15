@@ -23,27 +23,26 @@
  */
 package org.silverpeas.process.management;
 
-import java.util.LinkedList;
-import java.util.Map;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.process.SilverpeasProcess;
 import org.silverpeas.process.check.ProcessCheck;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
-
-import com.silverpeas.annotation.Service;
 import org.silverpeas.util.CollectionUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.inject.Singleton;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Default implementation of the <code>ProcessManagement</code> interface.
  * @author Yohann Chastagnier
  */
-@Service
+@Singleton
 public class DefaultProcessManagement implements ProcessManagement {
 
   private final ThreadLocal<LinkedList<InternalContext<?>>> parentFileTransactions =
-      new ThreadLocal<LinkedList<InternalContext<?>>>();
+      new ThreadLocal<>();
 
   /*
    * (non-Javadoc)
@@ -51,6 +50,7 @@ public class DefaultProcessManagement implements ProcessManagement {
    * org.silverpeas.io.ProcessManagement#execute(com.stratelia.webactiv.beans.admin.UserDetail,
    * java.lang.String, org.silverpeas.io.process.SilverpeasProcess)
    */
+  @SuppressWarnings("unchecked")
   @Override
   public <C extends ProcessExecutionContext> void execute(final SilverpeasProcess<C> process,
       final C processExecutionContext) throws Exception {
@@ -77,16 +77,16 @@ public class DefaultProcessManagement implements ProcessManagement {
         if (internalParentContexts != null && !processExecutionContext.requiresNewFileTransaction()) {
           // Attaching internal context to parents
           context =
-              new InternalContext<C>(internalParentContexts.peekLast().getLast(),
+              new InternalContext<>(internalParentContexts.peekLast().getLast(),
                   processExecutionContext);
         } else {
           // Prepare the context saving : new transaction case
           if (internalParentContexts == null) {
-            internalParentContexts = new LinkedList<InternalContext<?>>();
+            internalParentContexts = new LinkedList<>();
             parentFileTransactions.set(internalParentContexts);
           }
           // Initializing the new context
-          context = new InternalContext<C>(processExecutionContext);
+          context = new InternalContext<>(processExecutionContext);
           processExecutionContext.setFileHandler(new FileHandler(context.getSession()));
           // Saving the context
           internalParentContexts.add(context);

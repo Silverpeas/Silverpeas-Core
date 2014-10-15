@@ -43,7 +43,7 @@ public enum ProcessType {
   /** the process is oriented on file system manipulations (photo creations for example) */
   FILESYSTEM(ProcessCheckType.FILESYSTEM);
 
-  private final List<ProcessCheckType> checkTypesToProcess = new ArrayList<ProcessCheckType>();
+  private final List<ProcessCheckType> checkTypesToProcess = new ArrayList<>();
 
   private ProcessType(final ProcessCheckType... checkTypes) {
     Collections.addAll(checkTypesToProcess, checkTypes);

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.process.util;
 
+import org.silverpeas.process.SilverpeasProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.process.SilverpeasProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
 
 /**
  * Managing list of processes (tasks in other words) and setting global parameters for execution.
@@ -38,10 +38,10 @@ import org.silverpeas.process.management.ProcessExecutionContext;
 public class ProcessList<C extends ProcessExecutionContext> {
 
   /** List of Silverpeas processes */
-  private final List<SilverpeasProcess<C>> processes = new ArrayList<SilverpeasProcess<C>>();
+  private final List<SilverpeasProcess<C>> processes = new ArrayList<>();
 
   /** Common session parameters */
-  private final Map<String, Object> sessionParameters = new HashMap<String, Object>();
+  private final Map<String, Object> sessionParameters = new HashMap<>();
 
   /**
    * Default constructor
@@ -53,6 +53,7 @@ public class ProcessList<C extends ProcessExecutionContext> {
   /**
    * Default constructor
    */
+  @SafeVarargs
   public ProcessList(final SilverpeasProcess<C>... processes) {
     addAll(processes);
   }
@@ -65,18 +66,19 @@ public class ProcessList<C extends ProcessExecutionContext> {
   }
 
   /**
-   * Gets the list of Silverpeas processes
-   * @return
+   * Gets the list of Silverpeas processes.
+   * @return the list of processes to execute.
    */
   public List<SilverpeasProcess<C>> getList() {
     return processes;
   }
 
   /**
-   * Adds several Silverpeas processes
-   * @param processes
+   * Adds several Silverpeas processes.
+   * @param processes the processes to execute.
    */
-  public void addAll(final SilverpeasProcess<C>... processes) {
+  @SafeVarargs
+  public final void addAll(final SilverpeasProcess<C>... processes) {
     if (processes != null) {
       for (final SilverpeasProcess<C> process : processes) {
         add(process);
@@ -86,19 +88,17 @@ public class ProcessList<C extends ProcessExecutionContext> {
 
   /**
    * Adds several Silverpeas processes
-   * @param processes
+   * @param processes the processes to execute.
    */
   public void addAll(final List<SilverpeasProcess<C>> processes) {
     if (processes != null) {
-      for (final SilverpeasProcess<C> process : processes) {
-        add(process);
-      }
+      processes.forEach(this::add);
     }
   }
 
   /**
-   * Adds a Silverpeas process
-   * @param process
+   * Adds a Silverpeas process.
+   * @param process a process to execute.
    */
   public void add(final SilverpeasProcess<C> process) {
     if (process != null) {
@@ -107,33 +107,33 @@ public class ProcessList<C extends ProcessExecutionContext> {
   }
 
   /**
-   * Adds a session parameter
-   * @param key
-   * @param value
+   * Adds a session parameter.
+   * @param key the key of the session parameter.
+   * @param value the value of the session parameter.
    */
   public void put(final String key, final Object value) {
     sessionParameters.put(key, value);
   }
 
   /**
-   * Gets the common session parameters
-   * @return
+   * Gets the common session parameters.
+   * @return the map of session parameters.
    */
   public Map<String, Object> getSessionParameters() {
     return sessionParameters;
   }
 
   /**
-   * Indicates if the list of Silverpeas is empty
-   * @return
+   * Indicates if the list of Silverpeas is empty.
+   * @return true if it does not exist process to execute.
    */
   public boolean isEmpty() {
     return processes.isEmpty();
   }
 
   /**
-   * Indicates if the list of Silverpeas is not empty
-   * @return
+   * Indicates if the list of Silverpeas is not empty.
+   * @return true if it exists at least one process to execute.
    */
   public boolean isNotEmpty() {
     return !isEmpty();

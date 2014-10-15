@@ -23,8 +23,8 @@
  */
 package org.silverpeas.process.annotation;
 
-import org.silverpeas.util.MapUtil;
 import org.silverpeas.util.ActionType;
+import org.silverpeas.util.MapUtil;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.LinkedList;
@@ -36,7 +36,7 @@ import java.util.Map;
  * behind a primary key. Indeed, common services are not capable to find all elements behind a
  * primary key associated to a complex structure of documents only known by the component caller
  * itself.
- * <p/>
+ * <p>
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
@@ -121,5 +121,6 @@ public abstract class SimulationElementLister {
    * {@link SimulationElementLister#addElement(SimulationElement)} ]
    * @param source could be anything
    */
-  public abstract void listElements(final Object source, final String language, final WAPrimaryKey targetPK);
+  public abstract void listElements(final Object source, final String language,
+      final WAPrimaryKey targetPK);
 }

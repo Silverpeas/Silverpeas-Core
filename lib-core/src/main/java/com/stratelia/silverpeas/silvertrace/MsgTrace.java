@@ -41,7 +41,7 @@ import java.util.ResourceBundle;
  * @author Thierry Leroi
  * @version %I%, %G%
  */
-public final class MsgTrace {
+final class MsgTrace {
   private Properties allMessages = new Properties();
   private String languageMessages = "";
   private String pathMessages = "";
@@ -51,7 +51,7 @@ public final class MsgTrace {
    * Constructor declaration
    * @see
    */
-  public MsgTrace() {
+  MsgTrace() {
   }
 
   /**

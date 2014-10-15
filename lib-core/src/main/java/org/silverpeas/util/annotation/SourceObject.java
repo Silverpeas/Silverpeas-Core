@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,35 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.process;
+package org.silverpeas.util.annotation;
 
-import javax.inject.Inject;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.silverpeas.process.management.ProcessManagement;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Process API factory which offers an access to the <code>ProcessManagement</code> services.
+ * Annotation to specify a method object parameter object to be identified as a source one.
+ * <p/>
  * @author Yohann Chastagnier
  */
-public class ProcessFactory {
-  private final static ProcessFactory instance = new ProcessFactory();
-
-  @Inject
-  private ProcessManagement processManagement;
-
-  /**
-   * Instance accessor (singleton)
-   * @return
-   */
-  private static ProcessFactory getInstance() {
-    return instance;
-  }
-
-  /**
-   * Silverpeas processes management services access
-   * @return
-   */
-  public static ProcessManagement getProcessManagement() {
-    return getInstance().processManagement;
-  }
+@Inherited
+@Documented
+@Target(PARAMETER)
+@Retention(RUNTIME)
+public @interface SourceObject {
 }

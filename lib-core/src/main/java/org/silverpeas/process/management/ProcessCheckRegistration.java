@@ -37,11 +37,11 @@ import org.silverpeas.process.check.ProcessCheck;
 public class ProcessCheckRegistration {
 
   /** Check container */
-  private static final Collection<ProcessCheck> checks = new ArrayList<ProcessCheck>();
+  private static final Collection<ProcessCheck> checks = new ArrayList<>();
 
   /**
    * Register a check
-   * @param check
+   * @param check an instance of a check.
    */
   public static synchronized void register(final ProcessCheck check) {
     checks.add(check);
@@ -49,7 +49,7 @@ public class ProcessCheckRegistration {
 
   /**
    * Unregister a check
-   * @param check
+   * @param check an instance of a check.
    */
   public static synchronized void unregister(final ProcessCheck check) {
     checks.remove(check);

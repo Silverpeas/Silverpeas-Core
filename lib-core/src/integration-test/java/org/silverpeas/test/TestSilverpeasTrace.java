@@ -25,8 +25,11 @@
 package org.silverpeas.test;
 
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -37,6 +40,53 @@ import java.util.Properties;
  */
 @Singleton
 public class TestSilverpeasTrace implements SilverpeasTrace {
+
+  private static List<String> debugMessages = new ArrayList<>();
+  private static List<String> infoMessages = new ArrayList<>();
+  private static List<String> warnMessages = new ArrayList<>();
+  private static List<String> errorMessages = new ArrayList<>();
+  private static List<String> fatalMessages = new ArrayList<>();
+
+  public static void clean() {
+    debugMessages.clear();
+    infoMessages.clear();
+    warnMessages.clear();
+    errorMessages.clear();
+    fatalMessages.clear();
+  }
+
+  public static List<String> getDebugMessages() {
+    return debugMessages;
+  }
+
+  public static List<String> getInfoMessages() {
+    return infoMessages;
+  }
+
+  public static List<String> getWarnMessages() {
+    return warnMessages;
+  }
+
+  public static List<String> getErrorMessages() {
+    return errorMessages;
+  }
+
+  public static List<String> getFatalMessages() {
+    return fatalMessages;
+  }
+
+  private static String join(String... parts) {
+    StringBuilder sB = new StringBuilder();
+    for (String part : parts) {
+      if (StringUtil.isDefined(part)) {
+        if (sB.length() > 0) {
+          sB.append("@");
+        }
+        sB.append(part);
+      }
+    }
+    return sB.toString();
+  }
 
   @Override
   public void debug(final String module, final String classe, final String message) {
@@ -58,7 +108,9 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void debug(final String module, final String classe, final String message,
       final String extraInfos, final Throwable ex) {
-
+    debugMessages.add(StringUtil.join(
+        new String[]{module, classe, message, extraInfos, ((ex != null) ? ex.getMessage() : null)},
+        '@'));
   }
 
   @Override
@@ -81,7 +133,8 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void info(final String module, final String classe, final String messageID,
       final String extraInfos, final Throwable ex) {
-
+    infoMessages
+        .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
   }
 
   @Override
@@ -104,7 +157,8 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void warn(final String module, final String classe, final String messageID,
       final String extraInfos, final Throwable ex) {
-
+    warnMessages
+        .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
   }
 
   @Override
@@ -127,7 +181,8 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void error(final String module, final String classe, final String messageID,
       final String extraInfos, final Throwable ex) {
-
+    errorMessages
+        .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
   }
 
   @Override
@@ -150,7 +205,8 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void fatal(final String module, final String classe, final String messageID,
       final String extraInfos, final Throwable ex) {
-
+    fatalMessages
+        .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
   }
 
   @Override

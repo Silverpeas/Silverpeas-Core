@@ -50,17 +50,17 @@ public abstract class AbstractFileProcessCheck extends AbstractProcessCheck {
    * )
    */
   @Override
-  public final void check(final ProcessExecutionContext processExecutionProcess) throws Exception {
-    checkFiles(processExecutionProcess, processExecutionProcess.getFileHandler());
+  public final void check(final ProcessExecutionContext processExecutionContext) throws Exception {
+    checkFiles(processExecutionContext, processExecutionContext.getFileHandler());
   }
 
   /**
    * Contains the treatment of the verification. The file handler (@see {@link FileHandler})
    * associated to the current execution of chained Silverpeas processes is passed.
-   * @param processExecutionProcess
-   * @param fileHandler
+   * @param processExecutionContext the context of chained list of checks execution.
+   * @param fileHandler the instance of the file handler.
    * @throws Exception
    */
-  abstract public void checkFiles(ProcessExecutionContext processExecutionProcess,
+  abstract public void checkFiles(ProcessExecutionContext processExecutionContext,
       final FileHandler fileHandler) throws Exception;
 }

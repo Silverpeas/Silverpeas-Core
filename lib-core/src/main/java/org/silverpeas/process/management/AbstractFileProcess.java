@@ -51,18 +51,18 @@ public abstract class AbstractFileProcess<C extends ProcessExecutionContext> ext
    * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  public final void process(final C processExecutionProcess, final ProcessSession session)
+  public final void process(final C processExecutionContext, final ProcessSession session)
       throws Exception {
-    processFiles(processExecutionProcess, session, processExecutionProcess.getFileHandler());
+    processFiles(processExecutionContext, session, processExecutionContext.getFileHandler());
   }
 
   /**
    * Containing main treatment of the process.
-   * @param processExecutionProcess
+   * @param processExecutionContext
    * @param session
    * @param fileHandler
    * @throws Exception
    */
-  abstract public void processFiles(final C processExecutionProcess, final ProcessSession session,
+  abstract public void processFiles(final C processExecutionContext, final ProcessSession session,
       FileHandler fileHandler) throws Exception;
 }

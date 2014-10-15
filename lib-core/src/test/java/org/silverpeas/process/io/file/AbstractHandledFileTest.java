@@ -23,43 +23,57 @@
  */
 package org.silverpeas.process.io.file;
 
-import java.io.File;
-
+import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-
+import org.junit.BeforeClass;
 import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.test.TestBeanContainer;
 
-import static org.silverpeas.util.GeneralPropertiesManager.getString;
+import java.io.File;
+import java.io.IOException;
+
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
+import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractHandledFileTest {
 
-  protected static final FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-  protected static final ProcessSession currentSession = createSessionTest();
   protected static final String componentInstanceId = "componentInstanceId";
-  protected static final File sessionRootPath = new File(getString("tempPath"));
-  protected static final File realRootPath = new File(BASE_PATH_TEST.getPath());
-  protected static final File otherFile = new File(
-      new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
-  protected static final File sessionHandledPath = FileUtils.getFile(sessionRootPath,
-      currentSession.getId(), BASE_PATH_TEST.getHandledNodeName());
-  protected static final File realComponentPath = FileUtils.getFile(realRootPath,
-      componentInstanceId);
-  protected static final File sessionComponentPath = FileUtils.getFile(sessionRootPath,
-      currentSession.getId(), BASE_PATH_TEST.getHandledNodeName(), componentInstanceId);
+  protected FileBasePath BASE_PATH_TEST;
+  protected ProcessSession currentSession;
+  protected File sessionRootPath;
+  protected File realRootPath;
+  protected File otherFile;
+  protected File sessionHandledPath;
+  protected File realComponentPath;
+  protected File sessionComponentPath;
 
   protected FileHandler fileHandler;
 
   @Before
   public void beforeTest() throws Exception {
-    cleanTest();
+    reset(TestBeanContainer.getMockedBeanContainer());
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
+        .thenReturn(mock(SilverpeasTrace.class));
+    BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
+    currentSession = createSessionTest();
+    sessionRootPath = new File(getString("tempPath"));
+    realRootPath = new File(BASE_PATH_TEST.getPath());
+    otherFile = new File(new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
+    sessionHandledPath = FileUtils
+        .getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName());
+    realComponentPath = FileUtils.getFile(realRootPath, componentInstanceId);
+    sessionComponentPath = FileUtils
+        .getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName(),
+            componentInstanceId);
+
     fileHandler = new FileHandler(currentSession);
     realComponentPath.mkdirs();
     sessionComponentPath.mkdirs();

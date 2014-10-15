@@ -43,7 +43,8 @@ import java.util.HashSet;
 public abstract class WarBuilder<T extends WarBuilder>
     implements Builder<WebArchive>, CommonWebArchive<T> {
 
-  public Collection<String> mavenDependencies = new HashSet<>(Arrays.asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
+  public Collection<String> mavenDependencies = new HashSet<>(Arrays
+      .asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
           "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core"));
 
   private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");

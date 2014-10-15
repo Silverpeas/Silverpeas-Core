@@ -23,54 +23,59 @@
  */
 package org.silverpeas.process.management;
 
-import static org.silverpeas.util.GeneralPropertiesManager.getString;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.getFile;
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.ProcessProvider;
 import org.silverpeas.process.check.ProcessCheck;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.test.WarBuilder4LibCore;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
  * @author Yohann Chastagnier
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-process.xml" })
+@RunWith(Arquillian.class)
 public class ProcessManagementTest {
 
-  private static final FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-  private static final String componentInstanceId = "componentInstanceId";
-  private static final File sessionRootPath = new File(getString("tempPath"));
-  private static final File testResultFile = getFile(new File(BASE_PATH_TEST.getPath()),
-      componentInstanceId, "testResult");
-  private static final File testSuccessfulFile = getFile(new File(BASE_PATH_TEST.getPath()),
-      componentInstanceId, "testSuccessful");
-  private static final File testSecondFile = getFile(new File(BASE_PATH_TEST.getPath()),
-      componentInstanceId, "testSecondResult");
+  private FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
+  private String componentInstanceId = "componentInstanceId";
+  private File sessionRootPath = new File(getString("tempPath"));
+  private File testResultFile =
+      getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testResult");
+  private File testSuccessfulFile =
+      getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSuccessful");
+  private File testSecondFile =
+      getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSecondResult");
   private static String testSecondResultContent = "File check in has not been done.";
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWar()
+        .addSilverpeasExceptionBases()
+        .addFileRepositoryFeatures()
+        .addCommonUserBeans()
+        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.process"))
+        .build();
+  }
 
   @Before
   public void beforeTest() throws Exception {
@@ -290,8 +295,8 @@ public class ProcessManagementTest {
         });
       }
     };
-    final ProcessCheck check = new CheckFileTest();
-    check.register();
+    final ProcessCheck check = new ThrowIoExceptionCheckFileTest();
+    check.init();
     try {
       assertThat(testResultFile.exists(), is(false));
       assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
@@ -311,7 +316,7 @@ public class ProcessManagementTest {
       assertThat(test2.getException(), instanceOf(IOException.class));
       assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
     } finally {
-      check.unregister();
+      check.release();
     }
   }
 
@@ -511,23 +516,18 @@ public class ProcessManagementTest {
   private void executeTest(final boolean newThread, final AbstractFileProcessTest... processes)
       throws Exception {
     if (newThread) {
-      final Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            ProcessFactory.getProcessManagement().execute(
-                new ProcessList<ProcessExecutionContextTest>(processes),
-                new ProcessExecutionContextTest());
-          } catch (final Exception e) {
-            throw new RuntimeException(e);
-          }
+      final Thread thread = new Thread(() -> {
+        try {
+          ProcessProvider.getProcessManagement()
+              .execute(new ProcessList<>(processes), new ProcessExecutionContextTest());
+        } catch (final Exception e) {
+          throw new RuntimeException(e);
         }
       });
       thread.start();
     } else {
-      ProcessFactory.getProcessManagement().execute(
-          new ProcessList<ProcessExecutionContextTest>(processes),
-          new ProcessExecutionContextTest());
+      ProcessProvider.getProcessManagement()
+          .execute(new ProcessList<>(processes), new ProcessExecutionContextTest());
     }
   }
 
@@ -602,17 +602,6 @@ public class ProcessManagementTest {
     public void onSuccessful() throws Exception {
       writeStringToFile(testSuccessfulFile, " onSuccessful" + "(" + id + ")", true);
       super.onSuccessful();
-    }
-  }
-
-  /**
-   * @author Yohann Chastagnier
-   */
-  private class CheckFileTest extends AbstractFileProcessCheck {
-
-    @Override
-    public void checkFiles(final ProcessExecutionContext context, final FileHandler fileHandler) throws Exception {
-      throw new IOException();
     }
   }
 

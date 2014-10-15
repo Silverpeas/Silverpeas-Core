@@ -23,8 +23,6 @@
  */
 package org.silverpeas.util;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +30,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -341,7 +340,7 @@ public class MapUtil {
       V leftValue = entry.getValue();
       if (right.containsKey(leftKey)) {
         V rightValue = onlyOnRight.remove(leftKey);
-        if (!ObjectUtils.equals(leftValue, rightValue)) {
+        if (!Objects.equals(leftValue, rightValue)) {
           return false;
         }
       } else {

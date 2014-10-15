@@ -1,12 +1,11 @@
 package org.silverpeas.attachment.process;
 
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.process.io.file.DummyHandledFile;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.inject.Named;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,14 +13,8 @@ import java.util.List;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-@Named
 public class SimpleDocumentDummyHandledFileConverter
     extends AbstractDummyHandledFileConverter<SimpleDocumentSimulationElement> {
-
-  @Override
-  public Class<SimpleDocumentSimulationElement> getSourceElementType() {
-    return SimpleDocumentSimulationElement.class;
-  }
 
   @Override
   public List<DummyHandledFile> convert(final List<SimpleDocumentSimulationElement> elements,

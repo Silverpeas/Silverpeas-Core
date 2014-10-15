@@ -28,8 +28,8 @@ import java.util.Iterator;
 
 /**
  * The interface for all the SilverContent (filebox+, ..)
- * @deprecated use instead {@code org.silverpeas.contribution.model.Contribution} and
- * {@code org.silverpeas.contribution.model.ContributionContent} interfaces.
+ * @deprecated use instead {@link org.silverpeas.contribution.model.Contribution} and
+ * {@link org.silverpeas.contribution.model.ContributionContent} interfaces.
  */
 public interface SilverContentInterface {
   public String getName();

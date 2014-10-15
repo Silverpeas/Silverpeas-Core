@@ -53,7 +53,6 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
-@Named
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   protected static boolean dataStorageInSpaceQuotaActivated;
 
@@ -75,7 +74,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
    * .management.ProcessExecutionContext, org.silverpeas.process.io.file.FileHandler)
    */
   @Override
-  public void checkFiles(final ProcessExecutionContext processExecutionProcess,
+  public void checkFiles(final ProcessExecutionContext processExecutionContext,
       final FileHandler fileHandler) throws Exception {
 
     // If not activated, noting is done
@@ -87,7 +86,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     if (IOAccess.READ_WRITE.equals(fileHandler.getIoAccess())) {
 
       // Checking data storage quota on each space detected
-      for (final SpaceInst space : indentifyHandledSpaces(processExecutionProcess, fileHandler)) {
+      for (final SpaceInst space : indentifyHandledSpaces(processExecutionContext, fileHandler)) {
         try {
           SpaceServiceProvider.getDataStorageSpaceQuotaService()
               .verify(DataStorageSpaceQuotaKey.from(space),
@@ -96,7 +95,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
 
           // Loading the component from which a user action has generated a quota exception
           ComponentInstLight fromComponent = null;
-          final String fromComponentInstanceId = processExecutionProcess.getComponentInstanceId();
+          final String fromComponentInstanceId = processExecutionContext.getComponentInstanceId();
           if (StringUtil.isDefined(fromComponentInstanceId)) {
             fromComponent = organizationController.getComponentInstLight(fromComponentInstanceId);
           }

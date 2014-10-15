@@ -23,22 +23,28 @@
  */
 package org.silverpeas.process.annotation;
 
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.process.SimpleDocumentSimulationElement;
+
 /**
- * User: Yohann Chastagnier
- * Date: 28/10/13
+ * To be handled in a simulation action processing, an implementation of this interface must
+ * exist for a resource type.
+ * For example, implementation {@link SimpleDocumentSimulationElement} handles
+ * {@link SimpleDocument} resources.
+ * @author Yohann Chastagnier
  */
 public interface SimulationElement<E> {
 
   /**
    * Indicates if the element is an old one.
    * This information is useful in update or delete action.
-   * @return
+   * @return true if the element is an old one, false otherwise.
    */
   boolean isOld();
 
   /**
    * Gets the typed element
-   * @return
+   * @return the typed element.
    */
   E getElement();
 }

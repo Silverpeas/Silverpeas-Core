@@ -27,8 +27,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * User: Yohann Chastagnier
- * Date: 23/10/13
+ * @author Yohann Chastagnier
  */
 public abstract class AbstractDummyHandledFile implements DummyHandledFile {
 

@@ -37,7 +37,7 @@ public class FileHandlerException extends SilverpeasRuntimeException {
 
   /**
    * Default constructor
-   * @param message
+   * @param message the specific message of the exception.
    */
   public FileHandlerException(final String message) {
     super("FileHandler", SilverpeasException.ERROR, message);

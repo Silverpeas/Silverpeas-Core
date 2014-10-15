@@ -25,18 +25,18 @@ package org.silverpeas.util.annotation;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import org.apache.commons.lang3.NotImplementedException;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MapUtil;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import org.silverpeas.util.WAPrimaryKey;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.silverpeas.attachment.model.SimpleDocument;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -51,32 +51,83 @@ import java.util.Map;
 public class AnnotationUtil {
 
   /**
+   * This method is awesome.
+   * It permits to retrieve the class of a parametrized type, even if this type is parametrized
+   * into a super class or interface from a hierarchy of classes.
+   * <p>
+   * Example (it is stupid, but it is for understanding):
+   * <pre>
+   *   public interface Car<? extends Model, ? extends Engine> {...}
+   *
+   *   public abstract SedanElectricCar extends Car<Sedan, Electric> {...}
+   *
+   *   public class Wikispeed implements SedanElectricCar {...}
+   * </pre>
+   * When trying to get some parametrized type information from an instance of Wikispeed,
+   * perform this operation:
+   * <pre>
+   *   Class<? extends Engine> engineClassOfCar =
+   *     AnnotationUtil.searchParameterizedTypeFrom(Engine.class, Wikispeed.class)
+   * </pre>
+   * Some explanations:
+   * <ul>
+   * <li>Engine.class is the superclass of the searched class from parametrized type</li>
+   * <li>Wikispeed.class is the instance from which the parametrized type is searched</li>
+   * </ul>
+   * @param searchedParametrizedTypeClass the superclass of the searched parametrized type.
+   * @param fromClass the instance from which the parametrized type is searched.
+   * @return the class of the parametrized type if any, null otherwise.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Class<T> searchParameterizedTypeFrom(Class<?> searchedParametrizedTypeClass,
+      Class<?> fromClass) {
+    return (Class) searchParameterizedTypeFrom(searchedParametrizedTypeClass, (Type) fromClass);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Type searchParameterizedTypeFrom(Class<?> searchedParametrizedTypeClass,
+      Type fromClassType) {
+    if (fromClassType instanceof ParameterizedType) {
+      for (Type classType : ((ParameterizedType) fromClassType).getActualTypeArguments()) {
+        if (classType instanceof Class &&
+            searchedParametrizedTypeClass.isAssignableFrom((Class) classType)) {
+          return classType;
+        }
+      }
+      return searchParameterizedTypeFrom(searchedParametrizedTypeClass,
+          ((ParameterizedType) fromClassType).getRawType());
+    } else if (fromClassType != null) {
+      Type result = searchParameterizedTypeFrom(searchedParametrizedTypeClass,
+          ((Class) fromClassType).getGenericSuperclass());
+      if (result != null) {
+        return result;
+      }
+      for (Type interfaceType : ((Class) fromClassType).getGenericInterfaces()) {
+        result = searchParameterizedTypeFrom(searchedParametrizedTypeClass, interfaceType);
+        if (result != null) {
+          return result;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * Provides a centralized way to extract annotation of a method.
-   * @param invocationContext
-   * @return
+   * @param invocationContext the context of invocation.
+   * @return the map with keys of Annotation class and values of object list.
    * @throws Exception
    */
   public static <A extends Annotation> Map<Class<A>, A> extractMethodAnnotations(
       InvocationContext invocationContext) throws Exception {
-    return extractMethodAnnotations(getMethodFromContext(invocationContext));
+    return extractMethodAnnotations(getInterceptedMethodFromContext(invocationContext));
   }
 
   /**
    * Provides a centralized way to extract annotation of a method.
-   * @param invocationContext
-   * @return
-   * @throws Exception
-   */
-  public static <A extends Annotation> Map<Class<A>, A> extractMethodAnnotations(
-      ProceedingJoinPoint invocationContext) throws Exception {
-    return extractMethodAnnotations(getMethodFromContext(invocationContext));
-  }
-
-  /**
-   * Provides a centralized way to extract annotation of a method.
-   * @param method
-   * @param <A>
-   * @return
+   * @param method the intercepted method that will be invoked.
+   * @param <A> the type of an annotation.
+   * @return the map with keys of Annotation class and values of object list.
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
@@ -84,9 +135,7 @@ public class AnnotationUtil {
       throws Exception {
 
     // Initializing the results
-    Map<Class<? extends Annotation>, Annotation> results =
-        new LinkedHashMap<Class<? extends Annotation>, Annotation>();
-
+    Map<Class<? extends Annotation>, Annotation> results = new LinkedHashMap<>();
 
     for (Annotation annotation : method.getAnnotations()) {
       results.put(annotation.annotationType(), annotation);
@@ -96,42 +145,29 @@ public class AnnotationUtil {
   }
 
   /**
-   * Provides a centralized way to extract annoted method parameter values.
-   * @param invocationContext
-   * @return
+   * Provides a centralized way to extract annotated method parameter values.
+   * @param invocationContext the context of invocation.
+   * @return the map with keys of Annotation class and values of object list.
    * @throws Exception
    */
-  public static Map<Class<Annotation>, List<Object>> extractMethodAnnotedParameterValues(
+  public static Map<Class<Annotation>, List<Object>> extractMethodAnnotatedParameterValues(
       InvocationContext invocationContext) throws Exception {
-    return extractMethodAnnotedParameterValues(getMethodFromContext(invocationContext),
+    return extractMethodAnnotatedParameterValues(getInterceptedMethodFromContext(invocationContext),
         invocationContext.getParameters());
   }
 
   /**
-   * Provides a centralized way to extract annoted method parameter values.
-   * @param invocationContext
-   * @return
-   * @throws Exception
-   */
-  public static Map<Class<Annotation>, List<Object>> extractMethodAnnotedParameterValues(
-      ProceedingJoinPoint invocationContext) throws Exception {
-    return extractMethodAnnotedParameterValues(getMethodFromContext(invocationContext),
-        invocationContext.getArgs());
-  }
-
-  /**
-   * Provides a centralized way to extract annoted method parameter values.
-   * @param method
-   * @return
+   * Provides a centralized way to extract annotated method parameter values.
+   * @param method the intercepted method that will be invoked.
+   * @return the map with keys of Annotation class and values of object list.
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private static Map<Class<Annotation>, List<Object>> extractMethodAnnotedParameterValues(
+  private static Map<Class<Annotation>, List<Object>> extractMethodAnnotatedParameterValues(
       Method method, Object[] parameterValues) throws Exception {
 
     // Initializing the results
-    Map<Class<? extends Annotation>, List<Object>> results =
-        new LinkedHashMap<Class<? extends Annotation>, List<Object>>();
+    Map<Class<? extends Annotation>, List<Object>> results = new LinkedHashMap<>();
 
     Annotation[][] annotations = method.getParameterAnnotations();
     for (int i = 0; i < annotations.length; i++) {
@@ -152,10 +188,6 @@ public class AnnotationUtil {
                 addPKParameterValue(results, parameterAnnotation.annotationType(), parameterValue);
               }
 
-            } else if (parameterAnnotation.annotationType().isAssignableFrom(TargetObject.class)) {
-
-              MapUtil.putAddList(results, parameterAnnotation.annotationType(), parameterValue);
-
             } else if (parameterAnnotation.annotationType().isAssignableFrom(Language.class)) {
 
               String language = null;
@@ -166,6 +198,8 @@ public class AnnotationUtil {
               }
               MapUtil.putAddList(results, parameterAnnotation.annotationType(), language);
 
+            } else {
+              MapUtil.putAddList(results, parameterAnnotation.annotationType(), parameterValue);
             }
           }
         }
@@ -176,10 +210,18 @@ public class AnnotationUtil {
   }
 
   /**
-   * Perform pk parameter value
-   * @param parameterValues
-   * @param annotationClass
-   * @param object
+   * This method extracts from an object parameter annotated by {@link SourcePK} or {@link
+   * TargetPK} the instance of {@link WAPrimaryKey} that it contains. The extracted functional
+   * key is added to the given container parameterValue.
+   * If the type of the annotated object is not handled, an exception is thrown.
+   * @param parameterValues the container of functional key values of parameters.
+   * @param annotationClass the class of the annotation that indicate to take in account a method
+   * parameter.
+   * @param object the instance of the parameter.
+   * @throws NotImplementedException when trying to extract a {@link WAPrimaryKey} from an object
+   * that is not yet handled. If the object you try to handle is a centralized one,
+   * that is to say, used by several components, then you can add the support of this object by
+   * this method. If not, try to implement {@link SilverpeasContent} interface.
    */
   private static void addPKParameterValue(
       Map<Class<? extends Annotation>, List<Object>> parameterValues,
@@ -206,7 +248,7 @@ public class AnnotationUtil {
       waPrimaryKey = ((SimpleDocument) object).getPk();
     } else {
       if (object != null) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("");
       }
     }
 
@@ -216,45 +258,35 @@ public class AnnotationUtil {
   }
 
   /**
-   * Gets the values associated to an annotation.
-   * @param annotedValues
+   * Gets the list of annotation instances from the given list of annotations which the type is
+   * the one given.
+   * @param annotatedValues container that contains several types of annotation instances.
    * @return List empty or not (but never null)
    */
   @SuppressWarnings("unchecked")
-  public static List<Object> getAnnotedValues(Map<Class<Annotation>, List<Object>> annotedValues,
+  public static List<Object> getAnnotatedValues(
+      Map<Class<Annotation>, List<Object>> annotatedValues,
       Class<? extends Annotation> annotationClass) {
     List<Object> result = null;
 
-    if (annotedValues != null) {
-      result = annotedValues.get((Class) annotationClass);
+    if (annotatedValues != null) {
+      result = annotatedValues.get((Class) annotationClass);
     }
 
     if (result == null) {
-      result = new ArrayList<Object>(0);
+      result = new ArrayList<>(0);
     }
     return result;
   }
 
   /**
-   * Provides a centralized way to extract annotation of a method.
-   * @param invocationContext
-   * @return
+   * Provides a centralized way to find the method that has been intercepted.
+   * @param invocationContext the context of invocation.
+   * @return the method that has been intercepted.
    * @throws Exception
    */
-  private static Method getMethodFromContext(Object invocationContext) throws Exception {
-    if (invocationContext instanceof ProceedingJoinPoint) {
-      ProceedingJoinPoint context = (ProceedingJoinPoint) invocationContext;
-      final String methodName = context.getSignature().getName();
-      final MethodSignature methodSignature = (MethodSignature) context.getSignature();
-      Method method = methodSignature.getMethod();
-      if (method.getDeclaringClass().isInterface()) {
-        method = context.getTarget().getClass()
-            .getDeclaredMethod(methodName, method.getParameterTypes());
-      }
-      return method;
-    } else if (invocationContext instanceof InvocationContext) {
-      return ((InvocationContext) invocationContext).getMethod();
-    }
-    throw new NotImplementedException();
+  private static Method getInterceptedMethodFromContext(InvocationContext invocationContext)
+      throws Exception {
+    return invocationContext.getMethod();
   }
 }

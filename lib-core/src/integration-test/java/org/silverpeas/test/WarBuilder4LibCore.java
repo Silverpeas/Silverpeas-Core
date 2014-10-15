@@ -24,13 +24,22 @@
 
 package org.silverpeas.test;
 
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.PasteDetail;
+import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.contribution.model.Contribution;
+import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.util.*;
@@ -38,7 +47,9 @@ import org.silverpeas.util.exception.FromModule;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.pool.ConnectionPool;
 
 /**
@@ -84,7 +95,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <ul>
    * <li>{@link StringUtil}</li>
    * <li>{@link CollectionUtil}</li>
+   * <li>{@link MapUtil}</li>
    * <li>{@link AssertArgument}</li>
+   * <li>{@link ActionType} and classes in {@link org.silverpeas.util.annotation}</li>
+   * <li>{@link #addSilverpeasContentFeatures()}</li>
    * </ul>
    * @return the instance of the war builder.
    */
@@ -92,11 +106,33 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(StringUtil.class.getName())) {
       addClasses(StringUtil.class);
     }
+    if (!contains(MapUtil.class.getName())) {
+      addClasses(MapUtil.class);
+    }
     if (!contains(CollectionUtil.class.getName())) {
-      addClasses(CollectionUtil.class);
+      addClasses(CollectionUtil.class, ExtractionList.class, ExtractionComplexList.class);
     }
     if (!contains(AssertArgument.class.getName())) {
       addClasses(AssertArgument.class);
+    }
+    if (!contains(ActionType.class.getName())) {
+      addSilverpeasContentFeatures();
+      addClasses(ActionType.class);
+      addPackages(false, "org.silverpeas.util.annotation");
+    }
+    return this;
+  }
+
+  /**
+   * Sets common user beans.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addCommonUserBeans() {
+    if (!contains(UserDetail.class.getName())) {
+      addClasses(UserDetail.class, UserAccessLevel.class, UserState.class);
+    }
+    if (!contains(Domain.class.getName())) {
+      addClasses(Domain.class);
     }
     return this;
   }
@@ -108,6 +144,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link FromModule}</li>
    * <li>{@link SilverpeasException}</li>
    * <li>{@link SilverpeasRuntimeException}</li>
+   * <li>{@link UtilException}</li>
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSilverpeasExceptionBases() {
@@ -116,6 +153,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(FromModule.class);
       addClasses(SilverpeasException.class);
       addClasses(SilverpeasRuntimeException.class);
+      addClasses(UtilException.class);
     }
     return this;
   }
@@ -125,12 +163,66 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
-    addClasses(ResourceLocator.class, DisplayI18NHelper.class, ConfigurationClassLoader.class,
-        ConfigurationControl.class, ResourceBundleWrapper.class, FileUtil.class, MimeTypes.class,
-        RelativeFileAccessException.class, GeneralPropertiesManager.class);
-    addAsResource("org/silverpeas/general.properties");
-    addAsResource("org/silverpeas/multilang/generalMultilang.properties");
-    addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
+    if (!contains(ResourceLocator.class.getName())) {
+      addClasses(ResourceLocator.class, DisplayI18NHelper.class, ConfigurationClassLoader.class,
+          ConfigurationControl.class, ResourceBundleWrapper.class, FileUtil.class, MimeTypes.class,
+          RelativeFileAccessException.class, GeneralPropertiesManager.class);
+      addAsResource("org/silverpeas/general.properties");
+      addAsResource("org/silverpeas/multilang/generalMultilang.properties");
+      addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
+    }
+    return this;
+  }
+
+  /**
+   * Adds URL features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addSilverpeasUrlFeatures() {
+    if (!contains(URLManager.class.getName())) {
+      addClasses(URLManager.class);
+    }
+    return this;
+  }
+
+  /**
+   * Adds common classes to handle silverpeas content features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addSilverpeasContentFeatures() {
+    if (!contains(Contribution.class.getName())) {
+      addClasses(Contribution.class, IdentifiableResource.class);
+    }
+    if (!contains(SilverpeasContent.class.getName())) {
+      addClasses(SilverpeasContent.class);
+    }
+    if (!contains(SilverContentInterface.class.getName())) {
+      addClasses(SilverContentInterface.class);
+    }
+    if (!contains(WAPrimaryKey.class.getName())) {
+      addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,
+          PasteDetailFromToPK.class);
+    }
+    return this;
+  }
+
+  /**
+   * Adds file repository features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addBundleBaseFeatures()}</li>
+   * <li>{@link #addSilverpeasUrlFeatures()}</li>
+   * <li>{@link #addCommonBasicUtilities()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addFileRepositoryFeatures() {
+    addBundleBaseFeatures();
+    addSilverpeasUrlFeatures();
+    addCommonBasicUtilities();
+    if (!contains(FileRepositoryManager.class.getName())) {
+      addClasses(FileRepositoryManager.class, FileFolderManager.class);
+    }
     return this;
   }
 
@@ -141,6 +233,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link #addBundleBaseFeatures()}</li>
    * <li>{@link #addCacheFeatures()}</li>
    * <li>{@link #addCommonBasicUtilities()}</li>
+   * <li>{@link #addCommonUserBeans()}</li>
    * </ul>
    * @return the instance of the war builder.
    */
@@ -148,12 +241,14 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addBundleBaseFeatures();
     addCacheFeatures();
     addCommonBasicUtilities();
-    addPackages(true, "org.silverpeas.admin.user.constant");
-    addPackages(true, "org.silverpeas.persistence.model");
-    addPackages(true, "org.silverpeas.persistence.repository");
-    addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        UserDetail.class, UserAccessLevel.class, UserState.class);
-    addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+    addCommonUserBeans();
+    if (!contains(Transaction.class.getName())) {
+      addPackages(true, "org.silverpeas.admin.user.constant");
+      addPackages(true, "org.silverpeas.persistence.model");
+      addPackages(true, "org.silverpeas.persistence.repository");
+      addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class);
+      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+    }
     return this;
   }
 
@@ -163,6 +258,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addServiceProviderFeatures() {
     addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
+        .addPackages(true, "org.silverpeas.initialization")
         .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
             "META-INF/services/org.silverpeas.util.BeanContainer")
         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");

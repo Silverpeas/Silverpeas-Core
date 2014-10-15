@@ -23,36 +23,37 @@
  */
 package org.silverpeas.process.io.file;
 
-import java.io.File;
-import java.util.UUID;
-
+import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.session.DefaultProcessSession;
 import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.test.TestBeanContainer;
 
-import org.silverpeas.util.GeneralPropertiesManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
+import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
  * @author Yohann Chastagnier
  */
 public class AbstractFileHandlerTest {
 
-  private static final FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-  private static final File sessionRootPath = new File(GeneralPropertiesManager.
-      getString("tempPath"));
-  private static final File realRootPath = new File(BASE_PATH_TEST.getPath());
-  private static final File otherFile = new File(
-      new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
+  private FileBasePath BASE_PATH_TEST;
+  private File sessionRootPath;
+  private File realRootPath;
+  private File otherFile;
   private ProcessSession currentSession;
   private FileHandlerTest fileHandler;
   private String componentInstanceId;
@@ -61,7 +62,14 @@ public class AbstractFileHandlerTest {
 
   @Before
   public void beforeTest() throws Exception {
-    cleanTest();
+    reset(TestBeanContainer.getMockedBeanContainer());
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
+        .thenReturn(mock(SilverpeasTrace.class));
+    BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
+    sessionRootPath = new File(getString("tempPath"));
+    realRootPath = new File(BASE_PATH_TEST.getPath());
+    otherFile = new File(new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
+
     componentInstanceId = "component" + String.valueOf(System.identityHashCode(this)).
         substring(0, 2);
     currentSession = createSessionTest();

@@ -1,13 +1,13 @@
 package com.silverpeas.thumbnail.control;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.process.io.file.DummyHandledFile;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
 
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,14 +16,8 @@ import java.util.List;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
-@Named
 public class ThumbnailDummyHandledFileConverter
     extends AbstractDummyHandledFileConverter<ThumbnailSimulationElement> {
-
-  @Override
-  public Class<ThumbnailSimulationElement> getSourceElementType() {
-    return ThumbnailSimulationElement.class;
-  }
 
   @Override
   public List<DummyHandledFile> convert(final List<ThumbnailSimulationElement> elements,

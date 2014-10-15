@@ -46,7 +46,7 @@ import java.util.*;
  */
 public abstract class AbstractFileHandler {
 
-  private static final Set<FileBasePath> handledBasePath = new HashSet<FileBasePath>();
+  private static final Set<FileBasePath> handledBasePath = new HashSet<>();
   static {
     handledBasePath.add(FileBasePath.UPLOAD_PATH);
   }
@@ -55,9 +55,9 @@ public abstract class AbstractFileHandler {
 
   private final File sessionRootPath = new File(FileRepositoryManager.getTemporaryPath());
   private final ProcessSession session;
-  private final Map<FileBasePath, Set<File>> toDelete = new HashMap<FileBasePath, Set<File>>();
+  private final Map<FileBasePath, Set<File>> toDelete = new HashMap<>();
   private final Map<String, Set<DummyHandledFile>> dummyHandledFiles =
-      new HashMap<String, Set<DummyHandledFile>>();
+      new HashMap<>();
   private IOAccess ioAccess = IOAccess.READ_ONLY;
 
   /**
@@ -145,7 +145,7 @@ public abstract class AbstractFileHandler {
   Set<File> getMarkedToDelete(final FileBasePath basePath) {
     Set<File> toDeleteContainer = toDelete.get(basePath);
     if (toDeleteContainer == null) {
-      toDeleteContainer = new HashSet<File>();
+      toDeleteContainer = new HashSet<>();
       toDelete.put(basePath, toDeleteContainer);
     }
     return toDeleteContainer;
@@ -267,7 +267,7 @@ public abstract class AbstractFileHandler {
     }
 
     // Finally adding/removing the size of dummy handled files
-    Set<String> componentInstanceIds = new HashSet<String>();
+    Set<String> componentInstanceIds = new HashSet<>();
     if (relativeRootPath != null) {
       // Only a part of dummy files is aimed
       Collections.addAll(componentInstanceIds, relativeRootPath);
@@ -300,7 +300,7 @@ public abstract class AbstractFileHandler {
       final String... relativeRootPath) {
 
     // Computing root path from which the size has to be calculated
-    final List<String> rootPathParts = new ArrayList<String>();
+    final List<String> rootPathParts = new ArrayList<>();
     rootPathParts.add(getSession().getId());
     rootPathParts.add(basePath.getHandledNodeName());
     if (relativeRootPath != null) {
@@ -341,7 +341,7 @@ public abstract class AbstractFileHandler {
    * @return
    */
   public Collection<String> getSessionHandledRootPathNames(final boolean skipDeleted) {
-    final Set<String> rootPathNames = new HashSet<String>();
+    final Set<String> rootPathNames = new HashSet<>();
     for (final FileBasePath basePath : handledBasePath) {
       rootPathNames.addAll(getSessionHandledRootPathNames(basePath, skipDeleted));
     }
@@ -357,7 +357,7 @@ public abstract class AbstractFileHandler {
    */
   protected Collection<String> getSessionHandledRootPathNames(final FileBasePath basePath,
       final boolean skipDeleted) {
-    final Set<String> rootPathNames = new HashSet<String>();
+    final Set<String> rootPathNames = new HashSet<>();
     if (isHandledPath(basePath)) {
 
       // reads and writes
@@ -395,7 +395,7 @@ public abstract class AbstractFileHandler {
    * @return
    */
   public Collection<File> listAllSessionHandledRootPathFiles() {
-    final Set<File> rootPathFiles = new HashSet<File>();
+    final Set<File> rootPathFiles = new HashSet<>();
     for (final FileBasePath basePath : handledBasePath) {
       rootPathFiles.addAll(listAllSessionHandledRootPathFiles(basePath));
     }
@@ -408,7 +408,7 @@ public abstract class AbstractFileHandler {
    * @return
    */
   protected Collection<File> listAllSessionHandledRootPathFiles(final FileBasePath basePath) {
-    final Set<File> rootPathNames = new HashSet<File>();
+    final Set<File> rootPathNames = new HashSet<>();
     if (isHandledPath(basePath)) {
 
       // reads and writes
@@ -473,7 +473,7 @@ public abstract class AbstractFileHandler {
    */
   private void copyFiles(final FileBasePath basePath, final File file) throws IOException {
     if (file.exists()) {
-      final LinkedList<File> fifo = new LinkedList<File>();
+      final LinkedList<File> fifo = new LinkedList<>();
       fifo.add(file);
       File currentFile;
       while ((currentFile = fifo.poll()) != null) {

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.process.annotation;
 
-import org.silverpeas.util.ActionType;
-import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.process.io.file.DummyHandledFile;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.util.ActionType;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,8 @@ import java.util.Map;
  * User: Yohann Chastagnier
  * Date: 17/10/13
  */
-public class SimulationElementConversionProcess extends AbstractFileProcess<ProcessExecutionContext> {
+public class SimulationElementConversionProcess
+    extends AbstractFileProcess<ProcessExecutionContext> {
 
   private final Map<Class<SimulationElement>, List<SimulationElement>> elements;
   private final WAPrimaryKey targetPK;
@@ -60,7 +61,7 @@ public class SimulationElementConversionProcess extends AbstractFileProcess<Proc
 
   @SuppressWarnings("unchecked")
   @Override
-  public void processFiles(final ProcessExecutionContext processExecutionProcess,
+  public void processFiles(final ProcessExecutionContext processExecutionContext,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
     // Converting each element

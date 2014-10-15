@@ -23,6 +23,8 @@
  */
 package org.silverpeas.process.annotation;
 
+import org.silverpeas.util.annotation.AnnotationUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,23 +39,34 @@ public class DummyHandledFileConverterRegistration {
   /**
    * Converters
    */
-  private static final Map<Class<?>, DummyHandledFileConverter> converters =
-      new HashMap<Class<?>, DummyHandledFileConverter>();
+  private static final Map<Class<? extends SimulationElement>, DummyHandledFileConverter>
+      converters = new HashMap<>();
+
+  /**
+   * Gets the class of the element that has to be converted to a dummy handled file.
+   * @param converter a converter.
+   * @return the type of the source element handled by the converter.
+   */
+  private static Class<? extends SimulationElement> getSourceElementType(
+      DummyHandledFileConverter converter) {
+    return AnnotationUtil
+        .searchParameterizedTypeFrom(SimulationElement.class, converter.getClass());
+  }
 
   /**
    * Register
-   * @param converter
+   * @param converter a converter instance.
    */
   public static synchronized void register(final DummyHandledFileConverter converter) {
-    converters.put(converter.getSourceElementType(), converter);
+    converters.put(getSourceElementType(converter), converter);
   }
 
   /**
    * Unregister
-   * @param converter
+   * @param converter a converter instance.
    */
   public static synchronized void unregister(final DummyHandledFileConverter converter) {
-    converters.remove(converter.getSourceElementType());
+    converters.remove(getSourceElementType(converter));
   }
 
   /**

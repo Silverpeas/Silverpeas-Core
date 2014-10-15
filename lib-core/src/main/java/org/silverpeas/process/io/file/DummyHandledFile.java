@@ -25,7 +25,7 @@ package org.silverpeas.process.io.file;
 
 /**
  * This class permits to wrap a representation of a file that it will be used only for its
- * informations. It will not be physically manipulated.
+ * information. It will not be physically manipulated.
  * <p/>
  * It is useful for process check operation.
  * <p/>
@@ -36,37 +36,38 @@ public interface DummyHandledFile {
 
   /**
    * Gets the component instance id at which the virtual file is associated.
-   * @return
+   * @return the identifier of the component instance.
    */
   String getComponentInstanceId();
 
   /**
    * Gets the path of the virtual file.
    * In most of cases, this information is the same as the name one.
-   * @return
+   * @return the virtual path of the file.
    */
   String getPath();
 
   /**
    * Gets the name of the virtual file.
-   * @return
+   * @return the virtual name of the file.
    */
   String getName();
 
   /**
    * Gets the size of the virtual file (bytes).
-   * @return
+   * @return the virtual size of the file.
    */
   long getSize();
 
   /**
    * Gets the mime type of the virtual file.
+   * @return the virtual mime type of the file.
    */
   String getMimeType();
 
   /**
    * Indicates if the virtual file is a deleted one.
-   * @return
+   * @return true if the virtual file is being to be deleted, false otherwise.
    */
   boolean isDeleted();
 }

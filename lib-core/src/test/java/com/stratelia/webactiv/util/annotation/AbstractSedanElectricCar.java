@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,25 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+package com.stratelia.webactiv.util.annotation;
 
 /**
- * Annotation to specify a method object parameter object to be identified as a target one.
- * <p/>
- * User: Yohann Chastagnier
- * Date: 21/10/13
+ * @author Yohann Chastagnier
  */
-@Inherited
-@Documented
-@Target(PARAMETER)
-@Retention(RUNTIME)
-public @interface TargetObject {
-}
+public abstract class AbstractSedanElectricCar extends AbstractElectricCar<SedanModel> {}

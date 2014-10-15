@@ -180,7 +180,7 @@ public class HandledFile {
    * @return
    */
   private Collection<HandledFile> toIOFiles(final Collection<File> files) {
-    final Collection<HandledFile> result = new LinkedList<HandledFile>();
+    final Collection<HandledFile> result = new LinkedList<>();
     if (files != null) {
       for (final File file : files) {
         result.add(new HandledFile(basePath, fileHandler, file));

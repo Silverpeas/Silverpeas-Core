@@ -44,7 +44,7 @@ public interface SilverpeasProcess<C extends ProcessExecutionContext> {
    * Containing main treatment of the process.
    * @return
    */
-  void process(C context, ProcessSession session) throws Exception;
+  void process(C processExecutionContext, ProcessSession session) throws Exception;
 
   /**
    * Containing treatments which have to be done after a successful execution of process method and

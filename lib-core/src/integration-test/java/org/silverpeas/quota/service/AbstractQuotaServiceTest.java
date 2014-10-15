@@ -81,9 +81,6 @@ public class AbstractQuotaServiceTest extends RepositoryBasedTest {
       .columns("id", "quotaType", "resourceId", "minCount", "maxCount", "currentCount", "saveDate")
       .values(4L, "TYPE_THAT_NO_EXISTS", "38", 0L, 100L, 10L, "2012-07-19 00:00:00.0")
       .values(24L, "USERS_IN_DOMAIN", "38", 10L, 500L, 23L, "2012-07-19 00:00:00.0").build();
-  public static final Operation UNIQUE_ID_SET_UP =
-      Operations.insertInto("UniqueId").columns("maxId", "tableName").values(24, "st_quota")
-          .build();
 
   @Override
   protected Operation getDbSetupOperations() {

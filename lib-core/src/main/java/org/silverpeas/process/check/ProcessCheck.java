@@ -23,6 +23,7 @@
  */
 package org.silverpeas.process.check;
 
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.process.management.ProcessExecutionContext;
 
 /**
@@ -30,34 +31,18 @@ import org.silverpeas.process.management.ProcessExecutionContext;
  * execution of a chained Silverpeas processes.
  * @author Yohann Chastagnier
  */
-public interface ProcessCheck {
+public interface ProcessCheck extends Initialization {
 
   /**
    * Gets the type of the check
-   * @return
+   * @return the type of check.
    */
   ProcessCheckType getType();
 
   /**
-   * This method have to be annoted by @PostConstruct.
-   * Just after Silverpeas server start, this method is called.
-   * The content of this method consists to register the class instance into
-   * <code>ProcessCheckRegistration</code>.
-   */
-  void register();
-
-  /**
-   * This method have to be annoted by @PreDestroy.
-   * Just before Silverpeas server stop, this method is called.
-   * The content of this method consists to unregister the class instance from
-   * <code>ProcessCheckRegistration</code>.
-   */
-  void unregister();
-
-  /**
    * Contains the treatment of the verification.
-   * @param processExecutionProcess
+   * @param processExecutionContext the context of the chained list of checks execution.
    * @throws Exception
    */
-  void check(ProcessExecutionContext processExecutionProcess) throws Exception;
+  void check(ProcessExecutionContext processExecutionContext) throws Exception;
 }

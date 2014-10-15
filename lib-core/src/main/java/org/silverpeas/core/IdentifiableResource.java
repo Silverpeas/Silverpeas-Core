@@ -24,7 +24,7 @@ package org.silverpeas.core;
 /**
  * A resource managed in Silverpeas that is uniquely identifiable. This interface is the more
  * generic representation of a resource of any type managed in Silverpeas. All conceptual
- * resources in use in Silverpeas should extend this interface. It encapsulates the more
+ * resources in use in Silverpeas should implement this interface. It encapsulates the more
  * generic methods an identifiable resource in Silverpeas should satisfy.
  * @author mmoquillon
  */
