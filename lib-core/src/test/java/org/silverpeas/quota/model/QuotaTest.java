@@ -1,18 +1,28 @@
 package org.silverpeas.quota.model;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import java.math.BigDecimal;
-
+import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
-
+import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.TestSilverpeasTrace;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import java.math.BigDecimal;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+
 public class QuotaTest {
+
+  @Before
+  public void setup() {
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
+        .thenReturn(new TestSilverpeasTrace());
+  }
 
   @Test
   public void testValidate() {
