@@ -60,6 +60,24 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
@@ -68,7 +86,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private ResourceLocator messages = null;
   private ResourceLocator defaultMessages = null;
   private MainSessionController mainSC = null;
-  private String userId = null;
   private boolean displayPDCInNav = false;
   private boolean shouldDisplayPDCFrame = false;
   private boolean shouldDisplayContextualPDC = true;
@@ -87,6 +104,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   // Attribute used to manage user favorite space look
   private UserMenuDisplay displayUserMenu = UserMenuDisplay.DISABLE;
   private boolean enableUFSContainsState = false;
+  private HttpSession session = null; 
 
   /*
    * (non-Javadoc)
@@ -183,9 +201,22 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
+  /*
+   * Use LookSilverpeasV5Helper(HttpSession session)
+   * As HttpSession can be reused in a same Silverpeas session (anonymous case), so MainSessionController can not be stored.
+   * It must be retrieved from HttpSession only.
+   */
+  @Deprecated
   public LookSilverpeasV5Helper(MainSessionController mainSessionController,
       ResourceLocator resources) {
     init(mainSessionController, resources);
+  }
+  
+  public LookSilverpeasV5Helper(HttpSession session) {
+    this.session = session;
+    GraphicElementFactory gef =
+        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    init(gef.getFavoriteLookSettings());
   }
 
   /*
@@ -197,15 +228,18 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public final void init(MainSessionController mainSessionController, ResourceLocator resources) {
     this.mainSC = mainSessionController;
-    this.orga = mainSessionController.getOrganisationController();
-    this.userId = mainSessionController.getUserId();
+    init(resources);
+  }
+  
+  private final void init(ResourceLocator resources) {
+    this.orga = OrganisationControllerFactory.getOrganisationController();
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
         "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
-        mainSessionController.getFavoriteLanguage());
+        getMainSessionController().getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages = new ResourceLocator(resources.getString("MessageBundle"),
-          mainSessionController.getFavoriteLanguage());
+          getMainSessionController().getFavoriteLanguage());
     }
     initProperties();
     getTopItems();
@@ -223,8 +257,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     } else {
       displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
           PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
-      if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
-        this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
+      if (isMenuPersonalisationEnabled() && getMainSessionController().getPersonalization().getDisplay().isNotDefault()) {
+        this.displayUserMenu = getMainSessionController().getPersonalization().getDisplay();
       }
       enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
     }
@@ -238,6 +272,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   protected MainSessionController getMainSessionController() {
+    if (session != null) {
+      return (MainSessionController) session
+          .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    }
     return mainSC;
   }
 
@@ -260,7 +298,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getUserFullName() {
-    return orga.getUserDetail(userId).getDisplayedName();
+    return getUserDetail().getDisplayedName();
   }
 
   /*
@@ -269,15 +307,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getUserId() {
-    return userId;
+    return getMainSessionController().getUserId();
   }
 
   public UserDetail getUserDetail() {
-    return orga.getUserDetail(userId);
+    return UserDetail.getById(getUserId());
   }
 
   public UserFull getUserFull() {
-    return orga.getUserFull(userId);
+    return orga.getUserFull(getUserId());
   }
 
   /*
@@ -286,7 +324,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getLanguage() {
-    return mainSC.getFavoriteLanguage();
+    return getMainSessionController().getFavoriteLanguage();
   }
 
   /*
@@ -295,10 +333,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean isAnonymousUser() {
-    if (StringUtil.isDefined(userId)) {
-      return UserDetail.isAnonymousUser(userId);
-    }
-    return false;
+    return UserDetail.isAnonymousUser(getUserId());
   }
 
   /*
@@ -435,7 +470,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean isBackOfficeVisible() {
-    return mainSC.isBackOfficeVisible();
+    return getMainSessionController().isBackOfficeVisible();
   }
 
   /*
@@ -444,37 +479,35 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public List<TopItem> getTopItems() {
-    if (topItems == null) {
-      topItems = new ArrayList<TopItem>();
-      topSpaceIds = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
-      while (tokenizer.hasMoreTokens()) {
-        String itemId = tokenizer.nextToken();
+    topItems = new ArrayList<TopItem>();
+    topSpaceIds = new ArrayList<String>();
+    StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
+    while (tokenizer.hasMoreTokens()) {
+      String itemId = tokenizer.nextToken();
 
-        if (itemId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
-          if (orga.isSpaceAvailable(itemId, userId)) {
-            SpaceInstLight space = orga.getSpaceInstLightById(itemId);
-            SpaceInstLight rootSpace = orga.getRootSpace(itemId);
-            TopItem item = new TopItem();
-            item.setLabel(space.getName(getLanguage()));
-            item.setSpaceId(rootSpace.getId());
-            item.setSubSpaceId(itemId);
-            topItems.add(item);
-            topSpaceIds.add(item.getSpaceId());
-          }
-        } else {
-          if (orga.isComponentAvailable(itemId, userId)) {
-            ComponentInstLight component = orga.getComponentInstLight(itemId);
-            String currentSpaceId = component.getDomainFatherId();
-            SpaceInstLight rootSpace = orga.getRootSpace(currentSpaceId);
-            TopItem item = new TopItem();
-            item.setLabel(component.getLabel(getLanguage()));
-            item.setComponentId(itemId);
-            item.setSpaceId(rootSpace.getId());
-            item.setSubSpaceId(currentSpaceId);
+      if (itemId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+        if (orga.isSpaceAvailable(itemId, getUserId())) {
+          SpaceInstLight space = orga.getSpaceInstLightById(itemId);
+          SpaceInstLight rootSpace = orga.getRootSpace(itemId);
+          TopItem item = new TopItem();
+          item.setLabel(space.getName(getLanguage()));
+          item.setSpaceId(rootSpace.getId());
+          item.setSubSpaceId(itemId);
+          topItems.add(item);
+          topSpaceIds.add(item.getSpaceId());
+        }
+      } else {
+        if (orga.isComponentAvailable(itemId, getUserId())) {
+          ComponentInstLight component = orga.getComponentInstLight(itemId);
+          String currentSpaceId = component.getDomainFatherId();
+          SpaceInstLight rootSpace = orga.getRootSpace(currentSpaceId);
+          TopItem item = new TopItem();
+          item.setLabel(component.getLabel(getLanguage()));
+          item.setComponentId(itemId);
+          item.setSpaceId(rootSpace.getId());
+          item.setSubSpaceId(currentSpaceId);
 
-            topItems.add(item);
-          }
+          topItems.add(item);
         }
       }
     }
@@ -560,7 +593,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public String getDate() {
     if (formatter == null) {
       formatter = new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"),
-          new Locale(mainSC.getFavoriteLanguage()));
+          new Locale(getMainSessionController().getFavoriteLanguage()));
     }
     return formatter.format(new Date());
   }
@@ -569,7 +602,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public String getDefaultSpaceId() {
     String defaultSpaceId = resources.getString("DefaultSpaceId");
     if (!StringUtil.isDefined(defaultSpaceId)) {
-      defaultSpaceId = mainSC.getFavoriteSpace();
+      defaultSpaceId = getMainSessionController().getFavoriteSpace();
     }
     return defaultSpaceId;
   }
@@ -581,7 +614,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           "com.stratelia.webactiv.kmelia.KmeliaTransversal");
       Class<?> helperClass = Class.forName(helperClassName);
       kmeliaTransversal = (PublicationHelper) helperClass.newInstance();
-      kmeliaTransversal.setMainSessionController(mainSC);
+      kmeliaTransversal.setMainSessionController(getMainSessionController());
     }
     return kmeliaTransversal;
   }
@@ -761,7 +794,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (resources.getBoolean("space.homepage.subspaces", true)) {
       // get allowed subspaces
       String[] subspaceIds =
-          getOrganisationController().getAllowedSubSpaceIds(userId, currentSpaceId);
+          getOrganisationController().getAllowedSubSpaceIds(getUserId(), currentSpaceId);
       List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>();
       for (String subspaceId : subspaceIds) {
         subspaces.add(getOrganisationController().getSpaceInstLightById(subspaceId));
@@ -773,7 +806,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     boolean displayEvents = resources.getBoolean("space.homepage.events", true);
     if (displayApps || displayEvents) {
       // get allowed apps
-      String[] appIds = getOrganisationController().getAvailCompoIdsAtRoot(currentSpaceId, userId);
+      String[] appIds = getOrganisationController().getAvailCompoIdsAtRoot(currentSpaceId, getUserId());
       List<ComponentInstLight> apps = new ArrayList<ComponentInstLight>();
       for (String appId : appIds) {
         ComponentInstLight app = getOrganisationController().getComponentInstLight(appId);
@@ -825,7 +858,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   public List<PublicationDetail> getNews(String spaceId) {
     List<String> appIds = new ArrayList<String>();
-    String[] cIds = getOrganisationController().getAvailCompoIds(spaceId, userId);
+    String[] cIds = getOrganisationController().getAvailCompoIds(spaceId, getUserId());
     for (String id : cIds) {
       if (StringUtil.startsWithIgnoreCase(id, "quickinfo")) {
         appIds.add(id);
