@@ -32,7 +32,10 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.ws.rs.GET;
@@ -94,8 +97,13 @@ public class PublicationResource extends RESTWebService {
         URI uri = getURI(publication, baseUri);
         PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
         if (withAttachments) {
-          Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-              listDocumentsByForeignKey(publication.getPK(), null);
+          AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+          // expose regular files
+          Collection<SimpleDocument> attachments =
+              attachmentService.listDocumentsByForeignKey(publication.getPK(), null);
+          // and files attached to form too...
+          attachments.addAll(attachmentService.listDocumentsByForeignKeyAndType(
+              publication.getPK(), DocumentType.form, null));
           entity.withAttachments(attachments, getUriInfo().getBaseUri().toString(), token);
         }
         entities.add(entity);
