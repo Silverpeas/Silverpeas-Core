@@ -20,27 +20,24 @@
  */
 package com.silverpeas.admin.ejb;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.quota.exception.QuotaException;
 
-@Stateless(name = "AdminBm", description =
-    "Admin EJB to allow remote access on some administration functions.")
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+@Stateless(name = "AdminBm",
+    description = "Admin EJB to allow remote access on some administration functions.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class AdminBmEJB implements AdminBusiness {
 
@@ -130,17 +127,6 @@ public class AdminBmEJB implements AdminBusiness {
   @Override
   public String getUserIdByLoginAndDomain(String login, String domainId) {
     return getAdminController().getUserIdByLoginAndDomain(login, domainId);
-  }
-
-  @Override
-  public void addSecurityData(String securityId, String userId, String domainId) {
-    SecurityHolder.addData(securityId, userId, domainId);
-  }
-
-  @Override
-  public void addSecurityData(String securityId, String userId, String domainId,
-      boolean persistent) {
-    SecurityHolder.addData(securityId, userId, domainId, persistent);
   }
 
   @Override

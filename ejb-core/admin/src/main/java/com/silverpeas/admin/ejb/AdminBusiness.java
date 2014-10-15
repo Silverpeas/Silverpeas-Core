@@ -59,10 +59,6 @@ public interface AdminBusiness {
 
   public String getUserIdByLoginAndDomain(String login, String domainId);
 
-  public void addSecurityData(String securityId, String userId, String domainId);
-
-  public void addSecurityData(String securityId, String userId, String domainId, boolean persistent);
-
   public String addComponentInst(ComponentInst componentInst, String userId);
 
   public void updateComponentOrderNum(String sComponentId, int orderNum);
