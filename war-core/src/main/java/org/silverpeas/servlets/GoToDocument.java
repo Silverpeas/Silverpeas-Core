@@ -30,7 +30,7 @@ import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.permalinks.PermalinkServiceFactory;
+import org.silverpeas.permalinks.PermalinkServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -46,7 +46,7 @@ public class GoToDocument extends GoTo {
       throws Exception {
     SimpleDocument document;
     if (StringUtil.isInteger(objectId)) {
-      document = PermalinkServiceFactory.getPermalinkCompatibilityService().
+      document = PermalinkServiceProvider.getPermalinkCompatibilityService().
           findVersionnedDocumentByOldId(Integer.parseInt(objectId));
     } else {
       document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(

@@ -21,29 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.permalinks.repository;
 
-package org.silverpeas.permalinks;
-
-import javax.inject.Inject;
+import org.silverpeas.permalinks.model.VersionPermalink;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 
 /**
- * For compatibility issues after migration to JCR.
+ * @author: ebonnet
  */
-public class PermalinkServiceFactory {
-
-  @Inject
-  private PermalinkCompatibilityService service;
-
-  private PermalinkServiceFactory() {
-  }
-  private static final PermalinkServiceFactory factory = new PermalinkServiceFactory();
-
-  public static final PermalinkServiceFactory getInstance() {
-    return factory;
-  }
-
-  public static PermalinkCompatibilityService getPermalinkCompatibilityService() {
-    return factory.service;
-  }
-
+public class VersionPermalinkJpaManager
+    extends JpaBasicEntityManager<VersionPermalink, UniqueIntegerIdentifier>
+    implements VersionPermalinkManager {
 }

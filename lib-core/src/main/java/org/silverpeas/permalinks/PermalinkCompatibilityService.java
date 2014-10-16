@@ -21,53 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.permalinks;
 
-import javax.inject.Inject;
-
-import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.permalinks.model.DocumentPermalink;
-import org.silverpeas.permalinks.model.VersionPermalink;
-import org.silverpeas.permalinks.repository.DocumentPermalinkRepository;
-import org.silverpeas.permalinks.repository.VersionPermalinkRepository;
 
-import com.silverpeas.annotation.Service;
+/**
+ * @author: ebonnet
+ */
+public interface PermalinkCompatibilityService {
+  public SimpleDocument findDocumentVersionByOldId(int oldId);
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
-public class PermalinkCompatibilityService {
-
-  @Inject
-  private AttachmentService service;
-
-  @Inject
-  private DocumentPermalinkRepository docRepository;
-
-  @Inject
-  private VersionPermalinkRepository versionRepository;
-
-  public SimpleDocument findDocumentVersionByOldId(int oldId) {
-    VersionPermalink link = versionRepository.findOne(oldId);
-    if (link != null) {
-      SimpleDocumentPK pk = new SimpleDocumentPK(link.getUuid(), "");
-      return service.searchDocumentById(pk, null);
-    }
-    return null;
-  }
-
-  public SimpleDocument findVersionnedDocumentByOldId(int oldId) {
-    DocumentPermalink link = docRepository.findOne(oldId);
-    if (link != null) {
-      SimpleDocumentPK pk = new SimpleDocumentPK(link.getUuid(), "");
-      return service.searchDocumentById(pk, null);
-    }
-    return null;
-  }
-
+  public SimpleDocument findVersionnedDocumentByOldId(int oldId);
 }

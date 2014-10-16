@@ -20,11 +20,11 @@
  */
 package org.silverpeas.servlets;
 
+import org.silverpeas.permalinks.PermalinkServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.permalinks.PermalinkServiceFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +38,7 @@ public class GoToVersion extends GoToDocument {
       throws Exception {
     SimpleDocument document;
     if (StringUtil.isInteger(objectId)) {
-      document = PermalinkServiceFactory.getPermalinkCompatibilityService().
+      document = PermalinkServiceProvider.getPermalinkCompatibilityService().
           findDocumentVersionByOldId(Integer.parseInt(objectId));
     } else {
       document = AttachmentServiceProvider.getAttachmentService()

@@ -22,38 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.permalinks.model;
+package org.silverpeas.permalinks;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
-
-import java.io.Serializable;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * @author ehugonnet
+ * For compatibility issues after migration to JCR.
  */
-@Entity
-@Table(name = "permalinks_document")
-@AttributeOverride(name = "id", column = @Column(name = "documentId"))
-public class DocumentPermalink
-    extends AbstractJpaCustomEntity<DocumentPermalink, UniqueIntegerIdentifier>
-    implements Serializable {
-  private static final long serialVersionUID = 1L;
+public class PermalinkServiceProvider {
 
-  @Column(name = "documentUuid", nullable = false)
-  private String uuid;
-
-  public String getUuid() {
-    return uuid;
+  private PermalinkServiceProvider() {
   }
 
-  public void setUuid(String uuid) {
-    this.uuid = uuid;
+  public static PermalinkCompatibilityService getPermalinkCompatibilityService() {
+    return ServiceProvider.getService(PermalinkCompatibilityService.class);
   }
+
 }

@@ -25,9 +25,10 @@
 package org.silverpeas.permalinks.repository;
 
 import org.silverpeas.permalinks.model.DocumentPermalink;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public interface DocumentPermalinkManager
+    extends BasicEntityRepository<DocumentPermalink, UniqueIntegerIdentifier> {
 
-public interface DocumentPermalinkRepository extends JpaRepository<DocumentPermalink, Integer> {
-  
 }

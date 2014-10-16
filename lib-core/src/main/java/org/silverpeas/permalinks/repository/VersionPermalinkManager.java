@@ -24,42 +24,10 @@
 
 package org.silverpeas.permalinks.repository;
 
-import javax.inject.Inject;
-
 import org.silverpeas.permalinks.model.VersionPermalink;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
-@ContextConfiguration(locations = {"classpath:/spring-permalinks-embbed-datasource.xml",
-  "classpath:/spring-permalinks.xml"})
-@Transactional
-@DirtiesContext
-public class VersionPermalinkRepositoryTest {
-
-  @Inject
-  VersionPermalinkRepository repository;
-
-  public VersionPermalinkRepositoryTest() {
-  }
-
-  @Test
-  public void testFindById() {
-    VersionPermalink permalink = repository.findOne(5);
-    assertThat(permalink, is(notNullValue()));
-    assertThat(permalink.getId(), is(5));
-    assertThat(permalink.getUuid(), is("ilovesilverpeas"));
-  }
-
+public interface VersionPermalinkManager extends
+    BasicEntityRepository<VersionPermalink, UniqueIntegerIdentifier> {
 }

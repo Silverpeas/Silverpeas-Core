@@ -24,31 +24,25 @@
 
 package org.silverpeas.permalinks.model;
 
-import java.io.Serializable;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "permalinks_version")
-public class VersionPermalink implements Serializable {
+@AttributeOverride(name = "id", column = @Column(name = "versionId"))
+public class VersionPermalink
+    extends AbstractJpaCustomEntity<VersionPermalink, UniqueIntegerIdentifier>
+    implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  @Id
-  @Column(name = "versionId")
-  private int id;
   @Column(name = "versionUuid", nullable = false)
   private String uuid;
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
 
   public String getUuid() {
     return uuid;
