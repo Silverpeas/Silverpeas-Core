@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.contentManager;
 
 import org.silverpeas.util.DateUtil;
+
 import java.util.Date;
 
 public class SilverContentVisibility {
@@ -32,8 +33,7 @@ public class SilverContentVisibility {
   private String endDate = "9999/99/99";
   private boolean isVisible = true;
 
-  public SilverContentVisibility(String beginDate, String endDate,
-      boolean isVisible) {
+  public SilverContentVisibility(String beginDate, String endDate, boolean isVisible) {
     setVisibilityAttributes(beginDate, endDate);
     setVisibilityAttributes(isVisible);
   }
@@ -65,18 +65,19 @@ public class SilverContentVisibility {
     this.endDate = endDate;
   }
 
-  public void setVisibilityAttributes(Date beginDate, Date endDate,
-      boolean isVisible) {
+  public void setVisibilityAttributes(Date beginDate, Date endDate, boolean isVisible) {
     setVisibilityAttributes(beginDate, endDate);
     this.isVisible = isVisible;
   }
 
   public void setVisibilityAttributes(Date beginDate, Date endDate) {
-    if (beginDate != null)
+    if (beginDate != null) {
       this.beginDate = DateUtil.date2SQLDate(beginDate);
+    }
 
-    if (endDate != null)
+    if (endDate != null) {
       this.endDate = DateUtil.date2SQLDate(endDate);
+    }
   }
 
   public void setVisibilityAttributes(boolean isVisible) {
@@ -92,10 +93,11 @@ public class SilverContentVisibility {
   }
 
   public int isVisible() {
-    if (this.isVisible)
+    if (this.isVisible) {
       return 1;
-    else
+    } else {
       return 0;
+    }
   }
 
 }

@@ -33,16 +33,19 @@ import java.util.List;
  */
 public class ContentPeas {
 
-  String type = null; // The content type (unique among all contents)
-  String contentInterfaceClassName = null; // The class to call that implements
-  // the ContentInterface
-  ContentInterface contentInterface = null; // The object
-  // (class.forName(m_sContentInterface))
-  List<String> userRoles = null; // User roles of the content
-  String sessionControlBeanName = null; // Name of the bean in the session
+  // The content type (unique among all contents)
+  String type = null;
+  // The class to call that implements the ContentInterface
+  String contentInterfaceClassName = null;
+  // The object (class.forName(m_sContentInterface))
+  ContentInterface contentInterface = null;
+  // User roles of the content
+  List<String> userRoles = null;
+  // Name of the bean in the session
+  String sessionControlBeanName = null;
 
   public ContentPeas(String sContentDescriptorPath) {
-    userRoles = new ArrayList<String>();
+    userRoles = new ArrayList<>();
     // -------------------------------------------------
     // We don't have enough time to do the parsing !!!
     // We hard coded for this time !!!!

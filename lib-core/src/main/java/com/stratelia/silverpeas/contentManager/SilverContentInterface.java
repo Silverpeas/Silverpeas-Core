@@ -46,9 +46,6 @@ public interface SilverContentInterface {
 
   public String getInstanceId();
 
-  /*
-   * public String getTitle(); public String getTitle(String language);
-   */
   public String getDate();
 
   public String getSilverCreationDate(); // added by ney. 16/05/2004.

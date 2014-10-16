@@ -43,7 +43,6 @@ public class GSCDateComparatorAsc implements Comparator<GlobalSilverContent> {
       // both objects have been created on the same date
       compareResult = gsc1.getId().compareTo(gsc2.getId());
     }
-
     return compareResult;
   }
 }

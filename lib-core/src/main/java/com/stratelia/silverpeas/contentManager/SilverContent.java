@@ -75,8 +75,8 @@ public class SilverContent extends AbstractI18NBean<SilverContentI18N>
   }
 
   public String toString() {
-    return ("silverContent contains Name = " + getName() + ", Description = "
-        + getDescription() + ", Url = " + getURL());
+    return ("silverContent contains Name = " + getName() + ", Description = " + getDescription() +
+        ", Url = " + getURL());
   }
 
 }
