@@ -30,16 +30,20 @@ import com.stratelia.silverpeas.peasCore.URLManager;
  */
 public class ContainerPeas {
 
-  String m_sType = null; // The container type (unique among all containers)
-  String m_sContainerInterface = null; // The class to call that implements the
-  // ContainerInterface
-  ContainerInterface m_containerInterface = null; // The object
-  // (class.forName(m_sContainerInterface))
-  List<String> m_asUserRoles = null; // User roles of the container
-  String m_sReturnURL = null; // URL to call when the content want to get back
-  // on the container
-  String m_sSessionControlBeanName = null; // Name of the bean in the session
-  URLIcone m_ClassifyURLIcone = null; // URLIcone on the classify JSP to call
+  // The container type (unique among all containers)
+  String m_sType = null;
+  // The class to call that implements the ContainerInterface
+  String m_sContainerInterface = null;
+  // The object (class.forName(m_sContainerInterface))
+  ContainerInterface m_containerInterface = null;
+  // User roles of the container
+  List<String> m_asUserRoles = null;
+  // URL to call when the content want to get back on the container
+  String m_sReturnURL = null;
+  // Name of the bean in the session
+  String m_sSessionControlBeanName = null;
+  // URLIcone on the classify JSP to call
+  URLIcone m_ClassifyURLIcone = null;
 
   // for classifying a SilverContent
   public ContainerPeas(String sContainerDescriptorPath) {
@@ -52,7 +56,7 @@ public class ContainerPeas {
       this
           .setContainerInterface("com.stratelia.silverpeas.pdc.control.PdcBmImpl");
 
-      List<String> asUserRoles = new ArrayList<String>();
+      List<String> asUserRoles = new ArrayList<>();
       asUserRoles.add("containerPDC_admin");
       asUserRoles.add("containerPDC_user");
       this.setUserRoles(asUserRoles);

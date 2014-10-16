@@ -32,10 +32,14 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
  * This is the data structure that the container JSP is going to use (built by the container router)
  */
 public class ContainerWorkspace {
-  private List<String> asContainerUserRoles = null; // container roles for the logged user
-  private List<String> asContentUserRoles = null; // content roles for the logged user
-  private List<URLIcone> auContentURLIcones = null; // URLIcones of the content
-  private List<SilverContentInterface> alSilverContents = null; // List of SilverContent to display
+  // container roles for the logged user
+  private List<String> asContainerUserRoles = null;
+  // content roles for the logged user
+  private List<String> asContentUserRoles = null;
+  // URLIcones of the content
+  private List<URLIcone> auContentURLIcones = null;
+  // List of SilverContent to display
+  private List<SilverContentInterface> alSilverContents = null;
 
   public ContainerWorkspace() {
   }

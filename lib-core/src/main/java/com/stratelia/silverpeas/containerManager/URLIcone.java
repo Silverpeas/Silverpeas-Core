@@ -29,12 +29,14 @@ package com.stratelia.silverpeas.containerManager;
  * ActionBar)
  */
 public class URLIcone {
-  private String sIconePath = ""; // path on the icone to show in the JSP
-  private String sAlternateText = ""; // Alternate text on the icone
-  private String sActionURL = ""; // URLs on the action to link with the icones
-  private boolean bPopUp = true; // Tells the JSP to open the sActionURL in a
-
-  // new PopUp window or not
+  // path on the icone to show in the JSP
+  private String sIconePath = "";
+  // Alternate text on the icone
+  private String sAlternateText = "";
+  // URLs on the action to link with the icones
+  private String sActionURL = "";
+  // Tells the JSP to open the sActionURL in a new PopUp window or not
+  private boolean bPopUp = true;
 
   public URLIcone() {
   }

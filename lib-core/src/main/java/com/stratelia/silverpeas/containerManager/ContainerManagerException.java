@@ -38,26 +38,25 @@ public class ContainerManagerException extends SilverpeasException {
   private static final long serialVersionUID = -4426734498770573263L;
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * --------------------------------------------------------------------------
    * constructor
    */
-  public ContainerManagerException(String callingClass, int errorLevel,
-      String message) {
+  public ContainerManagerException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public ContainerManagerException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public ContainerManagerException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public ContainerManagerException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public ContainerManagerException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public ContainerManagerException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public ContainerManagerException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

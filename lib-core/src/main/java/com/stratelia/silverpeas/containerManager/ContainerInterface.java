@@ -32,25 +32,30 @@ import java.util.*;
  * and declare it in the containerDescriptor (xml)
  */
 public interface ContainerInterface {
-  /** Return the parameters for the HTTP call on the classify */
+  /**
+   * Return the parameters for the HTTP call on the classify
+   */
   public String getCallParameters(String sComponentId, String sSilverContentId);
 
-  /** Remove all the positions of the given content */
+  /**
+   * Remove all the positions of the given content
+   */
   public List<Integer> removePosition(Connection connection, int nSilverContentId)
       throws ContainerManagerException;
 
-  /** Find the search Context for the given SilverContentId */
-  public ContainerPositionInterface getSilverContentIdSearchContext(
-      int nSilverContentId, String sComponentId)
-      throws ContainerManagerException;
+  /**
+   * Find the search Context for the given SilverContentId
+   */
+  public ContainerPositionInterface getSilverContentIdSearchContext(int nSilverContentId,
+      String sComponentId) throws ContainerManagerException;
 
-  /** Find all the SilverContentId with the given position */
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId)
-      throws ContainerManagerException;
+  /**
+   * Find all the SilverContentId with the given position
+   */
+  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
+      List<String> alComponentId) throws ContainerManagerException;
 
-  public List<Integer> findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List<String> alComponentId,
-      String authorId, String afterDate, String beforeDate)
+  public List<Integer> findSilverContentIdByPosition(ContainerPositionInterface containerPosition,
+      List<String> alComponentId, String authorId, String afterDate, String beforeDate)
       throws ContainerManagerException;
 }
