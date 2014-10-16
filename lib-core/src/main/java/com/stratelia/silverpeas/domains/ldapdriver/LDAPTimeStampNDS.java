@@ -54,7 +54,7 @@ public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
     SilverTrace.info("admin", "LDAPTimeStampNDS.initFromServer()",
         "root.MSG_GEN_PARAM_VALUE", "# entries = " + theEntries.length);
 
-    String ttCurrent = "";
+    String ttCurrent;
     for (LDAPEntry theEntry : theEntries) {
       ttCurrent = LDAPUtility.getFirstAttributeValue(theEntry, driverSettings.getTimeStampVar());
       if (ttCurrent.compareTo(timeStamp) > 0) {

@@ -52,6 +52,17 @@
       <artifactId>opendj-server</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.forgerock.commons</groupId>
+      <artifactId>json-resource-servlet</artifactId>
+      <version>2.4.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.grizzly</groupId>
+      <artifactId>grizzly-framework</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.arquillian.junit</groupId>

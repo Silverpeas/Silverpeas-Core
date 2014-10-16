@@ -90,8 +90,8 @@ abstract public class AbstractLDAPGroup {
    * @throws AdminException if an error occur during LDAP operations
    */
   public Group[] getAllGroups(String lds, String extraFilter) throws AdminException {
-    Map<String, Group> groupsDone = new HashMap<String, Group>();
-    List<Group> groupsCurrent = new ArrayList<Group>();
+    Map<String, Group> groupsDone = new HashMap<>();
+    List<Group> groupsCurrent = new ArrayList<>();
 
     // Get the root Groups and add them to the current list
     Group[] groupsVector = getGroups(lds, null, extraFilter);
@@ -123,10 +123,10 @@ abstract public class AbstractLDAPGroup {
    * @throws AdminException if an error occur during LDAP operations
    */
   public Group[] getGroups(String lds, String parentId, String extraFilter) throws AdminException {
-    List<Group> groupsReturned = new ArrayList<Group>();
+    List<Group> groupsReturned = new ArrayList<>();
 
     // Only for the same group splitted into several groups (ie Novell LDAP)
-    List<LDAPEntry> groupMerged = new ArrayList<LDAPEntry>();
+    List<LDAPEntry> groupMerged = new ArrayList<>();
 
     int i;
     if (parentId == null) {
@@ -320,7 +320,7 @@ abstract public class AbstractLDAPGroup {
   protected Group translateGroups(String lds, List<LDAPEntry> groupEntries)
       throws AdminException {
     Group groupInfos = new Group();
-    ArrayList<String> allUserIds = new ArrayList<String>();
+    ArrayList<String> allUserIds = new ArrayList<>();
 
     if (groupEntries.isEmpty()) {
       throw new AdminException("AbstractLDAPGroup.translateGroups",

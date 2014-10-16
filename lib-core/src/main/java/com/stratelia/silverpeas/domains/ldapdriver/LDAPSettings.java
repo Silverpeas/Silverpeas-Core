@@ -37,7 +37,6 @@ import com.novell.ldap.LDAPSearchConstraints;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions
- *
  * @author tleroi
  * @version 1.0
  */
@@ -94,7 +93,6 @@ public class LDAPSettings extends DriverSettings {
   /**
    * Performs initialization from a properties file. The optional properties are retreive with
    * getSureString.
-   *
    * @param rs Properties resource file
    */
   public void initFromProperties(ResourceLocator rs) {
@@ -104,24 +102,22 @@ public class LDAPSettings extends DriverSettings {
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
     configuration.setLdapPort(getIntValue(rs, "database.LDAPPort", configuration.getLdapPort()));
     LDAPProtocolVer = getIntValue(rs, "database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
-    LDAPOpAttributesUsed = getBooleanValue(rs, "database.LDAPOpAttributesUsed",
-        LDAPOpAttributesUsed);
+    LDAPOpAttributesUsed =
+        getBooleanValue(rs, "database.LDAPOpAttributesUsed", LDAPOpAttributesUsed);
     LDAPProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
     configuration.setUsername(rs.getString("database.LDAPAccessLoginDN", null));
     configuration
         .setPassword(rs.getString("database.LDAPAccessPasswd", "").getBytes(Charsets.UTF_8));
     LDAPUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
-    LDAPMaxMsClientTimeLimit = getIntValue(rs,
-        "database.LDAPMaxMsClientTimeLimit", LDAPMaxMsClientTimeLimit);
-    LDAPMaxSecServerTimeLimit = getIntValue(rs,
-        "database.LDAPMaxSecServerTimeLimit", LDAPMaxSecServerTimeLimit);
-    LDAPMaxNbEntryReturned = getIntValue(rs, "database.LDAPMaxNbEntryReturned",
-        LDAPMaxNbEntryReturned);
-    LDAPMaxNbReferrals = getIntValue(rs, "database.LDAPMaxNbReferrals",
-        LDAPMaxNbReferrals);
+    LDAPMaxMsClientTimeLimit =
+        getIntValue(rs, "database.LDAPMaxMsClientTimeLimit", LDAPMaxMsClientTimeLimit);
+    LDAPMaxSecServerTimeLimit =
+        getIntValue(rs, "database.LDAPMaxSecServerTimeLimit", LDAPMaxSecServerTimeLimit);
+    LDAPMaxNbEntryReturned =
+        getIntValue(rs, "database.LDAPMaxNbEntryReturned", LDAPMaxNbEntryReturned);
+    LDAPMaxNbReferrals = getIntValue(rs, "database.LDAPMaxNbReferrals", LDAPMaxNbReferrals);
     LDAPBatchSize = getIntValue(rs, "database.LDAPBatchSize", LDAPBatchSize);
-    LDAPSearchRecurs = getBooleanValue(rs, "database.LDAPSearchRecurs",
-        LDAPSearchRecurs);
+    LDAPSearchRecurs = getBooleanValue(rs, "database.LDAPSearchRecurs", LDAPSearchRecurs);
     configuration.setSecure(getBooleanValue(rs, "database.LDAPSecured", false));
     if (configuration.isSecure()) {
       configuration.setLdapPort(getIntValue(rs, "database.LDAPPortSecured", 636));
@@ -133,15 +129,11 @@ public class LDAPSettings extends DriverSettings {
 
     // Synchro parameters
     // -------------------
-    SYNCHROautomatic = getBooleanValue(rs, "synchro.Automatic",
-        SYNCHROautomatic);
-    SYNCHRORecursToGroups = getBooleanValue(rs, "synchro.RecursToGroups",
-        SYNCHRORecursToGroups);
+    SYNCHROautomatic = getBooleanValue(rs, "synchro.Automatic", SYNCHROautomatic);
+    SYNCHRORecursToGroups = getBooleanValue(rs, "synchro.RecursToGroups", SYNCHRORecursToGroups);
     SYNCHROthreaded = getBooleanValue(rs, "synchro.Threaded", SYNCHROthreaded);
-    SYNCHROtimeStampVar = getStringValue(rs, "synchro.timeStampVar",
-        SYNCHROtimeStampVar);
-    SYNCHROCacheEnabled = getBooleanValue(rs, "synchro.CacheEnabled",
-        SYNCHROCacheEnabled);
+    SYNCHROtimeStampVar = getStringValue(rs, "synchro.timeStampVar", SYNCHROtimeStampVar);
+    SYNCHROCacheEnabled = getBooleanValue(rs, "synchro.CacheEnabled", SYNCHROCacheEnabled);
     SYNCHROImportUsers = getBooleanValue(rs, "synchro.importUsers", true);
 
     // Users Settings
@@ -160,15 +152,13 @@ public class LDAPSettings extends DriverSettings {
     // ---------------
     groupsType = rs.getString("groups.Type", null);
     groupsClassName = rs.getString("groups.ClassName", null);
-    groupsInheritProfiles = getBooleanValue(rs, "groups.InheritProfiles",
-        groupsInheritProfiles);
+    groupsInheritProfiles = getBooleanValue(rs, "groups.InheritProfiles", groupsInheritProfiles);
     groupsFilter = rs.getString("groups.Filter", null);
     groupsNamingDepth = getIntValue(rs, "groups.NamingDepth", groupsNamingDepth);
     groupsIdField = rs.getString("groups.IdField", null);
-    groupsIncludeEmptyGroups = getBooleanValue(rs, "groups.IncludeEmptyGroups",
-        groupsIncludeEmptyGroups);
-    groupsSpecificGroupsBaseDN = getSureString(rs,
-        "groups.SpecificGroupsBaseDN");
+    groupsIncludeEmptyGroups =
+        getBooleanValue(rs, "groups.IncludeEmptyGroups", groupsIncludeEmptyGroups);
+    groupsSpecificGroupsBaseDN = getSureString(rs, "groups.SpecificGroupsBaseDN");
     groupsMemberField = getSureString(rs, "groups.MemberField");
     groupsNameField = getSureString(rs, "groups.NameField");
     groupsDescriptionField = getSureString(rs, "groups.DescriptionField");
@@ -266,9 +256,9 @@ public class LDAPSettings extends DriverSettings {
       if (LDAPMaxNbReferrals == 0) {
         doReferrals = false;
       }
-      return new LDAPSearchConstraints(LDAPMaxMsClientTimeLimit,
-          LDAPMaxSecServerTimeLimit, LDAPSearchConstraints.DEREF_NEVER, LDAPMaxNbEntryReturned,
-          doReferrals, LDAPBatchSize, null, LDAPMaxNbReferrals);
+      return new LDAPSearchConstraints(LDAPMaxMsClientTimeLimit, LDAPMaxSecServerTimeLimit,
+          LDAPSearchConstraints.DEREF_NEVER, LDAPMaxNbEntryReturned, doReferrals, LDAPBatchSize,
+          null, LDAPMaxNbReferrals);
     }
     return LDAPDefaultSearchConstraints;
   }
@@ -352,11 +342,11 @@ public class LDAPSettings extends DriverSettings {
           singleSlashValue.append(aVca);
         }
       }
-      return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "="
-          + singleSlashValue.toString() + "))";
+      return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
+          singleSlashValue.toString() + "))";
     } else {
-      return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "="
-          + LDAPUtility.normalizeFilterValue(value) + "))";
+      return "(&" + getUsersFullFilter() + "(" + getUsersIdField() + "=" +
+          LDAPUtility.normalizeFilterValue(value) + "))";
     }
   }
 
@@ -447,17 +437,16 @@ public class LDAPSettings extends DriverSettings {
           singleSlashValue.append(aVca);
         }
       }
-      return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "="
-          + singleSlashValue.toString() + "))";
+      return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "=" +
+          singleSlashValue.toString() + "))";
     } else {
-      return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "="
-          + LDAPUtility.normalizeFilterValue(value) + "))";
+      return "(&" + getGroupsFullFilter() + "(" + getGroupsIdField() + "=" +
+          LDAPUtility.normalizeFilterValue(value) + "))";
     }
   }
 
   public String getGroupsNameFilter(String value) {
-    return "(&" + getGroupsFullFilter() + "(" + getGroupsNameField() + "="
-        + value + "))";
+    return "(&" + getGroupsFullFilter() + "(" + getGroupsNameField() + "=" + value + "))";
   }
 
   protected String[] getUserAttributes() {

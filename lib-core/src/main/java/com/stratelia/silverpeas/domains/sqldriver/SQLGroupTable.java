@@ -212,7 +212,7 @@ public class SQLGroupTable {
   public List<Group> getAllGroups(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<Group> theResult = new ArrayList<Group>();
+    List<Group> theResult = new ArrayList<>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName();
 
@@ -241,21 +241,23 @@ public class SQLGroupTable {
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<Group> theResult = new ArrayList<Group>();
+    List<Group> theResult = new ArrayList<>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName() + " where "
         + drvSettings.getGroupParentIdColumnName();
 
     try {
-      if (groupId == -1)
+      if (groupId == -1) {
         theQuery = theQuery + " is null";
-      else
+      } else {
         theQuery = theQuery + " = ?";
+      }
       SilverTrace.debug("admin", "SQLGroupTable.getGroup", "root.MSG_QUERY",
           theQuery);
       statement = c.prepareStatement(theQuery);
-      if (groupId != -1)
+      if (groupId != -1) {
         statement.setInt(1, groupId);
+      }
       rs = statement.executeQuery();
       while (rs.next()) {
         theResult.add(fetchGroup(rs));

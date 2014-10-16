@@ -49,18 +49,16 @@ public class SQLGroupUserRelTable {
   /**
    * Returns all the User ids which compose a group.
    */
-  public List<String> getDirectUserIdsOfGroup(Connection c, int groupId)
-      throws AdminException {
+  public List<String> getDirectUserIdsOfGroup(Connection c, int groupId) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<String> theResult = new ArrayList<String>();
-    String theQuery = "select " + drvSettings.getRelUIDColumnName() + " from "
-        + drvSettings.getRelTableName() + " where "
-        + drvSettings.getRelGIDColumnName() + " = ?";
+    List<String> theResult = new ArrayList<>();
+    String theQuery =
+        "select " + drvSettings.getRelUIDColumnName() + " from " + drvSettings.getRelTableName() +
+            " where " + drvSettings.getRelGIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin",
-          "SQLGroupUserRelTable.getDirectUserIdsOfGroup", "root.MSG_QUERY",
+      SilverTrace.debug("admin", "SQLGroupUserRelTable.getDirectUserIdsOfGroup", "root.MSG_QUERY",
           theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
@@ -70,8 +68,7 @@ public class SQLGroupUserRelTable {
       }
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.getDirectUserIdsOfGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -81,18 +78,16 @@ public class SQLGroupUserRelTable {
   /**
    * Returns all the groups in a given userRole (not recursive).
    */
-  public List<String> getDirectGroupIdsOfUser(Connection c, int userId)
-      throws AdminException {
+  public List<String> getDirectGroupIdsOfUser(Connection c, int userId) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<String> theResult = new ArrayList<String>();
-    String theQuery = "select " + drvSettings.getRelGIDColumnName() + " from "
-        + drvSettings.getRelTableName() + " where "
-        + drvSettings.getRelUIDColumnName() + " = ?";
+    List<String> theResult = new ArrayList<>();
+    String theQuery =
+        "select " + drvSettings.getRelGIDColumnName() + " from " + drvSettings.getRelTableName() +
+            " where " + drvSettings.getRelUIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin",
-          "SQLGroupUserRelTable.getDirectGroupIdsOfUser", "root.MSG_QUERY",
+      SilverTrace.debug("admin", "SQLGroupUserRelTable.getDirectGroupIdsOfUser", "root.MSG_QUERY",
           theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
@@ -102,8 +97,7 @@ public class SQLGroupUserRelTable {
       }
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.getDirectGroupIdsOfUser",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }
@@ -113,24 +107,22 @@ public class SQLGroupUserRelTable {
   /**
    * Insert a new group row.
    */
-  public int createGroupUserRel(Connection c, int groupId, int userId)
-      throws AdminException {
+  public int createGroupUserRel(Connection c, int groupId, int userId) throws AdminException {
     PreparedStatement statement = null;
-    String theQuery = "insert into " + drvSettings.getRelTableName() + "("
-        + drvSettings.getRelGIDColumnName() + ","
-        + drvSettings.getRelUIDColumnName() + ") " + " values (?,?)";
+    String theQuery =
+        "insert into " + drvSettings.getRelTableName() + "(" + drvSettings.getRelGIDColumnName() +
+            "," + drvSettings.getRelUIDColumnName() + ") " + " values (?,?)";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.createGroupUserRel",
-          "root.MSG_QUERY", theQuery);
+      SilverTrace
+          .debug("admin", "SQLGroupUserRelTable.createGroupUserRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.setInt(2, userId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.createGroupUserRel",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException("SQLGroupUserRelTable.createGroupUserRel", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -139,24 +131,22 @@ public class SQLGroupUserRelTable {
   /**
    * Insert a new group row.
    */
-  public int removeGroupUserRel(Connection c, int groupId, int userId)
-      throws AdminException {
+  public int removeGroupUserRel(Connection c, int groupId, int userId) throws AdminException {
     PreparedStatement statement = null;
-    String theQuery = "delete from " + drvSettings.getRelTableName()
-        + " where " + drvSettings.getRelGIDColumnName() + " = ?" + " and "
-        + drvSettings.getRelUIDColumnName() + " = ?";
+    String theQuery = "delete from " + drvSettings.getRelTableName() + " where " +
+        drvSettings.getRelGIDColumnName() + " = ?" + " and " + drvSettings.getRelUIDColumnName() +
+        " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.removeGroupUserRel",
-          "root.MSG_QUERY", theQuery);
+      SilverTrace
+          .debug("admin", "SQLGroupUserRelTable.removeGroupUserRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.setInt(2, userId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.removeGroupUserRel",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException("SQLGroupUserRelTable.removeGroupUserRel", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -167,19 +157,18 @@ public class SQLGroupUserRelTable {
    */
   public int removeAllUserRel(Connection c, int userId) throws AdminException {
     PreparedStatement statement = null;
-    String theQuery = "delete from " + drvSettings.getRelTableName()
-        + " where " + drvSettings.getRelUIDColumnName() + " = ?";
+    String theQuery = "delete from " + drvSettings.getRelTableName() + " where " +
+        drvSettings.getRelUIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.removeAllUserRel",
-          "root.MSG_QUERY", theQuery);
+      SilverTrace
+          .debug("admin", "SQLGroupUserRelTable.removeAllUserRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.removeAllUserRel",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException("SQLGroupUserRelTable.removeAllUserRel", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -190,19 +179,18 @@ public class SQLGroupUserRelTable {
    */
   public int removeAllGroupRel(Connection c, int groupId) throws AdminException {
     PreparedStatement statement = null;
-    String theQuery = "delete from " + drvSettings.getRelTableName()
-        + " where " + drvSettings.getRelGIDColumnName() + " = ?";
+    String theQuery = "delete from " + drvSettings.getRelTableName() + " where " +
+        drvSettings.getRelGIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.removeAllGroupRel",
-          "root.MSG_QUERY", theQuery);
+      SilverTrace
+          .debug("admin", "SQLGroupUserRelTable.removeAllGroupRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       return statement.executeUpdate();
     } catch (SQLException e) {
-      throw new AdminException("SQLGroupUserRelTable.removeAllGroupRel",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+      throw new AdminException("SQLGroupUserRelTable.removeAllGroupRel", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(statement);
     }
@@ -215,14 +203,14 @@ public class SQLGroupUserRelTable {
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    String theQuery = "select " + drvSettings.getRelUIDColumnName() + " from "
-        + drvSettings.getRelTableName() + " where "
-        + drvSettings.getRelGIDColumnName() + " = ? AND "
-        + drvSettings.getRelUIDColumnName() + " = ?";
+    String theQuery =
+        "select " + drvSettings.getRelUIDColumnName() + " from " + drvSettings.getRelTableName() +
+            " where " + drvSettings.getRelGIDColumnName() + " = ? AND " +
+            drvSettings.getRelUIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.isUserDirectlyInGroup",
-          "root.MSG_QUERY", theQuery);
+      SilverTrace
+          .debug("admin", "SQLGroupUserRelTable.isUserDirectlyInGroup", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.setInt(2, userId);
@@ -230,8 +218,7 @@ public class SQLGroupUserRelTable {
       return rs.next();
     } catch (SQLException e) {
       throw new AdminException("SQLGroupUserRelTable.isUserDirectlyInGroup",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = "
-          + theQuery, e);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", "Query = " + theQuery, e);
     } finally {
       DBUtil.close(rs, statement);
     }

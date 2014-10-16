@@ -56,7 +56,7 @@ import org.opends.server.util.StaticUtils;
  * JUnit ClassRule to start an embedded OpenDJ server in a JUnit Test. Must be used with the
  * CreateLdapServer annotation
  *
- * @sez org.silverpeas.ldap.CreateLdapServer
+ * @see org.silverpeas.ldap.CreateLdapServer
  * @author ehugonnet
  */
 public class OpenDJRule implements TestRule {
@@ -108,8 +108,6 @@ public class OpenDJRule implements TestRule {
    * @param ldifConfigFile
    * @throws InitializationException
    * @throws ConfigException
-   * @throws FileNotFoundException
-   * @throws DirectoryException
    * @throws URISyntaxException
    */
   private void startLdapServer(String serverHome, String ldifConfigFile) throws
@@ -173,9 +171,9 @@ public class OpenDJRule implements TestRule {
     importConfig.setEncrypted(false);
     importConfig.setValidateSchema(false);
     importConfig.setSkipDNValidation(false);
-    ArrayList<Backend> backendList = new ArrayList<Backend>();
-    ArrayList<BackendCfg> entryList = new ArrayList<BackendCfg>();
-    ArrayList<List<DN>> dnList = new ArrayList<List<DN>>();
+    ArrayList<Backend> backendList = new ArrayList<>();
+    ArrayList<BackendCfg> entryList = new ArrayList<>();
+    ArrayList<List<DN>> dnList = new ArrayList<>();
     BackendToolUtils.getBackends(backendList, entryList, dnList);
     Backend backend = null;
     for (Backend b : backendList) {
@@ -220,7 +218,6 @@ public class OpenDJRule implements TestRule {
   /**
    * Contruct a java.io.File to the specified serverHome directory, trying as a full path and if not
    * found as a resource path.
-   *
    * @param serverHome
    * @return
    * @throws URISyntaxException
@@ -236,8 +233,7 @@ public class OpenDJRule implements TestRule {
   /**
    * Contruct a java.io.File to the specified file, trying as a full path and if not found as a
    * resource path.
-   *
-   * @param serverHome
+   * @param fileName
    * @return
    * @throws URISyntaxException
    */

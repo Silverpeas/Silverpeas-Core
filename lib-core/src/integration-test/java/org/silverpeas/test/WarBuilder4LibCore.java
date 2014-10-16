@@ -274,7 +274,20 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     return this;
   }
 
+  /**
+   * Add quartz scheduler libraries in web archive (war)
+   * @return the instance of the war builder with quartz scheduler libraries
+   */
   public WarBuilder4LibCore addQuartzSchedulerFeatures() {
     return addMavenDependencies("org.quartz-scheduler:quartz");
   }
+
+  /**
+   * Add novell jldap libraries in web archive (war)
+   * @return the instance of the war builder with novell jldap
+   */
+  public WarBuilder4LibCore addLDAPFeatures() {
+    return addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
+  }
+
 }

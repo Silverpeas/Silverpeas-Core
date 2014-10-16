@@ -67,8 +67,9 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /*
-   * (non-Javadoc) @seecom.stratelia.webactiv.beans.admin.AbstractDomainDriver#
-   * getGroupMemberGroupIds(java.lang.String)
+   * (non-Javadoc)
+   * @see com.stratelia.webactiv.beans.admin.AbstractDomainDriver#getGroupMemberGroupIds
+   * (java.lang.String)
    */
   @Override
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
@@ -419,7 +420,7 @@ public class SQLDriver extends AbstractDomainDriver {
       int gid;
 
       this.openConnection();
-      List<Group> allSubGroups = new ArrayList<Group>();
+      List<Group> allSubGroups = new ArrayList<>();
       allSubGroups.add(localGroupMgr.getGroup(openedConnection, idAsInt(groupId)));
 
       while (allSubGroups.size() > 0) {
@@ -443,7 +444,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param group
    */
   public void updateGroup(Group group) throws Exception {
-    List<String> alAddUsers = new ArrayList<String>();
+    List<String> alAddUsers = new ArrayList<>();
     int groupId = idAsInt(group.getSpecificId());
 
     try {
