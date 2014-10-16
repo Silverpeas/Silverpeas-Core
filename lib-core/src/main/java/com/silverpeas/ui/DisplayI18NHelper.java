@@ -33,7 +33,7 @@ import org.silverpeas.util.ResourceLocator;
 
 public class DisplayI18NHelper {
 
-  private static final List<String> languages = new ArrayList<String>();
+  private static final List<String> languages = new ArrayList<>();
   private static final String defaultLanguage;
 
   static {
