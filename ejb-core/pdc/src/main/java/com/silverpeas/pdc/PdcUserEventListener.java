@@ -37,6 +37,6 @@ public class PdcUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Override
   public void onDeletion(final UserEvent event) throws Exception {
-    pdcBm.deleteManager(event.getResource().getId());
+    pdcBm.deleteManager(event.getTransition().getBefore().getId());
   }
 }

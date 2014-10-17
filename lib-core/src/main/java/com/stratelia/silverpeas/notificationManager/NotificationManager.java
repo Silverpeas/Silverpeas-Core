@@ -29,9 +29,9 @@ package com.stratelia.silverpeas.notificationManager;
  * @author Eric BURGEL
  * @version 1.0
  */
-import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
-import com.silverpeas.notification.delayed.model.DelayedNotificationData;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
+import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;

@@ -39,9 +39,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <property name="socialEventsInterface">
       <ref bean="socialEvents" />
     </property>
-    <property name="socialGalleryInterface">
+   <!-- <property name="socialGalleryInterface">
       <ref bean="socialGallery" />
-    </property>
+    </property>-->
     <property name="socialPublicationsInterface">
       <ref bean="socialPublications" />
     </property>
@@ -55,8 +55,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
   <bean id="socialEvents" class="com.stratelia.webactiv.calendar.socialnetwork.SocialEvent">
   </bean>
-  <bean id="socialGallery" class="com.silverpeas.gallery.socialNetwork.SocialGallery">
-  </bean>
+<!--  <bean id="socialGallery" class="com.silverpeas.gallery.socialNetwork.SocialGallery">
+  </bean>-->
   <bean id="socialPublications" class="com.stratelia.webactiv.publication.social.SocialPublications">
   </bean>
   <bean id="socialStatus" class="com.silverpeas.socialnetwork.status.SocialStatus">

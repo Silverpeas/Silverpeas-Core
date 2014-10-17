@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
+import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
@@ -28,9 +28,8 @@ import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.UserRow;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.admin.user.notification.UserEvent;
+import org.silverpeas.admin.user.notification.UserEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
@@ -51,7 +50,7 @@ public class UserManager {
   private UserDAO userDAO;
 
   @Inject
-  private ResourceEventNotifier<UserEvent> notifier;
+  private UserEventNotifier notifier;
 
   public UserManager() {
   }
@@ -271,13 +270,13 @@ public class UserManager {
    * @return
    * @throws AdminException
    */
-  public String[] getManageableSpaceIds(String sUserId, List<String> groupIds)
+  public Integer[] getManageableSpaceIds(String sUserId, List<String> groupIds)
       throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.openConnection();
-      List<String> spaceIds = SpaceDAO.getManageableSpaceIds(con, sUserId, groupIds);
-      return spaceIds.toArray(new String[spaceIds.size()]);
+      List<Integer> spaceIds = SpaceDAO.getManageableSpaceIds(con, sUserId, groupIds);
+      return spaceIds.toArray(new Integer[spaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException("UserManager.getManageableSpaceIds", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId + "'", e);

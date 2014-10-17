@@ -43,14 +43,14 @@ public class GoToSpace extends GoTo {
       HttpServletResponse res) throws Exception {
     SpaceInstLight space = OrganisationControllerProvider
         .getOrganisationController().getSpaceInstLightById(objectId);
-    if (space != null && space.getShortId() != null) {
+    if (space != null) {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
       if (gef != null && helper != null) {
-        gef.setSpaceIdForCurrentRequest(space.getFullId());
-        helper.setSpaceIdAndSubSpaceId(space.getFullId());
+        gef.setSpaceIdForCurrentRequest(space.getId());
+        helper.setSpaceIdAndSubSpaceId(space.getId());
       }
       return "SpaceId=" + objectId;
     }

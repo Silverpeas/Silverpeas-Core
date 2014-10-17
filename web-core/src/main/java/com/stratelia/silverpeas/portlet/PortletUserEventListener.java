@@ -42,7 +42,7 @@ public class PortletUserEventListener extends CDIResourceEventListener<UserEvent
     PortletSchema schema = null;
     try {
       schema = new PortletSchema();
-      int userId = Integer.parseInt(event.getResource().getId());
+      int userId = Integer.parseInt(event.getTransition().getBefore().getId());
       schema.portletState.dereferenceUserId(userId);
       schema.commit();
     } catch (Exception e) {

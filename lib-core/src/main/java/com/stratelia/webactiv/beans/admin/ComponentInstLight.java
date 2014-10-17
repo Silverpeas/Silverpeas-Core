@@ -105,19 +105,16 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
     publicApp = compo.publicAccess == 1;
   }
 
-  /**
-   * Set the space id
-   */
-  public void setId(String sId) {
-    this.m_sId = sId;
+  public String getId() {
+    return m_sId + m_sName;
   }
 
-  /**
-   * Get the space id
-   * @return the requested space id
-   */
-  public String getId() {
-    return m_sId;
+  public int getLocalId() {
+    return Integer.parseInt(m_sId);
+  }
+
+  public void setLocalId(int id) {
+    this.m_sId = String.valueOf(id);
   }
 
   /**

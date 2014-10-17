@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
+import static com.silverpeas.usernotification.RegisteredTopics.COMMENT_TOPIC;
 
 /**
  * An abstract test case on the comments. It sets up the test context within which a test case on

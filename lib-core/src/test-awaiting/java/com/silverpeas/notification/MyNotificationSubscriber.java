@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notification;
+package com.silverpeas.usernotification;
 
 import javax.inject.Inject;
 import javax.inject.Named;

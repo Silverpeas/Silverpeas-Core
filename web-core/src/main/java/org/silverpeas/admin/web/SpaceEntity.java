@@ -23,23 +23,15 @@
  */
 package org.silverpeas.admin.web;
 
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_APPEARANCE_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_BASE_URI;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_COMPONENTS_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_CONTENT_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_SPACES_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.buildURI;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import static org.silverpeas.admin.web.AdminResourceURIs.*;
 
 /**
  * The space instance light entity is a SpaceInstLight object that is exposed in the web as
@@ -168,8 +160,8 @@ public class SpaceEntity extends StructureElementEntity<SpaceEntity> {
    * @param language
    */
   private SpaceEntity(final SpaceInstLight space, final String language) {
-    super(TYPE, space.getShortId(), space.getFatherId(), space.getName(language), space
-        .getDescription(), space.getStatus(), space.getOrderNum(), space.isInheritanceBlocked());
+    super(TYPE, String.valueOf(space.getLocalId()), space.getFatherId(), space.getName(language),
+        space.getDescription(), space.getStatus(), space.getOrderNum(), space.isInheritanceBlocked());
     level = space.getLevel();
     isSpaceDisplayedAtFirst = space.isDisplaySpaceFirst();
   }

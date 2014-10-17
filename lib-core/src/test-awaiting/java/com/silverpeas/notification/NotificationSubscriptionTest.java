@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notification;
+package com.silverpeas.usernotification;
 
 import com.silverpeas.jms.JMSTestFacade;
 import javax.inject.Named;
@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.notification.NotificationTopic.*;
+import static com.silverpeas.usernotification.NotificationTopic.*;
 
 /**
  * Unit test on the subscription to a topic for receiving notifications.

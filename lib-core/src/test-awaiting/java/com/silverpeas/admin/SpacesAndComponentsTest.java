@@ -528,7 +528,7 @@ public class SpacesAndComponentsTest {
     SpaceInstLight spaceLight = ac.getSpaceInstLight(expectedSpaceId);
     assertThat(spaceLight, is(notNullValue()));
     assertThat(spaceLight.getName(), is("Copie de Space 1"));
-    assertThat(spaceLight.getFullId(), is(expectedSpaceId));
+    assertThat(spaceLight.getId(), is(expectedSpaceId));
     assertThat(spaceLight.getOrderNum(), is(rootSpaceIds.length));
 
     SpaceInst space = ac.getSpaceInstById(expectedSpaceId);
@@ -573,7 +573,7 @@ public class SpacesAndComponentsTest {
     SpaceInstLight spaceLight = ac.getSpaceInstLight(expectedSpaceId);
     assertThat(spaceLight, is(notNullValue()));
     assertThat(spaceLight.getName(), is(copiedSpace.getName()));
-    assertThat(spaceLight.getFullId(), is(expectedSpaceId));
+    assertThat(spaceLight.getId(), is(expectedSpaceId));
     assertThat(spaceLight.getOrderNum(), is(0));
 
     SpaceInst space = ac.getSpaceInstById(expectedSpaceId);

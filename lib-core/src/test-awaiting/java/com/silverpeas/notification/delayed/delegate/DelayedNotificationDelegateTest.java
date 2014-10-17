@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.silverpeas.notification.delayed.delegate;
+package com.silverpeas.usernotification.delayed.delegate;
 
 import java.util.*;
 
@@ -12,9 +12,9 @@ import javax.sql.DataSource;
 
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.notification.delayed.DelayedNotificationProvider;
-import com.silverpeas.notification.delayed.model.DelayedNotificationData;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.delayed.DelayedNotificationProvider;
+import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -64,7 +64,7 @@ public class DelayedNotificationDelegateTest {
     final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
     dataSet = new ReplacementDataSet(builder.build(DelayedNotificationDelegateTest.class.
         getClassLoader().getResourceAsStream(
-        "com/silverpeas/notification/delayed/delayed-notification-dataset.xml")));
+        "com/silverpeas/usernotification/delayed/delayed-notification-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
   }
   @Inject
@@ -310,7 +310,7 @@ public class DelayedNotificationDelegateTest {
           mock.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", ""),
           is(IOUtils.toString(
           DelayedNotificationDelegateTest.class.getClassLoader().getResourceAsStream(
-          "com/silverpeas/notification/delayed/result-synthese-" + userIds[i] + "-" + language
+          "com/silverpeas/usernotification/delayed/result-synthese-" + userIds[i] + "-" + language
           + ".txt"), Charsets.UTF_8).replaceAll("[\r\n\t]", "")));
     }
     return mock;

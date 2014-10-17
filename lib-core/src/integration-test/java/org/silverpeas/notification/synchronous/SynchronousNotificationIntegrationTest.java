@@ -27,19 +27,18 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.synchronous.SynchronousTestResourceEventListener;
-import org.silverpeas.notification.synchronous.SynchronousTestResourceEventNotifier;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
-import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StateTransition;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
@@ -47,8 +46,7 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -68,8 +66,7 @@ public class SynchronousNotificationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            DecodingException.class, EncodingException.class, JSONCodec.class)
-        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
+            DecodingException.class, EncodingException.class, StateTransition.class).addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
             SynchronousTestResourceEventNotifier.class, SynchronousTestResourceEventListener.class)
         .addPackage("org.silverpeas.notification")
         .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
@@ -83,6 +80,11 @@ public class SynchronousNotificationIntegrationTest {
     assertThat(bucket, notNullValue());
   }
 
+  @After
+  public void emptyBucket() {
+    bucket.empty();
+  }
+
   @Test
   public void emptyTest() {
     // just to test the deployment into wildfly works fine.
@@ -90,13 +92,25 @@ public class SynchronousNotificationIntegrationTest {
 
   @Test
   public void synchronousNotificationShouldWork() {
-    TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
+    TestResourceEvent event =
+        new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
 
     notifier.notify(event);
 
     assertThat(bucket.isEmpty(), is(false));
     assertThat(bucket.getContent().size(), is(1));
     assertThat(bucket.getContent().contains(event), is(true));
+  }
+
+  @Test
+  public void synchronousNotificationOnCreationShouldWork() {
+    notifier.notifyEventOn(ResourceEvent.Type.CREATION, aTestResource());
+
+    assertThat(bucket.isEmpty(), is(false));
+    assertThat(bucket.getContent().size(), is(1));
+    assertThat(bucket.getContent().get(0).getType(), is(ResourceEvent.Type.CREATION));
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), nullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
   }
 
   private TestResource aTestResource() {

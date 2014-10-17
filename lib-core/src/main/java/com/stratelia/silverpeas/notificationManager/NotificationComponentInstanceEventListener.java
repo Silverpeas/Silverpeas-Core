@@ -25,6 +25,7 @@ import com.stratelia.silverpeas.notificationManager.model.NotifSchema;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.logging.Level;
@@ -41,11 +42,9 @@ public class NotificationComponentInstanceEventListener
     NotifSchema schema = null;
     try {
       schema = new NotifSchema();
-      if (event.isOnCreation()) {
-        ComponentInst componentInst = event.getResource();
-        int id = Integer.parseInt(componentInst.getId());
-        schema.notifPreference.dereferenceComponentInstanceId(id);
-      }
+      ComponentInst componentInst = event.getTransition().getBefore();
+      int id = componentInst.getLocalId();
+      schema.notifPreference.dereferenceComponentInstanceId(id);
       schema.commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage(), e);

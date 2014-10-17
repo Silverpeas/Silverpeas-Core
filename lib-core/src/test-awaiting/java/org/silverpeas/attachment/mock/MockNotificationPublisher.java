@@ -25,9 +25,9 @@ package org.silverpeas.attachment.mock;
 
 import javax.inject.Named;
 
-import com.silverpeas.notification.NotificationPublisher;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.usernotification.NotificationPublisher;
+import com.silverpeas.usernotification.NotificationTopic;
+import com.silverpeas.usernotification.SilverpeasNotification;
 import com.silverpeas.util.Default;
 
 /**

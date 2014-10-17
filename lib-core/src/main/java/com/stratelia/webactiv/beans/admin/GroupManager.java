@@ -26,9 +26,8 @@ import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.GroupRow;
-import org.silverpeas.admin.user.notification.GroupEvent;
+import org.silverpeas.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
@@ -50,7 +49,7 @@ public class GroupManager {
   @Inject
   private UserDAO userDao;
   @Inject
-  private ResourceEventNotifier<GroupEvent> notifier;
+  private GroupEventNotifier notifier;
 
   /**
    * Constructor
@@ -612,7 +611,7 @@ public class GroupManager {
   }
 
   public String[] searchGroupsIds(DomainDriverManager ddManager, boolean isRootGroup,
-          String componentId, String[] aProfileId, Group modelGroup) throws AdminException {
+          int componentId, String[] aProfileId, Group modelGroup) throws AdminException {
     try {
       // Get organization
       ddManager.getOrganizationSchema();
@@ -637,7 +636,7 @@ public class GroupManager {
       }
       // Get groups
       return ddManager.getOrganization().group.searchGroupsIds(isRootGroup,
-              idAsInt(componentId), aRoleId, model);
+              componentId, aRoleId, model);
     } catch (Exception e) {
       throw new AdminException("GroupManager.searchGroupsIdsInGroup",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN", e);

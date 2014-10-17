@@ -36,6 +36,7 @@ import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StateTransition;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NBean;
 import org.silverpeas.util.i18n.Translation;
@@ -58,13 +59,13 @@ public class ComponentInstanceEventNotificationIntegrationTest {
   private TestComponentInstanceEventObserver observer;
 
   @Inject
-  private ResourceEventNotifier<ComponentInstanceEvent> notifier;
+  private ResourceEventNotifier<ComponentInst, ComponentInstanceEvent> notifier;
 
   @Deployment
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            Translation.class, ComponentInstanceI18NRow.class,
+            Translation.class, ComponentInstanceI18NRow.class, StateTransition.class,
             ComponentI18N.class, AbstractI18NBean.class, I18NBean.class, ComponentInst.class,
             ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
             TestComponentInstanceEventObserver.class).addPackage("org.silverpeas.notification")
@@ -81,7 +82,8 @@ public class ComponentInstanceEventNotificationIntegrationTest {
   @Test
   public void aFirstWayToTriggerAnEvent() {
     ComponentInst componentInst = new ComponentInst();
-    componentInst.setId("kmelia1");
+    componentInst.setName("kmelia");
+    componentInst.setLocalId(1);
 
     ComponentInstanceEvent event = new ComponentInstanceEvent(CREATION, componentInst);
     notifier.notify(event);
@@ -92,18 +94,13 @@ public class ComponentInstanceEventNotificationIntegrationTest {
   @Test
   public void aSecondWayToTriggerAnEvent() {
     ComponentInst componentInst = new ComponentInst();
-    componentInst.setId("kmelia1");
+    componentInst.setName("kmelia");
+    componentInst.setLocalId(1);
 
     notifier.notifyEventOn(CREATION, componentInst);
     assertThat(observer.isAnEventObserved(), is(true));
     assertThat(observer.getObservedEvent().getType(), is(CREATION));
-    assertThat(observer.getObservedEvent().getResource(), is(componentInst));
+    assertThat(observer.getObservedEvent().getTransition().getAfter(), is(componentInst));
   }
 
-  @Test(expected = ClassCastException.class)
-  public void theTypeOfResourceShouldBecorrect() {
-    String content = "coucou";
-
-    notifier.notifyEventOn(CREATION, content);
-  }
 }

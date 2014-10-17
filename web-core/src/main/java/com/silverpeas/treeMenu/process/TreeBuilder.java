@@ -117,7 +117,7 @@ public class TreeBuilder {
           controller.getSubSpacesContainingComponent(father.getKey(), userId, "kmelia");
       for (SpaceInstLight space : subspaces) {
         MenuItem item =
-            new MenuItem(space.getName(language), space.getFullId(), space.getLevel(),
+            new MenuItem(space.getName(language), space.getId(), space.getLevel(),
             NodeType.SPACE, false, father, null);
         children.add(item);
       }
@@ -202,7 +202,7 @@ public class TreeBuilder {
       for (SpaceInstLight space : rootSpaces) {
         if (space != null) {
           MenuItem subElement =
-              new MenuItem(space.getName(language), space.getFullId(), 0,
+              new MenuItem(space.getName(language), space.getId(), 0,
               NodeType.SPACE, false, null, null);
           children.add(subElement);
         }

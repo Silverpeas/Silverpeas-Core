@@ -29,7 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.silverpeas.notification.RegisteredTopics.COMMENT_TOPIC;
+import static com.silverpeas.usernotification.RegisteredTopics.COMMENT_TOPIC;
 
 /**
  * The base class of all of the test cases in which are involved the comment service.

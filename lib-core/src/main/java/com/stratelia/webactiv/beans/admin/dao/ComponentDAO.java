@@ -84,7 +84,7 @@ public class ComponentDAO {
 
     String name = rs.getString(4);
 
-    i.setId(name + Integer.toString(rs.getInt(1)));
+    i.setLocalId(rs.getInt(1));
     i.setDomainFatherId(Integer.toString(rs.getInt(2)));
     i.setLabel(rs.getString(3));
     i.setName(name);
@@ -240,12 +240,12 @@ public class ComponentDAO {
   }
 
   public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
-      int userId, String spaceId) throws SQLException {
+      int userId, int spaceId) throws SQLException {
     return getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId, null);
   }
 
   public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
-      int userId, String spaceId, String componentName) throws SQLException {
+      int userId, int spaceId, String componentName) throws SQLException {
     // get available components
     Set<ComponentInstLight> componentsSet = new HashSet<ComponentInstLight>();
     componentsSet.addAll(getPublicComponentsInSpace(con, spaceId));
@@ -265,7 +265,7 @@ public class ComponentDAO {
   }
 
   private static List<ComponentInstLight> getAvailableComponentsInSpace(Connection con,
-      List<String> groupIds, String spaceId, String componentName)
+      List<String> groupIds, int spaceId, String componentName)
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
@@ -291,8 +291,9 @@ public class ComponentDAO {
 
       while (rs.next()) {
         ComponentInstLight component = new ComponentInstLight();
-        component.setId(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        component.setLocalId(rs.getInt(1));
         component.setOrderNum(rs.getInt(3));
+        component.setName(rs.getString(2));
         components.add(component);
       }
 
@@ -303,7 +304,7 @@ public class ComponentDAO {
   }
 
   private static List<ComponentInstLight> getAvailableComponentsInSpace(Connection con, int userId,
-      String spaceId, String componentName) throws SQLException {
+      int spaceId, String componentName) throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
     try {
@@ -312,7 +313,7 @@ public class ComponentDAO {
       String queryAvailableComponentIdsInSpace =
           " select distinct(c.id), c.componentName, c.ordernum"
           + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
-          + " where c.spaceId = " + Integer.parseInt(spaceId);
+          + " where c.spaceId = " + spaceId;
       if (StringUtil.isDefined(componentName)) {
         queryAvailableComponentIdsInSpace += " and c.componentName = '" + componentName + "'";
       }
@@ -328,8 +329,9 @@ public class ComponentDAO {
 
       while (rs.next()) {
         ComponentInstLight component = new ComponentInstLight();
-        component.setId(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        component.setLocalId(rs.getInt(1));
         component.setOrderNum(rs.getInt(3));
+        component.setName(rs.getString(2));
         components.add(component);
       }
 
@@ -346,7 +348,7 @@ public class ComponentDAO {
       + " and c.spaceId = ?"
       + " and c.componentstatus is null";
 
-  private static List<ComponentInstLight> getPublicComponentsInSpace(Connection con, String spaceId)
+  private static List<ComponentInstLight> getPublicComponentsInSpace(Connection con, int spaceId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -354,13 +356,13 @@ public class ComponentDAO {
       List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
 
       stmt = con.prepareStatement(queryPublicComponentIdsInSpace);
-      stmt.setInt(1, Integer.parseInt(spaceId));
+      stmt.setInt(1, spaceId);
 
       rs = stmt.executeQuery();
 
       while (rs.next()) {
         ComponentInstLight component = new ComponentInstLight();
-        component.setId(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        component.setLocalId(rs.getInt(1));
         component.setOrderNum(rs.getInt(3));
         components.add(component);
       }

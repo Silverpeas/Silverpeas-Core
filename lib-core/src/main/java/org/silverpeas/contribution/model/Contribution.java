@@ -73,7 +73,7 @@ public interface Contribution extends IdentifiableResource {
    * @return the contribution's title in the specified language.
    * Can be empty if no title was set or no title is defined for a such contribution.
    */
-  public default String getTitle(String language) {
+  public default String getTitle() {
     return "";
   }
 

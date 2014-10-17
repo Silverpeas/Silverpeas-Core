@@ -23,6 +23,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
@@ -136,8 +137,8 @@ public class MainSessionController implements Clipboard {
    * @return given spaceId without "WA" prefix
    */
   private String checkSpaceId(String spaceId) {
-    if (spaceId != null && spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      return spaceId.substring(Admin.SPACE_KEY_PREFIX.length(), spaceId.length());
+    if (spaceId != null && spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+      return spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length(), spaceId.length());
     }
     return spaceId;
   }

@@ -23,11 +23,11 @@
  */
 package org.silverpeas.admin.web;
 
-import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.util.StringUtil;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -165,7 +165,7 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
       final boolean isInheritanceBlocked) {
     super(type);
     this.id = id == null ? "" : id;
-    this.parentId = parentId == null ? "" : parentId.replaceFirst(Admin.SPACE_KEY_PREFIX, "");
+    this.parentId = parentId == null ? "" : parentId.replaceFirst(SpaceInst.SPACE_KEY_PREFIX, "");
     this.label = label == null ? "" : label;
     this.description = description == null ? "" : description;
     this.status = status == null ? "" : status;

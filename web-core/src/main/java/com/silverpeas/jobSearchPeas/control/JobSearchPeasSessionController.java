@@ -215,15 +215,15 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
       String url;
       if (spaceInstLight.isRoot()) {
-        url = "openSpace('" + spaceInstLight.getFullId() + "')";
+        url = "openSpace('" + spaceInstLight.getId() + "')";
       } else {
         SpaceInstLight rootSpaceInstLight = spaceInstLight;
         while (!rootSpaceInstLight.isRoot()) {
           String fatherId = rootSpaceInstLight.getFatherId();
           rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
         }
-        url = "openSubSpace('" + rootSpaceInstLight.getFullId() + "', '" + spaceInstLight.
-            getFullId() + "')";
+        url = "openSubSpace('" + rootSpaceInstLight.getId() + "', '" + spaceInstLight.
+            getId() + "')";
       }
 
       SearchResult searchResult = new SearchResult();
@@ -273,15 +273,15 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           searchResult.setCreaName(nomCrea);
           searchResult.setPath(listEmplacement);
           if (spaceInstLight.isRoot()) {
-            searchResult.setUrl("openSpace('" + spaceInstLight.getFullId() + "')");
+            searchResult.setUrl("openSpace('" + spaceInstLight.getId() + "')");
           } else {
             SpaceInstLight rootSpaceInstLight = spaceInstLight;
             while (null != rootSpaceInstLight && !rootSpaceInstLight.isRoot()) {
               String fatherId = rootSpaceInstLight.getFatherId();
               rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
             }
-            searchResult.setUrl("openSubSpace('" + rootSpaceInstLight.getFullId() + "', '"
-                + spaceInstLight.getFullId() + "')");
+            searchResult.setUrl("openSubSpace('" + rootSpaceInstLight.getId() + "', '"
+                + spaceInstLight.getId() + "')");
           }
           listSearchResult.add(searchResult);
         }

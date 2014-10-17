@@ -21,6 +21,8 @@
 
 package org.silverpeas.contribution.model;
 
+import java.io.Serializable;
+
 /**
  * The content of a contribution in Silverpeas. It is the more generic representation of a content
  * embedded into a user contribution. All conceptual representation of a content supported in
@@ -28,7 +30,7 @@ package org.silverpeas.contribution.model;
  * @param <T> the type the content's data.
  * @author mmoquillon
  */
-public interface ContributionContent<T> {
+public interface ContributionContent<T> extends Serializable {
 
   /**
    * Gets the data of a content. A data can be a text, a structure, a binary stream, and so on. The

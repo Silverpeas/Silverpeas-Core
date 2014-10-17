@@ -21,6 +21,7 @@
 
 package org.silverpeas.notification.synchronous;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.util.TestResource;
@@ -30,12 +31,11 @@ import org.silverpeas.notification.util.TestResourceEvent;
  * @author mmoquillon
  */
 public class SynchronousTestResourceEventNotifier extends
-    CDIResourceEventNotifier<TestResourceEvent> {
+    CDIResourceEventNotifier<TestResource, TestResourceEvent> {
 
   @Override
   protected TestResourceEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new TestResourceEvent(type, (TestResource) resource);
+      final TestResource... resource) {
+    return new TestResourceEvent(type, resource);
   }
-
 }

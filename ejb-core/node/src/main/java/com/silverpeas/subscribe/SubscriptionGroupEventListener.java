@@ -38,6 +38,6 @@ public class SubscriptionGroupEventListener extends CDIResourceEventListener<Gro
   @Override
   public void onDeletion(final GroupEvent event) throws Exception {
     subscriptionService.unsubscribeBySubscriber(
-        GroupSubscriptionSubscriber.from(event.getResource().getId()));
+        GroupSubscriptionSubscriber.from(event.getTransition().getBefore().getId()));
   }
 }

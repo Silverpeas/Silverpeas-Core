@@ -24,9 +24,9 @@
 
 package com.silverpeas.pdc.web.mock;
 
-import com.silverpeas.notification.MessageSubscribingService;
-import com.silverpeas.notification.NotificationSubscriber;
-import com.silverpeas.notification.NotificationTopic;
+import com.silverpeas.usernotification.MessageSubscribingService;
+import com.silverpeas.usernotification.NotificationSubscriber;
+import com.silverpeas.usernotification.NotificationTopic;
 import javax.inject.Named;
 
 @Named("messageSubscribingService")

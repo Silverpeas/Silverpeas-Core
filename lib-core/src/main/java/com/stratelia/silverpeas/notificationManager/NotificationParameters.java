@@ -29,7 +29,7 @@ package com.stratelia.silverpeas.notificationManager;
 
 import java.util.Date;
 
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

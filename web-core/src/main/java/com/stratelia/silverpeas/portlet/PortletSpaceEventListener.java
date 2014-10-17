@@ -42,7 +42,7 @@ public class PortletSpaceEventListener extends CDIResourceEventListener<SpaceEve
   @Override
   public void onDeletion(final SpaceEvent event) throws Exception {
     PortletSchema schema = null;
-    int spaceId = Integer.parseInt(event.getResource().getId());
+    int spaceId = event.getTransition().getBefore().getLocalId();
     try {
       schema = new PortletSchema();
       PortletColumnRow[] portletColumnDeleted = schema.portletColumn.dereferenceSpaceId(spaceId);

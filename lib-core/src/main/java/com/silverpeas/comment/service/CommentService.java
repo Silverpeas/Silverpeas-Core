@@ -23,10 +23,10 @@
  */
 package com.silverpeas.comment.service;
 
-import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * User: ehugonnet Date: 21/03/11 Time: 09:54
  */
-public interface CommentService extends SilverpeasComponentService<Comment> {
+public interface CommentService {
 
   void createComment(Comment cmt);
 
@@ -74,4 +74,8 @@ public interface CommentService extends SilverpeasComponentService<Comment> {
   void indexAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
   void unindexAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
+
+  ResourceLocator getComponentMessages(String language);
+
+  ResourceLocator getComponentSettings();
 }

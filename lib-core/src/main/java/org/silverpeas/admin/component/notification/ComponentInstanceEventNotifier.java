@@ -41,7 +41,7 @@ import javax.inject.Inject;
  * @author mmoquillon
  */
 public class ComponentInstanceEventNotifier
-    extends CDIResourceEventNotifier<ComponentInstanceEvent> {
+    extends CDIResourceEventNotifier<ComponentInst, ComponentInstanceEvent> {
 
   /**
    * Gets an instance of this event notifier.
@@ -56,8 +56,8 @@ public class ComponentInstanceEventNotifier
 
   @Override
   protected ComponentInstanceEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new ComponentInstanceEvent(type, (ComponentInst) resource);
+      final ComponentInst... resource) {
+    return new ComponentInstanceEvent(type, resource);
   }
 
 }

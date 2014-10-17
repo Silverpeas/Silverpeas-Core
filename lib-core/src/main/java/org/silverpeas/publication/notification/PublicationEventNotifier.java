@@ -25,17 +25,16 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 
-import javax.enterprise.event.Event;
-
 /**
  * An synchronous notifier of change on a publication in Silverpeas.
  * @author mmoquillon
  */
-public class PublicationEventNotifier extends CDIResourceEventNotifier<PublicationEvent> {
+public class PublicationEventNotifier
+    extends CDIResourceEventNotifier<PublicationDetail, PublicationEvent> {
 
   @Override
   protected PublicationEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new PublicationEvent(type, (PublicationDetail) resource);
+      final PublicationDetail... resource) {
+    return new PublicationEvent(type, resource);
   }
 }

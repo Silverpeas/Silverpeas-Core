@@ -24,7 +24,7 @@
 
 package com.silverpeas.comment.service.notification;
 
-import com.silverpeas.SilverpeasComponentService;
+import com.silverpeas.ApplicationService;
 import org.silverpeas.util.ResourceLocator;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * A Silverpeas component service to use in tests.
  */
-public class ClassifiedService implements SilverpeasComponentService<Classified> {
+public class ClassifiedService implements ApplicationService<Classified> {
 
   public static final String COMPONENT_NAME = "classifieds";
 

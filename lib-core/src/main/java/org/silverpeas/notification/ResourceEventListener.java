@@ -25,16 +25,39 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * A resource event listener. This interface defines the common properties all listeners should
+ * implement. The event dispatching method is already implemented here so that the implementers
+ * have just to override one of the following method to perform their task:
+ * <ul>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onCreation(ResourceEvent} to
+ *   receive events about the creation of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onUpdate(ResourceEvent} to
+ *   receive events about the update of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onRemoving(ResourceEvent} to
+ *   receive events about the removing of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onDeletion(ResourceEvent} to
+ *   receive events about the deletion of a resource,</li>
+ * </ul>
  * @author mmoquillon
  */
 public interface ResourceEventListener<T extends ResourceEvent> {
 
   /**
-   * An event on the deletion of a resource has be listened. By default, this method does nothing.
+   * An event on the deletion of a resource has be listened. A deleted resource is nonexistent and
+   * nonrecoverable. By default, this method does nothing.
    * @param event the event on the deletion of a resource.
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
   public default void onDeletion(final T event) throws Exception {
+  }
+
+  /**
+   * An event on the removing of a resource has be listened. A removed resource is again existent
+   * and it is recoverable; it is usually put in a trash. By default, this method does nothing.
+   * @param event the event on the removing of a resource.
+   * @throws java.lang.Exception if an error occurs while treating the event.
+   */
+  public default void onRemoving(final T event) throws Exception {
   }
 
   /**
@@ -56,15 +79,17 @@ public interface ResourceEventListener<T extends ResourceEvent> {
   /**
    * Dispatches the treatment of the specified event to the correct method according to its type:
    * <ul>
-   * <li><code>onCreation</code> method is invoked with an event about the creation of a resource,
-   * </li>
-   * <li><code>onUpdate</code> method is invoked with an event about the update of a resource,
-   * </li>
-   * <li><code>onDeletion</code> method is invoked with an event about the deletion of a resource.
-   * </li>
+   *   <li>{@code org.silverpeas.notification.ResourceEventListener#onCreation(ResourceEvent} for
+   *   events about the creation of a resource,</li>
+   *   <li>{@code org.silverpeas.notification.ResourceEventListener#onUpdate(ResourceEvent} for
+   *   events about the update of a resource,</li>
+   *   <li>{@code org.silverpeas.notification.ResourceEventListener#onRemoving(ResourceEvent} for
+   *   events about the removing of a resource,</li>
+   *   <li>{@code org.silverpeas.notification.ResourceEventListener#onDeletion(ResourceEvent} for
+   *   events about the deletion of a resource,</li>
    * </ul>
    * <p>
-   *   This method shouldn't be overriden as the dispatch mechanism is already implemented here.
+   *   This method shouldn't be overridden as the dispatch mechanism is already implemented here.
    * </p>
    * @param event the event to dispatch.
    * @throws java.lang.Exception if an error occurs while treating the event.
@@ -76,6 +101,9 @@ public interface ResourceEventListener<T extends ResourceEvent> {
         break;
       case UPDATE:
         onUpdate(event);
+        break;
+      case REMOVING:
+        onRemoving(event);
         break;
       case DELETION:
         onDeletion(event);

@@ -160,11 +160,11 @@ public class AdminTest extends AbstractTestDao {
     List<SpaceInstLight> result = instance.getUserSpaceTreeview(userId);
     assertNotNull(result);
     assertEquals(5, result.size());
-    assertEquals("WA1", result.get(0).getFullId());
-    assertEquals("WA2", result.get(1).getFullId());
-    assertEquals("WA3", result.get(2).getFullId());
-    assertEquals("WA4", result.get(3).getFullId());
-    assertEquals("WA5", result.get(4).getFullId());
+    assertEquals("WA1", result.get(0).getId());
+    assertEquals("WA2", result.get(1).getId());
+    assertEquals("WA3", result.get(2).getId());
+    assertEquals("WA4", result.get(3).getId());
+    assertEquals("WA5", result.get(4).getId());
 
 
   }

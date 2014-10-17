@@ -36,13 +36,13 @@ import java.util.concurrent.ConcurrentMap;
 
 public class TreeCache {
 
-  private static final ConcurrentMap<String, Space> map = new ConcurrentHashMap<String, Space>();
+  private static final ConcurrentMap<Integer, Space> map = new ConcurrentHashMap<>();
 
   public synchronized static void clearCache() {
     map.clear();
   }
 
-  public static SpaceInstLight getSpaceInstLight(String spaceId) {
+  public static SpaceInstLight getSpaceInstLight(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getSpace();
@@ -50,21 +50,21 @@ public class TreeCache {
     return null;
   }
 
-  public static void addSpace(String spaceId, Space space) {
+  public static void addSpace(Integer spaceId, Space space) {
     map.putIfAbsent(spaceId, space);
   }
 
-  public synchronized static void removeSpace(String spaceId) {
+  public synchronized static void removeSpace(int spaceId) {
     Space space = map.get(spaceId);
     if (space != null) {
       for (SpaceInstLight subspace : space.getSubspaces()) {
-        removeSpace(subspace.getShortId());
+        removeSpace(subspace.getLocalId());
       }
       map.remove(spaceId);
     }
   }
 
-  public static void setSubspaces(String spaceId, List<SpaceInstLight> subspaces) {
+  public static void setSubspaces(int spaceId, List<SpaceInstLight> subspaces) {
     // add subspaces in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -73,7 +73,7 @@ public class TreeCache {
     }
   }
 
-  public static List<ComponentInstLight> getComponents(String spaceId) {
+  public static List<ComponentInstLight> getComponents(int spaceId) {
     SilverTrace.debug("admin", "TreeCache.getComponents()", "root.MSG_GEN_ENTER_METHOD",
         "spaceId = " + spaceId);
     Space space = getSpace(spaceId);
@@ -85,7 +85,7 @@ public class TreeCache {
     return new ArrayList<ComponentInstLight>();
   }
 
-  public static List<String> getComponentIds(String spaceId) {
+  public static List<String> getComponentIds(int spaceId) {
     SilverTrace.debug("admin", "TreeCache.getComponentIds()", "root.MSG_GEN_ENTER_METHOD",
         "spaceId = " + spaceId);
     Space space = getSpace(spaceId);
@@ -97,7 +97,7 @@ public class TreeCache {
     return new ArrayList<String>();
   }
 
-  public static List<SpaceInstLight> getSubSpaces(String spaceId) {
+  public static List<SpaceInstLight> getSubSpaces(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getSubspaces();
@@ -105,7 +105,7 @@ public class TreeCache {
     return new ArrayList<SpaceInstLight>();
   }
 
-  public static boolean isSpaceContainsComponent(String spaceId, String componentId) {
+  public static boolean isSpaceContainsComponent(int spaceId, String componentId) {
     boolean contains = false;
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -113,7 +113,7 @@ public class TreeCache {
       if (!contains) {
         List<SpaceInstLight> subspaces = space.getSubspaces();
         for (SpaceInstLight subspace : subspaces) {
-          contains = isSpaceContainsComponent(subspace.getShortId(), componentId);
+          contains = isSpaceContainsComponent(subspace.getLocalId(), componentId);
           if (contains) {
             return true;
           }
@@ -124,7 +124,7 @@ public class TreeCache {
     return contains;
   }
 
-  public static void addComponent(String componentId, ComponentInstLight component, String spaceId) {
+  public static void addComponent(int componentId, ComponentInstLight component, int spaceId) {
     // add component in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -132,7 +132,7 @@ public class TreeCache {
     }
   }
 
-  public static void removeComponent(String spaceId, String componentId) {
+  public static void removeComponent(int spaceId, String componentId) {
     // remove component from spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -143,7 +143,7 @@ public class TreeCache {
     }
   }
 
-  public static void setComponents(String spaceId, List<ComponentInstLight> components) {
+  public static void setComponents(int spaceId, List<ComponentInstLight> components) {
     // add components in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -152,24 +152,24 @@ public class TreeCache {
     }
   }
 
-  public static List<ComponentInstLight> getComponentsInSpaceAndSubspaces(String spaceId) {
+  public static List<ComponentInstLight> getComponentsInSpaceAndSubspaces(int spaceId) {
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     // add components of space
     components.addAll(getComponents(spaceId));
     // add components of subspaces
     for (SpaceInstLight subspace : getSubSpaces(spaceId)) {
-      components.addAll(getComponentsInSpaceAndSubspaces(subspace.getShortId()));
+      components.addAll(getComponentsInSpaceAndSubspaces(subspace.getLocalId()));
     }
     return components;
   }
 
-  public static List<SpaceInstLight> getSpacePath(String spaceId) {
+  public static List<SpaceInstLight> getSpacePath(int spaceId) {
     List<SpaceInstLight> path = new ArrayList<SpaceInstLight>();
     SpaceInstLight space = getSpaceInstLight(spaceId);
     if (space != null) {
       path.add(0, space);
       while (!space.isRoot()) {
-        space = getSpaceInstLight(space.getFatherId());
+        space = getSpaceInstLight(Integer.parseInt(space.getFatherId()));
         if (space != null) {
           path.add(0, space);
         }
@@ -201,34 +201,34 @@ public class TreeCache {
   public static List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);
     if (component != null) {
-      return getSpacePath(component.getDomainFatherId());
+      return getSpacePath(Integer.parseInt(component.getDomainFatherId()));
     }
     return new ArrayList<SpaceInstLight>();
   }
 
   public synchronized static void updateSpace(SpaceInstLight spaceLight) {
-    if (spaceLight != null && StringUtil.isDefined(spaceLight.getFullId())) {
-      Space space = getSpace(spaceLight.getShortId());
+    if (spaceLight != null && StringUtil.isDefined(spaceLight.getId())) {
+      Space space = getSpace(spaceLight.getLocalId());
       if (space != null) {
         space.setSpace(spaceLight);
         if (!spaceLight.isRoot()) {
           // update this space in parent space
-          Space parent = getSpace(spaceLight.getFatherId());
+          Space parent = getSpace(Integer.parseInt(spaceLight.getFatherId()));
           parent.updateSubspace(spaceLight);
         }
       }
     }
   }
 
-  private static synchronized Space getSpace(String spaceId) {
+  private static synchronized Space getSpace(int spaceId) {
     return map.get(spaceId);
   }
 
-  public static int getSpaceLevel(String spaceId) {
+  public static int getSpaceLevel(int spaceId) {
     return getSpacePath(spaceId).size() - 1;
   }
 
-  public static void addSubSpace(String spaceId, SpaceInstLight subSpace) {
+  public static void addSubSpace(int spaceId, SpaceInstLight subSpace) {
     Space space = getSpace(spaceId);
     if (space != null) {
       space.getSubspaces().add(subSpace);

@@ -22,17 +22,13 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.notification.ComponentJsonPatch;
-import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
-import org.silverpeas.notification.jsondiff.Operation;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     implements Serializable, Cloneable, Comparable<ComponentInst> {
@@ -80,7 +76,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   @Override
   public Object clone() {
     ComponentInst ci = new ComponentInst();
-    ci.setId(id);
+    ci.setLocalId(getLocalId());
     ci.setName(name);
     ci.setLabel(getLabel());
     ci.setDescription(getDescription());
@@ -117,11 +113,19 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return clonedArray;
   }
 
-  public void setId(String sId) {
-    id = sId;
+  public String getId() {
+    return name + id;
   }
 
-  public String getId() {
+  public void setLocalId(int id) {
+    this.id = String.valueOf(id);
+  }
+
+  public int getLocalId() {
+    return Integer.parseInt(id);
+  }
+
+  public String getLocalIdAsString() {
     return id;
   }
 
@@ -392,39 +396,5 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public boolean isWorkflow() {
     return Instanciateur.isWorkflow(getName());
-  }
-
-  public ComponentJsonPatch diff(ComponentInst newComponent) {
-    ComponentJsonPatch patch = new ComponentJsonPatch();
-    patch.setComponentType(getName());
-    List<Operation> operations = new ArrayList<Operation>(10 + parameters.size());
-    patch.addOperation(Operation.determineOperation("name", name, newComponent.getName()));
-    patch.addOperation(Operation.determineOperation("label", getLabel(), newComponent.getLabel()));
-    patch.addOperation(Operation.determineOperation("description", getDescription(), newComponent
-        .getDescription()));
-    patch.addOperation(Operation.determineOperation("domainFatherId", domainFatherId, newComponent
-        .getDomainFatherId()));
-    patch.addOperation(Operation.determineOperation("order", String.valueOf(order), String.valueOf(
-        newComponent.getOrderNum())));
-    patch.addOperation(Operation.determineOperation("public", String.valueOf(isPublic), String
-        .valueOf(newComponent.isPublic())));
-    patch.addOperation(Operation.determineOperation("hidden", String.valueOf(isHidden), String
-        .valueOf(newComponent.isHidden())));
-    patch.addOperation(Operation.determineOperation("inheritanceBlocked", String.valueOf(
-        isInheritanceBlocked), String.valueOf(newComponent.isInheritanceBlocked())));
-    Set<String> newParameters = new HashSet<String>(newComponent.getParameters().size());
-    for (Parameter parameter : newComponent.getParameters()) {
-      newParameters.add(parameter.getName());
-    }
-    for (Parameter parameter : parameters) {
-      patch.addOperation(Operation.determineOperation(parameter.getName(), parameter.getValue(),
-          newComponent.getParameterValue(parameter.getName())));
-      newParameters.remove(parameter.getName());
-    }
-    for (String newParameter : newParameters) {
-      patch.addOperation(Operation.determineOperation(newParameter, null, newComponent
-          .getParameterValue(newParameter)));
-    }
-    return patch;
   }
 }

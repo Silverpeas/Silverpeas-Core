@@ -24,45 +24,28 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.node.notification.NodeDeletionNotification;
-import com.silverpeas.notification.DefaultNotificationSubscriber;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.node.notification.NodeEvent;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.notification.CDIResourceEventListener;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.NODE_TOPIC;
 
 /**
  *
  * @author ehugonnet
  */
 @Named
-public class NodeSharingListener extends DefaultNotificationSubscriber {
+public class NodeSharingListener extends CDIResourceEventListener<NodeEvent> {
 
   @Inject
   private SharingTicketService service;
 
   @Override
-  public void subscribeOnTopics() {
-    subscribeForNotifications(onTopic(NODE_TOPIC.getTopicName()));
-  }
-
-  @Override
-  public void unsubscribeOnTopics() {
-    unsubscribeForNotifications(onTopic(NODE_TOPIC.getTopicName()));
-  }
-
-  @Override
-  public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
-    if (NODE_TOPIC.getTopicName().equals(onTopic.getName())) {
-      NodeDeletionNotification deletion = (NodeDeletionNotification) notification;
-      NodePK node = deletion.getNodePK();
-      service.deleteTicketsForSharedObject(Long.parseLong(node.getId()), Ticket.NODE_TYPE);
-    }
+  public void onDeletion(final NodeEvent event) throws Exception {
+    NodePK nodePK = event.getTransition().getBefore().getNodePK();
+    service.deleteTicketsForSharedObject(Long.parseLong(nodePK.getId()), Ticket.NODE_TYPE);
   }
 }

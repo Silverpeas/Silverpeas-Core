@@ -22,6 +22,7 @@
 package org.silverpeas.admin.space.notification;
 
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.notification.AbstractResourceEvent;
 
 /**
@@ -33,7 +34,10 @@ public class SpaceEvent extends AbstractResourceEvent<SpaceInst> {
     super();
   }
 
-  public SpaceEvent(final Type type, final SpaceInst resource) {
+  /**
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   */
+  public SpaceEvent(final Type type, final SpaceInst... resource) {
     super(type, resource);
   }
 }

@@ -68,10 +68,10 @@ public class LookWebDelegate {
   public String getUserFavorite(final SpaceInstLight space, final boolean forceGettingFavorite) {
     String favorite = "false";
     if (forceGettingFavorite || UserMenuDisplay.DISABLE != getUserMenuDisplay()) {
-      if (getUserFavoriteSpaceIds().contains(space.getShortId())) {
+      if (getUserFavoriteSpaceIds().contains(String.valueOf(space.getLocalId()))) {
         favorite = "true";
-      } else if (UserFavoriteSpaceManager.containsFavoriteSubSpace(space.getShortId(),
-          getUserFavoriteSpaces(), getOrganisationController(), getUserId())) {
+      } else if (UserFavoriteSpaceManager.containsFavoriteSubSpace(space,
+          getUserFavoriteSpaces(), getUserId())) {
         favorite = "contains";
       }
     }
@@ -117,22 +117,20 @@ public class LookWebDelegate {
 
   /**
    * Gets the right URL wallpaper
-   * @param spaceId
    * @return
    */
   public String getWallpaper(final SpaceInstLight space) {
     final String wallpaper =
-        SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(space.getShortId());
+        SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(String.valueOf(space.getLocalId()));
     return wallpaper == null ? "" : wallpaper;
   }
   
   /**
    * Gets the right URL CSS
-   * @param spaceId
    * @return
    */
   public String getCSS(final SpaceInstLight space) {
-    final String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(space.getShortId());
+    final String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(String.valueOf(space.getLocalId()));
     return css == null ? "" : css;
   }
 

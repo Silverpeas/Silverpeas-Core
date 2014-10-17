@@ -29,11 +29,11 @@ import org.silverpeas.notification.ResourceEvent;
 /** A notifier of an event concerning the life-cycle of a user group in Silverpeas.
  * @author mmoquillon
  */
-public class GroupEventNotifier extends CDIResourceEventNotifier<GroupEvent> {
+public class GroupEventNotifier extends CDIResourceEventNotifier<Group, GroupEvent> {
 
   @Override
   protected GroupEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new GroupEvent(type, (Group) resource);
+      final Group... resource) {
+    return new GroupEvent(type, resource);
   }
 }

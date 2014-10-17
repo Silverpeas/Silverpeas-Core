@@ -21,32 +21,36 @@
 
 package org.silverpeas.notification;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.io.Serializable;
 
-/** A synchronous event notifier using the notification bus of CDI. This bus is based on the
- * Observer pattern and then doesn't require to implement it. All synchronous notifiers should
- * extend this class; they have just to implement the
- * {@code createResourceEventFrom} method, the notification itself is
- * performed by this abstract class.
+/**
+ * A synchronous event notifier using the notification bus of CDI. This bus is based on the
+ * Observer pattern but by using the annotations in place of code lines to setup listeners and so
+ * on. All synchronous notifiers should extend this class; they have just to implement the
+ * {@code createResourceEventFrom} method, the notification itself is performed by this abstract
+ * class.
  * @param <T> the type of the resource event.
  * @author mmoquillon
  */
-public abstract class CDIResourceEventNotifier<T extends ResourceEvent>
-    implements ResourceEventNotifier<T> {
+public abstract class CDIResourceEventNotifier<R extends Serializable, T extends ResourceEvent>
+    implements ResourceEventNotifier<R, T> {
 
   @Inject
   private Event<T> notification;
 
-  protected abstract T createResourceEventFrom(ResourceEvent.Type type, Object resource);
+  protected abstract T createResourceEventFrom(final ResourceEvent.Type type, final R... resource);
 
   @Override
-  public void notify(final T event) {
+  public final void notify(final T event) {
     notification.fire(event);
   }
 
   @Override
-  public void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
+  public final void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
     notify(createResourceEventFrom(type, resource));
   }
 }

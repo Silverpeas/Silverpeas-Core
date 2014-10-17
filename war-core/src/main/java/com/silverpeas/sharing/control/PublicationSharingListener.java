@@ -24,47 +24,28 @@
  */
 package com.silverpeas.sharing.control;
 
-import com.silverpeas.notification.DefaultNotificationSubscriber;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.publication.notification.PublicationEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.silverpeas.publication.notification.PublicationDeletionNotification;
-
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.PUBLICATION_TOPIC;
 
 /**
  *
  * @author neysseric
  */
 @Named
-public class PublicationSharingListener extends DefaultNotificationSubscriber {
+public class PublicationSharingListener extends CDIResourceEventListener<PublicationEvent> {
 
   @Inject
   private SharingTicketService service;
 
   @Override
-  public void subscribeOnTopics() {
-    subscribeForNotifications(onTopic(PUBLICATION_TOPIC.getTopicName()));
+  public void onDeletion(final PublicationEvent event) throws Exception {
+    String id = event.getTransition().getBefore().getId();
+    service.deleteTicketsForSharedObject(Long.parseLong(id), Ticket.PUBLICATION_TYPE);
   }
 
-  @Override
-  public void unsubscribeOnTopics() {
-    unsubscribeForNotifications(onTopic(PUBLICATION_TOPIC.getTopicName()));
-  }
-
-  @Override
-  public void onNotification(SilverpeasNotification notification, NotificationTopic onTopic) {
-    if (PUBLICATION_TOPIC.getTopicName().equals(onTopic.getName())) {
-      PublicationDeletionNotification deletion = (PublicationDeletionNotification) notification;
-      PublicationPK pk = deletion.getPublicationPK();
-      service.deleteTicketsForSharedObject(Long.parseLong(pk.getId()), Ticket.PUBLICATION_TYPE);
-    }
-  }
 }

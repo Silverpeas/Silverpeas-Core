@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.silverpeas.notification.delayed;
+package com.silverpeas.usernotification.delayed;
 
-import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
-import com.silverpeas.notification.delayed.model.DelayedNotificationData;
-import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
+import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
+import com.silverpeas.usernotification.delayed.model.DelayedNotificationUserSetting;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import java.util.*;

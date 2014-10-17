@@ -314,9 +314,9 @@ $(document).ready(function() {
                           <div class="spaceNavigation">
 							<ul>
 								<% for (SpaceInstLight subspace : subspaces) { %>
-								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>')">
+								<li class="browse-space bgDegradeGris" onclick="goToSpaceItem('<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getId())%>')">
 									<div>
-										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getFullId())%>"><%=Encode.forHtml(subspace.getName(helper.getLanguage())) %></a>
+										<a href="<%=URLManager.getSimpleURL(URLManager.URL_SPACE, subspace.getId())%>"><%=Encode.forHtml(subspace.getName(helper.getLanguage())) %></a>
 										<% if (StringUtil.isDefined(subspace.getDescription(helper.getLanguage()))) { %>
 											<p><%=Encode.forHtml(subspace.getDescription(helper.getLanguage())) %></p>
 										<% } %>

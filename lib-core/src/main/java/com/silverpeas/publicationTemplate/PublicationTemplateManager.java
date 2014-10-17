@@ -404,9 +404,6 @@ public class PublicationTemplateManager {
     List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
     for (SpaceInst space : spacePath) {
       String spaceId = space.getId();
-      if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-        spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
-      }
       if (restrictedSpaceIds.contains(spaceId)) {
         return true;
       }

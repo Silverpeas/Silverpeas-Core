@@ -31,9 +31,9 @@ import java.util.List;
 import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.sharing.bean.SharingNotificationVO;
 
-import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.sharing.model.Ticket;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;

@@ -214,7 +214,12 @@ public class NavBarManager {
         m_CurrentSpaceId = null;
       } else {
         m_SpaceComponents = createComponentObjects(spaceInst, false);
-        m_SubSpaces = createSpaceObjects(spaceInst.getSubSpaceIds(), true);
+        List<SpaceInst> subspaces = spaceInst.getSubSpaces();
+        String[] spaceIds = new String[subspaces.size()];
+        for(int i = 0; i < subspaces.size(); i++) {
+          spaceIds[i] = subspaces.get(i).getId();
+        }
+        m_SubSpaces = createSpaceObjects(spaceIds, true);
       }
     }
     for (DisplaySorted ds : m_Spaces) {
@@ -435,7 +440,7 @@ public class NavBarManager {
   }
 
   protected boolean isAdminOfSpace(SpaceInstLight spaceInst) {
-    boolean valret = m_ManageableSpaces.contains(spaceInst.getShortId())
+    boolean valret = m_ManageableSpaces.contains(spaceInst.getLocalId())
         || m_ManageableSpaces.contains(getShortSpaceId(spaceInst
         .getFatherId()));
     SpaceInstLight parcSpaceInst = spaceInst;
@@ -443,7 +448,7 @@ public class NavBarManager {
     while (!valret && !parcSpaceInst.isRoot()) {
       parcSpaceInst = m_administrationCtrl.getSpaceInstLight(parcSpaceInst
           .getFatherId());
-      valret = m_ManageableSpaces.contains(parcSpaceInst.getShortId());
+      valret = m_ManageableSpaces.contains(parcSpaceInst.getLocalId());
     }
 
     return valret;

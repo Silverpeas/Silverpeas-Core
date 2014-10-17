@@ -305,9 +305,6 @@ public class URLManager {
     Permalink permalink = Permalink.fromType(type);
     switch (permalink) {
       case Space:
-        if (!id.startsWith(Admin.SPACE_KEY_PREFIX)) {
-          id = Admin.SPACE_KEY_PREFIX + id;
-        }
         url += permalink.getURLPrefix() + id;
         break;
       case Publication:

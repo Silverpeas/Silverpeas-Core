@@ -23,8 +23,10 @@ package com.stratelia.silverpeas.portlet;
 
 import com.stratelia.silverpeas.portlet.model.PortletRowRow;
 import com.stratelia.silverpeas.portlet.model.PortletSchema;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.logging.Level;
@@ -39,7 +41,7 @@ public class PortletComponentInstanceEventListener
   @Override
   public void onDeletion(final ComponentInstanceEvent event) throws Exception {
     PortletSchema schema = null;
-    int id = Integer.parseInt(event.getResource().getId());
+    int id = event.getTransition().getBefore().getLocalId();
     try {
       schema = new PortletSchema();
       PortletRowRow[] portletRowDeleted = schema.portletRow.dereferenceInstanceId(id);

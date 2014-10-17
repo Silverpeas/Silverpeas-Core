@@ -35,7 +35,10 @@ public class PublicationEvent extends AbstractResourceEvent<PublicationDetail> {
     super();
   }
 
-  public PublicationEvent(Type type, PublicationDetail publication) {
+  /**
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   */
+  public PublicationEvent(Type type, PublicationDetail... publication) {
     super(type, publication);
   }
 

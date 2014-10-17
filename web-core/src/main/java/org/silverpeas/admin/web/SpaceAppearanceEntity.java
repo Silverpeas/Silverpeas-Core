@@ -135,12 +135,11 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
   /**
    * Instantiating a new web entity from the corresponding data
    * @param space
-   * @param language
    */
   private SpaceAppearanceEntity(final SpaceInstLight space, final String look,
       final String wallpaper, final String css) {
     this();
-    spaceId = space.getShortId();
+    spaceId = String.valueOf(space.getLocalId());
     this.look = look;
     this.wallpaper = wallpaper;
     this.css = css;

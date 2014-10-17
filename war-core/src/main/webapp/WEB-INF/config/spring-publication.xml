@@ -35,8 +35,5 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.publication"/>
-  
-  <bean id="publicationNotificationService" class="org.silverpeas.publication.notification.PublicationNotificationService"
-        factory-method="getService"/>
 
 </beans>

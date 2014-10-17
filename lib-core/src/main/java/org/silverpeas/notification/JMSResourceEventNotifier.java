@@ -21,12 +21,11 @@
 
 package org.silverpeas.notification;
 
-import org.silverpeas.notification.util.TextMessageCodec;
-
 import javax.inject.Inject;
 import javax.jms.Destination;
 import javax.jms.JMSContext;
 import javax.jms.JMSProducer;
+import java.io.Serializable;
 
 /**
  * An asynchronous notifier of resource events based on JMS. The asynchronous notifiers should
@@ -36,8 +35,8 @@ import javax.jms.JMSProducer;
  * @param <T> the type of the resource event.
  * @author mmoquillon
  */
-public abstract class JMSResourceEventNotifier<T extends ResourceEvent>
-    implements ResourceEventNotifier<T> {
+public abstract class JMSResourceEventNotifier<R extends Serializable, T extends ResourceEvent>
+    implements ResourceEventNotifier<R, T> {
 
   @Inject
   private JMSContext context;
@@ -51,31 +50,21 @@ public abstract class JMSResourceEventNotifier<T extends ResourceEvent>
   /**
    * Creates a resource event about the specified cause on the specified resource.
    * @param type the event type.
-   * @param resource the resource related by the event.
+   * @param resource the resource related by the event. In the case of an update, two instances
+   * of the same resource are expected: the first being the resource before the update, the second
+   * being the resource after the update (the result of the update).
    * @return a resource event.
    */
-  protected abstract T createResourceEventFrom(ResourceEvent.Type type, Object resource);
-
-  /**
-   * Marshalls the specified event into a text message dedicated to be transmitted into a text
-   * stream by JMS.
-   * <p>In order to be serialized, the event should use either the JAXB annotations or the JSON
-   * annotations specific to Jackson to mark the parts of the event to serialize.</p>
-   * @param event the event to serialize.
-   * @return a text message.
-   */
-  protected String marshall(T event) {
-    return TextMessageCodec.encode(event);
-  }
+  protected abstract T createResourceEventFrom(final ResourceEvent.Type type, final R... resource);
 
   @Override
   public final void notify(final T event) {
     JMSProducer producer = context.createProducer();
-    producer.send(getDestination(), marshall(event));
+    producer.send(getDestination(), event);
   }
 
   @Override
-  public final void notifyEventOn(final ResourceEvent.Type type, final Object resource) {
+  public final void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
     notify(createResourceEventFrom(type, resource));
   }
 }

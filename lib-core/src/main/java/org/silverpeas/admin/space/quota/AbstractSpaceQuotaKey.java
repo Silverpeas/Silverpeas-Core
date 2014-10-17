@@ -59,7 +59,7 @@ abstract public class AbstractSpaceQuotaKey implements QuotaKey {
    */
   @Override
   public String getResourceId() {
-    return space.getId().replaceFirst(Admin.SPACE_KEY_PREFIX, "");
+    return String.valueOf(space.getLocalId());
   }
 
   /**

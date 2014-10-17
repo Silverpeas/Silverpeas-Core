@@ -21,10 +21,14 @@
 
 package org.silverpeas.notification;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.util.StateTransition;
+
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * It is an abstract implementation of a resource event. It defines the common properties all
@@ -37,12 +41,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author mmoquillon
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractResourceEvent<T> implements ResourceEvent<T> {
+public abstract class AbstractResourceEvent<T extends Serializable> implements ResourceEvent<T> {
 
   @XmlElement
   private Type type;
   @XmlElement
-  private T resource;
+  private StateTransition<T> resource;
 
   protected AbstractResourceEvent() {
 
@@ -52,11 +56,26 @@ public abstract class AbstractResourceEvent<T> implements ResourceEvent<T> {
    * Constructs a new instance representing the specified event type in relation to the specified
    * resource.
    * @param type the type of the event.
-   * @param resource the resource related by the event.
+   * @param resource the resource implied in the event. For an update, two instances of the same
+   * resource is expected:  the first being the resource before the update, the second being the
+   * resource after the update (the result of the update).
    */
-  public AbstractResourceEvent(Type type, T resource) {
+  public AbstractResourceEvent(Type type, @NotNull T... resource) {
     this.type = type;
-    this.resource = resource;
+    switch (type) {
+      case CREATION:
+        this.resource = StateTransition.transitionBetween(null, resource[0]);
+        break;
+      case UPDATE:
+        this.resource = StateTransition.transitionBetween(resource[0], resource[1]);
+        break;
+      case REMOVING:
+        this.resource = StateTransition.transitionBetween(resource[0], resource[0]);
+        break;
+      case DELETION:
+        this.resource = StateTransition.transitionBetween(resource[0], null);
+        break;
+    }
   }
 
   @Override
@@ -65,7 +84,7 @@ public abstract class AbstractResourceEvent<T> implements ResourceEvent<T> {
   }
 
   @Override
-  public T getResource() {
+  public StateTransition<T> getTransition() {
     return resource;
   }
 

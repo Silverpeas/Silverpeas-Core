@@ -21,6 +21,10 @@
 
 package org.silverpeas.notification;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.Serializable;
+
 /**
  * A notifier of an event about a resource in Silverpeas. A notification can be either synchronous
  * or asynchronous. For each of these two different notification way, an abstract class is defined:
@@ -32,9 +36,20 @@ package org.silverpeas.notification;
  * </ul>
  * @author mmoquillon
  */
-public interface ResourceEventNotifier<T extends ResourceEvent> {
+public interface ResourceEventNotifier<R extends Serializable, T extends ResourceEvent> {
 
+  /**
+   * Notify about the specified event.
+   * @param event the event to fire.
+   */
   public void notify(T event);
 
-  public void notifyEventOn(ResourceEvent.Type type, Object resource);
+  /**
+   * Notify about an event of the specified type and on the specified resource.
+   * @param type the type of the event that defines its cause.
+   * @param resource the resource related by the event. In the case of an update, two instances of
+   * the same resource is expected: the first being the resource before the update, the second
+   * being the resource after the update.
+   */
+  public void notifyEventOn(ResourceEvent.Type type, R... resource);
 }

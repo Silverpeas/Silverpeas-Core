@@ -24,21 +24,21 @@
 
 package com.stratelia.webactiv.node.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
-import com.silverpeas.node.notification.NodeNotificationService;
-
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import com.silverpeas.node.notification.NodeEventNotifier;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.control.dao.NodeI18NDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Process of deleting a node. As the deletion of a given node is performed by different parts of
@@ -76,12 +76,12 @@ public class NodeDeletion {
 
   private static void deleteNode(final NodePK pk, final Connection connection) throws
       SQLException {
-    NodeNotificationService notificationService = NodeNotificationService.getService();
-    notificationService.notifyOnDeletionOf(pk);
-
+    NodeDetail node = NodeDAO.loadRow(connection, pk);
     NodeDAO.deleteRow(connection, pk);
     NodeI18NDAO.removeTranslations(connection, Integer.parseInt(pk.getId()));
     IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node", pk.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
+    NodeEventNotifier notifier = ServiceProvider.getService(NodeEventNotifier.class);
+    notifier.notifyEventOn(ResourceEvent.Type.DELETION, node);
   }
 }

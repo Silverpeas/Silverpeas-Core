@@ -24,7 +24,7 @@
 package com.silverpeas.pdcSubscription;
 
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.notification.builder.AbstractResourceUserNotificationBuilder;
+import com.silverpeas.usernotification.builder.AbstractResourceUserNotificationBuilder;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import org.silverpeas.util.StringUtil;
 

@@ -54,7 +54,6 @@
   <ctx:component-scan base-package="com.stratelia.silverpeas.contentManager"/>
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
-  <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control"/>
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
@@ -100,11 +99,6 @@
   <bean id="validator"
         class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
-  <!-- Silverpeas context initializer. It depends upon some others components to do its job.
-  Let's Spring to initialize the Silverpeas application context ;-) -->
-  <bean class="com.stratelia.silverpeas.silverpeasinitialize.SilverpeasInitializer"
-        init-method="startInitialize" depends-on="schedulerFactory"/>
-
   <!-- The user authenticator -->
   <bean id="authenticator"
         class="org.silverpeas.authentication.AuthenticationService"/>
@@ -115,9 +109,10 @@
         factory-method="getFactory"/>-->
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
+
   <bean id="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController"
-        depends-on="schedulerFactory"/>
+        />
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <!-- ebo <bean id="organizationControllerFactory"
@@ -126,7 +121,7 @@
 
   <!-- The administration module -->
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
-        depends-on="schedulerFactory"/>
+        />
 
   <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
         factory-method="getInstance"/>
@@ -166,7 +161,7 @@
         class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager"
         factory-method="getInstance"
         init-method="initSilverStatisticsManager"
-        depends-on="schedulerFactory"/>
+        />
 
   <bean id="userPriviledgeValidationFactory"
         class="com.silverpeas.web.UserPriviledgeValidationFactory"

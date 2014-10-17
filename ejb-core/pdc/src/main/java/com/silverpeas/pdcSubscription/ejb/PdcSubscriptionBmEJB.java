@@ -25,7 +25,7 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdcSubscription.PdcResourceClassificationUserNotification;
 import com.silverpeas.pdcSubscription.PdcSubscriptionDeletionUserNotification;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;

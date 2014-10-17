@@ -105,9 +105,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
-    if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      this.spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
-    }
   }
 
   /*
@@ -126,9 +123,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSubSpaceId(String subSpaceId) {
     this.subSpaceId = subSpaceId;
-    if (!subSpaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      this.subSpaceId = Admin.SPACE_KEY_PREFIX + subSpaceId;
-    }
   }
 
   /*
@@ -458,13 +452,13 @@ public class LookSilverpeasV5Helper implements LookHelper {
       while (tokenizer.hasMoreTokens()) {
         String itemId = tokenizer.nextToken();
 
-        if (itemId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+        if (itemId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
           if (orga.isSpaceAvailable(itemId, userId)) {
             SpaceInstLight space = orga.getSpaceInstLightById(itemId);
             SpaceInstLight rootSpace = orga.getRootSpace(itemId);
             TopItem item = new TopItem();
             item.setLabel(space.getName(getLanguage()));
-            item.setSpaceId(rootSpace.getFullId());
+            item.setSpaceId(rootSpace.getId());
             item.setSubSpaceId(itemId);
             topItems.add(item);
             topSpaceIds.add(item.getSpaceId());
@@ -477,7 +471,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
             TopItem item = new TopItem();
             item.setLabel(component.getLabel(getLanguage()));
             item.setComponentId(itemId);
-            item.setSpaceId(rootSpace.getFullId());
+            item.setSpaceId(rootSpace.getId());
             item.setSubSpaceId(currentSpaceId);
 
             topItems.add(item);

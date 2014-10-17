@@ -34,7 +34,10 @@ public class GroupEvent extends AbstractResourceEvent<Group> {
     super();
   }
 
-  public GroupEvent(Type type, Group group) {
+  /**
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   */
+  public GroupEvent(Type type, Group... group) {
     super(type, group);
   }
 

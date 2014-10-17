@@ -23,7 +23,7 @@
  */
 package com.silverpeas.pdcSubscription;
 
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;

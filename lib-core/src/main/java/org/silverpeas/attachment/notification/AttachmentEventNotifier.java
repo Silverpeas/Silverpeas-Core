@@ -23,16 +23,12 @@ package org.silverpeas.attachment.notification;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.notification.JMSResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jms.Destination;
-import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
-import javax.jms.JMSProducer;
 import javax.jms.Topic;
 
 /**
@@ -44,7 +40,8 @@ import javax.jms.Topic;
         name = "java:/topic/attachments",
         interfaceName = "javax.jms.Topic",
         destinationName = "AttachmentEventNotification")})
-public class AttachmentEventNotifier extends JMSResourceEventNotifier<AttachmentEvent> {
+public class AttachmentEventNotifier
+    extends JMSResourceEventNotifier<SimpleDocument, AttachmentEvent> {
 
   public static AttachmentEventNotifier getNotifier() {
     return ServiceProvider.getService(AttachmentEventNotifier.class);
@@ -63,7 +60,7 @@ public class AttachmentEventNotifier extends JMSResourceEventNotifier<Attachment
 
   @Override
   protected AttachmentEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new AttachmentEvent(type, (SimpleDocument) resource);
+      final SimpleDocument... resource) {
+    return new AttachmentEvent(type, resource);
   }
 }

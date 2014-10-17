@@ -34,9 +34,32 @@ import java.util.Set;
  */
 public interface BeanContainer {
 
+  /**
+   * Gets a bean managed in this container by its name. If no such bean exists in the bean
+   * container, then an IllegalStateException exception is thrown.
+   * @param name the name of the bean.
+   * @param <T> the type of the bean to return.
+   * @return the bean matching the specified name.
+   */
   public <T> T getBeanByName(String name);
 
+  /**
+   * Gets a bean managed in this container by its type and optionnaly by some qualifiers.
+   * If no such bean exists in the bean container, then an IllegalStateException exception is
+   * thrown.
+   * @param type the type of the bean.
+   * @param qualifiers zero, one or more qualifiers annotating the bean to look for.
+   * @param <T> the type of the bean to return.
+   * @return the bean matching the specified name.
+   */
   public <T> T getBeanByType(Class<T> type, Annotation... qualifiers);
 
+  /**
+   * Gets a bean managed in this container by its name. If no such bean exists in the bean
+   * container, then an empty set is returned.
+   * @param type the type of the bean.
+   * @param <T> the type of the bean to return.
+   * @return the bean matching the specified name.
+   */
   public <T> Set<T> getAllBeansByType(Class<T> type);
 }

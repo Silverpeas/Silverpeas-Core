@@ -18,12 +18,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification;
+package com.silverpeas.usernotification;
 
 import javax.inject.Inject;
 
 import com.silverpeas.jms.JMSTestFacade;
-import com.silverpeas.notification.jms.JMSPublishingService;
+import com.silverpeas.usernotification.jms.JMSPublishingService;
 
 import com.mockrunner.mock.jms.MockMessage;
 import com.mockrunner.mock.jms.MockObjectMessage;
@@ -31,7 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.usernotification.NotificationTopic.onTopic;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 

@@ -69,7 +69,7 @@ public class UserFavoriteSpaceVO implements Serializable {
    */
   public UserFavoriteSpaceVO(UserDetail user, SpaceInstLight space) {
     this.userId = Integer.valueOf(user.getId());
-    this.spaceId = Integer.valueOf(space.getShortId());
+    this.spaceId = space.getLocalId();
   }
 
   /*

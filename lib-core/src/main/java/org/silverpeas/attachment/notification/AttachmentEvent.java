@@ -49,13 +49,17 @@ public class AttachmentEvent extends AbstractResourceEvent<AttachmentRef> {
   }
 
   /**
-   * Constructs a new instance representing the specified event type in relation to the specified
-   * simple document and with the user at the origin of the event.
-   * @param type the type of the event.
-   * @param document the simple document related by the event.
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
    */
-  public AttachmentEvent(final Type type, final SimpleDocument document) {
-    super(type, new AttachmentRef(document));
+  public AttachmentEvent(final Type type, final SimpleDocument... document) {
+    super(type, toAttachmentRefs(document));
   }
 
+  private static AttachmentRef[] toAttachmentRefs(SimpleDocument... documents) {
+    AttachmentRef[] refs = new AttachmentRef[documents.length];
+    for (int i = 0; i < documents.length; i++) {
+      refs[i] = new AttachmentRef(documents[i]);
+    }
+    return refs;
+  }
 }

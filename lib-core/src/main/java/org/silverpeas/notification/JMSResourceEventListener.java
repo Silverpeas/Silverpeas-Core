@@ -21,10 +21,6 @@
 
 package org.silverpeas.notification;
 
-import org.silverpeas.notification.util.TextMessageCodec;
-import org.silverpeas.util.exception.DecodingException;
-
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
@@ -32,6 +28,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * An asynchronous event listener. Asynchronous events are carried by JMS and are collected by this
+ * abstract class.
+ * <p>
+ * All concrete listeners have just to extend this abstract class and to implement
+ * first the {@code org.silverpeas.notification.JMSResourceEventListener#getResourceEventClass()}
+ * method to specify the class of the events to receive and then some of the following methods to
+ * transparently receive the events on which they are interested:
+ * </p>
+ * <ul>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onCreation(ResourceEvent} to
+ *   receive events about the creation of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onUpdate(ResourceEvent} to
+ *   receive events about the update of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onRemoving(ResourceEvent} to
+ *   receive events about the removing of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onDeletion(ResourceEvent} to
+ *   receive events about the deletion of a resource,</li>
+ * </ul>
+ * <p>
+ *   With JMS, when an exception is thrown, a retry mechanism will replay the event delivery. You
+ *   can refine this mechanism by overridden the
+ *   {@code org.silverpeas.notification.JMSResourceEventListener#retryAtFailure()} method; by
+ *   default this method returns false, indicating to not to replay the event delivery at exception
+ *   raising.
+ * </p>
  * @author mmoquillon
  */
 public abstract class JMSResourceEventListener<T extends ResourceEvent>
@@ -44,19 +65,6 @@ public abstract class JMSResourceEventListener<T extends ResourceEvent>
    * @return the class of the supported {@code org.silverpeas.notification.ResourceEvent}.
    */
   protected abstract Class<T> getResourceEventClass();
-
-  /**
-   * Unmarshalls the event embedded into the text of the specified message.
-   * @param message the text message into which is encoded the event.
-   * @return the event.
-   * @throws JMSException if an error occurs while reading the text of the message.
-   * @throws org.silverpeas.util.exception.DecodingException if an error occurs while decoding the
-   * event from the text of the message.
-   */
-  protected T unmarshall(final TextMessage message)
-      throws JMSException, DecodingException {
-    return TextMessageCodec.decode(message.getText(), getResourceEventClass());
-  }
 
   /**
    * Should JMS retry to replay the message to the listener at failure? By default returns false.
@@ -75,27 +83,18 @@ public abstract class JMSResourceEventListener<T extends ResourceEvent>
    * Listens for events related to a resource managed in Silverpeas.
    * <p>
    *   The event is decoded from the specified message and according to the type of the event,
-   *   the adequate method is then invoked (
-   *   {@code org.silverpeas.notification.JMSResourceEventListener#onCreation(ResourceEvent},
-   *   {@code org.silverpeas.notification.JMSResourceEventListener#onUpdate(ResourceEvent},
-   *   {@code org.silverpeas.notification.JMSResourceEventListener#onDeletion(ResourceEvent}).
+   *   the adequate method is then invoked:
    * </p>
    * @see org.silverpeas.notification.ResourceEventListener#dispatchEvent(ResourceEvent)
-   * @param message the notification message in which is encoded the event. The message must be
-   * a {@code javax.jms.TextMessage} instance.
+   * @param message the notification message in which is encoded the event. The event should be
+   * serialized within the received {@code javax.jms.Message} object.
    * @throws java.lang.RuntimeException if an error occurs while treating the event.
    */
   @Override
   public void onMessage(final Message message) {
-    TextMessage notification;
     try {
-      if (message instanceof TextMessage) {
-        notification = (TextMessage) message;
-        T event = unmarshall(notification);
+        T event = message.getBody(getResourceEventClass());
         dispatchEvent(event);
-      } else {
-        logger.log(Level.WARNING, "Invalid event notification received");
-      }
     } catch (Exception e) {
       if (retryAtFailure()) {
         throw new RuntimeException(e);

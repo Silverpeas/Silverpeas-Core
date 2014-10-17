@@ -66,7 +66,7 @@ public final class AdminResourceURIs {
    * @return
    */
   public static URI buildURIOfSpace(final SpaceInstLight space, final UriInfo uriInfo) {
-    return buildURIOfSpace(space.getShortId(), uriInfo);
+    return buildURIOfSpace(String.valueOf(space.getLocalId()), uriInfo);
   }
 
   /**
@@ -86,7 +86,7 @@ public final class AdminResourceURIs {
    * @return
    */
   public static URI buildURIOfSpaceAppearance(final SpaceInstLight space, final UriInfo uriInfo) {
-    return buildURIOfSpaceAppearance(space.getShortId(), uriInfo);
+    return buildURIOfSpaceAppearance(String.valueOf(space.getLocalId()), uriInfo);
   }
 
   /**

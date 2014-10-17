@@ -24,20 +24,22 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
-import org.silverpeas.util.ForeignPK;
+import com.silverpeas.comment.service.notification.CommentEventNotifier;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.WAPrimaryKey;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
@@ -50,7 +52,7 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
  */
 @Singleton
 @Named("commentService")
-public class DefaultCommentService extends CommentActionNotifier implements CommentService {
+public class DefaultCommentService implements CommentService {
 
   private static final String SETTINGS_PATH = "org.silverpeas.util.comment.Comment";
   private static final String MESSAGES_PATH = "org.silverpeas.util.comment.multilang.comment";
@@ -58,6 +60,8 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
 
   @Inject
   private CommentDAO commentDAO;
+  @Inject
+  private CommentEventNotifier notifier;
 
   /**
    * Constructs a new DefaultCommentService instance.
@@ -87,7 +91,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   public void createComment(final Comment cmt) {
     CommentPK newPK = getCommentDAO().saveComment(cmt);
     cmt.setCommentPK(newPK);
-    notifyCommentAdding(cmt);
+    notifier.notifyEventOn(ResourceEvent.Type.CREATION, cmt);
   }
 
   /**
@@ -149,8 +153,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * of the commented publication, the component instance name, and the deleted comment. If no such
    * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication the comments are on.
+   * @param instanceId the identifier of the component instance.
    */
   @Override
   public void deleteAllCommentsByComponentInstanceId(String instanceId) {
@@ -170,7 +173,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   public void deleteComment(final Comment comment) {
     deleteIndex(comment);
     getCommentDAO().removeComment(comment.getCommentPK());
-    notifyCommentRemoval(comment);
+    notifier.notifyEventOn(ResourceEvent.Type.DELETION, comment);
   }
 
   /**
@@ -412,11 +415,6 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    */
   protected OrganisationController getOrganisationController() {
     return OrganisationControllerProvider.getOrganisationController();
-  }
-
-  @Override
-  public Comment getContentById(String contentId) {
-    return getComment(new CommentPK(contentId));
   }
 
   @Override

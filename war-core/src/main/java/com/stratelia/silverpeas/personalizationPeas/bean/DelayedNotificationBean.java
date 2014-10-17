@@ -25,10 +25,10 @@ package com.stratelia.silverpeas.personalizationPeas.bean;
 
 import java.util.Set;
 
-import com.silverpeas.notification.delayed.DelayedNotificationProvider;
-import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
-import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
-import com.silverpeas.notification.delayed.model.DelayedNotificationUserSetting;
+import com.silverpeas.usernotification.delayed.DelayedNotificationProvider;
+import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
+import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
+import com.silverpeas.usernotification.delayed.model.DelayedNotificationUserSetting;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 

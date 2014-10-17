@@ -35,11 +35,11 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
-import org.silverpeas.notification.util.TextMessageCodec;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StateTransition;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
@@ -75,8 +75,7 @@ public class AsynchronousNotificationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            DecodingException.class, EncodingException.class, JSONCodec.class,
-            TextMessageCodec.class)
+            DecodingException.class, EncodingException.class, StateTransition.class)
         .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
             JMSQueueTestResourceEventNotifier.class, JMSQueueTestResourceEventListener.class,
             JMSTopicTestResourceEventNotifier.class, JMSTopicTestResourceEventListener.class,

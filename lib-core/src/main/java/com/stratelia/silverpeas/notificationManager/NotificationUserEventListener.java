@@ -48,13 +48,11 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
     NotifSchema schema = null;
     try {
       schema = new NotifSchema();
-      if (event.isOnCreation()) {
-        UserDetail user = event.getResource();
-        int userId = Integer.parseInt(user.getId());
-        schema.notifDefaultAddress.dereferenceUserId(userId);
-        schema.notifPreference.dereferenceUserId(userId);
-        schema.notifAddress.dereferenceUserId(userId);
-      }
+      UserDetail user = event.getTransition().getBefore();
+      int userId = Integer.parseInt(user.getId());
+      schema.notifDefaultAddress.dereferenceUserId(userId);
+      schema.notifPreference.dereferenceUserId(userId);
+      schema.notifAddress.dereferenceUserId(userId);
       schema.commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage(), e);

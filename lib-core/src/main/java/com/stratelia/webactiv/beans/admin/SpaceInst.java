@@ -23,6 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -42,6 +43,7 @@ import org.silverpeas.util.memory.MemoryUnit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +53,7 @@ import java.util.List;
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     implements Serializable, Comparable<SpaceInst>, Cloneable {
 
+  public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
   public static final String DEFAULT_SPACE_ID = "-20";
   private static final long serialVersionUID = 4695928610067045964L;
@@ -93,6 +96,9 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
 
   /* Collection of components Instances */
   private ArrayList<ComponentInst> components;
+
+  /* Collection of subspaces Instances */
+  private List<SpaceInst> subSpaces;
 
   /* Collection of space profiles Instances */
   private ArrayList<SpaceProfileInst> spaceProfiles;
@@ -137,21 +143,25 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   /**
-   * Set the space id
+   * Set the space local id
    *
-   * @param sId new space id
+   * @param id new space local id
    */
-  public void setId(String sId) {
-    id = sId;
+  public void setLocalId(int id) {
+    this.id = String.valueOf(id);
+  }
+
+  public int getLocalId() {
+    return Integer.parseInt(this.id);
   }
 
   /**
-   * Get the space id
+   * Get the absolute space id
    *
    * @return the requested space id
    */
   public String getId() {
-    return id;
+    return SPACE_KEY_PREFIX + id;
   }
 
   /**
@@ -255,26 +265,12 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     return firstPageExtraParam;
   }
 
-  /**
-   * Set the list of children space ids
-   *
-   * @param asSubSpaceIds Array of String containing all the children space ids
-   */
-  public void setSubSpaceIds(String[] asSubSpaceIds) {
-    if (asSubSpaceIds == null) {
-      subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
-    } else {
-      subSpaceIds = asSubSpaceIds.clone();
-    }
+  public List<SpaceInst> getSubSpaces() {
+    return Collections.unmodifiableList(subSpaces);
   }
 
-  /**
-   * Get the list of children space ids
-   *
-   * @return Array of String containing all the children space ids
-   */
-  public String[] getSubSpaceIds() {
-    return subSpaceIds;
+  public void setSubSpaces(List<SpaceInst> subSpaces) {
+    this.subSpaces = new ArrayList<>(subSpaces);
   }
 
   /**
@@ -372,7 +368,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @param spaceProfileInst space profile to be added
    */
   public void addSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
-    spaceProfileInst.setSpaceFatherId(getId());
+    spaceProfileInst.setSpaceFatherId(String.valueOf(getLocalId()));
     if (spaceProfiles.contains(spaceProfileInst)) {
       spaceProfiles.remove(spaceProfileInst);
     }
@@ -716,8 +712,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     final SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "admin/space/quota");
     template.setAttribute("quota", quotaReached);
-    if (!space.getShortId().equals(new SpaceInstLight(this).getShortId())) {
-      template.setAttribute("fromSpaceId", space.getShortId());
+    if (space.getLocalId() != new SpaceInstLight(this).getLocalId()) {
+      template.setAttribute("fromSpaceId", space.getLocalId());
       template.setAttribute("fromSpaceName", space.getName());
     }
     if (!StringUtil.isDefined(language)) {
@@ -786,7 +782,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     }
 
     // clone subspace ids
-    clone.setSubSpaceIds(getSubSpaceIds().clone());
+    clone.setSubSpaces(getSubSpaces());
 
     return clone;
   }

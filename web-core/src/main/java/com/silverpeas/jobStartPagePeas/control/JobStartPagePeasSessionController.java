@@ -218,8 +218,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   private String getShortSpaceId(String spaceId) {
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.getShortSpaceId()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
-    if (spaceId != null && spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      return spaceId.substring(Admin.SPACE_KEY_PREFIX.length());
+    if (spaceId != null && spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+      return spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length());
     }
     return (spaceId == null) ? "" : spaceId;
   }
@@ -1022,7 +1022,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       space = removedSpaces.get(s);
       space.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(space.
           getRemovedBy())).getDisplayedName());
-      space.setPath(adminController.getPathToSpace(space.getFullId(), false));
+      space.setPath(adminController.getPathToSpace(space.getId(), false));
 
       // Remove suffix
       name = space.getName();

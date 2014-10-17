@@ -1,4 +1,4 @@
-package com.silverpeas.notification.delayed.scheduler;
+package com.silverpeas.usernotification.delayed.scheduler;
 
 import com.silverpeas.scheduler.Scheduler;
 import javax.inject.Inject;

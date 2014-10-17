@@ -32,11 +32,11 @@ import javax.inject.Inject;
 /** A notifier of an event concerning the life-cycle of a user account in Silverpeas.
  * @author mmoquillon
  */
-public class UserEventNotifier extends CDIResourceEventNotifier<UserEvent> {
+public class UserEventNotifier extends CDIResourceEventNotifier<UserDetail, UserEvent> {
 
   @Override
   protected UserEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new UserEvent(type, (UserDetail) resource);
+      final UserDetail... resource) {
+    return new UserEvent(type, resource);
   }
 }

@@ -49,18 +49,18 @@ public class ProfileInstManager {
    * Create a new Profile instance in database
    * @param profileInst
    * @param ddManager
-   * @param sFatherCompoId
+   * @param fatherCompLocalId
    * @return
    * @throws AdminException
    */
   public String createProfileInst(ProfileInst profileInst,
-      DomainDriverManager ddManager, String sFatherCompoId)
+      DomainDriverManager ddManager, int fatherCompLocalId)
       throws AdminException {
     try {
       // Create the spaceProfile node
       UserRoleRow newRole = makeUserRoleRow(profileInst);
       newRole.id = -1; // new profile Id is to be defined
-      newRole.instanceId = idAsInt(sFatherCompoId);
+      newRole.instanceId = fatherCompLocalId;
       ddManager.getOrganization().userRole.createUserRole(newRole);
       String sProfileNodeId = idAsString(newRole.id);
 
@@ -82,7 +82,7 @@ public class ProfileInstManager {
     } catch (Exception e) {
       throw new AdminException("ProfileInstManager.createProfileInst", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_PROFILE", "profile name: '" + profileInst.getName()
-          + "', father component Id: '" + sFatherCompoId + "'", e);
+          + "', father component Id: '" + fatherCompLocalId + "'", e);
     }
   }
 
@@ -90,12 +90,11 @@ public class ProfileInstManager {
    * Get Profileinformation from database with the given id and creates a new Profile instance
    * @param ddManager
    * @param sProfileId
-   * @param sFatherId
    * @return
    * @throws AdminException
    */
-  public ProfileInst getProfileInst(DomainDriverManager ddManager, String sProfileId,
-      String sFatherId) throws AdminException {
+  public ProfileInst getProfileInst(DomainDriverManager ddManager, String sProfileId)
+      throws AdminException {
     ProfileInst profileInst = null;
     try {
       ddManager.getOrganizationSchema();
@@ -113,8 +112,7 @@ public class ProfileInstManager {
     } catch (Exception e) {
       throw new AdminException("ProfileInstManager.setProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_PROFILE",
-          "profile Id: '" + sProfileId + "', father component Id: '"
-          + sFatherId + "'", e);
+          "profile Id: '" + sProfileId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -166,14 +164,14 @@ public class ProfileInstManager {
   }
 
   public ProfileInst getInheritedProfileInst(DomainDriverManager ddManager,
-      String instanceId, String roleName)
+      int instanceLocalId, String roleName)
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
       // Load the profile detail
       UserRoleRow userRole =
-          ddManager.getOrganization().userRole.getUserRole(idAsInt(instanceId), roleName, 1);
+          ddManager.getOrganization().userRole.getUserRole(instanceLocalId, roleName, 1);
 
       ProfileInst profileInst = null;
       if (userRole != null) {
@@ -186,7 +184,7 @@ public class ProfileInstManager {
     } catch (Exception e) {
       throw new AdminException("ProfileInstManager.getInheritedProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
-          "instanceId = " + instanceId + ", role = " + roleName, e);
+          "instanceId = " + instanceLocalId + ", role = " + roleName, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -213,7 +211,7 @@ public class ProfileInstManager {
   public String updateProfileInst(DomainDriverManager ddManager, ProfileInst profileInstNew)
       throws AdminException {
 
-    ProfileInst profileInst = getProfileInst(ddManager, profileInstNew.getId(), null);
+    ProfileInst profileInst = getProfileInst(ddManager, profileInstNew.getId());
 
     ArrayList<String> alOldProfileGroup = new ArrayList<String>();
     ArrayList<String> alNewProfileGroup = new ArrayList<String>();
@@ -353,14 +351,14 @@ public class ProfileInstManager {
     }
   }
 
-  public String[] getProfileNamesOfUser(String sUserId, List<String> groupIds, int componentId)
+  public String[] getProfileNamesOfUser(String sUserId, List<String> groupIds, int componentLocalId)
       throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
-          RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentId);
+          RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentLocalId);
       List<String> roleNames = new ArrayList<String>();
 
       for (UserRoleRow role : roles) {

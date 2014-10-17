@@ -29,11 +29,11 @@ import org.silverpeas.notification.ResourceEvent;
 /**
  * @author mmoquillon
  */
-public class SpaceEventNotifier extends CDIResourceEventNotifier<SpaceEvent> {
+public class SpaceEventNotifier extends CDIResourceEventNotifier<SpaceInst, SpaceEvent> {
 
   @Override
   protected SpaceEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new SpaceEvent(type, (SpaceInst) resource);
+      final SpaceInst... resource) {
+    return new SpaceEvent(type, resource);
   }
 }

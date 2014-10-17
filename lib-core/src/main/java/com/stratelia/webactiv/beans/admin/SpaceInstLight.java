@@ -21,7 +21,6 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.organization.SpaceRow;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -70,7 +69,7 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
 
   public SpaceInstLight(SpaceRow spaceRow) {
     if (spaceRow != null) {
-      setId(spaceRow.id);
+      setLocalId(spaceRow.id);
       setName(spaceRow.name);
       setFatherId(spaceRow.domainFatherId);
       setDescription(spaceRow.description);
@@ -99,7 +98,7 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
 
   public SpaceInstLight(SpaceInst spaceInst) {
     if (spaceInst != null) {
-      setId(spaceInst.getId());
+      setLocalId(spaceInst.getLocalId());
       setName(spaceInst.getName());
       setFatherId(spaceInst.getDomainFatherId());
       setDescription(spaceInst.getDescription());
@@ -118,12 +117,8 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     }
   }
 
-  public String getShortId() {
-    return id;
-  }
-
-  public String getFullId() {
-    return "WA" + getShortId();
+  public String getId() {
+    return SpaceInst.SPACE_KEY_PREFIX + getLocalId();
   }
 
   /**
@@ -158,15 +153,12 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     this.fatherId = fatherId;
   }
 
-  public void setId(int id) {
+  public void setLocalId(int id) {
     this.id = Integer.toString(id);
   }
 
-  public void setId(String id) {
-    if (StringUtil.isDefined(id) && id.startsWith("WA")) {
-      id = id.substring(2);
-    }
-    this.id = id;
+  public int getLocalId() {
+    return Integer.parseInt(id);
   }
 
   /**
@@ -322,6 +314,6 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
       return false;
     }
     SpaceInstLight other = (SpaceInstLight) obj;
-    return ObjectUtils.equals(getFullId(), other.getFullId());
+    return ObjectUtils.equals(getId(), other.getId());
   }
 }

@@ -37,6 +37,6 @@ public class PdcGroupEventListener extends CDIResourceEventListener<GroupEvent> 
 
   @Override
   public void onDeletion(final GroupEvent event) throws Exception {
-    pdcBm.deleteGroupManager(event.getResource().getId());
+    pdcBm.deleteGroupManager(event.getTransition().getBefore().getId());
   }
 }

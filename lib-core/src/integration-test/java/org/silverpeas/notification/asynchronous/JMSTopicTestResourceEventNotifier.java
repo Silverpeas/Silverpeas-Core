@@ -23,21 +23,15 @@ package org.silverpeas.notification.asynchronous;
 
 import org.silverpeas.notification.JMSResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 
 import javax.annotation.Resource;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.jms.Destination;
-import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
-import javax.jms.JMSProducer;
 import javax.jms.Topic;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author mmoquillon
@@ -47,7 +41,8 @@ import java.util.logging.Logger;
         name = "java:/topic/resource",
         interfaceName = "javax.jms.Topic",
         destinationName = "ResourceEvent")})
-public class JMSTopicTestResourceEventNotifier extends JMSResourceEventNotifier<TestResourceEvent> {
+public class JMSTopicTestResourceEventNotifier
+    extends JMSResourceEventNotifier<TestResource, TestResourceEvent> {
 
   @Resource(lookup = "java:/topic/resource")
   private Topic topic;
@@ -59,8 +54,8 @@ public class JMSTopicTestResourceEventNotifier extends JMSResourceEventNotifier<
 
   @Override
   protected TestResourceEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new TestResourceEvent(type, (TestResource) resource);
+      final TestResource... resource) {
+    return new TestResourceEvent(type, resource);
   }
 
   public void onTestResourceEvent(@Observes TestResourceEvent event) {

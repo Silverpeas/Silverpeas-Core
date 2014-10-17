@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganisationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
@@ -78,7 +79,7 @@ public abstract class AbstractIndexer {
     SilverTrace.info(silvertraceModule, "AbstractIndexer.indexSpace()",
         "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + currentSpaceId);
 
-    if (currentSpaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+    if (currentSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
       currentSpaceId = currentSpaceId.substring(2);
     }
 

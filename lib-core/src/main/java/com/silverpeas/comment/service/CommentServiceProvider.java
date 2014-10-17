@@ -51,15 +51,6 @@ public class CommentServiceProvider {
     return ServiceProvider.getService(CommentService.class);
   }
 
-  /**
-   * Gets a CommentUserNotificationService instance.
-   *
-   * @return a CommentUserNotificationService instance.
-   */
-  public static CommentUserNotificationService getCommentUserNotificationService() {
-    return ServiceProvider.getService(CommentUserNotificationService.class);
-  }
-
   private CommentServiceProvider() {
   }
 }

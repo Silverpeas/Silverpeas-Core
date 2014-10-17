@@ -34,7 +34,7 @@ import java.text.MessageFormat;
 
 /**
  * A contribution identifier is an identifier that identifies uniquely a contribution in Silverpeas
- * whatever its type and the application instance or tools tio which it belongs.
+ * whatever its type and the application instance or tools to which it belongs.
  * For doing, it is made up of two parts: one part that identify uniquely a contribution among all
  * of the contributions of the same type, and a last part that identify the component instance the
  * contribution belongs to.
@@ -91,10 +91,13 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
   }
 
   /**
-   * Gets the absolute value of this identifier in which the component instance localId is the namespace
-   * and the contribution identifier a value in this namespace.
-   * @return the String representation of this identifier in the form of
-   * [component instance identifier]:[local contribution identifier]
+   * Gets the absolute value of this identifier.
+   * <p>Either it is an explicit absolute unique value or, in the case no absolute value is defined
+   * for this contribution, it is made up of both the component instance identifier and the
+   * contribution identifier. In latter, the component instance identifier defines the namespace
+   * in which the local identifier exists.
+   * @return the String representation of this identifier either as a value in itself or in the
+   * form of [component instance identifier]:[local contribution identifier]
    */
   @Override
   public String asString() {

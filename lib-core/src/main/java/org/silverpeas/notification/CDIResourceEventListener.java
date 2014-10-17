@@ -26,6 +26,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * A synchronous event listener using the notification bus of CDI. This bus is based on the
+ * Observer pattern but by using the annotations in place of code lines to setup listeners and so
+ * on.
+ * <p>
+ * Synchronous events are carried within a specific CDI event and are collected by this
+ * abstract class. All concrete listeners have just to extend this abstract class and to implement
+ * some of the following methods to transparently receive the events on which they are interested:
+ * </p>
+ * <ul>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onCreation(ResourceEvent} to
+ *   receive events about the creation of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onUpdate(ResourceEvent} to
+ *   receive events about the update of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onRemoving(ResourceEvent} to
+ *   receive events about the removing of a resource,</li>
+ *   <li>{@code org.silverpeas.notification.ResourceEventListener#onDeletion(ResourceEvent} to
+ *   receive events about the deletion of a resource,</li>
+ * </ul>
+ *
  * @author mmoquillon
  */
 public abstract class CDIResourceEventListener<T extends ResourceEvent>
@@ -38,10 +57,7 @@ public abstract class CDIResourceEventListener<T extends ResourceEvent>
    * Listens for events related to a resource managed in Silverpeas.
    * <p>
    *   The event is decoded from the specified message and according to the type of the event,
-   *   the adequate method is then invoked (
-   *   {@code org.silverpeas.notification.CDIResourceEventListener#onCreation(ResourceEvent},
-   *   {@code org.silverpeas.notification.CDIResourceEventListener#onUpdate(ResourceEvent},
-   *   {@code org.silverpeas.notification.CDIResourceEventListener#onDeletion(ResourceEvent}).
+   *   the adequate method is then invoked.
    * </p>
    * @see org.silverpeas.notification.ResourceEventListener#dispatchEvent(ResourceEvent)
    * @param event an event.

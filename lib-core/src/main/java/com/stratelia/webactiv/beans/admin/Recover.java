@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.List;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.util.List;
 
 public class Recover {
 
@@ -43,7 +43,7 @@ public class Recover {
     for (String spaceId : rootSpaceIds) {
       List<SpaceInstLight> subSpaces = admin.getSubSpaces(spaceId);
       for (SpaceInstLight subSpace : subSpaces) {
-        recoverSpaceRights(subSpace.getFullId());
+        recoverSpaceRights(subSpace.getId());
       }
     }
     SilverTrace.setTraceLevel("admin", oldTraceLevel);
@@ -80,9 +80,9 @@ public class Recover {
     }
 
     // recover subspaces rights
-    String[] subSpaceIds = space.getSubSpaceIds();
-    for (String subSpaceId : subSpaceIds) {
-      recoverSpaceRights(subSpaceId, false);
+    List<SpaceInst> subSpaces = space.getSubSpaces();
+    for (SpaceInst aSubSpace : subSpaces) {
+      recoverSpaceRights(aSubSpace.getId(), false);
     }
 
     // recover components rights

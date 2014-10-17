@@ -29,13 +29,10 @@ import com.silverpeas.sharing.services.SharingTicketService;
 import org.silverpeas.attachment.notification.AttachmentEvent;
 import org.silverpeas.attachment.notification.AttachmentRef;
 import org.silverpeas.notification.JMSResourceEventListener;
-import org.silverpeas.util.exception.DecodingException;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 
 /**
  * @author neysseri
@@ -59,7 +56,7 @@ public class AttachmentSharingListener extends JMSResourceEventListener<Attachme
 
   @Override
   public void onDeletion(final AttachmentEvent event) throws Exception {
-    AttachmentRef attachment = event.getResource();
+    AttachmentRef attachment = event.getTransition().getBefore();
     if (attachment != null) {
       service.deleteTicketsForSharedObject(attachment.getOldSilverpeasId(), Ticket.FILE_TYPE);
     }

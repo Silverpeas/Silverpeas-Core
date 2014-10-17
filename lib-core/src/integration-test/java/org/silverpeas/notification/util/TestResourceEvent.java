@@ -21,6 +21,7 @@
 
 package org.silverpeas.notification.util;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.JSONCodec;
@@ -43,12 +44,9 @@ public class TestResourceEvent extends AbstractResourceEvent<TestResource> {
   }
 
   /**
-   * Constructs a new instance representing the specified event type in relation to the specified
-   * resource.
-   * @param type the type of the event.
-   * @param resource the resource related by the event.
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
    */
-  public TestResourceEvent(final Type type, final TestResource resource) {
+  public TestResourceEvent(final Type type, final TestResource... resource) {
     super(type, resource);
   }
 }

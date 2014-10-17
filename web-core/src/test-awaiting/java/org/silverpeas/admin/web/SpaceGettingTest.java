@@ -413,7 +413,7 @@ public class SpaceGettingTest extends ResourceGettingTest<AdminTestResources> {
 
   @Override
   public String anUnexistingResourceURI() {
-    return SPACES_BASE_URI + "/" + expected.getFullId();
+    return SPACES_BASE_URI + "/" + expected.getId();
   }
 
   @Override

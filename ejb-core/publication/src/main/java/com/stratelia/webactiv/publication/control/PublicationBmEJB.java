@@ -56,7 +56,8 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.publication.model.ValidationStep;
 import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.publication.notification.PublicationNotificationService;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.publication.notification.PublicationEventNotifier;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -96,9 +97,10 @@ public class PublicationBmEJB implements PublicationBm {
   private RatingBm ratingBm;
   @Inject
   private TagCloudBm tagCloudBm;
-
   @Inject
   private ComponentHelper componentHelper;
+  @Inject
+  private PublicationEventNotifier notifier;
 
   private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
 
@@ -317,7 +319,7 @@ public class PublicationBmEJB implements PublicationBm {
 
       deleteIndex(pk);
 
-      PublicationNotificationService.getService().notifyOnDeletionOf(pk);
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, publi);
 
       // delete publication from database
       PublicationDAO.deleteRow(con, pk);

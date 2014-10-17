@@ -48,18 +48,18 @@ public class SpaceDAO {
 
   }
 
-  public static List<String> getRootSpaceIds(Connection con)
+  public static List<Integer> getRootSpaceIds(Connection con)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> spaceIds = new ArrayList<String>();
+      List<Integer> spaceIds = new ArrayList<>();
 
       stmt = con.prepareStatement(querySortedRootSpaceIds);
       rs = stmt.executeQuery();
 
       while (rs.next()) {
-        spaceIds.add(Integer.toString(rs.getInt(1)));
+        spaceIds.add(rs.getInt(1));
       }
 
       return spaceIds;
@@ -94,16 +94,16 @@ public class SpaceDAO {
       + " and spacestatus is null"
       + " order by orderNum";
 
-  public static List<String> getManageableSpaceIds(Connection con, String userId,
+  public static List<Integer> getManageableSpaceIds(Connection con, String userId,
       List<String> groupIds) throws SQLException {
-    Set<String> manageableSpaceIds = new HashSet<String>();
+    Set<Integer> manageableSpaceIds = new HashSet<>();
     if (StringUtil.isDefined(userId)) {
       manageableSpaceIds.addAll(getManageableSpaceIdsByUser(con, userId));
     }
     if (groupIds != null && groupIds.size() > 0) {
       manageableSpaceIds.addAll(getManageableSpaceIdsByGroups(con, groupIds));
     }
-    return new ArrayList<String>(manageableSpaceIds);
+    return new ArrayList<>(manageableSpaceIds);
   }
 
   static final private String queryGetManageableSpaceIdsByUser = "SELECT st_spaceuserrole.spaceid "
@@ -111,29 +111,29 @@ public class SpaceDAO {
       + "st_spaceuserrole_user_rel.spaceuserroleid = st_spaceuserrole.id AND st_spaceuserrole.rolename='" 
       + SpaceProfileInst.SPACE_MANAGER + "' AND st_spaceuserrole_user_rel.userid=?";
 
-  private static List<String> getManageableSpaceIdsByUser(Connection con, String userId)
+  private static List<Integer> getManageableSpaceIdsByUser(Connection con, String userId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
     try {
-      List<String> groupIds = new ArrayList<String>();
+      List<Integer> spaceIds = new ArrayList<>();
       stmt = con.prepareStatement(queryGetManageableSpaceIdsByUser);
       stmt.setInt(1, Integer.parseInt(userId));
 
       rs = stmt.executeQuery();
 
       while (rs.next()) {
-        groupIds.add(Integer.toString(rs.getInt(1)));
+        spaceIds.add(rs.getInt(1));
       }
-      return groupIds;
+      return spaceIds;
     } finally {
       DBUtil.close(rs, stmt);
     }
 
   }
 
-  private static List<String> getManageableSpaceIdsByGroups(Connection con, List<String> groupIds)
+  private static List<Integer> getManageableSpaceIdsByGroups(Connection con, List<String> groupIds)
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
@@ -143,11 +143,11 @@ public class SpaceDAO {
           + "st_spaceuserrole WHERE st_spaceuserrole_group_rel.spaceuserroleid = st_spaceuserrole.id"
           + " AND st_spaceuserrole.rolename='"+ SpaceProfileInst.SPACE_MANAGER 
           + "' AND st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
-      List<String> manageableSpaceIds = new ArrayList<String>();
+      List<Integer> manageableSpaceIds = new ArrayList<>();
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
       while (rs.next()) {
-        manageableSpaceIds.add(Integer.toString(rs.getInt(1)));
+        manageableSpaceIds.add(rs.getInt(1));
       }
       return manageableSpaceIds;
     } finally {
@@ -170,7 +170,7 @@ public class SpaceDAO {
   private static SpaceInstLight fetchSpace(ResultSet rs) throws SQLException {
     SpaceInstLight space = new SpaceInstLight();
 
-    space.setId(rs.getInt("id"));
+    space.setLocalId(rs.getInt("id"));
     space.setFatherId(rs.getInt("domainFatherId"));
     space.setName(rs.getString("name"));
     space.setOrderNum(rs.getInt("orderNum"));

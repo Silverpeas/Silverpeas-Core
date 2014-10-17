@@ -26,7 +26,6 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.notification.AdminNotificationService;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
@@ -48,10 +47,12 @@ import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.admin.space.SpaceServiceProvider;
+import org.silverpeas.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.search.indexEngine.IndexFileManager;
@@ -68,7 +69,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.sql.Connection;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -93,7 +93,7 @@ public final class Admin {
   private static final String PARAM_MSG_KEY = "root.MSG_GEN_PARAM_VALUE";
   private static final String START_SERVER_MSG = "Admin.startServer";
   public static final String ADMIN_COMPONENT_ID = "ADMIN";
-  public static final String SPACE_KEY_PREFIX = "WA";
+
   // Divers
   private static final Object semaphore = new Object();
   private static boolean delUsersOnDiffSynchro = true;
@@ -126,10 +126,6 @@ public final class Admin {
   private static transient boolean cacheLoaded = false;
 
   @Inject
-  @Named("adminNotificationService")
-  AdminNotificationService adminNotificationService;
-
-  @Inject
   private UserManager userManager;
   @Inject
   private GroupManager groupManager;
@@ -143,6 +139,8 @@ public final class Admin {
   private ComponentInstManager componentManager;
   @Inject
   private SpaceProfileInstManager spaceProfileManager;
+  @Inject
+  private SpaceEventNotifier spaceEventNotifier;
 
   static {
     // Load silverpeas admin resources
@@ -202,7 +200,7 @@ public final class Admin {
   // -------------------------------------------------------------------------
   public void startServer() {
     // init synchronization of domains
-    List<String> synchroDomainIds = new ArrayList<String>();
+    List<String> synchroDomainIds = new ArrayList<>();
     DomainDriverManager ddm = DomainDriverManagerFactory.getCurrentDomainDriverManager();
     Domain[] domains = null;
     try {
@@ -252,14 +250,13 @@ public final class Admin {
       throws NumberFormatException, AdminException {
     Space spaceInCache = new Space();
     spaceInCache.setSpace(space);
-    List<ComponentInstLight> components = componentManager.getComponentsInSpace(
-        Integer.parseInt(space.getShortId()));
+    List<ComponentInstLight> components = componentManager.getComponentsInSpace(space.getLocalId());
     spaceInCache.setComponents(components);
 
-    List<SpaceInstLight> subSpaces = getSubSpaces(space.getShortId());
+    List<SpaceInstLight> subSpaces = getSubSpaces(space.getId());
 
     spaceInCache.setSubspaces(subSpaces);
-    TreeCache.addSpace(space.getShortId(), spaceInCache);
+    TreeCache.addSpace(space.getLocalId(), spaceInCache);
 
     for (SpaceInstLight subSpace : subSpaces) {
       addSpaceInTreeCache(subSpace, false);
@@ -267,7 +264,7 @@ public final class Admin {
 
     if (addSpaceToSuperSpace) {
       if (!space.isRoot()) {
-        TreeCache.addSubSpace(space.getFatherId(), space);
+        TreeCache.addSubSpace(Integer.parseInt(space.getFatherId()), space);
       }
     }
   }
@@ -281,12 +278,12 @@ public final class Admin {
    * @return The general space id
    */
   public String getGeneralSpaceId() {
-    return SPACE_KEY_PREFIX + m_nEntrepriseClientSpaceId;
+    return SpaceInst.SPACE_KEY_PREFIX + m_nEntrepriseClientSpaceId;
   }
 
   public void createSpaceIndex(int spaceId) {
     try {
-      SpaceInstLight space = getSpaceInstLight(String.valueOf(spaceId));
+      SpaceInstLight space = getSpaceInstLight(spaceId);
       createSpaceIndex(space);
     } catch (AdminException e) {
       SilverTrace.error(MODULE_ADMIN, "admin.createSpaceIndex", PARAM_MSG_KEY,
@@ -296,11 +293,11 @@ public final class Admin {
 
   public void createSpaceIndex(SpaceInstLight spaceInst) {
     SilverTrace.info(MODULE_ADMIN, "admin.createSpaceIndex",
-        PARAM_MSG_KEY, "Space Name : " + spaceInst.getName() + " Space Id : "
-        + spaceInst.getShortId());
+        PARAM_MSG_KEY, "Space Name : " + spaceInst.getName() + " Space Id : " +
+            spaceInst.getLocalId());
 
     // Index the space
-    String spaceId = spaceInst.getFullId();
+    String spaceId = spaceInst.getId();
     FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
     indexEntry.setTitle(spaceInst.getName());
     indexEntry.setPreView(spaceInst.getDescription());
@@ -311,7 +308,7 @@ public final class Admin {
   public void deleteSpaceIndex(SpaceInst spaceInst) {
     SilverTrace.info("admin", "admin.deleteSpaceIndex", PARAM_MSG_KEY,
         "Space Name : " + spaceInst.getName() + " Space Id : " + spaceInst.getId());
-    String spaceId = getSpaceId(spaceInst);
+    String spaceId = spaceInst.getId();
     FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
@@ -337,7 +334,8 @@ public final class Admin {
       if (!spaceInst.isRoot()) {
         // It's a subspace
         // Convert the client id in driver id
-        spaceInst.setDomainFatherId(getDriverSpaceId(spaceInst.getDomainFatherId()));
+        int localId = getDriverSpaceId(spaceInst.getDomainFatherId());
+        spaceInst.setDomainFatherId(String.valueOf(localId));
         if (useProfileInheritance && !spaceInst.isInheritanceBlocked()) {
           // inherits profiles from super space
           // set super space profiles to new space
@@ -346,10 +344,9 @@ public final class Admin {
       }
       // Create the space instance
       spaceInst.setCreatorUserId(userId);
-      String sSpaceInstId = spaceManager.createSpaceInst(spaceInst, domainDriverManager);
-      spaceInst.setId(getClientSpaceId(sSpaceInstId));
+      spaceManager.createSpaceInst(spaceInst, domainDriverManager);
       // put new space in cache
-      cache.opAddSpace(getSpaceInstById(sSpaceInstId, true));
+      cache.opAddSpace(getSpaceInstById(spaceInst.getLocalId()));
 
       // Instantiate the components
       ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
@@ -362,7 +359,7 @@ public final class Admin {
       domainDriverManager.commit();
       connectionProd.commit();
 
-      SpaceInstLight space = getSpaceInstLight(sSpaceInstId);
+      SpaceInstLight space = getSpaceInstLight(spaceInst.getLocalId());
       addSpaceInTreeCache(space, true);
 
       // indexation de l'espace
@@ -428,21 +425,21 @@ public final class Admin {
       }
 
       // Convert the client id in driver id
-      String sDriverSpaceId = getDriverSpaceId(spaceId);
+      int driverSpaceId = getDriverSpaceId(spaceId);
 
       // Get the space to delete
-      SpaceInst spaceInst = getSpaceInstById(sDriverSpaceId, true);
+      SpaceInst spaceInst = getSpaceInstById(driverSpaceId);
 
       if (!definitive) {
         // Update the space in tables
-        spaceManager.sendSpaceToBasket(domainDriverManager, sDriverSpaceId,
+        spaceManager.sendSpaceToBasket(domainDriverManager, driverSpaceId,
             spaceInst.getName() + Admin.basketSuffix, userId);
 
         // delete all profiles (space, components and subspaces)
         deleteSpaceProfiles(spaceInst);
 
         // notify logical deletion
-        notifyOnSpaceLogicalDeletion(spaceId, userId);
+        notifyOnSpaceLogicalDeletion(spaceId);
       } else {
         // Get all the sub-spaces
         String[] subSpaceIds = getAllSubSpaceIds(spaceId);
@@ -455,8 +452,8 @@ public final class Admin {
         // Delete subspaces already in bin
         List<SpaceInstLight> removedSpaces = getRemovedSpaces();
         for (SpaceInstLight removedSpace : removedSpaces) {
-          if (sDriverSpaceId.equals(removedSpace.getFatherId())) {
-            deleteSpaceInstById(userId, removedSpace.getFullId(), false, true);
+          if (String.valueOf(driverSpaceId).equals(removedSpace.getFatherId())) {
+            deleteSpaceInstById(userId, removedSpace.getId(), false, true);
           }
         }
 
@@ -486,7 +483,7 @@ public final class Admin {
         domainDriverManager.commit();
       }
       cache.opRemoveSpace(spaceInst);
-      TreeCache.removeSpace(sDriverSpaceId);
+      TreeCache.removeSpace(driverSpaceId);
       // desindexation de l'espace
       deleteSpaceIndex(spaceInst);
       return spaceId;
@@ -505,14 +502,15 @@ public final class Admin {
     }
   }
 
-  private void notifyOnSpaceLogicalDeletion(String spaceId, String userId) {
+  private void notifyOnSpaceLogicalDeletion(String spaceId) throws AdminException {
     // notify of space logical deletion
-    adminNotificationService.notifyOnDeletionOf(getClientSpaceId(spaceId), userId);
+    SpaceInst spaceInst = getSpaceInstById(spaceId);
+    spaceEventNotifier.notifyEventOn(ResourceEvent.Type.REMOVING, spaceInst, spaceInst);
 
     // notify of direct sub spaces logical deletion too
     List<SpaceInstLight> spaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
     for (SpaceInstLight space : spaces) {
-      notifyOnSpaceLogicalDeletion(space.getFullId(), userId);
+      notifyOnSpaceLogicalDeletion(space.getId());
     }
   }
 
@@ -533,9 +531,8 @@ public final class Admin {
     }
 
     // delete the subspace profiles
-    String[] subSpaceIds = spaceInst.getSubSpaceIds();
-    for (int i = 0; subSpaceIds != null && i < subSpaceIds.length; i++) {
-      SpaceInst subSpace = getSpaceInstById(subSpaceIds[i]);
+    List<SpaceInst> subSpaces = spaceInst.getSubSpaces();
+    for (SpaceInst subSpace: subSpaces) {
       deleteSpaceProfiles(subSpace);
     }
   }
@@ -552,7 +549,7 @@ public final class Admin {
       // Start transaction
 
       // Convert the client id in driver id
-      String driverSpaceId = getDriverSpaceId(spaceId);
+      int driverSpaceId = getDriverSpaceId(spaceId);
       // update data in database
       spaceManager.removeSpaceFromBasket(domainDriverManager, driverSpaceId);
 
@@ -561,7 +558,7 @@ public final class Admin {
       TreeCache.removeSpace(driverSpaceId);
 
       // Get the space and put it in the cache
-      SpaceInst spaceInst = getSpaceInstById(driverSpaceId, true);
+      SpaceInst spaceInst = getSpaceInstById(driverSpaceId);
       // set superspace profiles to space
       if (useProfileInheritance && !spaceInst.isInheritanceBlocked() && !spaceInst.isRoot()) {
         updateSpaceInheritance(spaceInst, false);
@@ -570,7 +567,7 @@ public final class Admin {
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.restoreSpaceFromBasket",
           PARAM_MSG_KEY, "Indexation : spaceInst = " + spaceInst.getName());
-      createSpaceIndex(Integer.parseInt(driverSpaceId));
+      createSpaceIndex(driverSpaceId);
       // reset space and eventually subspace
       cache.opAddSpace(spaceInst);
       addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
@@ -592,28 +589,7 @@ public final class Admin {
    */
   public SpaceInst getSpaceInstById(String spaceId) throws AdminException {
     try {
-      SpaceInst spaceInst = getSpaceInstById(spaceId, false);
-      if (spaceInst == null) {
-        return null;
-      }
-
-      // Put the client space Id back
-      spaceInst.setId(spaceId);
-
-      // Put the client component Id back
-      List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-      for (ComponentInst component : alCompoInst) {
-        String sClientComponentId = getClientComponentId(component);
-        component.setId(sClientComponentId);
-      }
-
-      // Put the client sub spaces Id back
-      String[] asSubSpaceIds = spaceInst.getSubSpaceIds();
-      for (int nI = 0; asSubSpaceIds != null && nI < asSubSpaceIds.length; nI++) {
-        asSubSpaceIds[nI] = getClientSpaceId(asSubSpaceIds[nI]);
-      }
-      spaceInst.setSubSpaceIds(asSubSpaceIds);
-      return spaceInst;
+      return getSpaceInstById(getDriverSpaceId(spaceId));
     } catch (Exception e) {
       throw new AdminException("Admin.getSpaceInstById", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_SPACE", " space Id : '" + spaceId + "'", e);
@@ -624,27 +600,17 @@ public final class Admin {
    * Get the space instance with the given space id
    *
    * @param spaceId client space id
-   * @param useDriverSpaceId true is space id is in 'driver' format, false for 'client' format
    * @return Space information as SpaceInst object
    */
-  private SpaceInst getSpaceInstById(String spaceId, boolean useDriverSpaceId)
+  private SpaceInst getSpaceInstById(int spaceId)
       throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
     try {
-
-      String driverSpaceId;
-      // Convert the client id in driver id
-      if (useDriverSpaceId) {
-        driverSpaceId = spaceId;
-      } else {
-        driverSpaceId = getDriverSpaceId(spaceId);
-      }
-
-      SpaceInst spaceInst = cache.getSpaceInst(driverSpaceId);
+      SpaceInst spaceInst = cache.getSpaceInst(spaceId);
       if (spaceInst == null) {
         // Get space instance
-        spaceInst = spaceManager.getSpaceInstById(domainDriverManager, driverSpaceId);
+        spaceInst = spaceManager.getSpaceInstById(domainDriverManager, spaceId);
         if (spaceInst != null) {
           // Store the spaceInst in cache
           cache.putSpaceInst(spaceInst);
@@ -712,8 +678,6 @@ public final class Admin {
       SilverTrace.debug(MODULE_ADMIN, "Admin.updateSpaceInst",
           "root.MSG_GEN_ENTER_METHOD", "Before id: '" + spaceInstNew.getId() + "' after Id: "
           + getDriverSpaceId(spaceInstNew.getId()));
-      // Convert the client id in driver id
-      spaceInstNew.setId(getDriverSpaceId(spaceInstNew.getId()));
       // Update the space in tables
       spaceManager.updateSpaceInst(domainDriverManager, spaceInstNew);
       if (useProfileInheritance && (oldSpace.isInheritanceBlocked() != spaceInstNew.
@@ -723,7 +687,7 @@ public final class Admin {
       // commit the transactions
       domainDriverManager.commit();
       cache.opUpdateSpace(spaceInstNew);
-      TreeCache.getSpaceInstLight(spaceInstNew.getId()).setInheritanceBlocked(spaceInstNew.
+      TreeCache.getSpaceInstLight(spaceInstNew.getLocalId()).setInheritanceBlocked(spaceInstNew.
           isInheritanceBlocked());
       // Update space in TreeCache
       SpaceInstLight spaceLight = spaceManager.getSpaceInstLightById(domainDriverManager,
@@ -756,7 +720,7 @@ public final class Admin {
     try {
       SilverTrace.debug(MODULE_ADMIN, "Admin.updateSpaceOrderNum", "root.MSG_GEN_ENTER_METHOD",
           "Space id: '" + spaceId + "' New Order num: " + Integer.toString(orderNum));
-      String driverSpaceId = getDriverSpaceId(spaceId);
+      int driverSpaceId = getDriverSpaceId(spaceId);
       // Open the connections with auto-commit to false
       domainDriverManager.startTransaction(false);
       // Update the space in tables
@@ -771,7 +735,8 @@ public final class Admin {
       space.setOrderNum(orderNum);
       if (!space.isRoot()) {
         // Update brothers sort in TreeCache
-        TreeCache.setSubspaces(space.getFatherId(), getSubSpaces(space.getFatherId()));
+        TreeCache.setSubspaces(getDriverSpaceId(space.getFatherId()),
+            getSubSpaces(space.getFatherId()));
       }
     } catch (Exception e) {
       rollback();
@@ -894,7 +859,7 @@ public final class Admin {
       }
       while (!space.isRoot()) {
         String fatherId = space.getFatherId();
-        space = getSpaceInstLight(fatherId);
+        space = getSpaceInstLight(getDriverSpaceId(fatherId));
         path.add(0, space);
       }
     }
@@ -1027,8 +992,8 @@ public final class Admin {
    */
   public ComponentInst getComponentInst(String sClientComponentId) throws AdminException {
     try {
-      ComponentInst componentInst = getComponentInst(sClientComponentId, false, null);
-      componentInst.setId(getClientComponentId(componentInst));
+      ComponentInst componentInst = getComponentInst(getDriverComponentId(sClientComponentId),
+          null);
       componentInst.setDomainFatherId(getClientSpaceId(componentInst.getDomainFatherId()));
       return componentInst;
     } catch (Exception e) {
@@ -1048,7 +1013,7 @@ public final class Admin {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
     try {
-      String driverComponentId = getDriverComponentId(componentId);
+      int driverComponentId = getDriverComponentId(componentId);
       return componentManager.getComponentInstLight(domainDriverManager, driverComponentId);
     } catch (Exception e) {
       throw new AdminException("Admin.getComponentInstLight", SilverpeasException.ERROR,
@@ -1060,32 +1025,24 @@ public final class Admin {
    * Return the component Inst corresponding to the given ID.
    *
    * @param componentId
-   * @param isDriverComponentId
    * @param fatherDriverSpaceId
    * @return the component Inst corresponding to the given ID.
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
-  private ComponentInst getComponentInst(String componentId, boolean isDriverComponentId,
-      String fatherDriverSpaceId) throws AdminException {
+  private ComponentInst getComponentInst(int componentId,
+      Integer fatherDriverSpaceId) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
     String driverComponentId;
     try {
-      // Converts space id if necessary
-      if (isDriverComponentId) {
-        driverComponentId = componentId;
-      } else {
-        driverComponentId = getDriverComponentId(componentId);
-      }
-
       // Get the component instance
-      ComponentInst componentInst = cache.getComponentInst(driverComponentId);
+      ComponentInst componentInst = cache.getComponentInst(componentId);
       SilverTrace.info(MODULE_ADMIN, "Admin.getComponentInst", "root.MSG_GEN_ENTER_METHOD",
-          "componentInst=" + componentInst + " id=" + driverComponentId);
+          "componentInst=" + componentInst + " id=" + componentId);
       if (componentInst == null) {
         // Get component instance from database
         componentInst = componentManager.getComponentInst(domainDriverManager,
-            driverComponentId, fatherDriverSpaceId);
+            componentId, fatherDriverSpaceId);
         SilverTrace.info(MODULE_ADMIN, "Admin.getComponentInst",
             "root.MSG_GEN_ENTER_METHOD", "componentInst FatherId=" + componentInst.
             getDomainFatherId());
@@ -1202,12 +1159,7 @@ public final class Admin {
           "componentInst.getName() = " + componentInst.getName() + "' componentInst.getId() = "
           + componentInst.getId() + " componentInst.getLabel() = " + componentInst.getLabel());
 
-      String componentId;
-      if (componentInst.getId().startsWith(componentInst.getName())) {
-        componentId = componentInst.getId();
-      } else {
-        componentId = componentInst.getName().concat(componentInst.getId());
-      }
+      String componentId = componentInst.getId();
       FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
       indexEntry.setTitle(componentInst.getLabel());
       indexEntry.setPreView(componentInst.getDescription());
@@ -1219,7 +1171,7 @@ public final class Admin {
   /**
    * Delete the index for the specified component.
    *
-   * @param componentInst
+   * @param componentId
    */
   private void deleteComponentIndex(String componentId) {
     FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
@@ -1269,15 +1221,11 @@ public final class Admin {
           ComponentSpaceQuotaKey.from(spaceInstFather));
 
       // Create the component instance
-      String driverComponentId = componentManager.createComponentInst(componentInst,
-          domainDriverManager,
-          getDriverSpaceId(spaceInstFather.getId()));
+      componentManager.createComponentInst(componentInst,
+          domainDriverManager, spaceInstFather.getLocalId());
 
       // Add the component to the space
       spaceInstFather.addComponentInst(componentInst);
-
-      // Put the new Id for client
-      componentInst.setId(driverComponentId);
 
       // Instantiate the component
       String componentName = componentInst.getName();
@@ -1313,7 +1261,7 @@ public final class Admin {
       cache.opAddComponent(componentInst);
 
       ComponentInstLight component = getComponentInstLight(componentId);
-      TreeCache.addComponent(driverComponentId, component,
+      TreeCache.addComponent(component.getLocalId(), component,
           getDriverSpaceId(spaceInstFather.getId()));
 
       // indexation du composant
@@ -1394,10 +1342,10 @@ public final class Admin {
       }
 
       // Convert the client id in driver id
-      String sDriverComponentId = getDriverComponentId(componentId);
+      int sDriverComponentId = getDriverComponentId(componentId);
 
       // Get the component to delete
-      ComponentInst componentInst = getComponentInst(sDriverComponentId, true, null);
+      ComponentInst componentInst = getComponentInst(sDriverComponentId, null);
 
       // Get the father id
       String sFatherClientId = componentInst.getDomainFatherId();
@@ -1498,7 +1446,7 @@ public final class Admin {
     try {
       SilverTrace.debug(MODULE_ADMIN, "Admin.updateComponentOrderNum", "root.MSG_GEN_ENTER_METHOD",
           "Component id: '" + componentId + "' New Order num: " + orderNum);
-      String driverComponentId = getDriverComponentId(componentId);
+      int driverComponentId = getDriverComponentId(componentId);
       // Open the connections with auto-commit to false
       domainDriverManager.startTransaction(false);
 
@@ -1533,10 +1481,9 @@ public final class Admin {
       domainDriverManager.startTransaction(false);
 
       // Convert the client space Id in driver space Id
-      String sDriverComponentId = getDriverComponentId(component.getId());
-      component.setId(sDriverComponentId);
+      int sDriverComponentId = getDriverComponentId(component.getId());
       // Update the components in tables
-      componentManager.updateComponentInst(domainDriverManager, component);
+      componentManager.updateComponentInst(domainDriverManager, oldComponent, component);
 
       // Update the inherited rights
       if (useProfileInheritance && (oldComponent.isInheritanceBlocked() != component.
@@ -1545,13 +1492,9 @@ public final class Admin {
       }
       // commit the transactions
       domainDriverManager.commit();
-      adminNotificationService.notifyOfComponentConfigurationChange(componentClientId, component
-          .getUpdaterUserId(), oldComponent.diff(component));
       cache.opUpdateComponent(component);
       TreeCache.getComponent(componentClientId).setInheritanceBlocked(component.
           isInheritanceBlocked());
-      // put clientId as Id
-      component.setId(componentClientId);
       // indexation du composant
       createComponentIndex(componentClientId);
 
@@ -1616,7 +1559,7 @@ public final class Admin {
       throws AdminException {
     SpaceInst currentSpace = space;
     if (currentSpace == null) {
-      currentSpace = getSpaceInstById(subSpace.getDomainFatherId(), true);
+      currentSpace = getSpaceInstById(subSpace.getDomainFatherId());
     }
 
     setSpaceProfileToSubSpace(subSpace, currentSpace, SilverpeasRole.admin);
@@ -1698,7 +1641,7 @@ public final class Admin {
     List<Profile> componentRoles = waComponent.getProfiles();
 
     if (space == null) {
-      space = getSpaceInstById(component.getDomainFatherId(), false);
+      space = getSpaceInstById(component.getDomainFatherId());
     }
 
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
@@ -1766,31 +1709,30 @@ public final class Admin {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
 
-    if (isParent(spaceId, fatherId)) {
+    if (isParent(getDriverSpaceId(spaceId), getDriverSpaceId(fatherId))) {
       // space cannot be moved in one of its descendants
       return;
     }
 
-    String shortSpaceId = getDriverSpaceId(spaceId);
-    String shortFatherId = getDriverSpaceId(fatherId);
-    if (!StringUtil.isDefined(shortFatherId)) {
-      shortFatherId = "-1";
+    int shortSpaceId = getDriverSpaceId(spaceId);
+    int shortFatherId = -1;
+    if (StringUtil.isDefined(fatherId)) {
+      shortFatherId = getDriverSpaceId(fatherId);
     }
-    boolean moveOnTop = "-1".equals(shortFatherId);
+    boolean moveOnTop = shortFatherId == -1;
 
     try {
       SpaceInst space = getSpaceInstById(shortSpaceId);
-      String shortOldSpaceId = getDriverSpaceId(space.getDomainFatherId());
+      int shortOldSpaceId = getDriverSpaceId(space.getDomainFatherId());
 
       // Open the connections with auto-commit to false
       domainDriverManager.startTransaction(false);
       // move space in database
-      spaceManager.moveSpace(domainDriverManager, Integer.parseInt(shortSpaceId),
-          Integer.parseInt(shortFatherId));
+      spaceManager.moveSpace(domainDriverManager, shortSpaceId, shortFatherId);
 
       // set space in last rank
-      spaceManager.updateSpaceOrder(domainDriverManager, shortSpaceId, getAllSubSpaceIds(
-          shortFatherId).length);
+      spaceManager.updateSpaceOrder(domainDriverManager, shortSpaceId,
+          getAllSubSpaceIds(fatherId).length);
 
       if (useProfileInheritance) {
         space = spaceManager.getSpaceInstById(domainDriverManager, shortSpaceId);
@@ -1883,9 +1825,9 @@ public final class Admin {
     try {
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", PARAM_MSG_KEY,
           "spaceId= " + spaceId + " componentId=" + componentId);
-      String sDriverComponentId = getDriverComponentId(componentId);
+      int sDriverComponentId = getDriverComponentId(componentId);
       // Convert the client space Id in driver space Id
-      String sDriverSpaceId = getDriverSpaceId(spaceId);
+      int sDriverSpaceId = getDriverSpaceId(spaceId);
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", PARAM_MSG_KEY,
           "sDriverSpaceId= " + sDriverSpaceId + " sDriverComponentId=" + sDriverComponentId);
       ComponentInst componentInst = getComponentInst(componentId);
@@ -1894,7 +1836,7 @@ public final class Admin {
       domainDriverManager.startTransaction(false);
       // Update the components in tables
       componentManager.moveComponentInst(domainDriverManager, sDriverSpaceId, sDriverComponentId);
-      componentInst.setDomainFatherId(sDriverSpaceId);
+      componentInst.setDomainFatherId(String.valueOf(sDriverSpaceId));
 
       // set space profiles to component if it not use its own rights
       if (!componentInst.isInheritanceBlocked()) {
@@ -1909,7 +1851,7 @@ public final class Admin {
         setComponentPlace(componentId, idComponentBefore, componentInsts);
       } else {
         // set component in last rank
-        updateComponentOrderNum(sDriverComponentId, getAllComponentIds(spaceId).length);
+        updateComponentOrderNum(componentId, getAllComponentIds(spaceId).length);
       }
 
       // Update extraParamPage from Space if necessary
@@ -1928,9 +1870,9 @@ public final class Admin {
       cache.resetSpaceInst();
       cache.resetComponentInst();
       TreeCache.setComponents(getDriverSpaceId(oldSpaceId),
-          componentManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
+          componentManager.getComponentsInSpace(getDriverSpaceId(oldSpaceId)));
       TreeCache.setComponents(getDriverSpaceId(spaceId),
-          componentManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
+          componentManager.getComponentsInSpace(getDriverSpaceId(spaceId)));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.moveComponentInst", SilverpeasException.ERROR,
@@ -2036,7 +1978,7 @@ public final class Admin {
         .getCurrentDomainDriverManager();
     ProfileInst profileInst = cache.getProfileInst(sProfileId);
     if (profileInst == null) {
-      profileInst = profileManager.getProfileInst(domainDriverManager, sProfileId, null);
+      profileInst = profileManager.getProfileInst(domainDriverManager, sProfileId);
       cache.putProfileInst(profileInst);
     }
     return profileInst;
@@ -2048,14 +1990,14 @@ public final class Admin {
         .getCurrentDomainDriverManager();
     return profiledObjectManager.getProfiles(domainDriverManager,
         Integer.parseInt(objectId), objectType,
-        Integer.parseInt(getDriverComponentId(componentId)));
+        getDriverComponentId(componentId));
   }
 
   public String[] getProfilesByObjectAndUserId(int objectId, String objectType, String componentId,
       String userId) throws AdminException {
     List<String> groups = getAllGroupsOfUser(userId);
     return profiledObjectManager.getUserProfileNames(objectId, objectType,
-        Integer.parseInt(getDriverComponentId(componentId)), Integer.parseInt(userId), groups);
+        getDriverComponentId(componentId), Integer.parseInt(userId), groups);
   }
 
   public boolean isObjectAvailable(String componentId, int objectId, String objectType,
@@ -2083,13 +2025,13 @@ public final class Admin {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
       }
-      String sDriverFatherId = getDriverComponentId(profileInst.getComponentFatherId());
+      int driverFatherId = getDriverComponentId(profileInst.getComponentFatherId());
       String sProfileId = profileManager.createProfileInst(profileInst, domainDriverManager,
-          sDriverFatherId);
+          driverFatherId);
       profileInst.setId(sProfileId);
 
       if (profileInst.getObjectId() == -1 || profileInst.getObjectId() == 0) {
-        ComponentInst componentInstFather = getComponentInst(sDriverFatherId, true, null);
+        ComponentInst componentInstFather = getComponentInst(driverFatherId, null);
         componentInstFather.addProfileInst(profileInst);
         if (StringUtil.isDefined(userId)) {
           componentInstFather.setUpdaterUserId(userId);
@@ -2101,7 +2043,7 @@ public final class Admin {
       }
 
       if (profileInst.getObjectId() == -1 || profileInst.getObjectId() == 0) {
-        cache.opAddProfile(profileManager.getProfileInst(domainDriverManager, sProfileId, null));
+        cache.opAddProfile(profileManager.getProfileInst(domainDriverManager, sProfileId));
       }
       return sProfileId;
     } catch (Exception e) {
@@ -2140,7 +2082,7 @@ public final class Admin {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
         .getCurrentDomainDriverManager();
 
-    ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId, null);
+    ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId);
     try {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
@@ -2148,7 +2090,8 @@ public final class Admin {
       profileManager.deleteProfileInst(profile, domainDriverManager);
       if (StringUtil.isDefined(
           userId) && (profile.getObjectId() == -1 || profile.getObjectId() == 0)) {
-        ComponentInst component = getComponentInst(profile.getComponentFatherId(), true, null);
+        int driverFatherId = getDriverComponentId(profile.getComponentFatherId());
+        ComponentInst component = getComponentInst(driverFatherId, null);
 
         component.setUpdaterUserId(userId);
         updateComponentInst(component);
@@ -2208,7 +2151,8 @@ public final class Admin {
       profileManager.updateProfileInst(domainDriverManager, newProfile);
       if (StringUtil.isDefined(
           userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
-        ComponentInst component = getComponentInst(newProfile.getComponentFatherId(), true, null);
+        int driverFatherId = getDriverComponentId(newProfile.getComponentFatherId());
+        ComponentInst component = getComponentInst(driverFatherId, null);
         component.setUpdaterUserId(userId);
         updateComponentInst(component);
       }
@@ -2271,13 +2215,12 @@ public final class Admin {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
       }
-      String spaceId = getDriverComponentId(spaceProfile.getSpaceFatherId());
-
+      Integer spaceId = getDriverComponentId(spaceProfile.getSpaceFatherId());
       String sSpaceProfileId = spaceProfileManager.createSpaceProfileInst(spaceProfile,
           domainDriverManager, spaceId);
       spaceProfile.setId(sSpaceProfileId);
       if (StringUtil.isDefined(userId)) {
-        SpaceInst spaceInstFather = getSpaceInstById(spaceId, false);
+        SpaceInst spaceInstFather = getSpaceInstById(spaceId);
         spaceInstFather.setUpdaterUserId(userId);
         updateSpaceInst(spaceInstFather);
       }
@@ -2342,9 +2285,9 @@ public final class Admin {
       cache.opRemoveSpaceProfile(spaceProfileInst);
       spaceProfileInst.removeAllGroups();
       spaceProfileInst.removeAllUsers();
-      String spaceId = getDriverComponentId(spaceProfileInst.getSpaceFatherId());
+      Integer spaceId = getDriverComponentId(spaceProfileInst.getSpaceFatherId());
       if (StringUtil.isDefined(userId)) {
-        SpaceInst spaceInstFather = getSpaceInstById(spaceId, false);
+        SpaceInst spaceInstFather = getSpaceInstById(spaceId);
         spaceInstFather.setUpdaterUserId(userId);
         updateSpaceInst(spaceInstFather);
       }
@@ -2405,9 +2348,9 @@ public final class Admin {
           domainDriverManager, newSpaceProfile);
 
       if (!oldSpaceProfile.isManager()) {
-        String spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
+        int spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
         if (StringUtil.isDefined(userId)) {
-          SpaceInst spaceInstFather = getSpaceInstById(spaceId, false);
+          SpaceInst spaceInstFather = getSpaceInstById(spaceId);
           spaceInstFather.setUpdaterUserId(userId);
           updateSpaceInst(spaceInstFather);
         }
@@ -2480,8 +2423,7 @@ public final class Admin {
     return roles;
   }
 
-  private void spreadSpaceProfile(String spaceId, SpaceProfileInst spaceProfile)
-      throws AdminException {
+  private void spreadSpaceProfile(int spaceId, SpaceProfileInst spaceProfile) throws AdminException {
     SilverTrace.info("admin", "Admin.spreadSpaceProfile", "root.MSG_GEN_ENTER_METHOD",
         "spaceId = " + spaceId + ", profile = " + spaceProfile.getName());
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
@@ -2494,8 +2436,7 @@ public final class Admin {
             component.getName());
         if (componentRole != null) {
           ProfileInst inheritedProfile = profileManager.getInheritedProfileInst(domainDriverManager,
-              getDriverComponentId(component.getId()),
-              componentRole);
+              component.getLocalId(), componentRole);
           if (inheritedProfile != null) {
             inheritedProfile.removeAllGroups();
             inheritedProfile.removeAllUsers();
@@ -2535,7 +2476,7 @@ public final class Admin {
     for (SpaceInstLight subSpace : subSpaces) {
       if (!subSpace.isInheritanceBlocked()) {
         SpaceProfileInst subSpaceProfile = spaceProfileManager
-            .getInheritedSpaceProfileInstByName(domainDriverManager, subSpace.getShortId(),
+            .getInheritedSpaceProfileInstByName(domainDriverManager, subSpace.getLocalId(),
                 spaceProfile.getName());
         if (subSpaceProfile != null) {
           subSpaceProfile.setGroups(spaceProfile.getAllGroups());
@@ -2545,7 +2486,7 @@ public final class Admin {
           subSpaceProfile = new SpaceProfileInst();
           subSpaceProfile.setName(spaceProfile.getName());
           subSpaceProfile.setInherited(true);
-          subSpaceProfile.setSpaceFatherId(subSpace.getShortId());
+          subSpaceProfile.setSpaceFatherId(String.valueOf(subSpace.getLocalId()));
           subSpaceProfile.addGroups(spaceProfile.getAllGroups());
           subSpaceProfile.addUsers(spaceProfile.getAllUsers());
           if (!subSpaceProfile.getAllGroups().isEmpty() || !subSpaceProfile.getAllUsers().isEmpty()) {
@@ -3668,20 +3609,19 @@ public final class Admin {
   /**
    * Converts client space id to driver space id
    */
-  private String getDriverSpaceId(String sClientSpaceId) {
-    if (sClientSpaceId != null && sClientSpaceId.startsWith(SPACE_KEY_PREFIX)) {
-      return sClientSpaceId.substring(SPACE_KEY_PREFIX.length());
+  private int getDriverSpaceId(String sClientSpaceId) {
+    if (sClientSpaceId != null && sClientSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+      return Integer.parseInt(sClientSpaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length()));
     }
-    return sClientSpaceId;
-
+    return Integer.parseInt(sClientSpaceId);
   }
 
   /**
    * Converts driver space id to client space id
    */
   public String getClientSpaceId(String sDriverSpaceId) {
-    if (sDriverSpaceId != null && !sDriverSpaceId.startsWith(SPACE_KEY_PREFIX)) {
-      return SPACE_KEY_PREFIX + sDriverSpaceId;
+    if (sDriverSpaceId != null && !sDriverSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+      return SpaceInst.SPACE_KEY_PREFIX + sDriverSpaceId;
     }
     return sDriverSpaceId;
   }
@@ -3697,11 +3637,11 @@ public final class Admin {
     return asClientSpaceIds;
   }
 
-  private String getDriverComponentId(String sClientComponentId) {
+  private Integer getDriverComponentId(String sClientComponentId) {
     SilverTrace.debug("admin", "Admin.getDriverComponentId",
         "root.MSG_GEN_ENTER_METHOD", "component id: " + sClientComponentId);
     if (sClientComponentId == null) {
-      return "";
+      return null;
     }
 
     return getTableClientComponentIdFromClientComponentId(sClientComponentId);
@@ -3710,7 +3650,7 @@ public final class Admin {
   /**
    * Return 23 for parameter kmelia23
    */
-  private String getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
+  private Integer getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
     String sTableClientId = "";
 
     // Remove the component name to get the table client id
@@ -3722,7 +3662,7 @@ public final class Admin {
         sTableClientId = sClientComponentId.substring(nI);
       }
     }
-    return sTableClientId;
+    return Integer.parseInt(sTableClientId);
   }
 
   /**
@@ -4131,8 +4071,8 @@ public final class Admin {
     for (String componentId : componentIds) {
       List<SpaceInstLight> spaces = TreeCache.getComponentPath(componentId);
       for (SpaceInstLight space : spaces) {
-        if (!spaceIds.contains(space.getFullId())) {
-          spaceIds.add(space.getFullId());
+        if (!spaceIds.contains(space.getId())) {
+          spaceIds.add(space.getId());
         }
       }
     }
@@ -4213,8 +4153,8 @@ public final class Admin {
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
       for (SpaceInstLight subspace : subspaces) {
-        if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
-          result.add(subspace.getShortId());
+        if (isSpaceContainsOneComponent(componentIds, subspace.getLocalId(), true)) {
+          result.add(subspace.getId());
         }
       }
       return result.toArray(new String[result.size()]);
@@ -4240,7 +4180,7 @@ public final class Admin {
     return isSpaceContainsOneComponent(componentIds, getDriverSpaceId(spaceId), true);
   }
 
-  private boolean isSpaceContainsOneComponent(List<String> componentIds, String spaceId,
+  private boolean isSpaceContainsOneComponent(List<String> componentIds, int spaceId,
       boolean checkInSubspaces) {
     boolean find = false;
 
@@ -4259,7 +4199,7 @@ public final class Admin {
         List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>(TreeCache.getSubSpaces(
             spaceId));
         for (int s = 0; !find && s < subspaces.size(); s++) {
-          find = isSpaceContainsOneComponent(componentIds, subspaces.get(s).getShortId(),
+          find = isSpaceContainsOneComponent(componentIds, subspaces.get(s).getLocalId(),
               checkInSubspaces);
         }
       }
@@ -4290,7 +4230,7 @@ public final class Admin {
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
       for (SpaceInstLight subspace : subspaces) {
-        if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
+        if (isSpaceContainsOneComponent(componentIds, subspace.getLocalId(), true)) {
           result.add(subspace);
         }
       }
@@ -4349,7 +4289,7 @@ public final class Admin {
       throws AdminException {
     SilverTrace.info("admin", "Admin.getTreeView", "root.MSG_GEN_ENTER_METHOD",
         "userId = " + userId + ", spaceId = " + spaceId);
-    spaceId = getDriverSpaceId(spaceId);
+    int driverSpaceId = getDriverSpaceId(spaceId);
 
     // Step 1 - get all availables spaces and components
     Collection<SpaceInstLight> spacesLight = getSubSpacesOfUser(userId, spaceId);
@@ -4363,18 +4303,18 @@ public final class Admin {
     Iterator<SpaceInstLight> it = spacesLight.iterator();
     while (it.hasNext()) {
       SpaceInstLight space = it.next();
-      spaceTrees.put(space.getFullId(), new SpaceAndChildren(space));
+      spaceTrees.put(space.getId(), new SpaceAndChildren(space));
     }
 
     // Step 3 - add root space to hashtable
-    SpaceInstLight rootSpace = getSpaceInstLight(spaceId);
-    spaceTrees.put(rootSpace.getFullId(), new SpaceAndChildren(rootSpace));
+    SpaceInstLight rootSpace = getSpaceInstLight(driverSpaceId);
+    spaceTrees.put(rootSpace.getId(), new SpaceAndChildren(rootSpace));
 
     // Step 4 - build dependances
     it = spacesLight.iterator();
     while (it.hasNext()) {
       SpaceInstLight child = it.next();
-      String fatherId = SPACE_KEY_PREFIX + child.getFatherId();
+      String fatherId = getClientSpaceId(child.getFatherId());
       SpaceAndChildren father = spaceTrees.get(fatherId);
       if (father != null) {
         father.addSubSpace(child);
@@ -4382,7 +4322,7 @@ public final class Admin {
     }
 
     for (ComponentInstLight child : componentsLight) {
-      String fatherId = SPACE_KEY_PREFIX + child.getDomainFatherId();
+      String fatherId = getClientSpaceId(child.getDomainFatherId());
       SpaceAndChildren father = spaceTrees.get(fatherId);
       if (father != null) {
         father.addComponent(child);
@@ -4405,8 +4345,8 @@ public final class Admin {
   public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception {
     SilverTrace.info("admin", "Admin.getUserSpaceTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId);
-    Set<String> componentsId = new HashSet<String>(Arrays.asList(getAvailCompoIds(userId)));
-    Set<String> authorizedIds = new HashSet<String>(100);
+    Set<String> componentsId = new HashSet<>(Arrays.asList(getAvailCompoIds(userId)));
+    Set<Integer> authorizedIds = new HashSet<>(100);
     if (!componentsId.isEmpty()) {
       String componentId = componentsId.iterator().next();
       componentsId.remove(componentId);
@@ -4415,7 +4355,7 @@ public final class Admin {
     String[] rootSpaceIds = getAllRootSpaceIds(userId);
     List<SpaceInstLight> treeview = new ArrayList<SpaceInstLight>(authorizedIds.size());
     for (String spaceId : rootSpaceIds) {
-      String currentSpaceId = getDriverSpaceId(spaceId);
+      int currentSpaceId = getDriverSpaceId(spaceId);
       if (authorizedIds.contains(currentSpaceId)) {
         treeview.add(TreeCache.getSpaceInstLight(currentSpaceId));
         addAuthorizedSpaceToTree(treeview, authorizedIds, currentSpaceId, 1);
@@ -4424,13 +4364,13 @@ public final class Admin {
     return treeview;
   }
 
-  void addAuthorizedSpaceToTree(List<SpaceInstLight> treeview, Set<String> authorizedIds,
-      String spaceId, int level) {
+  void addAuthorizedSpaceToTree(List<SpaceInstLight> treeview, Set<Integer> authorizedIds,
+      int spaceId, int level) {
     SilverTrace.debug("admin", "Admin.addAuthorizedSpaceToTree", "root.MSG_GEN_ENTER_METHOD",
         "size of treeview = " + treeview.size());
     List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
     for (SpaceInstLight space : subSpaces) {
-      String subSpaceId = getDriverSpaceId(space.getFullId());
+      int subSpaceId = space.getLocalId();
       if (authorizedIds.contains(subSpaceId)) {
         space.setLevel(level);
         treeview.add(space);
@@ -4444,18 +4384,18 @@ public final class Admin {
    * @param componentsId list of components' id (base to get authorized spaces)
    * @param space a space candidate to be in authorized spaces list
    */
-  void addAuthorizedSpace(Set<String> spaces, Set<String> componentsId, SpaceInstLight space) {
+  void addAuthorizedSpace(Set<Integer> spaces, Set<String> componentsId, SpaceInstLight space) {
     SilverTrace.debug("admin", "Admin.addAuthorizedSpace", "root.MSG_GEN_ENTER_METHOD",
         "#componentIds = " + componentsId.size());
-    if (space != null && !SpaceInst.STATUS_REMOVED.equals(space.getStatus())
-        && !spaces.contains(space.getShortId())) {
+    if (space != null && !SpaceInst.STATUS_REMOVED.equals(space.getStatus()) &&
+        !spaces.contains(space.getLocalId())) {
       SilverTrace.debug("admin", "Admin.addAuthorizedSpace", PARAM_MSG_KEY,
-          "space = " + space.getFullId());
-      String spaceId = getDriverSpaceId(space.getFullId());
+          "space = " + space.getId());
+      int spaceId = space.getLocalId();
       spaces.add(spaceId);
       componentsId.removeAll(TreeCache.getComponentIds(spaceId));
       if (!space.isRoot()) {
-        String fatherId = getDriverSpaceId(space.getFatherId());
+        int fatherId = getDriverSpaceId(space.getFatherId());
         if (!spaces.contains(fatherId)) {
           SpaceInstLight parent = TreeCache.getSpaceInstLight(fatherId);
           addAuthorizedSpace(spaces, componentsId, parent);
@@ -4464,7 +4404,7 @@ public final class Admin {
     }
   }
 
-  void filterSpaceFromComponents(Set<String> spaces, Set<String> componentsId, String componentId) {
+  void filterSpaceFromComponents(Set<Integer> spaces, Set<String> componentsId, String componentId) {
     SilverTrace.debug("admin", "Admin.filterSpaceFromComponents", "root.MSG_GEN_ENTER_METHOD",
         "#componentIds = " + componentsId.size() + ", componentId = " + componentId);
     SpaceInstLight space = TreeCache.getSpaceContainingComponent(componentId);
@@ -4480,14 +4420,14 @@ public final class Admin {
     return getUserSubSpaceIds(userId, spaceFatherId);
   }
 
-  private SpaceInstLight getSpaceInstLight(String spaceId)
+  private SpaceInstLight getSpaceInstLight(int spaceId)
       throws AdminException {
     SilverTrace.info("admin", "Admin.getSpaceInstLight",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId);
     return getSpaceInstLight(spaceId, -1);
   }
 
-  private SpaceInstLight getSpaceInstLight(String spaceId, int level) throws AdminException {
+  private SpaceInstLight getSpaceInstLight(int spaceId, int level) throws AdminException {
     SilverTrace.info("admin", "Admin.getSpaceInstLight", "root.MSG_GEN_ENTER_METHOD",
         "spaceId = " + spaceId + ", level = " + level);
     SpaceInstLight sil = TreeCache.getSpaceInstLight(spaceId);
@@ -4533,7 +4473,7 @@ public final class Admin {
   public SpaceInstLight getRootSpace(String spaceId) throws AdminException {
     SpaceInstLight sil = getSpaceInstLight(getDriverSpaceId(spaceId));
     while (sil != null && !sil.isRoot()) {
-      sil = getSpaceInstLight(sil.getFatherId());
+      sil = getSpaceInstLight(getDriverSpaceId(sil.getFatherId()));
     }
     return sil;
   }
@@ -4551,21 +4491,19 @@ public final class Admin {
       // Get user manageable space ids from database
       List<String> groupIds = new ArrayList<String>();
       groupIds.add(sGroupId);
-      List<String> manageableSpaceIds = spaceManager.getManageableSpaceIds(null, groupIds);
-      asManageableSpaceIds = manageableSpaceIds.toArray(new String[manageableSpaceIds.size()]);
+      List<Integer> manageableSpaceIds = spaceManager.getManageableSpaceIds(null, groupIds);
 
       // Inherits manageability rights for space children
       String[] childSpaceIds;
-      for (String asManageableSpaceId : asManageableSpaceIds) {
+      for (Integer spaceId : manageableSpaceIds) {
+        String asManageableSpaceId = String.valueOf(spaceId);
         // add manageable space id in result
         if (!alManageableSpaceIds.contains(asManageableSpaceId)) {
           alManageableSpaceIds.add(asManageableSpaceId);
         }
 
         // calculate manageable space's childs
-        childSpaceIds = spaceManager.getAllSubSpaceIds(domainDriverManager,
-            asManageableSpaceId);
-
+        childSpaceIds = spaceManager.getAllSubSpaceIds(domainDriverManager, spaceId);
         // add them in result
         for (String childSpaceId : childSpaceIds) {
           if (!alManageableSpaceIds.contains(childSpaceId)) {
@@ -4589,8 +4527,9 @@ public final class Admin {
    * Get the spaces ids manageable by given user Id
    */
   public String[] getUserManageableSpaceIds(String sUserId) throws AdminException {
-    String[] asManageableSpaceIds;
-    ArrayList<String> alManageableSpaceIds = new ArrayList<String>();
+    Integer[] asManageableSpaceIds;
+    ArrayList<String> alManageableSpaceIds = new ArrayList<>();
+    ArrayList<Integer> alDriverManageableSpaceIds = new ArrayList<>();
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
         .getCurrentDomainDriverManager();
     try {
@@ -4604,10 +4543,11 @@ public final class Admin {
 
         // Inherits manageability rights for space children
         String[] childSpaceIds;
-        for (String asManageableSpaceId : asManageableSpaceIds) {
+        for (Integer asManageableSpaceId : asManageableSpaceIds) {
           // add manageable space id in result
           if (!alManageableSpaceIds.contains(asManageableSpaceId)) {
-            alManageableSpaceIds.add(asManageableSpaceId);
+            alManageableSpaceIds.add(String.valueOf(asManageableSpaceId));
+            alDriverManageableSpaceIds.add(asManageableSpaceId);
           }
 
           // calculate manageable space's childs
@@ -4618,16 +4558,17 @@ public final class Admin {
           for (String childSpaceId : childSpaceIds) {
             if (!alManageableSpaceIds.contains(childSpaceId)) {
               alManageableSpaceIds.add(childSpaceId);
+              alDriverManageableSpaceIds.add(getDriverSpaceId(childSpaceId));
             }
           }
         }
 
         // Put user manageable space ids in cache
-        asManageableSpaceIds = alManageableSpaceIds.toArray(
-            new String[alManageableSpaceIds.size()]);
+        asManageableSpaceIds = alDriverManageableSpaceIds.toArray(
+            new Integer[alDriverManageableSpaceIds.size()]);
         cache.putManageableSpaceIds(sUserId, asManageableSpaceIds);
       }
-      return asManageableSpaceIds;
+      return alManageableSpaceIds.toArray(new String[alManageableSpaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException("Admin.getUserManageableSpaceIds",
           SilverpeasException.ERROR,
@@ -4643,11 +4584,11 @@ public final class Admin {
     try {
       // Get user manageable space ids from database
       List<String> groupIds = getAllGroupsOfUser(sUserId);
-      String[] asManageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
+      Integer[] asManageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
 
       // retain only root spaces
-      List<String> manageableRootSpaceIds = new ArrayList<String>();
-      for (String asManageableSpaceId : asManageableSpaceIds) {
+      List<Integer> manageableRootSpaceIds = new ArrayList<>();
+      for (Integer asManageableSpaceId : asManageableSpaceIds) {
         SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceId);
         if (space != null && space.isRoot()) {
           manageableRootSpaceIds.add(asManageableSpaceId);
@@ -4670,22 +4611,23 @@ public final class Admin {
     try {
       // Get user manageable space ids from database
       List<String> groupIds = getAllGroupsOfUser(sUserId);
-      String[] asManageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
+      Integer[] asManageableSpaceIds = userManager.getManageableSpaceIds(sUserId, groupIds);
 
-      String parentSpaceId = getDriverSpaceId(sParentSpaceId);
+      int parentSpaceId = getDriverSpaceId(sParentSpaceId);
 
       // retain only sub spaces
       boolean find;
       List<String> manageableRootSpaceIds = new ArrayList<String>();
-      for (String manageableSpaceId : asManageableSpaceIds) {
+      for (Integer manageableSpaceId : asManageableSpaceIds) {
         find = false;
         SpaceInstLight space = TreeCache.getSpaceInstLight(manageableSpaceId);
         while (space != null && !space.isRoot() && !find) {
-          if (parentSpaceId.equals(space.getFatherId())) {
-            manageableRootSpaceIds.add(manageableSpaceId);
+          int driverFatherId = getDriverSpaceId(space.getFatherId());
+          if (parentSpaceId == driverFatherId) {
+            manageableRootSpaceIds.add(String.valueOf(manageableSpaceId));
             find = true;
           } else {
-            space = TreeCache.getSpaceInstLight(space.getFatherId());
+            space = TreeCache.getSpaceInstLight(driverFatherId);
           }
         }
       }
@@ -4721,7 +4663,7 @@ public final class Admin {
 
     try {
       // Converts client space id to driver space id
-      String spaceId = getDriverSpaceId(sClientSpaceId);
+      int spaceId = getDriverSpaceId(sClientSpaceId);
 
       // Get available component ids from cache
       asAvailCompoIds = cache.getAvailCompoIds(spaceId, sUserId);
@@ -4738,7 +4680,7 @@ public final class Admin {
         asAvailCompoIds = componentIds.toArray(new String[componentIds.size()]);
 
         // Store available component ids in cache
-        cache.putAvailCompoIds(spaceId, sUserId, asAvailCompoIds);
+        cache.putAvailCompoIds(String.valueOf(spaceId), sUserId, asAvailCompoIds);
       }
       return asAvailCompoIds;
 
@@ -4813,7 +4755,7 @@ public final class Admin {
       throws AdminException {
     try {
       // Converts client space id to driver space id
-      String spaceId = getDriverSpaceId(sClientSpaceId);
+      int spaceId = getDriverSpaceId(sClientSpaceId);
       List<String> groupIds = getAllGroupsOfUser(sUserId);
       List<String> asAvailCompoIds = componentManager.getAllowedComponentIds(Integer.parseInt(
           sUserId), groupIds, spaceId);
@@ -4840,7 +4782,7 @@ public final class Admin {
 
     try {
       // Converts client space id to driver space id
-      String spaceId = getDriverSpaceId(sClientSpaceId);
+      int spaceId = getDriverSpaceId(sClientSpaceId);
 
       // Get available component ids from database
       List<ComponentInstLight> components = TreeCache.getComponents(spaceId);
@@ -4970,13 +4912,13 @@ public final class Admin {
       String componentName)
       throws AdminException {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
-    spaceId = getDriverSpaceId(spaceId);
+    int driverSpaceId = getDriverSpaceId(spaceId);
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
 
     for (ComponentInstLight component : components) {
       List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
       for (SpaceInstLight space : path) {
-        if (space.getFatherId().equals(spaceId)) {
+        if (getDriverSpaceId(space.getFatherId()) == driverSpaceId) {
           if (!spaces.contains(space)) {
             spaces.add(space);
           }
@@ -5123,8 +5065,8 @@ public final class Admin {
    */
   public String[] getCurrentProfiles(String sUserId, String componentId)
       throws AdminException {
-    return profileManager.getProfileNamesOfUser(sUserId, getAllGroupsOfUser(sUserId), Integer.
-        parseInt(getDriverComponentId(componentId)));
+    return profileManager.getProfileNamesOfUser(sUserId, getAllGroupsOfUser(sUserId),
+        getDriverComponentId(componentId));
   }
 
   /**
@@ -5138,8 +5080,7 @@ public final class Admin {
 
     try {
       ComponentInst componentInst = getComponentInst(
-          getDriverComponentId(sClientComponentId), true,
-          getDriverSpaceId(sClientSpaceId));
+          getDriverComponentId(sClientComponentId), getDriverSpaceId(sClientSpaceId));
 
       for (ProfileInst profile : componentInst.getAllProfilesInst()) {
         if (profile != null) {
@@ -5367,7 +5308,7 @@ public final class Admin {
    */
   public String[] getAllSubSpaceIds(String sSpaceId, String sUserId)
       throws Exception {
-    return getClientSpaceIds(getUserSubSpaceIds(sUserId, sSpaceId));
+    return getUserSubSpaceIds(sUserId, sSpaceId);
   }
 
   /**
@@ -6649,8 +6590,7 @@ public final class Admin {
       } else if (profileIds != null && profileIds.length > 0) {
         // search users in profiles
         for (String profileId : profileIds) {
-          ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId,
-              null);
+          ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId);
           // add users directly attach to profile
           userIds.addAll(profile.getAllUsers());
 
@@ -6919,13 +6859,6 @@ public final class Admin {
   // -------------------------------------------------------------------------
   // Node profile management
   // -------------------------------------------------------------------------
-  private String getSpaceId(SpaceInst spaceInst) {
-    if (spaceInst.getId().startsWith(SPACE_KEY_PREFIX)) {
-      return spaceInst.getId();
-    }
-    return SPACE_KEY_PREFIX + spaceInst.getId();
-  }
-
   public void indexAllUsers() throws AdminException {
     Domain[] domains = getAllDomains();
     for (Domain domain : domains) {
@@ -6961,7 +6894,7 @@ public final class Admin {
 
     String lang = I18NHelper.defaultLanguage;
     // Creation
-    newCompo.setId("-1");
+    newCompo.setLocalId(-1);
     newCompo.setDomainFatherId(destinationSpace.getId());
     newCompo.setOrderNum(destinationSpace.getNumComponentInst());
     newCompo.setCreateDate(new Date());
@@ -7021,16 +6954,16 @@ public final class Admin {
   }
 
   //check if spaceId is not parent of anotherSpace
-  private boolean isParent(String spaceId, String anotherSpaceId) throws AdminException {
-    if (anotherSpaceId == null) {
+  private boolean isParent(int spaceId, Integer anotherSpaceId) throws AdminException {
+    if (anotherSpaceId == null || anotherSpaceId < 0) {
       return false;
     }
     List<SpaceInstLight> path = TreeCache.getSpacePath(anotherSpaceId);
     if (path.isEmpty()) {
-      path = getPathToSpace(anotherSpaceId, true);
+      path = getPathToSpace(String.valueOf(anotherSpaceId), true);
     }
     for (SpaceInstLight space : path) {
-      if (spaceId.equalsIgnoreCase(space.getFullId())) {
+      if (spaceId == space.getLocalId()) {
         return true;
       }
     }
@@ -7041,17 +6974,21 @@ public final class Admin {
     String newSpaceId = null;
     String spaceId = pasteDetail.getFromSpaceId();
     String toSpaceId = pasteDetail.getToSpaceId();
-    boolean pasteAllowed = !isParent(spaceId, toSpaceId);
+    boolean pasteAllowed = !isParent(getDriverSpaceId(spaceId), getDriverSpaceId(toSpaceId));
     if (pasteAllowed) {
       // paste space itself
       SpaceInst oldSpace = getSpaceInstById(spaceId);
       SpaceInst newSpace = oldSpace.clone();
-      newSpace.setId("-1");
+      newSpace.setLocalId(-1);
       List<String> newBrotherIds;
       if (StringUtil.isDefined(toSpaceId)) {
         SpaceInst destinationSpace = getSpaceInstById(toSpaceId);
         newSpace.setDomainFatherId(destinationSpace.getId());
-        newBrotherIds = Arrays.asList(destinationSpace.getSubSpaceIds());
+        List<SpaceInst> brothers = destinationSpace.getSubSpaces();
+        newBrotherIds = new ArrayList<>(brothers.size());
+        for(SpaceInst brother: brothers) {
+          newBrotherIds.add(brother.getId());
+        }
       } else {
         newSpace.setDomainFatherId("-1");
         newBrotherIds = Arrays.asList(getAllRootSpaceIds());
@@ -7116,9 +7053,9 @@ public final class Admin {
       PasteDetail subSpacePasteDetail = new PasteDetail(pasteDetail.getUserId());
       subSpacePasteDetail.setOptions(pasteDetail.getOptions());
       subSpacePasteDetail.setToSpaceId(newSpaceId);
-      String[] subSpaceIds = newSpace.getSubSpaceIds();
-      for (String subSpaceId : subSpaceIds) {
-        subSpacePasteDetail.setFromSpaceId(subSpaceId);
+      List<SpaceInst> subSpaceInsts = newSpace.getSubSpaces();
+      for(SpaceInst subSpaceInst: subSpaceInsts) {
+        subSpacePasteDetail.setFromSpaceId(subSpaceInst.getId());
         copyAndPasteSpace(subSpacePasteDetail);
       }
 

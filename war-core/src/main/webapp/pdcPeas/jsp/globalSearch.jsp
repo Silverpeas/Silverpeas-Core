@@ -570,11 +570,11 @@ if (!activeSelection.booleanValue())
 						incr += "&nbsp;&nbsp;&nbsp;&nbsp;";
 					}
 
-					if (space.getFullId().equals(spaceSelected)) {
+					if (space.getId().equals(spaceSelected)) {
 						selected = " selected=\"selected\"";
 					}
 
-					out.println("<option value=\""+space.getFullId()+"\""+selected+">"+incr+EncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
+					out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+EncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
 				}
              %>
              </select></td>

@@ -23,7 +23,6 @@ package com.stratelia.webactiv.beans.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.organization.SpaceUserRoleRow;
@@ -46,16 +45,16 @@ public class SpaceProfileInstManager {
    *
    * @param spaceProfileInst
    * @param domainManager
-   * @param sFatherId
+   * @param parentSpaceLocalId
    * @return
    * @throws AdminException
    */
   public String createSpaceProfileInst(SpaceProfileInst spaceProfileInst,
-      DomainDriverManager domainManager, String parentSpaceId) throws AdminException {
+      DomainDriverManager domainManager, int parentSpaceLocalId) throws AdminException {
     try {
       // Create the spaceProfile node
       SpaceUserRoleRow newRole = makeSpaceUserRoleRow(spaceProfileInst);
-      newRole.spaceId = idAsInt(parentSpaceId);
+      newRole.spaceId = parentSpaceLocalId;
       domainManager.getOrganization().spaceUserRole.createSpaceUserRole(newRole);
       String spaceProfileNodeId = idAsString(newRole.id);
 
@@ -83,13 +82,13 @@ public class SpaceProfileInstManager {
    *
    * @param ddManager
    * @param spaceProfileId
-   * @param parentSpaceId
+   * @param parentSpaceLocalId
    * @return
    * @throws AdminException
    */
   public SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
-      String spaceProfileId, String parentSpaceId) throws AdminException {
-    if (!StringUtil.isDefined(parentSpaceId)) {
+      String spaceProfileId, Integer parentSpaceLocalId) throws AdminException {
+    if (parentSpaceLocalId == null) {
       try {
         ddManager.getOrganizationSchema();
         SpaceRow space = ddManager.getOrganization().space.getSpaceOfSpaceUserRole(idAsInt(
@@ -97,12 +96,12 @@ public class SpaceProfileInstManager {
         if (space == null) {
           space = new SpaceRow();
         }
-        parentSpaceId = idAsString(space.id);
+        parentSpaceLocalId = space.id;
       } catch (Exception e) {
         throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
             "space profile Id: '" + spaceProfileId + "', space Id: '"
-            + parentSpaceId + "'", e);
+            + parentSpaceLocalId + "'", e);
       } finally {
         ddManager.releaseOrganizationSchema();
       }
@@ -126,7 +125,7 @@ public class SpaceProfileInstManager {
       throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
           "space profile Id: '" + spaceProfileId + "', space Id: '"
-          + parentSpaceId + "'", e);
+          + parentSpaceLocalId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -136,22 +135,22 @@ public class SpaceProfileInstManager {
    * get information for given id and store it in the given SpaceProfileInst object
    *
    * @param ddManager
-   * @param spaceId
+   * @param spaceLocalId
    * @param roleName
    * @throws AdminException
    */
   public SpaceProfileInst getInheritedSpaceProfileInstByName(DomainDriverManager ddManager,
-      String spaceId, String roleName) throws AdminException {
-    return getSpaceProfileInst(ddManager, spaceId, roleName, true);
+      int spaceLocalId, String roleName) throws AdminException {
+    return getSpaceProfileInst(ddManager, spaceLocalId, roleName, true);
   }
 
   public SpaceProfileInst getSpaceProfileInstByName(DomainDriverManager ddManager,
-      String spaceId, String roleName) throws AdminException {
-    return getSpaceProfileInst(ddManager, spaceId, roleName, false);
+      int spaceLocalId, String roleName) throws AdminException {
+    return getSpaceProfileInst(ddManager, spaceLocalId, roleName, false);
   }
 
   private SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
-      String spaceId, String roleName, boolean isInherited) throws AdminException {
+      int spaceLocalId, String roleName, boolean isInherited) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       int inherited = 0;
@@ -160,7 +159,7 @@ public class SpaceProfileInstManager {
       }
       // Load the profile detail
       SpaceUserRoleRow spaceUserRole = ddManager.getOrganization().spaceUserRole.
-          getSpaceUserRole(idAsInt(spaceId), roleName, inherited);
+          getSpaceUserRole(spaceLocalId, roleName, inherited);
 
       SpaceProfileInst spaceProfileInst = null;
       if (spaceUserRole != null) {
@@ -172,7 +171,7 @@ public class SpaceProfileInstManager {
     } catch (Exception e) {
       throw new AdminException("SpaceProfileInstManager.getInheritedSpaceProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
-          "spaceId = " + spaceId + ", role = " + roleName, e);
+          "spaceId = " + spaceLocalId + ", role = " + roleName, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }

@@ -35,7 +35,10 @@ public class UserEvent extends AbstractResourceEvent<UserDetail> {
 
   }
 
-  public UserEvent(Type type, UserDetail user) {
+  /**
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   */
+  public UserEvent(Type type, UserDetail... user) {
     super(type, user);
   }
 

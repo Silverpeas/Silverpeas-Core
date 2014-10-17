@@ -45,7 +45,7 @@ import javax.jms.Topic;
         name = "java:/topic/wysiwyg",
         interfaceName = "javax.jms.Topic",
         destinationName = "WysiwygEventNotification")})
-public class WysiwygEventNotifier extends JMSResourceEventNotifier<WysiwygEvent> {
+public class WysiwygEventNotifier extends JMSResourceEventNotifier<WysiwygContent, WysiwygEvent> {
 
   @Resource(lookup = "java:/topic/wysiwyg")
   private Topic topic;
@@ -57,7 +57,7 @@ public class WysiwygEventNotifier extends JMSResourceEventNotifier<WysiwygEvent>
 
   @Override
   protected WysiwygEvent createResourceEventFrom(final ResourceEvent.Type type,
-      final Object resource) {
-    return new WysiwygEvent(type, (WysiwygContent) resource);
+      final WysiwygContent... resource) {
+    return new WysiwygEvent(type, resource);
   }
 }

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.builder;
+package com.silverpeas.usernotification.builder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -44,9 +44,9 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.notification.builder.helper.UserNotificationHelper;
-import com.silverpeas.notification.builder.mock.OrganizationControllerMock;
-import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
+import com.silverpeas.usernotification.builder.mock.OrganizationControllerMock;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;

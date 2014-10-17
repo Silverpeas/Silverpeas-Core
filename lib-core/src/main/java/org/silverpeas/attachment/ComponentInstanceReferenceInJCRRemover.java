@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2013 éSilverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,13 +26,10 @@ package org.silverpeas.attachment;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
-import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.StringUtil;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.jcr.RepositoryException;
 
 /**
  * Clean the JCR repository for all documents concerning the specified component instance
@@ -49,11 +46,7 @@ public class ComponentInstanceReferenceInJCRRemover
 
   @Override
   public void onDeletion(final ComponentInstanceEvent event) throws Exception {
-    ComponentInst component = event.getResource();
-    String id = component.getId();
-    if (StringUtil.isInteger(id)) {
-      id = component.getName() + component.getId();
-    }
-    attachmentService.deleteAllAttachments(id);
+    ComponentInst inst = event.getTransition().getBefore();
+    attachmentService.deleteAllAttachments(inst.getId());
   }
 }
