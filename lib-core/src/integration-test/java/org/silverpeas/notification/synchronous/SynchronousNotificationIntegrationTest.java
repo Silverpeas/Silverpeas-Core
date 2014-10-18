@@ -66,7 +66,8 @@ public class SynchronousNotificationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            DecodingException.class, EncodingException.class, StateTransition.class).addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
+            DecodingException.class, EncodingException.class, StateTransition.class)
+        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
             SynchronousTestResourceEventNotifier.class, SynchronousTestResourceEventListener.class)
         .addPackage("org.silverpeas.notification")
         .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
@@ -111,6 +112,44 @@ public class SynchronousNotificationIntegrationTest {
     assertThat(bucket.getContent().get(0).getType(), is(ResourceEvent.Type.CREATION));
     assertThat(bucket.getContent().get(0).getTransition().getBefore(), nullValue());
     assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
+  }
+
+  @Test
+  public void synchronousNotificationOnUpdateShouldWork() {
+    notifier.notifyEventOn(ResourceEvent.Type.UPDATE, aTestResource(), aTestResource());
+
+    assertThat(bucket.isEmpty(), is(false));
+    assertThat(bucket.getContent().size(), is(1));
+    assertThat(bucket.getContent().get(0).getType(), is(ResourceEvent.Type.UPDATE));
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
+  }
+
+  @Test
+  public void synchronousNotificationOnRemovingShouldWork() {
+    notifier.notifyEventOn(ResourceEvent.Type.REMOVING, aTestResource());
+
+    assertThat(bucket.isEmpty(), is(false));
+    assertThat(bucket.getContent().size(), is(1));
+    assertThat(bucket.getContent().get(0).getType(), is(ResourceEvent.Type.REMOVING));
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
+  }
+
+  @Test
+  public void synchronousNotificationOnDeletionShouldWork() {
+    notifier.notifyEventOn(ResourceEvent.Type.DELETION, aTestResource());
+
+    assertThat(bucket.isEmpty(), is(false));
+    assertThat(bucket.getContent().size(), is(1));
+    assertThat(bucket.getContent().get(0).getType(), is(ResourceEvent.Type.DELETION));
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), nullValue());
+  }
+
+  @Test(expected = java.lang.ArrayIndexOutOfBoundsException.class)
+  public void synchronousNotificationOnUpdateWithAMissingArgumentShouldFail() {
+    notifier.notifyEventOn(ResourceEvent.Type.UPDATE, aTestResource());
   }
 
   private TestResource aTestResource() {

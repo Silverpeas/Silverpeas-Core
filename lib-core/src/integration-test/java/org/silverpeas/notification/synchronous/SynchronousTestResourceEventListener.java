@@ -44,6 +44,11 @@ public class SynchronousTestResourceEventListener
   }
 
   @Override
+  public void onRemoving(final TestResourceEvent event) {
+    pourEvent(event);
+  }
+
+  @Override
   public void onUpdate(final TestResourceEvent event) throws Exception {
     pourEvent(event);
   }

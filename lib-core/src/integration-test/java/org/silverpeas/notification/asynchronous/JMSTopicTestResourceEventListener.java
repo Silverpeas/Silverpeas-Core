@@ -60,6 +60,18 @@ public class JMSTopicTestResourceEventListener extends JMSResourceEventListener<
   }
 
   @Override
+  public void onRemoving(final TestResourceEvent event) throws Exception {
+    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Removing event reception...");
+    this.bucket.pour(event);
+  }
+
+  @Override
+  public void onUpdate(final TestResourceEvent event) throws Exception {
+    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Update event reception...");
+    this.bucket.pour(event);
+  }
+
+  @Override
   public void onCreation(final TestResourceEvent event) throws Exception {
     Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Creation event reception...");
     this.bucket.pour(event);

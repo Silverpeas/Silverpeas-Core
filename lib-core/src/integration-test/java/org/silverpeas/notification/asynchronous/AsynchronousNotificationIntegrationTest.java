@@ -37,7 +37,6 @@ import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
-import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StateTransition;
 import org.silverpeas.util.exception.DecodingException;
@@ -48,8 +47,7 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -126,11 +124,66 @@ public class AsynchronousNotificationIntegrationTest {
   @Test
   public void asynchronousNotificationFromSynchronousOneShouldWork() throws InterruptedException {
     TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
-
     notification.fire(event);
 
     waitForReception();
     assertThatEventIsWellReceived(3, event);
+  }
+
+  @Test
+  public void asynchronousNotificationOnCreationShouldWork() throws InterruptedException {
+    TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.CREATION, aTestResource());
+
+    queueNotifier.notify(event);
+
+    waitForReception();
+    assertThatEventIsWellReceived(1, event);
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), nullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
+  }
+
+  @Test
+  public void asynchronousNotificationOnUpdateShouldWork() throws InterruptedException {
+    TestResourceEvent event =
+        new TestResourceEvent(ResourceEvent.Type.UPDATE, aTestResource(), aTestResource());
+
+    queueNotifier.notify(event);
+
+    waitForReception();
+    assertThatEventIsWellReceived(1, event);
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
+  }
+
+  @Test
+  public void asynchronousNotificationOnRemovingShouldWork() throws InterruptedException {
+    TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.REMOVING, aTestResource());
+
+    queueNotifier.notify(event);
+
+    waitForReception();
+    assertThatEventIsWellReceived(1, event);
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), notNullValue());
+  }
+
+  @Test
+  public void asynchronousNotificationOnDeletionShouldWork() throws InterruptedException {
+    TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.DELETION, aTestResource());
+
+    queueNotifier.notify(event);
+
+    waitForReception();
+    assertThatEventIsWellReceived(1, event);
+    assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
+    assertThat(bucket.getContent().get(0).getTransition().getAfter(), nullValue());
+  }
+
+  @Test(expected = java.lang.ArrayIndexOutOfBoundsException.class)
+  public void asynchronousNotificationOnUpdateWithAMissingArgumentShouldFail() {
+    TestResourceEvent event = new TestResourceEvent(ResourceEvent.Type.UPDATE, aTestResource());
+
+    queueNotifier.notify(event);
   }
 
   private TestResource aTestResource() {
