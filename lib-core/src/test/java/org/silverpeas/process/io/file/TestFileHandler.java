@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Yohann Chastagnier
  */
-public class FileHandlerTest extends AbstractHandledFileTest {
+public class TestFileHandler extends AbstractHandledFileTest {
 
   /*
    * getAttachment

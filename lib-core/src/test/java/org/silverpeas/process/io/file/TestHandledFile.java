@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.notNullValue;
 /**
  * @author Yohann Chastagnier
  */
-public class HandledFileTest extends AbstractHandledFileTest {
+public class TestHandledFile extends AbstractHandledFileTest {
 
   /*
    * getHandledFile & getParentHandledFile

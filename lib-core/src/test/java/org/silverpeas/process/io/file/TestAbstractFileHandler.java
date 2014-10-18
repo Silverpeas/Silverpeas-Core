@@ -48,7 +48,7 @@ import static org.silverpeas.util.GeneralPropertiesManager.getString;
 /**
  * @author Yohann Chastagnier
  */
-public class AbstractFileHandlerTest {
+public class TestAbstractFileHandler {
 
   private FileBasePath BASE_PATH_TEST;
   private File sessionRootPath;
