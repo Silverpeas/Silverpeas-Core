@@ -24,10 +24,10 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -72,7 +72,7 @@ public abstract class AbstractPieChartBuilder {
       tabValue = cmpStats.get(cmpId);
       ComponentInstLight cmp = null;
       try {
-        cmp = AdminReference.getAdminService().getComponentInstLight(cmpId);
+        cmp = AdministrationServiceProvider.getAdminService().getComponentInstLight(cmpId);
       } catch (AdminException e) {
         SilverTrace.error("silverStatisticsPeas",
             "AbstractPieChartBuilder.buildStatsByInstance()",
@@ -148,24 +148,24 @@ public abstract class AbstractPieChartBuilder {
       String[] componentIds = null;
 
       // build instance list
-      UserDetail userDetail = AdminReference.getAdminService().getUserDetail(currentUserId);
+      UserDetail userDetail = AdministrationServiceProvider.getAdminService().getUserDetail(currentUserId);
       if (!StringUtil.isDefined(spaceId)) {
         if (userDetail.isAccessAdmin()) {// Admin
-          tabSpaceIds = AdminReference.getAdminService().getAllRootSpaceIds(); // de type WA123
+          tabSpaceIds = AdministrationServiceProvider.getAdminService().getAllRootSpaceIds(); // de type WA123
         } else {// Manager d'espaces ou de sous-espaces
           // manager d'espace
           List<String> listSpaceIds = new ArrayList<String>();
           String[] tabManageableSpaceIds =
-              AdminReference.getAdminService().getUserManageableSpaceIds(currentUserId); // de type
+              AdministrationServiceProvider.getAdminService().getUserManageableSpaceIds(currentUserId); // de type
           // 123
           for (String manageableSpaceId : tabManageableSpaceIds) {
             SpaceInstLight espace =
-                AdminReference.getAdminService().getSpaceInstLightById(manageableSpaceId);
+                AdministrationServiceProvider.getAdminService().getSpaceInstLightById(manageableSpaceId);
             int level = espace.getLevel();
             boolean trouve = false;
             while (level > 0) {
               String idEspace = espace.getFatherId();
-              espace = AdminReference.getAdminService().getSpaceInstLightById(idEspace);
+              espace = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(idEspace);
               level--;
               if (isIdBelongsTo(idEspace, tabManageableSpaceIds)) {
                 trouve = true;
@@ -180,8 +180,8 @@ public abstract class AbstractPieChartBuilder {
         }
         componentIds = new String[0];
       } else {
-        tabSpaceIds = AdminReference.getAdminService().getAllSubSpaceIds(spaceId); // de type WA123
-        componentIds = AdminReference.getAdminService().getAllComponentIds(spaceId);
+        tabSpaceIds = AdministrationServiceProvider.getAdminService().getAllSubSpaceIds(spaceId); // de type WA123
+        componentIds = AdministrationServiceProvider.getAdminService().getAllComponentIds(spaceId);
       }
 
       // build data
@@ -196,8 +196,8 @@ public abstract class AbstractPieChartBuilder {
         long count2 = 0L;
         long count3 = 0L;
 
-        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(tabSpaceId);
-        allComponentsIds = AdminReference.getAdminService().getAllComponentIdsRecur(tabSpaceId);
+        SpaceInstLight space = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(tabSpaceId);
+        allComponentsIds = AdministrationServiceProvider.getAdminService().getAllComponentIdsRecur(tabSpaceId);
 
         for (String allComponentsId : allComponentsIds) {
           StatItem item = statsByInstance.get(allComponentsId);

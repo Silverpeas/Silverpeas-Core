@@ -26,7 +26,7 @@ package com.silverpeas.workflow.engine.user;
 
 import com.silverpeas.workflow.api.user.User;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
@@ -86,7 +86,7 @@ public final class UserImpl implements User {
     if (userFull == null) {
 
       try {
-        userFull = AdminReference.getAdminService().getUserFull(getUserId());
+        userFull = AdministrationServiceProvider.getAdminService().getUserFull(getUserId());
       } catch (AdminException e) {
         return "";
       }

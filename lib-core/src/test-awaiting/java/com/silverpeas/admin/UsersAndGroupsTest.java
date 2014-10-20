@@ -22,6 +22,8 @@ package com.silverpeas.admin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
@@ -52,7 +54,6 @@ import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -386,7 +387,7 @@ public class UsersAndGroupsTest {
     GroupProfileInst profile = ac.getGroupProfile("1");
     profile.addUser("1");
     ac.updateGroupProfile(profile);
-    List<String> managerIds = AdminReference.getAdminService().getUserManageableGroupIds("1");
+    List<String> managerIds = AdministrationServiceProvider.getAdminService().getUserManageableGroupIds("1");
     assertThat(managerIds, hasSize(1));
   }
 

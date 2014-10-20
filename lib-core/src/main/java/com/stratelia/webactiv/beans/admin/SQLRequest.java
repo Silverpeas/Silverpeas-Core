@@ -226,8 +226,8 @@ public class SQLRequest {
   /**
    * Substitute all intern tag of the file. These tags ( __tableName__, ... ) will be replaced by
    * values received or read into the DBUtil.
-   * @param createQueries (String) creation requests of tables
-   * @return the complet request to allows the creation of a table.
+   * @param localQuery
+   * @return the complete request to allows the creation of a table.
    */
   private String substituteInternalTag(String localQuery) {
 

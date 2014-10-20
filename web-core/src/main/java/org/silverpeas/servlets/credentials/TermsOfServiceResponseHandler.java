@@ -71,7 +71,7 @@ public class TermsOfServiceResponseHandler extends FunctionHandler {
 
         // Indicating the user accepts terms of service
         try {
-          getAdmin().userAcceptsTermsOfService(verifier.getUser().getId());
+          getAdminService().userAcceptsTermsOfService(verifier.getUser().getId());
         } catch (AdminException e) {
           SilverTrace.error("peasCore", "TermsOfServiceResponseHandler.doAction()",
               "peasCore.EX_USER_KEY_NOT_FOUND", "login=" + verifier.getUser().getLogin());

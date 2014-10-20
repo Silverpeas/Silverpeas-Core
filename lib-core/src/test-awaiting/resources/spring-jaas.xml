@@ -83,7 +83,7 @@
 
   <!-- ebo <bean id="organizationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerProvider" factory-method="getFactory" /> -->
 
-  <bean id="adminController" name="adminController" class="com.stratelia.webactiv.beans.admin.Admin" />
+  <!-- YCH <bean id="adminController" name="adminController" class="com.stratelia.webactiv.beans.admin.Admin" />-->
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
 
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />

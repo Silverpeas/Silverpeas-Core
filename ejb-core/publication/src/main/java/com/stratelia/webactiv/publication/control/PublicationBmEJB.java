@@ -37,7 +37,7 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
@@ -1399,7 +1399,7 @@ public class PublicationBmEJB implements PublicationBm {
       // index creator's full name
       if (indexAuthorName) {
         try {
-          UserDetail ud = AdminReference.getAdminService().getUserDetail(pubDetail.getCreatorId());
+          UserDetail ud = AdministrationServiceProvider.getAdminService().getUserDetail(pubDetail.getCreatorId());
           if (ud != null) {
             indexEntry.addTextContent(ud.getDisplayedName());
           }

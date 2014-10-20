@@ -20,23 +20,24 @@
  */
 package org.silverpeas.servlets.credentials;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Administration;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @author ehugonnet
@@ -65,7 +66,7 @@ public abstract class FunctionHandler {
 
   protected ForgottenPasswordMailParameters getMailParameters(String userId) throws AdminException {
     ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
-    UserDetail userDetail = getAdmin().getUserDetail(userId);
+    UserDetail userDetail = getAdminService().getUserDetail(userId);
     parameters.setUserName(userDetail.getDisplayedName());
     parameters.setLogin(userDetail.getLogin());
     parameters.setDomainId(userDetail.getDomainId());
@@ -142,8 +143,8 @@ public abstract class FunctionHandler {
   /**
    * @return the admin
    */
-  protected Admin getAdmin() {
-    return AdminReference.getAdminService();
+  protected Administration getAdminService() {
+    return AdministrationServiceProvider.getAdminService();
   }
 
   /**

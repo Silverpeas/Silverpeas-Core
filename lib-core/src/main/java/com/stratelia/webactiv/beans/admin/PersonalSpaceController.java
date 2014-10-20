@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.quota.exception.QuotaException;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 public class PersonalSpaceController {
 

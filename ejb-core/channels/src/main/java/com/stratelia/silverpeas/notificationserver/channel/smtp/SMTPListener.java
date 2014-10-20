@@ -20,6 +20,7 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -27,7 +28,6 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.io.UnsupportedEncodingException;
@@ -156,7 +156,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       // parsing destination address for compliance with RFC822
       try {
         toAddress = InternetAddress.parse(pTo, false);
-        if (!AdminReference.getAdminService().getAdministratorEmail().equals(pFrom)
+        if (!AdministrationServiceProvider.getAdminService().getAdministratorEmail().equals(pFrom)
             && (!fromAddress.getAddress().equals(pFrom) || isForceReplyToSenderField())) {
           replyToAddress = new InternetAddress(pFrom, false);
           if (StringUtil.isDefined(personalName)) {

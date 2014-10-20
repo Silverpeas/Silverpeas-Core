@@ -24,10 +24,10 @@
 
 package com.silverpeas.authentication;
 
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 
@@ -54,9 +54,9 @@ public class MandatoryQuestionChecker {
       HttpSession session = req.getSession();
       session.setAttribute("svplogin_Key", authenticationKey);
       try {
-        String userId = AdminReference.getAdminService().identify(authenticationKey,
+        String userId = AdministrationServiceProvider.getAdminService().identify(authenticationKey,
             session.getId(), false, false);
-        UserDetail userDetail = AdminReference.getAdminService().getUserDetail(userId);
+        UserDetail userDetail = AdministrationServiceProvider.getAdminService().getUserDetail(userId);
         if (userDetail != null && !userDetail.isAnonymous() && !StringUtil.isDefined(userDetail.
             getLoginQuestion())) {
           req.setAttribute("userDetail", userDetail);

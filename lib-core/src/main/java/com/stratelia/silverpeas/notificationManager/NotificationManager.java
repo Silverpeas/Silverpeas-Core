@@ -32,6 +32,7 @@ package com.stratelia.silverpeas.notificationManager;
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.silverpeas.usernotification.model.NotificationResourceData;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;
@@ -48,7 +49,6 @@ import com.stratelia.silverpeas.notificationserver.NotificationServer;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -872,7 +872,7 @@ public class NotificationManager extends AbstractNotification
   public Collection<UserRecipient> getUsersFromGroup(String groupId) throws
       NotificationManagerException {
     try {
-      UserDetail[] users = AdminReference.getAdminService().getAllUsersOfGroup(groupId);
+      UserDetail[] users = AdministrationServiceProvider.getAdminService().getAllUsersOfGroup(groupId);
       List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);
       for (UserDetail user : users) {
         recipients.add(new UserRecipient(user));
@@ -909,15 +909,15 @@ public class NotificationManager extends AbstractNotification
       throws NotificationManagerException {
     try {
       final StringBuilder sb = new StringBuilder();
-      final ComponentInst instance = AdminReference.getAdminService().getComponentInst(compInst);
+      final ComponentInst instance = AdministrationServiceProvider.getAdminService().getComponentInst(compInst);
       if (!isPathToComponent) {
         final SpaceInst space =
-            AdminReference.getAdminService().getSpaceInstById(instance.getDomainFatherId());
+            AdministrationServiceProvider.getAdminService().getSpaceInstById(instance.getDomainFatherId());
         sb.append(space.getName());
         sb.append(separator);
       } else {
         final List<SpaceInstLight> spaces =
-            AdminReference.getAdminService().getPathToComponent(compInst);
+            AdministrationServiceProvider.getAdminService().getPathToComponent(compInst);
         for (final SpaceInstLight space : spaces) {
           sb.append(space.getName());
           sb.append(separator);
@@ -937,7 +937,7 @@ public class NotificationManager extends AbstractNotification
     if (userId > -1) {
       try {
         UserDetail uDetail =
-            AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+            AdministrationServiceProvider.getAdminService().getUserDetail(Integer.toString(userId));
         valret = uDetail.geteMail();
       } catch (AdminException e) {
         SilverTrace.warn("notificationManager", "NotificationManager.getUserEmail()",
@@ -953,7 +953,7 @@ public class NotificationManager extends AbstractNotification
     if (userId > -1) {
       try {
         UserDetail uDetail =
-            AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+            AdministrationServiceProvider.getAdminService().getUserDetail(Integer.toString(userId));
         valret = uDetail.getAccessLevel();
       } catch (AdminException e) {
         SilverTrace.warn("notificationManager", "NotificationManager.getUserAccessLevel()",
@@ -968,7 +968,7 @@ public class NotificationManager extends AbstractNotification
     if (userId > -1) {
       try {
         UserDetail uDetail =
-            AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+            AdministrationServiceProvider.getAdminService().getUserDetail(Integer.toString(userId));
         valret = uDetail.getDisplayedName();
       } catch (AdminException e) {
         SilverTrace.warn("notificationManager",
@@ -1368,7 +1368,7 @@ public class NotificationManager extends AbstractNotification
       if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
         fromEmail = getUserEmail(params.iFromUserId);
         if (!StringUtil.isDefined(fromEmail)) {
-          fromEmail = AdminReference.getAdminService().getAdministratorEmail();
+          fromEmail = AdministrationServiceProvider.getAdminService().getAdministratorEmail();
         }
       }
       theExtraParams.put(NotificationParameterNames.FROM, fromEmail);
@@ -1496,7 +1496,7 @@ public class NotificationManager extends AbstractNotification
     if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
       fromEmail = getUserEmail(params.iFromUserId);
       if (!StringUtil.isDefined(fromEmail)) {
-        fromEmail = AdminReference.getAdminService().getAdministratorEmail();
+        fromEmail = AdministrationServiceProvider.getAdminService().getAdministratorEmail();
       }
     }
     theExtraParams.put(NotificationParameterNames.FROM, fromEmail);
@@ -1617,7 +1617,7 @@ public class NotificationManager extends AbstractNotification
         if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
           fromEmail = getUserEmail(params.iFromUserId);
           if (!StringUtil.isDefined(fromEmail)) {
-            fromEmail = AdminReference.getAdminService().getAdministratorEmail();
+            fromEmail = AdministrationServiceProvider.getAdminService().getAdministratorEmail();
           }
         }
         theExtraParams.put(NotificationParameterNames.FROM, fromEmail);

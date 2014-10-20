@@ -21,8 +21,6 @@
 
 package org.silverpeas.notification;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.io.Serializable;

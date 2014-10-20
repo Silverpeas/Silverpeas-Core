@@ -122,11 +122,11 @@
         factory-method="getFactory"/> -->
 
   <!-- The administration module -->
-  <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
-        />
+  <!-- YCH <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"-->
+        <!--/>-->
 
-  <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
-        factory-method="getInstance"/>
+  <!-- YCH <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminServiceProvider"-->
+        <!--factory-method="getInstance"/>-->
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
   the actual scheduling backend -->

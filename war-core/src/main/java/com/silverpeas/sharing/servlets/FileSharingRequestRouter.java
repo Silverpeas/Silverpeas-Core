@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.sharing.bean.SharingNotificationVO;
 
@@ -37,7 +38,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 
@@ -102,10 +102,10 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       } else if ("EditTicket".equals(function)) {
         String token = request.getParameter("token");
         Ticket ticket = fileSharingSC.getTicket(token);
-        request.setAttribute("Creator", AdminReference.getAdminService().getUserDetail(ticket.
+        request.setAttribute("Creator", AdministrationServiceProvider.getAdminService().getUserDetail(ticket.
             getCreatorId()).getDisplayedName());
         if (StringUtil.isDefined(ticket.getLastModifier())) {
-          UserDetail updater = AdminReference.getAdminService().getUserDetail(
+          UserDetail updater = AdministrationServiceProvider.getAdminService().getUserDetail(
               ticket.getLastModifier());
           if (updater != null) {
             request.setAttribute("Updater", updater.getDisplayedName());

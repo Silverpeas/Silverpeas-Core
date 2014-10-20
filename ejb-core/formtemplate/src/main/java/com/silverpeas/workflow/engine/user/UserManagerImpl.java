@@ -33,7 +33,7 @@ import com.silverpeas.workflow.api.user.UserSettings;
 import com.silverpeas.workflow.engine.exception.UnknownUserException;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.exolab.castor.jdo.Database;
@@ -106,8 +106,8 @@ public class UserManagerImpl implements UserManager {
     String roleNames[] = null;
     try {
       // the modelId is the peasId.
-      ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
-      roleNames = AdminReference.getAdminService().getCurrentProfiles(user.getUserId(), peas);
+      ComponentInst peas = AdministrationServiceProvider.getAdminService().getComponentInst(modelId);
+      roleNames = AdministrationServiceProvider.getAdminService().getCurrentProfiles(user.getUserId(), peas);
     } catch (AdminException e) {
       throw new WorkflowException("UserManagerImpl.getRoleNames",
           "workflowEngine.EXP_UNKNOWN_ROLE", e);
@@ -131,7 +131,7 @@ public class UserManagerImpl implements UserManager {
     UserDetail[] userDetails = null;
     try {
       // the modelId is the peasId.
-      ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
+      ComponentInst peas = AdministrationServiceProvider.getAdminService().getComponentInst(modelId);
       userDetails =  OrganizationControllerProvider.getOrganisationController().getUsers(
           peas.getDomainFatherId(),
           modelId, roleName);

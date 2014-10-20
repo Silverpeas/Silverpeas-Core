@@ -22,7 +22,7 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
@@ -220,7 +220,7 @@ public class URLManager {
    * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
    */
   private static String buildStandardURL(String componentName, String sComponentId) {
-    return '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/'
+    return '/' + AdministrationServiceProvider.getAdminService().getRequestRouter(componentName) + '/'
         + sComponentId + '/';
   }
 

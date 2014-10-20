@@ -24,16 +24,15 @@
 
 package org.silverpeas.admin.domain;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
-import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
+import org.silverpeas.util.StringUtil;
+
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 public abstract class AbstractDomainService implements DomainService {
 
@@ -41,15 +40,14 @@ public abstract class AbstractDomainService implements DomainService {
    * Check domain's name validity (no white spaces, only alphanumeric characters, no duplicate in
    * database)
    * @param domainName the new domain name
-   * @throws DomainConflictException if domain name is not valid
+   * @throws NameAlreadyExistsInDatabaseException if domain name is not valid
    * @throws AdminException if a technical problem occurs during checks
    */
   protected void checkDomainName(String domainName)
       throws AdminException, NameAlreadyExistsInDatabaseException {
 
     // Check domain name availability in database
-    Admin adminService = AdminReference.getAdminService();
-    Domain[] tabDomain = adminService.getAllDomains();
+    Domain[] tabDomain = getAdminService().getAllDomains();
     for (Domain domain : tabDomain) {
       if (domain.getName().equalsIgnoreCase(domainName)) {
         throw new NameAlreadyExistsInDatabaseException(domainName);
@@ -60,14 +58,13 @@ public abstract class AbstractDomainService implements DomainService {
   /**
    * Get the next domain id
    * @return new domain id
-   * @throws DomainDeletionException
+   * @throws DomainCreationException
    */
   protected String getNextDomainId() throws DomainCreationException {
     SilverTrace
         .info("admin", "AbstractDomainService.getNextDomainId()", "root.MSG_GEN_ENTER_METHOD");
-    Admin adminService = AdminReference.getAdminService();
     try {
-      return adminService.getNextDomainId();
+      return getAdminService().getNextDomainId();
     } catch (AdminException e) {
       SilverTrace
           .error("admin", "AAbstractDomainService.getNextDomainId()", "admin.EX_ADD_DOMAIN", e);
@@ -79,7 +76,7 @@ public abstract class AbstractDomainService implements DomainService {
    * Register domain into Silverpeas domains directory
    * @param domainToCreate the domain to be created
    * @return new domain id
-   * @throws DomainDeletionException
+   * @throws DomainCreationException
    */
   protected String registerDomain(Domain domainToCreate) throws DomainCreationException {
     SilverTrace.info("admin",
@@ -89,10 +86,8 @@ public abstract class AbstractDomainService implements DomainService {
     if (StringUtil.isNotDefined(domainToCreate.getId())) {
       domainToCreate.setId("-1");
     }
-    Admin adminService = AdminReference.getAdminService();
-
     try {
-      return adminService.addDomain(domainToCreate);
+      return getAdminService().addDomain(domainToCreate);
     } catch (AdminException e) {
       SilverTrace
           .error("admin", "AAbstractDomainService.registerDomain()", "admin.EX_ADD_DOMAIN", e);
@@ -110,11 +105,8 @@ public abstract class AbstractDomainService implements DomainService {
     SilverTrace.info("admin",
         "AbstractDomainService.unRegisterDomain()",
         "root.MSG_GEN_ENTER_METHOD");
-
-    Admin adminService = AdminReference.getAdminService();
-
     try {
-      return adminService.removeDomain(domainToRemove.getId());
+      return getAdminService().removeDomain(domainToRemove.getId());
     } catch (AdminException e) {
       throw new DomainDeletionException("AbstractDomainService.unRegisterDomain()", e);
     }

@@ -24,10 +24,14 @@
 
 package org.silverpeas.test;
 
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
+import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
 import java.io.File;
@@ -42,6 +46,16 @@ import java.util.HashSet;
  */
 public abstract class WarBuilder<T extends WarBuilder>
     implements Builder<WebArchive>, CommonWebArchive<T> {
+
+  /**
+   * Path to the WEB-INF inside of the Archive.
+   */
+  private static final ArchivePath PATH_WEB_INF = ArchivePaths.create("WEB-INF");
+
+  /**
+   * Path to the classes inside of the Archive.
+   */
+  private static final ArchivePath PATH_CLASSES = ArchivePaths.create(PATH_WEB_INF, "classes");
 
   public Collection<String> mavenDependencies = new HashSet<>(Arrays
       .asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
@@ -65,6 +79,11 @@ public abstract class WarBuilder<T extends WarBuilder>
   public T addMavenDependencies(String... mavenDependencies) {
     Collections.addAll(this.mavenDependencies, mavenDependencies);
     return (T) this;
+  }
+
+  @Override
+  public boolean contains(final Class<?> aClass) throws IllegalArgumentException {
+    return war.contains(new BasicPath(PATH_CLASSES, AssetUtil.getFullPathForClassResource(aClass)));
   }
 
   @Override

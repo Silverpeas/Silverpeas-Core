@@ -35,7 +35,7 @@ import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.apache.commons.io.FileUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
@@ -168,7 +168,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
     }
 
     // The model is not cached, we must build it.
-    String fileName = AdminReference.getAdminService().getComponentParameterValue(modelId,
+    String fileName = AdministrationServiceProvider.getAdminService().getComponentParameterValue(modelId,
         ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
 
     // if file name not found, throw exception

@@ -45,8 +45,8 @@ public class ValidationQuestionHandler extends FunctionHandler {
     boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
 
     try {
-      String userId = getAdmin().identify(key, session.getId(), false, false);
-      UserDetail userDetail = getAdmin().getUserDetail(userId);
+      String userId = getAdminService().identify(key, session.getId(), false, false);
+      UserDetail userDetail = getAdminService().getUserDetail(userId);
       String question = request.getParameter("question");
       String answer = request.getParameter("answer");
       userDetail.setLoginQuestion(question);
@@ -56,7 +56,7 @@ public class ValidationQuestionHandler extends FunctionHandler {
         answer = CryptMD5.encrypt(answer);
       }
       userDetail.setLoginAnswer(answer);
-      getAdmin().updateUser(userDetail);
+      getAdminService().updateUser(userDetail);
 
       if (getGeneral().getBoolean("userLoginForcePasswordChange", false)) {
         return getGeneral().getString("userLoginForcePasswordChangePage");

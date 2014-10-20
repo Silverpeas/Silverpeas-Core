@@ -28,7 +28,7 @@ import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.core.admin.OrganizationController;
@@ -112,7 +112,7 @@ public class ComponentAccessController extends AbstractAccessController<String> 
       userRoles.add(SilverpeasRole.admin);
       return;
     }
-    if (Admin.ADMIN_COMPONENT_ID.equals(componentId)) {
+    if (Administration.ADMIN_COMPONENT_ID.equals(componentId)) {
       if (getOrganisationController().getUserDetail(userId).isAccessAdmin()) {
         userRoles.add(SilverpeasRole.admin);
       }

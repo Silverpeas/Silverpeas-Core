@@ -42,6 +42,7 @@ import com.silverpeas.usernotification.delayed.synthese.DelayedNotificationSynth
 import com.silverpeas.usernotification.delayed.synthese.SyntheseResource;
 import com.silverpeas.usernotification.delayed.synthese.SyntheseResourceNotification;
 import com.silverpeas.usernotification.model.NotificationResourceData;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.MapUtil;
@@ -57,7 +58,6 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServer;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
@@ -701,11 +701,11 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     UserDetail userDetail = userDetailCache.get(userId);
     if (userDetail == null) {
       if ((userId >= 0)) {
-        userDetail = AdminReference.getAdminService().getUserDetail(Integer.toString(userId));
+        userDetail = AdministrationServiceProvider.getAdminService().getUserDetail(Integer.toString(userId));
       } else {
         userDetail = new UserDetail();
         userDetail.setId(Integer.toString(userId));
-        userDetail.seteMail(AdminReference.getAdminService().getAdministratorEmail());
+        userDetail.seteMail(AdministrationServiceProvider.getAdminService().getAdministratorEmail());
       }
       if (userDetailCache.size() >= MAX_USER_DETAIL_ITEMS) {
         userDetailCache.remove(userDetailCache.keySet().iterator().next());

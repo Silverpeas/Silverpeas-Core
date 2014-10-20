@@ -61,7 +61,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
     for (int i = 0; synchronizedGroupIds != null && i < synchronizedGroupIds.size(); i++) {
       String groupId = synchronizedGroupIds.get(i);
       try {
-        AdminReference.getAdminService().synchronizeGroupByRule(groupId, true);
+        AdministrationServiceProvider.getAdminService().synchronizeGroupByRule(groupId, true);
       } catch (AdminException e) {
         SilverTrace.error("admin", "SynchroGroupScheduler.doSynchroGroup",
             "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);

@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
@@ -67,7 +67,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     ComponentInst compoInst;
 
     try {
-      compoInst = AdminReference.getAdminService().getComponentInst(componentId);
+      compoInst = AdministrationServiceProvider.getAdminService().getComponentInst(componentId);
     } catch (AdminException e) {
       throw new WorkflowException("TaskManagerImpl.assignTask",
           "workflowEngine.EX_GET_COMPONENT_INST", e);
@@ -122,7 +122,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     ComponentInst compoInst;
 
     try {
-      compoInst = AdminReference.getAdminService().getComponentInst(componentId);
+      compoInst = AdministrationServiceProvider.getAdminService().getComponentInst(componentId);
     } catch (AdminException e) {
       throw new WorkflowException("TaskManagerImpl.unassignTask",
           "workflowEngine.EX_GET_COMPONENT_INST", e);

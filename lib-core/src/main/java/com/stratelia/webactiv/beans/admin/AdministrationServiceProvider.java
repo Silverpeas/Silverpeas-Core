@@ -30,41 +30,32 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * AdminReference represents the reference to an Admin instance. It manages the access to this
- * instance. The Admin objects gathers all the operations that create the organizational resources
- * for a Silverpeas server instance. All objects requiring a reference to an Admin instance should
- * use an instance of this class.
+ * AdministrationServiceProvider provides the reference:
+ * <ul>
+ * <li>to an {@link Administration} instance that gathers all the operations that create the
+ * organizational resources for a Silverpeas server instance</li>
+ * <li>to an {@link Recover} instance that gathers all the operation to restore rights on space and
+ * components</li>
+ * </ul>
  */
-public class AdminReference {
-  private final static AdminReference instance = new AdminReference();
+public class AdministrationServiceProvider {
 
-  @Inject
-  private Admin admin;
-
-  private AdminReference() {
-  }
-
-  static AdminReference getInstance() {
-    return instance;
-  }
-
-  private synchronized Admin getAdmin() {
-    if (admin == null) {
-      // case where the admin reference is used in tests running out of an IoC container context.
-      // maintained for compatibility reason.
-      admin = new Admin();
-    }
-    return admin;
+  /**
+   * Gets the administration service
+   * @return the instance administration service.
+   */
+  public static Administration getAdminService() {
+    return ServiceProvider.getService(Administration.class);
   }
 
   /**
-   * Gets the administration service refered by this AdminReference.
-   * @return the admin service instance.
+   * Gets the recovering service of rights.
+   * @return the instance of recovering service of rights.
    */
-  public static Admin getAdminService() {
-    return getInstance().getAdmin();
+  public static Recover getRightRecoveringService() {
+    return ServiceProvider.getService(Recover.class);
   }
 }

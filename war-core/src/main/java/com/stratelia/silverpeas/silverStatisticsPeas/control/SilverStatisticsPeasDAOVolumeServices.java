@@ -25,10 +25,10 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 
@@ -72,7 +72,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
     List<String> apps = new ArrayList<String>();
     List<String> counts = new ArrayList<String>();
     long count = 0;
-    Map<String, WAComponent> components = AdminReference.getAdminService().getAllComponents();
+    Map<String, WAComponent> components = AdministrationServiceProvider.getAdminService().getAllComponents();
     String label = null;
     while (rs.next()) {
       String componentName = rs.getString(1);

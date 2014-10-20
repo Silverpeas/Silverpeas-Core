@@ -125,7 +125,7 @@ public class TransactionTest extends RepositoryBasedTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWar()
-        .addPersistenceFeatures()
+        .addJpaPersistenceFeatures()
         .testFocusedOn((warBuilder) -> warBuilder
             .addPackages(true, "org.silverpeas.persistence.repository.jpa"))
         .build();

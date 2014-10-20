@@ -20,9 +20,9 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.silverpeas.util.ResourceLocator;
 
@@ -51,7 +51,7 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
     String title = message.getString("silverStatisticsPeas.VolumeDocsSize") + " ";
     try {
       if (StringUtil.isDefined(this.spaceId) && (!this.spaceId.equals("WA0"))) {
-        SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(this.spaceId);
+        SpaceInstLight space = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(this.spaceId);
         title += message.getString("silverStatisticsPeas.FromSpace") + " [" + space.getName() + "]";
       }
     } catch (Exception e) {

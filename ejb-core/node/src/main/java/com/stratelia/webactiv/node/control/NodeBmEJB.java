@@ -22,7 +22,7 @@ package com.stratelia.webactiv.node.control;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.control.dao.NodeI18NDAO;
@@ -1054,7 +1054,7 @@ public class NodeBmEJB implements NodeBm {
       // index creator's full name
       if (nodeSettings.getString("indexAuthorName").equals("true")) {
         try {
-          UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
+          UserDetail ud = AdministrationServiceProvider.getAdminService().getUserDetail(userId);
           if (ud != null) {
             indexEntry.addTextContent(ud.getDisplayedName());
           }

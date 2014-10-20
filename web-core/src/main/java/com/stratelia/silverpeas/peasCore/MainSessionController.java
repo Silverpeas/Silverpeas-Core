@@ -57,7 +57,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.subscription.SubscriptionContext;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 /*
  This object is used by all the components jsp that have access to the session.

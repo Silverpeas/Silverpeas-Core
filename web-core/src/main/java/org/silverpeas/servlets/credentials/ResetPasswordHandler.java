@@ -39,7 +39,7 @@ public class ResetPasswordHandler extends FunctionHandler {
       String authenticationKey = request.getParameter("key");
       String userId;
       try {
-        userId = getAdmin().getUserIdByAuthenticationKey(authenticationKey);
+        userId = getAdminService().getUserIdByAuthenticationKey(authenticationKey);
       } catch (Exception e) {
         return getGeneral().getString("forgottenPasswordResetError");
       }
@@ -56,7 +56,7 @@ public class ResetPasswordHandler extends FunctionHandler {
 
         UserFull user;
         try {
-          user = getAdmin().getUserFull(userId);
+          user = getAdminService().getUserFull(userId);
         } catch (AdminException e) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",

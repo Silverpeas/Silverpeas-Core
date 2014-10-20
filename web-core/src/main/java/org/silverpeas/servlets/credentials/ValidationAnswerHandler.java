@@ -44,8 +44,8 @@ public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler
     boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
 
     try {
-      String userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
-      UserDetail userDetail = getAdmin().getUserDetail(userId);
+      String userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
+      UserDetail userDetail = getAdminService().getUserDetail(userId);
       request.setAttribute("userDetail", userDetail);
 
       // encrypt answer if needed

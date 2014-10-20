@@ -26,14 +26,18 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 
+@Singleton
 public class Recover {
 
-  private Admin admin;
+  @Inject
+  private Administration admin;
 
-  public Recover() {
-    admin = AdminReference.getAdminService();
+  private Recover() {
+    // Hidden constructor
   }
 
   public void recoverRights() throws AdminException {

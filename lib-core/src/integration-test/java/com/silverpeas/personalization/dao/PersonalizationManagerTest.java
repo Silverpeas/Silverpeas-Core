@@ -91,7 +91,7 @@ public class PersonalizationManagerTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWar()
-        .addPersistenceFeatures()
+        .addJpaPersistenceFeatures()
         .testFocusedOn(
             (warBuilder) -> warBuilder.addPackages(true, "com.silverpeas.personalization"))
         .build();

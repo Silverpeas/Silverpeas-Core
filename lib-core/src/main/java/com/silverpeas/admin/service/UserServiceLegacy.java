@@ -24,18 +24,7 @@
 
 package com.silverpeas.admin.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -43,15 +32,25 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Administration;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 @Singleton
 @Named("silverpeasUserService")
@@ -77,7 +76,7 @@ public class UserServiceLegacy implements UserService {
   public String registerUser(String firstName, String lastName,
       String email, String domainId, UserAccessLevel accessLevel) throws AdminException {
 
-    Admin admin = AdminReference.getAdminService();
+    Administration admin = AdministrationServiceProvider.getAdminService();
 
     // Generate user login
     String login = generateLogin(admin, domainId, email);
@@ -129,7 +128,7 @@ public class UserServiceLegacy implements UserService {
 
   @Override
   public UserDetail findUser(String userId) throws AdminException {
-    Admin admin = AdminReference.getAdminService();
+    Administration admin = AdministrationServiceProvider.getAdminService();
     return admin.getUserDetail(userId);
   }
 
@@ -142,8 +141,7 @@ public class UserServiceLegacy implements UserService {
     return new String(password);
   }
 
-  private String generateLogin(Admin admin, String domainId,
-      String email) {
+  private String generateLogin(Administration admin, String domainId, String email) {
     try {
       String userId = admin.getUserIdByLoginAndDomain(email,
           domainId);
@@ -164,7 +162,7 @@ public class UserServiceLegacy implements UserService {
 
   private void sendCredentialsToUser(UserFull user, String password, String silverpeasServerURL) {
     try {
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      Map<String, SilverpeasTemplate> templates = new HashMap<>();
       String subject = multilang.getString("credentialsMail.subject");
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
@@ -174,7 +172,7 @@ public class UserServiceLegacy implements UserService {
       ResourceLocator generalLook =
           new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
       String loginPage = generalLook.getString("loginPage", "defaultLogin.jsp");
-      StringBuffer url = new StringBuffer();
+      StringBuilder url = new StringBuilder();
       if (!loginPage.startsWith("http")) {
         url.append(silverpeasServerURL);
         if (!URLManager.getApplicationURL().startsWith("/")) {
@@ -187,7 +185,7 @@ public class UserServiceLegacy implements UserService {
       }
       url.append(loginPage).append("?DomainId=").append(user.getDomainId());
 
-      Admin admin = AdminReference.getAdminService();
+      Administration admin = AdministrationServiceProvider.getAdminService();
       Domain svpDomain = admin.getDomain(user.getDomainId());
 
       SilverpeasTemplate template = getNewTemplate();
@@ -229,13 +227,13 @@ public class UserServiceLegacy implements UserService {
   @Override
   public void migrateUserToDomain(UserDetail userDetail, String targetDomainId)
       throws AdminException {
-    Admin admin = AdminReference.getAdminService();
+    Administration admin = AdministrationServiceProvider.getAdminService();
     admin.migrateUser(userDetail, targetDomainId);
   }
 
   @Override
   public void updateUser(UserDetail userDetail) throws AdminException {
-    Admin admin = AdminReference.getAdminService();
+    Administration admin = AdministrationServiceProvider.getAdminService();
     admin.updateUser(userDetail);
   }
 

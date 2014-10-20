@@ -39,5 +39,4 @@ public class OrganizationControllerProvider {
 
   private OrganizationControllerProvider() {
   }
-
 }

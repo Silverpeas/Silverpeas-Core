@@ -32,7 +32,7 @@ import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.service.AbstractQuotaService;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 /**
  * @author Yohann Chastagnier

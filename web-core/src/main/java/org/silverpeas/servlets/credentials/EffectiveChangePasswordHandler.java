@@ -46,8 +46,8 @@ public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandle
     String key = (String) session.getAttribute("svplogin_Key");
 
     try {
-      String userId = getAdmin().identify(key, session.getId(), false, false);
-      UserDetail ud = getAdmin().getUserDetail(userId);
+      String userId = getAdminService().identify(key, session.getId(), false, false);
+      UserDetail ud = getAdminService().getUserDetail(userId);
       try {
         String login = ud.getLogin();
         String domainId = ud.getDomainId();

@@ -24,10 +24,7 @@
 
 package com.silverpeas.scheduler;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ServiceProvider;
-
-import javax.inject.Inject;
 
 /**
  * The factory of Scheduler objects. The <code>SchedulerFactory</code> class wraps the actual
@@ -48,11 +45,5 @@ public class SchedulerProvider {
    */
   public static Scheduler getScheduler() {
     return ServiceProvider.getService(Scheduler.class);
-  }
-
-  /**
-   * Boostraps a scheduling system.
-   */
-  private SchedulerProvider() {
   }
 }

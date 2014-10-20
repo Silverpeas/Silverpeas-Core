@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.instanceOf;
  * PasswordEncryptionFactory instances.
  */
 @RunWith(Arquillian.class)
-public class PasswordEncryptionFactoryTest {
+public class PasswordEncryptionProviderTest {
 
   static final String DES_DIGEST = "sa5zYATwASgaM";
   static final String MD5_DIGEST = "$1$saltstri$E33SwU4pwr7k4cYt7LIty0";

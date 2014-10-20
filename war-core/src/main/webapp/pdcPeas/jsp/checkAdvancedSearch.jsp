@@ -70,7 +70,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <!-- import plainSearch -->
 <%@ page import="com.stratelia.webactiv.calendar.model.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.CollectionUtil"%>
 <%@ page import="org.silverpeas.util.WAAttributeValuePair"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>

@@ -22,8 +22,10 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.comment.model.Comment;
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.notification.ResourceEvent;
+
+import java.io.Serializable;
 
 /**
  * An event of the life-cycle of comments. Such event is fired when a comment is added to a
@@ -37,7 +39,7 @@ public class CommentEvent extends AbstractResourceEvent<Comment> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(ResourceEvent.Type, Serializable[])
    */
   public CommentEvent(final Type type, Comment ... resource) {
     super(type, resource);

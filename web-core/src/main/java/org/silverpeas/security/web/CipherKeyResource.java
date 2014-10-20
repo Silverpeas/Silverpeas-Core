@@ -1,18 +1,19 @@
 package org.silverpeas.security.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Administration;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.security.CipherKeyUpdateException;
 import org.silverpeas.util.security.ContentEncryptionService;
 import org.silverpeas.util.security.DefaultContentEncryptionService;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Admin;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.crypto.CryptoException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -20,7 +21,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.GET;
 
 /**
  * A WEB resource representing the cipher key used in Silverpeas to encrypt and decrypt content.
@@ -45,7 +45,7 @@ public class CipherKeyResource extends RESTWebService {
 
   @Override
   public String getComponentId() {
-    return Admin.ADMIN_COMPONENT_ID;
+    return Administration.ADMIN_COMPONENT_ID;
   }
 
   @GET

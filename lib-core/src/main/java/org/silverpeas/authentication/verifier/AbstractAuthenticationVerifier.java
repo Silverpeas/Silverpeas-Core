@@ -25,7 +25,7 @@ package org.silverpeas.authentication.verifier;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.authentication.AuthenticationCredential;
@@ -80,7 +80,7 @@ class AbstractAuthenticationVerifier {
    */
   protected static UserDetail getUserByCredential(AuthenticationCredential credential) {
     try {
-      return UserDetail.getById(AdminReference.getAdminService()
+      return UserDetail.getById(AdministrationServiceProvider.getAdminService()
           .getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
     } catch (AdminException e) {
       SilverTrace.error("authentication", "AbstractAuthenticationVerifier.getUser()",

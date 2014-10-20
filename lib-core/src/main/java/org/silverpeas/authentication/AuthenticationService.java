@@ -20,11 +20,11 @@
  */
 package org.silverpeas.authentication;
 
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -168,7 +168,7 @@ public class AuthenticationService {
   public List<Domain> getAllDomains() {
     List<Domain> domains;
     try {
-      domains = Arrays.asList(AdminReference.getAdminService().getAllDomains());
+      domains = Arrays.asList(AdministrationServiceProvider.getAdminService().getAllDomains());
     } catch (AdminException e) {
       SilverTrace.error(module, "AuthenticationService", "Problem to retrieve all the domains", e);
       domains = Collections.EMPTY_LIST;

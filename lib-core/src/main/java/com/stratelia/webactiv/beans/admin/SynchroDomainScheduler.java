@@ -71,7 +71,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
     if (domainIds != null) {
       for (String domainId : domainIds) {
         try {
-          AdminReference.getAdminService().synchronizeSilverpeasWithDomain(domainId, true);
+          AdministrationServiceProvider.getAdminService().synchronizeSilverpeasWithDomain(domainId, true);
         } catch (Exception e) {
           SilverTrace.error("admin", "SynchroDomainScheduler.doSynchro()",
               "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);

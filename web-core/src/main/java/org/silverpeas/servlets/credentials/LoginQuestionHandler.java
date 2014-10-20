@@ -41,8 +41,8 @@ public class LoginQuestionHandler extends FunctionHandler {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
     try {
-      String userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
-      UserDetail userDetail = getAdmin().getUserDetail(userId);
+      String userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
+      UserDetail userDetail = getAdminService().getUserDetail(userId);
       if (StringUtil.isDefined(userDetail.getLoginQuestion())) {
         request.setAttribute("userDetail", userDetail);
         return getGeneral().getString("userLoginQuestionPage");

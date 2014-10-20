@@ -41,8 +41,8 @@ public class ForcePasswordChangeHandler extends FunctionHandler {
     HttpSession session = request.getSession(true);
     String key = (String) session.getAttribute("svplogin_Key");
     try {
-      String userId = getAdmin().identify(key, session.getId(), false, false);
-      UserDetail ud = getAdmin().getUserDetail(userId);
+      String userId = getAdminService().identify(key, session.getId(), false, false);
+      UserDetail ud = getAdminService().getUserDetail(userId);
       request.setAttribute("userDetail", ud);
       return getGeneral().getString("userLoginForcePasswordChangePage");
     } catch (AdminException e) {

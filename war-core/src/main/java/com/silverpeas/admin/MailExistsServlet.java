@@ -24,19 +24,18 @@
 
 package com.silverpeas.admin;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 public class MailExistsServlet extends HttpServlet {
 
@@ -58,9 +57,8 @@ public class MailExistsServlet extends HttpServlet {
 
     String email = req.getParameter("email");
     if (StringUtil.isDefined(email)) {
-      Admin admin = AdminReference.getAdminService();
       try {
-        if ( admin.isEmailExisting(email) ) {
+        if (getAdminService().isEmailExisting(email)) {
           out.print("MailExists");
         }
       } catch (AdminException e) {

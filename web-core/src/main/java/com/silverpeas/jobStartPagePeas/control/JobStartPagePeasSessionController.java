@@ -35,15 +35,6 @@ import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.clipboard.ClipboardSelection;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -51,42 +42,38 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.ComponentSelection;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.Recover;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceSelection;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.*;
-
+import com.stratelia.webactiv.beans.admin.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.PairObject;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.clipboard.ClipboardException;
+import org.silverpeas.util.clipboard.ClipboardSelection;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.*;
 
 /**
  * Class declaration
@@ -712,7 +699,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       return true;
     } else {
       List<String> spaceIds = Arrays.asList(adminController.getUserManageableSpaceIds(getUserId()));
-      if (spaceIds == null || spaceIds.isEmpty()) {
+      if (spaceIds.isEmpty()) {
         // user is not a space manager
         return false;
       } else {
@@ -762,7 +749,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void recoverSpaceRights(String spaceId) throws AdminException {
-    Recover recover = new Recover();
+    Recover recover = AdministrationServiceProvider.getRightRecoveringService();
     if (spaceId == null) {
       recover.recoverRights();
     } else if (StringUtil.isDefined(spaceId)) {
@@ -1026,7 +1013,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
       // Remove suffix
       name = space.getName();
-      name = name.substring(0, name.indexOf(Admin.basketSuffix));
+      name = name.substring(0, name.indexOf(Administration.basketSuffix));
       space.setName(name);
     }
     return removedSpaces;
@@ -1044,7 +1031,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
       // Remove suffix
       name = component.getLabel();
-      name = name.substring(0, name.indexOf(Admin.basketSuffix));
+      name = name.substring(0, name.indexOf(Administration.basketSuffix));
       component.setLabel(name);
     }
     return removedComponents;

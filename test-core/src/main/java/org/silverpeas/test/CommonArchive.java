@@ -45,6 +45,14 @@ public interface CommonArchive<T> {
   boolean contains(String path) throws IllegalArgumentException;
 
   /**
+   * Denotes whether this archive contains a class
+   * @param aClass
+   * @return
+   * @throws IllegalArgumentException If the path is not specified
+   */
+  boolean contains(Class<?> aClass) throws IllegalArgumentException;
+
+  /**
    * Adds the {@link Class}es, and all member (inner) {@link Class}es to the {@link Archive}.
    * @param classes The classes to add to the Archive
    * @return This archive

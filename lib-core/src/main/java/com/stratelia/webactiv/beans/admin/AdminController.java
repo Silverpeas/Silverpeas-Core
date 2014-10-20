@@ -42,9 +42,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 /*
-This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
+This object is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
 It provides access functions to query and modify the domains as well as the company organization
 It should be used only by a client that has the administrator rights
 */

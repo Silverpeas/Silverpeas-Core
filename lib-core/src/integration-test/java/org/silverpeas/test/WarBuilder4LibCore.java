@@ -25,24 +25,34 @@
 package org.silverpeas.test;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.organization.ScheduledDBReset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.core.IdentifiableResource;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
+import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.quota.QuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.*;
+import org.silverpeas.util.comparator.AbstractComparator;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.exception.FromModule;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -73,7 +83,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public static WarBuilder4LibCore onWar() {
     WarBuilder4LibCore warBuilder = new WarBuilder4LibCore();
     warBuilder.addServiceProviderFeatures();
-    warBuilder.addSilverTraceFeatures();
+    warBuilder.addStubbedSilverTraceFeatures();
+    warBuilder.addBundleBaseFeatures();
     return warBuilder;
   }
 
@@ -96,32 +107,45 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   /**
    * Adds common utilities classes:
    * <ul>
+   * <li>{@link ArrayUtil}</li>
    * <li>{@link StringUtil}</li>
    * <li>{@link CollectionUtil}</li>
    * <li>{@link MapUtil}</li>
    * <li>{@link AssertArgument}</li>
    * <li>{@link ActionType} and classes in {@link org.silverpeas.util.annotation}</li>
    * <li>{@link #addSilverpeasContentFeatures()}</li>
+   * <li>{@link AbstractComplexComparator}</li>
+   * <li>{@link AbstractComparator}</li>
+   * <li>{@link ListSlice}</li>
    * </ul>
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addCommonBasicUtilities() {
-    if (!contains(StringUtil.class.getName())) {
+    if (!contains(ArrayUtil.class)) {
+      addClasses(ArrayUtil.class);
+    }
+    if (!contains(StringUtil.class)) {
       addClasses(StringUtil.class);
     }
-    if (!contains(MapUtil.class.getName())) {
+    if (!contains(MapUtil.class)) {
       addClasses(MapUtil.class);
     }
-    if (!contains(CollectionUtil.class.getName())) {
+    if (!contains(CollectionUtil.class)) {
       addClasses(CollectionUtil.class, ExtractionList.class, ExtractionComplexList.class);
     }
-    if (!contains(AssertArgument.class.getName())) {
+    if (!contains(AssertArgument.class)) {
       addClasses(AssertArgument.class);
     }
-    if (!contains(ActionType.class.getName())) {
+    if (!contains(ActionType.class)) {
       addSilverpeasContentFeatures();
       addClasses(ActionType.class);
       addPackages(false, "org.silverpeas.util.annotation");
+    }
+    if (!contains(AbstractComplexComparator.class)) {
+      addClasses(AbstractComplexComparator.class, AbstractComparator.class);
+    }
+    if (!contains(ListSlice.class)) {
+      addClasses(ListSlice.class);
     }
     return this;
   }
@@ -131,10 +155,16 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addCommonUserBeans() {
-    if (!contains(UserDetail.class.getName())) {
+    if (!contains(UserDetail.class)) {
       addClasses(UserDetail.class, UserAccessLevel.class, UserState.class);
     }
-    if (!contains(Domain.class.getName())) {
+    if (!contains(UserFull.class)) {
+      addClasses(UserFull.class);
+    }
+    if (!contains(UserLog.class)) {
+      addClasses(UserLog.class);
+    }
+    if (!contains(Domain.class)) {
       addClasses(Domain.class);
     }
     return this;
@@ -151,7 +181,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSilverpeasExceptionBases() {
-    if (!contains(SilverpeasException.class.getName())) {
+    if (!contains(SilverpeasException.class)) {
       addClasses(WithNested.class);
       addClasses(FromModule.class);
       addClasses(SilverpeasException.class);
@@ -166,7 +196,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
-    if (!contains(ResourceLocator.class.getName())) {
+    if (!contains(ResourceLocator.class)) {
       addClasses(ResourceLocator.class, DisplayI18NHelper.class, ConfigurationClassLoader.class,
           ConfigurationControl.class, ResourceBundleWrapper.class, FileUtil.class, MimeTypes.class,
           RelativeFileAccessException.class, GeneralPropertiesManager.class);
@@ -182,7 +212,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSilverpeasUrlFeatures() {
-    if (!contains(URLManager.class.getName())) {
+    if (!contains(URLManager.class)) {
       addClasses(URLManager.class);
     }
     return this;
@@ -193,16 +223,16 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSilverpeasContentFeatures() {
-    if (!contains(Contribution.class.getName())) {
+    if (!contains(Contribution.class)) {
       addClasses(Contribution.class, IdentifiableResource.class);
     }
-    if (!contains(SilverpeasContent.class.getName())) {
+    if (!contains(SilverpeasContent.class)) {
       addClasses(SilverpeasContent.class);
     }
-    if (!contains(SilverContentInterface.class.getName())) {
+    if (!contains(SilverContentInterface.class)) {
       addClasses(SilverContentInterface.class);
     }
-    if (!contains(WAPrimaryKey.class.getName())) {
+    if (!contains(WAPrimaryKey.class)) {
       addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
@@ -223,34 +253,148 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addBundleBaseFeatures();
     addSilverpeasUrlFeatures();
     addCommonBasicUtilities();
-    if (!contains(FileRepositoryManager.class.getName())) {
+    if (!contains(FileRepositoryManager.class)) {
       addClasses(FileRepositoryManager.class, FileFolderManager.class);
     }
     return this;
   }
 
   /**
-   * Sets persistence features.
+   * Sets JDBC persistence features.
    * Calls automatically:
    * <ul>
+   * <li>{@link #addCommonBasicUtilities()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addJdbcPersistenceFeatures() {
+    addCommonBasicUtilities();
+    if (!contains(DBUtil.class)) {
+      addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class);
+      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+    }
+    return this;
+  }
+
+  /**
+   * Sets JPA persistence features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addJdbcPersistenceFeatures()}</li>
    * <li>{@link #addBundleBaseFeatures()}</li>
    * <li>{@link #addCacheFeatures()}</li>
-   * <li>{@link #addCommonBasicUtilities()}</li>
    * <li>{@link #addCommonUserBeans()}</li>
    * </ul>
    * @return the instance of the war builder.
    */
-  public WarBuilder4LibCore addPersistenceFeatures() {
+  public WarBuilder4LibCore addJpaPersistenceFeatures() {
+    addJdbcPersistenceFeatures();
     addBundleBaseFeatures();
     addCacheFeatures();
-    addCommonBasicUtilities();
     addCommonUserBeans();
-    if (!contains(Transaction.class.getName())) {
+    if (!contains(AbstractJpaEntity.class)) {
       addPackages(true, "org.silverpeas.admin.user.constant");
       addPackages(true, "org.silverpeas.persistence.model");
       addPackages(true, "org.silverpeas.persistence.repository");
-      addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class);
-      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+    }
+    return this;
+  }
+
+  /**
+   * Sets stubbed administration features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addStubbedAdministrationFeatures() {
+    if (!contains(StubbedAdministration.class)) {
+      addClasses(StubbedAdministration.class);
+      addCommonUserBeans();
+      addClasses(AdministrationServiceProvider.class, Administration.class, Parameter.class,
+          PasteDetail.class, WAComponent.class, SpaceTemplate.class, ComponentInst.class,
+          ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
+          QuotaException.class, ProfileInst.class, SpaceAndChildren.class, SpaceProfileInst.class,
+          Group.class, GroupProfileInst.class, AdminGroupInst.class, SearchCriteria.class,
+          UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
+      addClasses(Recover.class, AdminException.class);
+      addPackages(true, "org.silverpeas.util.i18n");
+      // Exclusions
+      applyManually(war -> war.deleteClass(Admin.class));
+    }
+    return this;
+  }
+
+  /**
+   * Adds common administration utilities.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addAdministrationUtilities() {
+    if (!contains(SilverpeasRole.class)) {
+      addClasses(SilverpeasRole.class);
+    }
+    if (!contains(AdminException.class)) {
+      addClasses(AdminException.class);
+    }
+    if (!contains(QuotaException.class)) {
+      addClasses(QuotaException.class, QuotaKey.class);
+    }
+    return this;
+  }
+
+  /**
+   * Sets administration features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addJdbcPersistenceFeatures()}</li>
+   * <li>{@link #addCommonUserBeans()}</li>
+   * <li>{@link #addOrganisationFeatures()}</li>
+   * <li>{@link #addSchedulerFeatures()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addAdministrationFeatures() {
+    if (!contains(Admin.class)) {
+      addClasses(Admin.class, ScheduledDBReset.class);
+      addClasses(Recover.class);
+      addPackages(true, "org.silverpeas.util.i18n");
+      addPackages(true, "com.silverpeas.admin.components");
+      addPackages(true, "com.silverpeas.admin.spaces");
+      addPackages(true, "com.stratelia.webactiv.beans.admin");
+      addPackages(false, "org.silverpeas.notification");
+      addPackages(true, "org.silverpeas.admin.component.notification");
+      addPackages(true, "org.silverpeas.admin.space.notification");
+      addPackages(true, "org.silverpeas.admin.user.constant");
+      addPackages(true, "org.silverpeas.admin.user.notification");
+      addPackages(true, "org.silverpeas.util.clipboard");
+      addAsResource("org/silverpeas/admin/roleMapping.properties");
+      addAsResource("org/silverpeas/beans/admin/admin.properties");
+      addAsResource("org/silverpeas/beans/admin/instance/control/instanciator.properties");
+      // Exclusions
+      applyManually(war -> war.deleteClass(StubbedAdministration.class));
+      // Centralized features
+      addJdbcPersistenceFeatures();
+      addAdministrationUtilities();
+      addCommonUserBeans();
+      addOrganisationFeatures();
+      addSchedulerFeatures();
+    }
+    return this;
+  }
+
+  /**
+   * Sets organisation features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addAdministrationFeatures()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addOrganisationFeatures() {
+    if (!contains(OrganisationController.class)) {
+      addClasses(OrganisationController.class);
+      addPackages(true, "com.stratelia.webactiv.organization");
+      addPackages(true, "com.stratelia.webactiv.persistence");
+      addClasses(Schema.class, SchemaPool.class);
+      // Centralized features
+      addAdministrationFeatures();
     }
     return this;
   }
@@ -272,17 +416,21 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Sets empty Silver trace implementation features.
    * @return the instance of the war builder.
    */
-  private WarBuilder4LibCore addSilverTraceFeatures() {
+  private WarBuilder4LibCore addStubbedSilverTraceFeatures() {
     addClasses(SilverpeasTrace.class, TestSilverpeasTrace.class, SilverTrace.class);
     return this;
   }
 
   /**
-   * Add quartz scheduler libraries in web archive (war)
-   * @return the instance of the war builder with quartz scheduler libraries
+   * Add scheduler features in web archive (war) with quartz libraries.
+   * @return the instance of the war builder with scheduler features.
    */
-  public WarBuilder4LibCore addQuartzSchedulerFeatures() {
-    return addMavenDependencies("org.quartz-scheduler:quartz");
+  public WarBuilder4LibCore addSchedulerFeatures() {
+    if (!contains("com.silverpeas.scheduler")) {
+      addMavenDependencies("org.quartz-scheduler:quartz");
+      addPackages(true, "com.silverpeas.scheduler");
+    }
+    return this;
   }
 
   /**

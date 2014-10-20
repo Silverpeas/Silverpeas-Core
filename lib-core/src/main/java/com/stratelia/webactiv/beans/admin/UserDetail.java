@@ -25,19 +25,20 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import com.silverpeas.socialnetwork.status.StatusService;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.File;
 import java.io.Serializable;
@@ -56,13 +57,13 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
-  private static final String AVATAR_PROPERTY = GeneralPropertiesManager
-      .getString("avatar.property", "login");
-  private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString(
-      "avatar.extension", "jpg");
+  private static final String AVATAR_PROPERTY =
+      GeneralPropertiesManager.getString("avatar.property", "login");
+  private static final String AVATAR_EXTENSION =
+      GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final String AVATAR_BASEURI = "/display/avatar/";
-  private static final ResourceLocator generalSettings = new ResourceLocator(
-      "org.silverpeas.lookAndFeel.generalLook", "");
+  private static final ResourceLocator generalSettings =
+      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
   private String id = null;
   private String specificId = null;
   private String domainId = null;
@@ -86,7 +87,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Gets the detail about the specified user.
-   *
    * @param userId the unique identifier of the user to get.
    * @return the detail about the user with the specified identifier or null if no such user exists.
    */
@@ -105,7 +105,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Gets the detail about all the users in Silverpeas, whatever their domain.
-   *
    * @return a list with all the users in Silverpeas.
    */
   public static List<UserDetail> getAll() {
@@ -114,7 +113,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Gets the detail about all the users belonging in the specified domain.
-   *
    * @param domainId the unique identifier of the domain.
    * @return a list with all the users that defined in the specified domain or null if no such
    * domain exists.
@@ -161,7 +159,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set the login question
-   *
    * @param loginQuestion
    */
   public void setLoginQuestion(String loginQuestion) {
@@ -177,7 +174,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set the login answer
-   *
    * @param loginAnswer
    */
   public void setLoginAnswer(String loginAnswer) {
@@ -260,7 +256,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * {@link UserDetail#isBlockedState()} to retrieve user blocked information. Please use
    * {@link UserDetail#isExpiredState()} to retrieve user expiration information. This method
    * returns the stored state information but not the functional information.
-   *
    * @return the state of the user (account)
    */
   public UserState getState() {
@@ -269,7 +264,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * The state of the user (account) is updated and the according save date too.
-   *
    * @param state the state of the user (account)
    */
   public void setState(final UserState state) {
@@ -334,7 +328,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user id as stored in database
-   *
    * @return
    */
   public String getId() {
@@ -343,7 +336,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user identifier
-   *
    * @param id the user identifier to set
    */
   public void setId(String id) {
@@ -352,7 +344,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get specific user id
-   *
    * @return
    */
   public String getSpecificId() {
@@ -361,7 +352,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set specific user id
-   *
    * @param specificId
    */
   public void setSpecificId(String specificId) {
@@ -370,7 +360,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user's domain id
-   *
    * @return user's domain id
    */
   public String getDomainId() {
@@ -379,7 +368,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user domain id
-   *
    * @param domainId
    */
   public void setDomainId(String domainId) {
@@ -388,7 +376,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user's login
-   *
    * @return user's login
    */
   public String getLogin() {
@@ -397,7 +384,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user login
-   *
    * @param login the login to set
    */
   public void setLogin(String login) {
@@ -410,7 +396,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user's first name
-   *
    * @return user's first name
    */
   public String getFirstName() {
@@ -419,7 +404,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user first name
-   *
    * @param firstName user first name
    */
   public void setFirstName(String firstName) {
@@ -432,7 +416,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user's last name
-   *
    * @return user's last name
    */
   public String getLastName() {
@@ -441,7 +424,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user last name
-   *
    * @param sLastName user last name
    */
   public void setLastName(String sLastName) {
@@ -454,7 +436,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user's email
-   *
    * @param seMail
    */
   public void seteMail(String seMail) {
@@ -467,7 +448,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user's email
-   *
    * @return
    */
   public String geteMail() {
@@ -476,7 +456,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Get user's access level
-   *
    * @return
    */
   public UserAccessLevel getAccessLevel() {
@@ -485,7 +464,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Set user access level
-   *
    * @param accessLevel
    */
   public void setAccessLevel(UserAccessLevel accessLevel) {
@@ -499,7 +477,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Gets the domain to which this user belongs.
-   *
    * @return a user domain.
    */
   public Domain getDomain() {
@@ -508,20 +485,19 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Is the specified user is restricted to access the resource in its own domain?
-   *
    * @return true if he's restricted in its own domain, false otherwise.
    */
   public boolean isDomainRestricted() {
-    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH
-        || (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE
-        && !"0".equals(getDomainId()))) && !isAccessAdmin();
+    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH ||
+        (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE &&
+            !"0".equals(getDomainId()))) && !isAccessAdmin();
   }
 
   public boolean isDomainAdminRestricted() {
-    return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
-        && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility()
-        != GeneralPropertiesManager.DVIS_ONE) || (!"0"
-        .equals(getDomainId()))));
+    return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) &&
+        (!isAccessAdmin()) &&
+        ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) ||
+            (!"0".equals(getDomainId()))));
   }
 
   public boolean isBackOfficeVisible() {
@@ -555,18 +531,17 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   /**
    * This method is the only one able to indicate the user validity state. Please do not use
    * {@link UserDetail#getState()} to retrieve user validity information.
-   *
    * @return
    */
   public boolean isValidState() {
-    return isAnonymous() || (!UserState.UNKNOWN.equals(state) && !isDeletedState()
-        && !isBlockedState() && !isExpiredState());
+    return isAnonymous() ||
+        (!UserState.UNKNOWN.equals(state) && !isDeletedState() && !isBlockedState() &&
+            !isExpiredState());
   }
 
   /**
    * This method is the only one able to indicate the user deletion state. Please do not use
    * {@link UserDetail#getState()} to retrieve user deletion information.
-   *
    * @return
    */
   public boolean isDeletedState() {
@@ -576,7 +551,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   /**
    * This method is the only one able to indicate the user blocked state. Please do not use
    * {@link UserDetail#getState()} to retrieve user blocked information.
-   *
    * @return
    */
   public boolean isBlockedState() {
@@ -586,7 +560,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   /**
    * This method is the only one able to indicate the user expiration state. Please do not use
    * {@link UserDetail#getState()} to retrieve user expiration information.
-   *
    * @return true if user is expired.
    */
   public boolean isExpiredState() {
@@ -596,7 +569,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Is the user is the anonymous one?
-   *
    * @return true if he's the anonymous user.
    */
   public boolean isAnonymous() {
@@ -605,14 +577,13 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Gets the anonymous user or null if no such user exists.
-   *
    * @return the detail about the anonymous user or null if no such user exists.
    */
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
     if (isAnonymousUserExist()) {
-      anonymousUser = OrganizationControllerProvider.getOrganisationController().getUserDetail(
-          getAnonymousUserId());
+      anonymousUser = OrganisationControllerProvider.getOrganisationController()
+          .getUserDetail(getAnonymousUserId());
     }
     return anonymousUser;
   }
@@ -625,14 +596,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public boolean equals(Object other) {
     if (other instanceof UserDetail) {
       UserDetail cmpUser = (UserDetail) other;
-      return areStringEquals(id, cmpUser.getId())
-          && areStringEquals(specificId, cmpUser.getSpecificId())
-          && areStringEquals(domainId, cmpUser.getDomainId())
-          && areStringEquals(login, cmpUser.getLogin())
-          && areStringEquals(firstName, cmpUser.getFirstName())
-          && areStringEquals(lastName, cmpUser.getLastName())
-          && areStringEquals(eMail, cmpUser.geteMail())
-          && accessLevel.equals(cmpUser.getAccessLevel());
+      return areStringEquals(id, cmpUser.getId()) &&
+          areStringEquals(specificId, cmpUser.getSpecificId()) &&
+          areStringEquals(domainId, cmpUser.getDomainId()) &&
+          areStringEquals(login, cmpUser.getLogin()) &&
+          areStringEquals(firstName, cmpUser.getFirstName()) &&
+          areStringEquals(lastName, cmpUser.getLastName()) &&
+          areStringEquals(eMail, cmpUser.geteMail()) &&
+          accessLevel.equals(cmpUser.getAccessLevel());
     }
     return false;
   }
@@ -656,18 +627,18 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public void traceUser() {
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Id : " + id);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : "
-        + specificId);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : "
-        + domainId);
+    SilverTrace
+        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : " + specificId);
+    SilverTrace
+        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : " + domainId);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Login : " + login);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : "
-        + firstName);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : "
-        + lastName);
+    SilverTrace
+        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : " + firstName);
+    SilverTrace
+        .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : " + lastName);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "eMail : " + eMail);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "AccessLevel : "
-        + accessLevel);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER",
+        "AccessLevel : " + accessLevel);
   }
 
   @Override
@@ -684,7 +655,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
     return "/directory/jsp/icons/avatar.png";
   }
-  
+
   public String getSmallAvatar() {
     String avatar = getAvatar();
     if (avatar.startsWith(AVATAR_BASEURI)) {
@@ -715,8 +686,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public String getStatus() {
-    String status = new StatusService().getLastStatusService(Integer.parseInt(getId()))
-        .getDescription();
+    String status =
+        new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
     if (isDefined(status)) {
       return status;
     }
@@ -725,7 +696,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Gets the preferences of this user.
-   *
    * @return the user preferences.
    */
   public final UserPreferences getUserPreferences() {
@@ -734,7 +704,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Is this user connected to Silverpeas?
-   *
    * @return true if the user is currently connected to Silverpeas, false otherwise.
    */
   public boolean isConnected() {
@@ -744,7 +713,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Is the anonymous user exist in this running Silverpeas application?
-   *
    * @return true if the anonymous user exist, false otherwise.
    */
   public static boolean isAnonymousUserExist() {
@@ -753,7 +721,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * Is the specified user is the anonymous one?
-   *
    * @param userId the identifier of the user.
    * @return true if the specified user is the anonymous one, false otherwise.
    */
@@ -762,13 +729,12 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public boolean isFullyDefined() {
-    return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin())
-        && StringUtil.isDefined(getLastName());
+    return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin()) &&
+        StringUtil.isDefined(getLastName());
   }
 
   /**
    * Gets the unique identifier of the anonymous user as set in the general look properties.
-   *
    * @return the anonymous user identifier.
    */
   protected static String getAnonymousUserId() {
@@ -777,5 +743,19 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   protected static OrganizationController getOrganisationController() {
     return OrganizationControllerProvider.getOrganisationController();
+  }
+
+  /**
+   * Centralized sort of {@link UserDetail} based on:
+   * <ul>
+   *   <li>firstly the last name</li>
+   *   <li>then the first name</li>
+   * </ul>
+   */
+  public static class OnFirstNameAndLastName extends AbstractComplexComparator<UserDetail> {
+    @Override
+    protected ValueBuffer getValuesToCompare(final UserDetail user) {
+      return new ValueBuffer().append(user.getLastName()).append(user.getFirstName());
+    }
   }
 }
