@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
-import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
+import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -276,8 +276,7 @@ public class SPUserDaoTest {
   }
 
   private SPUser getTartempion() {
-    PasswordEncryption encryption = PasswordEncryptionFactory.getFactory().
-        getDefaultPasswordEncryption();
+    PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     StringBuilder passwordBuilder = new StringBuilder(encryption.encrypt("tartempion"));
     for (; passwordBuilder.length() < 123;) {
       passwordBuilder.append("a");

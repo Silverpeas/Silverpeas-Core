@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationHostException;
@@ -40,7 +41,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
-import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
 
 /**
  * This class performs the authentication using an SQL table.
@@ -218,8 +218,7 @@ public class AuthenticationSQL extends Authentication {
    * @return the digest of the new password.
    */
   private String getNewPasswordDigest(String newPassword) {
-    PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
-    PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+    PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     return encryption.encrypt(newPassword);
   }
 
@@ -240,8 +239,7 @@ public class AuthenticationSQL extends Authentication {
   private void checkPassword(String login, String password, String digest)
       throws AuthenticationBadCredentialException {
     try {
-      PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
-      PasswordEncryption encryption = factory.getPasswordEncryption(digest);
+      PasswordEncryption encryption = PasswordEncryptionProvider.getPasswordEncryption(digest);
       encryption.check(password, digest);
     } catch (AssertionError error) {
       // the password doesn't match the digest. It is then possible the digest was a pure MD5 one!

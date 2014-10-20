@@ -1,5 +1,6 @@
 package org.silverpeas.util;
 
+import net.fortuna.ical4j.model.DateList;
 import org.apache.commons.lang3.AnnotationUtils;
 import sun.reflect.annotation.AnnotationType;
 
@@ -11,6 +12,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,7 +47,7 @@ public class CDIContainer implements BeanContainer {
   }
 
   @Override
-  public <T> Set<T> getAllBeansByType(final Class<T> type) {
+  public <T> Set<T> getAllBeansByType(final Class<T> type, Annotation... qualifiers) {
     BeanManager beanManager = CDI.current().getBeanManager();
     Set<T> refs = beanManager.getBeans(type).stream()
         .map(bean -> {

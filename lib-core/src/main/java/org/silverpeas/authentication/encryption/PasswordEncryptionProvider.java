@@ -23,6 +23,8 @@
  */
 package org.silverpeas.authentication.encryption;
 
+import org.silverpeas.util.ServiceProvider;
+
 /**
  * Factory of password encryption objects implementing a given algorithm. It wraps the concrete
  * implementation of the <code>PasswordEncryption</code> interface used for encrypting a password
@@ -36,26 +38,15 @@ package org.silverpeas.authentication.encryption;
  * method.
  * @author mmoquillon
  */
-public class PasswordEncryptionFactory {
-
-  private static PasswordEncryptionFactory instance = new PasswordEncryptionFactory();
-  private final PasswordEncryption currentEncryption = new UnixSHA512Encryption();
-
-  /**
-   * Gets an instance of the factory of password encryption.
-   * @return a instance of the PasswordEncryptionFactory class.
-   */
-  public static PasswordEncryptionFactory getFactory() {
-    return instance;
-  }
+public class PasswordEncryptionProvider {
 
   /**
    * Gets the password encryption that is used by default in Silverpeas to encrypt the user
    * passwords and to check them.
    * @return the current default password encryption.
    */
-  public PasswordEncryption getDefaultPasswordEncryption() {
-    return currentEncryption;
+  public static PasswordEncryption getDefaultPasswordEncryption() {
+    return ServiceProvider.getService(UnixSHA512Encryption.class);
   }
 
   /**
@@ -71,12 +62,12 @@ public class PasswordEncryptionFactory {
    * @throws IllegalArgumentException if the digest was not computed by any of the password
    * encryption supported in Silverpeas.
    */
-  public PasswordEncryption getPasswordEncryption(String digest) throws IllegalArgumentException {
-    PasswordEncryption[] availableEncryption =
-        new PasswordEncryption[]{ currentEncryption, new UnixMD5Encryption(),
-            new UnixDESEncryption() };
+  public static PasswordEncryption getPasswordEncryption(String digest)
+      throws IllegalArgumentException {
     PasswordEncryption encryption = null;
-    for (PasswordEncryption crypt : availableEncryption) {
+    for (PasswordEncryption crypt : new PasswordEncryption[]{getDefaultPasswordEncryption(),
+        ServiceProvider.getService(UnixMD5Encryption.class),
+        ServiceProvider.getService(UnixDESEncryption.class)}) {
       if (crypt.doUnderstandDigest(digest)) {
         encryption = crypt;
         break;

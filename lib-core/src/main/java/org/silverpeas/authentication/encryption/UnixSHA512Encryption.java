@@ -67,10 +67,11 @@
 package org.silverpeas.authentication.encryption;
 
 
-import org.silverpeas.util.ArrayUtil;
 import org.apache.commons.codec.digest.Crypt;
+import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.Charsets;
 
+import javax.inject.Singleton;
 import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,6 +101,7 @@ import java.util.regex.Pattern;
  * <a href="http://people.redhat.com/drepper/SHA-crypt.txt">
  * http://people.redhat.com/drepper/SHA-crypt.txt</a>
  */
+@Singleton
 public class UnixSHA512Encryption implements PasswordEncryption {
 
   static private final String SALTCHARS =

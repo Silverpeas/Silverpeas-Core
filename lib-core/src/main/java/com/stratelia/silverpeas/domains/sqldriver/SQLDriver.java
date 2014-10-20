@@ -24,21 +24,6 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.authentication.encryption.PasswordEncryption;
-import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
-import org.silverpeas.admin.domain.DomainServiceFactory;
-import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
-import org.silverpeas.quota.exception.QuotaException;
-
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -47,9 +32,23 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
+import org.silverpeas.admin.domain.DomainServiceFactory;
+import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
+import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class SQLDriver extends AbstractDomainDriver {
 
@@ -175,8 +174,7 @@ public class SQLDriver extends AbstractDomainDriver {
 
   @Override
   public void resetPassword(UserDetail user, String password) throws Exception {
-    PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
-    PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+    PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     String encryptedPassword = encryption.encrypt(password);
     effectiveResetPassword(user, encryptedPassword);
   }
@@ -238,8 +236,8 @@ public class SQLDriver extends AbstractDomainDriver {
         if (StringUtil.isDefined(uf.getPassword())) {
           String existingPassword = localUserMgr.getUserPassword(openedConnection, userId);
           if (!existingPassword.equals(uf.getPassword())) {
-            PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
-            PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+            PasswordEncryption encryption =
+                PasswordEncryptionProvider.getDefaultPasswordEncryption();
             String encryptedPassword = encryption.encrypt(uf.getPassword());
             localUserMgr.updateUserPassword(openedConnection, userId, encryptedPassword);
           }
@@ -650,9 +648,7 @@ public class SQLDriver extends AbstractDomainDriver {
       if (openedConnection != null) {
         openedConnection.setAutoCommit(bAutoCommit);
       }
-    } catch (AdminException ex) {
-      throw new UtilException("SQLDriver", "startTransaction", ex);
-    } catch (SQLException ex) {
+    } catch (AdminException | SQLException ex) {
       throw new UtilException("SQLDriver", "startTransaction", ex);
     }
   }

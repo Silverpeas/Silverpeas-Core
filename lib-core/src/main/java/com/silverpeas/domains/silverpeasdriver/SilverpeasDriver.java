@@ -31,7 +31,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
-import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
+import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -334,7 +334,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
         groupManager.saveAndFlush(subGroup);
       }
       SPGroup parent = group.getParent();
-      if (parent != null && parent != null) {
+      if (parent != null) {
         parent.getSubGroups().remove(group);
         groupManager.saveAndFlush(parent);
       }
@@ -544,8 +544,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   private String encrypt(String password) {
-    PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
-    PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+    PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     return encryption.encrypt(password);
   }
 

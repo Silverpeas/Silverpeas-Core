@@ -53,7 +53,7 @@ public class TestBeanContainer implements BeanContainer {
   }
 
   @Override
-  public <T> Set<T> getAllBeansByType(final Class<T> type) {
-    return mock.getAllBeansByType(type);
+  public <T> Set<T> getAllBeansByType(final Class<T> type, Annotation... qualifiers) {
+    return mock.getAllBeansByType(type, qualifiers);
   }
 }

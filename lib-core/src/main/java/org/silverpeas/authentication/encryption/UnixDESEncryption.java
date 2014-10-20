@@ -24,6 +24,7 @@
 
 package org.silverpeas.authentication.encryption;
 
+import javax.inject.Singleton;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Random;
@@ -44,6 +45,7 @@ import java.util.Random;
  * This class is a renaming of the jcrypt class found at http://www.vulcanware.com/java_jcrypt/
  * @author John F. Dumas
  */
+@Singleton
 public class UnixDESEncryption implements PasswordEncryption {
 
   private static final int ITERATIONS = 16;

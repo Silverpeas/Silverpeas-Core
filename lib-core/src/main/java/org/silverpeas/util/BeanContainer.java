@@ -58,8 +58,9 @@ public interface BeanContainer {
    * Gets a bean managed in this container by its name. If no such bean exists in the bean
    * container, then an empty set is returned.
    * @param type the type of the bean.
+   * @param qualifiers zero, one or more qualifiers annotating the bean to look for.
    * @param <T> the type of the bean to return.
    * @return the bean matching the specified name.
    */
-  public <T> Set<T> getAllBeansByType(Class<T> type);
+  public <T> Set<T> getAllBeansByType(Class<T> type, Annotation... qualifiers);
 }

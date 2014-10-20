@@ -1,7 +1,11 @@
 package org.silverpeas.authentication.encryption;
 
-import org.junit.Before;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.WarBuilder4LibCore;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -10,6 +14,7 @@ import static org.hamcrest.Matchers.instanceOf;
  * Unit tests on the getting of the correct PasswordEncryption implementations with the
  * PasswordEncryptionFactory instances.
  */
+@RunWith(Arquillian.class)
 public class PasswordEncryptionFactoryTest {
 
   static final String DES_DIGEST = "sa5zYATwASgaM";
@@ -18,34 +23,36 @@ public class PasswordEncryptionFactoryTest {
 
   static final Class CURRENT_ENCRYPTION = UnixSHA512Encryption.class;
 
-  PasswordEncryptionFactory encryptionFactory;
-
-  @Before
-  public void setUp() throws Exception {
-    encryptionFactory = PasswordEncryptionFactory.getFactory();
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWar()
+        .testFocusedOn((warBuilder) -> {
+          warBuilder.addPackages(true, "org.silverpeas.authentication.encryption");
+        }).build();
   }
 
   @Test
   public void testGetDefaultPasswordEncryption() throws Exception {
-    PasswordEncryption defaultEncryption = encryptionFactory.getDefaultPasswordEncryption();
+    PasswordEncryption defaultEncryption =
+        PasswordEncryptionProvider.getDefaultPasswordEncryption();
     assertThat(defaultEncryption, instanceOf(CURRENT_ENCRYPTION));
   }
 
   @Test
   public void testGetPasswordEncryptionFromADESDigest() throws Exception {
-    PasswordEncryption encryption = encryptionFactory.getPasswordEncryption(DES_DIGEST);
+    PasswordEncryption encryption = PasswordEncryptionProvider.getPasswordEncryption(DES_DIGEST);
     assertThat(encryption, instanceOf(UnixDESEncryption.class));
   }
 
   @Test
   public void testGetPasswordEncryptionFromAMD5Digest() throws Exception {
-    PasswordEncryption encryption = encryptionFactory.getPasswordEncryption(MD5_DIGEST);
+    PasswordEncryption encryption = PasswordEncryptionProvider.getPasswordEncryption(MD5_DIGEST);
     assertThat(encryption, instanceOf(UnixMD5Encryption.class));
   }
 
   @Test
   public void testGetPasswordEncryptionFromASHA512Digest() throws Exception {
-    PasswordEncryption encryption = encryptionFactory.getPasswordEncryption(SHA512_DIGEST);
+    PasswordEncryption encryption = PasswordEncryptionProvider.getPasswordEncryption(SHA512_DIGEST);
     assertThat(encryption, instanceOf(UnixSHA512Encryption.class));
   }
 }

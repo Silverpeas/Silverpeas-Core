@@ -39,6 +39,7 @@ package org.silverpeas.authentication.encryption;
  * Note: Crypt.class is much smaller when compiled with javac -O
  ****************************************************************************/
 
+import javax.inject.Singleton;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -60,6 +61,7 @@ import java.util.Random;
  * This class implements the popular MD5Crypt function as used by BSD and most modern Un*x systems.
  * It was basically converted from the C code write by Poul-Henning Kamp.
  */
+@Singleton
 public class UnixMD5Encryption implements PasswordEncryption {
 
   private static final String MAGIC = "$1$";
