@@ -76,24 +76,12 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   public void setProfileNames(List<String> profileNames) {
     this.profileNames = profileNames;
     ComponentInst componentInst = organizationController.getComponentInst(componentId);
-    profileIds = new ArrayList<String>();
+    profileIds = new ArrayList<>();
     for (ProfileInst profileInst : componentInst.getAllProfilesInst()) {
       if (profileNames.contains(profileInst.getName())) {
         profileIds.add(profileInst.getId());
       }
     }
-  }
-
-  /**
-   * Sets the identifier of the roles the users must play.
-   * @param profileIds the unique identifier of the user roles.
-   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
-   * for a given object in the component instance or the setProfileNames() method to set the roles
-   * for the whole component instance.
-   */
-  @Deprecated
-  public void setProfileIds(List<String> profileIds) {
-    this.profileIds = profileIds;
   }
 
   /**
@@ -106,24 +94,9 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   @Deprecated
   public void addProfileId(String profileId) {
     if (profileIds == null) {
-      profileIds = new ArrayList<String>();
+      profileIds = new ArrayList<>();
     }
     profileIds.add(profileId);
-  }
-
-  /**
-   * Adds the identifiers of the roles the users must play.
-   * @param profileIds the user role identifiers.
-   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
-   * for a given object in the component instance or the setProfileNames() method to set the roles
-   * for the whole component instance.
-   */
-  @Deprecated
-  public void addProfileIds(List<String> profileIds) {
-    if (this.profileIds == null) {
-      this.profileIds = new ArrayList<String>();
-    }
-    profileIds.addAll(profileIds);
   }
 
   /**

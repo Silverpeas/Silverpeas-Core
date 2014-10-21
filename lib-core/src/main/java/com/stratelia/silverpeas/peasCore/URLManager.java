@@ -22,13 +22,12 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
-import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
+import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -186,8 +185,7 @@ public class URLManager {
       return specialString;
     }
     // Build the standard path : /RcompName/CompId/
-    String url = buildStandardURL(sureCompName, sComponentId);
-    return url;
+    return buildStandardURL(sureCompName, sComponentId);
   }
 
   @Deprecated
