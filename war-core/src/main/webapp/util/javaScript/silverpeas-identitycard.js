@@ -48,7 +48,9 @@ function activateIDCards() {
         // do nothing
       }
     });
-  })
+  });
+  //activate user zoom present in user card
+  activateUserZoom();
 }
 
 /**
