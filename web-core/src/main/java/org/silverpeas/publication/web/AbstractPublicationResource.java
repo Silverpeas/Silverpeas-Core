@@ -35,7 +35,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.web.RESTWebService;
@@ -90,8 +92,13 @@ public abstract class AbstractPublicationResource extends RESTWebService {
       URI uri = getURI(publication);
       PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
       if (withAttachments) {
-        Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKey(publication.getPK(), null);
+        AttachmentService attachmentService = AttachmentServiceFactory.getAttachmentService();
+        // expose regular files
+        Collection<SimpleDocument> attachments =
+            attachmentService.listDocumentsByForeignKey(publication.getPK(), null);
+        // and files attached to form too...
+        attachments.addAll(attachmentService.listDocumentsByForeignKeyAndType(publication.getPK(),
+            DocumentType.form, null));
         entity.withAttachments(attachments);
       }
       return entity;
