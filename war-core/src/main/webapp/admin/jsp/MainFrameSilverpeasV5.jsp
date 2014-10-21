@@ -52,7 +52,7 @@ String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId
 ResourceLocator generalMessage			= new ResourceLocator("org.silverpeas.multilang.generalMultilang", language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
-boolean			login					= false;
+boolean			login					= StringUtil.getBooleanValue(request.getParameter("Login"));
 
 if (m_MainSessionCtrl == null) {
 %>

@@ -40,6 +40,11 @@
 <c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
 <%
 LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+
+String frontOfficeURL = (gef.getLookFrame().startsWith("/") ? m_context : m_context+"/admin/jsp/")+gef.getLookFrame()+"?Login=1";
+if (helper.getURLOfLastVisitedCollaborativeSpace() != null) {
+  frontOfficeURL = helper.getURLOfLastVisitedCollaborativeSpace();
+}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -76,7 +81,7 @@ function notifyPopup(context,compoId,users,groups) {
                 <a href="javascript:exit()"><img border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"/></a>&nbsp;
                 <a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank""><img border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"/></a>&nbsp;
                 <a href="<%=m_context + URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>" target="IdleFrame"><img src="<%=resource.getIcon("JMP.clipboardIcon")%>" border="0" alt="<%=resource.getString("JMP.clipboard")%>" onfocus="self.blur()" title="<%=resource.getString("JMP.clipboard")%>"/></a>&nbsp;
-                <a href="<%= (gef.getLookFrame().startsWith("/")) ? m_context : (m_context+"/admin/jsp/")%><%=gef.getLookFrame()%>" target="_top""><img border="0" src="<%=resource.getIcon("JMP.peas")%>" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/></a>&nbsp;
+                <a href="<%=frontOfficeURL%>" target="_top""><img border="0" src="<%=resource.getIcon("JMP.peas")%>" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/></a>&nbsp;
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <span class="textePetitBold"><%=resource.getString("GML.date")%> :
                 &nbsp;&nbsp;<img src="<%=resource.getIcon("JMP.arrow") %>" border="0"/>&nbsp;&nbsp;
@@ -86,7 +91,7 @@ function notifyPopup(context,compoId,users,groups) {
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 <tr>
     <td width="120" align="left">
-    <a href="<%= (gef.getLookFrame().startsWith("/")) ? m_context : (m_context+"/admin/jsp/")%><%=gef.getLookFrame()%>" target="_top">
+    <a href="<%=frontOfficeURL%>" target="_top">
     <img src="<%=resource.getIcon("JMP.px")%>" width="120" height="88" border="0" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/>
     </a>
     </td>

@@ -880,4 +880,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     return tickerSettings;
   }
+  
+  public String getURLOfLastVisitedCollaborativeSpace() {
+    String spaceId = getSpaceId();
+    if (StringUtil.isDefined(getSubSpaceId())) {
+      spaceId = getSubSpaceId();
+    }
+    if (StringUtil.isDefined(spaceId)) {
+      return URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId);
+    }
+    return null;
+  }
 }
