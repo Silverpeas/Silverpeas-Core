@@ -25,8 +25,6 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 
 import java.util.List;
 
-import org.silverpeas.ldap.CreateLdapServer;
-import org.silverpeas.ldap.OpenDJRule;
 import org.silverpeas.util.Charsets;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
