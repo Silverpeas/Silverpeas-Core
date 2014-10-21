@@ -35,7 +35,7 @@ public class PanelSearchEdit extends PanelSearchToken {
   }
 
   public String getHTMLSpecific() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     sb.append("<input type=\"text\" size=\"15\" maxlength=\"100\" name=\"filter").append(
         Integer.toString(m_Index)).append("\" value=\"").append(m_Text).append("\"");

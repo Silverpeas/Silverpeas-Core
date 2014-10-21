@@ -51,11 +51,9 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   protected GenericPanel searchSetPanel = null;
   protected GenericPanel searchElementPanel = null;
   protected CacheManager cacheManager = null;
-  protected List<PanelLine> panelLineList = new ArrayList<PanelLine>();
-  protected Map<CacheType, BrowsePanelProvider> m_NavBrowse = new EnumMap<CacheType, BrowsePanelProvider>(
-      CacheType.class);
-  protected Map<CacheType, PanelProvider> m_NavCart = new EnumMap<CacheType, PanelProvider>(
-      CacheType.class);
+  protected List<PanelLine> panelLineList = new ArrayList<>();
+  protected Map<CacheType, BrowsePanelProvider> m_NavBrowse = new EnumMap<>(CacheType.class);
+  protected Map<CacheType, PanelProvider> m_NavCart = new EnumMap<>(CacheType.class);
   protected String selectionType = "";
 
   /**
@@ -326,7 +324,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   }
 
   public PanelOperation[] getOperations(String currentFunction) {
-    List<PanelOperation> panelOperationList = new ArrayList<PanelOperation>();
+    List<PanelOperation> panelOperationList = new ArrayList<>();
 
     panelOperationList.add(cacheManager.getPanelOperation("DisplayBrowse"));
     if (selection.isElementSelectable()) {
@@ -489,12 +487,12 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
 
   public void removeSelectedFromCart() {
     String[] sel = m_NavCart.get(CacheType.CM_SET).getSelectedElements();
-    for (int i = 0; i < sel.length; i++) {
-      cacheManager.setSelected(CacheType.CM_SET, sel[i], false);
+    for (final String aSel : sel) {
+      cacheManager.setSelected(CacheType.CM_SET, aSel, false);
     }
     sel = m_NavCart.get(CacheType.CM_ELEMENT).getSelectedElements();
-    for (int i = 0; i < sel.length; i++) {
-      cacheManager.setSelected(CacheType.CM_ELEMENT, sel[i], false);
+    for (final String aSel : sel) {
+      cacheManager.setSelected(CacheType.CM_ELEMENT, aSel, false);
     }
   }
 

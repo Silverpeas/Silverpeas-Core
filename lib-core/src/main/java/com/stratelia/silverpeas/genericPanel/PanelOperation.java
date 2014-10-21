@@ -22,20 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.genericPanel;
 
 public class PanelOperation {
-  public String m_helpString = ""; // Not the Id (like GML.xxx) but the
-  // language-dependant string (like
-  // "Supprimer les fichiers")
-  public String m_icon = ""; // Not the Id (like GI.xxx) but the
-  // language-dependant string (like
-  // "theicons/ico1.ico")
-  public String m_command = ""; // The Command parameter sent to the URL
-  public String m_confirmation = "";// The confirmation message
+  // Not the Id (like GML.xxx) but the language-dependant string (like "Supprimer les fichiers")
+  public String m_helpString = "";
+  // Not the Id (like GI.xxx) but the language-dependant string (like "theicons/ico1.ico")
+  public String m_icon = "";
+  // The Command parameter sent to the URL
+  public String m_command = "";
+  // The confirmation message
+  public String m_confirmation = "";
 
   public PanelOperation(String helpString, String icon, String command) {
     m_helpString = helpString;

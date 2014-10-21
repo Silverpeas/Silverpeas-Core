@@ -40,8 +40,7 @@ abstract public class PanelSearchToken {
   public int m_Index = 0;
 
   public String getHTMLDisplay() {
-    StringBuffer sb = new StringBuffer();
-
+    StringBuilder sb = new StringBuilder();
     sb.append("<tr>\n<td nowrap><span class=\"txtlibform\">");
     sb.append(m_Label);
     sb.append(" : </span></td>\n<td nowrap>");

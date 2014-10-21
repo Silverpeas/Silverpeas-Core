@@ -45,7 +45,7 @@ public class PanelMiniFilterEdit extends PanelMiniFilterToken {
   }
 
   public String getHTMLDisplay() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     sb.append("&nbsp;&nbsp;<input type=text size=5 name=\"miniFilter" + '_').append(m_Label)
         .append(
@@ -61,7 +61,6 @@ public class PanelMiniFilterEdit extends PanelMiniFilterToken {
         m_Label).append('_').append(Integer.toString(m_Index)).append("','')\">");
     sb.append("<img src=\"").append(m_Icon).append("\" border=0 align=absmiddle alt=\"").append(
         m_Alt).append("\" title=\"").append(m_Title).append("\"></a>");
-    // sb.append("<img src=\""+resource.getIcon("selectionPeas.filter")+"\" border=0 align=absmiddle alt=\""+resource.getString("selectionPeas.filter")+"\" title=\""+resource.getString("selectionPeas.filter")+"\"></a>");
     return sb.toString();
   }
 }

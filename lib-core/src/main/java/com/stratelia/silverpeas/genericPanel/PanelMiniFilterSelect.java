@@ -58,7 +58,7 @@ public class PanelMiniFilterSelect extends PanelMiniFilterToken {
   }
 
   public String getHTMLDisplay() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     sb.append("<input type='checkbox' name='").append(m_Text).append(
         "All' value='' onClick=selectAll('").append(m_Text).append("')>&nbsp;");

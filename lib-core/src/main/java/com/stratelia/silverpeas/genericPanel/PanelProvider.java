@@ -46,8 +46,8 @@ abstract public class PanelProvider {
   protected int m_FirstDisplayed = 0;
   protected int nbDisplayed = GenericPanelSettings.m_ElementsByPage;
 
-  protected Map<String, PanelLine> elementsCache = new HashMap<String, PanelLine>();
-  protected Set<String> selectedElements = new HashSet<String>();
+  protected Map<String, PanelLine> elementsCache = new HashMap<>();
+  protected Set<String> selectedElements = new HashSet<>();
 
   protected boolean m_FilterValid = true;
 
@@ -188,33 +188,23 @@ abstract public class PanelProvider {
   }
 
   public boolean isFirstPage() {
-    if (nbDisplayed == -1) {
-      return true;
-    }
-    return (m_FirstDisplayed == 0);
+    return nbDisplayed == -1 || (m_FirstDisplayed == 0);
   }
 
   public boolean isLastPage() {
-    if (nbDisplayed == -1) {
-      return true;
-    }
-    return (ids.length <= (m_FirstDisplayed + nbDisplayed));
+    return nbDisplayed == -1 || (ids.length <= (m_FirstDisplayed + nbDisplayed));
   }
 
   public PanelLine[] getPage() {
-    PanelLine[] valret = new PanelLine[ids.length];
+    PanelLine[] valRet = new PanelLine[ids.length];
 
-    for (int i = 0; i < valret.length; i++) {
-      valret[i] = getCachedElement(ids[i]);
+    for (int i = 0; i < valRet.length; i++) {
+      valRet[i] = getCachedElement(ids[i]);
     }
-    return valret;
+    return valRet;
   }
 
   protected void verifIndexes() {
-    /*
-     * if (ids.length <= m_FirstDisplayed) { if (ids.length > 0) { m_FirstDisplayed = ids.length -
-     * 1; } else { m_FirstDisplayed = 0; } }
-     */
     m_FirstDisplayed = 0;
   }
 
