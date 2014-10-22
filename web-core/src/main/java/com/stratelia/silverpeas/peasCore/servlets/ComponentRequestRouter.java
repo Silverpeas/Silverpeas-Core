@@ -226,7 +226,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     destination = getDestination(function, component, httpRequest);
 
     // Session security token management
-    if (hasTheSessionSecurityTokenToBeRenewed(function)) {
+    if (StringUtil.isDefined(componentId) && hasTheSessionSecurityTokenToBeRenewed(function)) {
       renewSessionSecurityToken(request);
     }
 
