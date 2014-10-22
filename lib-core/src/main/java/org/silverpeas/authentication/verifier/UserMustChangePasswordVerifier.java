@@ -169,7 +169,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    */
   private boolean mustForceUserToChangePasswordOnFirstLogin() {
     boolean mustForceUserToChangePasswordOnFirstLogin = false;
-    if (isThatUserMustChangePasswordOnFirstLogin && getUser() != null) {
+    if (isThatUserMustChangePasswordOnFirstLogin && getUser() != null && !getUser().isAnonymous()) {
       if (UserFirstLoginStep.PASSWORD_CHANGED.equals(usersFirstLoginStep.get(getUser().getId()))) {
         // User has changed his password just now, the authentication is ok
         usersFirstLoginStep.remove(getUser().getId());
@@ -188,7 +188,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    * @return true if the user will soon be obliged to change his password.
    */
   private boolean mustForceUserToChangePassword() {
-    return !(!isMaxConnectionActivated || getUser() == null ||
+    return !(!isMaxConnectionActivated || getUser() == null || getUser().isAnonymous() ||
         getUser().getNbSuccessfulLoginAttempts() == 0) &&
         getUser().getNbSuccessfulLoginAttempts() >= nbMaxConnectionsForForcing;
   }
@@ -199,7 +199,8 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    */
   private boolean proposeToUserToChangePassword() {
     return !(!isMaxConnectionActivated || !isOffsetConnectionActivated || getUser() == null ||
-        getUser().getNbSuccessfulLoginAttempts() == 0) && !mustForceUserToChangePassword() &&
+        getUser().isAnonymous() || getUser().getNbSuccessfulLoginAttempts() == 0) &&
+        !mustForceUserToChangePassword() &&
         getUser().getNbSuccessfulLoginAttempts() >= nbMaxConnectionsForProposing;
   }
 }

@@ -94,12 +94,13 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
 
   /**
    * Indicates if the user must accept terms of service.
+   * (anonymous is ignored)
    * If the system is not activated (see file settings), this method answers always no.
    * If the system is activated, this method answers yes user must accept terms of service.
    * @return true if the user must accept terms of service, false otherwise.
    */
   private synchronized boolean isTermsOfServiceAcceptanceDateIsExpired() {
-    if (getUser() == null) {
+    if (getUser() == null || getUser().isAnonymous()) {
       return false;
     }
 

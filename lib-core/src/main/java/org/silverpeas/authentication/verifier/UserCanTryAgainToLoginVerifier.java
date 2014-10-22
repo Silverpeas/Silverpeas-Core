@@ -40,7 +40,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
@@ -132,7 +131,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    */
   public String getMessage() {
 
-    if (isActivated) {
+    if (isActivated && (getUser() == null || !getUser().isAnonymous())) {
       return getString("authentication.attempts.remaining",
           (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
               getUser().getUserPreferences().getLanguage() : I18NHelper.defaultLanguage,
@@ -179,7 +178,8 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    * @return true if the user can try to login one more time, false otherwise.
    */
   private synchronized boolean isAtLeastOneUserConnectionAttempt() {
-    return !isActivated || (getUser() != null && ++nbAttempts < nbMaxAttempts);
+    return !isActivated ||
+        (getUser() != null && (getUser().isAnonymous() || ++nbAttempts < nbMaxAttempts));
   }
 
   /**
