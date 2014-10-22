@@ -20,13 +20,13 @@
  */
 package org.silverpeas.authentication;
 
-import java.util.EventListener;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.EventListener;
 
 public interface UserAuthenticationListener extends EventListener {
 
-  String firstHomepageAccessAfterAuthentication(HttpServletRequest request, String userId,
+  String firstHomepageAccessAfterAuthentication(HttpServletRequest request, UserDetail user,
       String finalURL);
-
 }
