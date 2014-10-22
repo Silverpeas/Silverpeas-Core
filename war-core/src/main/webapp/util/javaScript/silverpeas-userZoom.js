@@ -277,13 +277,15 @@
 })(jQuery);
 
 function activateUserZoom() {
-  jQuery('.userToZoom').each(function() {
-    var $this = jQuery(this);
-    if (!$this.data('userZoom')) {
-      $this.userZoom({
-        id: $this.attr('rel')
-      });
-    }
+  jQuery(document).ready(function() {
+    jQuery('.userToZoom').each(function() {
+      var $this = jQuery(this);
+      if (!$this.data('userZoom')) {
+        $this.userZoom({
+          id : $this.attr('rel')
+        });
+      }
+    });
   });
 }
 
@@ -291,6 +293,4 @@ function activateUserZoom() {
  * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
  * javascript plugin.
  */
-jQuery(document).ready(function() {
-  activateUserZoom();
-});
+activateUserZoom();

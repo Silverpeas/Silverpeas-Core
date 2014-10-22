@@ -23,39 +23,40 @@
  */
 
 function activateIDCards() {
-  jQuery('.user-card').each(function() {
-    var $this = jQuery(this);
-    $.ajax({
-      type : "GET",
-      url : '/silverpeas/services/profile/users/' + $this.attr('rel') + '?extended=true',
-      dataType : "json",
-      cache : false,
-      success : function(user, status, jqXHR) {
-        $this.find('.userToZoom').text(user.firstName + ' ' + user.lastName);
-        jQuery.each(user, function(key, val) {
-          if (key == 'avatar') {
-            $this.find('.' + key + ' img:first').get(0).setAttribute('src', val);
-          } else if (key == 'moreData') {
-            jQuery.each(val, function(keyMore, valMore) {
-              $this.find('.' + keyMore).text(valMore);
-            });
-          } else  {
-            $this.find('.' + key).text(val);
-          }
-        });
-      },
-      error : function(jqXHR, status) {
-        // do nothing
-      }
+  jQuery(document).ready(function() {
+    jQuery('.user-card').each(function() {
+      var $this = jQuery(this);
+      $.ajax({
+        type : "GET",
+        url : '/silverpeas/services/profile/users/' + $this.attr('rel') + '?extended=true',
+        dataType : "json",
+        cache : false,
+        success : function(user, status, jqXHR) {
+          $this.find('.userToZoom').text(user.firstName + ' ' + user.lastName);
+          jQuery.each(user, function(key, val) {
+            if (key == 'avatar') {
+              $this.find('.' + key + ' img:first').get(0).setAttribute('src', val);
+            } else if (key == 'moreData') {
+              jQuery.each(val, function(keyMore, valMore) {
+                $this.find('.' + keyMore).text(valMore);
+              });
+            } else  {
+              $this.find('.' + key).text(val);
+            }
+          });
+
+          //activate user zoom present in user card
+          activateUserZoom();
+        },
+        error : function(jqXHR, status) {
+          // do nothing
+        }
+      });
     });
   });
-  //activate user zoom present in user card
-  activateUserZoom();
 }
 
 /**
  * Populate all identity card in page.
  */
-jQuery(document).ready(function() {
-	  activateIDCards();
-});
+activateIDCards();

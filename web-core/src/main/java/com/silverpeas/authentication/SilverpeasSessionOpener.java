@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.UserAuthenticationListener;
@@ -247,9 +246,10 @@ public class SilverpeasSessionOpener {
     
     // checks authentication hooks
     String alternativeURL = null;
-    for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration.getListeners()) {
-      alternativeURL = listener.firstHomepageAccessAfterAuthentication((HttpServletRequest) request,
-          controller.getUserId(), absoluteUrl.toString());
+    for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
+        .getListeners()) {
+      alternativeURL = listener.firstHomepageAccessAfterAuthentication(request,
+          controller.getCurrentUserDetail(), absoluteUrl.toString());
     }
     if (StringUtil.isDefined(alternativeURL)) {
       return absoluteBaseURL + alternativeURL;
