@@ -25,6 +25,7 @@
 package com.silverpeas.jobOrganizationPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.jobOrganizationPeas.JobOrganizationPeasException;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -34,6 +35,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -409,52 +411,57 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    * Assign rights to current selected user or group
    */
   public void assignRights(String choiceAssignRights, String sourceRightsId, 
-                            String sourceRightsType, boolean nodeAssignRights) {
+                            String sourceRightsType, boolean nodeAssignRights) throws JobOrganizationPeasException {
     
-    if (JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights) || 
-        JobOrganizationPeasSessionController.ADD_RIGHTS.equals(choiceAssignRights)) {
-      
-      boolean deleteTargetProfiles = JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights);
-      boolean targetSameSource = false;
-      
-      if(StringUtil.isDefined(sourceRightsId)) {
-        if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
-          if (getCurrentUserId() != null && sourceRightsId.equals(getCurrentUserId())) {//target = source
-            targetSameSource = true;
-          }
-        } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
-          if (getCurrentGroupId() != null && sourceRightsId.equals(getCurrentGroupId())) {//target = source
-            targetSameSource = true;
-          }
-        }
-      }
-
-      if(!targetSameSource) {
-        if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
-          if (getCurrentUserId() != null) {
-            getAdminController().assignRightsFromUserToUser(
-                deleteTargetProfiles, 
-                sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
-          } else if (getCurrentGroupId() != null) {
-            getAdminController().assignRightsFromUserToGroup(
-                deleteTargetProfiles, 
-                sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
-          }
-        } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
-          if (getCurrentUserId() != null) {
-            getAdminController().assignRightsFromGroupToUser(
-                deleteTargetProfiles, 
-                sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
-          } else if (getCurrentGroupId() != null) {
-            getAdminController().assignRightsFromGroupToGroup(
-                deleteTargetProfiles, 
-                sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
-          }
-        }
+    try {
+      if (JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights) || 
+          JobOrganizationPeasSessionController.ADD_RIGHTS.equals(choiceAssignRights)) {
         
-        //force to refresh
-        currentProfiles = null;
+        boolean deleteTargetProfiles = JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights);
+        boolean targetSameSource = false;
+        
+        if(StringUtil.isDefined(sourceRightsId)) {
+          if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+            if (getCurrentUserId() != null && sourceRightsId.equals(getCurrentUserId())) {//target = source
+              targetSameSource = true;
+            }
+          } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+            if (getCurrentGroupId() != null && sourceRightsId.equals(getCurrentGroupId())) {//target = source
+              targetSameSource = true;
+            }
+          }
+        }
+  
+        if(!targetSameSource) {
+          if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+            if (getCurrentUserId() != null) {
+              getAdminController().assignRightsFromUserToUser(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
+            } else if (getCurrentGroupId() != null) {
+              getAdminController().assignRightsFromUserToGroup(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
+            }
+          } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+            if (getCurrentUserId() != null) {
+              getAdminController().assignRightsFromGroupToUser(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
+            } else if (getCurrentGroupId() != null) {
+              getAdminController().assignRightsFromGroupToGroup(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
+            }
+          }
+          
+          //force to refresh
+          currentProfiles = null;
+        }
       }
+    } catch (AdminException e) {
+      throw new JobOrganizationPeasException("JobOrganizationPeasSessionController.assignRights", SilverpeasException.ERROR,
+          "", e);
     }
   }
 }

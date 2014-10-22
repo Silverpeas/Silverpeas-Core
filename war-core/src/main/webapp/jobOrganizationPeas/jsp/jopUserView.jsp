@@ -53,6 +53,7 @@
 <c:set var="userInfos" value="${requestScope.user}" />
 <c:set var="groupInfos" value="${requestScope.group}" />
 <c:set var="superGroupName" value="${requestScope.superGroupName}" />
+<c:set var="message" value="${requestScope.message}" />
 <c:if test="${not empty userInfos}">
 	<c:set var="lastName" value="${userInfos.lastName}" />
 	<c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
@@ -246,6 +247,9 @@
 	<div id="content">
 	<view:window>
 	<view:frame>
+	<c:if test="${not empty message}">
+		<div class="inlineMessage">${message}</div>
+	</c:if>
 	<%
     	UserFull userInfos = (UserFull) request.getAttribute("user");
 	%>
@@ -266,7 +270,7 @@
                   			<label class="txtlibform"><fmt:message key="GML.surname"/></label>
                   			<div class="champs">${displayedFirstName}</div>
                 		</li>
-            			 <!---Email-->
+            			<!---Email-->
           				<li id="form-row-email" class="field">
                   			<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
                   			<div class="champs"><a href="mailto:${displayedEmail}">${displayedEmail}</a></div>
@@ -352,7 +356,28 @@
             						currentKey))%>
             				</label>
 							<div class="champs">
+								<%
+					            if ("STRING".equals(userInfos.getPropertyType(currentKey)) ||
+					                "USERID".equals(userInfos.getPropertyType(currentKey))) {
+								%>
 								<%=EncodeHelper.javaStringToHtmlString(userInfos.getValue(currentKey))%>
+								<%
+					            } else if ("BOOLEAN".equals(userInfos.getPropertyType(currentKey))) {
+					
+					              if (userInfos.getValue(currentKey) != null &&
+					                  "1".equals(userInfos.getValue(currentKey))) {
+					            %>
+					            	<fmt:message key="GML.yes"/>
+					            <%
+					              } else if (userInfos.getValue(currentKey) == null ||
+					                  "".equals(userInfos.getValue(currentKey)) ||
+					                  "0".equals(userInfos.getValue(currentKey))) {
+					            %>
+					            	<fmt:message key="GML.no"/>
+					           <%
+					              }
+					            }
+					           %>
 							</div>
 		                </li>
           			<%
@@ -452,7 +477,7 @@
           String[] spaces = (String[]) request.getAttribute("spaces");
           if (spaces != null && spaces.length > 0) {
         %>
-		<fieldset class="skinFieldset" id="profil-spaces-manager">
+		<fieldset class="skinFieldset" id="profil-spaces-management">
         <legend><fmt:message key="JOP.spaces"/></legend>
         <%
             ArrayPane arrayPane = gef.getArrayPane("profil-spaces", "ViewUserOrGroup", request, session);

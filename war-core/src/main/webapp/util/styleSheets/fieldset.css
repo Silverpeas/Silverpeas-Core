@@ -36,7 +36,7 @@ form {
 	
 fieldset.skinFieldset {
 	position:relative;
-	margin:10px;
+	margin:0 10px  1%;
 	padding-bottom:15px;
 	background-color :#CCC;
 	border:1px solid #CCC;
@@ -60,7 +60,8 @@ fieldset.skinFieldset {
 	}	
 
  :root *> .table {
-	height:10%; 
+	height:8%; 
+	margin-bottom:1%;
 	}	
 
 .cell {
@@ -78,8 +79,9 @@ fieldset.skinFieldset {
 * html .cell { width:49.4%; }
 
 .cell fieldset.skinFieldset{
-	height:80%;
-	}
+	height:99%;
+	padding: 0;
+}
  
 .skinFieldset label {
 	color:#444;
@@ -153,7 +155,7 @@ input.inputHour{
 	margin:0;
 }
 
-.champs input.checkbox, .champs input.radio {
+.champs input.checkbox, .champs input.radio,  .champs input[type="radio"]{
 	width:13px;
 	vertical-align:middle;
 	margin:0 5px 0 15px;

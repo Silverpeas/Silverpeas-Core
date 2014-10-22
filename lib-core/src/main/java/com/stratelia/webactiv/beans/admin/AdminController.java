@@ -33,7 +33,6 @@ import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.quota.exception.QuotaException;
 
@@ -745,7 +744,6 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // User Profile related functions
   // ----------------------------------------------
-  // JCC 10/04/2002 ajout de getProfileIds
   /**
 * All the profiles to which the user belongs
 * @return an array of profile IDs
@@ -761,27 +759,10 @@ public class AdminController implements java.io.Serializable {
       return null;
     }
   }
-  
-  /**
-  * All the node profiles to which the user belongs
-  * @return an array of profile IDs
-  */
-  private String[] getNodeProfileIds(String sUserId) {
-      SilverTrace.info("admin", "AdminController.getNodeProfileIds",
-          "root.MSG_GEN_ENTER_METHOD");
-      try {
-        return getAdminService().getNodeProfileIds(sUserId);
-      } catch (Exception e) {
-        SilverTrace.error("admin", "AdminController.getNodeProfileIds",
-            "admin.MSG_ERR_GET_USERPROFILE", e);
-        return null;
-      }
-    }
 
   // ----------------------------------------------
   // Group Profile related functions
   // ----------------------------------------------
-  // JCC 10/04/2002 ajout de getProfileIdsOfGroup
   /**
 * All the profiles to which the group belongs
 * @return an array of profile IDs
@@ -798,101 +779,6 @@ public class AdminController implements java.io.Serializable {
     }
   }
   
-  /**
-  * All the node profiles to which the group belongs
-  * @return an array of profile IDs
-  */
-  private String[] getNodeProfileIdsOfGroup(String sGroupId) {
-      SilverTrace.info("admin", "AdminController.getNodeProfileIdsOfGroup",
-          "root.MSG_GEN_ENTER_METHOD");
-      try {
-        return getAdminService().getNodeProfileIdsOfGroup(sGroupId);
-      } catch (Exception e) {
-        SilverTrace.error("admin", "AdminController.getNodeProfileIdsOfGroup",
-            "admin.MSG_ERR_GET_USERPROFILE", e);
-        return null;
-      }
-  }
-  
-  /*
-   * Delete target user profiles
-   */
-  private void deleteTargetUserProfiles(String targetUserId, String authorId) {
-    
-    String[] targetSpaceProfileIds = new String[0];
-    String[] targetProfileIds = new String[0];
-    
-    if (targetUserId != null) {//target is a user
-      targetSpaceProfileIds = getSpaceProfileIds(targetUserId);
-      targetProfileIds = getProfileIds(targetUserId);
-    }
-    
-    //Delete space rights (and sub-space and components, by inheritance) for target
-    for (String spaceProfileId : targetSpaceProfileIds) {
-      SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
-      currentTargetSpaceProfile.removeUser(targetUserId);
-      updateSpaceProfileInst(currentTargetSpaceProfile, authorId);  
-    }
-    
-    //Delete component rights for target
-    for (String profileId : targetProfileIds) {
-      ProfileInst currentTargetProfile = getProfileInst(profileId);
-      ComponentInst currentComponent = getComponentInst(
-          currentTargetProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
-     
-      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        currentTargetProfile.removeUser(targetUserId);
-        updateProfileInst(currentTargetProfile, authorId);
-      }
-    }
-  }
-  
-  /*
-   * Add target user profiles (space, components, nodes)
-   */
-  private void addTargetUserProfiles(String targetUserId, String authorId, String[] sourceSpaceProfileIds, String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) {
-    
-    if (targetUserId != null) {//target is a user
-      
-      //Add space rights (and sub-space and components, by inheritance)
-      for (String spaceProfileId : sourceSpaceProfileIds) {
-        SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
-        currentSourceSpaceProfile.addUser(targetUserId);
-        updateSpaceProfileInst(currentSourceSpaceProfile, authorId);
-      }
-      
-      //Add component rights
-      for (String profileId : sourceComponentProfileIds) {
-        ProfileInst currentSourceProfile = getProfileInst(profileId);
-        ComponentInst currentComponent = getComponentInst(
-            currentSourceProfile.getComponentFatherId());
-        String spaceId = currentComponent.getDomainFatherId();
-        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
-       
-        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-            currentSourceProfile.addUser(targetUserId);
-            updateProfileInst(currentSourceProfile, authorId);
-        }
-      }
-      
-      //Add nodes rights
-      for (String profileId : sourceNodeProfileIds) {
-        ProfileInst currentSourceProfile = getProfileInst(profileId);
-        ComponentInst currentComponent = getComponentInst(
-            currentSourceProfile.getComponentFatherId());
-        String spaceId = currentComponent.getDomainFatherId();
-        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
-       
-        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-            currentSourceProfile.addUser(targetUserId);
-            updateProfileInst(currentSourceProfile, authorId);
-        }
-      }
-    }
-  }
-  
   /*
    * Assign rights of a user to a user
    * @param deleteTargetProfiles : true if you want to delete the target profiles before adding rights of user source to target user
@@ -902,115 +788,15 @@ public class AdminController implements java.io.Serializable {
    * @param authorId : the userId of the author of this action
    */
   public void assignRightsFromUserToUser(boolean deleteTargetProfiles, String sourceUserId, 
-      String targetUserId, boolean nodeAssignRights, String authorId) {
+      String targetUserId, boolean nodeAssignRights, String authorId) throws AdminException {
     
-      String[] sourceSpaceProfileIds = new String[0];
-      String[] sourceComponentProfileIds = new String[0];
-      String[] sourceNodeProfileIds = new String[0];
-      boolean targetSameSource = false;
-      
-      if(StringUtil.isDefined(sourceUserId)) {
-        if (targetUserId != null && sourceUserId.equals(targetUserId)) {//target = source
-          targetSameSource = true;
-        } else {
-          sourceSpaceProfileIds = getSpaceProfileIds(sourceUserId);
-          sourceComponentProfileIds = getProfileIds(sourceUserId);
-          if(nodeAssignRights) {
-            sourceNodeProfileIds = getNodeProfileIds(sourceUserId);
-          }
-        }
-      }
-      
-      //Replace rights : first, delete profiles of target user
-      if (StringUtil.isDefined(sourceUserId) && 
-          !targetSameSource && 
-          deleteTargetProfiles) {
-        
-        deleteTargetUserProfiles(targetUserId, authorId);
-      }
-      
-      //Second : add rights
-      addTargetUserProfiles(targetUserId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+      SilverTrace.info("admin", "AdminController.assignRightsFromUserToUser",
+          "root.MSG_GEN_ENTER_METHOD");
+      getAdminService().assignRightsFromUserToUser(deleteTargetProfiles, sourceUserId, 
+            targetUserId, nodeAssignRights, authorId);
   }
   
-  /*
-   * Delete target group profiles
-   */
-  private void deleteTargetGroupProfiles(String targetGroupId, String authorId) {
-    
-    String[] targetSpaceProfileIds = new String[0];
-    String[] targetProfileIds = new String[0];
-    
-    if (targetGroupId != null) {//target is a group
-      targetSpaceProfileIds = getSpaceProfileIdsOfGroup(targetGroupId);
-      targetProfileIds = getProfileIdsOfGroup(targetGroupId);
-    }
-    
-    //Delete space rights (and sub-space and components, by inheritance) for target
-    for (String spaceProfileId : targetSpaceProfileIds) {
-      SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
-      currentTargetSpaceProfile.removeGroup(targetGroupId);
-      updateSpaceProfileInst(currentTargetSpaceProfile, authorId);  
-    }
-    
-    //Delete component rights for target
-    for (String profileId : targetProfileIds) {
-      ProfileInst currentTargetProfile = getProfileInst(profileId);
-      ComponentInst currentComponent = getComponentInst(
-          currentTargetProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
-     
-      if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        currentTargetProfile.removeGroup(targetGroupId);
-        updateProfileInst(currentTargetProfile, authorId);
-      }
-    }
-  }
   
-  /*
-   * Add target group profiles (space, components, nodes)
-   */
-  private void addTargetGroupProfiles(String targeGroupId, String authorId, String[] sourceSpaceProfileIds, String[] sourceComponentProfileIds, String[] sourceNodeProfileIds) {
-    
-    if (targeGroupId != null) {//target is a group
-      
-      //Add space rights (and sub-space and components, by inheritance)
-      for (String spaceProfileId : sourceSpaceProfileIds) {
-        SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
-        currentSourceSpaceProfile.addGroup(targeGroupId);
-        updateSpaceProfileInst(currentSourceSpaceProfile, authorId);       
-      }
-      
-      //Add component rights
-      for (String profileId : sourceComponentProfileIds) {
-        ProfileInst currentSourceProfile = getProfileInst(profileId);
-        ComponentInst currentComponent = getComponentInst(
-            currentSourceProfile.getComponentFatherId());
-        String spaceId = currentComponent.getDomainFatherId();
-        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
-       
-        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-          currentSourceProfile.addGroup(targeGroupId);
-          updateProfileInst(currentSourceProfile, authorId);
-        }
-      }
-      
-      //Add nodes rights
-      for (String profileId : sourceNodeProfileIds) {
-        ProfileInst currentSourceProfile = getProfileInst(profileId);
-        ComponentInst currentComponent = getComponentInst(
-            currentSourceProfile.getComponentFatherId());
-        String spaceId = currentComponent.getDomainFatherId();
-        SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
-       
-        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
-          currentSourceProfile.addGroup(targeGroupId);
-          updateProfileInst(currentSourceProfile, authorId);
-        }
-      }
-    }
-  }
   
   /*
    * Assign rights of a user to a group
@@ -1021,29 +807,12 @@ public class AdminController implements java.io.Serializable {
    * @param authorId : the userId of the author of this action
    */
   public void assignRightsFromUserToGroup(boolean deleteTargetProfiles, String sourceUserId, 
-      String targetGroupId, boolean nodeAssignRights, String authorId) {
+      String targetGroupId, boolean nodeAssignRights, String authorId) throws AdminException {
     
-      String[] sourceSpaceProfileIds = new String[0];
-      String[] sourceComponentProfileIds = new String[0];
-      String[] sourceNodeProfileIds = new String[0];
-      
-      if(StringUtil.isDefined(sourceUserId)) {
-        sourceSpaceProfileIds = getSpaceProfileIds(sourceUserId);
-        sourceComponentProfileIds = getProfileIds(sourceUserId);
-        if(nodeAssignRights) {
-          sourceNodeProfileIds = getNodeProfileIds(sourceUserId);
-        }
-      }
-      
-      //Replace rights : first, delete profiles of target group
-      if (StringUtil.isDefined(sourceUserId) && 
-          deleteTargetProfiles) {
-        
-        deleteTargetGroupProfiles(targetGroupId, authorId);
-      }
-      
-      //Second : add rights
-      addTargetGroupProfiles(targetGroupId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+    SilverTrace.info("admin", "AdminController.assignRightsFromUserToGroup",
+        "root.MSG_GEN_ENTER_METHOD");
+    getAdminService().assignRightsFromUserToGroup(deleteTargetProfiles, sourceUserId, 
+          targetGroupId, nodeAssignRights, authorId);
   }
   
   /*
@@ -1055,29 +824,12 @@ public class AdminController implements java.io.Serializable {
    * @param authorId : the userId of the author of this action
    */
   public void assignRightsFromGroupToUser(boolean deleteTargetProfiles, String sourceGroupId, 
-      String targetUserId, boolean nodeAssignRights, String authorId) {
+      String targetUserId, boolean nodeAssignRights, String authorId) throws AdminException {
     
-      String[] sourceSpaceProfileIds = new String[0];
-      String[] sourceComponentProfileIds = new String[0];
-      String[] sourceNodeProfileIds = new String[0];
-      
-      if(StringUtil.isDefined(sourceGroupId)) {
-        sourceSpaceProfileIds = getSpaceProfileIdsOfGroup(sourceGroupId);
-        sourceComponentProfileIds = getProfileIdsOfGroup(sourceGroupId);
-        if(nodeAssignRights) {
-          sourceNodeProfileIds = getNodeProfileIdsOfGroup(sourceGroupId);
-        }
-      }
-      
-      //Replace rights : first, delete profiles of target user
-      if (StringUtil.isDefined(sourceGroupId) && 
-          deleteTargetProfiles) {
-        
-        deleteTargetUserProfiles(targetUserId, authorId);
-      }
-      
-      //Second : add rights
-      addTargetUserProfiles(targetUserId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+    SilverTrace.info("admin", "AdminController.assignRightsFromGroupToUser",
+        "root.MSG_GEN_ENTER_METHOD");
+    getAdminService().assignRightsFromGroupToUser(deleteTargetProfiles, sourceGroupId, 
+          targetUserId, nodeAssignRights, authorId);
   }
   
   /*
@@ -1089,35 +841,12 @@ public class AdminController implements java.io.Serializable {
    * @param authorId : the userId of the author of this action
    */
   public void assignRightsFromGroupToGroup(boolean deleteTargetProfiles, String sourceGroupId, 
-      String targetGroupId, boolean nodeAssignRights, String authorId) {
+      String targetGroupId, boolean nodeAssignRights, String authorId) throws AdminException {
     
-      String[] sourceSpaceProfileIds = new String[0];
-      String[] sourceComponentProfileIds = new String[0];
-      String[] sourceNodeProfileIds = new String[0];
-      boolean targetSameSource = false;
-      
-      if(StringUtil.isDefined(sourceGroupId)) {
-        if (targetGroupId != null && sourceGroupId.equals(targetGroupId)) {//target = source
-          targetSameSource = true;
-        } else {
-          sourceSpaceProfileIds = getSpaceProfileIdsOfGroup(sourceGroupId);
-          sourceComponentProfileIds = getProfileIdsOfGroup(sourceGroupId);
-          if(nodeAssignRights) {
-            sourceNodeProfileIds = getNodeProfileIdsOfGroup(sourceGroupId);
-          }
-        }
-      }
-      
-      //Replace rights : first, delete profiles of target group
-      if (StringUtil.isDefined(sourceGroupId) && 
-          !targetSameSource && 
-          deleteTargetProfiles) {
-        
-        deleteTargetGroupProfiles(targetGroupId, authorId);
-      }
-      
-      //Second : add rights
-      addTargetGroupProfiles(targetGroupId, authorId, sourceSpaceProfileIds, sourceComponentProfileIds, sourceNodeProfileIds);
+    SilverTrace.info("admin", "AdminController.assignRightsFromGroupToGroup",
+        "root.MSG_GEN_ENTER_METHOD");
+    getAdminService().assignRightsFromGroupToGroup(deleteTargetProfiles, sourceGroupId, 
+          targetGroupId, nodeAssignRights, authorId);
   }
 
   // ----------------------------------------------
@@ -1318,54 +1047,21 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Space Profile related functions
   // ----------------------------------------------
-  
   /**
-   * All the space profiles to which the user belongs
-   * @return an array of profile IDs
-   */
-  private String[] getSpaceProfileIds(String sUserId) {
-    SilverTrace.info("admin", "AdminController.getSpaceProfileIds",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      return getAdminService().getSpaceProfileIds(sUserId);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getSpaceProfileIds",
-          "admin.MSG_ERR_GET_USERPROFILE", e);
-      return null;
-    }
-  }
-  
-  /**
-   * All the space profiles to which the group belongs
-   * @return an array of profile IDs
-   */
-  private String[] getSpaceProfileIdsOfGroup(String groupId) {
-    SilverTrace.info("admin", "AdminController.getSpaceProfileIdsOfGroup",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      return getAdminService().getSpaceProfileIdsOfGroup(groupId);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getSpaceProfileIdsOfGroup",
-          "admin.MSG_ERR_GET_USERPROFILE", e);
-      return null;
-    }
-  }
-  
-  /**
-* Return the space profile Instance corresponding to the given space profile id
-*/
-  private SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
+  * Return the space profile Instance corresponding to the given space profile id
+  */
+  public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
     SilverTrace.info("admin", "AdminController.getSpaceProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+          "root.MSG_GEN_ENTER_METHOD");
     try {
       return getAdminService().getSpaceProfileInst(sSpaceProfileId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getSpaceProfileInst",
-          "admin.MSG_ERR_GET_SPACE_PROFILE", e);
-      return null;
+       "admin.MSG_ERR_GET_SPACE_PROFILE", e);
+        return null;
     }
   }
-
+  
   /** Add the given Space Profile Instance */
   public String addSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       String userId) {

@@ -24,6 +24,7 @@
 
 package com.silverpeas.jobOrganizationPeas.servlets;
 
+import com.silverpeas.jobOrganizationPeas.JobOrganizationPeasException;
 import com.silverpeas.jobOrganizationPeas.control.JobOrganizationPeasSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -95,7 +96,12 @@ public class JobOrganizationPeasRequestRouter extends
         String sourceRightsType = request.getParameter("sourceRightsType"); //Set | Element
         boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights"); //true | false
         
-        jobOrganizationSC.assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
+        try {
+          jobOrganizationSC.assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
+          request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageOk"));
+        } catch(JobOrganizationPeasException e) {
+          request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageNOk"));
+        }
         
         destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
       } 

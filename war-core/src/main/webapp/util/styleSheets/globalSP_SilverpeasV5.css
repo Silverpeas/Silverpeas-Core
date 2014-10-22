@@ -6117,6 +6117,10 @@ form .forms .fields > li:nth-child(even) {
     width: 96%;
 }
 
+#profil-groups-belong #form-row-desc {
+ 	width:98%
+}
+
 .skinFieldset .fields  {
 	padding:0;
 }
@@ -6127,6 +6131,10 @@ form .forms .fields > li:nth-child(even) {
 
 #profil table.tableArrayPane {
 	margin:10px;
+}
+
+#profil-groups-belong legend {
+    background: url("/silverpeas/util/icons/groups.png") no-repeat scroll 7px 0 transparent;
 }
 
 #profil-spaces-management legend {
