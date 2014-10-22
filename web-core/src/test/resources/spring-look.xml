@@ -43,6 +43,11 @@
         factory-bean="organizationControllerProvider"
         factory-method="getOrganisationController" />
 
+  <!-- the organisation controller factory  -->
+  <bean id="organisationControllerFactory" class="org.silverpeas.core.admin.OrganisationControllerFactory"
+        factory-method="getFactory"
+        depends-on="organizationController"/>
+
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
         factory-method="getSilverpeasLook"
