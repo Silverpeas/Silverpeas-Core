@@ -42,7 +42,7 @@ public class WysiwygEvent extends AbstractResourceEvent<WysiwygContent> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see org.silverpeas.notification.AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
    */
   public WysiwygEvent(final Type type, final WysiwygContent... wysiwyg) {
     super(type, wysiwyg);

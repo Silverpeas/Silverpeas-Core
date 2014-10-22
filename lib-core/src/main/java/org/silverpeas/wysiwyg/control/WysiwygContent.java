@@ -24,7 +24,6 @@ package org.silverpeas.wysiwyg.control;
 import org.silverpeas.contribution.model.ContributionContent;
 import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.WAPrimaryKey;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -63,7 +62,7 @@ public class WysiwygContent implements ContributionContent<String> {
    */
   public WysiwygContent(final ContributionIdentifier id, final String text) {
     this.text = text;
-    this.contributionId = contributionId;
+    this.contributionId = id;
   }
 
   /**

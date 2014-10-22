@@ -261,24 +261,24 @@ public class WysiwygManager {
    * @throws WysiwygException
    */
   String getNodePath(String currentPath, String componentId) {
-    String chemin = currentPath;
-    if (chemin != null) {
-      chemin = suppressFinalSlash(chemin);
-      int indexComponent = chemin.lastIndexOf(componentId) + componentId.length();
-      String finChemin = suppressLeadingSlashesOrAntislashes(chemin.substring(indexComponent));
+    String path = currentPath;
+    if (path != null) {
+      path = suppressFinalSlash(path);
+      int indexComponent = path.lastIndexOf(componentId) + componentId.length();
+      String pathEnd = suppressLeadingSlashesOrAntislashes(path.substring(indexComponent));
       int index = -1;
-      if (finChemin.contains("/")) {
-        index = finChemin.indexOf('/');
-      } else if (finChemin.contains("\\")) {
-        index = finChemin.indexOf('\\');
+      if (pathEnd.contains("/")) {
+        index = pathEnd.indexOf('/');
+      } else if (pathEnd.contains("\\")) {
+        index = pathEnd.indexOf('\\');
       }
       SilverTrace.info("wysiwyg", "WysiwygController.getNodePath()", "root.MSG_GEN_PARAM_VALUE",
-          "finChemin = " + finChemin);
+          "pathEnd = " + pathEnd);
 
       if (index == -1) {
-        return chemin;
+        return path;
       }
-      return chemin.substring(0, chemin.indexOf(finChemin) + index);
+      return path.substring(0, path.indexOf(pathEnd) + index);
     }
     return "";
   }
@@ -291,19 +291,19 @@ public class WysiwygManager {
     return path;
   }
 
-  String ignoreLeadingSlash(String chemin) {
-    if (chemin.startsWith("/")) {
-      return ignoreLeadingSlash(chemin.substring(1));
+  String ignoreLeadingSlash(String path) {
+    if (path.startsWith("/")) {
+      return ignoreLeadingSlash(path.substring(1));
     }
-    return chemin;
+    return path;
   }
 
-  String supprDoubleAntiSlash(String chemin) {
+  String supprDoubleAntiSlash(String path) {
     StringBuilder res = new StringBuilder("");
     int i = 0;
-    while (i < chemin.length()) {
-      char car = chemin.charAt(i);
-      if (car == '\\' && chemin.charAt(i + 1) == '\\') {
+    while (i < path.length()) {
+      char car = path.charAt(i);
+      if (car == '\\' && path.charAt(i + 1) == '\\') {
         res.append(car);
         i++;
       } else {
@@ -314,17 +314,17 @@ public class WysiwygManager {
     return res.toString();
   }
 
-  String suppressLeadingSlashesOrAntislashes(String chemin) {
-    if (chemin.startsWith("\\") || chemin.startsWith("/")) {
-      return suppressLeadingSlashesOrAntislashes(chemin.substring(1));
+  String suppressLeadingSlashesOrAntislashes(String path) {
+    if (path.startsWith("\\") || path.startsWith("/")) {
+      return suppressLeadingSlashesOrAntislashes(path.substring(1));
     }
-    return chemin;
+    return path;
   }
 
   /* doubleAntiSlash */
-  String doubleAntiSlash(String chemin) {
+  String doubleAntiSlash(String path) {
     int i = 0;
-    String res = chemin;
+    String res = path;
     boolean ok = true;
     while (ok) {
       int j = i + 1;
@@ -332,10 +332,10 @@ public class WysiwygManager {
         char car1 = res.charAt(i);
         char car2 = res.charAt(j);
         if (!((car1 == '\\' && car2 == '\\') || (car1 != '\\' && car2 != '\\'))) {
-          String avant = res.substring(0, j);
-          String apres = res.substring(j);
-          if (!apres.startsWith("\\\\") && !avant.endsWith("\\\\")) {
-            res = avant + '\\' + apres;
+          String before = res.substring(0, j);
+          String after = res.substring(j);
+          if (!after.startsWith("\\\\") && !before.endsWith("\\\\")) {
+            res = before + '\\' + after;
             i++;
           }
         }
@@ -617,7 +617,7 @@ public class WysiwygManager {
   public WysiwygContent load(final ContributionIdentifier id, String language) {
     String content = internalLoad(id, language);
     if (I18NHelper.isI18nActivated() && content != null && StringUtil.isNotDefined(content)) {
-      List<String> languages = new ArrayList<String>(I18NHelper.getAllSupportedLanguages());
+      List<String> languages = new ArrayList<>(I18NHelper.getAllSupportedLanguages());
       languages.remove(language);
       for (String lang : languages) {
         content = internalLoad(id, lang);
@@ -671,7 +671,7 @@ public class WysiwygManager {
    * @return
    */
   public List<String> getEmbeddedAttachmentIds(String content) {
-    List<String> attachmentIds = new ArrayList<String>();
+    List<String> attachmentIds = new ArrayList<>();
 
     if (content != null) {
       // 1 - search url with format : /silverpeas/File/####
@@ -744,33 +744,33 @@ public class WysiwygManager {
    * updateWebsite : creation or update of a file of a website Param = cheminFichier =
    * c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
    * contenuFichier = code du fichier : "<HTML><TITLE>...."
-   * @param cheminFichier
-   * @param contenuFichier
-   * @param nomFichier
+   * @param filePath
+   * @param fileContent
+   * @param fileName
    */
-  public void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier)
+  public void updateWebsite(String filePath, String fileName, String fileContent)
       throws WysiwygException {
-    checkPath(cheminFichier);
+    checkPath(filePath);
     SilverTrace.info("wysiwyg", "WysiwygController.updateWebsite()", "root.MSG_GEN_PARAM_VALUE",
-        "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
-    createFile(cheminFichier, nomFichier, contenuFichier);
+        "filePath=" + filePath + " fileName=" + fileName);
+    createFile(filePath, fileName, fileContent);
   }
 
   /**
    * Creation or update of a file
-   * @param cheminFichier the path to the directory containing the file.
-   * @param nomFichier the name of the file.
-   * @param contenuFichier the content of the file.
+   * @param filePath the path to the directory containing the file.
+   * @param fileName the name of the file.
+   * @param fileContent the content of the file.
    * @return the created file.
    */
-  protected File createFile(String cheminFichier, String nomFichier, String contenuFichier)
+  protected File createFile(String filePath, String fileName, String fileContent)
       throws WysiwygException {
-    checkPath(cheminFichier);
+    checkPath(filePath);
     SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_ENTER_METHOD",
-        "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
-    FileFolderManager.createFile(cheminFichier, nomFichier, contenuFichier);
-    File directory = new File(cheminFichier);
-    return FileUtils.getFile(directory, nomFichier);
+        "filePath=" + filePath + " fileName=" + fileName);
+    FileFolderManager.createFile(filePath, fileName, fileContent);
+    File directory = new File(filePath);
+    return FileUtils.getFile(directory, fileName);
   }
 
   /**
@@ -788,10 +788,9 @@ public class WysiwygManager {
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
     SimpleDocument copy = null;
-    List<Pair<SimpleDocumentPK, SimpleDocumentPK>> oldNewImagePkMapping =
-        new ArrayList<Pair<SimpleDocumentPK, SimpleDocumentPK>>();
-    Map<String, String> fileIds = new HashMap<String, String>();
-    List<String> languagesWithEmptyContent = new ArrayList<String>();
+    List<Pair<SimpleDocumentPK, SimpleDocumentPK>> oldNewImagePkMapping = new ArrayList<>();
+    Map<String, String> fileIds = new HashMap<>();
+    List<String> languagesWithEmptyContent = new ArrayList<>();
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       SimpleDocumentList<SimpleDocument> documents =
           AttachmentServiceProvider.getAttachmentService().
@@ -997,7 +996,7 @@ public class WysiwygManager {
   }
 
   public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
+    List<ComponentInstLight> galleries = new ArrayList<>();
     OrganisationController orgaController =
         OrganisationControllerProvider.getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
@@ -1017,7 +1016,7 @@ public class WysiwygManager {
    */
   public List<ComponentInstLight> getStorageFile() {
     // instiate all needed objects
-    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+    List<ComponentInstLight> components = new ArrayList<>();
     OrganisationController controller = OrganisationControllerProvider.getOrganisationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
