@@ -108,12 +108,12 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   public List<Parameter> getAllParametersInComponent(int componentId) throws
       AdminPersistenceException {
     List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
-    List<Parameter> params = new ArrayList<Parameter>();
+    List<Parameter> params = new ArrayList<>();
     for (InstanceDataRow row : rows) {
       Parameter param = new Parameter();
       param.setName(row.name);
       param.setValue(row.value);
-      HashMap<String, String> multilang = new HashMap<String, String>();
+      HashMap<String, String> multilang = new HashMap<>();
       multilang.put(I18NHelper.defaultLanguage, row.label);
       param.setLabel(multilang);
       params.add(param);
@@ -137,8 +137,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     idr.value = parameter.getValue();
     int nbRowUpdated = updateRow(UPDATE_INSTANCEDATA, idr);
     if (nbRowUpdated < 1) {
-      // no lines has been updated
-      // we have to insert it
+      // no lines has been updated we have to insert it
       createInstanceData(componentId, parameter);
     }
   }

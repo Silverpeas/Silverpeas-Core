@@ -669,7 +669,7 @@ public class UserTable extends Table<UserRow> {
     SynchroReport
         .info("UserTable.removeUser()", "Delete " + user.login + " from user favorite space table",
             null);
-    UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
+    UserFavoriteSpaceDAO ufsDAO = DAOProvider.getUserFavoriteSpaceDAO();
     if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(id, -1))) {
       throw new AdminPersistenceException("UserTable.removeUser()", SilverpeasException.ERROR,
           "admin.EX_ERR_DELETE_USER");

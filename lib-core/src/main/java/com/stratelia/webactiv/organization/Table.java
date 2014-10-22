@@ -509,7 +509,7 @@ public abstract class Table<T> {
   }
 
   protected List<T> getRows(ResultSet rs) throws SQLException {
-    ArrayList<T> result = new ArrayList<T>();
+    List<T> result = new ArrayList<>();
     while (rs.next()) {
       result.add(fetchRow(rs));
     }
@@ -517,7 +517,7 @@ public abstract class Table<T> {
   }
 
   protected List<String> getIds(ResultSet rs) throws SQLException {
-    ArrayList<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     while (rs.next()) {
       result.add(String.valueOf(rs.getInt(1)));
     }
@@ -662,12 +662,10 @@ public abstract class Table<T> {
 
   private boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery, Object value,
       String column, boolean concatAndOr, String andOr) {
-    boolean valret = concatAndOr;
-    if (valret) {
+    if (concatAndOr) {
       theQuery.append(andOr);
     } else {
       theQuery.append(" where (");
-      valret = true;
     }
     if (value instanceof String) {
       theQuery.append("LOWER(").append(column).append(")" + " LIKE LOWER(?)");
@@ -675,6 +673,6 @@ public abstract class Table<T> {
       theQuery.append(column).append(" = ?");
     }
     theVect.add(value);
-    return valret;
+    return true;
   }
 }

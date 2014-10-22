@@ -24,23 +24,27 @@
 
 package com.stratelia.webactiv.organization;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@Singleton
+@Default
 public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
 
   public List<UserFavoriteSpaceVO> getListUserFavoriteSpace(String userId) {
-    List<UserFavoriteSpaceVO> listUserFavoriteSpaces = new ArrayList<UserFavoriteSpaceVO>();
+    List<UserFavoriteSpaceVO> listUserFavoriteSpaces = new ArrayList<>();
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
     IdPK pk = new IdPK();
-    Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces = null;
+    Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces;
     String whereClause = " userid = " + userId;
     try {
 
@@ -87,7 +91,7 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
     boolean exist = false;
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
     IdPK pk = new IdPK();
-    Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces = null;
+    Collection<UserFavoriteSpaceBean> beansUserFavoriteSpaces;
     String whereClause = " userid = " + userId + " AND spaceId = " + spaceId;
     try {
 
@@ -109,7 +113,7 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
   public boolean removeUserFavoriteSpace(UserFavoriteSpaceVO ufsVO) {
     boolean result = false;
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
-    StringBuffer whereBuff = new StringBuffer();
+    StringBuilder whereBuff = new StringBuilder();
     int removedUserId = ufsVO.getUserId();
     int removedSpaceId = ufsVO.getSpaceId();
     if (removedUserId == -1 && removedSpaceId == -1) {
@@ -140,4 +144,6 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
     return result;
   }
 
+  public UserFavoriteSpaceDAOImpl() {
+  }
 }

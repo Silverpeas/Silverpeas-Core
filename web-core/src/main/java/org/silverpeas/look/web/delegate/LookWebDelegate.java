@@ -32,12 +32,12 @@ import com.silverpeas.look.LookHelper;
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import com.stratelia.webactiv.organization.DAOProvider;
 import org.silverpeas.core.admin.OrganisationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
-import com.stratelia.webactiv.organization.DAOFactory;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganisationController;
@@ -83,7 +83,7 @@ public class LookWebDelegate {
    * @param space
    */
   public void addToUserFavorites(final SpaceInstLight space) {
-    DAOFactory.getUserFavoriteSpaceDAO().addUserFavoriteSpace(
+    DAOProvider.getUserFavoriteSpaceDAO().addUserFavoriteSpace(
         new UserFavoriteSpaceVO(getUser(), space));
     clearFavoriteCache();
   }
@@ -93,7 +93,7 @@ public class LookWebDelegate {
    * @param space
    */
   public void removeFromUserFavorites(final SpaceInstLight space) {
-    DAOFactory.getUserFavoriteSpaceDAO().removeUserFavoriteSpace(
+    DAOProvider.getUserFavoriteSpaceDAO().removeUserFavoriteSpace(
         new UserFavoriteSpaceVO(getUser(), space));
     clearFavoriteCache();
   }
@@ -149,7 +149,7 @@ public class LookWebDelegate {
   private List<UserFavoriteSpaceVO> getUserFavoriteSpaces() {
     if (userFavoriteSpaces == null) {
       userFavoriteSpaces =
-          DAOFactory.getUserFavoriteSpaceDAO().getListUserFavoriteSpace(getUserId());
+          DAOProvider.getUserFavoriteSpaceDAO().getListUserFavoriteSpace(getUserId());
     }
     return userFavoriteSpaces;
   }

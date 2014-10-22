@@ -107,7 +107,7 @@ public class GroupTable extends Table<GroupRow> {
    */
   public GroupRow getGroupBySpecificId(int domainId, String specificId)
       throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(2);
+    List<Object> params = new ArrayList<>(2);
     params.add(domainId);
     params.add(specificId);
     List<GroupRow> groups = getRows(SELECT_GROUP_BY_SPECIFICID, params);
@@ -149,7 +149,7 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException
    */
   public GroupRow getGroup(int superGroupId, String name) throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(2);
+    List<Object> params = new ArrayList<>(2);
     params.add(superGroupId);
     params.add(name);
     List<GroupRow> groups = getRows(SELECT_GROUP_BY_NAME, params);
@@ -424,7 +424,7 @@ public class GroupTable extends Table<GroupRow> {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuilder theQuery;
-    List<Object> params = new ArrayList<Object>();
+    List<Object> params = new ArrayList<>();
 
     if ((aRoleId != null) && (aRoleId.length > 0)) {
       theQuery = new StringBuilder(SELECT_SEARCH_GROUPSID_IN_ROLE);
@@ -506,7 +506,7 @@ public class GroupTable extends Table<GroupRow> {
     boolean concatAndOr = false;
     String andOr;
     StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_GROUPS);
-    List<Object> params = new ArrayList<Object>();
+    List<Object> params = new ArrayList<>();
 
     if (isAnd) {
       andOr = ") AND (";

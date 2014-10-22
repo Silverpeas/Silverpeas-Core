@@ -44,10 +44,9 @@ import com.silverpeas.look.LookHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
-import com.stratelia.webactiv.organization.DAOFactory;
+import com.stratelia.webactiv.organization.DAOProvider;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.util.ResourceLocator;
@@ -191,7 +190,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return
    */
   private List<String> addSubSpace(String spaceId, String userId, ArrayList<String> addedSpaceIds) {
-    UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
+    UserFavoriteSpaceDAO ufsDAO = DAOProvider.getUserFavoriteSpaceDAO();
     SpaceInstLight space = organisationController.getSpaceInstLightById(spaceId);
     if (ufsDAO.addUserFavoriteSpace(new UserFavoriteSpaceVO(Integer.parseInt(userId),
         space.getLocalId()))) {
@@ -229,7 +228,7 @@ public class AjaxActionServlet extends HttpServlet {
     String spaceId = req.getParameter("SpaceId");
     if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(userId)) {
       SpaceInstLight spaceInst = organisationController.getSpaceInstLightById(spaceId);
-      UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
+      UserFavoriteSpaceDAO ufsDAO = DAOProvider.getUserFavoriteSpaceDAO();
       // Retrieve all the subspace identifier and status in order to display the right status
       if (ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(Integer.parseInt(userId),
           spaceInst.getLocalId()))) {

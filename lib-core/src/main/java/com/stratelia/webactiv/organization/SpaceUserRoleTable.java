@@ -76,7 +76,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow getSpaceUserRole(int spaceId, String roleName, int inherited) throws
       AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(3);
+    List<Object> params = new ArrayList<>(3);
     params.add(spaceId);
     params.add(inherited);
     params.add(roleName);
@@ -188,7 +188,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
 
   static final private String INSERT_SPACEUSERROLE = "insert into"
       + " ST_SpaceUserRole(id,spaceId,name,RoleName,description,isInherited)"
-      + " values     (? 	,?       ,?   ,?       ,?		   ,?)";
+      + " values (?, ?, ?, ?, ?, ?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceUserRoleRow row)

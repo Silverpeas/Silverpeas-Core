@@ -24,31 +24,22 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * DAOFactory is the data main access point. Use this class to retrieve UserFavoriteSpaceDAO, ...
+ * DAOProvider is the data main access point. Use this class to retrieve UserFavoriteSpaceDAO, ...
  */
-public class DAOFactory {
+public class DAOProvider {
 
-  // UserFavoriteSpaceDAO interface
-  private static UserFavoriteSpaceDAO ufsDAO = null;
-
-  /** Creates a new instance of DAOFactory */
-  public DAOFactory() {
+  /** Creates a new instance of DAOProvider */
+  private DAOProvider() {
   }
 
   /**
    * @return UserFavoriteSpaceDAO singleton
    */
   public static synchronized UserFavoriteSpaceDAO getUserFavoriteSpaceDAO() {
-    SilverTrace.debug("server", "DAOFactory.getUserFavoriteSpaceDAO", "",
-        "return UserFavoriteSpaceDAO singleton");
-    if (ufsDAO == null) {
-      // use properties configuration to load (switch on) the right implementation (JPA)
-      ufsDAO = new UserFavoriteSpaceDAOImpl();
-    }
-    return ufsDAO;
+    return ServiceProvider.getService(UserFavoriteSpaceDAO.class);
   }
 
 }

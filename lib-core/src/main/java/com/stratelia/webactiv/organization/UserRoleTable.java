@@ -92,7 +92,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   public UserRoleRow getUserRole(int instanceId, String roleName, int inherited)
       throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(3);
+    List<Object> params = new ArrayList<>(3);
     params.add(instanceId);
     params.add(inherited);
     params.add(roleName);
@@ -163,7 +163,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   public String[] getAllUserRoleIdsOfObject(int objectId, String objectType, int instanceId) throws
       AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(3);
+    List<Object> params = new ArrayList<>(3);
     params.add(instanceId);
     params.add(objectId);
     params.add(objectType);
