@@ -58,6 +58,7 @@ public interface LookHelper {
   public abstract void setComponentIdAndSpaceIds(String spaceId,
       String subSpaceId, String componentId);
 
+  @Deprecated
   public abstract void init(MainSessionController mainSessionController,
       ResourceLocator resources);
 
