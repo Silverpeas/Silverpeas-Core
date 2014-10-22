@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.persistence;
 
 import org.silverpeas.util.WAPrimaryKey;
+
 import java.sql.Connection;
 import java.util.Collection;
 
@@ -34,15 +35,19 @@ import java.util.Collection;
  * linked with a SilverpeasBean specialisation. The code below show you how to build a
  * SilverpeasBeanDAO, enable to create, update... objects for TrainingDetail class. <CODE>
  * // get a dao instance, associated with TrainingDetail bean class
- * SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO("com.stratelia.webactiv.training.model.TrainingDetail");
+ * SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO("com.stratelia.webactiv.training.model
+ * .TrainingDetail");
  * </CODE> Once a dao instance is build, it enables you to create, update, remove and list objects
  * from TrainingDetail. TrainingDetail has to be a SilverpeasBean specialisation. (A SilverpeasBean
  * contains a PK). The persistance mechanism is based on your bean properties. In your bean, you
  * need to have getXXX and setXXX methods for each "column" you want to be persistant. For the
  * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
  * near futur.
- * @param <T>
+ * @param <T> the SilverpeasBeanIntf type
+ * @Deprecated Replaced it with the new persistence layer {@Link org.silverpeas.persistence
+ * .JpaBasicEntityManager} or {@Link org.silverpeas.persistence.SilverpeasJpaEntityManager}
  */
+@Deprecated
 public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
 
   public static final int CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS = 0;
@@ -71,7 +76,7 @@ public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
 
   /**
    * remove the row in db represented by the primary key.
-   * @param bean the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
+   * @param pk the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
    * and componentId.
    */
   public void remove(WAPrimaryKey pk) throws PersistenceException;
@@ -80,12 +85,13 @@ public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
 
   /**
    * remove all row in db represented by the where clause.
-   * @param the where clause.
+   * @param pk the specific identifier
+   * @param p_WhereClause the where clause.
    */
   public void removeWhere(WAPrimaryKey pk, String p_WhereClause) throws PersistenceException;
 
-  public void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause) throws
-      PersistenceException;
+  public void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause)
+      throws PersistenceException;
 
   /**
    * get a bean list, representing a specific row selection.
@@ -97,8 +103,8 @@ public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
   public Collection<T> findByWhereClause(WAPrimaryKey pk, String whereClause)
       throws PersistenceException;
 
-  public Collection<T> findByWhereClause(Connection con, WAPrimaryKey pk, String whereClause) throws
-      PersistenceException;
+  public Collection<T> findByWhereClause(Connection con, WAPrimaryKey pk, String whereClause)
+      throws PersistenceException;
 
   /**
    * get a bean representing a row in db from its pk

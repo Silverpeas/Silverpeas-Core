@@ -37,31 +37,31 @@ public class PersistenceException extends SilverpeasException {
   private static final long serialVersionUID = -3169410580528156650L;
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * --------------------------------------------------------------------------
    * constructor
    */
-  public PersistenceException(String callingClass, int errorLevel,
-      String message) {
+  public PersistenceException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public PersistenceException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public PersistenceException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public PersistenceException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public PersistenceException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public PersistenceException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public PersistenceException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   /**
-   * -------------------------------------------------------------------------- getModule getModule
+   * --------------------------------------------------------------------------
+   * getModule
    */
   public String getModule() {
     return "persistence";

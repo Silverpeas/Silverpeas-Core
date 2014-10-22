@@ -26,6 +26,7 @@ package com.stratelia.webactiv.persistence;
 
 import org.silverpeas.util.WAPrimaryKey;
 
+@Deprecated
 public interface SilverpeasBeanIntf {
 
   public WAPrimaryKey getPK();

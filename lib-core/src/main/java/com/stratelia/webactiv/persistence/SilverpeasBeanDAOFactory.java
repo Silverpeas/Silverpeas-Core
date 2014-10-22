@@ -27,19 +27,20 @@ package com.stratelia.webactiv.persistence;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class SilverpeasBeanDAOFactory {
 
   private static Map<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>> silverpeasBeanDAOs =
-      new HashMap<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>>();
+      new HashMap<>();
 
   @SuppressWarnings("unchecked")
   public static <T extends SilverpeasBeanIntf> SilverpeasBeanDAO<T> getDAO(String beanName) throws
       PersistenceException {
-    SilverpeasBeanDAO<T> result = null;
+    SilverpeasBeanDAO<T> result;
     synchronized (SilverpeasBeanDAOFactory.class) {
       result = (SilverpeasBeanDAO<T>) silverpeasBeanDAOs.get(beanName);
       if (result == null) {
-        result = new SilverpeasBeanDAOImpl<T>(beanName);
+        result = new SilverpeasBeanDAOImpl<>(beanName);
         silverpeasBeanDAOs.put(beanName, result);
       }
     }
