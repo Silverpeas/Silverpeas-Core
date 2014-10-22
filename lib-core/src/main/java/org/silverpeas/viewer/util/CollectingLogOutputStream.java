@@ -39,7 +39,7 @@ public class CollectingLogOutputStream extends LogOutputStream {
   private final List<String> lines;
 
   public CollectingLogOutputStream() {
-    this(new LinkedList<String>());
+    this(new LinkedList<>());
   }
 
   public CollectingLogOutputStream(List<String> lines) {

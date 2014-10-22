@@ -23,25 +23,24 @@
  */
 package org.silverpeas.viewer;
 
-import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
-
-import java.io.File;
-
+import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.viewer.exception.PreviewException;
 import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.viewer.util.DocumentInfo;
 import org.silverpeas.viewer.util.SwfUtil;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.converter.DocumentFormat;
-import org.silverpeas.util.FileUtil;
+import javax.inject.Singleton;
+import java.io.File;
+
+import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Singleton
 public class DefaultViewService extends AbstractViewerService implements ViewService {
 
   /*

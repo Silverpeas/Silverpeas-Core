@@ -119,7 +119,7 @@ import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.viewer.ViewerFactory;
+import org.silverpeas.viewer.ViewerProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
@@ -1573,8 +1573,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     // check if attachment is previewable and viewable
     File attachmentFile = new File(document.getAttachmentPath());
-    boolean previewable = ViewerFactory.getPreviewService().isPreviewable(attachmentFile);
-    boolean viewable = ViewerFactory.getViewService().isViewable(attachmentFile);
+    boolean previewable = ViewerProvider.getPreviewService().isPreviewable(attachmentFile);
+    boolean viewable = ViewerProvider.getViewService().isViewable(attachmentFile);
 
     gsr.setPreviewable(previewable);
     gsr.setViewable(viewable);
@@ -1619,8 +1619,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (version != null) {
       // check if attachment is previewable and viewable
       File file = new File(version.getAttachmentPath());
-      boolean previewable = ViewerFactory.getPreviewService().isPreviewable(file);
-      boolean viewable = ViewerFactory.getViewService().isViewable(file);
+      boolean previewable = ViewerProvider.getPreviewService().isPreviewable(file);
+      boolean viewable = ViewerProvider.getViewService().isViewable(file);
 
       gsr.setPreviewable(previewable);
       gsr.setViewable(viewable);

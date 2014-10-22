@@ -43,7 +43,7 @@
 
   <aop:aspectj-autoproxy/>
 
-  <ctx:component-scan base-package="com.silverpeas.scheduler"/>
+  <!-- ebo <ctx:component-scan base-package="com.silverpeas.scheduler"/> -->
   <ctx:component-scan base-package="com.silverpeas.calendar"/>
   <!-- YCH <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>-->
   <ctx:component-scan base-package="com.silverpeas.admin.service"/>
@@ -68,7 +68,7 @@
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
   <ctx:component-scan base-package="org.silverpeas.look"/>
   <ctx:component-scan base-package="org.silverpeas.password"/>
-  <ctx:component-scan base-package="org.silverpeas.viewer"/>
+  <!-- ebo <ctx:component-scan base-package="org.silverpeas.viewer"/> -->
   <ctx:component-scan base-package="org.silverpeas.image.imagemagick"/>
   <!-- YCH <ctx:component-scan base-package="org.silverpeas.token"/>-->
   <!-- MMO <ctx:component-scan base-package="org.silverpeas.util.data"/> -->
@@ -142,8 +142,8 @@
 
   <!-- the factory for document viewing features available in Silverpeas.
   It wraps and provides an access to the actual view implementations -->
-  <bean id="viewerFactory" class="org.silverpeas.viewer.ViewerFactory"
-        factory-method="getInstance"/>
+  <!-- ebo <bean id="viewerFactory" class="org.silverpeas.viewer.ViewerProvider"
+        factory-method="getInstance"/> -->
 
   <!-- the factory of the content management services.
   It wraps and provides an access to the actual content manager managed by the IoC container -->

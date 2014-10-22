@@ -23,39 +23,31 @@
  */
 package org.silverpeas.viewer;
 
-import static org.silverpeas.util.ImageUtil.BMP_IMAGE_EXTENSION;
-import static org.silverpeas.util.ImageUtil.GIF_IMAGE_EXTENSION;
-import static org.silverpeas.util.ImageUtil.JPG_IMAGE_EXTENSION;
-import static org.silverpeas.util.ImageUtil.PCD_IMAGE_EXTENSION;
-import static org.silverpeas.util.ImageUtil.PNG_IMAGE_EXTENSION;
-import static org.silverpeas.util.ImageUtil.TGA_IMAGE_EXTENSION;
-import static org.silverpeas.util.ImageUtil.TIF_IMAGE_EXTENSION;
-import static org.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
+import com.silverpeas.converter.DocumentFormat;
+import com.silverpeas.converter.DocumentFormatConverterProvider;
+import com.silverpeas.converter.option.PageRangeFilterOption;
+import org.silverpeas.image.ImageTool;
+import org.silverpeas.image.ImageToolDirective;
+import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.util.SwfUtil;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import com.silverpeas.converter.DocumentFormatConverterProvider;
-import org.silverpeas.image.ImageTool;
-import org.silverpeas.image.ImageToolDirective;
-import org.silverpeas.image.option.DimensionOption;
-import org.silverpeas.viewer.exception.PreviewException;
-import org.silverpeas.viewer.util.SwfUtil;
-
-import com.silverpeas.annotation.Service;
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.option.PageRangeFilterOption;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MimeTypes;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.silverpeas.util.ImageUtil.*;
+import static org.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
 
 /**
  * @author Yohann Chastagnier
  */
-@Service
+@Singleton
 public class DefaultPreviewService extends AbstractViewerService implements PreviewService {
 
   // Extension of pdf document file

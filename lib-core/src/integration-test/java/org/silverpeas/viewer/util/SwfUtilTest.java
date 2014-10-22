@@ -23,13 +23,20 @@
  */
 package org.silverpeas.viewer.util;
 
-import java.io.File;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FilenameUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecutionException;
+import org.silverpeas.test.WarBuilder4LibCore;
+
+import java.io.File;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -38,6 +45,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
+@RunWith(Arquillian.class)
 public class SwfUtilTest {
 
   private static final String OS_KEY = "os.name";
@@ -57,6 +65,16 @@ public class SwfUtilTest {
     System.setProperty(OS_KEY, realSystem);
   }
 
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWar().addMavenDependencies("org.apache.commons:commons-exec")
+        .addSilverpeasExceptionBases().addCommonBasicUtilities().testFocusedOn((warBuilder) -> {
+          warBuilder.addPackages(true, "org.silverpeas.viewer");
+          warBuilder.addClasses(ExternalExecution.class, ExternalExecutionException.class);
+        }).build();
+  }
+
+
   /**
    * Test of buildPdfToSwfCommandLine method, of class SwfUtil.
    */
@@ -68,9 +86,9 @@ public class SwfUtilTest {
     File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildPdfToSwfCommandLine(endingCommand, inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(result.toString()), is("pdf2swf "
-        + "/silverpeas/viewer/file ' - '' .pdf "
-        + "-o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
+    assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
+        is("pdf2swf " + "/silverpeas/viewer/file ' - '' .pdf " +
+            "-o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
   }
 
   /**
@@ -82,8 +100,8 @@ public class SwfUtilTest {
     File file = new File("/silverpeas/viewer/", "file ' - '' .pdf");
     CommandLine result = SwfUtil.buildPdfDocumentInfoCommandLine(file);
     assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(result.toString()), is("pdf2swf -qq "
-        + "/silverpeas/viewer/file ' - '' .pdf --info"));
+    assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
+        is("pdf2swf -qq " + "/silverpeas/viewer/file ' - '' .pdf --info"));
   }
 
   /**
@@ -96,8 +114,8 @@ public class SwfUtilTest {
     File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildSwfToImageCommandLine(inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(result.toString()), is("swfrender "
-        + "/silverpeas/viewer/file ' - '' .pdf -o /silverpeas/viewer/file ' - '' .swf"));
+    assertThat(separatorsToUnix(String.join(" ", result.toStrings())), is("swfrender " +
+        "/silverpeas/viewer/file ' - '' .pdf -o /silverpeas/viewer/file ' - '' .swf"));
   }
 
   /**
@@ -111,8 +129,9 @@ public class SwfUtilTest {
     File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildPdfToSwfCommandLine(endingCommand, inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(result.toString()), is("pdf2swf /silverpeas/viewer/file ' - '' .pdf"
-        + " -o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
+    assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
+        is("pdf2swf /silverpeas/viewer/file ' - '' .pdf" +
+            " -o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
   }
 
   /**
@@ -124,8 +143,8 @@ public class SwfUtilTest {
     File file = new File("/silverpeas/viewer/", "file ' - '' .pdf");
     CommandLine result = SwfUtil.buildPdfDocumentInfoCommandLine(file);
     assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(result.toString()), is("pdf2swf -qq "
-        + "/silverpeas/viewer/file ' - '' .pdf" + " --info"));
+    assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
+        is("pdf2swf -qq " + "/silverpeas/viewer/file ' - '' .pdf" + " --info"));
   }
 
   /**
@@ -138,11 +157,12 @@ public class SwfUtilTest {
     File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildSwfToImageCommandLine(inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(result.toString()), is("swfrender "
-        + "/silverpeas/viewer/file ' - '' .pdf -o /silverpeas/viewer/file ' - '' .swf"));
+    assertThat(separatorsToUnix(String.join(" ", result.toStrings())), is("swfrender " +
+        "/silverpeas/viewer/file ' - '' .pdf -o /silverpeas/viewer/file ' - '' .swf"));
   }
 
   private static String separatorsToUnix(String filePath) {
     return FilenameUtils.separatorsToUnix(filePath).replaceAll("[a-zA-Z]:", "");
   }
+
 }

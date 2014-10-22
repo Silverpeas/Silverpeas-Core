@@ -44,8 +44,9 @@ import java.util.Collection;
  * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
  * near futur.
  * @param <T> the SilverpeasBeanIntf type
- * @Deprecated Replaced it with the new persistence layer {@Link org.silverpeas.persistence
- * .JpaBasicEntityManager} or {@Link org.silverpeas.persistence.SilverpeasJpaEntityManager}
+ * @Deprecated Replaced it with the new persistence layer
+ * {@link org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager}
+ * or {@link org.silverpeas.persistence.repository.jpa.SilverpeasJpaEntityManager}
  */
 @Deprecated
 public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {

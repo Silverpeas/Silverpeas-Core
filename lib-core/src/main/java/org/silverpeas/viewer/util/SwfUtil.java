@@ -147,7 +147,7 @@ public class SwfUtil extends ExternalExecution {
    * @return
    */
   public static DocumentInfo getPdfDocumentInfo(final File pdfFile) {
-    List<String> execResult = null;
+    List<String> execResult;
     try {
       execResult = exec(buildPdfDocumentInfoCommandLine(pdfFile));
     } catch (ExternalExecutionException e) {
@@ -169,7 +169,7 @@ public class SwfUtil extends ExternalExecution {
 
   static CommandLine buildPdfToSwfCommandLine(final String endingCommand, File inputFile,
       File outputFile) {
-    Map<String, File> files = new HashMap<String, File>(2);
+    Map<String, File> files = new HashMap<>(2);
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("pdf2swf");
@@ -185,7 +185,7 @@ public class SwfUtil extends ExternalExecution {
   }
 
   static CommandLine buildPdfDocumentInfoCommandLine(File file) {
-    Map<String, File> files = new HashMap<String, File>(1);
+    Map<String, File> files = new HashMap<>(1);
     files.put("file", file);
     CommandLine commandLine = new CommandLine("pdf2swf");
     commandLine.addArgument("-qq");
@@ -196,7 +196,7 @@ public class SwfUtil extends ExternalExecution {
   }
 
   static CommandLine buildSwfToImageCommandLine(File inputFile, File outputFile) {
-    Map<String, File> files = new HashMap<String, File>(2);
+    Map<String, File> files = new HashMap<>(2);
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("swfrender");

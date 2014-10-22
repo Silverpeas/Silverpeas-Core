@@ -39,7 +39,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.viewer.ViewerFactory;
+import org.silverpeas.viewer.ViewerProvider;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -106,14 +106,14 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
               .append(attachment.getFilename()).append("</a>");
           if (!pageContext.isSharingContext()) {
             File attachmentFile = new File(attachment.getAttachmentPath());
-            if (ViewerFactory.isPreviewable(attachmentFile)) {
+            if (ViewerProvider.isPreviewable(attachmentFile)) {
               html.append("<img onclick=\"javascript:previewFormFile(this, '").
                   append(attachment.getId()).append("');\" class=\"preview-file\" src=\"").
                   append(webContext).append("/util/icons/preview.png\" alt=\"").
                   append(Util.getString("GML.preview", language)).append("\" title=\"").
                   append(Util.getString("GML.preview", language)).append("\"/>");
             }
-            if (ViewerFactory.isViewable(attachmentFile)) {
+            if (ViewerProvider.isViewable(attachmentFile)) {
               html.append("<img onclick=\"javascript:viewFormFile(this, '")
                   .append(attachment.getId()).
                   append("');\" class=\"view-file\" src=\"").append(webContext)

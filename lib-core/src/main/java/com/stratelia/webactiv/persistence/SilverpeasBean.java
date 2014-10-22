@@ -31,7 +31,8 @@ import org.silverpeas.util.WAPrimaryKey;
 /**
  * SilverpeasBean represents an Entity in old silverpeas persistence layer
  * @Deprecated Replaced with a model Entity from org.silverpeas.persistence.model package. You can
- * use {@Link AbstractJpaEntity} or {@Link AbstractJpaCustomEntity}
+ * use {@link org.silverpeas.persistence.model.jpa.AbstractJpaEntity} or {@link
+ * org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity}
  */
 @Deprecated
 public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
