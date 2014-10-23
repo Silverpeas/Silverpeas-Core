@@ -42,8 +42,7 @@ public class ContributionRatingPK extends ForeignPK implements Serializable {
    */
   @Override
   public boolean equals(Object other) {
-    return ((other instanceof ContributionRatingPK) &&
-        (toString().equals(((ContributionRatingPK) other).toString())));
+    return ((other instanceof ContributionRatingPK) && (toString().equals(other.toString())));
   }
 
   @Override

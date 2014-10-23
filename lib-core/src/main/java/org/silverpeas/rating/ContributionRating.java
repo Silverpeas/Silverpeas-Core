@@ -16,7 +16,7 @@ public class ContributionRating implements Serializable {
 
   private ContributionRatingPK pk;
   private float ratingAverage = 0;
-  private Map<String, Integer> raterRatings = new HashMap<String, Integer>();
+  private Map<String, Integer> raterRatings = new HashMap<>();
 
   /**
    * Default constructor.
