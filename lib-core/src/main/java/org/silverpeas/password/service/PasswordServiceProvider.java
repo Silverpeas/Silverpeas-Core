@@ -23,40 +23,18 @@
  */
 package org.silverpeas.password.service;
 
-import org.silverpeas.password.constant.PasswordRuleType;
-
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * @author Yohann Chastagnier
  */
-public class PasswordServiceFactory {
-
-  private static final PasswordServiceFactory instance = new PasswordServiceFactory();
-
-  @Inject
-  private PasswordService passwordService;
+public class PasswordServiceProvider {
 
   /**
    * @return the passwordService
    */
   public static PasswordService getPasswordService() {
-    return getInstance().passwordService;
+    return ServiceProvider.getService(PasswordService.class);
   }
 
-  /**
-   * Gets the minimum length of passwords.
-   * @return
-   */
-  public static int getPasswordMinimumLength() {
-    return (Integer) getPasswordService().getRule(PasswordRuleType.MIN_LENGTH).getValue();
-  }
-
-  /**
-   * Gets an instance of this PasswordServiceFactory class.
-   * @return a PasswordServiceFactory instance.
-   */
-  private static PasswordServiceFactory getInstance() {
-    return instance;
-  }
 }

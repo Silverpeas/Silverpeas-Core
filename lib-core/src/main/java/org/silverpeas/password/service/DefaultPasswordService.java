@@ -23,10 +23,6 @@
  */
 package org.silverpeas.password.service;
 
-import com.silverpeas.annotation.Service;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.password.constant.PasswordRuleType;
 import org.silverpeas.password.rule.AtLeastXDigitPasswordRule;
@@ -38,8 +34,12 @@ import org.silverpeas.password.rule.MaxLengthPasswordRule;
 import org.silverpeas.password.rule.MinLengthPasswordRule;
 import org.silverpeas.password.rule.PasswordRule;
 import org.silverpeas.password.rule.SequentialForbiddenPasswordRule;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +54,7 @@ import java.util.Set;
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
-@Service
+@Singleton
 public class DefaultPasswordService implements PasswordService {
   protected static ResourceLocator settings =
       new ResourceLocator("org.silverpeas.password.settings.password", "");
@@ -63,15 +63,15 @@ public class DefaultPasswordService implements PasswordService {
 
   /* All server password rules */
   private Map<PasswordRuleType, PasswordRule> allPasswordRules =
-      new LinkedHashMap<PasswordRuleType, PasswordRule>(PasswordRuleType.values().length);
+      new LinkedHashMap<>(PasswordRuleType.values().length);
 
   /* All required server password rules */
   private Map<PasswordRuleType, PasswordRule> requiredPasswordRules =
-      new LinkedHashMap<PasswordRuleType, PasswordRule>(PasswordRuleType.values().length);
+      new LinkedHashMap<>(PasswordRuleType.values().length);
 
   /* All combined server password rules */
   private Map<PasswordRuleType, PasswordRule> combinedPasswordRules =
-      new LinkedHashMap<PasswordRuleType, PasswordRule>(PasswordRuleType.values().length);
+      new LinkedHashMap<>(PasswordRuleType.values().length);
 
   /**
    * Loading just after the server is started all activated server password rules.
@@ -102,17 +102,17 @@ public class DefaultPasswordService implements PasswordService {
 
   @Override
   public Collection<PasswordRule> getRules() {
-    return new ArrayList<PasswordRule>(allPasswordRules.values());
+    return new ArrayList<>(allPasswordRules.values());
   }
 
   @Override
   public Collection<PasswordRule> getRequiredRules() {
-    return new ArrayList<PasswordRule>(requiredPasswordRules.values());
+    return new ArrayList<>(requiredPasswordRules.values());
   }
 
   @Override
   public Collection<PasswordRule> getCombinedRules() {
-    return new ArrayList<PasswordRule>(combinedPasswordRules.values());
+    return new ArrayList<>(combinedPasswordRules.values());
   }
 
   @Override
@@ -151,21 +151,21 @@ public class DefaultPasswordService implements PasswordService {
   private String generate(PasswordRule sequentialForbidden) {
 
     // Context
-    final List<PasswordRule> rules = new ArrayList<PasswordRule>(getRules());
-    final List<PasswordRule> requiredRules = new ArrayList<PasswordRule>(getRequiredRules());
-    final List<PasswordRule> combinedRules = new ArrayList<PasswordRule>(getCombinedRules());
-    int minLength = (Integer) getRule(PasswordRuleType.MIN_LENGTH).getValue();
-    int maxLength = (Integer) getRule(PasswordRuleType.MAX_LENGTH).getValue();
+    final List<PasswordRule> rules = new ArrayList<>(getRules());
+    final List<PasswordRule> requiredRules = new ArrayList<>(getRequiredRules());
+    final List<PasswordRule> combinedRules = new ArrayList<>(getCombinedRules());
+    int minLength = getRule(PasswordRuleType.MIN_LENGTH).getValue();
+    int maxLength = getRule(PasswordRuleType.MAX_LENGTH).getValue();
 
     // Length of the random password
     int requiredPasswordLength = minLength + random(maxLength - minLength + 1);
 
     // Random parts of the password
     int currentPasswordLength = 0;
-    List<String> randomPasswordParts = new ArrayList<String>();
+    List<String> randomPasswordParts = new ArrayList<>();
     PasswordRule currentRule;
     String currentRandomPasswordPart;
-    Set<PasswordRule> combinedRulesPerformed = new HashSet<PasswordRule>();
+    Set<PasswordRule> combinedRulesPerformed = new HashSet<>();
     while (currentPasswordLength < requiredPasswordLength) {
 
       // Gets a password rule

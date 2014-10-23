@@ -27,6 +27,7 @@ import com.silverpeas.jobDomainPeas.JobDomainPeasException;
 import com.silverpeas.jobDomainPeas.JobDomainPeasTrappedException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.jobDomainPeas.SynchroUserWebServiceItf;
+import org.silverpeas.password.service.PasswordServiceProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
@@ -91,7 +92,6 @@ import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.password.service.PasswordCheck;
-import org.silverpeas.password.service.PasswordServiceFactory;
 import org.silverpeas.quota.exception.QuotaException;
 
 /**
@@ -578,7 +578,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // password is not mandatory
       if (StringUtil.isDefined(motDePasse)) {
         // Cheking password
-        PasswordCheck passwordCheck = PasswordServiceFactory.getPasswordService().check(motDePasse);
+        PasswordCheck passwordCheck = PasswordServiceProvider.getPasswordService().check(motDePasse);
         if (!passwordCheck.isCorrect()) {
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse))
               .append(passwordCheck.getFormattedErrorMessage(getLanguage()));

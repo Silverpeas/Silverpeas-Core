@@ -90,7 +90,7 @@ public class SchedulerTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWar().addQuartzSchedulerFeatures()
-        .addMavenDependencies("com.jayway.awaitility:awaitility")
+        .addMavenDependencies("com.jayway.awaitility:awaitility", "org.antlr:stringtemplate")
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "com.silverpeas.scheduler");
           warBuilder.addPackages(true, "org.silverpeas.initialization");

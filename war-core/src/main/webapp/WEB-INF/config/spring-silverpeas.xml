@@ -67,7 +67,7 @@
   <ctx:component-scan base-package="org.silverpeas.admin.component"/>
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
   <ctx:component-scan base-package="org.silverpeas.look"/>
-  <ctx:component-scan base-package="org.silverpeas.password"/>
+  <!-- ebo <ctx:component-scan base-package="org.silverpeas.password"/> -->
   <!-- ebo <ctx:component-scan base-package="org.silverpeas.viewer"/> -->
   <ctx:component-scan base-package="org.silverpeas.image.imagemagick"/>
   <!-- YCH <ctx:component-scan base-package="org.silverpeas.token"/>-->
@@ -179,8 +179,8 @@
 
   <!-- the factory of password services.
   It wraps and provides an access to different service instances relative to password handling -->
-  <bean id="passwordServiceFactory" class="org.silverpeas.password.service.PasswordServiceFactory"
-        factory-method="getInstance"/>
+  <!-- ebo <bean id="passwordServiceFactory" class="org.silverpeas.password.service.PasswordServiceProvider"
+        factory-method="getInstance"/> -->
 
   <!-- ebo <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/> -->
   <!-- ebo remove unused code <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/> -->

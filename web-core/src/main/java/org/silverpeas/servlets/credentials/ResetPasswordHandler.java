@@ -29,7 +29,7 @@ import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
-import org.silverpeas.password.service.PasswordServiceFactory;
+import org.silverpeas.password.service.PasswordServiceProvider;
 
 public class ResetPasswordHandler extends FunctionHandler {
 
@@ -44,7 +44,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         return getGeneral().getString("forgottenPasswordResetError");
       }
       if (userId != null) {
-        String password = PasswordServiceFactory.getPasswordService().generate();
+        String password = PasswordServiceProvider.getPasswordService().generate();
         ForgottenPasswordMailParameters parameters = null;
         try {
           parameters = getMailParameters(userId);

@@ -51,6 +51,10 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.pool.ConnectionPool;
+import org.silverpeas.util.template.SilverpeasStringTemplate;
+import org.silverpeas.util.template.SilverpeasStringTemplateUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -288,6 +292,17 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addLDAPFeatures() {
     return addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
+  }
+
+  /**
+   * @return
+   */
+  public WarBuilder4LibCore addStringTemplateFeatures() {
+    return addMavenDependencies("org.antlr:stringtemplate")
+        .addClasses(SilverpeasTemplateFactory.class, SilverpeasTemplate.class,
+            SilverpeasStringTemplateUtil.class, SilverpeasStringTemplate.class)
+        .addAsResource("com/silverpeas/util/stringtemplate.properties");
+
   }
 
 }

@@ -40,7 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import static org.silverpeas.password.service.PasswordServiceFactory.getPasswordService;
+import static org.silverpeas.password.service.PasswordServiceProvider.getPasswordService;
 import static org.silverpeas.password.web.PasswordResourceURIs.*;
 
 /**

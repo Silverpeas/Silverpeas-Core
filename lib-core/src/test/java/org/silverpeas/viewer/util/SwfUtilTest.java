@@ -25,16 +25,9 @@ package org.silverpeas.viewer.util;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FilenameUtils;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.silverpeas.exec.ExternalExecution;
-import org.silverpeas.exec.ExternalExecutionException;
-import org.silverpeas.test.WarBuilder4LibCore;
 
 import java.io.File;
 
@@ -45,7 +38,6 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
-@RunWith(Arquillian.class)
 public class SwfUtilTest {
 
   private static final String OS_KEY = "os.name";
@@ -64,16 +56,6 @@ public class SwfUtilTest {
   public static void restoreRealSystem() {
     System.setProperty(OS_KEY, realSystem);
   }
-
-  @Deployment
-  public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addMavenDependencies("org.apache.commons:commons-exec")
-        .addSilverpeasExceptionBases().addCommonBasicUtilities().testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.viewer");
-          warBuilder.addClasses(ExternalExecution.class, ExternalExecutionException.class);
-        }).build();
-  }
-
 
   /**
    * Test of buildPdfToSwfCommandLine method, of class SwfUtil.
