@@ -137,7 +137,7 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType) {
     SpaceComponentPair pair = new SpaceComponentPair(null, component);
-    Set<SpaceComponentPair> set = new HashSet<SpaceComponentPair>(1);
+    Set<SpaceComponentPair> set = new HashSet<>(1);
     set.add(pair);
 
     IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
@@ -165,7 +165,7 @@ public class WAIndexSearcher {
    * Search the documents of the given component's set. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results set.
    *
-   * @param query
+   * @param query the
    * @return
    * @throws org.silverpeas.search.searchEngine.model.ParseException
    */
@@ -237,7 +237,7 @@ public class WAIndexSearcher {
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
-      results = new ArrayList<MatchingIndexEntry>();
+      results = new ArrayList<>();
     }
     long endTime = System.nanoTime();
 
@@ -366,7 +366,7 @@ public class WAIndexSearcher {
    */
   private Query getQuery(String fieldName, String queryStr, Set<String> languages, Analyzer analyzer)
       throws ParseException {
-    Map<String, BooleanClause.Occur> fieldNames = new HashMap<String, BooleanClause.Occur>();
+    Map<String, BooleanClause.Occur> fieldNames = new HashMap<>();
     for (String language : languages) {
       fieldNames.put(getFieldName(fieldName, language), BooleanClause.Occur.SHOULD);
     }
@@ -421,7 +421,7 @@ public class WAIndexSearcher {
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
     if ("Publication".equals(indexEntry.getObjectType())) {
-      HashMap<String, String> sortableField = new HashMap<String, String>();
+      HashMap<String, String> sortableField = new HashMap<>();
       String fieldValue;
 
       for (String formXMLFieldName : SearchEnginePropertiesManager.getFieldsNameList()) {
@@ -439,7 +439,7 @@ public class WAIndexSearcher {
     // adds fields and values used to generate facets
     String fieldsForFacets = doc.get(IndexManager.FIELDS_FOR_FACETS);
     if (StringUtil.isDefined(fieldsForFacets)) {
-      Map<String, String> fieldsValueForFacets = new HashMap<String, String>();
+      Map<String, String> fieldsValueForFacets = new HashMap<>();
       StringTokenizer tokenizer = new StringTokenizer(fieldsForFacets, ",");
       while (tokenizer.hasMoreTokens()) {
         String fieldName = tokenizer.nextToken();
@@ -459,7 +459,7 @@ public class WAIndexSearcher {
    */
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
       IndexSearcher searcher) throws IOException {
-    List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
+    List<MatchingIndexEntry> results = new ArrayList<>();
 
     if (topDocs != null) {
       ScoreDoc scoreDoc;
@@ -484,7 +484,7 @@ public class WAIndexSearcher {
   private IndexSearcher getSearcher(Set<SpaceComponentPair> spaceComponentPairSet) {
     Set<String> indexPathSet = getIndexPathSet(spaceComponentPairSet);
 
-    List<IndexReader> readers = new ArrayList<IndexReader>();
+    List<IndexReader> readers = new ArrayList<>();
     for (String path : indexPathSet) {
       IndexReader indexReader = getIndexReader(path);
       if (indexReader != null) {
@@ -499,7 +499,7 @@ public class WAIndexSearcher {
    */
   private IndexSearcher getSearcher(QueryDescription query) {
     Set<String> indexPathSet = getIndexPathSet(query.getSpaceComponentPairSet());
-    List<IndexReader> readers = new ArrayList<IndexReader>();
+    List<IndexReader> readers = new ArrayList<>();
     for (String path : indexPathSet) {
       IndexReader indexReader = getIndexReader(path);
       if (indexReader != null) {
@@ -520,11 +520,8 @@ public class WAIndexSearcher {
   }
 
   private String getExternalComponentPath(ExternalComponent extComp) {
-    StringBuilder extStrBuilder = new StringBuilder();
-    extStrBuilder.append(extComp.getDataPath()).append(File.separator);
-    extStrBuilder.append("index").append(File.separator);
-    extStrBuilder.append(extComp.getComponent()).append(File.separator).append("index");
-    return extStrBuilder.toString();
+    return extComp.getDataPath() + File.separator + "index" + File.separator +
+        extComp.getComponent() + File.separator + "index";
   }
 
   /**
@@ -532,7 +529,7 @@ public class WAIndexSearcher {
    * component) pairs.
    */
   public Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
-    Set<String> pathSet = new HashSet<String>();
+    Set<String> pathSet = new HashSet<>();
 
     for (SpaceComponentPair pair : spaceComponentPairSet) {
 

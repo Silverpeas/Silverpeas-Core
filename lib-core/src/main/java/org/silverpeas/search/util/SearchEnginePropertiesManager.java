@@ -50,7 +50,7 @@ public class SearchEnginePropertiesManager {
    */
   public synchronized static List<String> getFieldsNameList() {
     if (fieldsNameList == null) {
-      fieldsNameList = new ArrayList<String>();
+      fieldsNameList = new ArrayList<>();
       ResourceLocator resource = new ResourceLocator(
           "com.silverpeas.searchEngine.searchEngineSettings", "");
       String property = resource.getString("sorting.formXML.fields");

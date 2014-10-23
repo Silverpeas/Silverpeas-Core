@@ -50,7 +50,7 @@ public class ExcelParser extends PipedParser {
   }
 
   /**
-   *Read the text content of a pdf file and store it in out to be ready to be indexed.
+   * Read the text content of a pdf file and store it in out to be ready to be indexed.
    * @param out
    * @param path
    * @param encoding
@@ -63,7 +63,7 @@ public class ExcelParser extends PipedParser {
       POIFSFileSystem fs = new POIFSFileSystem(file);
       HSSFWorkbook workbook = new HSSFWorkbook(fs);
 
-      HSSFSheet sheet = null;
+      HSSFSheet sheet;
       for (int nbSheet = 0; nbSheet < workbook.getNumberOfSheets(); nbSheet++) {
         // extract sheet's name
         out.write(workbook.getSheetName(nbSheet));

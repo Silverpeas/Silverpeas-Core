@@ -43,10 +43,11 @@ public final class QueryDescription implements Serializable {
 
   private static final long serialVersionUID = 1L;
   /**
-   * The searched components' instance is built empty. To be searched any space or component must be
+   * The searched components' instance is built empty. To be searched any space or component must
+   * be
    * explicitly added with the addSpaceComponent() method. This Set is a set of SpaceComponentPair.
    */
-  private Set<SpaceComponentPair> spaceComponentPairSet = new HashSet<SpaceComponentPair>();
+  private Set<SpaceComponentPair> spaceComponentPairSet = new HashSet<>();
   /**
    * The query defaults to the empty query. This is an error to set the query to null : a query is
    * needed to perform the search.
@@ -74,15 +75,16 @@ public final class QueryDescription implements Serializable {
   private boolean searchBySpace = false;
   private boolean searchByComponentType = false;
   private String requestedFolder = null;
-  
+
   /**
    * The external searched components are build empty. This is a set of ExternalComponent
    */
-  private Set<ExternalComponent> extComponents = new HashSet<ExternalComponent>();
+  private Set<ExternalComponent> extComponents = new HashSet<>();
 
   /**
    * The no parameters constructor builds an empty query. The setQuery and addSpaceComponentPair()
-   * methods should be called to initialize the query. Other criterium (language, creation date ...)
+   * methods should be called to initialize the query. Other criterium (language, creation date
+   * ...)
    * can be set before the request is sent to the searchEngine.
    */
   public QueryDescription() {
@@ -109,14 +111,13 @@ public final class QueryDescription implements Serializable {
     if (this.query.indexOf("not ") == 0) {
       this.query = "NOT " + this.query.substring(4, this.query.length());
     }
-    SilverTrace.info("searchEngine", "QueryDescription.setQuery()",
-        "root.MSG_GEN_PARAM_VALUE", "Query String to Lucence= " + this.query);
+    SilverTrace.info("searchEngine", "QueryDescription.setQuery()", "root.MSG_GEN_PARAM_VALUE",
+        "Query String to Lucence= " + this.query);
   }
 
   /**
    * Return the query string.
-   *
-   * @return
+   * @return the query string
    */
   public String getQuery() {
     return query;
@@ -124,17 +125,14 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the user
-   *
    * @param searchingUser : the user.
    */
   public void setSearchingUser(String searchingUser) {
-    this.searchingUser = (searchingUser == null) ? "" : searchingUser
-        .toLowerCase();
+    this.searchingUser = (searchingUser == null) ? "" : searchingUser.toLowerCase();
   }
 
   /**
    * return the user.
-   *
    * @return the user.
    */
   public String getSearchingUser() {
@@ -143,7 +141,6 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Add the given instance of the component to the searched instances set.
-   *
    * @param space
    * @param component
    */
@@ -154,15 +151,14 @@ public final class QueryDescription implements Serializable {
   }
 
   public void addComponent(String component) {
-    SilverTrace.info("searchEngine", "QueryDescription.addComponent()",
-        "root.MSG_GEN_PARAM_VALUE", "component=" + component);
+    SilverTrace.info("searchEngine", "QueryDescription.addComponent()", "root.MSG_GEN_PARAM_VALUE",
+        "component=" + component);
     spaceComponentPairSet.add(new SpaceComponentPair(null, component));
   }
 
   /**
    * Return the set of all the component's instances whose the documents must be searched. The
    * return Set is a set of SpaceComponentPair.
-   *
    * @return
    */
   public Set<SpaceComponentPair> getSpaceComponentPairSet() {
@@ -171,7 +167,6 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the requested language.
-   *
    * @param requestedLang
    */
   public void setRequestedLanguage(String requestedLang) {
@@ -180,7 +175,6 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Returns the requested language.
-   *
    * @return
    */
   public String getRequestedLanguage() {
@@ -192,7 +186,7 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the requested author.
-   * @param author 
+   * @param author
    */
   public void setRequestedAuthor(String author) {
     this.requestedAuthor = (author == null) ? null : author.toLowerCase();
@@ -200,7 +194,7 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Return the requested author.
-   * @return 
+   * @return
    */
   public String getRequestedAuthor() {
     return requestedAuthor;
@@ -208,7 +202,7 @@ public final class QueryDescription implements Serializable {
 
   /**
    * Set the before date
-   * @param beforedate 
+   * @param beforedate
    */
   public void setRequestedCreatedBefore(String beforedate) {
     this.requestedCreatedBefore = beforedate;
@@ -267,7 +261,7 @@ public final class QueryDescription implements Serializable {
     }
 
     if (multiFieldQuery == null) {
-      multiFieldQuery = new ArrayList<FieldDescription>();
+      multiFieldQuery = new ArrayList<>();
     }
 
     multiFieldQuery.add(fieldQuery);
@@ -275,7 +269,7 @@ public final class QueryDescription implements Serializable {
 
   public void addFieldQueries(List<FieldDescription> fieldQueries) {
     if (multiFieldQuery == null) {
-      multiFieldQuery = new ArrayList<FieldDescription>();
+      multiFieldQuery = new ArrayList<>();
     }
 
     multiFieldQuery.addAll(fieldQueries);
@@ -287,8 +281,8 @@ public final class QueryDescription implements Serializable {
   }
 
   public boolean isEmpty() {
-    return !StringUtil.isDefined(query) && getMultiFieldQuery() == null
-        && getXmlQuery() == null && !StringUtil.isDefined(xmlTitle);
+    return !StringUtil.isDefined(query) && getMultiFieldQuery() == null && getXmlQuery() == null &&
+        !StringUtil.isDefined(xmlTitle);
   }
 
   /**
@@ -299,8 +293,8 @@ public final class QueryDescription implements Serializable {
     int index = source.indexOf(find);
 
     while (index > -1) {
-      source = source.substring(0, index) + replace
-          + source.substring(index + find.length(), source.length());
+      source = source.substring(0, index) + replace +
+          source.substring(index + find.length(), source.length());
       index = source.indexOf(find);
     }
 
@@ -308,8 +302,9 @@ public final class QueryDescription implements Serializable {
   }
 
   public boolean isPeriodDefined() {
-    return StringUtil.isDefined(requestedCreatedAfter) || StringUtil.isDefined(
-        requestedCreatedBefore) || StringUtil.isDefined(requestedUpdatedAfter) || StringUtil.
+    return StringUtil.isDefined(requestedCreatedAfter) ||
+        StringUtil.isDefined(requestedCreatedBefore) ||
+        StringUtil.isDefined(requestedUpdatedAfter) || StringUtil.
         isDefined(requestedUpdatedBefore);
   }
 
@@ -321,7 +316,7 @@ public final class QueryDescription implements Serializable {
   }
 
   /**
-   * @param searchBySpace the searchBySpace to set
+   * @param isSearchBySpace the searchBySpace to set
    */
   public void setSearchBySpace(boolean isSearchBySpace) {
     this.searchBySpace = isSearchBySpace;
@@ -353,11 +348,13 @@ public final class QueryDescription implements Serializable {
   /**
    * add new external component to the list
    *
-   * @param server
-   * @param component
+   * @param server the external server name
+   * @param component the external component
+   * @param path the external path
+   * @param url the external url
    */
   public void addExternalComponents(String server, String component, String path, String url) {
-    SilverTrace.info("searchEngine", "QueryDescription.addExternalComponents()", 
+    SilverTrace.info("searchEngine", "QueryDescription.addExternalComponents()",
         "root.MSG_GEN_PARAM_VALUE", "server = " + server + ", component=" + component);
     // add all needed information
     extComponents.add(new ExternalComponent(server, component, path, url));

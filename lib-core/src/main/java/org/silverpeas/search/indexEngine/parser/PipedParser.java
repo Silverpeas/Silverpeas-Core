@@ -56,8 +56,8 @@ public abstract class PipedParser implements Parser {
 
       new ParserThread(pipeOut, path, encoding).start();
     } catch (IOException e) {
-      SilverTrace.error("indexEngine", "PipedParser",
-          "indexEngine.MSG_PIPE_CREATION_FAILED", path, e);
+      SilverTrace
+          .error("indexEngine", "PipedParser", "indexEngine.MSG_PIPE_CREATION_FAILED", path, e);
       try {
         if (pipeIn != null) {
           pipeIn.close();
@@ -75,7 +75,8 @@ public abstract class PipedParser implements Parser {
   }
 
   /**
-   * Inner class which will run in the background the outPutContent method. Running this thread will
+   * Inner class which will run in the background the outPutContent method. Running this thread
+   * will
    * provide the character stream of the piped reader returned by the getReader method and which is
    * used by the main calling thread.
    */
@@ -88,8 +89,7 @@ public abstract class PipedParser implements Parser {
      * @param encoding
      * @see
      */
-    public ParserThread(Writer out, String path, String encoding) // ????
-    {
+    public ParserThread(Writer out, String path, String encoding) {
       this.out = out;
       this.path = path;
       this.encoding = encoding;
@@ -105,13 +105,12 @@ public abstract class PipedParser implements Parser {
           outPutContent(out, path, encoding);
         } catch (IOException e) {
 
-          // Most IOExceptions are quasi normal here :
-          // when an indexed document is too huge,
-          // the lucene engine close the pipe as soon as
-          // he gets enought words : then the writer receives
-          // an IOException("Pipe closed").
-          SilverTrace.info("indexEngine", "PipedParser",
-              "indexEngine.MSG_IO_ERROR_WHILE_PARSING", path, e);
+          // Most IOExceptions are quasi normal here : when an indexed document is too huge,
+          // the lucene engine close the pipe as soon as he gets enought words : then the writer
+          // receives an IOException("Pipe closed").
+          SilverTrace
+              .info("indexEngine", "PipedParser", "indexEngine.MSG_IO_ERROR_WHILE_PARSING", path,
+                  e);
         } finally {
           try {
             out.close();

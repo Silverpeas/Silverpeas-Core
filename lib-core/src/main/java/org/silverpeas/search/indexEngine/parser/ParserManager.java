@@ -48,7 +48,7 @@ public final class ParserManager {
 * The map giving the parser for a specific file format. The type of this map is : Map (String ->
 * Parser).
 */
-  private static final Map<String, Parser> parserMap = new HashMap<String, Parser>();
+  private static final Map<String, Parser> parserMap = new HashMap<>();
   private static final Parser defaultParser = new TikaParser();
 
   /**

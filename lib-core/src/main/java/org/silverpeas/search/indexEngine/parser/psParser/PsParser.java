@@ -77,7 +77,7 @@ public class PsParser extends PipedParser {
 
   public void outPutChar(Writer out, BufferedReader buffer) throws IOException {
     int ch, para = 0, last = 0;
-    char charr = 0;
+    char charr;
 
     while ((ch = buffer.read()) != -1) {
       charr = (char) ch;

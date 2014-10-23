@@ -35,8 +35,8 @@ public class ScoreComparator implements Comparator<MatchingIndexEntry>, Serializ
    * A matching index entry is greater another if his score is higher. This result is reversed as we
    * want a descending sort.
    *
-   * @param r1
-   * @param r2
+   * @param r1 matching index entry
+   * @param r2 other matching index entry to compare
    */
   @Override
   public int compare(MatchingIndexEntry r1, MatchingIndexEntry r2) {

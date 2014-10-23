@@ -163,7 +163,7 @@ public class OOParser implements Parser {
     String dest = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR + File.separator
         + tempFolder;
     unzip(file, dest);
-    List<String> ls = new ArrayList<String>();
+    List<String> ls = new ArrayList<>();
     ls.add(0, dest + File.separator + contentFile);
     ls.add(1, dest + File.separator + metaFile);
     return ls;
@@ -172,7 +172,7 @@ public class OOParser implements Parser {
   private List<String> unzip(String zip, String destination) {
     SilverTrace.debug("indexEngine", "OOParser.unzip()()", "root.MSG_PARAM_VALUE", "zip = " + zip
         + " destination=" + destination);
-    List<String> destLs = new ArrayList<String>();
+    List<String> destLs = new ArrayList<>();
     ZipFile zipFile;
     File dest = new File(destination);
     try {

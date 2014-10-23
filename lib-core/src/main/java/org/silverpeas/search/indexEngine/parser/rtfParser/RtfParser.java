@@ -41,11 +41,6 @@ import java.io.Writer;
  */
 
 public class RtfParser extends PipedParser {
-  /**
-   * Pattern used to remove {\*\ts...} RTF keywords, which cause NPE in Java 1.4.
-   */
-  // private static final Pattern TS_REMOVE_PATTERN =
-  // Pattern.compile("\\{\\\\\\*\\\\ts[^\\}]*\\}", Pattern.DOTALL);
 
   public RtfParser() {
   }
@@ -60,12 +55,6 @@ public class RtfParser extends PipedParser {
 
       // RTF always uses ASCII, so we don't need to care about the encoding
       String input = new String(buffer);
-
-      // workaround to remove RTF keywords that cause a NPE in Java 1.4
-      // this is a known bug in Java 1.4 that was fixed in 1.5
-      // please see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5042109 for
-      // the official bug report
-      // input = TS_REMOVE_PATTERN.matcher(input).replaceAll("");
 
       String result = null;
       try {

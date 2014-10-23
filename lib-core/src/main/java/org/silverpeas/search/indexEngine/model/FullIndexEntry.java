@@ -177,31 +177,31 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
 
   private List<TextDescription> getTextList() {
     if (textList == null)
-      textList = new ArrayList<TextDescription>();
+      textList = new ArrayList<>();
     return textList;
   }
 
   private List<FileDescription> getFileList() {
     if (fileList == null)
-      fileList = new ArrayList<FileDescription>();
+      fileList = new ArrayList<>();
     return fileList;
   }
 
   private List<FileDescription> getLinkedFileList() {
     if (linkedFileList == null)
-      linkedFileList = new ArrayList<FileDescription>();
+      linkedFileList = new ArrayList<>();
     return linkedFileList;
   }
 
   public Set<String> getLinkedFileIdsSet() {
     if (linkedFileIdsList == null)
-      linkedFileIdsList = new HashSet<String>();
+      linkedFileIdsList = new HashSet<>();
     return linkedFileIdsList;
   }
 
   public List<FieldDescription> getFields() {
     if (fields == null)
-      fields = new ArrayList<FieldDescription>();
+      fields = new ArrayList<>();
     return fields;
   }
   

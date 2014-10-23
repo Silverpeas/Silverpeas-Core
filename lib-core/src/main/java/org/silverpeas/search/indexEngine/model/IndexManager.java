@@ -476,7 +476,7 @@ public class IndexManager {
     }
 
     List<FieldDescription> list3 = indexEntry.getFields();
-    List<String> fieldsForFacets = new ArrayList<String>(list3.size());
+    List<String> fieldsForFacets = new ArrayList<>(list3.size());
     for (FieldDescription field : list3) {
       if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort or to generate a facet, it's stored in the lucene index

@@ -35,7 +35,7 @@ import static java.io.File.separatorChar;
 public class IndexFileManager {
 
   /**
-   * For test purposde only
+   * For test purpose only
    *
    * @param indexPath
    */

@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -36,28 +37,20 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
 
-/**
- * 
- *
- */
 public class SearchCompletion {
 
   private static int pdcMaxRow = 100;
-
   private static int thesaurusMaxRow = 100;
-
   private static int keywordMaxRow = 100;
 
   private final String pdcQuery = "SELECT DISTINCT name FROM sb_tree_tree where lower(name) like ?";
-
   private final String thesaurusQuery =
       "SELECT DISTINCT name FROM  sb_thesaurus_synonym where lower(name) like ?";
-
   private final String keywordsQuery =
       "SELECT DISTINCT label FROM sb_tagcloud_tagcloud  where lower(label) like ?";
 
   /**
-   * 
+   *
    */
   public SearchCompletion() {
   }
@@ -69,29 +62,27 @@ public class SearchCompletion {
    */
   public Set<String> getSuggestions(String query) {
     query = query.toLowerCase();
-    SilverTrace.debug("searchEngine", "SearchCompletion.getSuggestions()",
-        "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+    SilverTrace
+        .debug("searchEngine", "SearchCompletion.getSuggestions()", "root.MSG_GEN_PARAM_VALUE",
+            "query = " + query);
     // local variable instantiation
-    TreeSet<String> set = new TreeSet<String>();
+    TreeSet<String> set = new TreeSet<>();
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-    ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+    ResourceLocator resource =
+        new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
 
     int autocompletionMaxResults = Integer.parseInt(resource.getString("autocompletionMaxResults"));
     try {
       con = DBUtil.openConnection();
       // request pdc
-      ArrayList<String> pdcList = executeQuery(con, pdcMaxRow,
-          query, pdcQuery);
+      List<String> pdcList = executeQuery(con, pdcMaxRow, query, pdcQuery);
       // request thesaurus
-      ArrayList<String> thesauruslist = executeQuery(con, thesaurusMaxRow,
-          query, thesaurusQuery);
+      List<String> thesauruslist = executeQuery(con, thesaurusMaxRow, query, thesaurusQuery);
       // request keywords
-      ArrayList<String> keywordsList = executeQuery(con, keywordMaxRow,
-          query, keywordsQuery);
+      List<String> keywordsList = executeQuery(con, keywordMaxRow, query, keywordsQuery);
 
       // results consolidation
       int numberOfPdcSuggest = getSize(autocompletionMaxResults, pdcList);
@@ -103,8 +94,9 @@ public class SearchCompletion {
       set.addAll(keywordsList.subList(0, numberOfKeywordsSuggest));
 
     } catch (Exception e) {
-      SilverTrace.error("searchEngine", "SearchCompletion.getSuggestions()",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverTrace
+          .error("searchEngine", "SearchCompletion.getSuggestions()", "root.EX_SQL_QUERY_FAILED",
+              e);
     } finally {
       DBUtil.close(rs, ps);
       try {
@@ -122,9 +114,9 @@ public class SearchCompletion {
 
   /**
    * @param autocompletionMaxResults
-   * @param pdcList
+   * @param list
    */
-  private int getSize(int autocompletionMaxResults, ArrayList<String> list) {
+  private int getSize(int autocompletionMaxResults, List<String> list) {
     int numberOfSuggest = 0;
     int pdcSize = list.size();
     if (pdcSize > 0) {
@@ -145,9 +137,9 @@ public class SearchCompletion {
    * @return
    * @throws SQLException
    */
-  private ArrayList<String> executeQuery(Connection con, int maxRow,
-      String query, String sqlQuery) throws SQLException {
-    ArrayList<String> list = new ArrayList<String>();
+  private List<String> executeQuery(Connection con, int maxRow, String query, String sqlQuery)
+      throws SQLException {
+    List<String> list = new ArrayList<>();
     PreparedStatement ps = null;
     ResultSet rs = null;
     try {

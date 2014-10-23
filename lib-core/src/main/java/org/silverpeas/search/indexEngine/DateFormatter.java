@@ -24,14 +24,12 @@
 
 package org.silverpeas.search.indexEngine;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateFormatter {
 
-  private static final SimpleDateFormat indexFormatter = new SimpleDateFormat(
-      "yyyyMMdd");
+  private static final SimpleDateFormat indexFormatter = new SimpleDateFormat("yyyyMMdd");
   public final static String nullBeginDate = "00000000";
   public final static String nullEndDate = "99999999";
 
@@ -39,11 +37,4 @@ public class DateFormatter {
     return indexFormatter.format(date);
   }
 
-  public synchronized static Date string2Date(String date) {
-    try {
-      return indexFormatter.parse(date);
-    } catch (ParseException e) {
-      return null;
-    }
-  }
 }

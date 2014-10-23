@@ -37,7 +37,7 @@ public class IndexReadersCache {
   private Map<String, IndexReader> indexReaders;
 
   private IndexReadersCache() {
-    indexReaders = new HashMap<String, IndexReader>();
+    indexReaders = new HashMap<>();
   }
 
   private static IndexReadersCache getInstance() {

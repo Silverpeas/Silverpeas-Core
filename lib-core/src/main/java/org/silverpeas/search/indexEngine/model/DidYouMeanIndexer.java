@@ -112,7 +112,7 @@ public class DidYouMeanIndexer {
    * index source will be added. otherwise a new index will be created. <br>
    * This method create an spelling index from the original index path by the adding a suffix to the
    * original path index. The suffix is already the same
-   * @see DidYouMeanIndexer.SUFFIX_SPELLING_INDEX_PATH
+   * @see DidYouMeanIndexer
    * @param field name of the field of the index source that will be used to feed the spelling index
    * @param originalIndexDirectory represents the source index path
    */
@@ -167,7 +167,7 @@ public class DidYouMeanIndexer {
    * a new index will be created. <br>
    * This method create an spelling index from the original index path by the adding a suffix to the
    * original path index. The suffix is already the same
-   * @see DidYouMeanIndexer.SUFFIX_SPELLING_INDEX_PATH
+   * @see DidYouMeanIndexer
    * @param field name of the field of the index source that will be used to feed the spelling index
    * @param originalIndexDirectory represents the source index path
    */

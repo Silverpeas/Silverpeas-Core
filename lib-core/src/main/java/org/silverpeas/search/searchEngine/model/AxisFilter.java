@@ -39,7 +39,7 @@ public class AxisFilter {
   public static final String NAME = "NAME";
   public static final String DESCRIPTION = "DESCRIPTION";
 
-  private List<AxisFilterNode> filter = new ArrayList<AxisFilterNode>(1);
+  private List<AxisFilterNode> filter = new ArrayList<>(1);
   private int index = -1;
 
   public AxisFilter() {

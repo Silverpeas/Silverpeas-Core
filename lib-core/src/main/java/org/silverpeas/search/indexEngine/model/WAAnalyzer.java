@@ -104,7 +104,7 @@ public final class WAAnalyzer extends Analyzer {
    * Returns an array of words which are not usually usefull for searching.
    */
   private void getStopWords(String language) {
-    stopWords = new HashSet<String>();
+    stopWords = new HashSet<>();
     String currentLanguage = language;
     try {
       if (!StringUtil.isDefined(currentLanguage)) {
