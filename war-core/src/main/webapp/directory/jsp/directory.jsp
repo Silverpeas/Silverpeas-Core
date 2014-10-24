@@ -217,7 +217,7 @@
         <div id="users">
           <ol class="message_list aff_colonnes">
             <c:forEach items="${fragments}" var="fragment">
-              <li class="intfdcolor" id="user-${fragment.userId}">
+              <li class="intfdcolor ${fragment.type}" id="user-${fragment.userId}">
                   ${fragment.fragment}
                 <br clear="all"/>
               </li>

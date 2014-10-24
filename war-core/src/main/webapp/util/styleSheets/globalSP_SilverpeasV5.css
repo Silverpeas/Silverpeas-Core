@@ -1054,6 +1054,20 @@ td.browsebar a:hover {
   display: none;
 }
 
+/***************************************/
+/****** Look V5 - Popup ****************/
+/***************************************/
+
+.popup-compute-settings {
+  margin: 0;
+  height: auto;
+}
+
+.popup-compute-finally {
+  margin: 5px;
+  height: auto;
+}
+
 /****************************************/
 /****** Look V5 - TopBar ****************/
 /****************************************/

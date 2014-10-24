@@ -24,6 +24,8 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.socialnetwork.invitation.InvitationService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -765,6 +767,38 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * Gets the duration of the current user session since its last registered login date.
+   * @return the formatted duration of the current user session, or empty string if the user is not
+   * connected.
+   */
+  public String getDurationOfCurrentSession() {
+    if (isConnected()) {
+      return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
+    }
+    return "";
+  }
+
+  /**
+   * Indicates if the current user is in relation with, or invited by, a user represented by the
+   * given identifier.
+   * @param userId the identifier of the user which the current user is potentially in relation
+   * with or invited by.
+   * @return true if the current user is in relation with, or invited by, the user represented by
+   * the given identifier, false otherwise.
+   */
+  public boolean isInRelationWithOrInvitedBy(String userId) {
+    RelationShipService relation = new RelationShipService();
+    InvitationService invitation = new InvitationService();
+    try {
+      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId())) ||
+          (invitation.getInvitation(Integer.parseInt(userId), Integer.parseInt(getId())) != null);
+    } catch (Exception e) {
+      SilverTrace.warn("admin", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
+    }
+    return false;
+  }
+
+  /**
    * Gets the unique identifier of the anonymous user as set in the general look properties.
    *
    * @return the anonymous user identifier.
@@ -774,6 +808,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   protected static OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getFactory().getOrganisationController();
+    return OrganisationControllerFactory.getOrganisationController();
   }
 }

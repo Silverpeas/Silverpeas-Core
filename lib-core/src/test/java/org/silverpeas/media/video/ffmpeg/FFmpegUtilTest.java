@@ -1,19 +1,17 @@
 package org.silverpeas.media.video.ffmpeg;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
-
-import java.io.File;
-
+import com.silverpeas.util.StringUtil;
 import org.apache.commons.exec.CommandLine;
-import org.apache.commons.io.FilenameUtils;
-import org.junit.After;
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class FFmpegUtilTest {
 
@@ -43,9 +41,9 @@ public class FFmpegUtilTest {
     File outputFile = new File("/silverpeas/viewer/", "thumb.jpg");
     CommandLine result =
         FFmpegUtil.buildFFmpegThumbnailExtractorCommandLine(inputFile, outputFile, 30);
-    assertThat(result, is(notNullValue()));
-    assertThat(FilenameUtils.separatorsToUnix(result.toString()),
-        is("ffmpeg -ss 30 -i /silverpeas/video/movie.mp4 -vframes 1 -vf scale=600:-1 /silverpeas/viewer/thumb.jpg"));
+    assertThat(result, is(Matchers.notNullValue()));
+    assertThat(StringUtil.join(result.toStrings(), " "),
+        is("ffmpeg -ss 30 -i " + inputFile.getAbsolutePath() + " -vframes 1 -vf scale=600:-1 " +
+            outputFile.getAbsolutePath()));
   }
-
 }
