@@ -25,6 +25,7 @@ import java.util.Collection;
 import javax.ejb.Local;
 
 import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -48,7 +49,7 @@ public interface ContactBm {
    * @param detail
    * @return
    */
-  public ContactPK createContact(ContactDetail detail);
+  public ContactPK createContact(Contact contact);
 
   /**
    * removeContact() remove the contact designed by pubPK parameter.
@@ -62,7 +63,7 @@ public interface ContactBm {
    *
    * @param detail
    */
-  public void setDetail(ContactDetail detail);
+  public void setDetail(Contact detail);
 
   /**
    * addFather() add a new father (designed by "fatherPK") to a contact ("pubPK") The contact will

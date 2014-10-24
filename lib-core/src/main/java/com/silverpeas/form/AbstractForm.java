@@ -51,6 +51,8 @@ public abstract class AbstractForm implements Form {
   private String title = "";
   private String name = "";
   private String formName = "";
+  private DataRecord data;
+
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
   
@@ -263,6 +265,17 @@ public abstract class AbstractForm implements Form {
    */
   @Override
   public abstract void display(JspWriter out, PagesContext pagesContext, DataRecord record);
+  
+  /**
+   * Prints this form into the specified JSP writer according to the specified records of data that
+   * populate the form fields.
+   * @param out the JSP writer.
+   * @param pagesContext the JSP page context.
+   */
+  @Override
+  public void display(JspWriter out, PagesContext pagesContext) {
+    display(out, pagesContext, getData());
+  }
 
   /**
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
@@ -473,5 +486,13 @@ public abstract class AbstractForm implements Form {
       SilverTrace.error("form", "AbstractForm.display", "form.EX_CANT_GET_FORM", null, fe);
     }
     return field;
+  }
+  
+  public DataRecord getData() {
+    return data;
+  }
+
+  public void setData(DataRecord data) {
+    this.data = data;
   }
 }

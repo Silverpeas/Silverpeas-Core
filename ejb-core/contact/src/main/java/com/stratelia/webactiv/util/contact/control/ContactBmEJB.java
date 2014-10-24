@@ -20,11 +20,26 @@
  */
 package com.stratelia.webactiv.util.contact.control;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.contact.info.InfoDAO;
 import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -32,17 +47,6 @@ import com.stratelia.webactiv.util.contact.model.ContactRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 @Stateless(name = "ContactBm", description = "EJB to manage a user's contacts.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -62,14 +66,10 @@ public class ContactBmEJB implements ContactBm {
         throw new ContactRuntimeException("ContactBmEJB.getDetail()",
             SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_NOT_FOUND");
       }
-    } catch (SQLException re) {
+    } catch (Exception re) {
       throw new ContactRuntimeException("ContactBmEJB.getDetail()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = "
           + pubPK.getId(), re);
-    } catch (ParseException ex) {
-      throw new ContactRuntimeException("ContactBmEJB.getDetail()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = "
-          + pubPK.getId(), ex);
     } finally {
       DBUtil.close(con);
     }
@@ -77,19 +77,25 @@ public class ContactBmEJB implements ContactBm {
 
   @Override
   @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public ContactPK createContact(ContactDetail detail) {
+  public ContactPK createContact(Contact contact) {
     Connection con = getConnection();
     try {
-      int id = 0;
-      id = DBUtil.getNextId(detail.getPK().getTableName(), "contactId");
-      detail.getPK().setId(String.valueOf(id));
-      ContactDAO.insertRow(con, detail);
-      createIndex(detail);
-      return detail.getPK();
-    } catch (SQLException re) {
+      int id = DBUtil.getNextId(contact.getPK().getTableName(), "contactId");
+      contact.getPK().setId(String.valueOf(id));
+      ContactDAO.insertRow(con, contact);
+      
+      if (contact instanceof CompleteContact) {
+        CompleteContact fullContact = (CompleteContact) contact;
+        fullContact.saveForm("fr");
+        createInfoModel(contact.getPK(), fullContact.getModelId());
+      }
+      
+      createIndex(contact);
+      return contact.getPK();
+    } catch (Exception e) {
       throw new ContactRuntimeException("ContactBmEJB.createContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_FAILED",
-          "contactDetail = " + detail.toString(), re);
+          "contactDetail = " + contact.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -100,10 +106,22 @@ public class ContactBmEJB implements ContactBm {
   public void removeContact(ContactPK pubPK) {
     Connection con = getConnection();
     try {
+      // remove forms data
+      List<String> modelIds = InfoDAO.getInfo(con, pubPK);
+      for(String modelId : modelIds) {
+        CompleteContact completeContact = getCompleteContact(pubPK, modelId);
+        completeContact.removeForm();
+      }
+      
+      // remove forms association
       InfoDAO.deleteInfoDetailByContactPK(con, pubPK);
+      
+      // remove contact itself
       ContactDAO.deleteRow(con, pubPK);
+      
+      // remove contact index
       deleteIndex(pubPK);
-    } catch (SQLException re) {
+    } catch (Exception re) {
       throw new ContactRuntimeException("ContactBmEJB.removeContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_DELETE_FAILED",
           "pk = " + pubPK, re);
@@ -113,14 +131,20 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  public void setDetail(ContactDetail detail) {
+  public void setDetail(Contact contact) {
     Connection con = getConnection();
     try {
-      ContactDAO.storeRow(con, detail);
-      createIndex(detail);
+      ContactDAO.storeRow(con, contact);
+      
+      if (contact instanceof CompleteContact) {
+        CompleteContact fullContact = (CompleteContact) contact;
+        fullContact.saveForm("fr");
+      }
+      
+      createIndex(contact);
     } catch (Exception re) {
       throw new ContactRuntimeException("ContactBmEJB.setDetail()", SilverpeasRuntimeException.ERROR,
-          "contact.EX_SET_CONTACT_DETAIL_FAILED", "contactDetail = " + detail, re);
+          "contact.EX_SET_CONTACT_DETAIL_FAILED", "contactDetail = " + contact, re);
     } finally {
       DBUtil.close(con);
     }
@@ -349,16 +373,13 @@ public class ContactBmEJB implements ContactBm {
 
   @Override
   public CompleteContact getCompleteContact(ContactPK pubPK, String modelId) {
-    Connection con = getConnection();
     try {
       // get detail
-      ContactDetail pubDetail = ContactDAO.loadRow(con, pubPK);
-      return new CompleteContact(pubDetail, modelId);
+      ContactDetail contact = getDetail(pubPK);
+      return new CompleteContact(contact, modelId);
     } catch (Exception re) {
       throw new ContactRuntimeException("ContactBmEJB.getCompleteContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -429,15 +450,21 @@ public class ContactBmEJB implements ContactBm {
    * Called on : - createContact() - updateContact() - createInfoModel() - updateInfoDetail() -
    * deleteAttachments()
    */
-  private void createIndex(ContactDetail pubDetail) {
+  private void createIndex(Contact contact) {
     try {
-      if (pubDetail != null) {
-        FullIndexEntry indexEntry = new FullIndexEntry(pubDetail.getPK().getComponentName(),
-            "Contact", pubDetail.getPK().getId());
-        indexEntry.setTitle(pubDetail.getFirstName() + " " + pubDetail.getLastName());
+      if (contact != null) {
+        FullIndexEntry indexEntry = new FullIndexEntry(contact.getPK().getComponentName(),
+            "Contact", contact.getPK().getId());
+        indexEntry.setTitle(contact.getFirstName() + " " + contact.getLastName());
         indexEntry.setLang(I18NHelper.defaultLanguage);
-        indexEntry.setCreationDate(formatter.format(pubDetail.getCreationDate()));
-        indexEntry.setCreationUser(pubDetail.getCreatorId());
+        indexEntry.setCreationDate(formatter.format(contact.getCreationDate()));
+        indexEntry.setCreationUser(contact.getCreatorId());
+        
+        if (contact instanceof CompleteContact) {
+          CompleteContact completeContact = (CompleteContact) contact;
+          completeContact.indexForm(indexEntry);
+        }
+        
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception re) {
@@ -457,4 +484,5 @@ public class ContactBmEJB implements ContactBm {
 
   public ContactBmEJB() {
   }
+  
 }

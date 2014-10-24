@@ -32,6 +32,7 @@ import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -286,7 +287,7 @@ public class ContactDAO {
     }
   }
 
-  public static void insertRow(Connection con, ContactDetail detail)
+  public static void insertRow(Connection con, Contact detail)
       throws SQLException {
     String insertStatement = "INSERT INTO " + detail.getPK().getTableName()
         + " VALUES ( ? , ? , ? , ? , ? , ? , ? , ?, ? , ?)";
@@ -302,7 +303,7 @@ public class ContactDAO {
       prepStmt.setString(5, detail.getPhone());
       prepStmt.setString(6, detail.getFax());
       prepStmt.setString(7, detail.getUserId());
-      prepStmt.setString(8, DateUtil.date2SQLDate(detail.getCreationDate()));
+      prepStmt.setString(8, DateUtil.today2SQLDate());
       prepStmt.setString(9, detail.getCreatorId());
       prepStmt.setString(10, detail.getPK().getComponentName());
       prepStmt.executeUpdate();
@@ -566,7 +567,7 @@ public class ContactDAO {
     }
   }
 
-  public static void storeRow(Connection con, ContactDetail detail)
+  public static void storeRow(Connection con, Contact detail)
       throws SQLException {
     int rowCount = 0;
     String insertStatement = "update " + detail.getPK().getTableName()
