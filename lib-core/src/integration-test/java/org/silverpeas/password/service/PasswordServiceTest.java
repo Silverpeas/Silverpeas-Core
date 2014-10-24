@@ -245,6 +245,8 @@ public class PasswordServiceTest {
     }
   }
 
+  //TODO make this test works after spring migration end : change test using maven properties
+  // (real file system instead of arquillian vfs)
   @Test
   @Ignore
   public void testGetExtraRuleMessage() {

@@ -32,7 +32,6 @@ import javax.inject.Singleton;
 /**
  * @author Yohann Chastagnier
  */
-@Named("swfToolManager")
 @Singleton
 public class SwfToolManager {
 

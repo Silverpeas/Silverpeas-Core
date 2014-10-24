@@ -51,7 +51,6 @@ public class CollectingLogOutputStream extends LogOutputStream {
     lines.add(line);
   }
 
-  @SuppressWarnings("unchecked")
   public List<String> getLines() {
     return Collections.unmodifiableList(lines);
   }

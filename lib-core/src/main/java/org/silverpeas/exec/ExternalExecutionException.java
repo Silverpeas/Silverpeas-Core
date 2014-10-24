@@ -39,7 +39,7 @@ public class ExternalExecutionException extends SilverpeasRuntimeException {
 
   /**
    * Default constructor
-   * @param e
+   * @param message the exception message
    */
   public ExternalExecutionException(final String message) {
     super("ExternalExecution", SilverpeasException.ERROR, message);

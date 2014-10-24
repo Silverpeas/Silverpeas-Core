@@ -17,7 +17,7 @@ public class ExternalExecution {
 
   /**
    * Centralizing command execution code
-   * @param commandLine
+   * @param commandLine the apache command line
    * @return
    */
   protected static List<String> exec(final CommandLine commandLine)
@@ -29,25 +29,19 @@ public class ExternalExecution {
     final Process process;
     try {
       process = Runtime.getRuntime().exec(commandLine.toStrings());
-      final Thread errEater = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            errors.addAll(IOUtils.readLines(process.getErrorStream()));
-          } catch (final IOException e) {
-            throw new ExternalExecutionException(e);
-          }
+      final Thread errEater = new Thread(() -> {
+        try {
+          errors.addAll(IOUtils.readLines(process.getErrorStream()));
+        } catch (final IOException e) {
+          throw new ExternalExecutionException(e);
         }
       });
       errEater.start();
-      final Thread outEater = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            result.addAll(IOUtils.readLines(process.getInputStream()));
-          } catch (final IOException e) {
-            throw new ExternalExecutionException(e);
-          }
+      final Thread outEater = new Thread(() -> {
+        try {
+          result.addAll(IOUtils.readLines(process.getInputStream()));
+        } catch (final IOException e) {
+          throw new ExternalExecutionException(e);
         }
       });
       outEater.start();
