@@ -31,7 +31,7 @@ public class VideoThumbnailExtractorException extends SilverpeasRuntimeException
 
   /**
    * Default constructor
-   * @param e
+   * @param e the original exception
    */
   public VideoThumbnailExtractorException(final Exception e) {
     super("VideoTool", SilverpeasException.ERROR, e.getMessage(), e);
@@ -39,7 +39,7 @@ public class VideoThumbnailExtractorException extends SilverpeasRuntimeException
 
   /**
    * Default constructor
-   * @param e
+   * @param message error message
    */
   public VideoThumbnailExtractorException(final String message) {
     super("VideoTool", SilverpeasException.ERROR, message);

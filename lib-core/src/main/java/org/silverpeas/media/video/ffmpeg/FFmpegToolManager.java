@@ -23,13 +23,10 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-@Named("ffmpegToolManager")
 @Singleton
 public class FFmpegToolManager {
 
@@ -65,4 +62,5 @@ public class FFmpegToolManager {
   public static boolean isActivated() {
     return isActivated;
   }
+
 }

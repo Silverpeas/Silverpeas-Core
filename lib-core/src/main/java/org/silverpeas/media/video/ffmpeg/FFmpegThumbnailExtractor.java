@@ -23,24 +23,20 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
-import java.io.File;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
-import org.silverpeas.util.time.TimeData;
-
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.time.TimeData;
+
+import javax.inject.Inject;
+import java.io.File;
 
 /**
  * This class extract 5 thumbnails from a video file using FFmpeg
  * @author ebonnet
  */
-@Named("videoThumbnailExtractor")
 public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
 
   @Inject

@@ -46,11 +46,11 @@ public class JsonPatch implements Serializable {
   private Map<String, Operation> operations;
 
   public JsonPatch() {
-    operations = new LinkedHashMap<String, Operation>(5);
+    operations = new LinkedHashMap<>(5);
   }
 
   public List<Operation> getOperations() {
-    return new ArrayList<Operation>(this.operations.values());
+    return new ArrayList<>(this.operations.values());
   }
 
   public Operation getOperationByPath(String path) {

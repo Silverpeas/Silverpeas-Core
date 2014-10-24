@@ -63,7 +63,6 @@ import org.silverpeas.util.template.SilverpeasTemplateFactory;
  */
 public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
 
-
   /**
    * Gets an instance of an war archive test builder with the following common stuffs:
    * <ul>
@@ -295,7 +294,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
-   * @return
+   * Add String template classes to web archive (war)
+   * @return the instance of the war builder with String Template enable
    */
   public WarBuilder4LibCore addStringTemplateFeatures() {
     return addMavenDependencies("org.antlr:stringtemplate")

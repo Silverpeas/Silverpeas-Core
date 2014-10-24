@@ -10,7 +10,6 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.viewer.util.CollectingLogOutputStream;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -24,8 +23,8 @@ public class ExternalExecution {
   protected static List<String> exec(final CommandLine commandLine)
       throws ExternalExecutionException {
     SilverTrace.info("util", "ExternalExecution.exec", "Command " + commandLine);
-    final List<String> result = new LinkedList<String>();
-    final List<String> errors = new LinkedList<String>();
+    final List<String> result = new LinkedList<>();
+    final List<String> errors = new LinkedList<>();
     CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
     final Process process;
     try {

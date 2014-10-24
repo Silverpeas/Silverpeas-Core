@@ -104,9 +104,6 @@ public class LDAPDriverTest {
                   TokenRuntimeException.class);
           warBuilder.addAsResource("org/silverpeas/domains/domainLDAP.properties");
           warBuilder.addAsResource("maven.properties");
-//          warBuilder.applyManually((shrinkWrap) -> {
-//          });
-
         }).build();
   }
 
@@ -145,7 +142,7 @@ public class LDAPDriverTest {
     } catch (IOException ex) {
       Logger.getLogger(LDAPDriverTest.class.getName()).log(Level.SEVERE, null, ex);
     }
-    File targetDir = new File(props.getProperty("ldap.dir", "/home/user/"));
+    File targetDir = new File(props.getProperty("int-test.dir", "/home/user/"));
     try {
       return targetDir.getCanonicalPath();
     } catch (IOException e) {

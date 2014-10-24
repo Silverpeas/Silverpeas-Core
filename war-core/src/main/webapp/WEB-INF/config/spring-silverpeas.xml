@@ -87,7 +87,7 @@
   <ctx:component-scan base-package="org.silverpeas.language"/>
   <ctx:component-scan base-package="org.silverpeas.preferences"/>
   <ctx:component-scan base-package="org.silverpeas.file"/>
-  <ctx:component-scan base-package="org.silverpeas.media.video"/>
+  <!-- ebo <ctx:component-scan base-package="org.silverpeas.media.video"/> -->
 
   <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionProvider"-->
         <!--factory-method="getFactory"/>-->
@@ -207,7 +207,7 @@
         <!--factory-method="getInstance"/>-->
 
   <!-- the provider of the video thumbnails service in Silverpeas -->
-  <bean id="videoThumbnailExtractorFactory" class="org.silverpeas.media.video.VideoThumbnailExtractorFactory"
-        factory-method="getInstance"/>
+  <!-- ebo <bean id="videoThumbnailExtractorFactory" class="org.silverpeas.media.video.VideoThumbnailExtractorFactory"
+        factory-method="getInstance"/> -->
 
 </beans>

@@ -38,12 +38,11 @@ import java.util.Set;
  * Date: 07/11/13
  */
 public class MessageContainer {
-  private final Map<String, ResourceLocator> resourceLocators =
-      new HashMap<String, ResourceLocator>();
+  private final Map<String, ResourceLocator> resourceLocators = new HashMap<>();
 
-  private final List<MessageListener> listeners = new ArrayList<MessageListener>();
+  private final List<MessageListener> listeners = new ArrayList<>();
   private String language = I18NHelper.defaultLanguage;
-  private final Set<Message> messages = new LinkedHashSet<Message>();
+  private final Set<Message> messages = new LinkedHashSet<>();
 
   /**
    * Hidden construtor because only the Manager is able to instance it.

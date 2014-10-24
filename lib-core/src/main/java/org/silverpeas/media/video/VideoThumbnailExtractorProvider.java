@@ -23,39 +23,18 @@
  */
 package org.silverpeas.media.video;
 
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-public class VideoThumbnailExtractorFactory {
-
-  private static final VideoThumbnailExtractorFactory instance =
-      new VideoThumbnailExtractorFactory();
-
-  @Inject
-  private VideoThumbnailExtractor videoThumbnailExtractor;
+public class VideoThumbnailExtractorProvider {
 
   /**
    * Default private constructor
    */
-  private VideoThumbnailExtractorFactory() {
+  private VideoThumbnailExtractorProvider() {
   }
 
-  /**
-   * Gets an instance of this VideoThumbnailExtractorFactory class.
-   * @return a VideoThumbnailExtractorFactory instance.
-   */
-  public static VideoThumbnailExtractorFactory getInstance() {
-    return VideoThumbnailExtractorFactory.instance;
-  }
-
-  public VideoThumbnailExtractor getVideoThumbnailExtractor() {
-    if (videoThumbnailExtractor == null) {
-      SilverTrace.error("video", getClass().getSimpleName() + ".getVideoThumbnailExtractor()",
-          "EX_NO_MESSAGES",
-          "IoC container not bootstrapped or no VideoThumbnailExtractor bean found!");
-    }
-    return videoThumbnailExtractor;
+  public static VideoThumbnailExtractor getVideoThumbnailExtractor() {
+    return ServiceProvider.getService(VideoThumbnailExtractor.class);
   }
 
 }
