@@ -26,6 +26,7 @@ package org.silverpeas.util.lang;
 
 import javax.inject.Singleton;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Default implementation that is nothing more than a delegate of {@link System} class.
@@ -42,5 +43,30 @@ public class DefaultSystemWrapper implements SystemWrapper {
   @Override
   public Map<String, String> getenv() {
     return System.getenv();
+  }
+
+  @Override
+  public Properties getProperties() {
+    return System.getProperties();
+  }
+
+  @Override
+  public void setProperties(final Properties props) {
+    System.setProperties(props);
+  }
+
+  @Override
+  public String setProperty(final String key, final String value) {
+    return System.setProperty(key, value);
+  }
+
+  @Override
+  public String getProperty(final String key) {
+    return System.getProperty(key);
+  }
+
+  @Override
+  public String getProperty(final String key, final String def) {
+    return System.getProperty(key, def);
   }
 }

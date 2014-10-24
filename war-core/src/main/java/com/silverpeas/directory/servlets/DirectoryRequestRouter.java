@@ -25,21 +25,19 @@ package com.silverpeas.directory.servlets;
 
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.control.DirectorySessionController;
-import com.silverpeas.directory.model.Member;
+import com.silverpeas.directory.model.DirectoryItemList;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +67,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         "root.MSG_GEN_PARAM_VALUE", "User=" + directorySC.getUserId() + " Function=" + function);
 
     try {
-      List<UserDetail> users = new ArrayList<UserDetail>();
+      DirectoryItemList users = new DirectoryItemList();
       if (function.equalsIgnoreCase("Main")) {
 
         String groupId = request.getParameter("GroupId");
@@ -146,7 +144,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
       } else if ("Sort".equals(function)) {
         String sort = request.getParameter("Type");
-        users = directorySC.sort(sort);
+        directorySC.sort(sort);
+        users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
       }
     } catch (DirectoryException e) {
@@ -169,22 +168,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   }
 
   /**
-   * Transform list of UserDetail to list of Membre
-   * @param uds
-   */
-  List<Member> toListMember(List<UserDetail> uds) {
-    List<Member> listMember = new ArrayList<Member>();
-    for (UserDetail varUD : uds) {
-      listMember.add(new Member(varUD));
-    }
-    return listMember;
-  }
-
-  /**
    * do pagination
    * @param request
    */
-  String doPagination(HttpServletRequest request, List<UserDetail> users,
+  String doPagination(HttpServletRequest request, DirectoryItemList users,
       DirectorySessionController directorySC) {
     int index = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
@@ -195,9 +182,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         "SessionGraphicElementFactory");
     Pagination pagination = gef.getPagination(users.size(), directorySC.getElementsByPage(), index);
-    List<Member> membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(),
-        pagination.
-        getLastItemIndex()));
+    DirectoryItemList membersToDisplay =
+        users.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
 
     // setting one fragment per user displayed
     request.setAttribute("UserFragments", directorySC.getFragments(membersToDisplay));

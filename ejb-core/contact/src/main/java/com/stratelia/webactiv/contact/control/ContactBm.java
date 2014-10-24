@@ -25,10 +25,17 @@ import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
 import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.util.ServiceProvider;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface ContactBm {
+
+  public static ContactBm get() {
+    return ServiceProvider.getService(ContactBm.class);
+  }
 
   /**
    * get details on the contact specified by the primary key given in contactPK parameter
@@ -40,10 +47,10 @@ public interface ContactBm {
   /**
    * Create a new contact A new line will be added in contact table. The "id" in
    * "detail" is not used (a new one will be computed). The "ed" is used to know the table name.
-   * @param detail the contact detail
+   * @param contact the contact detail
    * @return contact primary key
    */
-  public ContactPK createContact(ContactDetail detail);
+  public ContactPK createContact(Contact contact);
 
   /**
    * removeContact() remove the contact designed by contactPK parameter.
@@ -55,7 +62,7 @@ public interface ContactBm {
    * setDetail() update the contact content.
    * @param detail the contact detail to update
    */
-  public void setDetail(ContactDetail detail);
+  public void setDetail(Contact detail);
 
   /**
    * addFather() add a new father (designed by "fatherPK") to a contact ("contactPK") The contact
@@ -123,6 +130,8 @@ public interface ContactBm {
       String firstName);
 
   public void createInfoModel(ContactPK contactPK, String modelId);
+  
+  public CompleteContact getCompleteContact(ContactPK contactPK);
 
   public CompleteContact getCompleteContact(ContactPK pubPK, String modelId);
 
@@ -134,4 +143,18 @@ public interface ContactBm {
       ContactPK contactPK, NodePK nodePK);
 
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
+
+  /**
+   * Gets all non transitive contacts from an component represented by the given identifier that are
+   * not in basket.
+   * A transitive contact is a contact of user type linked directly by a group.
+   * @param instanceId the identifier of the component instance into which contact are retrieved.
+   * @return the list of complete contact data. Empty list if none.
+   */
+  public List<CompleteContact> getVisibleContacts(String instanceId);
+  
+  public void index(ContactPK pk);
+  
+  public void deleteIndex(ContactPK pk);
+
 }

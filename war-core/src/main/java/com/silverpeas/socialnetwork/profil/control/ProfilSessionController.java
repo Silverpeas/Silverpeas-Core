@@ -65,7 +65,7 @@ public class ProfilSessionController extends AbstractComponentSessionController 
   public boolean isInMyContact(String userId) throws SocialNetworkException {
     try {
       int id = Integer.parseInt(userId);
-      return RelationShipService.getInstance()
+      return RelationShipService.get()
           .isInRelationShip(Integer.parseInt(this.getUserId()), id);
     } catch (SQLException ex) {
       throw new SocialNetworkException(

@@ -27,6 +27,7 @@ package org.silverpeas.util.lang;
 import org.silverpeas.util.ServiceProvider;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * This wrapper interface permits to bootstrap different System mechanism according to the context
@@ -55,4 +56,45 @@ public interface SystemWrapper {
    * @return the map of environment variables.
    */
   Map<String, String> getenv();
+
+  /**
+   * Gets the system properties.
+   * @return the system properties.
+   * @see System#getProperties()
+   */
+  Properties getProperties();
+
+  /**
+   * Sets the system properties.
+   * @param props the system properties to set
+   * @see System#setProperties(java.util.Properties)
+   */
+  void setProperties(Properties props);
+
+  /**
+   * Sets a system property.
+   * @param key the key of the property.
+   * @param value the value of the property.
+   * @return the previous value of the system property,
+   * or <code>null</code> if it did not have one.
+   * @see System#setProperty(String, String)
+   */
+  String setProperty(String key, String value);
+
+  /**
+   * Gets a system property.
+   * @param key the key of the system property.
+   * @return the string value of the system property,
+   * or <code>null</code> if there is no property with that key.
+   */
+  String getProperty(String key);
+
+  /**
+   * Gets a system property.
+   * @param key the key of the system property.
+   * @param def the default value if there is no property value with the key.
+   * @return the string value of the system property,
+   * or the default value if there is no property with that key.
+   */
+  String getProperty(String key, String def);
 }

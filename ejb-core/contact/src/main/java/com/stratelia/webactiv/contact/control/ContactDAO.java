@@ -20,6 +20,17 @@
  */
 package com.stratelia.webactiv.contact.control;
 
+import com.stratelia.webactiv.contact.model.CompleteContact;
+import com.stratelia.webactiv.contact.model.ContactDetail;
+import com.stratelia.webactiv.contact.model.ContactFatherDetail;
+import com.stratelia.webactiv.contact.model.ContactPK;
+import com.stratelia.webactiv.contact.model.ContactRuntimeException;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,15 +40,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.DateUtil;
-import com.stratelia.webactiv.contact.model.ContactDetail;
-import com.stratelia.webactiv.contact.model.ContactFatherDetail;
-import com.stratelia.webactiv.contact.model.ContactPK;
-import com.stratelia.webactiv.contact.model.ContactRuntimeException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.model.NodePK;
 
 /**
  * This is the Contact Data Access Object.
@@ -277,7 +279,7 @@ public class ContactDAO {
     }
   }
 
-  public static void insertRow(Connection con, ContactDetail detail) throws SQLException {
+  public static void insertRow(Connection con, Contact detail) throws SQLException {
     String insertStatement = "INSERT INTO " + detail.getPK().getTableName() +
         " VALUES ( ? , ? , ? , ? , ? , ? , ? , ?, ? , ?)";
     PreparedStatement prepStmt = null;
@@ -292,7 +294,7 @@ public class ContactDAO {
       prepStmt.setString(5, detail.getPhone());
       prepStmt.setString(6, detail.getFax());
       prepStmt.setString(7, detail.getUserId());
-      prepStmt.setString(8, DateUtil.date2SQLDate(detail.getCreationDate()));
+      prepStmt.setString(8, DateUtil.today2SQLDate());
       prepStmt.setString(9, detail.getCreatorId());
       prepStmt.setString(10, detail.getPK().getComponentName());
       prepStmt.executeUpdate();
@@ -544,7 +546,7 @@ public class ContactDAO {
     }
   }
 
-  public static void storeRow(Connection con, ContactDetail detail) throws SQLException {
+  public static void storeRow(Connection con, Contact detail) throws SQLException {
     int rowCount = 0;
     String insertStatement = "update " + detail.getPK().getTableName() + " set " +
         "contactFirstName = ? , contactLastName = ? , " +
@@ -622,6 +624,44 @@ public class ContactDAO {
       while (rs.next()) {
         ContactDetail pub = resultSet2ContactDetail(rs, pk);
         list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Gets all non transitive contacts from an component represented by the given identifier that are
+   * not in basket.
+   * A transitive contact is a contact of user type linked directly by a group.
+   * @param con the database connection.
+   * @param instanceId the identifier of the component instance into which contact are retrieved.
+   * @return the list of complete contact data. Empty list if none.
+   * @throws SQLException
+   * @throws ParseException
+   */
+  public static List<CompleteContact> getVisibleContacts(Connection con, String instanceId)
+      throws SQLException, ParseException {
+    ResultSet rs = null;
+    ContactPK pubPK = new ContactPK("unknown", instanceId);
+    String selectStatement = "select P.*, I.modelId" +
+            " from " + pubPK.getTableName() + " P" +
+            " join " + pubPK.getTableName() + "father F on F.contactId = P.contactId" +
+            " left outer join sb_contact_info I on P.contactId = I.contactId" +
+            " where F.nodeId <> ? and P.instanceId = ? ";
+
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, Integer.parseInt(NodePK.BIN_NODE_ID));
+      prepStmt.setString(2, instanceId);
+      rs = prepStmt.executeQuery();
+      List<CompleteContact> list = new ArrayList<>();
+      while (rs.next()) {
+        ContactDetail pub = resultSet2ContactDetail(rs, pubPK);
+        CompleteContact contact = new CompleteContact(pub, rs.getString("modelId"));
+        list.add(contact);
       }
       return list;
     } finally {

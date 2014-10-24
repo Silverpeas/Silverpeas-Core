@@ -46,7 +46,7 @@ public class MyContactsPortlet extends GenericPortlet implements FormNames {
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    RelationShipService relationShipService = RelationShipService.getInstance();
+    RelationShipService relationShipService = RelationShipService.get();
     List<String> listContactIds = null;
     try {
       listContactIds = relationShipService.getMyContactsIds(

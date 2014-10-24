@@ -24,18 +24,19 @@
 
 package com.stratelia.webactiv.contact.model;
 
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
  * This object contains the description of a contact
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class ContactDetail implements Serializable {
+public class ContactDetail implements Contact, Serializable {
 
   private ContactPK pk;
   private String firstName;
@@ -76,10 +77,16 @@ public class ContactDetail implements Serializable {
     this.creatorId = creatorId;
   }
 
+  public ContactDetail(ContactPK pk) {
+    this.pk = pk;
+  }
+      
+  @Override
   public ContactPK getPK() {
     return pk;
   }
 
+  @Override
   public String getFirstName() {
     return firstName;
   }
@@ -88,6 +95,7 @@ public class ContactDetail implements Serializable {
     this.firstName = firstName;
   }
 
+  @Override
   public String getLastName() {
     return lastName;
   }
@@ -95,7 +103,8 @@ public class ContactDetail implements Serializable {
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
-
+  
+  @Override
   public String getEmail() {
     return email;
   }
@@ -104,6 +113,7 @@ public class ContactDetail implements Serializable {
     this.email = email;
   }
 
+  @Override
   public String getPhone() {
     if (StringUtil.isDefined(phone)) {
       return phone;
@@ -118,6 +128,7 @@ public class ContactDetail implements Serializable {
     this.phone = phone;
   }
 
+  @Override
   public String getFax() {
     if (StringUtil.isDefined(phone)) {
       return fax;
@@ -132,14 +143,17 @@ public class ContactDetail implements Serializable {
     this.fax = fax;
   }
 
+  @Override
   public Date getCreationDate() {
     return creationDate;
   }
 
+  @Override
   public String getCreatorId() {
     return creatorId;
   }
 
+  @Override
   public String getUserId() {
     return userId;
   }
@@ -160,16 +174,15 @@ public class ContactDetail implements Serializable {
     this.userFull = userFull;
   }
 
+  @Override
   public UserFull getUserFull() {
     return userFull;
   }
 
+  @Override
   public String toString() {
     String result = "ContactDetail {" + "\n";
-    result = result + "  getPK().getId() = " + getPK().getId() + "\n";
-    result = result + "  getPK().getEd() = " + getPK().getSpace() + "\n";
-    result = result + "  getPK().getCo() = " + getPK().getComponentName()
-        + "\n";
+    result = result + "  getPK() = " + getPK().toString() + "\n";
     result = result + "  getFirstName() = " + getFirstName() + "\n";
     result = result + "  getLastName() = " + getLastName() + "\n";
     result = result + "  getEmail() = " + getEmail() + "\n";

@@ -24,14 +24,15 @@
 
 package com.silverpeas.form;
 
-import java.io.PrintWriter;
-import java.util.Map;
-
-import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import java.io.PrintWriter;
+import java.util.Map;
 
 public class Util {
 
@@ -173,5 +174,9 @@ public class Util {
       return fieldName;
     }
     return fieldName + AbstractForm.REPEATED_FIELD_SEPARATOR + occurrence;
+  }
+  
+  public static boolean isEmptyFieldsDisplayed() {
+    return StringUtil.getBooleanValue(getSetting("form.view.emptyFields.displayed"));
   }
 }

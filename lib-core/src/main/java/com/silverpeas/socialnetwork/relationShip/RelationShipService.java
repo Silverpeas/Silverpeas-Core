@@ -43,7 +43,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RelationShipService {
 
-  public static RelationShipService getInstance() {
+  public static RelationShipService get() {
     return ServiceProvider.getService(RelationShipService.class);
   }
 

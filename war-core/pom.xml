@@ -146,6 +146,11 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>contact</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>mylinks</artifactId>
       <version>${project.version}</version>
     </dependency>

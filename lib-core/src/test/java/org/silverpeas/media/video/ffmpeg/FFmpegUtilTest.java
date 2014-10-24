@@ -2,10 +2,13 @@ package org.silverpeas.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.lang.SystemWrapper;
 
 import java.io.File;
 
@@ -18,13 +21,16 @@ public class FFmpegUtilTest {
 
   private static String realSystem;
 
-  @BeforeClass
-  public static void computeRealSystem() {
-    realSystem = System.getProperty(OS_KEY);
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Before
+  public void computeRealSystem() {
+    realSystem = SystemWrapper.get().getProperty(OS_KEY);
   }
 
-  @AfterClass
-  public static void restoreRealSystem() {
+  @After
+  public void restoreRealSystem() {
     System.setProperty(OS_KEY, realSystem);
   }
 

@@ -24,6 +24,8 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import com.silverpeas.socialnetwork.invitation.InvitationService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -733,6 +735,38 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public boolean isFullyDefined() {
     return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin()) &&
         StringUtil.isDefined(getLastName());
+  }
+
+  /**
+   * Gets the duration of the current user session since its last registered login date.
+   * @return the formatted duration of the current user session, or empty string if the user is not
+   * connected.
+   */
+  public String getDurationOfCurrentSession() {
+    if (isConnected()) {
+      return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
+    }
+    return "";
+  }
+
+  /**
+   * Indicates if the current user is in relation with, or invited by, a user represented by the
+   * given identifier.
+   * @param userId the identifier of the user which the current user is potentially in relation
+   * with or invited by.
+   * @return true if the current user is in relation with, or invited by, the user represented by
+   * the given identifier, false otherwise.
+   */
+  public boolean isInRelationWithOrInvitedBy(String userId) {
+    RelationShipService relation = RelationShipService.get();
+    InvitationService invitation = InvitationService.get();
+    try {
+      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId())) ||
+          (invitation.getInvitation(Integer.parseInt(userId), Integer.parseInt(getId())) != null);
+    } catch (Exception e) {
+      SilverTrace.warn("admin", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
+    }
+    return false;
   }
 
   /**

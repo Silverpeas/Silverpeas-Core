@@ -211,7 +211,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @Override
   public Form getViewForm() throws PublicationTemplateException {
     if (viewForm == null) {
-      viewForm = getForm(viewFileName, viewTypeFile);
+      viewForm = getForm(viewFileName, viewTypeFile, true);
     }
     return viewForm;
   }
@@ -268,8 +268,13 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     // }
     return searchForm;
   }
-
+  
   private Form getForm(String fileName, String fileType) throws PublicationTemplateException {
+    return getForm(fileName, fileType, false);
+  }
+
+  private Form getForm(String fileName, String fileType, boolean viewForm)
+      throws PublicationTemplateException {
     Form form;
     RecordTemplate templateForm;
     String currentFileName = fileName;
@@ -283,7 +288,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
       try {
-        form = new XmlForm(templateForm);
+        form = new XmlForm(templateForm, viewForm);
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
             "form.EX_CANT_GET_FORM", null, e);

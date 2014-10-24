@@ -33,6 +33,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InfoDAO {
 
@@ -143,5 +145,27 @@ public class InfoDAO {
       DBUtil.close(rs, prepStmt);
     }
   }
+  
+  public static List<String> getInfo(Connection con, ContactPK pubPK) throws SQLException {
+    List<String> modelIds = new ArrayList<String>();
+    InfoPK infoPK = new InfoPK("unknown", pubPK);
+    String tableName = infoPK.getTableName();
 
+    String selectStatement = "select modelId FROM " + tableName
+        + " WHERE contactId = ? and instanceId = ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
+      prepStmt.setString(2, pubPK.getComponentName());
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        modelIds.add(rs.getString("modelId"));
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return modelIds;
+  }
 }

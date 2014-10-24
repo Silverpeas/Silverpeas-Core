@@ -45,7 +45,7 @@ import javax.inject.Singleton;
 @Singleton
 public class InvitationService {
 
-  public static InvitationService getInstance() {
+  public static InvitationService get() {
     return ServiceProvider.getService(InvitationService.class);
   }
 

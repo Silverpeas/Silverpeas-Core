@@ -44,7 +44,7 @@ import java.util.ArrayList;
  */
 public class MyContactProfilSessionController extends AbstractComponentSessionController {
 
-  private RelationShipService relationShipService = RelationShipService.getInstance();
+  private RelationShipService relationShipService = RelationShipService.get();
 
   /**
    * @param mainSessionCtrl

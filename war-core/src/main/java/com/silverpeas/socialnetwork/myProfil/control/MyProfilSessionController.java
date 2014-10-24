@@ -64,7 +64,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.owasp.encoder.Encode;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.exception.AuthenticationException;
@@ -75,8 +74,8 @@ import org.silverpeas.authentication.exception.AuthenticationException;
 public class MyProfilSessionController extends AbstractComponentSessionController {
 
   private AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
-  private RelationShipService relationShipService = RelationShipService.getInstance();
-  private InvitationService invitationService = InvitationService.getInstance();
+  private RelationShipService relationShipService = RelationShipService.get();
+  private InvitationService invitationService = InvitationService.get();
   private long domainActions = -1;
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
@@ -222,9 +221,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void sendInvitation(String receiverId, String message) {
-    String safeMessage = Encode.forHtml(message);
-    Invitation invitation =
-        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), safeMessage,
+    Invitation invitation = 
+        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message, 
             new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);

@@ -60,6 +60,8 @@ public interface Form {
    */
   public void display(JspWriter out, PagesContext pagesContext,
       DataRecord record) throws FormException;
+  
+  public void display(JspWriter out, PagesContext pagesContext) throws FormException;
 
   /**
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
@@ -104,4 +106,6 @@ public interface Form {
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);
   
   public void setFormName(String name);
+
+  public void setData(DataRecord data);
 }
