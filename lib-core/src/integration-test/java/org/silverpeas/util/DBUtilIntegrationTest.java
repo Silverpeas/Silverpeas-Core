@@ -132,24 +132,20 @@ public class DBUtilIntegrationTest {
 
   @Test
   public void nextUniqueIdUpdateForAnExistingTableShouldWorkInNewTransaction()
-      throws SQLException, InterruptedException {
+      throws Exception {
     assertThat(actualMaxIdInUniqueIdFor("User"), is(1));
     final Thread nextIdThread = new Thread(() -> {
       try {
         Transaction.performInOne(() -> {
           int nextId = 0;
-          try {
-            nextId = DBUtil.getNextId("User", "id");
-            assertThat(nextId, is(2));
-            assertThat(actualMaxIdInUniqueIdFor("User"), is(nextId));
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
+          nextId = DBUtil.getNextId("User", "id");
+          assertThat(nextId, is(2));
+          assertThat(actualMaxIdInUniqueIdFor("User"), is(nextId));
           assertThat(nextId, is(2));
           return null;
         });
         Thread.sleep(500);
-      } catch (InterruptedException e) {
+      } catch (Exception e) {
         throw new RuntimeException(e);
       }
     });

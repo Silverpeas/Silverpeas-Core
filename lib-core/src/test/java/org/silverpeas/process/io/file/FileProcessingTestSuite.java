@@ -21,8 +21,16 @@
 
 package org.silverpeas.process.io.file;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.lang.DefaultSystemWrapper;
+import org.silverpeas.util.lang.SystemWrapper;
+
+import static org.mockito.Mockito.when;
 
 /**
  * Test suite to sequence the unit tests on the file processing API.

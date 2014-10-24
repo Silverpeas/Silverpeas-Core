@@ -33,7 +33,7 @@ import javax.transaction.Transactional;
 public class Transaction {
 
   /**
-   * Gets a transaction instance in order to perform some tasks transactionally.
+   * Gets a transaction instance in order to perform some transactional tasks.
    * @return a transaction.
    */
   public static Transaction getTransaction() {
@@ -70,7 +70,11 @@ public class Transaction {
    */
   @Transactional
   public <RETURN_VALUE> RETURN_VALUE perform(final Process<RETURN_VALUE> process) {
-    return process.execute();
+    try {
+      return process.execute();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -82,7 +86,11 @@ public class Transaction {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public <RETURN_VALUE> RETURN_VALUE performNew(final Process<RETURN_VALUE> process) {
-    return process.execute();
+    try {
+      return process.execute();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -90,6 +98,6 @@ public class Transaction {
    * @param <RETURN_VALUE> the type of the returned value.
    */
   public interface Process<RETURN_VALUE> {
-    RETURN_VALUE execute();
+    RETURN_VALUE execute() throws Exception;
   }
 }

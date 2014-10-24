@@ -38,13 +38,14 @@ import java.util.logging.Logger;
 
 import static java.io.File.separator;
 import static java.io.File.separatorChar;
+import static org.silverpeas.util.lang.SystemWrapperProvider.getSystem;
 
 /**
  * @author ehugonnet
  */
 public class ConfigurationClassLoader extends ClassLoader {
 
-  private String baseDir = System.getenv("SILVERPEAS_HOME") + separatorChar;
+  private String baseDir = getSystem().getenv("SILVERPEAS_HOME") + separatorChar;
 
   @Override
   public synchronized void clearAssertionStatus() {
@@ -159,7 +160,7 @@ public class ConfigurationClassLoader extends ClassLoader {
   }
 
   public ConfigurationClassLoader(ClassLoader parent) {
-    this(parent, System.getenv("SILVERPEAS_HOME") + separatorChar + "properties");
+    this(parent, getSystem().getenv("SILVERPEAS_HOME") + separatorChar + "properties");
   }
 
   public ConfigurationClassLoader(ClassLoader parent, String directory) {

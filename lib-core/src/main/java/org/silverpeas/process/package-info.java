@@ -43,7 +43,7 @@
  * and offers a new abstract method 'processFile' with FileHandler parameter (@see {@link org.silverpeas.process.io.file.FileHandler}).
  *
  * As concrete API using example, let's taken the photo creation functionnality of the Gallery application.
- * In a first time, create the transactional service which will contain all directives of photo data registering (<code>createPhoto</code> as example).
+ * In a first time, create the transactional service which will contain all directives of photo data registering (<code>createMedia</code> as example).
  * In a second time, create the different Silverpeas processes :
  * <ul>
  * <li>one process to register the photo in database</li>

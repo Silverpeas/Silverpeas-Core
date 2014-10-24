@@ -38,13 +38,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.persistence.jdbc.ResultSetWrapper;
+import org.silverpeas.persistence.jdbc.SelectResultRowProcessor;
 import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.util.DBUtil;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -226,18 +227,17 @@ public class PersonalizationManagerTest {
 
   private UserPreferences actualUserPreferencesForUserId(String userId) {
     try {
-      return DBUtil.unique(DBUtil.select(dataSource.getConnection(),
-          "SELECT id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, " +
+      return JdbcSqlQuery.createSelect(
+          "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, " +
               "webdavEditingStatus, menuDisplay FROM personalization where " +
-              "id = ?", userId, new DBUtil.SelectResultRowProcessor<UserPreferences>() {
-            @Override
-            protected UserPreferences currentRow(final int rowIndex, final ResultSet rs)
-                throws SQLException {
-              return new UserPreferences(rs.getString(1), rs.getString(2), rs.getString(3),
-                  rs.getString(4), rs.getBoolean(5), rs.getBoolean(6), rs.getBoolean(7),
-                  UserMenuDisplay.valueOf(rs.getString(8)));
-            }
-          }));
+              "id = ?", userId).executeUnique(new SelectResultRowProcessor<UserPreferences>() {
+        @Override
+        protected UserPreferences currentRow(final ResultSetWrapper row) throws SQLException {
+          return new UserPreferences(row.getString(1), row.getString(2), row.getString(3),
+              row.getString(4), row.getBoolean(5), row.getBoolean(6), row.getBoolean(7),
+              UserMenuDisplay.valueOf(row.getString(8)));
+        }
+      });
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

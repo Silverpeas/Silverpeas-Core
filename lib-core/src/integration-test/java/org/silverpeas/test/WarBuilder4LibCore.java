@@ -50,6 +50,8 @@ import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -60,6 +62,8 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.lang.SystemWrapperProvider;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasStringTemplate;
 import org.silverpeas.util.template.SilverpeasStringTemplateUtil;
@@ -85,6 +89,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     warBuilder.addServiceProviderFeatures();
     warBuilder.addStubbedSilverTraceFeatures();
     warBuilder.addBundleBaseFeatures();
+    warBuilder
+        .addClasses(SystemWrapper.class, SystemWrapperProvider.class, TestSystemWrapper.class);
     return warBuilder;
   }
 
@@ -271,7 +277,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addCommonBasicUtilities();
     if (!contains(DBUtil.class)) {
       addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class);
-      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+      addPackages(false, "org.silverpeas.persistence.jdbc");
     }
     return this;
   }
@@ -296,6 +302,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.admin.user.constant");
       addPackages(true, "org.silverpeas.persistence.model");
       addPackages(true, "org.silverpeas.persistence.repository");
+      addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
     }
     return this;
   }
@@ -334,7 +341,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(AdminException.class);
     }
     if (!contains(QuotaException.class)) {
-      addClasses(QuotaException.class, QuotaKey.class);
+      addClasses(QuotaException.class, QuotaKey.class, QuotaRuntimeException.class);
     }
     return this;
   }

@@ -32,8 +32,10 @@ import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
 
@@ -57,12 +59,11 @@ public class PublicationTemplateImplTest {
   public File MAPPINGS_PATH;
   public File TEMPLATES_PATH;
 
-  public PublicationTemplateImplTest() {
-  }
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Before
   public void setUpClass() throws Exception {
-    reset(TestBeanContainer.getMockedBeanContainer());
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
         .thenReturn(mock(SilverpeasTrace.class));
 

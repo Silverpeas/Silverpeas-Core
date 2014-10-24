@@ -28,12 +28,14 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.session.DefaultProcessSession;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,9 +62,11 @@ public class TestAbstractFileHandler {
   private File realPath;
   private File sessionPath;
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   @Before
   public void beforeTest() throws Exception {
-    reset(TestBeanContainer.getMockedBeanContainer());
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
         .thenReturn(mock(SilverpeasTrace.class));
     BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;

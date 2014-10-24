@@ -59,6 +59,8 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.admin.OrganizationController;
 
+import static org.silverpeas.util.lang.SystemWrapperProvider.getSystem;
+
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
  * singleton.
@@ -82,7 +84,7 @@ public class PublicationTemplateManager {
         new ResourceLocator("org.silverpeas.publicationTemplate.settings.template", "");
 
     templateDir = templateSettings.getString("templateDir");
-    defaultTemplateDir = System.getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
+    defaultTemplateDir = getSystem().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
     
     try {
       JAXB_CONTEXT = JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);
