@@ -1,15 +1,16 @@
 package org.silverpeas.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
-import org.apache.commons.io.FilenameUtils;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public class FFmpegUtilTest {
 
@@ -39,10 +40,9 @@ public class FFmpegUtilTest {
     File outputFile = new File("/silverpeas/viewer/", "thumb.jpg");
     CommandLine result =
         FFmpegUtil.buildFFmpegThumbnailExtractorCommandLine(inputFile, outputFile, 30);
-    Assert.assertThat(result, Matchers.is(Matchers.notNullValue()));
-    Assert.assertThat(FilenameUtils.separatorsToUnix(String.join(" ", result.toStrings())), Matchers
-        .is("ffmpeg -ss 30 -i /silverpeas/video/movie.mp4 -vframes 1 -vf scale=600:-1 " +
-            "/silverpeas/viewer/thumb.jpg"));
+    assertThat(result, is(Matchers.notNullValue()));
+    assertThat(String.join(" ", result.toStrings()),
+        is("ffmpeg -ss 30 -i " + inputFile.getAbsolutePath() + " -vframes 1 -vf scale=600:-1 " +
+            outputFile.getAbsolutePath()));
   }
-
 }

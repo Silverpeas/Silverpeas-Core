@@ -23,6 +23,8 @@
  */
 package org.silverpeas.password.rule;
 
+import org.junit.Rule;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ResourceLocator;
 import org.junit.After;
 
@@ -34,6 +36,9 @@ import java.lang.reflect.ParameterizedType;
  */
 public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
   protected final static int NB_LOOP = 1000;
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @After
   public void afterTest() {
