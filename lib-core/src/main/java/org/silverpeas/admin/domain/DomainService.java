@@ -33,9 +33,9 @@ import com.stratelia.webactiv.beans.admin.Domain;
 public interface DomainService {
 
   /**
-   * Create given Domain
-   * @param domainToCreate
-   * @return
+   * Create given Domain.
+   * @param domainToCreate the domain to create.
+   * @return the identifier of the created domain.
    * @throws DomainCreationException
    * @throws DomainConflictException
    */
@@ -43,11 +43,10 @@ public interface DomainService {
       DomainConflictException;
 
   /**
-   * Remove given Domain
-   * @param domainToCreate
-   * @return
+   * Remove given Domain.
+   * @param domainToRemove the domain to remove.
+   * @return the identifier of the removed domain.
    * @throws DomainDeletionException
    */
   String deleteDomain(Domain domainToRemove) throws DomainDeletionException;
-
 }

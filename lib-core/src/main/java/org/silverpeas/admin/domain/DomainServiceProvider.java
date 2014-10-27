@@ -27,17 +27,18 @@ package org.silverpeas.admin.domain;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.service.QuotaService;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
- * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and so
- * to encapsulates from the CommentService client the adopted policy about that life-cycle.
+ * A factory of DomainService objects. Its aim is to manage the life-cycle of such objects and so
+ * to encapsulates from the DomainService client the adopted policy about that life-cycle.
  */
-public class DomainServiceFactory {
-
-  private static final DomainServiceFactory instance = new DomainServiceFactory();
+@Singleton
+public class DomainServiceProvider {
 
   @Inject
   @Named("externalDomainService")
@@ -54,8 +55,8 @@ public class DomainServiceFactory {
    * Gets an instance of this DomainServiceFactory class.
    * @return a DomainServiceFactory instance.
    */
-  public static DomainServiceFactory getFactory() {
-    return instance;
+  private static DomainServiceProvider getFactory() {
+    return ServiceProvider.getService(DomainServiceProvider.class);
   }
 
   /**
@@ -65,44 +66,24 @@ public class DomainServiceFactory {
   public static DomainService getDomainService(final DomainType type) {
     switch (type) {
       case EXTERNAL:
-        if (getFactory().externalDomainService == null) {
-          SilverTrace
-              .error(
-                  "admin",
-                  getFactory().getClass().getSimpleName()
-                      + ".getDomainService()",
-                  "EX_NO_MESSAGES",
-                  "IoC container not bootstrapped or no DomainService named 'silverpeasDomainService' bean found!");
-        }
         return getFactory().externalDomainService;
-
       case SQL:
-        if (getFactory().sqlDomainService == null) {
-          SilverTrace
-              .error(
-                  "admin",
-                  getFactory().getClass().getSimpleName()
-                      + ".getDomainService()",
-                  "EX_NO_MESSAGES",
-                  "IoC container not bootstrapped or no DomainService named 'sqlDomainService' bean found!");
-        }
         return getFactory().sqlDomainService;
-
       default:
-        SilverTrace
-            .error("admin",
-                getFactory().getClass().getSimpleName()
-            + ".getDomainService()",
-            "EX_NO_MESSAGES",
-            "Only SQL and SILVERPEAS Domain Services are implemented");
+        SilverTrace.error("admin", getFactory().getClass().getSimpleName() + ".getDomainService()",
+            "EX_NO_MESSAGES", "Only SQL and SILVERPEAS Domain Services are implemented");
         return null;
     }
   }
 
+  /**
+   * Gets the QuotaService instance associated to the user in domain quota.
+   * @return the QuotaService associated to the user in domain quota.
+   */
   public static QuotaService<UserDomainQuotaKey> getUserDomainQuotaService() {
     return getFactory().userDomainQuotaService;
   }
 
-  private DomainServiceFactory() {
+  private DomainServiceProvider() {
   }
 }

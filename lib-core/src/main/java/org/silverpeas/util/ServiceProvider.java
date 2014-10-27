@@ -51,8 +51,8 @@ public final class ServiceProvider {
     return beanContainer().getBeanByName(name);
   }
 
-  public static <T> Set<T> getAllServices(Class<T> type) {
-    return beanContainer().getAllBeansByType(type);
+  public static <T> Set<T> getAllServices(Class<T> type, Annotation... qualifiers) {
+    return beanContainer().getAllBeansByType(type, qualifiers);
   }
 
   private static BeanContainer beanContainer() {

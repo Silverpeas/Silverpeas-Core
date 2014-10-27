@@ -22,7 +22,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
 
-import org.silverpeas.admin.domain.DomainServiceFactory;
+import org.silverpeas.admin.domain.DomainServiceProvider;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
@@ -168,7 +168,7 @@ public class Domain implements Serializable {
   private void loadUserDomainQuota() {
     try {
       userDomainQuota =
-          DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
+          DomainServiceProvider.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
     } catch (final QuotaException qe) {
       throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR, "root.EX_CANT_GET_QUOTA",
           qe);

@@ -32,7 +32,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
-import org.silverpeas.admin.domain.DomainServiceFactory;
+import org.silverpeas.admin.domain.DomainServiceProvider;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
@@ -156,7 +156,7 @@ public class SQLDriver extends AbstractDomainDriver {
   public String createUser(UserDetail ud) throws Exception {
     try {
       this.openConnection();
-      DomainServiceFactory.getUserDomainQuotaService().verify(UserDomainQuotaKey.from(ud));
+      DomainServiceProvider.getUserDomainQuotaService().verify(UserDomainQuotaKey.from(ud));
       int userId = localUserMgr.createUser(openedConnection, ud);
       localUserMgr.updateUserPassword(openedConnection, userId, "");
       localUserMgr.updateUserPasswordValid(openedConnection, userId,

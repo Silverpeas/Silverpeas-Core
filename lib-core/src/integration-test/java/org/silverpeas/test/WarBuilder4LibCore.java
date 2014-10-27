@@ -51,6 +51,7 @@ import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.quota.service.QuotaService;
 import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
@@ -65,10 +66,7 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.lang.SystemWrapperProvider;
 import org.silverpeas.util.pool.ConnectionPool;
-import org.silverpeas.util.template.SilverpeasStringTemplate;
-import org.silverpeas.util.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -347,6 +345,37 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
+   * Sets string template features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addStringTemplateFeatures() {
+    if (!contains(SilverpeasTemplate.class)) {
+      addMavenDependencies("org.antlr:stringtemplate");
+      addPackages(true, "org.silverpeas.util.template");
+      addAsResource("org/silverpeas/util/stringtemplate.properties");
+    }
+    return this;
+  }
+
+  /**
+   * Sets Quota Bases features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addJpaPersistenceFeatures()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addQuotaBasesFeatures() {
+    if (!contains(QuotaService.class)) {
+      addClasses(QuotaService.class);
+      addPackages(true, "org.silverpeas.quota");
+      // Centralized features
+      addJpaPersistenceFeatures();
+    }
+    return this;
+  }
+
+  /**
    * Sets administration features.
    * Calls automatically:
    * <ul>
@@ -447,17 +476,4 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addLDAPFeatures() {
     return addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
   }
-
-  /**
-   * Add String template classes to web archive (war)
-   * @return the instance of the war builder with String Template enable
-   */
-  public WarBuilder4LibCore addStringTemplateFeatures() {
-    return addMavenDependencies("org.antlr:stringtemplate")
-        .addClasses(SilverpeasTemplateFactory.class, SilverpeasTemplate.class,
-            SilverpeasStringTemplateUtil.class, SilverpeasStringTemplate.class)
-        .addAsResource("com/silverpeas/util/stringtemplate.properties");
-
-  }
-
 }
