@@ -31,7 +31,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.apache.commons.collections.CollectionUtils;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.StringUtil;
@@ -51,7 +51,7 @@ import java.util.Set;
 public class ComponentAccessController extends AbstractAccessController<String> {
 
   @Inject
-  private OrganisationController controller;
+  private OrganizationController controller;
 
   @Inject
   private ComponentHelper componentHelper;
@@ -152,7 +152,7 @@ public class ComponentAccessController extends AbstractAccessController<String> 
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     return controller;
   }
 }

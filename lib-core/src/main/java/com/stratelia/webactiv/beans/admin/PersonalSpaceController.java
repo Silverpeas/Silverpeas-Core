@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.quota.exception.QuotaException;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
@@ -41,7 +41,7 @@ public class PersonalSpaceController {
   private static final String MESSAGES_LOCATION =
       "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle";
 
-  public List<WAComponent> getVisibleComponents(OrganisationController orgaController) {
+  public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
     Collection<WAComponent> components = orgaController.getAllComponents().values();
     for (WAComponent component : components) {

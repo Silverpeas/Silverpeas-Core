@@ -30,7 +30,7 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -109,7 +109,7 @@ public class RepositoriesTypeManager {
       reportManager.addMassiveReport(massiveReport, componentId);
       massiveReport.setRepositoryPath(sPath);
 
-      ComponentInst componentInst = OrganisationControllerProvider.getOrganisationController()
+      ComponentInst componentInst = OrganizationControllerProvider.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas

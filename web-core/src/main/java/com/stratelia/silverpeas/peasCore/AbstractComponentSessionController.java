@@ -39,7 +39,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.subscription.SubscriptionContext;
 
 import java.io.UnsupportedEncodingException;
@@ -258,7 +258,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @see
    */
   @Override
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     return controller.getOrganisationController();
   }
 

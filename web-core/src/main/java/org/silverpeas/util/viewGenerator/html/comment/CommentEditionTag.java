@@ -27,7 +27,7 @@ package org.silverpeas.util.viewGenerator.html.comment;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 
@@ -78,7 +78,7 @@ public class CommentEditionTag extends CommentWidget {
    * @return the rendering instructions.
    */
   protected String getCommentEditionScript() {
-    UserDetail user = OrganisationControllerProvider
+    UserDetail user = OrganizationControllerProvider
         .getOrganisationController().getUserDetail(getUserId());
     String edition = "";
     if (!user.isAccessGuest() && !user.isAnonymous()) {

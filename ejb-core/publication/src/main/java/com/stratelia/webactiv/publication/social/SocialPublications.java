@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -78,7 +78,7 @@ public class SocialPublications implements SocialPublicationsInterface {
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     // getting all components allowed to me
-    OrganisationController oc = OrganisationControllerProvider.getOrganisationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> options = new ArrayList<String>();
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));

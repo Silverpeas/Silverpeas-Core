@@ -51,18 +51,17 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
 
 <%
   MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
       MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  OrganisationController organizationCtrl = null;
+  org.silverpeas.core.admin.OrganizationController organizationCtrl = null;
   GraphicElementFactory gef = null;
   String language = null;
   ResourceLocator message = null;

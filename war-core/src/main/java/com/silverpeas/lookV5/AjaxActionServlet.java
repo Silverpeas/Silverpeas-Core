@@ -51,14 +51,14 @@ import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 public class AjaxActionServlet extends HttpServlet {
 
   private static final long serialVersionUID = -2317530610033349156L;
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   // Servlet action controller
   private static final String ACTION_ADD_SPACE = "addSpace";
@@ -246,7 +246,7 @@ public class AjaxActionServlet extends HttpServlet {
             jsonRslt.put("spacestate", spaceState);
           }
           // Retrieve father space identifiers
-          OrganisationController orga = m_MainSessionCtrl.getOrganisationController();
+          OrganizationController orga = m_MainSessionCtrl.getOrganisationController();
           ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId);
           JSONArray parentSpaceJA = buildParentJA(userId, listUFS, orga, parentSpaceIds);
           jsonRslt.put("spacestate", spaceState);
@@ -273,7 +273,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return
    */
   private JSONArray buildParentJA(String userId, List<UserFavoriteSpaceVO> listUFS,
-      OrganisationController orga, ArrayList<String> parentSpaceIds) {
+      OrganizationController orga, ArrayList<String> parentSpaceIds) {
     JSONArray resultJA = new JSONArray();
     for (String curSpaceId : parentSpaceIds) {
       JSONObject curParentState = new JSONObject();

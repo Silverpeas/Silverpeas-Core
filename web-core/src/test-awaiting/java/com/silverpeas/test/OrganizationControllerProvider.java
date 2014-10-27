@@ -25,8 +25,9 @@
 package com.silverpeas.test;
 
 import javax.inject.Named;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganisationController;
+
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static org.mockito.Mockito.*;
 
@@ -38,8 +39,9 @@ import static org.mockito.Mockito.*;
 @Named("organizationControllerProvider")
 public class OrganizationControllerProvider {
 
-  public OrganisationController getOrganisationController() {
-    OrganisationController organizationController = mock(OrganizationController.class);
+  public OrganizationController getOrganisationController() {
+    OrganizationController
+        organizationController = mock(DefaultOrganizationController.class);
     return organizationController;
   }
 }

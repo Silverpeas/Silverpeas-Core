@@ -35,7 +35,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +46,7 @@ import java.util.List;
 
 public interface ComponentSessionController {
   /** Return the organizationController */
-  public OrganisationController getOrganisationController();
+  public OrganizationController getOrganisationController();
 
   /** Return the user language */
   public String getLanguage();

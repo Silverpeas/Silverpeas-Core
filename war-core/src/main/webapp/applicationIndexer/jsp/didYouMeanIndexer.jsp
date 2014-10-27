@@ -32,24 +32,24 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-
-<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 
-<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationControllerProvider" %>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+
+<%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%!
-private String printSpaceAndSubSpaces(String spaceId, int depth, OrganisationController m_OrganizationController, String m_sContext) {
+  private String printSpaceAndSubSpaces(String spaceId, int depth,
+      org.silverpeas.core.admin.OrganizationController m_OrganizationController,
+      String m_sContext) {
     ComponentInst 	compoInst 	= null;
     String 			compoName 	= null;
     String 			compoDesc 	= null;
@@ -111,8 +111,8 @@ if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSes
     return;
 }
 
-OrganisationController m_OrganizationController = OrganisationControllerProvider
-    .getOrganisationController();
+  org.silverpeas.core.admin.OrganizationController m_OrganizationController =
+      OrganizationControllerProvider.getOrganisationController();
 
 ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
 

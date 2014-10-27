@@ -28,7 +28,7 @@ import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.jsp.JspWriter;
@@ -122,7 +122,7 @@ public abstract class AbstractForm implements Form {
 
       boolean jsAdded = false;
       if (StringUtil.isDefined(pagesContext.getComponentId()) && StringUtil.isDefined(getName())) {
-        ComponentInstLight component =  OrganisationControllerProvider.getOrganisationController()
+        ComponentInstLight component =  OrganizationControllerProvider.getOrganisationController()
             .getComponentInstLight(pagesContext.getComponentId());
         if (component != null && component.isWorkflow()) {
           out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")

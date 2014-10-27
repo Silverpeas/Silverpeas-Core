@@ -28,7 +28,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
 /**
@@ -109,7 +109,7 @@ public class PdcUserField extends AbstractField {
         userCardId = userCardIdUserId.substring(0, index);
         userId = userCardIdUserId.substring(index + 1);
 
-        user = OrganisationControllerProvider.getOrganisationController().getUserDetail(userId);
+        user = OrganizationControllerProvider.getOrganisationController().getUserDetail(userId);
         if (user == null) {
           names.append("userCardId(").append(userCardId).append(")");
         } else {

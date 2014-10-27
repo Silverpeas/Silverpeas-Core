@@ -33,21 +33,21 @@ import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.webactiv.organization.DAOProvider;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 /**
  * @author Yohann Chastagnier
  */
 public class LookWebDelegate {
 
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   private final UserDetail user;
   private final UserPreferences userPreference;
@@ -256,10 +256,10 @@ public class LookWebDelegate {
     return gef;
   }
 
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     if (organizationController == null) {
       organizationController =
-          OrganisationControllerProvider.getOrganisationController();
+          OrganizationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

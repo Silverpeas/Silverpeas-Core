@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.silverpeas.util.ListSlice;
 
-public interface OrganisationController extends java.io.Serializable {
+public interface OrganizationController extends java.io.Serializable {
 
   /**
    * Return all the spaces Id available in silverpeas

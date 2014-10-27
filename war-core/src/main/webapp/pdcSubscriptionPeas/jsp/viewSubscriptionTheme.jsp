@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
 <%@ page import="org.silverpeas.subscription.bean.NodeSubscriptionBean" %>
 <%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
 <%--
@@ -37,7 +37,7 @@
   String userId = (String) request.getAttribute("userId");
   String action = (String) request.getAttribute("action");
 
-  OrganisationController organizationCtrl = sessionController.getOrganisationController();
+  org.silverpeas.core.admin.OrganizationController organizationCtrl = sessionController.getOrganisationController();
   final String rootPath = resource.getString("Path");
 
   boolean isReadOnly = false;

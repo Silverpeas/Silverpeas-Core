@@ -24,7 +24,7 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
@@ -38,7 +38,6 @@ import com.stratelia.silverpeas.pdc.control.PdcSettings;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminUserConnections;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -55,7 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.subscription.SubscriptionContext;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
@@ -75,7 +74,7 @@ public class MainSessionController implements Clipboard {
   Object m_ComponentSOFactory = null;
   private String sessionId = null;
   private String userId = null;
-  private OrganisationController organizationController = null;
+  private OrganizationController organizationController = null;
   private Date userLoginBegin = null;
   private Date userLastRequest = null;
   private String userLanguage = null;
@@ -344,9 +343,9 @@ public class MainSessionController implements Clipboard {
   }
 
   // ------------------- Other functions -----------------------------
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = OrganisationControllerProvider.getOrganisationController();
+      organizationController = OrganizationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

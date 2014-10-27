@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
@@ -42,7 +42,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_USER_LASTNAME = 0;
@@ -54,7 +54,7 @@ public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_GROUP_DESCRIPTION = 1;
   protected static final int COL_GROUP_NBUSERS = 2;
 
-  protected OrganisationController m_oc = OrganisationControllerProvider.getOrganisationController();
+  protected OrganizationController m_oc = OrganizationControllerProvider.getOrganisationController();
   protected AdminController adminController = new AdminController(null);
   protected UserDetail userDetail = null;
 

@@ -27,7 +27,7 @@ package com.silverpeas.external.webConnections.control;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -74,7 +74,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   private void addParamToConnection(ConnectionDetail connection) {
     // ajouter les données venue de hyperlink
-    ComponentInst inst = OrganisationControllerProvider
+    ComponentInst inst = OrganizationControllerProvider
         .getOrganisationController().getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("Url");

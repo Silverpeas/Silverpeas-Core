@@ -39,7 +39,7 @@ import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.mock.OrganizationControllerMock;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
@@ -77,7 +77,7 @@ public class SubscriptionServiceTest {
   // Spring context
   private ClassPathXmlApplicationContext context;
   private SubscriptionService subscriptionService;
-  private OrganizationController organizationController;
+  private DefaultOrganizationController organizationController;
 
   @BeforeClass
   public static void setUpClass() throws Exception {

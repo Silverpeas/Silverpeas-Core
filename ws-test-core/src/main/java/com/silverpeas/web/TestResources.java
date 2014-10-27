@@ -30,7 +30,6 @@ import com.silverpeas.web.mock.SessionManagerMock;
 import com.silverpeas.web.mock.TokenServiceMockWrapper;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.sun.istack.logging.Logger;
@@ -42,7 +41,7 @@ import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.AuthenticationServiceFactory;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.silverpeas.token.persistent.PersistentResourceTokenBuilder;
@@ -191,7 +190,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * expected behaviours for the OrganizationController instances.
    * @return the OrganizationController mock used in the tests.
    */
-  public OrganisationController getOrganizationControllerMock() {
+  public OrganizationController getOrganizationControllerMock() {
     return organizationControllerMockWrapper;
   }
 
@@ -269,7 +268,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * @return the user itself with its identifier set.
    */
   public UserDetail registerUser(final UserDetail user) {
-    OrganisationController mock = getOrganizationControllerMock();
+    OrganizationController mock = getOrganizationControllerMock();
     user.setId(String.valueOf(maxUserId++));
     if (user.getDomainId() == null) {
       user.setDomainId(DEFAULT_DOMAIN);

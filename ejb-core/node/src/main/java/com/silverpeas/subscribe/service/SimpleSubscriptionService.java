@@ -34,7 +34,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,7 +56,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   private final SubscriptionDao subscriptionDao = new SubscriptionDao();
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   /**
    * Gets a database connection.

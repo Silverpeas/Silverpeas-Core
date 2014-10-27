@@ -32,7 +32,7 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
@@ -77,7 +77,7 @@ public class ScheduledImport implements SchedulerEventListener {
 
     String userId = resources.getString("userIdAsCreatorId");
     ImportExport importExport = new ImportExport();
-    UserDetail user = OrganisationControllerProvider
+    UserDetail user = OrganizationControllerProvider
         .getOrganisationController().getUserDetail(userId);
     ResourceLocator multilang = new ResourceLocator(
         "com.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");

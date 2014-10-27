@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.questionContainer.control;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -59,7 +59,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -1335,7 +1335,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
   public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
     List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
     StringBuffer csvRow = new StringBuffer();
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     try {
       if (questionContainer.getHeader().isAnonymous()) {
         // anonymes
@@ -1499,7 +1499,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
     return componentLabel;
   }
 
-  private OrganisationController getOrganisationController() {
-    return OrganisationControllerProvider.getOrganisationController();
+  private OrganizationController getOrganisationController() {
+    return OrganizationControllerProvider.getOrganisationController();
   }
 }

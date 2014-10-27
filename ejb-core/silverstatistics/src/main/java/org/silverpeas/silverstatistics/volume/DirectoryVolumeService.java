@@ -23,12 +23,13 @@
  */
 package org.silverpeas.silverstatistics.volume;
 
-import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.StringUtil;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -157,7 +158,7 @@ public class DirectoryVolumeService {
   @SuppressWarnings("unchecked")
   private File[] listDirectoriesToScan(File dataDirectory, String userId) {
     FileFilter filter;
-    OrganizationController controller = new OrganizationController();
+    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     if (!StringUtil.isDefined(userId) || controller.getUserDetail(userId).isAccessAdmin()) {
       filter = DirectoryFileFilter.DIRECTORY;
     } else {

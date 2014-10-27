@@ -110,9 +110,11 @@
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
 
+  <!--
   <bean id="organizationController"
-        class="com.stratelia.webactiv.beans.admin.OrganizationController"
+        class="com.stratelia.webactiv.beans.admin.DefaultOrganizationController"
         />
+  -->
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <!-- ebo <bean id="organizationControllerFactory"

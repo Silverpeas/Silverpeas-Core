@@ -39,7 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -73,7 +73,7 @@ public class ComponentAccessControllerTest {
 
   private static final String userId = "bart";
 
-  private OrganisationController controller;
+  private OrganizationController controller;
 
   private ComponentAccessController instance;
   private AccessControlContext accessControlContext;
@@ -100,7 +100,7 @@ public class ComponentAccessControllerTest {
     when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
 
-    controller = mock(OrganisationController.class);
+    controller = mock(OrganizationController.class);
 
     when(controller.getComponentInst(anyString())).thenAnswer(new Answer<ComponentInst>() {
       @Override

@@ -29,7 +29,7 @@ import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -123,7 +123,7 @@ public class AuthenticationParameters {
       ExternalAccount account =
           SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
-      UserDetail user = OrganisationControllerProvider
+      UserDetail user = OrganizationControllerProvider
           .getOrganisationController().getUserDetail(account.getSilverpeasUserId());
       this.domainId = user.getDomainId();
       this.login = user.getLogin();

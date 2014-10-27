@@ -40,7 +40,7 @@ import java.net.URI;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
@@ -97,7 +97,7 @@ public class PdcTestResources extends TestResources {
    *
    * @return an organisation controller instance.
    */
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     return organizationControllerMockWrapper.getOrganizationControllerMock();
   }
 

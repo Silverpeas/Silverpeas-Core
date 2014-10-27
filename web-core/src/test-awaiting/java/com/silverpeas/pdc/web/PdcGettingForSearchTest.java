@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -196,7 +196,7 @@ public class PdcGettingForSearchTest extends ResourceGettingTest<PdcTestResource
   }
 
   private void mockOrganisationControllerBehaviour() {
-    OrganisationController organisationController = getTestResources().getOrganisationController();
+    OrganizationController organisationController = getTestResources().getOrganisationController();
     doAnswer(new Answer<List<String>>() {
       @Override
       public List<String> answer(InvocationOnMock invocation) throws Throwable {

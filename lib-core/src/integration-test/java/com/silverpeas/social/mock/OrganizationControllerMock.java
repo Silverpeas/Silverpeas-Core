@@ -27,7 +27,7 @@ package com.silverpeas.social.mock;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Named;
@@ -40,10 +40,11 @@ import static org.mockito.Mockito.mock;
  * @author Yohann Chastagnier
  */
 @Named("organizationController")
-public class OrganizationControllerMock implements OrganisationController {
+public class OrganizationControllerMock implements
+    org.silverpeas.core.admin.OrganizationController {
   private static final long serialVersionUID = 1L;
 
-  private final OrganisationController mock = mock(OrganisationController.class);
+  private final OrganizationController mock = mock(OrganizationController.class);
 
   @Override
   public String[] getAllSpaceIds() {
@@ -497,7 +498,7 @@ public class OrganizationControllerMock implements OrganisationController {
     return null;
   }
 
-  public OrganisationController getMock() {
+  public OrganizationController getMock() {
     return mock;
   }
 }

@@ -37,7 +37,7 @@ import javax.servlet.http.HttpSession;
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 public class JobDomainPeasGroupPathServlet extends HttpServlet {
 
@@ -72,7 +72,7 @@ public class JobDomainPeasGroupPathServlet extends HttpServlet {
   private String getGroupPath(JobDomainPeasSessionController sc, String groupId) {
     String groupPath = "";
 
-    OrganisationController orgaController = sc.getOrganisationController();
+    OrganizationController orgaController = sc.getOrganisationController();
     Group group = orgaController.getGroup(groupId);
     String domainId = group.getDomainId();
     if (domainId == null) {

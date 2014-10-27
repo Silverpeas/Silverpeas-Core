@@ -29,7 +29,7 @@ import com.silverpeas.pdc.dao.PdcRightsDAO;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -876,7 +876,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
       if (!isManager) {
         // If not, check if at least one of his groups it is
-        String[] groupIds = OrganisationControllerProvider
+        String[] groupIds = OrganizationControllerProvider
             .getOrganisationController().getAllGroupIdsOfUser(userId);
 
         isManager = isGroupManager(groupIds);

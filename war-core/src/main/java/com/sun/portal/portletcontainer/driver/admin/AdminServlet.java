@@ -46,7 +46,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import static org.silverpeas.util.StringUtil.*;
 
@@ -188,7 +188,7 @@ public class AdminServlet extends HttpServlet {
 
       // If the home page of the space is the standard one, then spaceId is unset
       SpaceInst spaceStruct =
-          OrganisationControllerProvider.getOrganisationController()
+          OrganizationControllerProvider.getOrganisationController()
               .getSpaceInstById(spaceId.replace("space", ""));
       if (spaceStruct == null || spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_STANDARD) {
         spaceId = null;

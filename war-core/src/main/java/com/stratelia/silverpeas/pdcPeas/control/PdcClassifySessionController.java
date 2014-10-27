@@ -42,7 +42,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
@@ -101,7 +101,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public void setCurrentComponentId(String componentId) {
-    OrganisationController orga = getOrganisationController();
+    OrganizationController orga = getOrganisationController();
     ComponentInst componentInst = orga.getComponentInst(componentId);
     String currentSpaceId = componentInst.getDomainFatherId();
     SpaceInst spaceInst = orga.getSpaceInstById(currentSpaceId);

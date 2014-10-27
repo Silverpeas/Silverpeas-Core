@@ -48,7 +48,7 @@ import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
@@ -879,7 +879,7 @@ public class ImportExport extends AbstractExportProcess {
         }
 
         // Create unbalanced file html index
-        ComponentInst componentInst = OrganisationControllerProvider
+        ComponentInst componentInst = OrganizationControllerProvider
             .getOrganisationController().getComponentInst(componentId);
         gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 

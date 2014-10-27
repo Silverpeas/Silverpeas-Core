@@ -39,7 +39,7 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
@@ -134,7 +134,7 @@ public class PublicationsTypeManager {
 
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
-      ComponentInstLight componentInst = OrganisationControllerProvider
+      ComponentInstLight componentInst = OrganizationControllerProvider
           .getOrganisationController().getComponentInstLight(componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
       // Récupération du PublicationType
@@ -166,7 +166,7 @@ public class PublicationsTypeManager {
           nodeInstanceId = rootPK.getInstanceId();
           if (!nodeInstanceId.equals(componentId)) {
             // case of aliases
-            componentInst = OrganisationControllerProvider.getOrganisationController().
+            componentInst = OrganizationControllerProvider.getOrganisationController().
                 getComponentInstLight(
                     nodeInstanceId);
           }
@@ -603,7 +603,7 @@ public class PublicationsTypeManager {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport();
       reportManager.addUnitReport(unitReport, componentId);
-      ComponentInst componentInst = OrganisationControllerProvider.getOrganisationController()
+      ComponentInst componentInst = OrganizationControllerProvider.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas

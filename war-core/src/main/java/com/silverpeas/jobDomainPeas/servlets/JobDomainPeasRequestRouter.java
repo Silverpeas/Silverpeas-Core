@@ -54,7 +54,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 
@@ -300,7 +300,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.equals("userOpen")) {
           String userId = request.getParameter("userId");
 
-          OrganisationController orgaController = jobDomainSC.getOrganisationController();
+          OrganizationController orgaController = jobDomainSC.getOrganisationController();
           UserDetail user = orgaController.getUserDetail(userId);
           String domainId = user.getDomainId();
           if (domainId == null) {
@@ -425,7 +425,7 @@ public class JobDomainPeasRequestRouter extends
           String groupId = request.getParameter("groupId");
 
           if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
-            OrganisationController orgaController = jobDomainSC.getOrganisationController();
+            OrganizationController orgaController = jobDomainSC.getOrganisationController();
             Group group = orgaController.getGroup(groupId);
             String domainId = group.getDomainId();
             if (domainId == null) {

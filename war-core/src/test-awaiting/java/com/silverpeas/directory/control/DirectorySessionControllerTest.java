@@ -31,10 +31,10 @@ import java.util.Map;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import org.junit.Test;
 
@@ -71,7 +71,8 @@ public class DirectorySessionControllerTest {
     users.add(user3);
 
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganisationController organisation = mock(OrganizationController.class);
+    final OrganizationController
+        organisation = mock(DefaultOrganizationController.class);
     when(organisation.getAllUsers()).thenReturn(users.toArray(new UserDetail[3]));
     when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
@@ -124,7 +125,8 @@ public class DirectorySessionControllerTest {
     usersGroup.add(user3);
 
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganisationController organisation = mock(OrganizationController.class);
+    final OrganizationController
+        organisation = mock(DefaultOrganizationController.class);
     when(organisation.getAllUsersOfGroup("2")).thenReturn(usersGroup.toArray(new UserDetail[2]));
     when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
@@ -191,7 +193,8 @@ public class DirectorySessionControllerTest {
     Domain domain = new Domain();
     domain.setId("3");
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganisationController organisation = mock(OrganizationController.class);
+    final OrganizationController
+        organisation = mock(DefaultOrganizationController.class);
     List<String> domainIds = new ArrayList<String>();
     domainIds.add("3");
     when(organisation.getUsersOfDomains(domainIds)).thenReturn(usersDomain);
@@ -259,7 +262,8 @@ public class DirectorySessionControllerTest {
     usersSpace.add(user3);
 
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganisationController organisation = mock(OrganizationController.class);
+    final OrganizationController
+        organisation = mock(DefaultOrganizationController.class);
     when(controller.getOrganisationController()).thenReturn(organisation);
 
     String[] componentIds = {"kmelia12", "webPages245"};
@@ -312,7 +316,8 @@ public class DirectorySessionControllerTest {
   @Test
   public void testFillList(){
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganisationController organisation = mock(OrganizationController.class);
+    final OrganizationController
+        organisation = mock(DefaultOrganizationController.class);
     when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");

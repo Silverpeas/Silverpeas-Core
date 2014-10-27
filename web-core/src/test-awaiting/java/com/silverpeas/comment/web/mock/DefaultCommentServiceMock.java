@@ -25,7 +25,7 @@
 package com.silverpeas.comment.web.mock;
 
 import com.silverpeas.comment.service.DefaultCommentService;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,10 +37,10 @@ import javax.inject.Named;
 public class DefaultCommentServiceMock extends DefaultCommentService {
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   @Override
-  protected OrganisationController getOrganisationController() {
+  protected OrganizationController getOrganisationController() {
     return organizationController;
   }
 }

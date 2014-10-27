@@ -33,7 +33,7 @@ import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
 
 import java.rmi.RemoteException;
@@ -67,7 +67,7 @@ public class AgendaRssServlet extends RssServlet {
   public String getChannelTitle(String userId) {
     UserPreferences preferences =
         SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
-    UserDetail user = OrganisationControllerProvider
+    UserDetail user = OrganizationControllerProvider
         .getOrganisationController().getUserDetail(userId);
     ResourceLocator message = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
         preferences.getLanguage());

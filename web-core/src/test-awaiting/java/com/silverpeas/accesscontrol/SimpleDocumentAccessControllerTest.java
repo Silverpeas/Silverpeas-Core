@@ -43,7 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.silverpeas.accesscontrol.SimpleDocumentAccessController;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,7 +68,7 @@ public class SimpleDocumentAccessControllerTest {
 
   private static final String userId = "bart";
 
-  private OrganisationController controller;
+  private OrganizationController controller;
   private PublicationBm publicationBm;
 
   private ComponentAccessController componentAccessController;
@@ -97,7 +97,7 @@ public class SimpleDocumentAccessControllerTest {
     yellowComponent.setPortlet(true);
     when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
-    controller = mock(OrganisationController.class);
+    controller = mock(OrganizationController.class);
     componentAccessController = mock(ComponentAccessController.class);
     nodeAccessController = mock(NodeAccessController.class);
     publicationBm = mock(PublicationBm.class);

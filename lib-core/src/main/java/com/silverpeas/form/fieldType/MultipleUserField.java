@@ -29,7 +29,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 
@@ -108,7 +108,7 @@ public class MultipleUserField extends AbstractField {
     }
 
     StringBuilder value = new StringBuilder();
-    UserDetail[] users = OrganisationControllerProvider.getOrganisationController()
+    UserDetail[] users = OrganizationControllerProvider.getOrganisationController()
         .getUserDetails(getUserIds());
     for (int i = 0; i < users.length; i++) {
       if (i > 0) {
@@ -172,7 +172,7 @@ public class MultipleUserField extends AbstractField {
     if (this.userIds == null || this.userIds.length == 0) {
       return null;
     }
-    return OrganisationControllerProvider.getOrganisationController().getUserDetails(getUserIds());
+    return OrganizationControllerProvider.getOrganisationController().getUserDetails(getUserIds());
   }
 
   /**

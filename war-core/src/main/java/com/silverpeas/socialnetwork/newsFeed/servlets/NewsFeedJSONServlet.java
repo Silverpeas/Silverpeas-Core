@@ -36,7 +36,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -189,7 +189,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param information
    * @return JSONObject
    */
-  private JSONObject toJson(SocialInformation information, OrganisationController oc,
+  private JSONObject toJson(SocialInformation information, OrganizationController oc,
       ResourceLocator multilang) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
@@ -238,7 +238,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param map
    * @return JSONArray
    */
-  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganisationController oc,
+  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganizationController oc,
       ResourceLocator multilang) {
     SimpleDateFormat formatDate =
         new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale(multilang.getLanguage()));

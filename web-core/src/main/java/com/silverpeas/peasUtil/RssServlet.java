@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.StringUtil;
@@ -141,7 +141,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public String getChannelTitle(String instanceId) {
-    ComponentInstLight instance = OrganisationControllerProvider.getOrganisationController()
+    ComponentInstLight instance = OrganizationControllerProvider.getOrganisationController()
         .getComponentInstLight(instanceId);
     if (instance != null) {
       return instance.getLabel();
@@ -155,7 +155,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public boolean isComponentRss(String instanceId) {
-    String paramRssValue = OrganisationControllerProvider.getOrganisationController()
+    String paramRssValue = OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(instanceId, "rss");
     // rechercher si le composant a bien le flux RSS autorisé
     return "yes".equalsIgnoreCase(paramRssValue);

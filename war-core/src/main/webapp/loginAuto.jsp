@@ -32,12 +32,10 @@
 <view:setBundle basename="com.silverpeas.authentication.multilang.authentication"/>
 <%@ include file="headLog.jsp" %>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%@ page import="com.stratelia.webactiv.kmelia.KmeliaSecurity" %>
 <%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationControllerProvider" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 
 <%
   HttpSession httpSession = request.getSession();
@@ -60,7 +58,8 @@
   if (redirection == null && componentId == null && spaceId == null) {
     isAnonymousAccessAuthorized = true;
   } else {
-    OrganisationController organization = OrganisationControllerProvider.getOrganisationController();
+    org.silverpeas.core.admin.OrganizationController organization =
+        OrganizationControllerProvider.getOrganisationController();
     if (organization.isAnonymousAccessActivated()) {
       if (componentId != null) {
         if (organization.isComponentAvailable(componentId, anonymousUser.getId())) {

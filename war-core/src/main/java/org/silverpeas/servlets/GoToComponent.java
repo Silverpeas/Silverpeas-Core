@@ -26,7 +26,7 @@ package org.silverpeas.servlets;
 
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +37,7 @@ public class GoToComponent extends GoTo {
 
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    ComponentInstLight component = OrganisationControllerProvider
+    ComponentInstLight component = OrganizationControllerProvider
         .getOrganisationController().getComponentInstLight(objectId);
 
     if (component != null) {

@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.admin.web.tools.AbstractTool;
 import org.silverpeas.admin.web.tools.ToolDelegate;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.look.web.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;
@@ -48,7 +48,7 @@ import org.silverpeas.util.exception.SilverpeasException;
  */
 public class AdminPersonalWebDelegate {
 
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   private final UserDetail user;
   private final UserPreferences userPreference;
@@ -261,10 +261,10 @@ public class AdminPersonalWebDelegate {
     return user.getId();
   }
 
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     if (organizationController == null) {
       organizationController =
-          OrganisationControllerProvider.getOrganisationController();
+          OrganizationControllerProvider.getOrganisationController();
     }
     return organizationController;
   }

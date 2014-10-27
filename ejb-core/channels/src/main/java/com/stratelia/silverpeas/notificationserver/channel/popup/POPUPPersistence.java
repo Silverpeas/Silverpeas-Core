@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.LongText;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -139,7 +139,7 @@ public class POPUPPersistence {
     String result = "";
 
     try {
-      UserDetail ud = OrganisationControllerProvider.getOrganisationController().getUserDetail(
+      UserDetail ud = OrganizationControllerProvider.getOrganisationController().getUserDetail(
           Long.toString(userId));
       if (ud != null) {
         result = ud.getLogin();

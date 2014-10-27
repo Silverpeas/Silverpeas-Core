@@ -31,7 +31,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.settings.SilverpeasSettings;
@@ -65,7 +65,7 @@ public abstract class RESTWebService {
    */
   public static final String RESPONSE_HEADER_ARRAYSIZE = "X-Silverpeas-Size";
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
   @Context
   private UriInfo uriInfo;
   @Context
@@ -226,7 +226,7 @@ public abstract class RESTWebService {
    *
    * @return an OrganizationController instance.
    */
-  protected OrganisationController getOrganisationController() {
+  protected OrganizationController getOrganisationController() {
     return organizationController;
   }
 

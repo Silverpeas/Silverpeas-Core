@@ -25,7 +25,7 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -80,7 +80,7 @@ public class NodeTreesTypeManager {
         UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
         reportManager.addUnitReport(unitReport, componentId);
 
-        ComponentInst component = OrganisationControllerProvider
+        ComponentInst component = OrganizationControllerProvider
             .getOrganisationController().getComponentInst(componentId);
         if (component == null) {
           // le composant n'existe pas

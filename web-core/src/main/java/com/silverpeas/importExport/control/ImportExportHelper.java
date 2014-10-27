@@ -20,7 +20,7 @@
  */
 package com.silverpeas.importExport.control;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import org.silverpeas.util.StringUtil;
 
@@ -36,7 +36,7 @@ import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 public class ImportExportHelper {
 
   public static boolean isVersioningUsed(final String componentId) {
-    return isVersioningUsed(OrganisationControllerProvider.getOrganisationController()
+    return isVersioningUsed(OrganizationControllerProvider.getOrganisationController()
         .getComponentInst(componentId));
   }
 
@@ -53,7 +53,7 @@ public class ImportExportHelper {
   }
 
   public static String checkUserId(String userId, UserDetail importer) {
-    if (OrganisationControllerProvider.getOrganisationController().getUserDetail(userId) != null) {
+    if (OrganizationControllerProvider.getOrganisationController().getUserDetail(userId) != null) {
       return userId;
     }
     return importer.getId();

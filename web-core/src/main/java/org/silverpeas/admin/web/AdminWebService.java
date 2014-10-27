@@ -24,11 +24,10 @@
 package org.silverpeas.admin.web;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 /**
  * This service provides several common operations for the REST-based resources representing admin
@@ -38,7 +37,7 @@ import org.silverpeas.core.admin.OrganisationController;
 public class AdminWebService {
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   /**
    * Gets ids of available root spaces of a user
@@ -91,7 +90,7 @@ public class AdminWebService {
    * Gets the OrganizationController instance
    * @return
    */
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     return organizationController;
   }
 }

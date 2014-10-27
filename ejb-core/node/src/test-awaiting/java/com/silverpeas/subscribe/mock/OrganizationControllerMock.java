@@ -23,7 +23,7 @@
  */
 package com.silverpeas.subscribe.mock;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.inject.Named;
@@ -34,9 +34,9 @@ import static org.mockito.Mockito.mock;
  * @author Yohann Chastagnier
  */
 @Named("organizationController")
-public class OrganizationControllerMock extends OrganizationController {
+public class OrganizationControllerMock extends DefaultOrganizationController {
 
-  private final OrganizationController mock = mock(OrganizationController.class);
+  private final DefaultOrganizationController mock = mock(DefaultOrganizationController.class);
 
   private OrganizationController getMock() {
     return mock;

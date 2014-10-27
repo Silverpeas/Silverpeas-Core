@@ -26,9 +26,9 @@ package com.silverpeas.social.mock;
 
 import javax.inject.Named;
 
-import org.silverpeas.core.admin.OrganisationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
+import org.silverpeas.core.admin.OrganizationController;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import static org.mockito.Mockito.mock;
@@ -37,17 +37,17 @@ import static org.mockito.Mockito.mock;
  * @author Yohann Chastagnier
  */
 @Named("organizationController")
-public class OrganizationControllerMock extends OrganizationController {
+public class OrganizationControllerMock extends DefaultOrganizationController {
   private static final long serialVersionUID = 1L;
 
-  private final OrganisationController mock = mock(OrganisationController.class);
+  private final OrganizationController mock = mock(OrganizationController.class);
 
   @Override
   public UserDetail getUserDetail(final String sUserId) {
     return mock.getUserDetail(sUserId);
   }
 
-  public OrganisationController getMock() {
+  public OrganizationController getMock() {
     return mock;
   }
 }

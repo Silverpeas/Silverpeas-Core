@@ -42,7 +42,7 @@ import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
 import org.silverpeas.accesscontrol.SpaceAccessController;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 
@@ -188,21 +188,21 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
    * @param componentId the unique identifier of the component instance to use in tests.
    */
   public void addComponentInstance(String componentId) {
-    OrganisationController mock = getOrganizationControllerMock();
+    OrganizationController mock = getOrganizationControllerMock();
     when(mock.isComponentExist(componentId)).thenReturn(true);
   }
 
   public void addTool(String toolId) {
-    OrganisationController mock = getOrganizationControllerMock();
+    OrganizationController mock = getOrganizationControllerMock();
     when(mock.isToolAvailable(toolId)).thenReturn(true);
   }
 
   public void setComponentAccessibilityToUser(String componentId, String userId) {
-    OrganisationController mock = getOrganizationControllerMock();
+    OrganizationController mock = getOrganizationControllerMock();
     when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
   }
 
-  protected OrganisationController getOrganizationControllerMock() {
+  protected OrganizationController getOrganizationControllerMock() {
     return getTestResources().getOrganizationControllerMock();
   }
 

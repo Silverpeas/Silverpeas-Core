@@ -46,7 +46,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
@@ -248,6 +248,6 @@ public class MyLinksResource extends RESTWebService {
   }
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
 }

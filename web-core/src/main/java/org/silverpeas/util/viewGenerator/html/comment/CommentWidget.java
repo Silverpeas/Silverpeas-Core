@@ -23,7 +23,7 @@ package org.silverpeas.util.viewGenerator.html.comment;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -35,7 +35,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -216,7 +216,7 @@ public abstract class CommentWidget extends TagSupport {
   private String setUpJQueryCommentPlugin() {
     String context = URLManager.getApplicationURL();
 
-    OrganisationController controller = OrganisationControllerProvider.getOrganisationController();
+    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     ResourcesWrapper settings = getSettings();
     UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());

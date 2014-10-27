@@ -58,7 +58,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst" %>
 
 <%@ page import="org.silverpeas.util.*"%>

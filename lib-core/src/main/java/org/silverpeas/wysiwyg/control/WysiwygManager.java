@@ -38,8 +38,8 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.util.SimpleDocumentList;
 import org.silverpeas.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
@@ -997,8 +997,8 @@ public class WysiwygManager {
 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = new ArrayList<>();
-    OrganisationController orgaController =
-        OrganisationControllerProvider.getOrganisationController();
+    OrganizationController orgaController =
+        OrganizationControllerProvider.getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if (StringUtil.getBooleanValue(
@@ -1017,7 +1017,7 @@ public class WysiwygManager {
   public List<ComponentInstLight> getStorageFile() {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<>();
-    OrganisationController controller = OrganisationControllerProvider.getOrganisationController();
+    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {

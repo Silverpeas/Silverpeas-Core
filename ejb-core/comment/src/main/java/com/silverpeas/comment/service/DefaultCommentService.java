@@ -26,8 +26,8 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.service.notification.CommentEventNotifier;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -413,8 +413,8 @@ public class DefaultCommentService implements CommentService {
    *
    * @return an OrganizationController instance.
    */
-  protected OrganisationController getOrganisationController() {
-    return OrganisationControllerProvider.getOrganisationController();
+  protected OrganizationController getOrganisationController() {
+    return OrganizationControllerProvider.getOrganisationController();
   }
 
   @Override

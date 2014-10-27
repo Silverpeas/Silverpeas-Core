@@ -26,7 +26,7 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
@@ -366,7 +366,7 @@ public class ExportIcalManager {
       // set the attendees to the event
       Collection<Attendee> attendees = calendarBm.getJournalAttendees(schedulable.getId());
       for (Attendee attendee : attendees) {
-        UserDetail user = OrganisationControllerProvider
+        UserDetail user = OrganizationControllerProvider
             .getOrganisationController().getUserDetail(attendee.getUserId());
         if (user != null) {
           String email = user.geteMail();

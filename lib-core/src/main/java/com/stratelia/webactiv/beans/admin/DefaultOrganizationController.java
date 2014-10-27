@@ -27,6 +27,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -37,20 +38,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Named;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
 
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
 import static org.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-
 /**
- * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
+ * This object is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
  * provides access functions to query and modify the domains as well as the company organization It
  * should be used only by a client that has the administrator rights. The OrganizationController
  * extends AdminReference that maintains a static references to an Admin instance. During the
@@ -60,14 +58,17 @@ import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
  * static Admin instance can be performed correctly within the execution context of IoC container.
  */
 @Singleton
-public class OrganizationController implements OrganisationController {
+public class DefaultOrganizationController implements OrganizationController {
 
   private static final long serialVersionUID = 3435241972671610107L;
+
+  @Inject
+  private Admin admin;
 
   /**
    * Constructor declaration
    */
-  public OrganizationController() {
+  public DefaultOrganizationController() {
   }
 
   // -------------------------------------------------------------------
@@ -1274,5 +1275,9 @@ public class OrganizationController implements OrganisationController {
       items.addAll(Arrays.asList(componentIds));
     }
     return items;
+  }
+
+  private Admin getAdminService() {
+    return admin;
   }
 }

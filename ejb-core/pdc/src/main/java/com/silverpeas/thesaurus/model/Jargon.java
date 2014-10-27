@@ -30,7 +30,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**
@@ -51,13 +51,13 @@ public class Jargon extends SilverpeasBean {
   public String readUserName() {
     String userName = null;
     if (type == 0) {// user
-      UserDetail userDetail = OrganisationControllerProvider
+      UserDetail userDetail = OrganizationControllerProvider
           .getOrganisationController().getUserDetail(getIdUser());
       if (userDetail != null) {
         userName = userDetail.getLastName() + " " + userDetail.getFirstName();
       }
     } else { // group
-      Group group = OrganisationControllerProvider.getOrganisationController().getGroup(getIdUser());
+      Group group = OrganizationControllerProvider.getOrganisationController().getGroup(getIdUser());
       if (group != null) {
         userName = group.getName();
       }

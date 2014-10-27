@@ -52,7 +52,7 @@ import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -71,7 +71,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -88,7 +88,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
             GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-    OrganisationController orgaController = mainSessionController.getOrganisationController();
+    OrganizationController orgaController = mainSessionController.getOrganisationController();
 
     String userId = mainSessionController.getUserId();
     UserPreferences preferences = mainSessionController.getPersonalization();
@@ -230,7 +230,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private List<String> getSpaceIdsPath(String spaceId, String componentId,
-          OrganisationController orgaController) {
+          OrganizationController orgaController) {
     List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
     if (StringUtil.isDefined(spaceId)) {
       spacePath = orgaController.getSpacePath(spaceId);

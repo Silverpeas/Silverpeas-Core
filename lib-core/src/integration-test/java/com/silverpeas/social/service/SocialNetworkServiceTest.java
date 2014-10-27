@@ -18,8 +18,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.ListSlice;
@@ -75,12 +75,12 @@ public class SocialNetworkServiceTest {
           warBuilder.addPackages(true, "org.silverpeas.util.exception");
           warBuilder.addPackages(true, "com.silverpeas.socialnetwork");
           //warBuilder.addPackages(true, "org.silverpeas.core.admin");
-          warBuilder.addClasses(OrganisationController.class, Group.class, ComponentInst.class,
+          warBuilder.addClasses(OrganizationController.class, Group.class, ComponentInst.class,
               SpaceInst.class, UserFull.class, ComponentInstLight.class, SpaceInstLight.class,
               UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, ProfileInst.class,
               ObjectType.class, ComponentSearchCriteria.class, SearchCriteria.class, Domain.class,
               CompoSpace.class, ListSlice.class, WAComponent.class,
-              OrganizationControllerMock.class, OrganisationControllerProvider.class);
+              OrganizationControllerMock.class, OrganizationControllerProvider.class);
           warBuilder.addPackages(true, "org.silverpeas.util.i18n");
           warBuilder
               .addAsResource("org/silverpeas/social/settings/socialNetworkSettings.properties");

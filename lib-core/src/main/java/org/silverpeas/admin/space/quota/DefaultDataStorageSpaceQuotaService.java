@@ -24,7 +24,7 @@
 package org.silverpeas.admin.space.quota;
 
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
@@ -106,7 +106,7 @@ public class DefaultDataStorageSpaceQuotaService
     // space could be null if user space is performed
     if (key.getSpace() != null) {
       File file;
-      for (final String componentId : OrganisationControllerProvider.getOrganisationController()
+      for (final String componentId : OrganizationControllerProvider.getOrganisationController()
           .getAllComponentIdsRecur(key.getSpace().getId())) {
         file = new File(getAbsolutePath(componentId));
         if (file.exists()) {

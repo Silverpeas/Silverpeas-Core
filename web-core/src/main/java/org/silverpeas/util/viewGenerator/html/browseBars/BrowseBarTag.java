@@ -25,7 +25,7 @@
 package org.silverpeas.util.viewGenerator.html.browseBars;
 
 import com.silverpeas.look.LookHelper;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.NavigationContext;
@@ -91,7 +91,7 @@ public class BrowseBarTag extends NeedWindowTag {
       browseBar.setPath(path.toString());
     }
     if (StringUtil.isDefined(componentId)) {
-      ComponentInstLight component = OrganisationControllerProvider.getOrganisationController()
+      ComponentInstLight component = OrganizationControllerProvider.getOrganisationController()
           .getComponentInstLight(componentId);
       if (component == null) {
         browseBar.setComponentName(componentId);

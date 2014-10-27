@@ -56,7 +56,7 @@ import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import org.silverpeas.util.DBUtil;
@@ -294,7 +294,7 @@ public class UsersAndGroupsTest {
 
   @Test
   public void testGetUsers() {
-    OrganizationController oc = new OrganizationController();
+    DefaultOrganizationController oc = new DefaultOrganizationController();
     List<UserDetail> users = Arrays.asList(oc.getAllUsers());
     assertThat(users.size(), is(3));
     assertThat(users.get(0).getId(), is("1"));

@@ -42,13 +42,13 @@ import static org.mockito.Mockito.mock;
  * should have in the tests.
  */
 @Named("organizationController")
-public class OrganizationControllerMockWrapper extends OrganizationController {
+public class OrganizationControllerMockWrapper extends DefaultOrganizationController {
 
   private static final long serialVersionUID = 2449731617524868440L;
-  private OrganizationController mock;
+  private DefaultOrganizationController mock;
 
   public OrganizationControllerMockWrapper() {
-    mock = mock(OrganizationController.class);
+    mock = mock(DefaultOrganizationController.class);
   }
 
   /**

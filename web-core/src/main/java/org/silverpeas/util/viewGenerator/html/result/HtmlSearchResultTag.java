@@ -31,7 +31,7 @@ import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.ResultDisplayerFactory;
 import com.silverpeas.search.ResultSearchRendererUtil;
 import com.silverpeas.search.SearchResultContentVO;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
@@ -172,7 +172,7 @@ public class HtmlSearchResultTag extends TagSupport {
         || instanceId.startsWith("pdc"))) {
 
       // Check if this component has a specific template result
-      ComponentInstLight component = OrganisationControllerProvider
+      ComponentInstLight component = OrganizationControllerProvider
           .getOrganisationController().getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();

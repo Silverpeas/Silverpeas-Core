@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.URLUtils;
 
 import com.silverpeas.ical.ExportIcalManager;
@@ -1755,7 +1755,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   public String getMyAgendaUrl() {
     String url = "/SubscribeAgenda/" + AGENDA_FILENAME_PREFIX + "?userId="
         + getUserId() + "&amp;login=" + URLUtils.encodePathParamValue(getUserDetail().getLogin())
-        + "&amp;password=" + URLUtils.encodePathParamValue(OrganisationControllerProvider.
+        + "&amp;password=" + URLUtils.encodePathParamValue(OrganizationControllerProvider.
         getOrganisationController().getUserFull(getUserId()).getPassword());
     return url;
   }

@@ -31,12 +31,12 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -58,7 +58,7 @@ public class SilverpeasWebUtilTest {
 
   @Before
   public void setUp() throws Exception {
-    OrganisationControllerProvider.getFactory().clearFactory();
+    OrganizationControllerProvider.getFactory().clearFactory();
 
     // Spring
     context = new ClassPathXmlApplicationContext("spring-webComponentManager.xml");
@@ -68,12 +68,12 @@ public class SilverpeasWebUtilTest {
 
   @After
   public void tearDown() {
-    OrganisationControllerProvider.getFactory().clearFactory();
+    OrganizationControllerProvider.getFactory().clearFactory();
     SilverStatisticsManager.setInstanceForTest(null);
     context.close();
   }
 
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     return context.getBean(OrganizationControllerMockWrapper.class).getOrganizationControllerMock();
   }
 
@@ -82,9 +82,9 @@ public class SilverpeasWebUtilTest {
    */
   @Test
   public void checkDefaultOrganizationController() {
-    OrganisationControllerProvider.getFactory().clearFactory();
+    OrganizationControllerProvider.getFactory().clearFactory();
     SilverpeasWebUtil util = new SilverpeasWebUtil();
-    assertEquals(OrganizationController.class.getName(), util.getOrganisationController().getClass().getName());
+    assertEquals(DefaultOrganizationController.class.getName(), util.getOrganisationController().getClass().getName());
   }
 
   /**
@@ -120,7 +120,7 @@ public class SilverpeasWebUtilTest {
     MockHttpServletRequest request = new MockHttpServletRequest("GET",
         "http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
     request.setPathInfo("/toolbox8/Main");
-    OrganisationController controller = getOrganisationController();
+    OrganizationController controller = getOrganisationController();
     ComponentInstLight component = mock(ComponentInstLight.class);
     String spaceId = "12";
     when(component.getDomainFatherId()).thenReturn(spaceId);

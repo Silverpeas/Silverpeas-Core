@@ -25,7 +25,7 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -39,7 +39,7 @@ import javax.inject.Singleton;
 public class SpaceAccessController extends AbstractAccessController<String> {
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   public SpaceAccessController() {
   }

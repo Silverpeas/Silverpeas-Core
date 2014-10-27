@@ -33,7 +33,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.StringUtil;
 
@@ -54,7 +54,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private NodeAccessController accessController;
   
   @Inject
-  private OrganisationController controller;
+  private OrganizationController controller;
 
   @Inject
   private PublicationBm publicationService;
@@ -148,7 +148,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     return controller;
   }
 }

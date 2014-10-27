@@ -39,7 +39,7 @@ import com.silverpeas.treeMenu.model.NodeType;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 /**
  *
@@ -63,7 +63,7 @@ public class TreeHandler {
   public static String ProcessMenu(HttpServletRequest request, String menuType) {
     MainSessionController mainSessionCtrl =
         new SilverpeasWebUtil().getMainSessionController(request);
-    OrganisationController controller = mainSessionCtrl.getOrganisationController();
+    OrganizationController controller = mainSessionCtrl.getOrganisationController();
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();
     MenuItem items =

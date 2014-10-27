@@ -40,7 +40,7 @@ import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.AuthenticationServiceFactory;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
 import org.silverpeas.util.Charsets;
@@ -76,7 +76,7 @@ public class UserPriviledgeValidation {
   private @SimpleDocumentAccessControl AccessController<SimpleDocument> documentAccessController;
 
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. By the user

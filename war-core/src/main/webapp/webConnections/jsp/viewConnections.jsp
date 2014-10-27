@@ -35,8 +35,8 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
 %>
 
 <%@page import="java.util.Enumeration"%>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationControllerProvider" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 <html>
 <head>
   <view:looknfeel />
@@ -80,7 +80,7 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
           ArrayLine line = arrayPane.addArrayLine();
           ConnectionDetail connection = (ConnectionDetail) it.next();
           line.addArrayCellText(connection.getComponentName());
-          ComponentInst inst = OrganisationControllerProvider
+          ComponentInst inst = OrganizationControllerProvider
               .getOrganisationController().getComponentInst(connection.getComponentId());
           String nameLogin = inst.getParameterValue("login");
           String name =  connection.getParam().get(nameLogin);

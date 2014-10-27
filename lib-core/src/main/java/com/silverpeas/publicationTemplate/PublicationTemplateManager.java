@@ -36,7 +36,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -51,14 +51,13 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
@@ -359,8 +358,8 @@ public class PublicationTemplateManager {
           return true;
         }
       } else {
-        OrganisationController oc =
-            OrganisationControllerProvider.getOrganisationController();
+        OrganizationController oc =
+            OrganizationControllerProvider.getOrganisationController();
         boolean allowed = true;
         if (template.isRestrictedVisibilityToApplication()) {
           if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
@@ -388,7 +387,7 @@ public class PublicationTemplateManager {
   }
   
   private boolean isTemplateVisibleAccordingToApplication(PublicationTemplate template,
-      GlobalContext context, OrganisationController oc) {
+      GlobalContext context, OrganizationController oc) {
     List<String> restrictedApplications = template.getApplications();
     String componentName = context.getComponentName();
     if (StringUtil.isDefined(context.getComponentId())) {
@@ -399,7 +398,7 @@ public class PublicationTemplateManager {
   }
   
   private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template,
-      GlobalContext context, OrganisationController oc) {
+      GlobalContext context, OrganizationController oc) {
     List<String> restrictedSpaceIds = template.getSpaces();
     List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
     for (SpaceInst space : spacePath) {

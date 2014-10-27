@@ -24,10 +24,10 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@page import="com.stratelia.webactiv.applicationIndexer.control.ApplicationIndexer"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -36,25 +36,24 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.applicationIndexer.control.ApplicationIndexer"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationControllerProvider" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%!
-private String printSpaceAndSubSpaces(String spaceId, int depth, OrganisationController m_OrganizationController, String m_sContext) {
+  private String printSpaceAndSubSpaces(String spaceId, int depth,
+      org.silverpeas.core.admin.OrganizationController m_OrganizationController,
+      String m_sContext) {
     String 			compoName 	= null;
     String 			compoDesc 	= null;
     String 			compoId 	= null;
@@ -115,8 +114,8 @@ if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSes
     return;
 }
 
-OrganisationController m_OrganizationController = OrganisationControllerProvider
-    .getOrganisationController();
+  org.silverpeas.core.admin.OrganizationController m_OrganizationController =
+      OrganizationControllerProvider.getOrganisationController();
 
 ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
 

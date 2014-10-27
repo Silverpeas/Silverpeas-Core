@@ -38,16 +38,15 @@
 
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 <view:timeout />
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-  OrganisationController organizationController = mainSessionCtrl.getOrganisationController();
+  org.silverpeas.core.admin.OrganizationController organizationController =
+      mainSessionCtrl.getOrganisationController();
   String language = mainSessionCtrl.getFavoriteLanguage();
   ResourceLocator message =
       new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);

@@ -23,13 +23,12 @@
  */
 package org.silverpeas.admin.component.process.check;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.DummyHandledFile;
@@ -37,11 +36,10 @@ import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;

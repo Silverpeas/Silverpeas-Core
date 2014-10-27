@@ -31,13 +31,13 @@ import org.silverpeas.util.ServiceProvider;
  * to access the concrete implementation of the OrganisationController interface available. It is
  * dedicated to be used by non-managed beans.
  */
-public class OrganisationControllerProvider {
+public class OrganizationControllerProvider {
 
-  public static OrganisationController getOrganisationController() {
-    return ServiceProvider.getService(OrganisationController.class);
+  public static OrganizationController getOrganisationController() {
+    return ServiceProvider.getService(OrganizationController.class);
   }
 
-  private OrganisationControllerProvider() {
+  private OrganizationControllerProvider() {
   }
 
 }

@@ -31,7 +31,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.FileHandler;
@@ -43,7 +43,6 @@ import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -65,7 +64,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   }
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   /*
    * (non-Javadoc)

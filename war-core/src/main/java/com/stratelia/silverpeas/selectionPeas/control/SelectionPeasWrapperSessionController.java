@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas.control;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -200,21 +200,21 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     if (isGroupSelectable()) {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedSets();
-        selectedGroups = OrganisationControllerProvider.getOrganisationController().getGroups(ids);
+        selectedGroups = OrganizationControllerProvider.getOrganisationController().getGroups(ids);
       } else {
         String id = sel.getFirstSelectedSet();
         if (StringUtil.isDefined(id)) {
-          selectedGroup = OrganisationControllerProvider.getOrganisationController().getGroup(id);
+          selectedGroup = OrganizationControllerProvider.getOrganisationController().getGroup(id);
         }
       }
     } else {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedElements();
-        selectedUsers = OrganisationControllerProvider.getOrganisationController().getUserDetails(ids);
+        selectedUsers = OrganizationControllerProvider.getOrganisationController().getUserDetails(ids);
       } else {
         String id = sel.getFirstSelectedElement();
         if (StringUtil.isDefined(id)) {
-          selectedUser = OrganisationControllerProvider.getOrganisationController().getUserDetail(id);
+          selectedUser = OrganizationControllerProvider.getOrganisationController().getUserDetail(id);
         }
       }
     }

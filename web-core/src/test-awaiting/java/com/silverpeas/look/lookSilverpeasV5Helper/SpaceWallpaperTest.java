@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.mockito.Mockito.*;
@@ -55,7 +55,7 @@ public class SpaceWallpaperTest {
       "org.silverpeas.util.viewGenerator.settings.SilverpeasV5", "fr");
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   public SpaceWallpaperTest() {
   }
@@ -147,7 +147,7 @@ public class SpaceWallpaperTest {
    * Gets a mock of the organization controller.
    * @return a mock
    */
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     return organizationController;
   }
 
@@ -174,7 +174,7 @@ public class SpaceWallpaperTest {
       when(space.getId()).thenReturn(spaceId);
       spaces.add(space);
     }
-    OrganisationController controller = getOrganisationController();
+    OrganizationController controller = getOrganisationController();
     when(controller.getSpacePath(anyString())).thenReturn(spaces);
   }
 }

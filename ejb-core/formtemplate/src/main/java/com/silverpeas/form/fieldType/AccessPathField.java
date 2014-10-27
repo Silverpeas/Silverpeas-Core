@@ -27,7 +27,7 @@ package com.silverpeas.form.fieldType;
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -100,14 +100,14 @@ public class AccessPathField extends TextField {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces =  OrganisationControllerProvider
+      List<SpaceInst> listSpaces =  OrganizationControllerProvider
           .getOrganisationController().getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
         currentAccessPath += space.getName() + " > ";
       }
 
       // Service
-      currentAccessPath +=  OrganisationControllerProvider.getOrganisationController()
+      currentAccessPath +=  OrganizationControllerProvider.getOrganisationController()
           .getComponentInstLight(componentId).getLabel();
 
       // Theme > SubTheme

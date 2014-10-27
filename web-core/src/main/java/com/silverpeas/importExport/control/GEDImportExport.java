@@ -43,21 +43,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -72,6 +61,16 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -94,7 +93,6 @@ import java.util.List;
 public abstract class GEDImportExport extends ComponentImportExport {
 
   // Variables
-  private static final OrganizationController organizationController = new OrganizationController();
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeBm nodeBm = null;
@@ -902,7 +900,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setComponentId(componentId);
 
       // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      UserDetail userDetail = organizationController.getUserDetail(publicationDetail.getCreatorId());
+      UserDetail userDetail = publicationDetail.getCreator();
       if (userDetail != null) {
         String nomPrenomCreator = userDetail.getDisplayedName().trim();
         publicationDetail.setCreatorName(nomPrenomCreator);

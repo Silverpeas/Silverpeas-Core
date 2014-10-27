@@ -27,6 +27,7 @@ import java.util.List;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -39,7 +40,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -55,7 +56,6 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -72,7 +72,7 @@ public class SpacesAndComponentsTest {
   private static DataSource dataSource;
   private static ClassPathXmlApplicationContext context;
   private static Admin admin;
-  private static OrganisationController organizationController;
+  private static OrganizationController organizationController;
   String userId = "1";
 
   @BeforeClass
@@ -81,7 +81,8 @@ public class SpacesAndComponentsTest {
     context = new ClassPathXmlApplicationContext(new String[]{
       "spring-admin-spacecomponents-embbed-datasource.xml", "spring-domains.xml"});
     dataSource = context.getBean("jpaDataSource", DataSource.class);
-    organizationController = context.getBean(OrganizationController.class);
+    organizationController = context.getBean(
+        DefaultOrganizationController.class);
     admin = context.getBean(Admin.class);
     InitialContext ic = new InitialContext();
     ic.rebind("jdbc/Silverpeas", dataSource);

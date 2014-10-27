@@ -49,7 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
 
@@ -70,7 +70,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-    OrganisationController orgaController = m_MainSessionCtrl.getOrganisationController();
+    OrganizationController orgaController = m_MainSessionCtrl.getOrganisationController();
     String userId = m_MainSessionCtrl.getUserId();
 
     res.setContentType("application/json");

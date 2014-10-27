@@ -40,7 +40,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -612,7 +612,7 @@ public class SPDesktopServlet extends HttpServlet {
     return null;
   }
 
-  private OrganisationController getOrganizationController(final HttpServletRequest request) {
+  private OrganizationController getOrganizationController(final HttpServletRequest request) {
     return getMainSessionController(request).getOrganisationController();
   }
 
@@ -629,7 +629,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
-    OrganisationController organizationCtrl = getOrganizationController(request);
+    OrganizationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
 
     if (spaceStruct != null) {

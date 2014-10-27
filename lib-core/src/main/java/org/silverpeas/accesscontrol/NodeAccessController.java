@@ -33,7 +33,7 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 
@@ -53,7 +53,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
   private ComponentAccessController componentAccessController;
 
   @Inject
-  private OrganisationController controller;
+  private OrganizationController controller;
 
   @Inject
   private NodeBm nodeService;
@@ -138,7 +138,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganisationController() {
     return controller;
   }
 

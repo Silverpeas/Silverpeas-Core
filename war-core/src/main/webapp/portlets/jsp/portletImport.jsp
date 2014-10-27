@@ -50,7 +50,6 @@
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 

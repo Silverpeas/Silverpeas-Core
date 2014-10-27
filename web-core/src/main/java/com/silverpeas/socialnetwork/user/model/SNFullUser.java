@@ -32,7 +32,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 
@@ -52,7 +52,7 @@ public class SNFullUser {
   private String phone;
 
   public SNFullUser(String userId) {
-    userFull = OrganisationControllerProvider.getOrganisationController().getUserFull(userId);
+    userFull = OrganizationControllerProvider.getOrganisationController().getUserFull(userId);
     this.phone = userFull.getValue("phone");
 
     // return the url of profil Photo

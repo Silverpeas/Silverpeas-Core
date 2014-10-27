@@ -26,7 +26,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.util.ServiceProvider;
@@ -58,8 +58,8 @@ public class UserFavoriteSpaceManager {
   public static boolean containsFavoriteSubSpace(SpaceInstLight space,
       List<UserFavoriteSpaceVO> listUFS, String userId) {
     boolean result = false;
-    OrganisationController organisationController =
-        ServiceProvider.getService(OrganisationController.class);
+    OrganizationController organisationController =
+        ServiceProvider.getService(OrganizationController.class);
     String[] userSubSpaceIds = organisationController.getAllowedSubSpaceIds(userId, space.getId());
     for (String curSpaceId : userSubSpaceIds) {
       // Recursive loop on each subspace

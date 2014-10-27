@@ -39,7 +39,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.admin.web.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.admin.web.tools.AbstractTool;
-import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.look.web.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;

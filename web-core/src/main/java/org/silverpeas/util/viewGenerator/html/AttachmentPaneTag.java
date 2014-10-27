@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.viewGenerator.html;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -82,7 +82,7 @@ public class AttachmentPaneTag extends TagSupport {
     if (!isReadOnly()) {
       String userId = getCurrentUserIdInSession();
       if (StringUtil.isDefined(userId)) {
-        String[] roles = OrganisationControllerProvider.getOrganisationController()
+        String[] roles = OrganizationControllerProvider.getOrganisationController()
             .getUserProfiles(userId, getComponentId());
         if (roles.length > 0) {
           role = SilverpeasRole.getGreaterFrom(SilverpeasRole.from(roles)).getName();

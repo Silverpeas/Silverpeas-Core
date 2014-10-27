@@ -34,7 +34,7 @@ package com.stratelia.silverpeas.portlet;
  * @version 1.0
  */
 import com.silverpeas.admin.components.WAComponent;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -51,7 +51,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ import java.util.Map;
  */
 public class SpaceModelFactory {
 
-  static final protected OrganisationController oc = OrganisationControllerProvider
+  static final protected OrganizationController oc = OrganizationControllerProvider
       .getOrganisationController();
   static final protected Map<String, WAComponent> compoDescriptors = (new AdminController(null)).
       getAllComponents();

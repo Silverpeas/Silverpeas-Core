@@ -27,7 +27,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import com.silverpeas.SilverpeasContent;
 import org.silverpeas.util.ForeignPK;
@@ -154,7 +154,7 @@ public class StatisticBmEJB implements StatisticBm {
   @Override
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType) {
-    UserDetail[] allUsers = OrganisationControllerProvider.getOrganisationController().getAllUsers(
+    UserDetail[] allUsers = OrganizationControllerProvider.getOrganisationController().getAllUsers(
         foreignPK.getInstanceId());
     return getHistoryByObject(foreignPK, action, objectType, allUsers);
   }
@@ -165,7 +165,7 @@ public class StatisticBmEJB implements StatisticBm {
     if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(foreignPK, action, objectType);
     }
-    UserDetail[] users = OrganisationControllerProvider.getOrganisationController()
+    UserDetail[] users = OrganizationControllerProvider.getOrganisationController()
         .getUserDetails(userIds.toArray(new String[userIds.size()]));
     return getHistoryByObject(foreignPK, action, objectType, users);
   }
@@ -193,7 +193,7 @@ public class StatisticBmEJB implements StatisticBm {
       i++;
     }
     UserDetail[] allUsersByComponent = users;
-    UserDetail[] controlledUsers = OrganisationControllerProvider.getOrganisationController()
+    UserDetail[] controlledUsers = OrganizationControllerProvider.getOrganisationController()
         .getUserDetails(readerIds);
 
     // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant

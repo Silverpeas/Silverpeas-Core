@@ -35,7 +35,7 @@ import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.date.Period;
 
 import com.silverpeas.personalization.UserMenuDisplay;
@@ -46,7 +46,6 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -64,7 +63,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
-  private OrganisationController orga = null;
+  private OrganizationController orga = null;
   private ResourceLocator resources = null;
   private ResourceLocator messages = null;
   private ResourceLocator defaultMessages = null;
@@ -242,7 +241,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return mainSC;
   }
 
-  protected OrganisationController getOrganisationController() {
+  protected OrganizationController getOrganisationController() {
     return orga;
   }
 

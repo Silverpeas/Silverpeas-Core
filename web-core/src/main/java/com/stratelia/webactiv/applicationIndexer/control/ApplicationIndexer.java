@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import com.silverpeas.pdc.PdcIndexer;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -109,7 +109,7 @@ public class ApplicationIndexer extends AbstractIndexer {
 
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    ComponentInstLight compoInst = OrganisationControllerProvider.getOrganisationController()
+    ComponentInstLight compoInst = OrganizationControllerProvider.getOrganisationController()
         .getComponentInstLight(componentId);
     indexComponent(spaceId, compoInst);
   }

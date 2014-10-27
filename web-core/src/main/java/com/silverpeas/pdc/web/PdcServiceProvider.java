@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
@@ -64,7 +64,7 @@ public class PdcServiceProvider {
   @Inject
   private PdcClassificationService classificationService;
   @Inject
-  private OrganisationController organisationController;
+  private OrganizationController organisationController;
 
   /**
    * A convenient method to enhance the readability of method calls when a component identifier is
@@ -325,7 +325,7 @@ public class PdcServiceProvider {
     return this.thesaurusManager;
   }
 
-  public OrganisationController getOrganisationController() {
+  public OrganizationController getOrganisationController() {
     return organisationController;
   }
 

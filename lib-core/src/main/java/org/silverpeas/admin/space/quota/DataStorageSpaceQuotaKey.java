@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.quota.constant.QuotaType;
 
 import org.silverpeas.util.StringUtil;
@@ -50,10 +50,10 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   public static DataStorageSpaceQuotaKey from(final String componentInstanceId) {
     final SpaceInst space =
-        OrganisationControllerProvider
+        OrganizationControllerProvider
             .getOrganisationController()
             .getSpaceInstById(
-                OrganisationControllerProvider.getOrganisationController()
+                OrganizationControllerProvider.getOrganisationController()
                     .getComponentInst(componentInstanceId).getDomainFatherId());
     return from(space);
   }

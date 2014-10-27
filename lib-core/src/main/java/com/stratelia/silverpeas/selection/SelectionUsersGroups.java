@@ -28,8 +28,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SelectionUsersGroups implements SelectionExtraParams {
-  static OrganisationController organizationController =  OrganisationControllerProvider
+  static OrganizationController organizationController =  OrganizationControllerProvider
       .getOrganisationController();
 
   public final static int USER = 0;
