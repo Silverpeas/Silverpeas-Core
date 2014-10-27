@@ -26,21 +26,12 @@ package org.silverpeas.core.admin;
 
 import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Singleton;
-
 /**
- * A factory of OrganizationController instances. This factory is managed by the IoC container used
- * in Silverpeas and it provides an access the managed OrganizationController instances for the
- * beans not taken in charge by the IoC container.
+ * A provider of OrganizationController instances. This provider uses the underlying IoD container
+ * to access the concrete implementation of the OrganisationController interface available. It is
+ * dedicated to be used by non-managed beans.
  */
-@Singleton
 public class OrganisationControllerProvider {
-
-  private static OrganisationControllerProvider instance = new OrganisationControllerProvider();
-
-  public static OrganisationControllerProvider getFactory() {
-    return instance;
-  }
 
   public static OrganisationController getOrganisationController() {
     return ServiceProvider.getService(OrganisationController.class);
