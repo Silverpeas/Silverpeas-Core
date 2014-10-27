@@ -31,55 +31,9 @@ import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext;
  */
 public class SilverpeasFileProvider {
 
-  private static final SilverpeasFileProvider instance = new SilverpeasFileProvider();
-
-  public static final SilverpeasFileProvider getInstance() {
-    return instance;
-  }
-
-  private List<SilverpeasFileProcessor> processors = new ArrayList<SilverpeasFileProcessor>();
+  private static List<SilverpeasFileProcessor> processors = new ArrayList<SilverpeasFileProcessor>();
 
   private SilverpeasFileProvider() {
-
-  }
-
-  /**
-   * @see org.silverpeas.file.SilverpeasFileProvider#getSilverpeasFile(SilverpeasFileDescriptor)
-   * @param descriptor a descriptor of a SilverpeasFile.
-   * @return the SilverpeasFile with the content of the file identified by the specified descriptor
-   * and after filtering by pre and post file processing.
-   */
-  public static SilverpeasFile getFile(SilverpeasFileDescriptor descriptor) {
-    return getInstance().getSilverpeasFile(descriptor);
-  }
-
-  /**
-   * @see org.silverpeas.file.SilverpeasFileProvider#getSilverpeasFile(String)
-   * @param absolutePath the absolute path of a file.
-   * @return the SilverpeasFile with the content of the file located at the specified path and
-   * after filtering by pre and post file processing.
-   */
-  public static SilverpeasFile getFile(String absolutePath) {
-    return getInstance().getSilverpeasFile(absolutePath);
-  }
-
-  /**
-   * @see org.silverpeas.file.SilverpeasFileProvider#newSilverpeasFile(String)
-   * @param absolutePath the absolute path at which will be located the file.
-   * @return a new SilverpeasFile that will be created (if not already) at the specified location.
-   */
-  public static SilverpeasFile newFile(String absolutePath) {
-    return getInstance().newSilverpeasFile(absolutePath);
-  }
-
-  /**
-   * @see org.silverpeas.file.SilverpeasFileProvider#newSilverpeasFile(org.silverpeas.file.SilverpeasFileDescriptor)
-   * @param descriptor a descriptor of a SilverpeasFile.
-   * @return a new SilverpeasFile that will be created (if not already) at the location described
-   * by the specified descriptor.
-   */
-  public static SilverpeasFile newFile(SilverpeasFileDescriptor descriptor) {
-    return getInstance().newSilverpeasFile(descriptor);
   }
 
   /**
@@ -89,7 +43,7 @@ public class SilverpeasFileProvider {
    * @param absolutePath the absolute path at which will be located the file.
    * @return a new SilverpeasFile that will be created (if not already) at the specified location.
    */
-  public SilverpeasFile newSilverpeasFile(String absolutePath) {
+  public static SilverpeasFile newFile(String absolutePath) {
     return new SilverpeasFile("", absolutePath);
   }
 
@@ -100,7 +54,7 @@ public class SilverpeasFileProvider {
    * @param descriptor a descriptor of a SilverpeasFile.
    * @return a new SilverpeasFile that will be created (if not already) at the specified location.
    */
-  public SilverpeasFile newSilverpeasFile(SilverpeasFileDescriptor descriptor) {
+  public static SilverpeasFile newFile(SilverpeasFileDescriptor descriptor) {
     return new SilverpeasFile(descriptor.getComponentInstanceId(), getFilePathFrom(descriptor),
         descriptor.getMimeType());
   }
@@ -131,9 +85,9 @@ public class SilverpeasFileProvider {
    * @return the SilverpeasFile with the content of the file identified by the specified descriptor
    * and after filtering by pre and post file processing.
    */
-  public SilverpeasFile getSilverpeasFile(SilverpeasFileDescriptor descriptor) {
+  public static SilverpeasFile getFile(SilverpeasFileDescriptor descriptor) {
     String filePath = processPath(getFilePathFrom(descriptor), ProcessingContext.GETTING);
-    return processSilverpeasFile(new SilverpeasFile(descriptor.getComponentInstanceId(), filePath,
+    return processFile(new SilverpeasFile(descriptor.getComponentInstanceId(), filePath,
         descriptor.getMimeType()), ProcessingContext.GETTING);
   }
 
@@ -162,9 +116,9 @@ public class SilverpeasFileProvider {
    * @return the SilverpeasFile with the content of the file located at the specified path and
    * after filtering by pre and post file processing.
    */
-  public SilverpeasFile getSilverpeasFile(String absolutePath) {
+  public static SilverpeasFile getFile(String absolutePath) {
     String filePath = processPath(absolutePath, ProcessingContext.GETTING);
-    return processSilverpeasFile(new SilverpeasFile("", filePath), ProcessingContext.GETTING);
+    return processFile(new SilverpeasFile("", filePath), ProcessingContext.GETTING);
   }
 
   /**
@@ -181,9 +135,9 @@ public class SilverpeasFileProvider {
    * {@see SilverpeasFileProcessor}
    * @param processor a SilverpeasFile processor to add.
    */
-  public void addProcessor(final SilverpeasFileProcessor processor) {
-    if (!this.processors.contains(processor)) {
-      this.processors.add(processor);
+  public static void addProcessor(final SilverpeasFileProcessor processor) {
+    if (!processors.contains(processor)) {
+      processors.add(processor);
     }
   }
 
@@ -196,10 +150,10 @@ public class SilverpeasFileProvider {
    * @return the Silverpeas file resulting from the post-processors chain execution.
    */
   protected static SilverpeasFile processAfter(SilverpeasFile file, ProcessingContext context) {
-    return getInstance().processSilverpeasFile(file, context);
+    return processFile(file, context);
   }
 
-  private String processPath(String path, ProcessingContext context) {
+  private static String processPath(String path, ProcessingContext context) {
     String processedPath = path;
     for (SilverpeasFileProcessor processor : processors) {
       processedPath = processor.processBefore(processedPath, context);
@@ -207,7 +161,7 @@ public class SilverpeasFileProvider {
     return processedPath;
   }
 
-  private SilverpeasFile processSilverpeasFile(final SilverpeasFile file,
+  private static SilverpeasFile processFile(final SilverpeasFile file,
       ProcessingContext context) {
     SilverpeasFile processedFile = file;
     for (SilverpeasFileProcessor processor : processors) {
@@ -216,7 +170,7 @@ public class SilverpeasFileProvider {
     return processedFile;
   }
 
-  private String getFilePathFrom(SilverpeasFileDescriptor descriptor) {
+  private static String getFilePathFrom(SilverpeasFileDescriptor descriptor) {
     String filePath;
     if (descriptor.isTemporaryFile()) {
       filePath =

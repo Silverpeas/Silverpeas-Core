@@ -266,18 +266,17 @@ public class ThumbnailController {
       if (thumbnail != null) {
         // move thumbnail on disk
         if (!thumbnail.getOriginalFileName().startsWith("/")) {
-          SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
           String path = getImageDirectory(fromPK.getInstanceId()) + File.separatorChar +
               thumbnail.getOriginalFileName();
           String destinationPath = getImageDirectory(toPK.getInstanceId());
-          SilverpeasFile image = fileProvider.getSilverpeasFile(path);
+          SilverpeasFile image = SilverpeasFileProvider.getFile(path);
           image.moveInto(destinationPath);
 
           // move cropped thumbnail
           if (thumbnail.getCropFileName() != null) {
             path = getImageDirectory(fromPK.getInstanceId()) + File.separatorChar +
                 thumbnail.getCropFileName();
-            image = fileProvider.getSilverpeasFile(path);
+            image = SilverpeasFileProvider.getFile(path);
             image.moveInto(destinationPath);
           }
         }

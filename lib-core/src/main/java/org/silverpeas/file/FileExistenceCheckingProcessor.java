@@ -8,7 +8,6 @@ import javax.inject.Named;
  * file doesn't exist, then {@¢ode NO_FILE} is returned.
  * @author mmoquillon
  */
-@Named("fileExistenceCheckingProcessor")
 public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor {
 
   /**
@@ -16,8 +15,7 @@ public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor {
    */
   @PostConstruct
   public void registerItself() {
-    SilverpeasFileProvider fileFactory = SilverpeasFileProvider.getInstance();
-    fileFactory.addProcessor(this);
+    SilverpeasFileProvider.addProcessor(this);
   }
 
   @Override

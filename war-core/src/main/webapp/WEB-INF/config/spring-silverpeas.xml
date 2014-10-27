@@ -86,7 +86,7 @@
   <ctx:component-scan base-package="org.silverpeas.mylinks"/>
   <ctx:component-scan base-package="org.silverpeas.language"/>
   <ctx:component-scan base-package="org.silverpeas.preferences"/>
-  <ctx:component-scan base-package="org.silverpeas.file"/>
+  <!-- <ctx:component-scan base-package="org.silverpeas.file"/> -->
   <!-- ebo <ctx:component-scan base-package="org.silverpeas.media.video"/> -->
 
   <!-- YCH <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionProvider"-->

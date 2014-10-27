@@ -59,7 +59,6 @@ public class ImageProfil {
    * @throws IOException
    */
   public void saveImage(InputStream data) throws IOException {
-    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
     SilverpeasFile image = SilverpeasFileProvider.newFile(getImagePath());
     image.writeFrom(data);
   }
@@ -68,7 +67,6 @@ public class ImageProfil {
    * remove existing image
    */
   public void removeImage() {
-    SilverpeasFileProvider fileProvider = SilverpeasFileProvider.getInstance();
     SilverpeasFile image = SilverpeasFileProvider.getFile(getImagePath());
     if (image.exists()) {
       image.delete();

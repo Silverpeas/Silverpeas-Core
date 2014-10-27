@@ -15,11 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Unit tests on the image resizing.
+ * A processor dedicated to resize an image on the demand. If the image is already resized, then
+ * nothing the resized image is just returned.
  *
  * @author mmoquillon
  */
-@Named("imageResizingProcessor")
 public class ImageResizingProcessor implements SilverpeasFileProcessor {
 
   protected static final String IMAGE_CACHE_PATH = FileRepositoryManager.getAbsolutePath("cache");
@@ -29,8 +29,7 @@ public class ImageResizingProcessor implements SilverpeasFileProcessor {
 
   @PostConstruct
   public void registerItself() {
-    SilverpeasFileProvider fileFactory = SilverpeasFileProvider.getInstance();
-    fileFactory.addProcessor(this);
+    SilverpeasFileProvider.addProcessor(this);
   }
 
   @Override
