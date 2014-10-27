@@ -782,12 +782,12 @@ public class PublicationsTypeManager {
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
                   copiedAttachments = attachmentsSizeOk;
                   versioningIE.importDocuments(pubDetail.getId(), componentId, attachmentsSizeOk,
-                      Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
+                      pubDetail.isIndexable());
                 } else {
                   // Ajout des attachments
                   copiedAttachments = attachmentIE
                       .importAttachments(pubDetail.getId(), componentId, attachmentsSizeOk,
-                          userDetail.getId(), pubDetail.isIndexable());
+                          pubDetail.isIndexable());
                   if (copiedAttachments.size() != attachmentsSizeOk.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
                   }

@@ -50,7 +50,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
+ * A non-versioned attachment importer/exporter. Import and export are performed by a user and then
+ * they are done according to its privileges.
  */
 public class AttachmentImportExport {
 
@@ -81,12 +82,12 @@ public class AttachmentImportExport {
   }
 
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
-      List<AttachmentDetail> attachments, String userId, boolean indexIt) throws
+      List<AttachmentDetail> attachments, boolean indexIt) throws
       FileNotFoundException {
     FormTemplateImportExport xmlIE = null;
     for (AttachmentDetail attDetail : attachments) {
       //TODO check user id
-      attDetail.setAuthor(userId);
+      attDetail.setAuthor(this.user.getId());
       attDetail.setInstanceId(componentId);
       XMLModelContentType xmlContent = attDetail.getXMLModelContentType();
       if (xmlContent != null) {

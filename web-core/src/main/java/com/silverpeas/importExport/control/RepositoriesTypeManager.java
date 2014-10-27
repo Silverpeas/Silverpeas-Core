@@ -336,14 +336,13 @@ public class RepositoriesTypeManager {
           // versioning mode
           VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
           versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
-              documents, Integer.parseInt(userDetail.getId()),
-              pubDetail.isIndexable());
+              documents, pubDetail.isIndexable());
         } else {
           // classic mode
           AttachmentImportExport attachmentIE =
               new AttachmentImportExport(gedIE.getCurentUserDetail());
           attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId, documents,
-              userDetail.getId(), pubDetail.isIndexable());
+              pubDetail.isIndexable());
         }
       } catch (Exception e) {
         SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent",
@@ -358,11 +357,6 @@ public class RepositoriesTypeManager {
    *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
-   * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
-   * @param componentId - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId - id du thème dans lequel seront crées les éléments, l'id passé est toujours le
-   * même dans le cas présent
    * @throws ImportExportException
    */
   public void processImportRecursiveNoReplicate(ImportReportManager reportManager,
@@ -388,11 +382,6 @@ public class RepositoriesTypeManager {
    *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
-   * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
-   * @param componentId - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId - id du thème dans lequel seront crées les éléments du niveau de récursivité
-   * auquel on se trouve.
    * @return the list of publications created by the import.
    * @throws ImportExportException
    */

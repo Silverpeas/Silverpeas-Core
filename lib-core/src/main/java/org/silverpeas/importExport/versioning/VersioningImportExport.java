@@ -66,16 +66,15 @@ public class VersioningImportExport {
   }
 
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
-      int userId, boolean indexIt) throws RemoteException, IOException {
-    return importDocuments(objectId, componentId, attachments, userId,
-        DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, null);
+      boolean indexIt) throws RemoteException, IOException {
+    return importDocuments(objectId, componentId, attachments, DocumentVersion.TYPE_PUBLIC_VERSION,
+        indexIt, null);
   }
 
   /**
    * @param objectId
    * @param componentId
    * @param attachments
-   * @param userId
    * @param versionType
    * @param indexIt
    * @param topicId
@@ -84,13 +83,12 @@ public class VersioningImportExport {
    * @throws IOException
    */
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
-      int userId, int versionType, boolean indexIt, String topicId) throws RemoteException,
-      IOException {
+      int versionType, boolean indexIt, String topicId) throws RemoteException, IOException {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", componentId);
     int nbFilesProcessed = 0;
     AttachmentImportExport attachmentImportExport =
-        new AttachmentImportExport(UserDetail.getById(String.valueOf(userId)));
+        new AttachmentImportExport(user);
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object
@@ -117,8 +115,8 @@ public class VersioningImportExport {
         HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null, componentId),
             objectId, -1, attachment.getAuthor(), new SimpleAttachment(attachment.getLogicalName(),
             attachment.getLanguage(), attachment.getTitle(), attachment.getInfo(), attachment.
-            getSize(), attachment.getType(), "" + userId, attachment.getCreationDate(), attachment.
-            getXmlForm()));
+            getSize(), attachment.getType(), "" + user.getId(), attachment.getCreationDate(),
+            attachment.getXmlForm()));
         version.setPublicDocument((versionType == DocumentVersion.TYPE_PUBLIC_VERSION));
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
         AttachmentServiceProvider.getAttachmentService().createAttachment(version,
