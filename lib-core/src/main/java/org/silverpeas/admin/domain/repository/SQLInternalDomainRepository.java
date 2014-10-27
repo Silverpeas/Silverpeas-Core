@@ -24,100 +24,54 @@
 
 package org.silverpeas.admin.domain.repository;
 
-import org.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
-import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.persistence.jdbc.JdbcSqlQueries;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.StringUtil;
 
-import javax.inject.Named;
-import javax.sql.DataSource;
+import javax.inject.Singleton;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
-@Repository
-@Named("sqlInternalDomainRepository")
+@Singleton
 public class SQLInternalDomainRepository implements SQLDomainRepository {
 
-  private JdbcTemplate jdbcTemplate;
-
-  @Autowired
-  public void setDataSource(DataSource dataSource) {
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
-
   @Override
-  @Transactional(propagation=Propagation.REQUIRES_NEW)
   public void createDomainStorage(Domain domain) throws SQLDomainDAOException {
     String domainName = domain.getName();
-
     try {
-      jdbcTemplate.update(generateUserTableCreateStatement(domainName));
-      jdbcTemplate.update(generateGroupTableCreateStatement(domainName));
-      jdbcTemplate.update(generateGroupUserRelTableCreateStatement(domainName));
+      List<JdbcSqlQuery> queries = new ArrayList<>();
+      queries.add(generateUserTableCreateStatement(domainName));
+      queries.add(generateGroupTableCreateStatement(domainName));
+      queries.add(generateGroupUserRelTableCreateStatement(domainName));
+      JdbcSqlQueries.execute(queries);
     } catch (Exception e) {
       throw new SQLDomainDAOException("SQLInternalDomainDAO.createDomainStorage",
           "admin.CANNOT_CREATE_DOMAIN_STORAGE", e);
     }
   }
 
-  @Override
-  public void deleteDomainStorage(Domain domain) {
-    String domainName = domain.getName();
-
-    jdbcTemplate.update(generateUserTableDropStatement(domainName));
-    jdbcTemplate.update(generateGroupTableDropStatement(domainName));
-    jdbcTemplate.update(generateGroupUserRelTableDropStatement(domainName));
+  private JdbcSqlQuery generateGroupUserRelTableCreateStatement(String domainName) {
+    return JdbcSqlQuery.createTable("Domain" + domainName +
+        "_Group_User_Rel").addField("groupId", "int NOT NULL").addField("userId", "int NOT NULL");
   }
 
-  private String generateGroupUserRelTableCreateStatement(String domainName) {
-    StringBuilder createStatement = new StringBuilder();
-
-    createStatement.append(" CREATE TABLE Domain").append(domainName).append("_Group_User_Rel ");
-    createStatement.append(" (");
-    createStatement.append(" groupId int NOT NULL , userId int NOT NULL ");
-    createStatement.append(" )");
-
-    return createStatement.toString();
+  private JdbcSqlQuery generateGroupTableCreateStatement(String domainName) {
+    return JdbcSqlQuery.createTable("Domain" + domainName +
+        "_Group").addField("id", "int NOT NULL").addField("superGroupId", "int NULL")
+        .addField("name", "varchar(100) NOT NULL").addField("description", "varchar(400) NULL")
+        .addField("grSpecificInfo", "varchar(50) NULL");
   }
 
-  private String generateGroupUserRelTableDropStatement(String domainName) {
-    StringBuilder dropStatement = new StringBuilder();
-
-    dropStatement.append(" DROP TABLE Domain").append(domainName).append("_Group_User_Rel ");
-
-    return dropStatement.toString();
-  }
-
-  private String generateGroupTableCreateStatement(String domainName) {
-    StringBuilder createStatement = new StringBuilder();
-
-    createStatement.append(" CREATE TABLE Domain").append(domainName).append("_Group ");
-    createStatement.append(" (");
-    createStatement.append(" id int NOT NULL , superGroupId int NULL ,");
-    createStatement.append(" name varchar(100) NOT NULL , description varchar(400) NULL ,");
-    createStatement.append(" grSpecificInfo varchar(50) NULL ");
-    createStatement.append(" )");
-
-    return createStatement.toString();
-  }
-
-  private String generateGroupTableDropStatement(String domainName) {
-    StringBuilder dropStatement = new StringBuilder();
-
-    dropStatement.append(" DROP TABLE Domain").append(domainName).append("_Group ");
-
-    return dropStatement.toString();
-  }
-
-  private String generateUserTableCreateStatement(String domainName) throws IOException {
+  private JdbcSqlQuery generateUserTableCreateStatement(String domainName) throws IOException {
     Properties props = new Properties();
     FileInputStream fis = null;
     try {
@@ -128,16 +82,13 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     }
     int numberOfColumns = Integer.parseInt(props.getProperty("property.Number"));
 
-    StringBuilder createStatement = new StringBuilder();
-
-    createStatement.append("CREATE TABLE Domain").append(domainName).append("_User ");
-    createStatement.append("(");
+    JdbcSqlQuery userTable = JdbcSqlQuery.createTable("Domain" + domainName + "_User ");
 
     // Common columns
-    createStatement.append("id int NOT NULL , firstName varchar(100) NULL , ");
-    createStatement.append("lastName varchar(100) NULL ," + "email varchar(200) NULL , ");
-    createStatement.append("login varchar(50) NOT NULL ," + "password varchar(123) NULL , ");
-    createStatement.append("passwordValid char(1) NULL , ");
+    userTable.addField("id", "int NOT NULL").addField("firstName", "varchar(100) NULL");
+    userTable.addField("lastName", "varchar(100) NULL").addField("email", "varchar(200) NULL");
+    userTable.addField("login", "varchar(50) NOT NULL").addField("password", "varchar(123) NULL");
+    userTable.addField("passwordValid", "char(1) NULL");
 
     // Domain specific columns
     String specificColumnName;
@@ -154,29 +105,40 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
         specificColumnMaxLength = DomainProperty.DEFAULT_MAX_LENGTH;
       }
 
-      createStatement.append(specificColumnName);
       if ("BOOLEAN".equals(specificColumnType)) {
-        createStatement.append(" int NOT NULL DEFAULT (0) ");
+        userTable.addField(specificColumnName, "int NOT NULL DEFAULT (0)");
       } else {
-        createStatement.append(" varchar(").append(specificColumnMaxLength).append(") NULL ");
-      }
-
-      if (i != numberOfColumns) {
-        createStatement.append(", ");
+        userTable.addField(specificColumnName, "varchar(" + specificColumnMaxLength + ") NULL");
       }
     }
 
-    createStatement.append(")");
-
-    return createStatement.toString();
+    return userTable;
   }
 
-  private String generateUserTableDropStatement(String domainName) {
-    StringBuilder dropStatement = new StringBuilder();
-
-    dropStatement.append("DROP TABLE Domain").append(domainName).append("_User ");
-
-    return dropStatement.toString();
+  @Override
+  public void deleteDomainStorage(Domain domain) {
+    String domainName = domain.getName();
+    try {
+      List<JdbcSqlQuery> queries = new ArrayList<>();
+      queries.add(generateUserTableDropStatement(domainName));
+      queries.add(generateGroupTableDropStatement(domainName));
+      queries.add(generateGroupUserRelTableDropStatement(domainName));
+      JdbcSqlQueries.execute(queries);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "SQLInternalDomainRepository.deleteDomainStorage",
+          "admin.CANNOT_CREATE_DOMAIN_STORAGE", e);
+    }
   }
 
+  private JdbcSqlQuery generateGroupUserRelTableDropStatement(String domainName) {
+    return JdbcSqlQuery.createDropFor("Domain" + domainName + "_Group_User_Rel");
+  }
+
+  private JdbcSqlQuery generateGroupTableDropStatement(String domainName) {
+    return JdbcSqlQuery.createDropFor("Domain" + domainName + "_Group");
+  }
+
+  private JdbcSqlQuery generateUserTableDropStatement(String domainName) {
+    return JdbcSqlQuery.createDropFor("Domain" + domainName + "_User");
+  }
 }

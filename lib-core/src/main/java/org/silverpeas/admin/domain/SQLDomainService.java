@@ -24,32 +24,35 @@
 
 package org.silverpeas.admin.domain;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.domains.sqldriver.SQLSettings;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.repository.SQLDomainRepository;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.Normalizer;
 
+@Singleton
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
   ResourceLocator templateSettings;
@@ -61,8 +64,7 @@ public class SQLDomainService extends AbstractDomainService {
   private final static String DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX = "_Group_User_Rel";
 
   @Inject
-  @Named("sqlInternalDomainRepository")
-  SQLDomainRepository dao;
+  private SQLDomainRepository dao;
 
   @PostConstruct
   void init() {
@@ -124,6 +126,7 @@ public class SQLDomainService extends AbstractDomainService {
     return domain.getId() + StringUtil.left(fileDomainName, maxLength);
   }
 
+  @Transactional
   @Override
   public String createDomain(Domain domainToCreate)
       throws DomainConflictException, DomainCreationException {
@@ -209,6 +212,7 @@ public class SQLDomainService extends AbstractDomainService {
     return domainId;
   }
 
+  @Transactional
   @Override
   public String deleteDomain(Domain domainToRemove) throws DomainDeletionException {
 

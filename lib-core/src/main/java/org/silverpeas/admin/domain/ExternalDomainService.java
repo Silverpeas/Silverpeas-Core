@@ -24,18 +24,17 @@
 
 package org.silverpeas.admin.domain;
 
-import javax.inject.Named;
-
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Domain;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
-import org.springframework.stereotype.Service;
-
 import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
 
-@Service
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+@Singleton
 @Named("externalDomainService")
 public class ExternalDomainService extends AbstractDomainService {
 
