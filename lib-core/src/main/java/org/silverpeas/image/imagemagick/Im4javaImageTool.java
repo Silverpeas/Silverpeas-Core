@@ -40,7 +40,6 @@ import org.silverpeas.image.option.DimensionOption;
 /**
  * @author Yohann Chastagnier
  */
-@Named("imageTool")
 public class Im4javaImageTool extends AbstractImageTool {
 
   private static final String FIRST_PAGE_ONLY = "[0]";

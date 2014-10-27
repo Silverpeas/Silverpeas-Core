@@ -35,7 +35,6 @@ import org.im4java.process.ProcessStarter;
 /**
  * @author Yohann Chastagnier
  */
-@Named("im4javaManager")
 @Singleton
 public class Im4javaManager {
 

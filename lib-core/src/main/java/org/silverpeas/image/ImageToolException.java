@@ -42,7 +42,7 @@ public class ImageToolException extends SilverpeasRuntimeException {
 
   /**
    * Default constructor
-   * @param e
+   * @param message the exception message
    */
   public ImageToolException(final String message) {
     super("ImageTool", SilverpeasException.ERROR, message);

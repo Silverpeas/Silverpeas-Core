@@ -133,12 +133,12 @@ public abstract class AbstractImageTool implements ImageTool {
       final Set<AbstractImageToolOption> options) {
     Map<Class<T>, AbstractImageToolOption> mappedOptions;
     if (options != null) {
-      mappedOptions = new HashMap<Class<T>, AbstractImageToolOption>();
+      mappedOptions = new HashMap<>();
       for (final AbstractImageToolOption option : options) {
         mappedOptions.put((Class<T>) option.getClass(), option);
       }
     } else {
-      mappedOptions = new HashMap<Class<T>, AbstractImageToolOption>(0);
+      mappedOptions = new HashMap<>(0);
     }
     return mappedOptions;
   }
@@ -151,7 +151,7 @@ public abstract class AbstractImageTool implements ImageTool {
    */
   private <T> Set<T> toSet(final T... items) {
     if (items == null) {
-      return new HashSet<T>(0);
+      return new HashSet<>(0);
     }
     return CollectionUtil.asSet(items);
   }
