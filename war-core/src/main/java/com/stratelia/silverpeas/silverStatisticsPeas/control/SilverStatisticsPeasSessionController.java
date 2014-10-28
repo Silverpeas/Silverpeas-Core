@@ -29,6 +29,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -138,7 +139,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         "SilverStatisticsPeasSessionController.getUserProfile()",
         "root.MSG_GEN_ENTER_METHOD");
     UserAccessLevel userProfile = getUserDetail().getAccessLevel();
-    AdminController ac = new AdminController(getUserId());
+    AdminController ac = ServiceProvider.getService(AdminController.class);
     if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile)
         && ac.getUserManageableSpaceRootIds(getUserId()) != null) {
       userProfile = UserAccessLevel.SPACE_ADMINISTRATOR;

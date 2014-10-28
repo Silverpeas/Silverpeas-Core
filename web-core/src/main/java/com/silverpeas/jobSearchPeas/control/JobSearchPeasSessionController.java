@@ -50,6 +50,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeBm;
@@ -67,7 +68,7 @@ import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
  */
 public class JobSearchPeasSessionController extends AbstractComponentSessionController {
 
-  private AdminController myAdminController = null;
+  private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
   private PublicationBm publicationBm = null;
   private NodeBm nodeBm = null;
   private String searchField = null;
@@ -92,9 +93,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   public AdminController getAdminController() {
-    if (null == myAdminController) {
-      myAdminController = new AdminController(getUserId());
-    }
     return myAdminController;
   }
 

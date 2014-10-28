@@ -28,10 +28,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import org.silverpeas.initialization.Initialization;
 
+import javax.inject.Inject;
+
 /**
  * Initializes the Administration layer of Silverpeas. It sets up the administration service.
  */
 public class AdminInitialize implements Initialization {
+
+  @Inject
+  private AdminController adminController;
 
   public AdminInitialize() {
   }
@@ -39,9 +44,8 @@ public class AdminInitialize implements Initialization {
   @Override
   public void init() {
     // Initialize SilverTrace
-    AdminController ac = new AdminController("");
     try {
-      ac.startServer();
+      adminController.startServer();
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminInitialize.Initialize()", "admin.MSG_ERR_GET_DOMAIN", e);
     }

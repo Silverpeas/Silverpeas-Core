@@ -25,6 +25,7 @@
 package com.silverpeas.jobOrganizationPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -49,7 +50,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
   private String currentUserId = null;
   private String currentGroupId = null;
-  private AdminController myAdminController = null;
+  private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
   private UserFull currentUser = null;
   private Group currentGroup = null;
   private String[][] currentGroups = null;
@@ -84,9 +85,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   public AdminController getAdminController() {
-    if (myAdminController == null) {
-      myAdminController = new AdminController(getUserId());
-    }
     return myAdminController;
   }
 

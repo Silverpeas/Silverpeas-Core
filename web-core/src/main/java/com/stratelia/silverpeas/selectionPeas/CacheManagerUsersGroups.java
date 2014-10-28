@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
+import com.stratelia.webactiv.beans.admin.Admin;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
@@ -43,6 +44,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ServiceProvider;
 
 public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_USER_LASTNAME = 0;
@@ -55,7 +57,7 @@ public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_GROUP_NBUSERS = 2;
 
   protected OrganizationController m_oc = OrganizationControllerProvider.getOrganisationController();
-  protected AdminController adminController = new AdminController(null);
+  protected AdminController adminController = ServiceProvider.getService(AdminController.class);
   protected UserDetail userDetail = null;
 
   public CacheManagerUsersGroups(String language, ResourceLocator local,
@@ -83,7 +85,7 @@ public class CacheManagerUsersGroups extends CacheManager {
     switch (what) {
       case CM_ELEMENT: {
         if (SelectionPeasSettings.displayUsersGroups) {
-          AdminController ac = new AdminController(id);
+          AdminController ac = ServiceProvider.getService(AdminController.class);
           String[] groupIds = ac.getDirectGroupsIdsOfUser(id);
           String[] columns = getColumnsNames(CacheType.CM_SET);
 

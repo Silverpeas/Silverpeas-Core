@@ -21,6 +21,7 @@
 package org.silverpeas.servlets.credentials;
 
 import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -43,7 +44,7 @@ public class ChangeExpiredPasswordHandler extends ChangePasswordFunctionHandler 
         .withAsPassword(oldPassword).withAsDomainId(domainId);
     try {
       // Change password.
-      AuthenticationService authenticator = new AuthenticationService();
+      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
       authenticator.changePassword(credential, newPassword);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId="
           + domainId;

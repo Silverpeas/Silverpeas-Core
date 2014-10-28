@@ -24,6 +24,7 @@
 
 package org.silverpeas.servlets.credentials;
 
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
@@ -38,7 +39,7 @@ import java.util.List;
 
 public class ForgotPasswordHandler extends FunctionHandler {
 
-  private static AuthenticationService authenticator = new AuthenticationService();
+  private AuthenticationService authenticator = AuthenticationServiceProvider.getService();
   private ForgottenPasswordMailManager forgottenPasswordMailManager =
       new ForgottenPasswordMailManager();
 

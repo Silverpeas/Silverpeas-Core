@@ -27,6 +27,7 @@ package org.silverpeas.servlets.credentials;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,7 +47,7 @@ public class ChangePasswordHandler extends FunctionHandler {
       AuthenticationCredential credential = AuthenticationCredential
           .newWithAsLogin(login)
           .withAsDomainId(domainId);
-      AuthenticationService authenticator = new AuthenticationService();
+      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
       authenticator.resetPassword(credential, password);
 
       return "/AuthenticationServlet?Login=" + login + "&Password=" + password

@@ -40,7 +40,7 @@ import org.silverpeas.accesscontrol.SpaceAccessController;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceFactory;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.token.persistent.PersistentResourceToken;
@@ -116,9 +116,9 @@ public abstract class TestResources implements ApplicationContextAware {
   public TestResources() {
     authenticationService = mock(AuthenticationService.class);
     try {
-      Field service = AuthenticationServiceFactory.class.getDeclaredField("service");
+      Field service = AuthenticationServiceProvider.class.getDeclaredField("service");
       service.setAccessible(true);
-      service.set(AuthenticationServiceFactory.getFactory(), authenticationService);
+      service.set(AuthenticationServiceProvider.getService(), authenticationService);
 
       final Answer<String> answer = new Answer<String>() {
 

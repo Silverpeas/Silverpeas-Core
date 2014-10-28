@@ -44,6 +44,7 @@ import java.util.Set;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -68,7 +69,6 @@ import org.silverpeas.util.exception.UtilException;
  */
 public class SilverStatisticsPeasDAOAccesVolume {
 
-  static AdminController myAdminController = new AdminController("");
   private static final String SELECT_VOLUME_YEARS = "SELECT DISTINCT dateStat "
       + "FROM sb_stat_volumecumul ORDER BY dateStat ASC";
   private static final String SELECT_VOLUME_BY_USER = "SELECT componentId, SUM(countVolume) "
@@ -289,7 +289,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectGroupAccessEvolutionForSpace(String spaceId, String groupId)
       throws SQLException, ParseException {
-    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
     Map<String, String[]> allAccesses = new HashMap<String, String[]>();
     for (UserDetail user : users) {
       List<String[]> userStats = selectUserAccessEvolutionForSpace(spaceId, user.getId());
@@ -355,7 +355,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectGroupAccessEvolutionForComponent(String componentId,
       String groupId) throws SQLException, ParseException {
-    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
     Map<String, String[]> allAccesses = new HashMap<String, String[]>();
     for (UserDetail user : users) {
       List<String[]> userStats = selectUserAccessEvolutionForComponent(componentId, user.getId());
@@ -548,7 +548,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   static Map<String, String> selectAccessForGroup(String dateStat, String groupId)
       throws SQLException {
-    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
     Map<String, String> allAccesses = new HashMap<String, String>();
     for (UserDetail user : users) {
       Map<String, String> userStats = selectAccessForUser(dateStat, user.getId());
@@ -566,7 +566,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   static Map<String, String> selectVolumeForGroup(String dateStat, String groupId) throws
       SQLException {
-    UserDetail[] users = myAdminController.getAllUsersOfGroup(groupId);
+    UserDetail[] users = getAdminController().getAllUsersOfGroup(groupId);
     Map<String, String> allVolumes = new HashMap<String, String>();
     for (UserDetail user : users) {
       Map<String, String> userStats = selectVolumeForUser(dateStat, user.getId());
@@ -606,6 +606,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
       Map<String, String> hashTout) {
     for (String cmpId : hashTout.keySet()) {
       boolean ok = false;
+      AdminController myAdminController = getAdminController();
       ComponentInst compInst = myAdminController.getComponentInst(cmpId);
       String spaceId = compInst.getDomainFatherId();
       String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
@@ -644,7 +645,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Collection<ComponentInstLight> result = new ArrayList<ComponentInstLight>();
     OrganizationController orgaController = OrganizationControllerProvider
         .getOrganisationController();
-    AdminController adminController = new AdminController(currentUserId);
+    AdminController adminController = getAdminController();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_ACCESS_COMPONENTS_USER);
@@ -671,5 +672,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       DBUtil.close(rs, stmt);
       DBUtil.close(myCon);
     }
+  }
+
+  private static AdminController getAdminController() {
+    return ServiceProvider.getService(AdminController.class);
   }
 }

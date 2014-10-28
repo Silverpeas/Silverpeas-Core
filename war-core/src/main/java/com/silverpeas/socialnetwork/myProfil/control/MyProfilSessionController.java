@@ -34,6 +34,8 @@ import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -81,7 +83,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         "org.silverpeas.social.multilang.socialNetworkBundle",
         "org.silverpeas.social.settings.socialNetworkIcons",
         "org.silverpeas.social.settings.socialNetworkSettings");
-    adminCtrl = new AdminController(getUserId());
+    adminCtrl = ServiceProvider.getService(AdminController.class);
     invitationService = new InvitationService();
   }
 
@@ -174,7 +176,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   private void changePassword(AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
-    AuthenticationService authenticator = new AuthenticationService();
+    AuthenticationService authenticator = AuthenticationServiceProvider.getService();
     authenticator.changePassword(credential, newPassword);
   }
 

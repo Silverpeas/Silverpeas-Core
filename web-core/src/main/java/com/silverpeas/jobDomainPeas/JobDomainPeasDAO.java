@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**
@@ -77,7 +78,7 @@ public class JobDomainPeasDAO {
     String propDomainFileName = domain.getPropFileName();
     String domainName = propDomainFileName.substring(39);
 
-    AdminController adminCtrl = new AdminController(null);
+    AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas
     Collection<Group> listRes = new ArrayList<Group>();
@@ -124,7 +125,7 @@ public class JobDomainPeasDAO {
     String propDomainFileName = domain.getPropFileName();
     String domainName = propDomainFileName.substring(39);
 
-    AdminController adminCtrl = new AdminController(null);
+    AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas
     Collection<UserFull> listRes = new ArrayList<UserFull>();
@@ -157,7 +158,6 @@ public class JobDomainPeasDAO {
   /**
    * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
    *
-   * @param domainName
    * @return Collection de UserDetail
    * @throws SQLException
    * @see
@@ -168,7 +168,7 @@ public class JobDomainPeasDAO {
         "JobDomainPeasDAO.selectUserSynchroDeleteTableDomain_User",
         "root.MSG_GEN_ENTER_METHOD");
 
-    AdminController adminCtrl = new AdminController(null);
+    AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas
     Collection<UserDetail> listRes = new ArrayList<UserDetail>();

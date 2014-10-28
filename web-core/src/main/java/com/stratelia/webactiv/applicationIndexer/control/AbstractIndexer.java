@@ -23,6 +23,7 @@ package com.stratelia.webactiv.applicationIndexer.control;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -33,7 +34,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
  */
 public abstract class AbstractIndexer {
 
-  final AdminController admin = new AdminController(null);
+  final AdminController admin = ServiceProvider.getService(AdminController.class);
   final static String silvertraceModule = "applicationIndexer";
 
   void setSilverTraceLevel() {

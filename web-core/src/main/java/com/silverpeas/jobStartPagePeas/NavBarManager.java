@@ -20,6 +20,7 @@
  */
 package com.silverpeas.jobStartPagePeas;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -151,7 +152,7 @@ public class NavBarManager {
     SilverTrace.info("jobStartPagePeas", "NavBarManager.initWithUser()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + sUserId);
     m_sContext = URLManager.getApplicationURL();
-    m_administrationCtrl = new AdminController(sUserId);
+    m_administrationCtrl = ServiceProvider.getService(AdminController.class);
     m_SessionCtrl = msc;
     m_user = user;
     m_elmtCounter = 0;

@@ -20,6 +20,8 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.stratelia.webactiv.beans.admin.Admin;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -55,7 +57,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   private SimpleDocument document;
   private String contentLanguage;
   private String nodeId = null;
-  private AdminController adminController = null;
+  private AdminController adminController = ServiceProvider.getService(AdminController.class);
   private String currentProfile = null;
   public static final String ADMIN = SilverpeasRole.admin.toString();
   public static final String PUBLISHER = SilverpeasRole.publisher.toString();
@@ -282,10 +284,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    */
   private AdminController getAdmin() {
-    if (adminController == null) {
-      adminController = new AdminController(getUserId());
-    }
-
     return adminController;
   }
 

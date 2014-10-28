@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.URLUtils;
 
 import com.silverpeas.ical.ExportIcalManager;
@@ -106,7 +107,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     super(mainSessionCtrl, context, "org.silverpeas.agenda.multilang.agenda");
     setComponentRootName(URLManager.CMP_AGENDA);
     initEJB();
-    AdminController admin = new AdminController("useless");
+    AdminController admin = ServiceProvider.getService(AdminController.class);
     Domain defaultDomain = admin.getDomain(getUserDetail().getDomainId());
     serverURL = defaultDomain.getSilverpeasServerURL();
   }

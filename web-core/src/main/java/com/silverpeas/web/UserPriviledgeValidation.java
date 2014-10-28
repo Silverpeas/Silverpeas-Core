@@ -37,7 +37,7 @@ import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceFactory;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.OrganizationController;
@@ -278,7 +278,7 @@ public class UserPriviledgeValidation {
               .newWithAsLogin(user.getLogin())
               .withAsPassword(password)
               .withAsDomainId(user.getDomainId());
-          AuthenticationService authenticator = AuthenticationServiceFactory.getService();
+          AuthenticationService authenticator = AuthenticationServiceProvider.getService();
           String key = authenticator.authenticate(credential);
           if (!authenticator.isInError(key)) {
             session = sessionManagement.openSession(user);

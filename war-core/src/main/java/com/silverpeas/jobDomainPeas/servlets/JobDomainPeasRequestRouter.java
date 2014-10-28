@@ -24,6 +24,7 @@ import com.silverpeas.jobDomainPeas.JobDomainPeasException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -317,7 +318,7 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.returnIntoGroup(null);
 
           // groupe d'appartenance
-          AdminController adminController = new AdminController(jobDomainSC.getUserId());
+          AdminController adminController = ServiceProvider.getService(AdminController.class);
           String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
           if (groupIds != null && groupIds.length > 0) {
             for (final String groupId : groupIds) {

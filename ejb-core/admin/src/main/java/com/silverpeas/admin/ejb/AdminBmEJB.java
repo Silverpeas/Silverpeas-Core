@@ -31,6 +31,7 @@ import org.silverpeas.quota.exception.QuotaException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,15 +43,14 @@ import java.util.Map;
 public class AdminBmEJB implements AdminBusiness {
 
   private static final long serialVersionUID = 8753816261083500713L;
-  AdminController ac = null;
+
+  @Inject
+  private AdminController ac;
 
   public AdminBmEJB() {
   }
 
   private AdminController getAdminController() {
-    if (ac == null) {
-      ac = new AdminController("unknown");
-    }
     return ac;
   }
 

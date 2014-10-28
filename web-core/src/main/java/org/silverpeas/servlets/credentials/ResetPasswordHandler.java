@@ -26,6 +26,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
@@ -66,7 +67,7 @@ public class ResetPasswordHandler extends FunctionHandler {
           AuthenticationCredential credential = AuthenticationCredential
               .newWithAsLogin(user.getLogin())
               .withAsDomainId(user.getDomainId());
-          AuthenticationService authenticator = new AuthenticationService();
+          AuthenticationService authenticator = AuthenticationServiceProvider.getService();
           authenticator.resetPassword(credential, password);
         } catch (AuthenticationException e1) {
           throw new ForgottenPasswordException(

@@ -29,6 +29,7 @@ import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.trigger.TimeUnit;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -158,7 +159,8 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
     initializationOrLastVerifyDate = DateUtil.getNow();
     if (!isAtLeastOneUserConnectionAttempt()) {
       if (getUser() != null && StringUtil.isDefined(getUser().getId())) {
-        new AdminController(getUser().getId()).blockUser(getUser().getId());
+        AdminController adminController = ServiceProvider.getService(AdminController.class);
+        adminController.blockUser(getUser().getId());
         clearCache();
       }
       throw new AuthenticationNoMoreUserConnectionAttemptException(

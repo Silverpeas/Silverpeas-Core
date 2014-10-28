@@ -59,6 +59,7 @@ import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.PairObject;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
@@ -122,7 +123,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasIcons");
     setComponentRootName(URLManager.CMP_JOBSTARTPAGEPEAS);
     selection = getSelection();
-    adminController = new AdminController(getUserId());
+    adminController = ServiceProvider.getService(AdminController.class);
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
         JobStartPagePeasSettings.TEMPLATE_PATH);
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
@@ -735,7 +736,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         definitiveDelete = !JobStartPagePeasSettings.useBasketWhenAdmin;
       }
 
-      String res = adminController.deleteSpaceInstById(spaceint1.getId(),
+      String res = adminController.deleteSpaceInstById(getUserDetail(), spaceint1.getId(),
           definitiveDelete);
 
       m_NavBarMgr.removeSpaceInCache(res);
@@ -1045,7 +1046,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void deleteSpaceInBin(String spaceId) {
-    adminController.deleteSpaceInstById(spaceId, true);
+    adminController.deleteSpaceInstById(getUserDetail(), spaceId, true);
   }
 
   public void restoreComponentFromBin(String componentId) {
@@ -1053,7 +1054,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void deleteComponentInBin(String componentId) {
-    adminController.deleteComponentInst(componentId, true);
+    adminController.deleteComponentInst(getUserDetail(), componentId, true);
   }
 
   /**
@@ -1295,7 +1296,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       definitiveDelete = !JobStartPagePeasSettings.useBasketWhenAdmin;
     }
 
-    return adminController.deleteComponentInst(sInstanceId, definitiveDelete);
+    return adminController.deleteComponentInst(getUserDetail(), sInstanceId, definitiveDelete);
   }
 
   // ArrayList de ProfileInst dont l'id est vide ou pas

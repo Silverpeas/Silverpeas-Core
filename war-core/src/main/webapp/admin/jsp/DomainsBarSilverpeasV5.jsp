@@ -40,6 +40,7 @@
 <%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -372,7 +373,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
                     //------------------------------------------------------------------
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a AuthenticationService object
-                    AuthenticationService lpAuth = new AuthenticationService();
+                    AuthenticationService lpAuth = AuthenticationServiceProvider.getService();
                     List<Domain> listDomains = lpAuth.getAllDomains();
                     pageContext.setAttribute("listDomains", listDomains);
                     pageContext.setAttribute("multipleDomains", listDomains != null && listDomains.size() > 1);

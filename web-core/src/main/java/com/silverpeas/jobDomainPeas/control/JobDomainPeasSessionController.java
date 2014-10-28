@@ -31,6 +31,7 @@ import org.silverpeas.admin.domain.DomainServiceProvider;
 import org.silverpeas.password.service.PasswordServiceProvider;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.csv.CSVReader;
 import org.silverpeas.util.csv.Variant;
@@ -134,7 +135,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "com.silverpeas.jobDomainPeas.settings.jobDomainPeasIcons",
         "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
     setComponentRootName(URLManager.CMP_JOBDOMAINPEAS);
-    m_AdminCtrl = new AdminController(getUserId());
+    m_AdminCtrl = ServiceProvider.getService(AdminController.class);
     sel = getSelection();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
         .getString("templatePath"));

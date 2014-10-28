@@ -20,17 +20,30 @@
  */
 package org.silverpeas.authentication;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -43,17 +56,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.exception.AuthenticationHostException;
-import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
-import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
-import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -117,10 +119,13 @@ public class AuthenticationService {
     m_UserDomainColumnName = propFile.getString("SQLUserDomainColumnName");
   }
 
+  @Inject
+  private AdminController adminController;
+
   /**
    * Constructs a new AuthenticationService instance.
    */
-  public AuthenticationService() {
+  protected AuthenticationService() {
   }
 
   /**
@@ -569,16 +574,15 @@ public class AuthenticationService {
    */
   private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email)
       throws AuthenticationException {
-    AdminController admin = new AdminController(null);
-    UserDetail user = UserDetail
-        .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
+    UserDetail user = UserDetail.getById(
+        adminController.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
 
     // Notify that the user has changed his password.
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
         .notifyPasswordChange();
 
     // Updating some data
-    UserFull userFull = admin.getUserFull(user.getId());
+    UserFull userFull = adminController.getUserFull(user.getId());
 
     // Reset the counter of number of successful connections for the given user.
     userFull.setNbSuccessfulLoginAttempts(0);
@@ -593,7 +597,7 @@ public class AuthenticationService {
 
     // Persisting user data changes.
     try {
-      admin.updateUserFull(userFull);
+      adminController.updateUserFull(userFull);
     } catch (AdminException e) {
       throw new AuthenticationException("AuthenticationService.onPasswordAndEmailChanged",
           SilverpeasException.ERROR, "authentication.EX_CANT_UPDATE_USERFULL", e);

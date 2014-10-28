@@ -23,28 +23,17 @@
  */
 package org.silverpeas.authentication;
 
+import org.silverpeas.util.ServiceProvider;
+
 /**
- * A factory of an authentication service.
- *
- * The factory manages the life-cycle of the authentication service instances and wraps the concrete
- * implementation of a such service.
+ * A provider of the authentication service.
  *
  * @author mmoquillon
  */
-public class AuthenticationServiceFactory {
+public class AuthenticationServiceProvider {
 
-  private static final AuthenticationServiceFactory instance = new AuthenticationServiceFactory();
-  private final AuthenticationService service = new AuthenticationService();
-
-  public static final AuthenticationServiceFactory getFactory() {
-    return instance;
+  public static AuthenticationService getService() {
+    return ServiceProvider.getService(AuthenticationService.class);
   }
 
-  public static final AuthenticationService getService() {
-    return getFactory().getAuthenticationService();
-  }
-
-  public AuthenticationService getAuthenticationService() {
-    return service;
-  }
 }

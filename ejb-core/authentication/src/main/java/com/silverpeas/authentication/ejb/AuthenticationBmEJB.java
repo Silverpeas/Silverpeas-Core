@@ -23,6 +23,7 @@ package com.silverpeas.authentication.ejb;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
@@ -32,9 +33,11 @@ import org.silverpeas.authentication.AuthenticationService;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class AuthenticationBmEJB implements AuthenticationBm {
 
+  @Inject
+  private AuthenticationService authenticator;
+
   @Override
   public String authenticate(String login, String password, String domainId) {
-    AuthenticationService authenticator = new AuthenticationService();
     AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
         .withAsPassword(password).withAsDomainId(domainId);
     return authenticator.authenticate(credential);

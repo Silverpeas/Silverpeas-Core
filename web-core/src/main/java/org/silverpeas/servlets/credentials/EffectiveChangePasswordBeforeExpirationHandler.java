@@ -21,6 +21,7 @@
 package org.silverpeas.servlets.credentials;
 
 import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -60,7 +61,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
       String newPassword = request.getParameter("newPassword");
       AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
           .withAsPassword(oldPassword).withAsDomainId(domainId);
-      AuthenticationService authenticator = new AuthenticationService();
+      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
       authenticator.changePassword(credential, newPassword);
 
       GraphicElementFactory gef =

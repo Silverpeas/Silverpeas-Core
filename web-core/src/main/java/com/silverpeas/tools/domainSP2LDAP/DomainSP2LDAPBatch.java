@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.OrganizationController;
 
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DomainSP2LDAPBatch {
-  private AdminController adminController;
+  private AdminController adminController = ServiceProvider.getService(AdminController.class);
   public static final String DOMAIN_SILVERPEAS_ID = "0";
 
   public OrganizationController getOrganisationController() {
@@ -47,8 +48,6 @@ public class DomainSP2LDAPBatch {
   }
 
   public AdminController getAdminController() {
-    if (adminController == null)
-      adminController = new AdminController("0");
     return adminController;
   }
 

@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
 
 <%
   response.setHeader("Expires", "Tue, 21 Dec 1993 23:59:59 GMT");
@@ -73,7 +74,7 @@
   boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
   boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
 // Get a AuthenticationService object
-AuthenticationService lpAuth = new AuthenticationService();
+AuthenticationService lpAuth = AuthenticationServiceProvider.getService();
 // list of domains
 List<Domain> listDomains = lpAuth.getAllDomains();
 pageContext.setAttribute("listDomains", listDomains);

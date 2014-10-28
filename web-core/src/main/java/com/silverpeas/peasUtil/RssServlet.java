@@ -31,6 +31,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ import javax.servlet.http.HttpSession;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -59,6 +61,9 @@ import de.nava.informa.impl.basic.Item;
 public abstract class RssServlet<T> extends HttpServlet {
 
   private static final long serialVersionUID = 1756308502037077021L;
+
+  @Inject
+  private AdminController adminController;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -81,7 +86,6 @@ public abstract class RssServlet<T> extends HttpServlet {
             "InstanceId = " + instanceId);
 
         // Vérification que le user a droit d'accès au composant
-        AdminController adminController = new AdminController(null);
         UserFull user = adminController.getUserFull(userId);
         if (user != null && login.equals(user.getLogin())
             && password.equals(user.getPassword())

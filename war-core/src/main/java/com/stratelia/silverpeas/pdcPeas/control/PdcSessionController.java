@@ -49,6 +49,7 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class PdcSessionController extends AbstractComponentSessionController {
@@ -60,7 +61,6 @@ public class PdcSessionController extends AbstractComponentSessionController {
   private ThesaurusManager thBm = null;
   private String values = "";
   private String currentLanguage = null;
-  private AdminController m_AdminCtrl = null;
 
   /**
    * Constructor declaration
@@ -533,7 +533,6 @@ public class PdcSessionController extends AbstractComponentSessionController {
   /**
    * get the managers of the specified value
    *
-   * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
    */
@@ -553,7 +552,6 @@ public class PdcSessionController extends AbstractComponentSessionController {
   /**
    * get the inherited managers of the specified value
    *
-   * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException , SQLException
    */
@@ -705,8 +703,8 @@ public class PdcSessionController extends AbstractComponentSessionController {
   /**
    * update permissions on current value
    *
-   * @param ArrayList usersId
-   * @param ArrayList groupsId
+   * @param userIds
+   * @param groupIds
    * @throws PdcException
    * @throws SQLException
    */
@@ -738,11 +736,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   private AdminController getAdmin() {
-    if (m_AdminCtrl == null) {
-      m_AdminCtrl = new AdminController(getUserId());
-    }
-
-    return m_AdminCtrl;
+    return ServiceProvider.getService(AdminController.class);
   }
 
   public List<Group> groupIds2Groups(List<String> groupIds) {

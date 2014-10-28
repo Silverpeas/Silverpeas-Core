@@ -23,6 +23,8 @@ package com.silverpeas.authentication;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import com.stratelia.webactiv.beans.admin.Admin;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -151,7 +153,8 @@ public class SilverpeasSessionOpener {
     UserDetail user = UserDetail.getById(controller.getUserId());
     user.setLastLoginDate(DateUtil.getNow());
     user.setNbSuccessfulLoginAttempts(user.getNbSuccessfulLoginAttempts() + 1);
-    new AdminController(user.getId()).updateUser(user);
+    AdminController adminController = ServiceProvider.getService(AdminController.class);
+    adminController.updateUser(user);
   }
 
   /**

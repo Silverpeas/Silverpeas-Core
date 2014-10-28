@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -41,7 +42,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceFactory;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
@@ -62,7 +63,8 @@ import org.silverpeas.servlet.HttpRequest;
  */
 public class AuthenticationServlet extends HttpServlet {
 
-  private static final AuthenticationService authService = AuthenticationServiceFactory.getService();
+  @Inject
+  private AuthenticationService authService;
   private static final long serialVersionUID = -8695946617361150513L;
   private static final SilverpeasSessionOpener silverpeasSessionOpener
       = new SilverpeasSessionOpener();

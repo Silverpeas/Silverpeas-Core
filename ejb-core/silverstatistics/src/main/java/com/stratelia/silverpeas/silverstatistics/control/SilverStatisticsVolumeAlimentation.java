@@ -37,6 +37,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -48,7 +50,6 @@ import java.util.ResourceBundle;
 public class SilverStatisticsVolumeAlimentation {
 
   private static ResourceBundle resources = null;
-  private static final AdminController myAdminController = new AdminController("");
 
   static {
     try {
@@ -108,7 +109,7 @@ public class SilverStatisticsVolumeAlimentation {
    */
   private static List<String> getAllSpacesAndAllSubSpacesId() {
     List<String> resultList = new ArrayList<String>();
-    String[] spaceIds = myAdminController.getAllSpaceIds();
+    String[] spaceIds = getAdminController().getAllSpaceIds();
     if (spaceIds != null) {
       resultList.addAll(Arrays.asList(spaceIds));
     }
@@ -122,14 +123,14 @@ public class SilverStatisticsVolumeAlimentation {
    * @see
    */
   private static List<ComponentInst> getAllComponentsInst(String spaceId) {
-    SpaceInst mySpaceInst = myAdminController.getSpaceInstById(spaceId);
+    SpaceInst mySpaceInst = getAdminController().getSpaceInstById(spaceId);
     return mySpaceInst.getAllComponentsInst();
   }
 
   /**
    * Method declaration
    * @param spaceId
-   * @param componentId
+   * @param ci
    * @return
    * @see
    */
@@ -220,6 +221,10 @@ public class SilverStatisticsVolumeAlimentation {
       }
     }
     return null;
+  }
+
+  private static AdminController getAdminController() {
+    return ServiceProvider.getService(AdminController.class);
   }
 
   private SilverStatisticsVolumeAlimentation() {

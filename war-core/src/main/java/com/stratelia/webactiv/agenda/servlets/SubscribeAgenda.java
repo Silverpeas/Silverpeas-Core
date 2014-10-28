@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -67,7 +68,7 @@ public class SubscribeAgenda extends HttpServlet {
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
 
       // Check login/pwd must be a identified user
-      AdminController adminController = new AdminController(null);
+      AdminController adminController = ServiceProvider.getService(AdminController.class);
       UserFull user = adminController.getUserFull(userId);
       if (user != null && login.equals(user.getLogin())
           && password.equals(user.getPassword())) {

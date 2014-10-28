@@ -23,6 +23,7 @@
  */
 package org.silverpeas.servlets.credentials;
 
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
@@ -49,7 +50,7 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
             .withAsDomainId(domainId);
     try {
       // Change password.
-      AuthenticationService authenticator = new AuthenticationService();
+      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
       authenticator.changePasswordAndEmail(credential, newPassword, email);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
           domainId;

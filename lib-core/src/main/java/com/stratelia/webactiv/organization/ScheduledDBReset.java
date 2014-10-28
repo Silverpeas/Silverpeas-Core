@@ -29,6 +29,7 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -67,7 +68,7 @@ public class ScheduledDBReset implements SchedulerEventListener {
    */
   public void doDBReset() {
     if (adminController == null) {
-      adminController = new AdminController(null);
+      adminController = ServiceProvider.getService(AdminController.class);
     }
     try {
       adminController.resetAllDBConnections(true);

@@ -31,6 +31,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.templatedesigner.model.TemplateDesignerException;
 import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.security.ContentEncryptionService;
 import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -78,7 +79,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.templatedesigner.multilang.templateDesignerBundle",
         "org.silverpeas.templatedesigner.settings.templateDesignerIcons");
-    adminController = new AdminController(getUserId());
+    adminController = ServiceProvider.getService(AdminController.class);
   }
 
   public List<String> getLanguages() {

@@ -29,15 +29,13 @@ import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * Classe de gestion des components dans le moteur d'importExport de silverpeas.
  * @author sdevolder
  */
 public class AdminImportExport {
-
-  // Variables
-  AdminController ac = null;
 
   /**
    * Méthode récupérant la liste des componentInsts des composants impliqués dans une exportation
@@ -61,10 +59,7 @@ public class AdminImportExport {
    * @return un objet AdminController
    */
   private synchronized AdminController getAdminController() {
-    if (ac == null) {
-      ac = new AdminController("unknown");
-    }
-    return ac;
+    return ServiceProvider.getService(AdminController.class);
   }
 
 }

@@ -20,12 +20,13 @@
  */
 package org.silverpeas.servlets.credentials;
 
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
+import org.silverpeas.authentication.exception.AuthenticationException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -37,7 +38,8 @@ import javax.servlet.http.HttpSession;
  */
 public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandler {
 
-  private static final AuthenticationService authenticator = new AuthenticationService();
+  private final AuthenticationService authenticator =
+      AuthenticationServiceProvider.getService();
   private ForcePasswordChangeHandler forcePasswordChangeHandler = new ForcePasswordChangeHandler();
 
   @Override
