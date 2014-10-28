@@ -82,4 +82,9 @@ public class UuidIdentifier implements EntityIdentifier {
     final UuidIdentifier other = (UuidIdentifier) obj;
     return new EqualsBuilder().append(getId(), other.getId()).isEquals();
   }
+
+  @Override
+  public String toString() {
+    return asString();
+  }
 }

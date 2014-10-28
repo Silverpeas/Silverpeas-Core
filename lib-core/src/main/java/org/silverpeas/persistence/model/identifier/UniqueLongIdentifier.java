@@ -88,4 +88,9 @@ public class UniqueLongIdentifier implements EntityIdentifier {
     final UniqueLongIdentifier other = (UniqueLongIdentifier) obj;
     return new EqualsBuilder().append(getId(), other.getId()).isEquals();
   }
+
+  @Override
+  public String toString() {
+    return asString();
+  }
 }

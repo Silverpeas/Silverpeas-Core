@@ -98,4 +98,14 @@ public interface Contribution extends IdentifiableResource {
    * @return true if the user can access this content, false otherwise.
    */
   public boolean canBeAccessedBy(UserDetail user);
+
+  /**
+   * Gets the type of this contribution. The type is a label that identifies uniquely a kind of
+   * contribution handled by a Silverpeas application.
+   * By default, this method returns the simple name of the class implementing this interface.
+   * @return the label of the type of this contribution.
+   */
+  public default String getContributionType() {
+    return getClass().getSimpleName();
+  }
 }

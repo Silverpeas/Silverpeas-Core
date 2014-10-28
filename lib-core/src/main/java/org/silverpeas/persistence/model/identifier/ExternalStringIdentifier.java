@@ -75,4 +75,9 @@ public class ExternalStringIdentifier implements ExternalEntityIdentifier {
     final ExternalStringIdentifier other = (ExternalStringIdentifier) obj;
     return new EqualsBuilder().append(getId(), other.getId()).isEquals();
   }
+
+  @Override
+  public String toString() {
+    return asString();
+  }
 }

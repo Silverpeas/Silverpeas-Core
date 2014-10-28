@@ -23,6 +23,8 @@
  */
 package org.silverpeas.persistence.model;
 
+import org.silverpeas.core.ResourceIdentifier;
+
 import java.io.Serializable;
 
 /**
@@ -30,13 +32,7 @@ import java.io.Serializable;
  * By this way, all entities have a typed identifier that only the entity knows.
  * @author Yohann Chastagnier
  */
-public interface EntityIdentifier extends Serializable {
-
-  /**
-   * Gets the id value as a String.
-   * @return
-   */
-  String asString();
+public interface EntityIdentifier extends ResourceIdentifier, Serializable {
 
   /**
    * Sets the id value from a String.

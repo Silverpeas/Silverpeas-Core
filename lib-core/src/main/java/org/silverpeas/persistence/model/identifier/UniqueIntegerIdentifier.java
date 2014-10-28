@@ -88,4 +88,9 @@ public class UniqueIntegerIdentifier implements EntityIdentifier {
     final UniqueIntegerIdentifier other = (UniqueIntegerIdentifier) obj;
     return new EqualsBuilder().append(getId(), other.getId()).isEquals();
   }
+
+  @Override
+  public String toString() {
+    return asString();
+  }
 }
