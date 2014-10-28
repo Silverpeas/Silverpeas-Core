@@ -290,19 +290,19 @@ public class JdbcSqlQueryTest extends DataSetTest {
 
     JdbcSqlQuery firstInsertSqlQuery = createUpdateFor("a_table");
     firstInsertSqlQuery.addUpdateParam("value", "value_26_updated");
-    firstInsertSqlQuery.append("where id = ?", 26);
+    firstInsertSqlQuery.where("id = ?", 26);
 
     JdbcSqlQuery secondInsertSqlQuery = createUpdateFor("a_table");
     secondInsertSqlQuery.addUpdateParam("value", "value_38_updated");
-    secondInsertSqlQuery.append("where id = ?", 38);
+    secondInsertSqlQuery.where("id = ?", 38);
 
     JdbcSqlQuery thirdInsertSqlQuery = createUpdateFor("a_table");
     thirdInsertSqlQuery.addUpdateParam("value", "value_200_updated");
-    thirdInsertSqlQuery.append("where id = ?", 200);
+    thirdInsertSqlQuery.where("id = ?", 200);
 
     Transaction.performInOne(() -> {
-      long updateCount =
-          JdbcSqlQueries.execute(firstInsertSqlQuery, secondInsertSqlQuery, thirdInsertSqlQuery);
+      long updateCount = JdbcSqlExecutorProvider.getJdbcSqlExecutor()
+          .executeModify(firstInsertSqlQuery, secondInsertSqlQuery, thirdInsertSqlQuery);
       assertThat(updateCount, is(2L));
       return null;
     });

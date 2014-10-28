@@ -34,7 +34,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * A factory of DomainService objects. Its aim is to manage the life-cycle of such objects and so
+ * A provider of DomainService objects. Its aim is to manage the life-cycle of such objects and so
  * to encapsulates from the DomainService client the adopted policy about that life-cycle.
  */
 @Singleton

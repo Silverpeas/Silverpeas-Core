@@ -95,6 +95,11 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     }
   }
 
+  @Override
+  public long executeModify(final JdbcSqlQuery... modifySqlQueries) throws SQLException {
+    return executeModify(Arrays.asList(modifySqlQueries));
+  }
+
   @Transactional(Transactional.TxType.MANDATORY)
   @Override
   public long executeModify(List<JdbcSqlQuery> modifySqlQueries) throws SQLException {

@@ -49,6 +49,7 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
+import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
@@ -277,7 +278,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addJdbcPersistenceFeatures() {
     addCommonBasicUtilities();
     if (!contains(DBUtil.class)) {
-      addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class);
+      addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
+          TransactionRuntimeException.class);
       addPackages(false, "org.silverpeas.persistence.jdbc");
     }
     return this;
@@ -383,7 +385,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * Sets administration features.
    * Calls automatically:
    * <ul>
-   * <li>{@link #addJdbcPersistenceFeatures()}</li>
+   * <li>{@link #addJpaPersistenceFeatures()}</li>
+   * <li>{@link #addQuotaBasesFeatures()}</li>
+   * <li>{@link #addStringTemplateFeatures()}</li>
+   * <li>{@link #addAdministrationUtilities()}</li>
    * <li>{@link #addCommonUserBeans()}</li>
    * <li>{@link #addOrganisationFeatures()}</li>
    * <li>{@link #addSchedulerFeatures()}</li>
@@ -413,7 +418,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       // Exclusions
       applyManually(war -> war.deleteClass(StubbedAdministration.class));
       // Centralized features
-      addJdbcPersistenceFeatures();
+      addJpaPersistenceFeatures();
+      addQuotaBasesFeatures();
+      addStringTemplateFeatures();
       addAdministrationUtilities();
       addCommonUserBeans();
       addOrganisationFeatures();
@@ -473,6 +480,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addMavenDependencies("org.quartz-scheduler:quartz");
       addPackages(true, "com.silverpeas.scheduler");
     }
+    return this;
+  }
+
+  /**
+   * Add benchmark test features in web archive (war).
+   * @return the instance of the war builder with benchmark test features.
+   */
+  public WarBuilder4LibCore addBenchmarkTestFeatures() {
+    addMavenDependencies("com.carrotsearch:junit-benchmarks");
     return this;
   }
 

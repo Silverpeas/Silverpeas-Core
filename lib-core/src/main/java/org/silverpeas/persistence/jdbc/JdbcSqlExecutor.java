@@ -58,5 +58,13 @@ public interface JdbcSqlExecutor {
    * string (SQL) and an Object (parameters).
    * @throws java.sql.SQLException
    */
+  long executeModify(JdbcSqlQuery... modifySqlQueries) throws SQLException;
+
+  /**
+   * Modify query executor.
+   * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
+   * string (SQL) and an Object (parameters).
+   * @throws java.sql.SQLException
+   */
   long executeModify(List<JdbcSqlQuery> modifySqlQueries) throws SQLException;
 }

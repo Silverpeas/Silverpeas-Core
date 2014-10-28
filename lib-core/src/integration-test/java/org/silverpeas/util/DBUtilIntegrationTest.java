@@ -34,22 +34,16 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionProvider;
-import org.silverpeas.util.pool.ConnectionPool;
+import org.silverpeas.test.WarBuilder4LibCore;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -102,18 +96,8 @@ public class DBUtilIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    File[] libs = Maven.resolver()
-        .loadPomFromFile("pom.xml")
-        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-            "commons-codec:commons-codec", "com.carrotsearch:junit-benchmarks").withTransitivity()
-        .asFile();
-    return ShrinkWrap.create(WebArchive.class, "test.war").addClass(ServiceProvider.class)
-        .addClass(BeanContainer.class).addClass(CDIContainer.class).addClass(DBUtil.class)
-        .addClass(ConnectionPool.class).addClass(Transaction.class)
-        .addClass(TransactionProvider.class).addClass(StringUtil.class).addAsLibraries(libs).addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "services/org.silverpeas.util.BeanContainer")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-        .addAsWebInfResource("test-ds.xml", "test-ds.xml");
+    return WarBuilder4LibCore.onWar().addBenchmarkTestFeatures().addJdbcPersistenceFeatures()
+        .build();
   }
 
   @Test

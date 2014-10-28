@@ -24,7 +24,6 @@
 
 package org.silverpeas.persistence.jdbc;
 
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import java.sql.SQLException;
@@ -33,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
 
 /**
  * This class permits to build easily a SQL query with parameters.
@@ -79,7 +80,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery create(String sqlPart, Object... paramValue) {
-    return new JdbcSqlQuery().append(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -89,7 +90,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery create(String sqlPart, Collection<?> paramValue) {
-    return new JdbcSqlQuery().append(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -99,7 +100,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Object... paramValue) {
-    return new JdbcSqlQuery().append("select").append(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart("select").addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -109,7 +110,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Collection<?> paramValue) {
-    return new JdbcSqlQuery().append("select").append(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart("select").addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -118,7 +119,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createCountFor(String tableName) {
-    return new JdbcSqlQuery().append("select count(*) from").append(tableName);
+    return new JdbcSqlQuery().addSqlPart("select count(*) from").addSqlPart(tableName);
   }
 
   /**
@@ -127,7 +128,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createTable(String tableName) {
-    return new JdbcSqlQuery().append("create table").append(tableName).append(" (");
+    return new JdbcSqlQuery().addSqlPart("create table").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
@@ -136,7 +137,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createInsertFor(String tableName) {
-    return new JdbcSqlQuery().append("insert into").append(tableName).append(" (");
+    return new JdbcSqlQuery().addSqlPart("insert into").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
@@ -145,7 +146,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createUpdateFor(String tableName) {
-    return new JdbcSqlQuery().append("update ").append(tableName).append(" set");
+    return new JdbcSqlQuery().addSqlPart("update ").addSqlPart(tableName).addSqlPart(" set");
   }
 
   /**
@@ -154,7 +155,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createDeleteFor(String tableName) {
-    return new JdbcSqlQuery().append("delete from").append(tableName);
+    return new JdbcSqlQuery().addSqlPart("delete from").addSqlPart(tableName);
   }
 
   /**
@@ -163,7 +164,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createDropFor(String tableName) {
-    return new JdbcSqlQuery().append("drop table").append(tableName);
+    return new JdbcSqlQuery().addSqlPart("drop table").addSqlPart(tableName);
   }
 
 
@@ -198,7 +199,7 @@ public class JdbcSqlQuery {
         sqlQuery.charAt(sqlQuery.length() - 1) != '(') {
       sqlQuery.append(", ");
     }
-    return append(fieldName).append(definition);
+    return addSqlPart(fieldName).addSqlPart(definition);
   }
 
   /**
@@ -218,7 +219,7 @@ public class JdbcSqlQuery {
    * @return the instance of the given string builder that represents the SQL query.
    */
   public JdbcSqlQuery where(String sqlPart, Collection<?> paramValues) {
-    return append("where " + sqlPart, paramValues);
+    return addSqlPart("where " + sqlPart, paramValues);
   }
 
   /**
@@ -238,7 +239,7 @@ public class JdbcSqlQuery {
    * @return the instance of the given string builder that represents the SQL query.
    */
   public JdbcSqlQuery and(String sqlPart, Collection<?> paramValues) {
-    return append("and " + sqlPart, paramValues);
+    return addSqlPart("and " + sqlPart, paramValues);
   }
 
   /**
@@ -258,7 +259,7 @@ public class JdbcSqlQuery {
    * @return the instance of the given string builder that represents the SQL query.
    */
   public JdbcSqlQuery or(String sqlPart, Collection<?> paramValues) {
-    return append("or " + sqlPart, paramValues);
+    return addSqlPart("or " + sqlPart, paramValues);
   }
 
   /**
@@ -267,8 +268,8 @@ public class JdbcSqlQuery {
    * @param paramValue the value of parameters included into the given sqlPart.
    * @return the instance of the given string builder that represents the SQL query.
    */
-  public JdbcSqlQuery append(String sqlPart, Object... paramValue) {
-    return append(sqlPart, Arrays.asList(paramValue));
+  public JdbcSqlQuery addSqlPart(String sqlPart, Object... paramValue) {
+    return addSqlPart(sqlPart, Arrays.asList(paramValue));
   }
 
   /**
@@ -277,7 +278,7 @@ public class JdbcSqlQuery {
    * @param paramValues the value of parameters included into the given sqlPart.
    * @return the instance of the given string builder that represents the SQL query.
    */
-  public JdbcSqlQuery append(String sqlPart, Collection<?> paramValues) {
+  public JdbcSqlQuery addSqlPart(String sqlPart, Collection<?> paramValues) {
     allParameters.addAll(paramValues);
     if (sqlQuery.length() > 0) {
       char lastChar = sqlQuery.charAt(sqlQuery.length() - 1);
@@ -296,7 +297,7 @@ public class JdbcSqlQuery {
    */
   public JdbcSqlQuery in(Collection<?> parameters) {
     sqlQuery.append(" in");
-    appendListOfParameters(parameters, true);
+    addListOfParameters(parameters, true);
     return this;
   }
 
@@ -307,7 +308,7 @@ public class JdbcSqlQuery {
    */
   public JdbcSqlQuery in(Object... parameters) {
     sqlQuery.append(" in");
-    appendListOfParameters(Arrays.asList(parameters), true);
+    addListOfParameters(Arrays.asList(parameters), true);
     return this;
   }
 
@@ -317,7 +318,7 @@ public class JdbcSqlQuery {
    */
   private JdbcSqlQuery valuesForInsert() {
     sqlQuery.append(") values");
-    appendListOfParameters(allParameters, false);
+    addListOfParameters(allParameters, false);
     return this;
   }
 
@@ -330,7 +331,7 @@ public class JdbcSqlQuery {
     return this;
   }
 
-  private JdbcSqlQuery appendListOfParameters(Collection<?> parameters,
+  private JdbcSqlQuery addListOfParameters(Collection<?> parameters,
       final boolean addToParameters) {
     StringBuilder params = new StringBuilder();
     if (parameters != null) {
@@ -395,7 +396,7 @@ public class JdbcSqlQuery {
    */
   public <ROW_ENTITY> List<ROW_ENTITY> execute(SelectResultRowProcessor<ROW_ENTITY> rowProcess)
       throws SQLException {
-    return getExecutor().select(this, rowProcess);
+    return getJdbcSqlExecutor().select(this, rowProcess);
   }
 
   /**
@@ -426,12 +427,8 @@ public class JdbcSqlQuery {
   public long execute() throws SQLException {
     String sqlQuery = getSqlQuery();
     if (sqlQuery.startsWith("select count(*)")) {
-      return getExecutor().selectCount(this);
+      return getJdbcSqlExecutor().selectCount(this);
     }
-    return getExecutor().executeModify(Collections.singletonList(this));
-  }
-
-  private static JdbcSqlExecutor getExecutor() {
-    return ServiceProvider.getService(JdbcSqlExecutor.class);
+    return getJdbcSqlExecutor().executeModify(Collections.singletonList(this));
   }
 }

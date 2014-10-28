@@ -24,7 +24,6 @@
 
 package org.silverpeas.admin.domain;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -39,9 +38,6 @@ import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -66,8 +62,7 @@ public class DomainServiceProviderTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWar().addCommonBasicUtilities().addSilverpeasExceptionBases()
-        .addQuotaBasesFeatures().addStringTemplateFeatures().addAdministrationFeatures()
-        .testFocusedOn((warBuilder) -> {
+        .addAdministrationFeatures().testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.admin.domain");
         }).build();
   }

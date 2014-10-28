@@ -37,8 +37,6 @@ import org.silverpeas.util.StringUtil;
 import javax.inject.Singleton;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 @Singleton
@@ -48,11 +46,11 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   public void createDomainStorage(Domain domain) throws SQLDomainDAOException {
     String domainName = domain.getName();
     try {
-      List<JdbcSqlQuery> queries = new ArrayList<>();
+      JdbcSqlQueries queries = new JdbcSqlQueries();
       queries.add(generateUserTableCreateStatement(domainName));
       queries.add(generateGroupTableCreateStatement(domainName));
       queries.add(generateGroupUserRelTableCreateStatement(domainName));
-      JdbcSqlQueries.execute(queries);
+      queries.execute();
     } catch (Exception e) {
       throw new SQLDomainDAOException("SQLInternalDomainDAO.createDomainStorage",
           "admin.CANNOT_CREATE_DOMAIN_STORAGE", e);
@@ -119,11 +117,11 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   public void deleteDomainStorage(Domain domain) {
     String domainName = domain.getName();
     try {
-      List<JdbcSqlQuery> queries = new ArrayList<>();
+      JdbcSqlQueries queries = new JdbcSqlQueries();
       queries.add(generateUserTableDropStatement(domainName));
       queries.add(generateGroupTableDropStatement(domainName));
       queries.add(generateGroupUserRelTableDropStatement(domainName));
-      JdbcSqlQueries.execute(queries);
+      queries.execute();
     } catch (Exception e) {
       SilverTrace.error("admin", "SQLInternalDomainRepository.deleteDomainStorage",
           "admin.CANNOT_CREATE_DOMAIN_STORAGE", e);

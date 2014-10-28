@@ -186,9 +186,11 @@ public class TransactionTest extends RepositoryBasedTest {
       transaction.perform(() -> {
         jpaEntityServiceTest.save(createOperationContext("26"), person);
         jpaEntityServiceTest.flush();
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("ExpectedTransactionError");
       });
-    } catch (IllegalArgumentException e) {
+    } catch (TransactionRuntimeException e) {
+      assertThat(e.getMessage(),
+          is("java.lang.IllegalArgumentException: ExpectedTransactionError"));
       exceptionThrown = true;
     }
     assertThat(exceptionThrown, is(true));

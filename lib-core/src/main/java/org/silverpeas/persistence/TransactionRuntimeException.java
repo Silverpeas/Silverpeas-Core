@@ -22,29 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.persistence.jdbc;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-
-import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
+package org.silverpeas.persistence;
 
 /**
- * This class handles list of {@link JdbcSqlQuery} instance and provide a method execute to
- * perform each one.<br/>
- * As there is no sense that the collection handles other query than those of modification,
- * this collection is oriented to SQL query modifications.<br/>
- * The queries are executed into processes (transactional or not) without
- * handling the connection to the database.
  * @author Yohann Chastagnier
  */
-public class JdbcSqlQueries extends ArrayList<JdbcSqlQuery> {
+public class TransactionRuntimeException extends RuntimeException {
+  public TransactionRuntimeException() {
+    super();
+  }
 
-  /**
-   * Executes all the queries contained into the list.
-   * @throws SQLException
-   */
-  public long execute() throws SQLException {
-    return getJdbcSqlExecutor().executeModify(this);
+  public TransactionRuntimeException(final String message) {
+    super(message);
+  }
+
+  public TransactionRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public TransactionRuntimeException(final Throwable cause) {
+    super(cause);
   }
 }

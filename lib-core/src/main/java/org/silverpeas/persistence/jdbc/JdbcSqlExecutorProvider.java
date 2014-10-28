@@ -24,27 +24,30 @@
 
 package org.silverpeas.persistence.jdbc;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
+import org.silverpeas.util.ServiceProvider;
 
-import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * This class handles list of {@link JdbcSqlQuery} instance and provide a method execute to
- * perform each one.<br/>
- * As there is no sense that the collection handles other query than those of modification,
- * this collection is oriented to SQL query modifications.<br/>
- * The queries are executed into processes (transactional or not) without
- * handling the connection to the database.
+ * This class provides an implementation of {@link JdbcSqlExecutor} API.
  * @author Yohann Chastagnier
  */
-public class JdbcSqlQueries extends ArrayList<JdbcSqlQuery> {
+@Singleton
+public class JdbcSqlExecutorProvider {
+
+  @Inject
+  private JdbcSqlExecutor jdbcSqlExecutor;
+
+  private static JdbcSqlExecutorProvider getProvider() {
+    return ServiceProvider.getService(JdbcSqlExecutorProvider.class);
+  }
 
   /**
-   * Executes all the queries contained into the list.
-   * @throws SQLException
+   * Gets the current implementation if the {@link JdbcSqlExecutor} API.
+   * @return an instance of {@link JdbcSqlExecutor} API.
    */
-  public long execute() throws SQLException {
-    return getJdbcSqlExecutor().executeModify(this);
+  public static JdbcSqlExecutor getJdbcSqlExecutor() {
+    return getProvider().jdbcSqlExecutor;
   }
 }
