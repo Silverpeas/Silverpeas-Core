@@ -24,10 +24,6 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import com.stratelia.webactiv.beans.admin.Admin;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
@@ -42,8 +38,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 
 public class CacheManagerUsersGroups extends CacheManager {

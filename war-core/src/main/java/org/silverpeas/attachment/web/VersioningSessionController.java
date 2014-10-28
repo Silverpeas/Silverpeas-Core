@@ -20,9 +20,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.stratelia.webactiv.beans.admin.Admin;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -34,8 +31,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -43,6 +38,10 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 
 import java.rmi.RemoteException;
 import java.util.Collections;

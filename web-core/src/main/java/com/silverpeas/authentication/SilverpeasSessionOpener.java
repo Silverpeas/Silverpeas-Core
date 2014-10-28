@@ -23,7 +23,6 @@ package com.silverpeas.authentication;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
-import com.stratelia.webactiv.beans.admin.Admin;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
