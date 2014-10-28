@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Empty implementation for integration tests.
@@ -75,6 +76,23 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
     return fatalMessages;
   }
 
+  private void logAsInfoForTest(List<String> messages) {
+    final String prefix;
+    if (debugMessages == messages) {
+      prefix = "[-> DEBUG]";
+    } else if (warnMessages == messages) {
+      prefix = "[-> WARNING]";
+    } else if (errorMessages == messages) {
+      prefix = "[-> ERROR]";
+    } else if (fatalMessages == messages) {
+      prefix = "[-> FATAL]";
+    } else {
+      prefix = "[-> INFO]";
+    }
+    Logger.getLogger(this.getClass().getName())
+        .info(prefix + " - " + messages.get(messages.size() - 1));
+  }
+
   private static String join(String... parts) {
     StringBuilder sB = new StringBuilder();
     for (String part : parts) {
@@ -111,6 +129,7 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
     debugMessages.add(StringUtil.join(
         new String[]{module, classe, message, extraInfos, ((ex != null) ? ex.getMessage() : null)},
         '@'));
+    logAsInfoForTest(debugMessages);
   }
 
   @Override
@@ -135,6 +154,7 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
       final String extraInfos, final Throwable ex) {
     infoMessages
         .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
+    logAsInfoForTest(infoMessages);
   }
 
   @Override
@@ -159,6 +179,7 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
       final String extraInfos, final Throwable ex) {
     warnMessages
         .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
+    logAsInfoForTest(warnMessages);
   }
 
   @Override
@@ -183,6 +204,7 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
       final String extraInfos, final Throwable ex) {
     errorMessages
         .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
+    logAsInfoForTest(errorMessages);
   }
 
   @Override
@@ -207,6 +229,7 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
       final String extraInfos, final Throwable ex) {
     fatalMessages
         .add(join(module, classe, messageID, extraInfos, ((ex != null) ? ex.getMessage() : null)));
+    logAsInfoForTest(fatalMessages);
   }
 
   @Override

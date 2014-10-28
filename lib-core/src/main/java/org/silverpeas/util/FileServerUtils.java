@@ -20,12 +20,9 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.URLUtils;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.net.URI;
 import java.net.URISyntaxException;

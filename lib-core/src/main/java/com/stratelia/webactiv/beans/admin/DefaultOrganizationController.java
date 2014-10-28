@@ -63,7 +63,7 @@ public class DefaultOrganizationController implements OrganizationController {
   private static final long serialVersionUID = 3435241972671610107L;
 
   @Inject
-  private Admin admin;
+  private Administration admin;
 
   /**
    * Constructor declaration
@@ -1277,7 +1277,7 @@ public class DefaultOrganizationController implements OrganizationController {
     return items;
   }
 
-  private Admin getAdminService() {
+  private Administration getAdminService() {
     return admin;
   }
 }

@@ -391,7 +391,6 @@
         <includes>
           <include>**/index/**/*</include>
           <include>index/kmelia*/**/*.*</include>
-          <include>org/silverpeas/util/*.*</include>
           <include>**/*.odp</include>
           <include>**/*.odt</include>
           <include>**/*.doc</include>
@@ -416,7 +415,6 @@
         <excludes>
           <exclude>index/kmelia*/**/*.*</exclude>
           <exclude>**/index/**/*</exclude>
-          <exclude>org/silverpeas/util/*.*</exclude>
           <exclude>**/*.odp</exclude>
           <exclude>**/*.odt</exclude>
           <exclude>**/*.doc</exclude>

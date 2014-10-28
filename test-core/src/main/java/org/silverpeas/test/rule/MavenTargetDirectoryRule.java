@@ -29,13 +29,20 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static org.apache.commons.io.FileUtils.getFile;
+import static org.junit.Assert.fail;
 
 /**
  * @author Yohann Chastagnier
  */
 public class MavenTargetDirectoryRule implements TestRule {
+
+
+  private Properties mavenProperties;
 
   private Object testInstance;
 
@@ -44,19 +51,15 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @return the target directory of the test.
    */
   public File getBuildDirFile() {
-    if (testInstance == null) {
-      return null;
-    }
-    File targetDir = new File(
-        testInstance.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
-    while (targetDir != null && (!targetDir.getName().equalsIgnoreCase("target") &&
-        !targetDir.getName().equalsIgnoreCase("content"))) {
-      targetDir = targetDir.getParentFile();
-    }
-    if (targetDir != null && targetDir.getName().equalsIgnoreCase("content")) {
-      targetDir = getFile(targetDir.getParentFile(), "target");
-    }
-    return targetDir;
+    return getPath("project.build.directory");
+  }
+
+  /**
+   * Gets the resource path of integration test execution context.
+   * @return the resource path.
+   */
+  public File getIntegrationTestResourceDirFile() {
+    return getPath("int-test-resources.directory");
   }
 
   public MavenTargetDirectoryRule(Object testInstance) {
@@ -71,5 +74,36 @@ public class MavenTargetDirectoryRule implements TestRule {
         base.evaluate();
       }
     };
+  }
+
+  /**
+   * Gets a {@link File} instance according to the given proeprty key.
+   * @param key the key from which the path value will be retrieved.
+   * @return the aimed {@link File} instance.
+   */
+  private File getPath(String key) {
+    return new File(getMavenProperty(key));
+  }
+
+  /**
+   * Gets a property from the maven.properties file.
+   * @param key the key of the property.
+   * @return the value related to the given key.
+   */
+  private String getMavenProperty(String key) {
+    if (mavenProperties == null) {
+      mavenProperties = new Properties();
+      try {
+        mavenProperties
+            .load(testInstance.getClass().getClassLoader().getResourceAsStream("maven.properties"));
+      } catch (IOException ex) {
+        Logger.getLogger(testInstance.getClass().getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    String mavenPropertyValue = mavenProperties.getProperty(key, null);
+    if (mavenPropertyValue == null) {
+      fail("The maven.properties file from resource tests is not complete...");
+    }
+    return mavenPropertyValue;
   }
 }

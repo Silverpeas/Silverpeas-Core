@@ -32,6 +32,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opends.messages.Message;
@@ -57,6 +58,7 @@ import org.silverpeas.authentication.exception.AuthenticationBadCredentialExcept
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.profile.UserReference;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
 import org.silverpeas.util.ArrayUtil;
@@ -69,21 +71,19 @@ import org.silverpeas.util.i18n.Translation;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
 public class LDAPDriverTest {
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -103,16 +103,8 @@ public class LDAPDriverTest {
                   UserReference.class, I18NBean.class, Translation.class,
                   TokenRuntimeException.class);
           warBuilder.addAsResource("org/silverpeas/domains/domainLDAP.properties");
-          warBuilder.addAsResource("maven.properties");
         }).build();
   }
-
-  private static final String BASE_PATH = getLDAPServerPath();
-  private static final String LDIF_CONFIG_FILE = BASE_PATH + "/opendj/config/config.ldif";
-  private static final String SERVER_HOME = BASE_PATH + "/opendj";
-  private static final String LDIFF_FILE = BASE_PATH + "/opendj/silverpeas-ldap.ldif";
-  private static final String BACKEND_ID = "silverpeas";
-  private static final String BACKEND_DN = "dc=silverpeas,dc=org";
 
   private String connectionId;
   private LDAPDriver driver = new LDAPDriver();
@@ -123,6 +115,13 @@ public class LDAPDriverTest {
   @Before
   @RunAsClient
   public void prepareConnection() throws Exception {
+    final String BASE_PATH = getLDAPServerPath();
+    final String LDIF_CONFIG_FILE = BASE_PATH + "/opendj/config/config.ldif";
+    final String SERVER_HOME = BASE_PATH + "/opendj";
+    final String LDIFF_FILE = BASE_PATH + "/opendj/silverpeas-ldap.ldif";
+    final String BACKEND_ID = "silverpeas";
+    final String BACKEND_DN = "dc=silverpeas,dc=org";
+
     try {
       startLdapServer(SERVER_HOME, LDIF_CONFIG_FILE);
       loadLdif(LDIFF_FILE, BACKEND_ID, DN.decode(BACKEND_DN));
@@ -135,20 +134,8 @@ public class LDAPDriverTest {
   }
 
 
-  private static String getLDAPServerPath() {
-    Properties props = new Properties();
-    try {
-      props.load(LDAPDriverTest.class.getClassLoader().getResourceAsStream("maven.properties"));
-    } catch (IOException ex) {
-      Logger.getLogger(LDAPDriverTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    File targetDir = new File(props.getProperty("int-test.dir", "/home/user/"));
-    try {
-      return targetDir.getCanonicalPath();
-    } catch (IOException e) {
-      fail();
-    }
-    return "";
+  private String getLDAPServerPath() {
+    return mavenTargetDirectoryRule.getIntegrationTestResourceDirFile().getAbsolutePath();
   }
 
 

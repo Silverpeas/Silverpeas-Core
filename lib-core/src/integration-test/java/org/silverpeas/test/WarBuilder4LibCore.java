@@ -32,6 +32,8 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.domains.DriverSettings;
+import com.stratelia.silverpeas.domains.sqldriver.SQLDriver;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
@@ -89,6 +91,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     warBuilder.addBundleBaseFeatures();
     warBuilder
         .addClasses(SystemWrapper.class, SystemWrapperProvider.class, TestSystemWrapper.class);
+    warBuilder.addAsResource("maven.properties");
     return warBuilder;
   }
 
@@ -322,7 +325,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(Recover.class, AdminException.class);
       addPackages(true, "org.silverpeas.util.i18n");
       // Exclusions
-      applyManually(war -> war.deleteClass(Admin.class));
+      applyManually(war -> war.deleteClass("com.stratelia.webactiv.beans.admin.Admin"));
     }
     return this;
   }
@@ -387,12 +390,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addAdministrationFeatures() {
-    if (!contains(Admin.class)) {
-      addClasses(Admin.class, ScheduledDBReset.class);
+    if (!contains(Administration.class)) {
+      addClasses(Administration.class, ScheduledDBReset.class);
       addClasses(Recover.class);
+      addClasses(DriverSettings.class);
       addPackages(true, "org.silverpeas.util.i18n");
       addPackages(true, "com.silverpeas.admin.components");
       addPackages(true, "com.silverpeas.admin.spaces");
+      addPackages(true, "com.silverpeas.domains");
+      addPackages(true, "com.stratelia.silverpeas.domains.sqldriver");
       addPackages(true, "com.stratelia.webactiv.beans.admin");
       addPackages(false, "org.silverpeas.notification");
       addPackages(true, "org.silverpeas.admin.component.notification");

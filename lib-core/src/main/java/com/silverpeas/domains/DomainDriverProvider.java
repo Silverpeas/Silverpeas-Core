@@ -35,10 +35,16 @@ public class DomainDriverProvider {
   private DomainDriverProvider() {
   }
 
+  @SuppressWarnings("unchecked")
   private static DomainDriver loadDomainDriver(String name) throws ClassNotFoundException {
-    return ServiceProvider.getService(name);
+    try {
+      return ServiceProvider.getService(name);
+    } catch (IllegalStateException e) {
+      return ServiceProvider.getService((Class<? extends DomainDriver>) Class.forName(name));
+    }
   }
 
+  @SuppressWarnings("unchecked")
   public static DomainDriver getDriver(String name)
       throws IllegalAccessException, InstantiationException, ClassNotFoundException {
 

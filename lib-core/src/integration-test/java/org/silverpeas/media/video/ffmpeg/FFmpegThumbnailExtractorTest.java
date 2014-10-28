@@ -5,6 +5,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.exec.CollectingLogOutputStream;
@@ -13,6 +14,7 @@ import org.silverpeas.exec.ExternalExecutionException;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
 import org.silverpeas.media.video.VideoThumbnailExtractorProvider;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
 import org.silverpeas.util.UnitUtil;
@@ -22,18 +24,16 @@ import org.silverpeas.util.time.TimeUnit;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
 public class FFmpegThumbnailExtractorTest {
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   private VideoThumbnailExtractor videoThumbnailExtractor;
 
@@ -41,11 +41,11 @@ public class FFmpegThumbnailExtractorTest {
   @Inject
   private FFmpegToolManager ffmpegToolManager;
 
-  private static final String BASE_PATH = getIntegrationTestResourcePath();
+  private String BASE_PATH;
 
-  private static final File mp4File = getDocumentNamed(BASE_PATH + "/video.mp4");
-  private static final File flvFile = getDocumentNamed(BASE_PATH + "/video.flv");
-  private static final File movFile = getDocumentNamed(BASE_PATH + "/video.mov");
+  private File mp4File;
+  private File flvFile;
+  private File movFile;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -56,7 +56,6 @@ public class FFmpegThumbnailExtractorTest {
           warBuilder.addClasses(ExternalExecution.class, MetadataExtractor.class, MetaData.class,
               ExternalExecutionException.class, CollectingLogOutputStream.class, UnitUtil.class,
               TimeUnit.class, TimeConversionBoardKey.class, TimeData.class);
-          warBuilder.addAsResource("maven.properties");
           warBuilder.addAsResource("video.mp4");
           warBuilder.addAsResource("video.flv");
           warBuilder.addAsResource("video.mov");
@@ -64,26 +63,18 @@ public class FFmpegThumbnailExtractorTest {
   }
 
 
-  private static String getIntegrationTestResourcePath() {
-    Properties props = new Properties();
-    try {
-      props.load(FFmpegThumbnailExtractorTest.class.getClassLoader()
-          .getResourceAsStream("maven.properties"));
-    } catch (IOException ex) {
-      Logger.getLogger(FFmpegThumbnailExtractorTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    File targetDir = new File(props.getProperty("int-test.dir", "/home/user/"));
-    try {
-      return targetDir.getCanonicalPath();
-    } catch (IOException e) {
-      fail();
-    }
-    return "";
+  private String getIntegrationTestResourcePath() {
+    return mavenTargetDirectoryRule.getIntegrationTestResourceDirFile().getAbsolutePath();
   }
 
 
   @Before
   public void setUp() throws Exception {
+    BASE_PATH = getIntegrationTestResourcePath();
+    mp4File = getDocumentNamed(BASE_PATH + "/video.mp4");
+    flvFile = getDocumentNamed(BASE_PATH + "/video.flv");
+    movFile = getDocumentNamed(BASE_PATH + "/video.mov");
+
     videoThumbnailExtractor = VideoThumbnailExtractorProvider.getVideoThumbnailExtractor();
     cleanThumbnails();
   }
@@ -93,7 +84,7 @@ public class FFmpegThumbnailExtractorTest {
     cleanThumbnails();
   }
 
-  private static void cleanThumbnails() {
+  private void cleanThumbnails() {
     for (int i = 0; i < 5; i++) {
       new File(mp4File.getParentFile(), "img" + i + ".jpg").delete();
     }

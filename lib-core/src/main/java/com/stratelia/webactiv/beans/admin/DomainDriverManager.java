@@ -940,15 +940,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Create domain
       getOrganization().domain.createDomain(dr);
-      this.commit();
 
       return idAsString(dr.id);
     } catch (AdminException e) {
-      try {
-        rollback();
-      } catch (Exception e1) {
-        SilverTrace.error("admin", "DomainDriverManager.createDomain", "root.EX_ERR_ROLLBACK", e1);
-      }
       throw new AdminException("DomainDriverManager.createDomain", SilverpeasException.ERROR,
               "admin.EX_ERR_ADD_DOMAIN", "domain name: '" + theDomain.getName() + "'", e);
     } finally {
@@ -975,16 +969,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
       if (domainDriverInstances.get(theDomain.getId()) != null) {
         domainDriverInstances.remove(theDomain.getId());
       }
-      this.commit();
 
       return theDomain.getId();
     } catch (AdminException e) {
-      try {
-        this.rollback();
-      } catch (Exception e1) {
-        SilverTrace.error("admin", "DomainDriverManager.updateDomain",
-                "root.EX_ERR_ROLLBACK", e1);
-      }
       throw new AdminException("DomainDriverManager.updateDomain",
               SilverpeasException.ERROR, "admin.EX_ERR_ADD_DOMAIN",
               "domain name: '" + theDomain.getName() + "'", e);
@@ -1002,16 +989,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
       if (domainDriverInstances.get(domainId) != null) {
         domainDriverInstances.remove(domainId);
       }
-      this.commit();
 
       return domainId;
     } catch (AdminException e) {
-      try {
-        this.rollback();
-      } catch (Exception e1) {
-        SilverTrace.error("admin", "DomainDriverManager.createDomain",
-                "root.EX_ERR_ROLLBACK", e1);
-      }
       throw new AdminException("DomainDriverManager.createDomain",
               SilverpeasException.ERROR, "admin.EX_ERR_ADD_DOMAIN", "domain id: '" + domainId + "'",
               e);

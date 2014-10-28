@@ -71,6 +71,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -82,8 +83,9 @@ import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
  * The class Admin is the main class of the Administrator.
  * <br/> The role of the administrator is to create and maintain spaces.
  */
+@Transactional(Transactional.TxType.SUPPORTS)
 @Singleton
-public class Admin implements Administration {
+class Admin implements Administration {
 
   /**
    * Identifier of the administration component in Silverpeas. It identifies any administrative tool
@@ -163,7 +165,7 @@ public class Admin implements Administration {
     componentInstanciator = new Instanciateur();
   }
 
-  private Admin() {
+  protected Admin() {
     // Hidden constructor
   }
 
@@ -3322,6 +3324,7 @@ public class Admin implements Administration {
     }
   }
 
+  @Transactional
   @Override
   public String addDomain(Domain theDomain) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
@@ -3342,6 +3345,7 @@ public class Admin implements Administration {
     }
   }
 
+  @Transactional
   @Override
   public String updateDomain(Domain domain) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
@@ -3355,6 +3359,7 @@ public class Admin implements Administration {
     }
   }
 
+  @Transactional
   @Override
   public String removeDomain(String domainId) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
