@@ -23,18 +23,19 @@ package org.silverpeas.admin.domain.repository;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
 import com.stratelia.webactiv.beans.admin.Domain;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.lang.SystemWrapperProvider;
 
@@ -54,6 +55,9 @@ import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.createCountFor;
  */
 @RunWith(Arquillian.class)
 public class SQLInternalDomainRepositoryTest extends DataSetTest {
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Inject
   private SQLDomainRepository dao;
@@ -106,7 +110,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
 
   @Before
   public void setup() throws Exception {
-    silverpeasHome = FileUtils.getFile(targetDir(), "SILVERPEAS_HOME");
+    silverpeasHome = getFile(mavenTargetDirectoryRule.getBuildDirFile(), "SILVERPEAS_HOME");
     SystemWrapperProvider.getSystem().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
   }
 
