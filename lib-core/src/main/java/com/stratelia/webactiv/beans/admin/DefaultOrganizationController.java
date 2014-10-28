@@ -28,13 +28,14 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -44,7 +44,7 @@ import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.core.IdentifiableResource;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
@@ -424,8 +424,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addOrganisationFeatures() {
-    if (!contains(OrganisationController.class)) {
-      addClasses(OrganisationController.class);
+    if (!contains(OrganizationController.class)) {
+      addClasses(OrganizationController.class);
       addPackages(true, "com.stratelia.webactiv.organization");
       addPackages(true, "com.stratelia.webactiv.persistence");
       addClasses(Schema.class, SchemaPool.class);

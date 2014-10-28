@@ -29,8 +29,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
@@ -582,7 +582,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
     if (isAnonymousUserExist()) {
-      anonymousUser = OrganisationControllerProvider.getOrganisationController()
+      anonymousUser = OrganizationControllerProvider.getOrganisationController()
           .getUserDetail(getAnonymousUserId());
     }
     return anonymousUser;

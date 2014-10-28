@@ -68,23 +68,6 @@ public abstract class DataSetTest {
   protected abstract Operation getDbSetupOperations();
 
   /**
-   * Gets the target directory of the test.
-   * @return the target directory of the test.
-   */
-  protected File targetDir() {
-    File targetDir =
-        new File(getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
-    while (targetDir != null && (!targetDir.getName().equalsIgnoreCase("target") &&
-        !targetDir.getName().equalsIgnoreCase("content"))) {
-      targetDir = targetDir.getParentFile();
-    }
-    if (targetDir != null && targetDir.getName().equalsIgnoreCase("content")) {
-      targetDir = getFile(targetDir.getParentFile(), "target");
-    }
-    return targetDir;
-  }
-
-  /**
    * Gets the database connection.
    * @return the database connection.
    * @throws java.sql.SQLException

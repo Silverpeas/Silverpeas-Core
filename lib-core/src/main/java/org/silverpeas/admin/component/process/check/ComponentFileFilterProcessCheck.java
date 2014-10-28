@@ -50,7 +50,7 @@ import java.util.Set;
 public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
   @Inject
-  private OrganisationController organizationController;
+  private OrganizationController organizationController;
 
   /*
    * (non-Javadoc)
