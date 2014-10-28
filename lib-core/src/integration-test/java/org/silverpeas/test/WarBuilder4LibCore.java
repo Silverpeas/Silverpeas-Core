@@ -33,7 +33,6 @@ import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
-import com.stratelia.silverpeas.domains.sqldriver.SQLDriver;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
@@ -46,6 +45,7 @@ import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.core.IdentifiableResource;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
@@ -300,6 +300,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addCacheFeatures();
     addCommonUserBeans();
     if (!contains(AbstractJpaEntity.class)) {
+      addClasses(ResourceIdentifier.class);
       addPackages(true, "org.silverpeas.admin.user.constant");
       addPackages(true, "org.silverpeas.persistence.model");
       addPackages(true, "org.silverpeas.persistence.repository");
