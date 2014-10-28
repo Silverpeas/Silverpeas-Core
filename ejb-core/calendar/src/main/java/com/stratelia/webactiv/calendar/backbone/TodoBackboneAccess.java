@@ -38,9 +38,13 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.ejb.EJB;
+import javax.inject.Inject;
+
 public class TodoBackboneAccess {
 
-  private static SilverpeasCalendar calendarBm = null;
+  @Inject
+  private SilverpeasCalendar calendarBm;
 
   private static TodoDetail todoHeaderToDetail(final ToDoHeader header) {
     TodoDetail detail = new TodoDetail();
@@ -75,8 +79,7 @@ public class TodoBackboneAccess {
     return head;
   }
 
-  public TodoBackboneAccess() {
-    SilverTrace.info("calendar", "TodoBackboneAcess.TodoBackboneAccess()", "calendar.MSG_NEW_BB");
+  protected TodoBackboneAccess() {
   }
 
   public String addEntry(TodoDetail todo) {

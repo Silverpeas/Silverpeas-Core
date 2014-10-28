@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -51,7 +52,9 @@ import org.silverpeas.util.exception.UtilException;
 public class CalendarEJB implements SilverpeasCalendar {
 
   private static final long serialVersionUID = -7683983529322401293L;
-  private final JournalDAO journalDAO = new JournalDAO();
+
+  @Inject
+  private JournalDAO journalDAO;
 
   // private methods to use in all this ejb methods
   private Connection getConnection() {

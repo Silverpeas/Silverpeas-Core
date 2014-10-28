@@ -43,6 +43,7 @@ import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -57,6 +58,9 @@ import java.util.stream.Collectors;
 @Singleton
 public class TaskManagerImpl extends AbstractTaskManager {
   static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<>();
+
+  @Inject
+  private TodoBackboneAccess todoAccessor;
 
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
@@ -86,14 +90,13 @@ public class TaskManagerImpl extends AbstractTaskManager {
           "Undefined delegator for new task : " + todo.getName());
     }
 
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    Vector<Attendee> attendees = new Vector<>();
+    List<Attendee> attendees = new ArrayList<>();
     if (task.getUser() != null) {
       // add todo to specified user
       attendees.add(new Attendee(task.getUser().getUserId()));
       todo.setAttendees(attendees);
       todo.setExternalId(getExternalId(task));
-      todoBBA.addEntry(todo);
+      todoAccessor.addEntry(todo);
     } else {
       List<User> users;
       if (StringUtil.isDefined(task.getGroupId())) {
@@ -108,7 +111,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         attendees.add(new Attendee(user.getUserId()));
         todo.setAttendees(attendees);
         todo.setExternalId(getExternalId(task, user.getUserId()));
-        todoBBA.addEntry(todo);
+        todoAccessor.addEntry(todo);
       }
     }
   }
@@ -128,10 +131,8 @@ public class TaskManagerImpl extends AbstractTaskManager {
           "workflowEngine.EX_GET_COMPONENT_INST", e);
     }
 
-    TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-
     if (task.getUser() != null) {
-      todoBBA.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
+      todoAccessor.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
           getExternalId(task));
     } else {
       String role = task.getUserRoleName();
@@ -139,7 +140,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
       for (User userInRole : usersInRole) {
         TaskImpl taskImpl =
             new TaskImpl(userInRole, role, task.getProcessInstance(), task.getState());
-        todoBBA.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
+        todoAccessor.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
             getExternalId(taskImpl, userInRole.getUserId()));
       }
     }

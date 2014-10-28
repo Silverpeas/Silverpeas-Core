@@ -46,6 +46,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -67,6 +68,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   private static String COLUMNS =
       " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
+
+  @Inject
+  private TodoBackboneAccess todoAccessor;
 
   @Override
   public ProcessInstance[] getProcessInstances(String peasId, User user, String role)
@@ -447,8 +451,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     // delete associated todos
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
         "root.MSG_GEN_PARAM_VALUE", "Delete associated todos");
-    TodoBackboneAccess tbba = new TodoBackboneAccess();
-    tbba.removeEntriesFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId() + "##%");
+    todoAccessor
+        .removeEntriesFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId() + "##%");
 
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
         "root.MSG_GEN_EXIT_METHOD");

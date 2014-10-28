@@ -142,7 +142,6 @@ public class SocialInformationEvent extends AbstractSocialInformation {
   /**
    * Indicates whether some other SocialInformation date is befor or after the date of this one.
    *
-   * @param obj the reference object with which to compare.
    * @return int
    */
   @Override
