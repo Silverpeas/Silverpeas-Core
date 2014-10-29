@@ -135,7 +135,7 @@ public class LDAPDriverTest {
 
 
   private String getLDAPServerPath() {
-    return mavenTargetDirectoryRule.getIntegrationTestResourceDirFile().getAbsolutePath();
+    return mavenTargetDirectoryRule.getResourceTestDirFile().getAbsolutePath();
   }
 
 

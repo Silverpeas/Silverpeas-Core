@@ -55,11 +55,11 @@ public class MavenTargetDirectoryRule implements TestRule {
   }
 
   /**
-   * Gets the resource path of integration test execution context.
+   * Gets the resource path of test execution context.
    * @return the resource path.
    */
-  public File getIntegrationTestResourceDirFile() {
-    return getPath("int-test-resources.directory");
+  public File getResourceTestDirFile() {
+    return getPath("test-resources.directory");
   }
 
   public MavenTargetDirectoryRule(Object testInstance) {

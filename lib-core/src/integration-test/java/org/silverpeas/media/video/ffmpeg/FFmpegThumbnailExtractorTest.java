@@ -64,7 +64,7 @@ public class FFmpegThumbnailExtractorTest {
 
 
   private String getIntegrationTestResourcePath() {
-    return mavenTargetDirectoryRule.getIntegrationTestResourceDirFile().getAbsolutePath();
+    return mavenTargetDirectoryRule.getResourceTestDirFile().getAbsolutePath();
   }
 
 
