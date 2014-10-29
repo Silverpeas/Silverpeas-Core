@@ -23,7 +23,7 @@
  */
 package org.silverpeas.admin.domain.quota;
 
-import com.stratelia.webactiv.beans.admin.DomainDriverManagerFactory;
+import com.stratelia.webactiv.beans.admin.DomainDriverManagerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.service.AbstractQuotaService;
 import org.silverpeas.util.ResourceLocator;
@@ -46,7 +46,7 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
   @Override
   public long getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
     try {
-      return DomainDriverManagerFactory.getCurrentDomainDriverManager().getAllUsers(
+      return DomainDriverManagerProvider.getCurrentDomainDriverManager().getAllUsers(
           key.getResourceId()).length;
     } catch (final Exception e) {
       throw new QuotaException(e);

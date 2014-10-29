@@ -95,10 +95,21 @@ public class SQLDomainServiceTest extends DataSetTest {
               "description varchar(400), propfilename varchar(100) not NULL, " +
               "classname varchar(100) not NULL, authenticationserver varchar(100) not NULL, " +
               "thetimestamp varchar(100) not NULL, silverpeasserverurl varchar(400) not NULL )",
+          "CREATE TABLE ST_Space (id int NOT NULL, domainFatherId int, " +
+              "name varchar(100) NOT NULL," +
+              " description varchar(400), createdBy int, firstPageType int NOT NULL, " +
+              "firstPageExtraParam	varchar(400), orderNum int DEFAULT (0) NOT NULL, " +
+              "createTime varchar(20), updateTime varchar(20), removeTime varchar(20), " +
+              "spaceStatus char(1), updatedBy int, removedBy int, lang char(2), " +
+              "isInheritanceBlocked	int	 default(0) NOT NULL, look varchar(50), " +
+              "displaySpaceFirst smallint, isPersonal smallint)",
+          "CREATE TABLE ST_SpaceI18N (id int NOT NULL, spaceId int NOT NULL, " +
+              "lang char(2) NOT NULL, name varchar(100)	NOT NULL, description varchar(400))",
           "CREATE TABLE IF NOT EXISTS uniqueId ( maxId INT NOT NULL, " +
               "tableName VARCHAR(100) NOT NULL )");
-  public static final Operation DROP_ALL =
-      Operations.sql("DROP TABLE IF EXISTS st_domain", "DROP TABLE IF EXISTS uniqueId");
+  public static final Operation DROP_ALL = Operations
+      .sql("DROP TABLE IF EXISTS st_domain", "DROP TABLE IF EXISTS ST_Space",
+          "DROP TABLE IF EXISTS ST_SpaceI18N", "DROP TABLE IF EXISTS uniqueId");
   public static final Operation DEFAULT_DOMAIN_SET_UP = Operations.insertInto("st_domain")
       .columns("id", " name", " description", " propfilename", " classname",
           " authenticationserver", " thetimestamp", " silverpeasserverurl")

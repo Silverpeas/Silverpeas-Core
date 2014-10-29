@@ -211,6 +211,12 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
       addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
+      addAsResource("org/silverpeas/util/i18n.properties");
+      addAsResource("org/silverpeas/util/multilang/i18n_fr.properties");
+      addAsResource("org/silverpeas/util/multilang/i18n_en.properties");
+      addAsResource("org/silverpeas/util/multilang/util.properties");
+      addAsResource("org/silverpeas/util/multilang/util_fr.properties");
+      addAsResource("org/silverpeas/util/multilang/util_en.properties");
     }
     return this;
   }

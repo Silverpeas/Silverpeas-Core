@@ -24,10 +24,15 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.util.ServiceProvider;
+
+import javax.inject.Singleton;
+
 /**
- * Factory to provides a DomainDriverManager per thread using ThreadLocal.
+ * Provider that provides a DomainDriverManager per thread using ThreadLocal.
  */
-public class DomainDriverManagerFactory {
+@Singleton
+public class DomainDriverManagerProvider {
   private ThreadLocal<DomainDriverManager> domainDriverManagerRef =
       new ThreadLocal<DomainDriverManager>() {
     @Override
@@ -35,21 +40,20 @@ public class DomainDriverManagerFactory {
       return new DomainDriverManager();
     }
   };
-  private static final DomainDriverManagerFactory instance = new DomainDriverManagerFactory();
 
-  public static DomainDriverManagerFactory getFactory() {
-    return instance;
+  private static DomainDriverManagerProvider getProvider() {
+    return ServiceProvider.getService(DomainDriverManagerProvider.class);
   }
 
-  public DomainDriverManager getDomainDriverManager() {
-    return domainDriverManagerRef.get();
+  public static DomainDriverManager getDomainDriverManager() {
+    return getProvider().domainDriverManagerRef.get();
   }
 
   public static DomainDriverManager getCurrentDomainDriverManager() {
-    return getFactory().getDomainDriverManager();
+    return getProvider().getDomainDriverManager();
   }
 
   // Don't let outsiders create new factories directly
-  private DomainDriverManagerFactory() {
+  private DomainDriverManagerProvider() {
   }
 }
