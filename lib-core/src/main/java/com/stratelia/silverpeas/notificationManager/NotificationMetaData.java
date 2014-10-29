@@ -24,6 +24,14 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
+import com.silverpeas.usernotification.model.NotificationResourceData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,14 +40,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.silverpeas.usernotification.model.NotificationResourceData;
-import org.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class NotificationMetaData implements java.io.Serializable {
 
@@ -428,7 +428,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   /**
-   * @param externalAddress the externalAddress to set
+   * @param externalRecipients the externalAddress to set
    */
   public void setExternalRecipients(Collection<ExternalRecipient> externalRecipients) {
     if (externalRecipients != null) {
