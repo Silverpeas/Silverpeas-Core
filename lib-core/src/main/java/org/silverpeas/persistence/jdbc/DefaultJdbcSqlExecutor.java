@@ -72,7 +72,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
 
   @Override
   public <ROW_ENTITY> List<ROW_ENTITY> select(JdbcSqlQuery selectQueryBuilder,
-      SelectResultRowProcessor<ROW_ENTITY> rowProcess) throws SQLException {
+      SelectResultRowProcess<ROW_ENTITY> process) throws SQLException {
     try (Connection con = DBUtil.openConnection()) {
       try (PreparedStatement st = con.prepareStatement(selectQueryBuilder.getSqlQuery())) {
         setParameters(st, selectQueryBuilder.getParameters());
@@ -80,10 +80,11 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
           List<ROW_ENTITY> entities = new ArrayList<>();
           int i = 0;
           while (rs.next()) {
-            if (rowProcess.getLimit() > 0 && entities.size() >= rowProcess.getLimit()) {
+            int resultLimit = selectQueryBuilder.getConfiguration().getResultLimit();
+            if (resultLimit > 0 && entities.size() >= resultLimit) {
               break;
             }
-            ROW_ENTITY entity = rowProcess.currentRow(new ResultSetWrapper(rs, i));
+            ROW_ENTITY entity = process.currentRow(new ResultSetWrapper(rs, i));
             if (entity != null) {
               entities.add(entity);
             }

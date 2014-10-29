@@ -30,21 +30,7 @@ import java.sql.SQLException;
  * Result Set Row Processor
  * @param <ROW_ENTITY>
  */
-public abstract class SelectResultRowProcessor<ROW_ENTITY> {
-
-  private final int limit;
-
-  public SelectResultRowProcessor() {
-    this(0);
-  }
-
-  public SelectResultRowProcessor(int limit) {
-    this.limit = limit;
-  }
-
-  public int getLimit() {
-    return limit;
-  }
-
-  protected abstract ROW_ENTITY currentRow(final ResultSetWrapper row) throws SQLException;
+@FunctionalInterface
+public interface SelectResultRowProcess<ROW_ENTITY> {
+  ROW_ENTITY currentRow(final ResultSetWrapper row) throws SQLException;
 }

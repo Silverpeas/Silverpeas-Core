@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
 
@@ -42,6 +43,7 @@ import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSql
  */
 public class JdbcSqlQuery {
 
+  private final Configuration configuration = new Configuration();
   private final StringBuilder sqlQuery = new StringBuilder();
   private final Collection<Object> allParameters = new ArrayList<>();
 
@@ -189,10 +191,28 @@ public class JdbcSqlQuery {
   }
 
   /**
+   * Calling this method to configure some parameters around execution, result, etc.
+   * @param config the configuration instance.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery configure(Consumer<Configuration> config) {
+    config.accept(this.configuration);
+    return this;
+  }
+
+  /**
+   * Gets the configuration of the query.
+   * @return the configuration.
+   */
+  Configuration getConfiguration() {
+    return configuration;
+  }
+
+  /**
    * Centralization in order to populate the prepare statement parameters (FOR TABLE CREATION ONLY).
    * @param fieldName the name of the field to define.
    * @param definition the definition of the field.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addField(String fieldName, String definition) {
     if (sqlQuery.charAt(sqlQuery.length() - 2) != ' ' &&
@@ -206,7 +226,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery where(String sqlPart, Object... paramValue) {
     return where(sqlPart, Arrays.asList(paramValue));
@@ -216,7 +236,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValues the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery where(String sqlPart, Collection<?> paramValues) {
     return addSqlPart("where " + sqlPart, paramValues);
@@ -226,7 +246,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery and(String sqlPart, Object... paramValue) {
     return and(sqlPart, Arrays.asList(paramValue));
@@ -236,7 +256,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValues the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery and(String sqlPart, Collection<?> paramValues) {
     return addSqlPart("and " + sqlPart, paramValues);
@@ -246,7 +266,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery or(String sqlPart, Object... paramValue) {
     return or(sqlPart, Arrays.asList(paramValue));
@@ -256,7 +276,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValues the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery or(String sqlPart, Collection<?> paramValues) {
     return addSqlPart("or " + sqlPart, paramValues);
@@ -266,7 +286,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addSqlPart(String sqlPart, Object... paramValue) {
     return addSqlPart(sqlPart, Arrays.asList(paramValue));
@@ -276,7 +296,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValues the value of parameters included into the given sqlPart.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addSqlPart(String sqlPart, Collection<?> paramValues) {
     allParameters.addAll(paramValues);
@@ -293,7 +313,7 @@ public class JdbcSqlQuery {
   /**
    * Centralization in order to build easily a SQL in clause.
    * @param parameters the parameters to append to the given SQL query.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery in(Collection<?> parameters) {
     sqlQuery.append(" in");
@@ -304,7 +324,7 @@ public class JdbcSqlQuery {
   /**
    * Centralization in order to build easily a SQL in clause.
    * @param parameters the parameters to append to the given SQL query.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery in(Object... parameters) {
     sqlQuery.append(" in");
@@ -314,7 +334,7 @@ public class JdbcSqlQuery {
 
   /**
    * Centralization in order to build easily a SQL values clause.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   private JdbcSqlQuery valuesForInsert() {
     sqlQuery.append(") values");
@@ -324,7 +344,7 @@ public class JdbcSqlQuery {
 
   /**
    * Centralization in order to build easily a SQL values clause.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   private JdbcSqlQuery finalizeTableCreation() {
     sqlQuery.append(")");
@@ -353,7 +373,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters for insertion.
    * @param paramName the name of the parameter to add into update fields part.
    * @param paramValue the value of the parameter.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addInsertParam(String paramName, Object paramValue) {
     return addSaveParam(paramName, paramValue, true);
@@ -363,7 +383,7 @@ public class JdbcSqlQuery {
    * Centralization in order to populate the prepare statement parameters for update.
    * @param paramName the name of the parameter to add into update fields part.
    * @param paramValue the value of the parameter.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addUpdateParam(String paramName, Object paramValue) {
     return addSaveParam(paramName, paramValue, false);
@@ -374,7 +394,7 @@ public class JdbcSqlQuery {
    * @param paramName the name of the parameter to add into update fields part.
    * @param paramValue the value of the parameter.
    * @param isInsert indicates if the SQL built is an INSERT or an UPDATE one.
-   * @return the instance of the given string builder that represents the SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addSaveParam(String paramName, Object paramValue, final boolean isInsert) {
     if (allParameters.size() > 0) {
@@ -394,18 +414,18 @@ public class JdbcSqlQuery {
    * Select executor.
    * @throws java.sql.SQLException
    */
-  public <ROW_ENTITY> List<ROW_ENTITY> execute(SelectResultRowProcessor<ROW_ENTITY> rowProcess)
+  public <ROW_ENTITY> List<ROW_ENTITY> execute(SelectResultRowProcess<ROW_ENTITY> process)
       throws SQLException {
-    return getJdbcSqlExecutor().select(this, rowProcess);
+    return getJdbcSqlExecutor().select(this, process);
   }
 
   /**
    * Select executor.
    * @throws java.sql.SQLException
    */
-  public <ROW_ENTITY> ROW_ENTITY executeUnique(SelectResultRowProcessor<ROW_ENTITY> rowProcess)
+  public <ROW_ENTITY> ROW_ENTITY executeUnique(SelectResultRowProcess<ROW_ENTITY> process)
       throws SQLException {
-    return unique(execute(rowProcess));
+    return unique(execute(process));
   }
 
   /**
@@ -430,5 +450,21 @@ public class JdbcSqlQuery {
       return getJdbcSqlExecutor().selectCount(this);
     }
     return getJdbcSqlExecutor().executeModify(Collections.singletonList(this));
+  }
+
+  /**
+   * Context of execution that has to be taken into account.
+   */
+  public static class Configuration {
+    private int limit = 0;
+
+    int getResultLimit() {
+      return limit;
+    }
+
+    public Configuration withResultLimit(final int limit) {
+      this.limit = limit;
+      return this;
+    }
   }
 }

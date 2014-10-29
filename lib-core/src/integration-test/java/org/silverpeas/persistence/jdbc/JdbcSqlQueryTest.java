@@ -212,26 +212,32 @@ public class JdbcSqlQueryTest extends DataSetTest {
   @Test
   public void selectAll() throws SQLException {
     List<Pair<Long, String>> rows =
-        createSelect("* from a_table").execute(new TableResultProcessor());
+        createSelect("* from a_table").execute(new TableResultProcess());
     long l = 0;
+    assertThat(rows, hasSize((int) NB_ROW_AT_BEGINNING));
     for (Pair<Long, String> row : rows) {
       assertThat(row.getLeft(), is(l));
       l++;
     }
+
+    int resultLimit = (int) (NB_ROW_AT_BEGINNING - 10);
+    rows = createSelect("* from a_table").configure(config -> config.withResultLimit(resultLimit))
+        .execute(new TableResultProcess());
+    assertThat(rows, hasSize(resultLimit));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void selectAllButUsingUnique() throws SQLException {
-    createSelect("* from a_table").executeUnique(new TableResultProcessor());
+    createSelect("* from a_table").executeUnique(new TableResultProcess());
   }
 
   @Test
   public void selectOneParameter() throws SQLException {
     final String sqlQuery = "* from a_table where id = ?";
-    List<Pair<Long, String>> rows = createSelect(sqlQuery, 30).execute(new TableResultProcessor());
+    List<Pair<Long, String>> rows = createSelect(sqlQuery, 30).execute(new TableResultProcess());
     assertThat(rows, hasSize(1));
     assertThat(unique(rows).getLeft(), is(30L));
-    rows = createSelect(sqlQuery, 200).execute(new TableResultProcessor());
+    rows = createSelect(sqlQuery, 200).execute(new TableResultProcess());
     assertThat(rows, hasSize(0));
     assertThat(unique(rows), nullValue());
   }
@@ -239,7 +245,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
   @Test
   public void selectUsingOneAppendParameter() throws SQLException {
     List<Pair<Long, String>> rows =
-        createSelect("* from a_table where id = ?", 26).execute(new TableResultProcessor());
+        createSelect("* from a_table where id = ?", 26).execute(new TableResultProcess());
     assertThat(rows, hasSize(1));
     assertThat(unique(rows).getLeft(), is(26L));
   }
@@ -249,20 +255,20 @@ public class JdbcSqlQueryTest extends DataSetTest {
     JdbcSqlQuery sqlQuery = createSelect("* from a_table where (id = ?", 26);
     sqlQuery.or("LENGTH(value) <= ?)", 7);
     sqlQuery.or("id").in(38, 39, 40);
-    List<Pair<Long, String>> rows = sqlQuery.execute(new TableResultProcessor());
+    List<Pair<Long, String>> rows = sqlQuery.execute(new TableResultProcess());
     assertThat(rows, hasSize(14));
   }
 
   @Test
   public void selectUsingAppendListOfParameters() throws SQLException {
     List<Pair<Long, String>> rows =
-        createSelect("* from a_table where id").in(38, 39, 40).execute(new TableResultProcessor());
+        createSelect("* from a_table where id").in(38, 39, 40).execute(new TableResultProcess());
     assertThat(rows, hasSize(3));
   }
 
-  private static class TableResultProcessor extends SelectResultRowProcessor<Pair<Long, String>> {
+  private static class TableResultProcess implements SelectResultRowProcess<Pair<Long, String>> {
     @Override
-    protected Pair<Long, String> currentRow(final ResultSetWrapper row) throws SQLException {
+    public Pair<Long, String> currentRow(final ResultSetWrapper row) throws SQLException {
       return Pair.of(row.getLongObject(1), row.getString(2));
     }
   }

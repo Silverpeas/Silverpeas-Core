@@ -39,8 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.persistence.jdbc.ResultSetWrapper;
-import org.silverpeas.persistence.jdbc.SelectResultRowProcessor;
 import org.silverpeas.test.WarBuilder4LibCore;
 
 import javax.annotation.Resource;
@@ -230,14 +228,10 @@ public class PersonalizationManagerTest {
       return JdbcSqlQuery.createSelect(
           "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, " +
               "webdavEditingStatus, menuDisplay FROM personalization where " +
-              "id = ?", userId).executeUnique(new SelectResultRowProcessor<UserPreferences>() {
-        @Override
-        protected UserPreferences currentRow(final ResultSetWrapper row) throws SQLException {
-          return new UserPreferences(row.getString(1), row.getString(2), row.getString(3),
+              "id = ?", userId).executeUnique(
+          row -> new UserPreferences(row.getString(1), row.getString(2), row.getString(3),
               row.getString(4), row.getBoolean(5), row.getBoolean(6), row.getBoolean(7),
-              UserMenuDisplay.valueOf(row.getString(8)));
-        }
-      });
+              UserMenuDisplay.valueOf(row.getString(8))));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

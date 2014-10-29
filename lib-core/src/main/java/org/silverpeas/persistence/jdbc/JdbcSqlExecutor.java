@@ -46,11 +46,13 @@ public interface JdbcSqlExecutor {
   /**
    * Select query executor.
    *
-   * @param selectQueryBuilder@return the list of entities.
+   * @param selectQuery the select SQL query.
+   * @param process the row processor.
+   *  @return the list of entities.
    * @throws java.sql.SQLException
    */
-  <ROW_ENTITY> List<ROW_ENTITY> select(JdbcSqlQuery selectQueryBuilder,
-      SelectResultRowProcessor<ROW_ENTITY> rowProcess) throws SQLException;
+  <ROW_ENTITY> List<ROW_ENTITY> select(JdbcSqlQuery selectQuery,
+      SelectResultRowProcess<ROW_ENTITY> process) throws SQLException;
 
   /**
    * Modify query executor.
