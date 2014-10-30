@@ -60,14 +60,12 @@ public class FileRepositoryManager {
       tempPath = tempPath + File.separatorChar;
     }
 
-    StringBuilder path = new StringBuilder(512);
-    path.append(SystemWrapper.get().getenv("SILVERPEAS_HOME")).append(separatorChar)
-        .append("properties");
-    path.append(separatorChar).append("org").append(separatorChar).append("silverpeas").append(
-        separatorChar);
-
-    domainPropertiesFolderPath = path.toString() + "domains" + separatorChar;
-    domainAuthenticationPropertiesFolderPath = path.toString() + "authentication" + separatorChar;
+    File path = FileUtils
+        .getFile(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas");
+    domainPropertiesFolderPath =
+        FileUtils.getFile(path, "domains").getAbsolutePath() + separatorChar;
+    domainAuthenticationPropertiesFolderPath =
+        FileUtils.getFile(path, "authentication").getAbsolutePath() + separatorChar;
   }
 
   /**
