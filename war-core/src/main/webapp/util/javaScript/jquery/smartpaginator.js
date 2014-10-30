@@ -91,9 +91,9 @@
                     list.find('li a').addClass(settings.theme).removeClass('active');
                     list.find('li:eq(0) a').addClass(settings.theme).addClass('active');
                     //set width of paginator
-                    var sW = list.find('li:eq(0)').outerWidth() + parseInt(list.find('li:eq(0)').css('margin-left'));
+                    /*var sW = list.find('li:eq(0)').outerWidth(true) + parseInt(list.find('li:eq(0)').css('margin-left'));
                     var width = sW * list.find('li').length;
-                    list.css({ width: width });
+                    list.css({ width: width });*/
                     showRequiredButtons(startPage);
                 }
                 function navigate(topage) {
