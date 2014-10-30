@@ -228,14 +228,10 @@ public class UserDAO {
     ListSlice<UserDetail> users = new ListSlice<UserDetail>(start, end);
     rs.relative(start);
     int i;
-    for (i = start; rs.next() && i < end; i++) {
-      users.add(fetchUser(rs));
-    }
-    if (i == end) {
-      i++;
-    }
-    while (rs.next()) {
-      i++;
+    for (i = start; rs.next(); i++) {
+      if (i < end) {
+        users.add(fetchUser(rs));
+      }
     }
     users.setOriginalListSize(i);
     return users;
