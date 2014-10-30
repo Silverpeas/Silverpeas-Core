@@ -41,8 +41,7 @@ public class LinkDetail implements Serializable {
 
   }
 
-  public LinkDetail(String name, String description, String url,
-      boolean visible, boolean popup) {
+  public LinkDetail(String name, String description, String url, boolean visible, boolean popup) {
     this.name = name;
     this.description = description;
     this.url = url;
@@ -50,12 +49,6 @@ public class LinkDetail implements Serializable {
     this.popup = popup;
 
   }
-
-  /*
-   * public LinkDetail(String name, String description, String url, boolean visible, boolean popup,
-   * String instanceId) { this.name = name; this.description = description; this.url = url;
-   * this.visible = visible; this.popup = popup; this.instanceId = instanceId; }
-   */
 
   public String getUserId() {
     return userId;

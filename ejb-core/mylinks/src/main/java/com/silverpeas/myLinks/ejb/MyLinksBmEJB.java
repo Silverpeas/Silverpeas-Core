@@ -20,28 +20,25 @@
  */
 package com.silverpeas.myLinks.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
+import com.silverpeas.myLinks.MyLinksRuntimeException;
+import com.silverpeas.myLinks.dao.LinkDAO;
+import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-
-import com.silverpeas.myLinks.MyLinksRuntimeException;
-import com.silverpeas.myLinks.dao.LinkDAO;
-import com.silverpeas.myLinks.model.LinkDetail;
-
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * @author
  */
-@Stateless(name = "MyLinks", description =
-    "Stateless session bean to manage personal links to content")
+@Stateless(name = "MyLinks",
+    description = "Stateless session bean to manage personal links to content")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class MyLinksBmEJB implements MyLinksBm {
 
@@ -137,8 +134,8 @@ public class MyLinksBmEJB implements MyLinksBm {
     try {
       return LinkDAO.getLink(con, linkId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.getLink()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
+      throw new MyLinksRuntimeException("MyLinksBmEJB.getLink()", SilverpeasRuntimeException.ERROR,
+          "myLinks.MSG_LINKS_NOT_EXIST", e);
     } finally {
       DBUtil.close(con);
     }
@@ -149,8 +146,8 @@ public class MyLinksBmEJB implements MyLinksBm {
     try {
       con = DBUtil.openConnection();
     } catch (SQLException e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.initCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new MyLinksRuntimeException("MyLinksBmEJB.initCon()", SilverpeasException.ERROR,
+          "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
   }

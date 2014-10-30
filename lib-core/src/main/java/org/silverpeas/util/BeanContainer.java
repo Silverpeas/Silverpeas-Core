@@ -41,7 +41,7 @@ public interface BeanContainer {
    * @param <T> the type of the bean to return.
    * @return the bean matching the specified name.
    */
-  public <T> T getBeanByName(String name);
+  public <T> T getBeanByName(String name) throws IllegalStateException;
 
   /**
    * Gets a bean managed in this container by its type and optionnaly by some qualifiers.
@@ -52,7 +52,7 @@ public interface BeanContainer {
    * @param <T> the type of the bean to return.
    * @return the bean matching the specified name.
    */
-  public <T> T getBeanByType(Class<T> type, Annotation... qualifiers);
+  public <T> T getBeanByType(Class<T> type, Annotation... qualifiers) throws IllegalStateException;
 
   /**
    * Gets a bean managed in this container by its name. If no such bean exists in the bean

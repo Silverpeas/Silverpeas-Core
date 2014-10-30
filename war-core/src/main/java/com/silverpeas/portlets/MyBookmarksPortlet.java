@@ -20,9 +20,12 @@
  */
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.model.LinkDetail;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -30,15 +33,9 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import com.silverpeas.myLinks.ejb.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
 
@@ -50,7 +47,7 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
 
-    List<LinkDetail> links = new ArrayList<LinkDetail>();
+    List<LinkDetail> links = new ArrayList<>();
     if (m_MainSessionCtrl != null) {
       try {
         MyLinksBm myLinksBm = getMyLinksBm();
@@ -82,7 +79,7 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
   }
 
   private MyLinksBm getMyLinksBm() throws Exception {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBm.class);
+    return ServiceProvider.getService(MyLinksBm.class);
   }
 
   /**

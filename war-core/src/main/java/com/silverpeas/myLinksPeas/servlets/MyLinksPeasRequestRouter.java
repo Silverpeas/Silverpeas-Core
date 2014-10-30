@@ -54,7 +54,6 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   public MyLinksPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -67,7 +66,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
    *
    * @param function The entering request function (ex : "Main.jsp")
    * @param myLinksSC The component Session Control, build and initialised.
-   * @param request
+   * @param request the current HttpRequest
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -76,7 +75,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
     SilverTrace.info("myLinksPeas", "MyLinksPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myLinksSC.getUserId() + " Function=" + function);
 
-    String destination = "";
+    String destination;
     String rootDest = "/myLinksPeas/jsp/";
 
     try {
@@ -86,7 +85,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
 
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ComponentLinks")) {
-        // recupere l'id de l'instance
+        // Retrieve instance identifier
         String instanceId = request.getParameter("InstanceId");
         String url = request.getParameter("UrlReturn");
         if (!StringUtil.isDefined(url)) {
@@ -99,7 +98,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
 
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ObjectLinks")) {
-        // recupere l'id de l'objet et de l'instance
+        // retrieve object id and instance id
         String objectId = request.getParameter("ObjectId");
         String instanceId = request.getParameter("InstanceId");
         String url = request.getParameter("UrlReturn");
@@ -110,7 +109,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
 
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ViewLinks")) {
-        Collection<LinkDetail> links = null;
+        Collection<LinkDetail> links;
         int scope = myLinksSC.getScope();
         switch (scope) {
           case MyLinksPeasSessionController.SCOPE_COMPONENT:

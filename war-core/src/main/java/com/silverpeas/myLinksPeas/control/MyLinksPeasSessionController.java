@@ -24,20 +24,17 @@
 
 package com.silverpeas.myLinksPeas.control;
 
-import java.util.Collection;
-
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.util.Collection;
 
 public class MyLinksPeasSessionController extends AbstractComponentSessionController {
   public static final int SCOPE_USER = 0;
@@ -63,13 +60,12 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public Collection<LinkDetail> getAllLinksByUser() {
-    Collection<LinkDetail> links = null;
+    Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByUser(getUserId());
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByUser()",
           "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size());
     } catch (Exception e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByUser",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
@@ -77,29 +73,26 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public Collection<LinkDetail> getAllLinksByInstance() {
-    Collection<LinkDetail> links = null;
+    Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByInstance(instanceId);
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByInstance()",
-          "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size()
-          + " instanceId = " + instanceId);
+          "root.MSG_GEN_PARAM_VALUE",
+          "nombre de liens = " + links.size() + " instanceId = " + instanceId);
     } catch (Exception e) {
-      // traitement des exceptions
-      throw new MyLinksRuntimeException(
-          "MyLinksPeasSessionController.getAllLinksByInstance",
+      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByInstance",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
     return links;
   }
 
   public Collection<LinkDetail> getAllLinksByObject() {
-    Collection<LinkDetail> links = null;
+    Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByObject(instanceId, objectId);
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByObject()",
           "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size());
     } catch (Exception e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByObject",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
@@ -107,13 +100,13 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public LinkDetail getLink(String linkId) {
-    LinkDetail link = null;
+    LinkDetail link;
     try {
       link = getMyLinksBm().getLink(linkId);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getLink()",
-          "root.MSG_GEN_PARAM_VALUE", "linkId = " + linkId);
+      SilverTrace
+          .debug("myLinks", "MyLinksPeasSessionController.getLink()", "root.MSG_GEN_PARAM_VALUE",
+              "linkId = " + linkId);
     } catch (Exception e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getLink",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
@@ -127,59 +120,49 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
       link.setUserId(userId);
 
       // ajout de l'instanceId si existe
-      if (instanceId != null)
+      if (instanceId != null) {
         link.setInstanceId(instanceId);
+      }
 
       getMyLinksBm().createLink(link);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.createLink()",
-          "root.MSG_GEN_PARAM_VALUE", "liens = " + link.toString());
+      SilverTrace
+          .debug("myLinks", "MyLinksPeasSessionController.createLink()", "root.MSG_GEN_PARAM_VALUE",
+              "liens = " + link.toString());
     } catch (Exception e) {
-      // traitement des exceptions
-      throw new MyLinksRuntimeException(
-          "MyLinksPeasSessionController.createLink", SilverpeasException.ERROR,
-          "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException("MyLinksPeasSessionController.createLink",
+          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
   }
 
   public void updateLink(LinkDetail link) {
     try {
       // ajout de l'instanceId si existe
-      if (instanceId != null)
+      if (instanceId != null) {
         link.setInstanceId(instanceId);
-
+      }
       String userId = getUserId();
       link.setUserId(userId);
       getMyLinksBm().updateLink(link);
     } catch (Exception e) {
-      // traitement des exceptions
-      throw new MyLinksRuntimeException(
-          "MyLinksPeasSessionController.updateLink", SilverpeasException.ERROR,
-          "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException("MyLinksPeasSessionController.updateLink",
+          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
   }
 
   public void deleteLinks(String[] links) {
     try {
       getMyLinksBm().deleteLinks(links);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.deleteLink()",
-          "root.MSG_GEN_PARAM_VALUE", "links = " + links.toString());
+      SilverTrace
+          .debug("myLinks", "MyLinksPeasSessionController.deleteLink()", "root.MSG_GEN_PARAM_VALUE",
+              "links = " + links.toString());
     } catch (Exception e) {
-      // traitement des exceptions
-      throw new MyLinksRuntimeException(
-          "MyLinksPeasSessionController.createLink", SilverpeasException.ERROR,
-          "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException("MyLinksPeasSessionController.createLink",
+          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
   }
 
   private MyLinksBm getMyLinksBm() {
-    MyLinksBm myLinksBm = null;
-    try {
-      myLinksBm = EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBm.class);
-    } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLInksSessionController.getMyLInksBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return myLinksBm;
+    return ServiceProvider.getService(MyLinksBm.class);
   }
 
   public String getUrl() {

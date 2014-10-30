@@ -23,15 +23,19 @@
  */
 package org.silverpeas.mylinks.web;
 
-import static org.silverpeas.util.JNDINames.MYLINKSBM_EJBHOME;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.model.LinkDetail;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -45,21 +49,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.core.admin.OrganizationController;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.myLinks.ejb.MyLinksBm;
-import com.silverpeas.myLinks.model.LinkDetail;
-import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A REST Web resource representing user favorite links. It is a web service that provides an access
@@ -85,7 +81,7 @@ public class MyLinksResource extends RESTWebService {
     Collection<LinkDetail> links = getMyLinksBm().getAllLinks(curUser.getId());
     String baseUri = getUriInfo().getAbsolutePath().toString();
 
-    List<MyLinkEntity> myLinkEntities = new ArrayList<MyLinkEntity>();
+    List<MyLinkEntity> myLinkEntities = new ArrayList<>();
     for (LinkDetail linkDetail : links) {
       URI uri = getURI(linkDetail, baseUri);
       if (linkDetail.isVisible()) {
@@ -241,7 +237,7 @@ public class MyLinksResource extends RESTWebService {
 
   private MyLinksBm getMyLinksBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(MYLINKSBM_EJBHOME, MyLinksBm.class);
+      return ServiceProvider.getService(MyLinksBm.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
