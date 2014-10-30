@@ -48,6 +48,7 @@ import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -58,8 +59,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.core.admin.OrganizationController;
-
-import static org.silverpeas.util.lang.SystemWrapperProvider.getSystem;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
@@ -84,7 +83,8 @@ public class PublicationTemplateManager {
         new ResourceLocator("org.silverpeas.publicationTemplate.settings.template", "");
 
     templateDir = templateSettings.getString("templateDir");
-    defaultTemplateDir = getSystem().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
+    defaultTemplateDir =
+        SystemWrapper.get().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
     
     try {
       JAXB_CONTEXT = JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);

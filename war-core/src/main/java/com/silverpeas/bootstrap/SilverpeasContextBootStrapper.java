@@ -42,6 +42,7 @@ import javax.servlet.ServletContextListener;
 
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -51,7 +52,6 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.web.context.ContextLoaderListener;
 
 import static java.io.File.separatorChar;
-import static org.silverpeas.util.lang.SystemWrapperProvider.getSystem;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
 
@@ -154,9 +154,8 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
    * our own classloader so that we avoid JBoss loads them with its its asshole VFS.
    */
   private static void loadExternalJarLibraries() {
-    String libPath =
-        getSystem().getenv("SILVERPEAS_HOME") + separatorChar + "repository" + separatorChar +
-            "lib";
+    String libPath = SystemWrapper.get().getenv("SILVERPEAS_HOME") + separatorChar + "repository" +
+        separatorChar + "lib";
     File libDir = new File(libPath);
     File[] jars = libDir.listFiles();
     URL[] jarURLs = new URL[jars.length];

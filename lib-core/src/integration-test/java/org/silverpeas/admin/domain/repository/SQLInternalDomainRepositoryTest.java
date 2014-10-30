@@ -37,7 +37,7 @@ import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.lang.SystemWrapperProvider;
+import org.silverpeas.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -111,7 +111,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
   @Before
   public void setup() throws Exception {
     silverpeasHome = getFile(mavenTargetDirectoryRule.getBuildDirFile(), "SILVERPEAS_HOME");
-    SystemWrapperProvider.getSystem().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
   }
 
   @After

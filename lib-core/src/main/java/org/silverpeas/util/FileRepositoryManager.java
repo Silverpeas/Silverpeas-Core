@@ -25,7 +25,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.util.lang.SystemWrapperProvider;
+import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.memory.MemoryUnit;
 
 import java.io.File;
@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 
 import static java.io.File.separatorChar;
-import static org.silverpeas.util.lang.SystemWrapperProvider.getSystem;
 
 /**
  * @author Norbert CHAIX
@@ -62,7 +61,8 @@ public class FileRepositoryManager {
     }
 
     StringBuilder path = new StringBuilder(512);
-    path.append(getSystem().getenv("SILVERPEAS_HOME")).append(separatorChar).append("properties");
+    path.append(SystemWrapper.get().getenv("SILVERPEAS_HOME")).append(separatorChar)
+        .append("properties");
     path.append(separatorChar).append("org").append(separatorChar).append("silverpeas").append(
         separatorChar);
 

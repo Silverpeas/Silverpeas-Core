@@ -24,6 +24,8 @@
 
 package org.silverpeas.util.lang;
 
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.Map;
 
 /**
@@ -32,6 +34,14 @@ import java.util.Map;
  * @author Yohann Chastagnier
  */
 public interface SystemWrapper {
+
+  /**
+   * Gets the wrapped {@link System} instance.
+   * @return the instance of the System Wrapper.
+   */
+  public static SystemWrapper get() {
+    return ServiceProvider.getService(SystemWrapper.class);
+  }
 
   /**
    * Gets the value of a environment variable.

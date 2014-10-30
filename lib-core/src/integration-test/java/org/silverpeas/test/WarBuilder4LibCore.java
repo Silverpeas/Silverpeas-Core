@@ -67,7 +67,6 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.lang.SystemWrapperProvider;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
@@ -91,7 +90,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     warBuilder.addStubbedSilverTraceFeatures();
     warBuilder.addBundleBaseFeatures();
     warBuilder
-        .addClasses(SystemWrapper.class, SystemWrapperProvider.class, TestSystemWrapper.class);
+        .addClasses(SystemWrapper.class, TestSystemWrapper.class);
     warBuilder.addAsResource("maven.properties");
     return warBuilder;
   }

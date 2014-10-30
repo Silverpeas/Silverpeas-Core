@@ -25,6 +25,8 @@
 package org.silverpeas.util;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.lang.SystemWrapper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,14 +40,13 @@ import java.util.logging.Logger;
 
 import static java.io.File.separator;
 import static java.io.File.separatorChar;
-import static org.silverpeas.util.lang.SystemWrapperProvider.getSystem;
 
 /**
  * @author ehugonnet
  */
 public class ConfigurationClassLoader extends ClassLoader {
 
-  private String baseDir = getSystem().getenv("SILVERPEAS_HOME") + separatorChar;
+  private String baseDir = SystemWrapper.get().getenv("SILVERPEAS_HOME") + separatorChar;
 
   @Override
   public synchronized void clearAssertionStatus() {
@@ -160,7 +161,7 @@ public class ConfigurationClassLoader extends ClassLoader {
   }
 
   public ConfigurationClassLoader(ClassLoader parent) {
-    this(parent, getSystem().getenv("SILVERPEAS_HOME") + separatorChar + "properties");
+    this(parent, SystemWrapper.get().getenv("SILVERPEAS_HOME") + separatorChar + "properties");
   }
 
   public ConfigurationClassLoader(ClassLoader parent, String directory) {

@@ -42,7 +42,7 @@ import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.lang.SystemWrapperProvider;
+import org.silverpeas.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -145,7 +145,7 @@ public class SQLDomainServiceTest extends DataSetTest {
   @Before
   public void initTest() throws Exception {
     silverpeasHome = getFile(mavenTargetDirectoryRule.getBuildDirFile(), "SILVERPEAS_HOME");
-    SystemWrapperProvider.getSystem().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
 
     // load expected properties files
     expectedDomainPropertiesFile =
