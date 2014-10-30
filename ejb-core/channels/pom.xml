@@ -23,6 +23,13 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
   </dependencies>
   
   <build>

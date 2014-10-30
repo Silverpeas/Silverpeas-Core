@@ -24,31 +24,45 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import java.util.Date;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-
-public class SILVERMAILMessageBean extends SilverpeasBean {
+@Entity
+@Table(name = "ST_SilverMailMessage")
+@NamedQueries({
+    @NamedQuery(name = "findByUserIdAndFolderIdAndReadState",
+        query = "select m from SILVERMAILMessageBean m where m.userId = :userId and m.folderId = " +
+            ":folderId and m.readen = :readState order by m.id desc"),
+    @NamedQuery(name = "findByUserIdAndFolderId",
+        query = "select m from SILVERMAILMessageBean m where m.userId = :userId and m.folderId = " +
+            ":folderId order by m.id desc")})
+public class SILVERMAILMessageBean
+    extends AbstractJpaCustomEntity<SILVERMAILMessageBean, UniqueIntegerIdentifier> {
   private static final long serialVersionUID = -3073514330044912996L;
 
   public SILVERMAILMessageBean() {
   }
 
-  private long userId = -1;
+  private int userId = -1;
 
   public long getUserId() {
     return userId;
   }
 
   public void setUserId(long value) {
-    userId = value;
+    userId = (int) value;
   }
 
-  private long folderid = 0; // 0 = INBOX
+  private int folderid = 0; // 0 = INBOX
 
   public void setFolderId(long value) {
-    folderid = value;
+    folderid = (int) value;
   }
 
   public long getFolderId() {
@@ -123,14 +137,6 @@ public class SILVERMAILMessageBean extends SilverpeasBean {
 
   public int getReaden() {
     return m_readen;
-  }
-
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  public String _getTableName() {
-    return "ST_SilverMailMessage";
   }
 
 }

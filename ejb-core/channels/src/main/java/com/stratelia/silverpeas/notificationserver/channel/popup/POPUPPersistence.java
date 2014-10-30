@@ -25,27 +25,27 @@
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.LongText;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.LongText;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.Date;
 
 public class POPUPPersistence {
 
-  public static void addMessage(POPUPMessage popupMsg) throws POPUPException {
-    SilverpeasBeanDAO dao;
-    POPUPMessageBean smb = new POPUPMessageBean();
+  protected static POPUPMessageBeanRepository getRepository() {
+    return ServiceProvider.getService(POPUPMessageBeanRepository.class);
+  }
 
+  public static void addMessage(POPUPMessage popupMsg) throws POPUPException {
+    POPUPMessageBean smb = new POPUPMessageBean();
     if (popupMsg != null) {
       try {
-        dao = SilverpeasBeanDAOFactory
-            .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
         smb.setUserId(popupMsg.getUserId());
         smb.setSenderId(popupMsg.getSenderId());
         smb.setSenderName(popupMsg.getSenderName());
@@ -56,7 +56,7 @@ public class POPUPPersistence {
         SilverTrace.debug("popup", "POPUPPersistence.getMessage()",
             "Date et time", DateUtil.date2SQLDate(new Date()) + "-"
             + DateUtil.getFormattedTime(new Date()));
-        dao.add(smb);
+        getRepository().save(smb);
       } catch (Exception e) {
         throw new POPUPException("POPUPPersistence.addMessage()",
             SilverpeasException.ERROR, "POPUP.EX_CANT_WRITE_MESSAGE", e);
@@ -67,19 +67,15 @@ public class POPUPPersistence {
   public static POPUPMessage getMessage(long msgId) throws POPUPException {
     POPUPMessage result = null;
     POPUPMessageBean smb;
-    SilverpeasBeanDAO dao;
     IdPK pk = new IdPK();
 
     try {
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
       pk.setIdAsLong(msgId);
-      smb = (POPUPMessageBean) dao.findByPrimaryKey(pk);
+      smb = getRepository().getById(String.valueOf(msgId));
       if (smb != null) {
         String body = "";
-
         result = new POPUPMessage();
-        result.setId(((IdPK) smb.getPK()).getIdAsLong());
+        result.setId(Long.parseLong(smb.getId()));
         result.setUserId(smb.getUserId());
         result.setUserLogin(getUserLogin(smb.getUserId()));
         result.setSenderId(smb.getSenderId());
@@ -101,7 +97,7 @@ public class POPUPPersistence {
         result.setDate(smb.getMsgDate());
         result.setTime(smb.getMsgTime());
       }
-    } catch (com.stratelia.webactiv.persistence.PersistenceException e) {
+    } catch (Exception e) {
       throw new POPUPException("POPUPPersistence.getMessage()",
           SilverpeasException.ERROR, "POPUP.EX_CANT_READ_MSG", "MsgId="
           + Long.toString(msgId), e);
@@ -110,28 +106,25 @@ public class POPUPPersistence {
   }
 
   public static void deleteMessage(long msgId) throws POPUPException {
-    SilverpeasBeanDAO dao;
-    IdPK pk = new IdPK();
-
     try {
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
-      pk.setIdAsLong(msgId);
-      try {
-        int longTextId = -1;
-        POPUPMessageBean toDel = (POPUPMessageBean) dao.findByPrimaryKey(pk);
-
-        longTextId = Integer.parseInt(toDel.getBody());
-        LongText.removeLongText(longTextId);
-      } catch (Exception e) {
-        SilverTrace.debug("popup", "POPUPListener.deleteMessage()",
-            "PB converting body id to LongText", "Message Body = " + msgId);
-      }
-      dao.remove(pk);
+      Transaction.performInOne(() -> {
+        POPUPMessageBeanRepository repository = getRepository();
+        POPUPMessageBean toDel = repository.getById(String.valueOf(msgId));
+        if (toDel != null) {
+          try {
+            int longTextId = Integer.parseInt(toDel.getBody());
+            LongText.removeLongText(longTextId);
+          } catch (Exception e) {
+            SilverTrace.debug("popup", "POPUPListener.deleteMessage()",
+                "PB converting body id to LongText", "Message Body = " + msgId);
+          }
+          repository.delete(toDel);
+        }
+        return null;
+      });
     } catch (Exception e) {
-      throw new POPUPException("POPUPPersistence.deleteMessage()",
-          SilverpeasException.ERROR, "POPUP.EX_CANT_DEL_MSG", "MsgId="
-          + Long.toString(msgId), e);
+      throw new POPUPException("POPUPPersistence.deleteMessage()", SilverpeasException.ERROR,
+          "POPUP.EX_CANT_DEL_MSG", "MsgId=" + Long.toString(msgId), e);
     }
   }
 

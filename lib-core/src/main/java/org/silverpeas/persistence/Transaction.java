@@ -97,6 +97,7 @@ public class Transaction {
    * Defines a process to execute.
    * @param <RETURN_VALUE> the type of the returned value.
    */
+  @FunctionalInterface
   public interface Process<RETURN_VALUE> {
     RETURN_VALUE execute() throws Exception;
   }

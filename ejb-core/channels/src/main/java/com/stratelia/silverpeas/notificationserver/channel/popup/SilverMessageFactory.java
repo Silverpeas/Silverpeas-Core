@@ -24,23 +24,24 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import java.util.Collection;
-import java.util.Date;
-
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.LongText;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.LongText;
+import org.silverpeas.util.ServiceProvider;
+
+import java.util.Date;
 
 /**
  * @author dblot
  * @version
  */
 public class SilverMessageFactory {
+
+  protected static POPUPMessageBeanRepository getRepository() {
+    return ServiceProvider.getService(POPUPMessageBeanRepository.class);
+  }
 
   /**
    * -------------------------------------------------------------------------- constructor
@@ -55,24 +56,13 @@ public class SilverMessageFactory {
   public static SilverMessage read(String userId) {
     SilverMessage silverMessage = null;
     String msg;
-    Collection collectionPopupMessage = null;
-    SilverpeasBeanDAO dao;
-    IdPK pk = new IdPK();
-    String whereClause = null;
     POPUPMessageBean pmb;
-
-    whereClause = " ID IN ( SELECT MIN(ID) FROM ST_PopupMessage WHERE USERID="
-        + userId + " )";
-
     try {
       // find all message to display
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
-      collectionPopupMessage = dao.findByWhereClause(pk, whereClause);
+      pmb = getRepository().findFirstMessageByUserId(userId);
       // if any
-      if (!collectionPopupMessage.isEmpty()) {
+      if (pmb != null) {
         // get the only one
-        pmb = (POPUPMessageBean) (collectionPopupMessage.toArray()[0]);
         try {
           String body = pmb.getBody();
           if (body.startsWith("COMMUNICATION")) {
@@ -96,13 +86,13 @@ public class SilverMessageFactory {
           // CBO : FIN UPDATE
 
           silverMessage.setContent(msg);
-          silverMessage.setID(pmb.getPK().getId());
+          silverMessage.setID(pmb.getId());
           silverMessage.setSenderId(pmb.getSenderId());
           silverMessage.setSenderName(pmb.getSenderName());
-          silverMessage.setAnswerAllowed(pmb._getAnswerAllowed());
+          silverMessage.setAnswerAllowed(pmb.isAnswerAllowed());
         }
       }
-    } catch (PersistenceException e) {
+    } catch (Exception e) {
       SilverTrace.error("popup", "SilverMessageFactory.read()",
           "popup.EX_CANT_READ_MSG", "UserId=" + userId, e);
     }
@@ -115,50 +105,60 @@ public class SilverMessageFactory {
    * @param msgId the message identifier
    */
   public static void del(String msgId) {
-    try {
-      SilverpeasBeanDAO dao;
-      IdPK pk = new IdPK();
-
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
-      pk.setId(msgId);
+    Transaction.performInOne(() -> {
       try {
-        POPUPMessageBean toDel = (POPUPMessageBean) dao.findByPrimaryKey(pk);
-        int longTextId = -1;
-
-        // CBO : UPDATE
-        // longTextId = Integer.parseInt(toDel.getBody());
-        if (toDel.getBody().startsWith("COMMUNICATION")) {
-          longTextId = Integer.parseInt(toDel.getBody().substring(13));
-        } else {
-          longTextId = Integer.parseInt(toDel.getBody());
+        POPUPMessageBeanRepository repository = getRepository();
+        POPUPMessageBean toDel = repository.getById(msgId);
+        if (toDel != null) {
+          try {
+            int longTextId;
+            // CBO : UPDATE
+            // longTextId = Integer.parseInt(toDel.getBody());
+            if (toDel.getBody().startsWith("COMMUNICATION")) {
+              longTextId = Integer.parseInt(toDel.getBody().substring(13));
+            } else {
+              longTextId = Integer.parseInt(toDel.getBody());
+            }
+            // CBO : FIN UPDATE
+            LongText.removeLongText(longTextId);
+          } catch (Exception e) {
+            SilverTrace
+                .debug("popup", "SilverMessageFactory.del()", "PB converting body id to LongText",
+                    "Message Body = " + msgId);
+          }
+          repository.delete(toDel);
         }
-        // CBO : FIN UPDATE
-        LongText.removeLongText(longTextId);
       } catch (Exception e) {
-        SilverTrace.debug("popup", "SilverMessageFactory.del()",
-            "PB converting body id to LongText", "Message Body = " + msgId);
+        SilverTrace
+            .error("popup", "SilverMessageFactory.del()", "popup.EX_CANT_DEL_MSG", "MsgId=" + msgId,
+                e);
       }
-      dao.remove(pk);
-    } catch (PersistenceException e) {
-      SilverTrace.error("popup", "SilverMessageFactory.del()",
-          "popup.EX_CANT_DEL_MSG", "MsgId=" + msgId, e);
-    }
+      return null;
+    });
+  }
+
+  public static void delAll(String userId) {
+    Transaction.performInOne(() -> {
+      try {
+        getRepository().deleteMessagesByUserIdAndSenderId(userId, "-1");
+      } catch (Exception ex) {
+        SilverTrace.error("popup", "SilverMessageFactory.delAll()", "popup.EX_CANT_DEL_MSG",
+            "UserId=" + userId, ex);
+      }
+      return null;
+    });
   }
 
   /**
    * -------------------------------------------------------------------------- push
    */
   public static void push(String userId, NotificationData notifMsg) {
-    SilverpeasBeanDAO dao;
     POPUPMessageBean pmb = new POPUPMessageBean();
     try {
       SilverTrace.debug("popup", "SilverMessageFactory.push()", "Message = "
           + notifMsg.toString());
       SilverTrace.debug("popup", "SilverMessageFactory.push()",
           "Message.isAnswerAllowed = " + notifMsg.isAnswerAllowed());
-      dao = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
       pmb.setUserId(Long.parseLong(userId));
 
       // CBO : UPDATE
@@ -178,7 +178,7 @@ public class SilverMessageFactory {
       pmb.setAnswerAllowed(notifMsg.isAnswerAllowed());
       pmb.setMsgDate(DateUtil.date2SQLDate(new Date()));
       pmb.setMsgTime(DateUtil.getFormattedTime(new Date()));
-      dao.add(pmb);
+      getRepository().save(pmb);
     } catch (Exception e) {
       SilverTrace.error("popup", "SilverMessageFactory.push()",
           "popup.EX_CANT_PUSH_MSG", "UserId=" + userId + ";Msg=" + notifMsg,

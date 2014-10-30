@@ -24,17 +24,36 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
-public class POPUPMessageBean extends SilverpeasBean {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "ST_PopupMessage")
+@NamedQueries({
+    @NamedQuery(name = "findByUserId",
+        query = "select m from POPUPMessageBean m where m.id in (select min(p.id) FROM " +
+            "POPUPMessageBean p WHERE p.userId = :userId)"),
+    @NamedQuery(name = "deleteByUserIdAndSenderId",
+        query = "delete from POPUPMessageBean m where m.userId = :userId and m.senderId = " +
+            ":senderId")})
+public class POPUPMessageBean
+    extends AbstractJpaCustomEntity<POPUPMessageBean, UniqueIntegerIdentifier> {
 
   private static final long serialVersionUID = 7025111830012761169L;
 
   public POPUPMessageBean() {
   }
 
-  private long userId = -1;
+  @Column(nullable = false)
+  @NotNull
+  private int userId = -1;
   private String body = "";
   private String senderId = null;
   private String senderName = null;
@@ -47,7 +66,7 @@ public class POPUPMessageBean extends SilverpeasBean {
   }
 
   public void setUserId(long value) {
-    userId = value;
+    userId = (int) value;
   }
 
   public String getBody() {
@@ -106,15 +125,7 @@ public class POPUPMessageBean extends SilverpeasBean {
     msgTime = time;
   }
 
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  public String _getTableName() {
-    return "ST_PopupMessage";
-  }
-
-  public boolean _getAnswerAllowed() {
+  public boolean isAnswerAllowed() {
     return "1".equals(getAnswerAllowed());
   }
 

@@ -30,32 +30,24 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionValidationContext;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean;
-import com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverLog;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.servlets.LogoutServlet;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -265,24 +257,12 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * @param sessionId
    */
   private void removeInQueueMessages(String userId, String sessionId) {
-    try {
-      IdPK pk = new IdPK();
-      if (StringUtil.isDefined(sessionId)) {
-        SilverpeasBeanDAO<ServerMessageBean> dao = SilverpeasBeanDAOFactory.getDAO(
-            "com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean");
-        String whereClause = " USERID=" + userId + " AND SESSIONID='" + sessionId + "'";
-        dao.removeWhere(pk, whereClause);
-      }
-
-      // Remove "end of session" messages
-      SilverpeasBeanDAO<POPUPMessageBean> dao = SilverpeasBeanDAOFactory.getDAO(
-          "com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean");
-      String whereClause = "userid=" + userId + " AND senderid='-1'";
-      dao.removeWhere(pk, whereClause);
-    } catch (PersistenceException e) {
-      SilverTrace.error("peasCore", "SessionManager.removeInQueueMessages()",
-          "root.EX_NO_MESSAGE", "USERID=" + userId + " AND SESSIONID = " + sessionId, e);
+    if (StringUtil.isDefined(sessionId)) {
+      com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
+          .delAll(userId, sessionId);
     }
+    // Remove "end of session" messages
+    com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.delAll(userId);
   }
 
   /**

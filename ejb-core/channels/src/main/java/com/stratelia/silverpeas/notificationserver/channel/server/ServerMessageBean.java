@@ -24,24 +24,42 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
-public class ServerMessageBean extends SilverpeasBean {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name = "ST_ServerMessage")
+@NamedQueries({
+    @NamedQuery(name = "findByUserIdAndSessionId",
+        query = "select m from ServerMessageBean m where m.id in (select min(s.id) from " +
+            "ServerMessageBean s where s.userId=:userId and s.sessionId=:sessionId)"),
+    @NamedQuery(name = "deleteByUserIdAndSessionId",
+        query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = :sessionId")})
+public class ServerMessageBean
+    extends AbstractJpaCustomEntity<ServerMessageBean, UniqueIntegerIdentifier> {
 
   private static final long serialVersionUID = 769537113068849221L;
 
   public ServerMessageBean() {
   }
 
-  private long userId = -1;
+  @Column(nullable = false)
+  @NotNull
+  private int userId = -1;
 
   public long getUserId() {
     return userId;
   }
 
   public void setUserId(long value) {
-    userId = value;
+    userId = (int) value;
   }
 
   private String body = "";
@@ -64,19 +82,5 @@ public class ServerMessageBean extends SilverpeasBean {
     sessionId = value;
   }
 
-  /*****************************************************************************/
-  /**
-   *
-   */
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  /**
-   *
-   */
-  public String _getTableName() {
-    return "ST_ServerMessage";
-  }
 
 }
