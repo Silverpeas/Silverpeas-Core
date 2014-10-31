@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.clipboard.control.ejb;
+package com.stratelia.webactiv.clipboard.control;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,10 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
@@ -41,12 +40,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import static org.silverpeas.util.clipboard.ClipboardSelection.IndexFlavor;
 
 /**
- * Stateful EJB to maintain the status of the clipboard of Silverpeas content.
+ * Silverpeas Service to maintain the status of the main clipboard.
  */
-@Stateful(name = "Clipboard", description =
-    "Stateful EJB to maintain the status of the clipboard of Silverpeas content")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class ClipboardBmEJB implements Clipboard, Serializable {
+@Singleton
+@Transactional
+@MainClipboard
+public class MainClipboardService implements Clipboard, Serializable {
 
   private static final long serialVersionUID = -824732581358882058L;
   private ClipboardSelection lastObject = null;
@@ -346,27 +345,14 @@ public class ClipboardBmEJB implements Clipboard, Serializable {
   /**
    * Constructor.
    */
-  public ClipboardBmEJB() {
+  public MainClipboardService() {
     SilverTrace.info("clipboard", "ClipboardBmEJB.constructor()", "root.MSG_GEN_ENTER_METHOD");
   }
 
-  @Override
-  @Remove
-  public void remove() {
-    clear();
-  }
-
-  @Override
-  public String getName() {
-    return this.name;
-  }
-
-  @Override
-  public Clipboard create(String name) {
-    this.name = name;
+  @PostConstruct
+  public void setUp() {
+    this.name = "MainClipboard";
     lastObject = null;
-    objectsInClipboard = new ArrayList<ClipboardSelection>();
-    SilverTrace.info("clipboard", "ClipboardBmEJB.ejbCreate()", "root.MSG_GEN_ENTER_METHOD");
-    return this;
+    objectsInClipboard = new ArrayList<>();
   }
 }

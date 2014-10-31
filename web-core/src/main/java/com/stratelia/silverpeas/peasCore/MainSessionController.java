@@ -24,7 +24,9 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.clipboard.control.MainClipboard;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
@@ -42,7 +44,7 @@ import com.stratelia.webactiv.beans.admin.AdminUserConnections;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
+import com.stratelia.webactiv.clipboard.control.Clipboard;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -57,6 +59,8 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.subscription.SubscriptionContext;
 
+import javax.enterprise.util.AnnotationLiteral;
+
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
 /*
@@ -68,32 +72,28 @@ import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.g
 public class MainSessionController implements Clipboard {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
-  Clipboard clipboard = null;
-  final UserPreferences userPreferences;
-  PdcBm pdcBm = null;
-  Object m_ComponentSOFactory = null;
+  private Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
+      new AnnotationLiteral<MainClipboard>() {});
+  private final UserPreferences userPreferences;
+  private PdcBm pdcBm = null;
   private String sessionId = null;
   private String userId = null;
   private OrganizationController organizationController = null;
-  private Date userLoginBegin = null;
-  private Date userLastRequest = null;
   private String userLanguage = null;
   private ContentManager contentManager = null;
-  Map<String, GenericPanel> genericPanels = Collections.synchronizedMap(
-      new HashMap<String, GenericPanel>());
-  Selection selection = null;
+  private Map<String, GenericPanel> genericPanels = Collections.synchronizedMap(
+      new HashMap<>());
+  private Selection selection = null;
   private String userSpace = null;
-  AlertUser m_alertUser = null;
+  private AlertUser m_alertUser = null;
   private String serverName = null;
   private String serverPort = null;
-  String m_CurrentSpaceId = null;
-  String m_CurrentComponentId = null;
   private SubscriptionContext subscriptionContext = null;
   /**
    * Maintenance Mode *
    */
-  static boolean appInMaintenance = false;
-  static List<String> spacesInMaintenance = new ArrayList<String>();
+  private static boolean appInMaintenance = false;
+  private static List<String> spacesInMaintenance = new ArrayList<>();
   // Last results from search engine
   private List<GlobalSilverContent> lastResults = null;
   private boolean allowPasswordChange;
@@ -178,43 +178,16 @@ public class MainSessionController implements Clipboard {
     }
   }
 
+  public String getClipboardName() {
+    return MainClipboard.class.getSimpleName();
+  }
+
   public String getUserId() {
     return userId;
   }
 
   public String getSessionId() {
     return sessionId;
-  }
-
-  /**
-   * Return the SilverObject Factory
-   */
-  public Object getComponentSOFactory() {
-    return m_ComponentSOFactory;
-  }
-
-  /**
-   * Get the Factory
-   */
-  public void setComponentSOFactory(Object Factory) {
-    m_ComponentSOFactory = Factory;
-  }
-
-  // ------------------- Connexion Functions -----------------------------
-  public synchronized void setUserLoginBegin(Date d) {
-    userLoginBegin = d;
-  }
-
-  public synchronized Date getUserLoginBegin() {
-    return userLoginBegin;
-  }
-
-  public synchronized void setUserLastRequest(Date d) {
-    userLastRequest = d;
-  }
-
-  public synchronized Date getUserLastRequest() {
-    return userLastRequest;
   }
 
   // ------------------- Generic Panel Functions -----------------------------
@@ -250,26 +223,10 @@ public class MainSessionController implements Clipboard {
     return m_alertUser;
   }
 
-  // ------------------- Clipboard Functions -----------------------------
-  public synchronized void initClipboard() {
-    clipboard = null;
-  }
-
   /**
-   * Return the clipboard EJB
+   * Return the clipboard service
    */
-  public synchronized Clipboard getClipboard() {
-    if (clipboard == null) {
-      SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
-          "root.MSG_GEN_ENTER_METHOD");
-      try {
-        clipboard = create("MainClipboard");
-      } catch (Exception e) {
-        throw new PeasCoreRuntimeException("MainSessionController.getClipboard()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    SilverTrace.info("peasCore", "MainSessionController.getClipboard()", "root.MSG_GEN_EXIT_METHOD");
+  private Clipboard getClipboard() {
     return clipboard;
   }
 
@@ -325,13 +282,6 @@ public class MainSessionController implements Clipboard {
    */
   public String getFavoriteLook() {
     return userPreferences.getLook();
-  }
-
-  /**
-   * @return @deprecated use isWebDAVEditingEnabled instead.
-   */
-  public boolean isOnlineEditingEnabled() {
-    return userPreferences.isWebdavEditionEnabled();
   }
 
   public boolean isWebDAVEditingEnabled() {
@@ -510,7 +460,7 @@ public class MainSessionController implements Clipboard {
       }
       // Set the current component and profiles
       if (sComponent != null) {
-        String sCurCompoLabel = "";
+        String sCurCompoLabel;
         ComponentInst componentInst = getAdminService().getComponentInst(sComponent);
 
         // if (componentInst.getLabel() != null &&
@@ -529,49 +479,6 @@ public class MainSessionController implements Clipboard {
           + " | sComponent=" + sComponent, e);
     }
     return newInfos;
-  }
-
-  /**
-   * Update the current space for the current user
-   *
-   * @deprecated
-   */
-  public void updateUserSpace(String sSpaceId) {
-    m_CurrentSpaceId = sSpaceId;
-  }
-
-  /**
-   * Update the current component for the current user
-   *
-   * @deprecated
-   */
-  public void updateUserComponent(String sComponent) {
-    m_CurrentComponentId = sComponent;
-  }
-
-  // ---------------------------------
-  // Profile functions
-  // ---------------------------------
-  /**
-   * @deprecated
-   */
-  public String getUserCurrentSpaceId() {
-    return m_CurrentSpaceId;
-  }
-
-  /**
-   * @deprecated
-   */
-  public String getUserCurrentComponentId() {
-    return m_CurrentComponentId;
-  }
-
-  /**
-   * Get the userId
-   */
-  public AdminUserConnections getAdminUserConnections() {
-    AdminUserConnections auc = new AdminUserConnections(userId, sessionId);
-    return auc;
   }
 
   // ------------------- ContentManager Functions -----------------------------
@@ -608,12 +515,6 @@ public class MainSessionController implements Clipboard {
     }
   }
 
-  public void remove() {
-    if (clipboard != null) {
-      clipboard.remove();
-    }
-  }
-
   /**
    * @return a List of GlobalSilverResult corresponding to the last search
    */
@@ -638,143 +539,98 @@ public class MainSessionController implements Clipboard {
   }
 
   @Override
-  public Clipboard create(final String name) {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.CLIPBOARD_EJBHOME, Clipboard.class).create(name);
-  }
-
-  @Override
   public void add(ClipboardSelection clipObject) throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.add(clipObject);
-    }
   }
 
   @Override
   public ClipboardSelection getObject() {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getObject();
-    }
   }
 
   @Override
   public void PasteDone() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.PasteDone();
-    }
   }
 
   @Override
   public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getSelectedObjects();
-    }
   }
 
   @Override
   public Collection<ClipboardSelection> getObjects() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getObjects();
-    }
   }
 
   @Override
   public int size() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.size();
-    }
   }
 
   @Override
   public ClipboardSelection getObject(int index) throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getObject(index);
-    }
   }
 
   @Override
   public void setSelected(int index, boolean setIt) throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.setSelected(index, setIt);
-    }
   }
 
   @Override
   public void removeObject(int index) throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.removeObject(index);
-    }
   }
 
   @Override
   public void clear() {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.clear();
-    }
   }
 
   @Override
   public void setMultiClipboard() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.setMultiClipboard();
-    }
   }
 
   @Override
   public void setSingleClipboard() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.setSingleClipboard();
-    }
-  }
-
-  @Override
-  public String getName() {
-    Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
-      return clipboard.getName();
-    }
   }
 
   @Override
   public int getCount() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getCount();
-    }
   }
 
   @Override
   public String getMessageError() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getMessageError();
-    }
   }
 
   @Override
   public Exception getExceptionError() throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       return clipboard.getExceptionError();
-    }
   }
 
   @Override
   public void setMessageError(String messageID, Exception e) throws ClipboardException {
     Clipboard clipboard = getClipboard();
-    synchronized (clipboard) {
       clipboard.setMessageError(messageID, e);
-    }
   }
 }

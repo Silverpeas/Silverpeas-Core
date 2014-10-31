@@ -9,7 +9,7 @@
 	
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>clipboard</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Clipboard - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Clipboard - ${project.version}</name>
 
 </project>

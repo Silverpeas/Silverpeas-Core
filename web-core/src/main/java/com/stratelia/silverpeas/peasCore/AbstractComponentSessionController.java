@@ -626,7 +626,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   @Override
   public String getClipboardName() {
-    return controller.getName();
+    return controller.getClipboardName();
   }
 
   @Override
