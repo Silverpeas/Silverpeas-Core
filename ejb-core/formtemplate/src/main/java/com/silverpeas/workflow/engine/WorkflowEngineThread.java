@@ -158,48 +158,57 @@ public class WorkflowEngineThread extends Thread {
   public void run() {
     Request request = null;
 
-    while (true) {
-
-      /*
-       * First, all the requests are processed until the queue becomes empty.
-       */
-      do {
-        request = null;
-
-        synchronized (requestList) {
-          if (!requestList.isEmpty()) {
-            request = requestList.remove(0);
-          }
-        }
+    try {
+      while (true) {
 
         /*
-         * Each request is processed out of the synchronized block so the others threads (which put
-         * the requests) will not be blocked.
+         * First, all the requests are processed until the queue becomes empty.
          */
-        if (request != null) {
-          try {
-            request.process();
-          } catch (Exception e) {
-            SilverTrace.error("workflowEngine", "WorkflowEngineThread",
-                "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request.toString(), e);
-          }
-        }
+        do {
+          request = null;
 
-      } while (request != null);
-
-      /*
-       * Finally, we wait the notification of a new request to be processed.
-       */
-      try {
-        synchronized (requestList) {
-          if (requestList.isEmpty()) {
-            requestList.wait();
+          synchronized (requestList) {
+            if (!requestList.isEmpty()) {
+              request = requestList.remove(0);
+            }
           }
+
+          /*
+           * Each request is processed out of the synchronized block so the others threads (which
+           * put the requests) will not be blocked.
+           */
+          if (request != null) {
+            try {
+              request.process();
+            } catch (Exception e) {
+              SilverTrace.error("workflowEngine", "WorkflowEngineThread",
+                  "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request.toString(), e);
+            }
+          }
+
+        } while (request != null);
+
+        /*
+         * Finally, we wait the notification of a new request to be processed.
+         */
+        try {
+          synchronized (requestList) {
+            if (requestList.isEmpty()) {
+              requestList.wait();
+            }
+          }
+        } catch (InterruptedException e) {
+          SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+              "workflowEngine.INFO_INTERRUPTED_WHILE_WAITING");
         }
-      } catch (InterruptedException e) {
-        SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-            "workflowEngine.INFO_INTERRUPTED_WHILE_WAITING");
       }
+    } catch (Throwable error) {
+      /*
+       * Keep this log, we really need to know why this thread has been down. Problem can happen
+       * when external workflow is not synchronize with current Silverpeas platform version.
+       */
+      SilverTrace.fatal("workflowEngine", "WorkflowEngineThread", "Exit from workflow thread loop",
+          error);
     }
   }
 
@@ -207,7 +216,7 @@ public class WorkflowEngineThread extends Thread {
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
    * access will be synchronized on this list. Futhermore this list is used to synchronize the
    * providers and the consumers of the list :
-   * 
+   *
    * <PRE>
    * // provider
    * synchronized(requestList)
@@ -713,7 +722,7 @@ class QuestionRequest implements Request {
     }
     State state =
         instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.
-        getUser());
+            getUser());
 
     // add the state that is discussed in the list of active states
     instance.addActiveState(state);
@@ -1193,9 +1202,9 @@ class WorkflowTools {
             } catch (WorkflowException we) {
               SilverTrace.info("workflowEngine",
                   "WorkflowEngineThread.processAction(" + event.getActionName()
-                  + ")", "root.EX_ERR_PROCESS_EVENT",
+                      + ")", "root.EX_ERR_PROCESS_EVENT",
                   "Impossible de trouver l'expediteur avec le user id : "
-                  + senderId);
+                      + senderId);
             }
           }
 
@@ -1246,8 +1255,8 @@ class WorkflowTools {
             SilverTrace.error("workflowEngine",
                 "WorkflowEngineThread.processTriggers()",
                 "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "
-                + event.getActionName() + ", trigger = "
-                + trigger.getName(), e);
+                    + event.getActionName() + ", trigger = "
+                    + trigger.getName(), e);
           }
         }
       }
