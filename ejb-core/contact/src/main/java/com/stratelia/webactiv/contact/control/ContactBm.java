@@ -34,49 +34,43 @@ import com.stratelia.webactiv.node.model.NodePK;
 public interface ContactBm {
 
   /**
-   * getDetail() get details on the contact specified by the primary key given in pubPK parameter
-   *
-   * @param pubPK
-   * @return
+   * get details on the contact specified by the primary key given in contactPK parameter
+   * @param contactPK the contact primary key
+   * @return the contact detail
    */
-  public ContactDetail getDetail(ContactPK pubPK);
+  public ContactDetail getDetail(ContactPK contactPK);
 
   /**
-   * createContact() Create a new contact A new line will be added in contact table. The "id" in
+   * Create a new contact A new line will be added in contact table. The "id" in
    * "detail" is not used (a new one will be computed). The "ed" is used to know the table name.
-   *
-   * @param detail
-   * @return
+   * @param detail the contact detail
+   * @return contact primary key
    */
   public ContactPK createContact(ContactDetail detail);
 
   /**
-   * removeContact() remove the contact designed by pubPK parameter.
-   *
-   * @param pubPK
+   * removeContact() remove the contact designed by contactPK parameter.
+   * @param contactPK
    */
-  public void removeContact(ContactPK pubPK);
+  public void removeContact(ContactPK contactPK);
 
   /**
    * setDetail() update the contact content.
-   *
-   * @param detail
+   * @param detail the contact detail to update
    */
   public void setDetail(ContactDetail detail);
 
   /**
-   * addFather() add a new father (designed by "fatherPK") to a contact ("pubPK") The contact will
-   * be visible from its new father node.
-   *
-   * @param pubPK
+   * addFather() add a new father (designed by "fatherPK") to a contact ("contactPK") The contact
+   * will be visible from its new father node.
+   * @param contactPK
    * @param fatherPK
    */
-  public void addFather(ContactPK pubPK, NodePK fatherPK);
+  public void addFather(ContactPK contactPK, NodePK fatherPK);
 
   /**
    * removeFather() remove a father (designed by "fatherPK") from a contact ("pubPK") The contact
    * won't be visible from its old father node.
-   *
    * @param pubPK
    * @param fatherPK
    */
@@ -84,7 +78,6 @@ public interface ContactBm {
 
   /**
    * removeAllFather() remove all father from a contact ("pubPK") The contact won't be visible.
-   *
    * @param pubPK
    */
   public void removeAllFather(ContactPK pubPK);
@@ -92,7 +85,6 @@ public interface ContactBm {
   /**
    * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
    * designed by originPK
-   *
    * @param originPK
    * @param pubPK
    */
@@ -100,21 +92,19 @@ public interface ContactBm {
 
   /**
    * getOrphanContacts() return the Detail of contact which are not linked to a father
-   *
-   * @param pubPK
-   * @return
+   * @param contactPK the contact primary key
+   * @return list of contact which are not linked to a father
    */
-  public Collection<ContactDetail> getOrphanContacts(ContactPK pubPK);
+  public Collection<ContactDetail> getOrphanContacts(ContactPK contactPK);
 
   public void deleteOrphanContactsByCreatorId(ContactPK pubPK, String creatorId);
 
   public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK pubPK,
-      String publisherId,
-      String nodeId);
+      String publisherId, String nodeId);
 
   /**
-   * getAllFatherPK() return a collection, containing all node primary key from where the contact is
-   * visible
+   * getAllFatherPK() return a collection, containing all node primary key from where the contact
+   * is visible
    * @param pubPK
    * @return
    */
@@ -123,7 +113,6 @@ public interface ContactBm {
   /**
    * getDetailsByFatherPK() return a ContactDetail collection of all contact visible from the node
    * identified by "fatherPK" parameter
-   *
    * @param fatherPK
    * @return
    */

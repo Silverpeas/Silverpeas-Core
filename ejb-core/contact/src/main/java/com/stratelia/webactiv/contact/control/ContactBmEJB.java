@@ -20,34 +20,33 @@
  */
 package com.stratelia.webactiv.contact.control;
 
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.DBUtil;
 import com.stratelia.webactiv.contact.info.InfoDAO;
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
 import com.stratelia.webactiv.contact.model.ContactRuntimeException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 @Stateless(name = "ContactBm", description = "EJB to manage a user's contacts.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class ContactBmEJB implements ContactBm {
 
-  private static final long serialVersionUID = 7603553259862289647L;
   private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   @Override
@@ -56,19 +55,15 @@ public class ContactBmEJB implements ContactBm {
     try {
       ContactPK primary = ContactDAO.selectByPrimaryKey(con, pubPK);
       if (primary != null) {
-        return primary.pubDetail;
+        return primary.contactDetail;
       } else {
         throw new ContactRuntimeException("ContactBmEJB.getDetail()",
             SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_NOT_FOUND");
       }
-    } catch (SQLException re) {
+    } catch (SQLException | ParseException re) {
       throw new ContactRuntimeException("ContactBmEJB.getDetail()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = "
           + pubPK.getId(), re);
-    } catch (ParseException ex) {
-      throw new ContactRuntimeException("ContactBmEJB.getDetail()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = "
-          + pubPK.getId(), ex);
     } finally {
       DBUtil.close(con);
     }
@@ -212,10 +207,10 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  public Collection<ContactDetail> getOrphanContacts(ContactPK pubPK) {
+  public Collection<ContactDetail> getOrphanContacts(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getOrphanContacts(con, pubPK);
+      return ContactDAO.getOrphanContacts(con, contactPK);
     } catch (Exception re) {
       throw new ContactRuntimeException("ContactBmEJB.getOrphanContacts()",
           SilverpeasRuntimeException.ERROR,

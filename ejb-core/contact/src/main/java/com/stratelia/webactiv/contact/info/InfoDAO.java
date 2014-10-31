@@ -40,12 +40,18 @@ public class InfoDAO {
   public InfoDAO() {
   }
 
-  // return true if an info already exists
-  public static boolean hasInfo(Connection con, ContactPK pubPK, String modelId)
+  /**
+   * @param con the database connection
+   * @param contactPK the contact primary key
+   * @param modelId the model identifier
+   * @return true if an info already exists
+   * @throws SQLException
+   */
+  public static boolean hasInfo(Connection con, ContactPK contactPK, String modelId)
       throws SQLException {
 
     boolean result;
-    InfoPK infoPK = new InfoPK("unknown", pubPK);
+    InfoPK infoPK = new InfoPK("unknown", contactPK);
     String tableName = infoPK.getTableName();
 
     String selectStatement = "select infoId FROM " + tableName
@@ -54,8 +60,8 @@ public class InfoDAO {
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(pubPK.getId()).intValue());
-      prepStmt.setString(2, pubPK.getComponentName());
+      prepStmt.setInt(1, Integer.parseInt(contactPK.getId()));
+      prepStmt.setString(2, contactPK.getComponentName());
       prepStmt.setString(3, modelId);
       rs = prepStmt.executeQuery();
       result = rs.next();
@@ -65,27 +71,34 @@ public class InfoDAO {
     }
   }
 
-  // create the info reference
-  // match the info with a model
+  /**
+   * create the info reference
+   * match the info with a model
+   *
+   * @param con the database connection
+   * @param modelId the model identifier
+   * @param contactPK the contact primary key
+   * @return an Info primary key
+   * @throws SQLException
+   */
   public static InfoPK createInfo(Connection con, String modelId,
-      ContactPK pubPK) throws SQLException {
-    int newId = 0;
-    InfoPK infoPK = new InfoPK("unknown", pubPK);
+      ContactPK contactPK) throws SQLException {
+    InfoPK infoPK = new InfoPK("unknown", contactPK);
     String tableName = infoPK.getTableName();
 
-    newId = DBUtil.getNextId(tableName, "infoId");
-    infoPK.setId(new Integer(newId).toString());
+    int newId = DBUtil.getNextId(tableName, "infoId");
+    infoPK.setId(Integer.toString(newId));
 
-    if (!hasInfo(con, pubPK, modelId)) {
+    if (!hasInfo(con, contactPK, modelId)) {
       String insertStatement = "INSERT INTO " + tableName + " values ( ? , ? , ? , ? )";
       PreparedStatement prepStmt = null;
 
       try {
         prepStmt = con.prepareStatement(insertStatement);
-        prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
-        prepStmt.setInt(2, new Integer(pubPK.getId()).intValue());
+        prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
+        prepStmt.setInt(2, Integer.parseInt(contactPK.getId()));
         prepStmt.setString(3, modelId);
-        prepStmt.setString(4, pubPK.getComponentName());
+        prepStmt.setString(4, contactPK.getComponentName());
         prepStmt.executeUpdate();
         return infoPK;
       } finally {
@@ -103,7 +116,7 @@ public class InfoDAO {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -119,12 +132,12 @@ public class InfoDAO {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(contactPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(contactPK.getId()));
       prepStmt.setString(2, infoPK.getComponentName());
       rs = prepStmt.executeQuery();
-      String id = "";
+      String id;
       while (rs.next()) {
-        id = new Integer(rs.getInt(1)).toString();
+        id = Integer.toString(rs.getInt(1));
         infoPK = new InfoPK(id, contactPK);
 
         deleteInfo(con, infoPK);

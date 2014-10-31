@@ -34,40 +34,40 @@ import java.io.Serializable;
  */
 public class CompleteContact implements Serializable {
 
-  private ContactDetail pubDetail;
+  private ContactDetail contactDetail;
   private String modelId;
 
   /**
    * Create a new CompleteContact
-   * @param pubDetail
-   * @param modelId
-   * @see com.stratelia.webactiv.contact.model.PulicationDetail
+   * @param contactDetail the contact detail
+   * @param modelId the modeil identifier
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
-  public CompleteContact(ContactDetail pubDetail, String modelId) {
-    this.pubDetail = pubDetail;
+  public CompleteContact(ContactDetail contactDetail, String modelId) {
+    this.contactDetail = contactDetail;
     this.modelId = modelId;
   }
 
   /**
    * Get the contact parameters
    * @return a ContactDetail - the contact parameters
-   * @see com.stratelia.webactiv.contact.model.PulicationDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   public ContactDetail getContactDetail() {
-    return pubDetail;
+    return contactDetail;
   }
 
   /**
-   * @return
+   * @return the model identifier
    */
   public String getModelId() {
     return modelId;
   }
 
   /**
-   * @param modelId
+   * @param modelId the model identifier to set
    */
   public void setModelId(String modelId) {
     this.modelId = modelId;

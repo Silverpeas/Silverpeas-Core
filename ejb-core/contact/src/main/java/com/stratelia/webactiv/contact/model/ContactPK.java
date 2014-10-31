@@ -36,7 +36,7 @@ import org.silverpeas.util.WAPrimaryKey;
 public class ContactPK extends WAPrimaryKey implements Serializable {
 
   // for flat pk design pattern
-  public transient ContactDetail pubDetail = null;
+  public transient ContactDetail contactDetail = null;
 
   /**
    * Constructor which set only the id
@@ -82,16 +82,14 @@ public class ContactPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Check if an another object is equal to this object
+   * @param other the object to compare to this ContactPK
    * @return true if other is equals to this object
-   * @param other the object to compare to this NodePK
    * @since 1.0
    */
   public boolean equals(Object other) {
-    if (!(other instanceof ContactPK))
-      return false;
-    return (id.equals(((ContactPK) other).getId()))
-        && (space.equals(((ContactPK) other).getSpace()))
-        && (componentName.equals(((ContactPK) other).getComponentName()));
+    return other instanceof ContactPK && (id.equals(((ContactPK) other).getId())) &&
+        (space.equals(((ContactPK) other).getSpace())) &&
+        (componentName.equals(((ContactPK) other).getComponentName()));
   }
 
   /**

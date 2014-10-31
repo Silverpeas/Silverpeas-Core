@@ -34,19 +34,18 @@ import java.io.Serializable;
  */
 public class ContactFatherDetail implements Serializable {
 
-  private ContactDetail pubDetail;
+  private ContactDetail contactDetail;
   private String nodeId;
   private String nodeName;
 
   /**
    * Create a new ContactFatherDetail
-   * @param contactDetail
-   * @param nodeId
-   * @param nodeName
+   * @param contactDetail the contact detail
+   * @param nodeId the node identifier
+   * @param nodeName the node name
    */
-  public ContactFatherDetail(ContactDetail pubDetail, String nodeId,
-      String nodeName) {
-    this.pubDetail = pubDetail;
+  public ContactFatherDetail(ContactDetail contactDetail, String nodeId, String nodeName) {
+    this.contactDetail = contactDetail;
     this.nodeId = nodeId;
     this.nodeName = nodeName;
   }
@@ -54,11 +53,11 @@ public class ContactFatherDetail implements Serializable {
   /**
    * Get the contact parameters
    * @return a ContactDetail - the contact parameters
-   * @see com.stratelia.webactiv.contact.model.PulicationDetail
+   * @see com.stratelia.webactiv.contact.model.ContactDetail
    * @since 1.0
    */
   public ContactDetail getContactDetail() {
-    return pubDetail;
+    return contactDetail;
   }
 
   public String getNodeId() {
