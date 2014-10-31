@@ -46,7 +46,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
 
   private PublicationBm publicationBm;
-  private NodeService nodeService = NodeService.getNodeService();
+  private NodeService nodeService = NodeService.getInstance();
 
   NodeAccessControl() {
     super();

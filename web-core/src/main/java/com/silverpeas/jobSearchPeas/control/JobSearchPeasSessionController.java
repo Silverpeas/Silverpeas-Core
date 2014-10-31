@@ -70,7 +70,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
   private PublicationBm publicationBm = null;
-  private NodeService nodeService = NodeService.getNodeService();
+  private NodeService nodeService = NodeService.getInstance();
   private String searchField = null;
   private String category = null;
   private List<SearchResult> listResult = null;

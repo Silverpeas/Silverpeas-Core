@@ -11,8 +11,8 @@
 
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>notation</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Notation - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Notation - ${project.version}</name>
 
   <dependencies>
     <dependency>

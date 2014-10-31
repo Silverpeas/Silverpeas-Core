@@ -24,7 +24,7 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.notation.ejb.RatingBm;
+import com.silverpeas.notation.ejb.RatingService;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -94,7 +94,7 @@ public class PublicationBmEJB implements PublicationBm {
   @Inject
   private CoordinatesService coordinatesService;
   @Inject
-  private RatingBm ratingBm;
+  private RatingService ratingService;
   @Inject
   private TagCloudBm tagCloudBm;
   @Inject
@@ -1678,7 +1678,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void moveRating(PublicationPK pubPK, String componentInstanceId) {
     if (isRatingEnabled(pubPK)) {
-      ratingBm
+      ratingService
           .moveRating(new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE),
               componentInstanceId);
     }
@@ -1686,7 +1686,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void deleteRating(PublicationPK pubPK) {
     if (isRatingEnabled(pubPK)) {
-      ratingBm
+      ratingService
           .deleteRating(new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE));
     }
   }

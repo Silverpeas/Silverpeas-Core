@@ -31,9 +31,9 @@ import org.silverpeas.util.ServiceProvider;
 public class RatingServiceProvider {
 
   /**
-   * @return an instance of {@link RatingBm} EJB.
+   * @return an instance of {@link RatingService} EJB.
    */
-  public static RatingBm getRatingService() {
-    return ServiceProvider.getService(RatingBm.class);
+  public static RatingService getRatingService() {
+    return ServiceProvider.getService(RatingService.class);
   }
 }

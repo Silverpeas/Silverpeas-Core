@@ -24,13 +24,17 @@ import com.silverpeas.SilverpeasContent;
 import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.ejb.Local;
 import javax.inject.Singleton;
 import java.util.Map;
 
-@Local
-public interface RatingBm {
+public interface RatingService {
+
+  static RatingService getInstance() {
+    return ServiceProvider.getService(RatingService.class);
+  }
 
   /**
    * Save user notation. Create it or update it if it already exists.

@@ -95,7 +95,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   // Variables
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
-  private NodeService nodeService = NodeService.getNodeService();
+  private NodeService nodeService = NodeService.getInstance();
   private AttachmentImportExport attachmentIE;
 
   /**

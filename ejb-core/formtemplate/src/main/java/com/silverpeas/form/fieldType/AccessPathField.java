@@ -113,7 +113,7 @@ public class AccessPathField extends TextField {
       if (nodeId != null) {
         NodeService nodeService = null;
         try {
-          nodeService = NodeService.getNodeService();
+          nodeService = NodeService.getInstance();
         } catch (Exception e) {
           SilverTrace.error("form", "AccessPathFieldDisplayer.display",
               "form.EX_CANT_CREATE_NODEBM_HOME");

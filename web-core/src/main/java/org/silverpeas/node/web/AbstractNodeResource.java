@@ -135,7 +135,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
   }
 
   private NodeService getNodeService() {
-    return NodeService.getNodeService();
+    return NodeService.getInstance();
   }
   
 }

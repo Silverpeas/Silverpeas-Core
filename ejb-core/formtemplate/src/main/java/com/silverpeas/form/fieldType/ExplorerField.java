@@ -288,7 +288,7 @@ public class ExplorerField extends AbstractField {
       if (nodeId != null) {
         NodeService nodeService = null;
         try {
-          nodeService = NodeService.getNodeService();
+          nodeService = NodeService.getInstance();
         } catch (Exception e) {
           SilverTrace.error("form", "ExplorerFieldDisplayer.display",
               "form.EX_CANT_CREATE_NODEBM_HOME", e);
