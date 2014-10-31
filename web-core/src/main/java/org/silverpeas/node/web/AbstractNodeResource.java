@@ -20,8 +20,6 @@
  */
 package org.silverpeas.node.web;
 
-import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +29,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import com.silverpeas.web.RESTWebService;
-import org.silverpeas.util.EJBUtilitaire;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -119,7 +116,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
   }
 
   private NodeDetail getNodeDetail(String id) {
-    return getNodeBm().getDetail(getNodePK(id));
+    return getNodeService().getDetail(getNodePK(id));
   }
 
   private NodeEntity[] removeSpecialNodes(NodeEntity[] nodes) {
@@ -137,14 +134,8 @@ public abstract class AbstractNodeResource extends RESTWebService {
     return new NodePK(id, getComponentId());
   }
 
-  private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
-    try {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
-    } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return NodeService.getNodeService();
   }
   
 }

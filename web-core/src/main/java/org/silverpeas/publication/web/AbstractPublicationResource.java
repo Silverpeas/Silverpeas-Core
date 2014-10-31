@@ -42,7 +42,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.util.EJBUtilitaire;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -124,9 +124,9 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     return uri;
   }
   
-  protected NodeBm getNodeBm() {
+  protected NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeService.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }

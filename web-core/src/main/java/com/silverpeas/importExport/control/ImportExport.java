@@ -79,6 +79,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.*;
 
+import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -118,10 +119,13 @@ public class ImportExport extends AbstractExportProcess {
   public final static int EXPORT_FILESONLY = 1;
   public final static int EXPORT_PUBLICATIONSONLY = 2;
 
-  /**
-   * Unique constructeur de la classe
-   */
-  public ImportExport() {
+  @Inject
+  private CoordinateImportExport coordinateImportExport;
+  @Inject
+  private NodeImportExport nodeImportExport;
+
+  protected ImportExport() {
+
   }
 
   /**
@@ -438,7 +442,6 @@ public class ImportExport extends AbstractExportProcess {
         "com.silverpeas.importExport.multilang.importExportBundle", language);
     PublicationsTypeManager pub_Typ_Mger = getPublicationsTypeManager();
     PdcImportExport pdcIE = new PdcImportExport();
-    NodeImportExport nodeIE = new NodeImportExport();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
@@ -507,7 +510,7 @@ public class ImportExport extends AbstractExportProcess {
       // Exportation des composants liés aux publications exportées
       silverPeasExch.setComponentsType(adminIE.getComponents(listComponentId));
       // Exportation des Arbres de topics liés aux publications exportées
-      NodeTreesType nodeTreesType = nodeIE.getTrees(listComponentId);
+      NodeTreesType nodeTreesType = nodeImportExport.getTrees(listComponentId);
       silverPeasExch.setNodeTreesType(nodeTreesType);
       // Exportation des pdcs liés aux publications exportées
       if (!listClassifyPosition.isEmpty()) {
@@ -801,7 +804,6 @@ public class ImportExport extends AbstractExportProcess {
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
-    CoordinateImportExport coordinateImportExport = new CoordinateImportExport();
     GEDImportExport gedIE;
     try {
       // Stockage de la date de démarage de l'export dans l'objet rapport
@@ -1127,11 +1129,10 @@ public class ImportExport extends AbstractExportProcess {
    * @return
    */
   private List<String> addNodeToList(List<String> nodesIds, NodeDetail nodeDetail) {
-    CoordinateImportExport cie = new CoordinateImportExport();
     // Add father
     nodesIds.add(String.valueOf(nodeDetail.getFatherPK().getId()));
     if (nodeDetail.getLevel() >= 4) {
-      NodeDetail parentNodeDetail = cie.getNodeHeader(nodeDetail.getFatherPK());
+      NodeDetail parentNodeDetail = coordinateImportExport.getNodeHeader(nodeDetail.getFatherPK());
       addNodeToList(nodesIds, parentNodeDetail);
     }
     return nodesIds;

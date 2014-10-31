@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -47,6 +48,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   ExportThread exportThread = null;
   Exception errorOccured = null;
   ExportReport exportReport = null;
+  ImportExport importExport = ServiceProvider.getService(ImportExport.class);
 
   private List<WAAttributeValuePair> items = null;
   private NodePK rootPK = null;
@@ -58,19 +60,11 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
 
   public ImportReport processImport(String xmlFileName,
       ResourcesWrapper resource) throws ImportExportException {
-    ImportExport importExport = new ImportExport();
     ImportReport importReport = importExport.processImport(getUserDetail(), xmlFileName);
     importExport.writeImportToLog(importReport, resource);
     return importReport;
   }
 
-  /**
-   * @param language
-   * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
-   * (objectId and instanceId)
-   * @param rootId
-   * @throws ImportExportException
-   */
   public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK)
       throws ImportExportException {
     processExport(itemsToExport, rootPK, ImportExport.EXPORT_FULL);
@@ -127,8 +121,6 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    */
   public ExportPDFReport processExportPDF(List<WAAttributeValuePair> itemsToExport)
       throws ImportExportException {
-    ImportExport importExport = new ImportExport();
-
     return importExport.processExportPDF(getUserDetail(), itemsToExport, rootPK);
   }
 
@@ -143,7 +135,6 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    */
   public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
       List combination, String timeCriteria) throws ImportExportException {
-    ImportExport importExport = new ImportExport();
     ExportReport report = importExport.processExportKmax(getUserDetail(),
         language, itemsToExport, combination, timeCriteria);
     return report;

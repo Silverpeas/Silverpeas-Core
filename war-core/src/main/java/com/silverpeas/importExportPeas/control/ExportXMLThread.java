@@ -28,6 +28,7 @@ import java.util.List;
 
 import com.silverpeas.importExport.control.ImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -52,7 +53,7 @@ public class ExportXMLThread extends ExportThread {
     SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
         "------------DEBUT DU THREAD D'EXPORT-----------");
     try {
-      ImportExport importExport = new ImportExport();
+      ImportExport importExport = ServiceProvider.getService(ImportExport.class);
       m_ExportReport =
           importExport.processExport(super.m_toAwake.getUserDetail(), language, pksToExport,
           rootPK, mode);

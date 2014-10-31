@@ -39,22 +39,13 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MetaData;
-import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -63,6 +54,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentsType;
@@ -70,7 +62,15 @@ import org.silverpeas.importExport.versioning.Document;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAAttributeValuePair;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.inject.Inject;
@@ -93,6 +93,10 @@ public class PublicationsTypeManager {
 
   @Inject
   private MetadataExtractor metadataExtractor;
+  @Inject
+  private CoordinateImportExport coordinateImportExport;
+  @Inject
+  private NodeImportExport nodeImportExport;
 
   protected PublicationsTypeManager() {
 
@@ -351,8 +355,7 @@ public class PublicationsTypeManager {
 
     StringBuilder pathToCreate = new StringBuilder(exportPath);
 
-    NodeImportExport nodeIE = new NodeImportExport();
-    List<NodeDetail> listNodes = new ArrayList<NodeDetail>(nodeIE.getPathOfNode(pk));
+    List<NodeDetail> listNodes = new ArrayList<>(nodeImportExport.getPathOfNode(pk));
     Collections.reverse(listNodes);
     boolean rootFound = false;
     for (NodeDetail nodeDetail : listNodes) {
@@ -416,11 +419,11 @@ public class PublicationsTypeManager {
         componentLabelForm = DirectoryUtils.formatToDirectoryNamingCompliant(componentLabel);
       }
 
-      NodeImportExport nodeIE = new NodeImportExport();
       relativeExportPath.append(componentLabelForm);
       pathToCreate.append(File.separatorChar).append(componentLabelForm);
-      List<NodeDetail> listNodes = new ArrayList<NodeDetail>(nodeIE.getPathOfNode(new NodePK(String.
-          valueOf(topicId), "useless", componentId)));
+      List<NodeDetail> listNodes =
+          new ArrayList<NodeDetail>(nodeImportExport.getPathOfNode(new NodePK(String.
+              valueOf(topicId), "useless", componentId)));
       Collections.reverse(listNodes);
       for (NodeDetail nodeDetail : listNodes) {
         String nodeNameForm = nodeDetail.getNodePK().getId();
@@ -451,7 +454,6 @@ public class PublicationsTypeManager {
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     GEDImportExport gedIE = null;
-    NodeImportExport nodeIE = new NodeImportExport();
     if (listItemsToExport != null && !listItemsToExport.isEmpty()) {
       String componentId = listItemsToExport.get(0).getValue();
       gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
@@ -478,7 +480,7 @@ public class PublicationsTypeManager {
         NodePK rightFolderPK = null;
         for (NodePK folderPK : folderPKs) {
           if (folderPK.getInstanceId().equals(nodeRootPK.getInstanceId())) {
-            List<NodeDetail> listNodes = new ArrayList<NodeDetail>(nodeIE.getPathOfNode(folderPK));
+            List<NodeDetail> listNodes = new ArrayList<>(nodeImportExport.getPathOfNode(folderPK));
             Collections.reverse(listNodes);
             for (NodeDetail nodeDetail : listNodes) {
               if (nodeDetail.getNodePK().equals(nodeRootPK)) {
@@ -582,7 +584,6 @@ public class PublicationsTypeManager {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(gedIE.getCurentUserDetail());
     PdcImportExport pdcIE = new PdcImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
-    CoordinateImportExport coordinateIE = new CoordinateImportExport();
 
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
     List<Integer> nodesKmax = new ArrayList<Integer>();
@@ -669,7 +670,7 @@ public class PublicationsTypeManager {
                     for (CoordinatePointType coordinatePointType : listCoordinatePointsType) {
                       if (StringUtil.isDefined(coordinatePointType.getValue())) {
                         // Get NodeDetail by his name
-                        NodeDetail nodeDetail = coordinateIE
+                        NodeDetail nodeDetail = coordinateImportExport
                             .getNodeDetailByName(coordinatePointType.getValue(),
                                 coordinatePointType.getAxisId(), componentId);
                         SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
@@ -679,8 +680,8 @@ public class PublicationsTypeManager {
                               coordinatePointType.getValue(), "", null, userDetail.getId(), null,
                               NodePK.ROOT_NODE_ID, String.valueOf(coordinatePointType.getAxisId()),
                               null);
-                          nodeDetail = coordinateIE.addPosition(position, String.valueOf(
-                              coordinatePointType.getAxisId()), componentId);
+                          nodeDetail = coordinateImportExport.addPosition(position,
+                              String.valueOf(coordinatePointType.getAxisId()), componentId);
                           SilverTrace.debug("importExport",
                               "PublicationsTypeManager.processImport",
                               "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
@@ -700,8 +701,9 @@ public class PublicationsTypeManager {
                     SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
                         "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
                     // Add coordinate (set of coordinatePoints)
-                    int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath.
-                        toString());
+                    int coordinateId =
+                        coordinateImportExport.addPositions(componentId, coordinatePointsPath.
+                            toString());
                     if (coordinateId == 0) {
                       unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
                     } else {

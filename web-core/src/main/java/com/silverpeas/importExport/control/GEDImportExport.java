@@ -47,7 +47,7 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -95,7 +95,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   // Variables
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
-  private NodeBm nodeBm = null;
+  private NodeService nodeService = NodeService.getNodeService();
   private AttachmentImportExport attachmentIE;
 
   /**
@@ -143,16 +143,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return l'EJB NodeBM
    * @throws ImportExportException
    */
-  protected NodeBm getNodeBm() throws ImportExportException {
-    if (nodeBm == null) {
-      try {
-        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-      } catch (Exception e) {
-        throw new ImportExportException("GEDImportExport.getNodeBm()",
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return nodeBm;
+  protected NodeService getNodeService() {
+    return nodeService;
   }
 
   private List<NodePositionType> processTopics(String userId, List<NodePositionType> topics,
@@ -682,8 +674,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         for (String name : path) {
           NodeDetail existingNode = null;
           try {
-            existingNode = getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(
-                parentId));
+            existingNode = getNodeService().getDetailByNameAndFatherId(nodePK, name,
+                Integer.parseInt(parentId));
           } catch (Exception e) {
             SilverTrace.info("importExport", "GEDImportExport.getExistingTopics",
                 "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" + node.
@@ -701,7 +693,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             newNode.setCreatorId(userId);
             NodePK newNodePK;
             try {
-              newNodePK = getNodeBm().createNode(newNode);
+              newNodePK = getNodeService().createNode(newNode);
             } catch (Exception e) {
               SilverTrace.error("importExport", "GEDImportExport.getExistingTopics",
                   "root.MSG_GEN_PARAM_VALUE",
@@ -722,7 +714,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private boolean isTopicExist(int nodeId, String componentId) {
     try {
-      getNodeBm().getHeader(new NodePK(Integer.toString(nodeId), "useless", componentId));
+      getNodeService().getHeader(new NodePK(Integer.toString(nodeId), "useless", componentId));
     } catch (Exception e) {
       return false;
     }
@@ -776,7 +768,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     unitReport.setItemName(nodeDetail.getName());
     NodePK nodePk = addSubTopicToTopic(nodeDetail, parentTopicId, unitReport);
     try {
-      return getNodeBm().getDetail(nodePk);
+      return getNodeService().getDetail(nodePk);
     } catch (Exception ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_TOPIC);
       SilverTrace.error("importExport", "GEDImportExport.createTopicForUnitImport()",
@@ -937,7 +929,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   public List<NodePK> getTopicTree(NodePK pk) throws ImportExportException {
     List<NodePK> listNodePk = new ArrayList<NodePK>();
-    Collection<NodeDetail> path = getNodeBm().getPath(pk);
+    Collection<NodeDetail> path = getNodeService().getPath(pk);
     for (NodeDetail detail : path) {
       listNodePk.add(detail.getNodePK());
     }

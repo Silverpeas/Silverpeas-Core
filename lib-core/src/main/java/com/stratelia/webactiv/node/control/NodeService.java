@@ -28,14 +28,18 @@ import javax.ejb.Local;
 
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This is the Node BM interface.
  *
  * @author Nicolas Eysseric
  */
-@Local
-public interface NodeBm {
+public interface NodeService {
+
+  static NodeService getNodeService() {
+    return ServiceProvider.getService(NodeService.class);
+  }
 
   /**
    * Get the attributes of THIS node

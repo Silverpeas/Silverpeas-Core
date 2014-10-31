@@ -23,12 +23,6 @@
  */
 package com.silverpeas.pdc.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.persistence.EntityNotFoundException;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.dao.PdcAxisValueRepository;
 import com.silverpeas.pdc.dao.PdcClassificationRepository;
@@ -36,17 +30,19 @@ import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
-
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
-import com.stratelia.webactiv.node.NodeBmProvider;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.util.StringUtil.isDefined;
@@ -65,9 +61,9 @@ public class DefaultPdcClassificationService implements PdcClassificationService
   @Inject
   private PdcAxisValueRepository valueRepository;
   @Inject
-  private NodeBmProvider nodeBmProvider;
-  @Inject
   private PdcBm pdcBm;
+  @Inject
+  private NodeService nodeService;
 
   /**
    * Finds a predefined classification on the PdC that was set for any new contents in the specified
@@ -94,7 +90,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
         while (classification == null && !nodeToSeek.isUndefined()) {
           classification = classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.
               getId(), nodeToSeek.getInstanceId());
-          NodeDetail node = getNodeBm().getDetail(nodeToSeek);
+          NodeDetail node = getNodeService().getDetail(nodeToSeek);
           nodeToSeek = node.getFatherPK();
         }
         if (classification == null) {
@@ -324,8 +320,8 @@ public class DefaultPdcClassificationService implements PdcClassificationService
     }
   }
 
-  protected NodeBm getNodeBm() {
-    return nodeBmProvider.getNodeBm();
+  protected NodeService getNodeService() {
+    return nodeService;
   }
 
   private boolean isFound(ClassifyPosition aPosition,

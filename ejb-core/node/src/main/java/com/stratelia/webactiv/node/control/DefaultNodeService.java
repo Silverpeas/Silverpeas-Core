@@ -41,7 +41,6 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,15 +52,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is the NodeBM EJB-tier controller. A node is composed by some another nodes (children) and
- * have got one and only one father. It describes a tree. It is implemented as a session EJB.
+ * This is the default implementation of NodeService. A node is composed by some another nodes
+ * (children) and have got one and only one father. It describes a tree.
  *
  * @author Nicolas Eysseric
  */
-@Stateless(name = "Node", description = "Stateless EJB to manage nodes. A node is composed by some "
-    + "another nodes (children) and have got one and only one father. It describes a tree.")
 @Transactional(Transactional.TxType.SUPPORTS)
-public class NodeBmEJB implements NodeBm {
+public class DefaultNodeService implements NodeService {
 
   /**
    * Database name where is stored nodes

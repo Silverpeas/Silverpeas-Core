@@ -39,11 +39,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.coordinates.control.CoordinatesService;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.info.SeeAlsoDAO;
@@ -90,9 +90,9 @@ import java.util.*;
 public class PublicationBmEJB implements PublicationBm {
 
   @Inject
-  private NodeBm nodeBm;
+  private NodeService nodeService;
   @Inject
-  private CoordinatesBm coordinatesBm;
+  private CoordinatesService coordinatesService;
   @Inject
   private RatingBm ratingBm;
   @Inject
@@ -1413,7 +1413,7 @@ public class PublicationBmEJB implements PublicationBm {
       Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
       List<String> paths = new ArrayList<String>();
       for (NodePK father : fathers) {
-        paths.add(nodeBm.getDetail(father).getFullPath());
+        paths.add(nodeService.getDetail(father).getFullPath());
       }
       indexEntry.setPaths(paths);
 
@@ -1491,7 +1491,7 @@ public class PublicationBmEJB implements PublicationBm {
           pathsByIndex.put(pk, new ArrayList<String>());
         }
         pathsByIndex.get(pk).add(
-            nodeBm.getDetail(new NodePK(alias.getId(), alias.getInstanceId())).getFullPath());
+            nodeService.getDetail(new NodePK(alias.getId(), alias.getInstanceId())).getFullPath());
       }
     }
 
@@ -1717,7 +1717,7 @@ public class PublicationBmEJB implements PublicationBm {
       String coordinateId = it.next().getId();
       coordinateIds.add(coordinateId);
     }
-    Collection<Coordinate> coordinates = coordinatesBm.getCoordinatesByCoordinateIds(
+    Collection<Coordinate> coordinates = coordinatesService.getCoordinatesByCoordinateIds(
         coordinateIds, coordinatePK);
     // Enrichit les coordonnees avec le nom du noeud
     Iterator<Coordinate> itCoordinates = coordinates.iterator();
@@ -1730,7 +1730,7 @@ public class PublicationBmEJB implements PublicationBm {
       while (pointsIt.hasNext()) {
         CoordinatePoint point = pointsIt.next();
         try {
-          NodeDetail node = nodeBm.getHeader(new NodePK("" + point.getNodeId(), componentId));
+          NodeDetail node = nodeService.getHeader(new NodePK("" + point.getNodeId(), componentId));
           point.setName(node.getName());
           point.setLevel(node.getLevel());
           point.setPath(node.getPath());

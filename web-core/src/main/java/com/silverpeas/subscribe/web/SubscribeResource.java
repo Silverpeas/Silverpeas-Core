@@ -29,7 +29,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.web.RESTWebService;
@@ -65,7 +65,7 @@ public class SubscribeResource extends RESTWebService {
   public String subscribeToComponent() {
     try {
       Subscription subscription = new ComponentSubscription(getUserDetail().getId(), componentId);
-      SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
       NotifierUtil.addSuccess(MessageFormat
           .format(getBundle().getResourceBundle().getString("GML.subscribe.success"),
@@ -85,7 +85,7 @@ public class SubscribeResource extends RESTWebService {
     try {
       Subscription subscription = new NodeSubscription(getUserDetail().getId(), new NodePK(topicId,
               componentId));
-      SubscriptionServiceFactory.getFactory().getSubscribeService().subscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       return "OK";
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);

@@ -25,7 +25,7 @@ package org.silverpeas.subscription.control;
 
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.service.ComponentSubscription;
@@ -168,7 +168,7 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
    */
   private SubscriptionService getSubscriptionService() {
     if (subscriptionService == null) {
-      subscriptionService = SubscriptionServiceFactory.getFactory().getSubscribeService();
+      subscriptionService = SubscriptionServiceProvider.getSubscribeService();
     }
     return subscriptionService;
   }

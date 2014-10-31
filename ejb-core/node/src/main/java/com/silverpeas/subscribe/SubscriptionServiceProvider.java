@@ -24,24 +24,19 @@
 
 package com.silverpeas.subscribe;
 
+import org.silverpeas.util.ServiceProvider;
+
 import javax.inject.Inject;
 
 /**
  * @author ehugonnet
  */
-public class SubscriptionServiceFactory {
-  private final static SubscriptionServiceFactory instance = new SubscriptionServiceFactory();
-  @Inject
-  private SubscriptionService service;
+public class SubscriptionServiceProvider {
 
-  private SubscriptionServiceFactory() {
+  private SubscriptionServiceProvider() {
   }
 
-  public static SubscriptionServiceFactory getFactory() {
-    return instance;
-  }
-
-  public SubscriptionService getSubscribeService() {
-    return service;
+  public static SubscriptionService getSubscribeService() {
+    return ServiceProvider.getService(SubscriptionService.class);
   }
 }

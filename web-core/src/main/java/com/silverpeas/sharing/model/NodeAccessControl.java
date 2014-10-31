@@ -33,7 +33,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.WAPrimaryKey;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -46,7 +46,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
 
   private PublicationBm publicationBm;
-  private NodeBm nodeBm;
+  private NodeService nodeService = NodeService.getNodeService();
 
   NodeAccessControl() {
     super();
@@ -81,7 +81,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
 
   protected Collection<NodePK> getNodeDescendants(NodePK pk)
       throws CreateException, RemoteException {
-    return findNodeBm().getDescendantPKs(pk);
+    return getNodeService().getDescendantPKs(pk);
   }
 
   private boolean isPublicationReadable(WAPrimaryKey pk, String instanceId,
@@ -111,10 +111,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
     return publicationBm;
   }
 
-  private NodeBm findNodeBm() {
-    if (nodeBm == null) {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return nodeService;
   }
 }

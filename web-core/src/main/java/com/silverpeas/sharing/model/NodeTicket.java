@@ -33,9 +33,7 @@ import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableResource;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -73,8 +71,8 @@ public class NodeTicket extends Ticket {
 
   @Override
   public ShareableResource<NodeDetail> getResource() {
-    NodeBm nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-    NodeDetail node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
+    NodeService nodeService = NodeService.getNodeService();
+    NodeDetail node = nodeService.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
         getComponentId()));
     if (node != null) {
       return new ShareableNode(getToken(), node);

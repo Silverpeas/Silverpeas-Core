@@ -29,8 +29,7 @@ import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 
-@Local
-public interface CoordinatesBm {
+public interface CoordinatesService {
 
   /**
    * Used only by the specific job'peas SmallAds This method must not be used by an another Job'peas

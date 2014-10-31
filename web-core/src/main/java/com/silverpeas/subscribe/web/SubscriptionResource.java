@@ -29,15 +29,15 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -99,10 +99,10 @@ public class SubscriptionResource extends RESTWebService {
           UserSubscriptionSubscriber.from(getUserDetail().getId());
       final Collection<Subscription> subscriptions;
       if (StringUtil.isDefined(resourceId)) {
-        subscriptions = SubscriptionServiceFactory.getFactory().getSubscribeService()
+        subscriptions = SubscriptionServiceProvider.getSubscribeService()
             .getByResource(NodeSubscriptionResource.from(new NodePK(resourceId, componentId)));
       } else {
-        subscriptions = SubscriptionServiceFactory.getFactory().
+        subscriptions = SubscriptionServiceProvider.
             getSubscribeService().getByResource(ComponentSubscriptionResource.from(componentId));
       }
       return asWebEntities(subscriptions);
@@ -149,8 +149,8 @@ public class SubscriptionResource extends RESTWebService {
       } else {
         subscriptionResource = ComponentSubscriptionResource.from(componentId);
       }
-      return asSubscriberWebEntities(SubscriptionServiceFactory.getFactory().
-          getSubscribeService().getSubscribers(subscriptionResource));
+      return asSubscriberWebEntities(
+          SubscriptionServiceProvider.getSubscribeService().getSubscribers(subscriptionResource));
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {

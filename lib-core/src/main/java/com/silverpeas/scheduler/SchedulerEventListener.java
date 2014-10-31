@@ -40,7 +40,7 @@ public interface SchedulerEventListener {
    * listener. The processing of this event can be, for example for preparing the resources before
    * the job execution or performing the execution of the job itself (delegation).
    * @param anEvent the event coming from the trigger firing.
-   * @throws an exception if the process of this event failed.
+   * @throws java.lang.Exception if the process of this event failed.
    */
   void triggerFired(final SchedulerEvent anEvent) throws Exception;
 

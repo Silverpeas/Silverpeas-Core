@@ -40,8 +40,8 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import com.stratelia.silverpeas.treeManager.model.TreeNodePK;
 import com.stratelia.webactiv.node.NodeBmProvider;
+import com.stratelia.webactiv.node.control.NodeService;
 import org.silverpeas.util.exception.SilverpeasException;
-import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;
@@ -75,49 +75,49 @@ public final class TestResources {
   private PdcBmMock pdcBmMock;
   @Inject
   private NodeBmProvider nodeBmProvider;
-  private NodeBm nodeBmMock = mock(NodeBm.class);
+  private NodeService nodeServiceMock = mock(NodeService.class);
 
   @PostConstruct
   protected void init() {
-    ReflectionTestUtils.invokeSetterMethod(nodeBmProvider, "setNodeBm", nodeBmMock);
-    when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_2_ID, COMPONENT_INSTANCE_1_ID))).
+    ReflectionTestUtils.invokeSetterMethod(nodeBmProvider, "setNodeBm", nodeServiceMock);
+    when(nodeServiceMock.getDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_2_ID, COMPONENT_INSTANCE_1_ID))).
         thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_2_ID,
         COMPONENT_INSTANCE_1_ID), "", "", "", "", "",
         1, new NodePK(COMPONENT_INSTANCE_1_NODE_1_ID, COMPONENT_INSTANCE_1_ID),
         new ArrayList<NodeDetail>()));
-    when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_1_ID, COMPONENT_INSTANCE_1_ID))).
+    when(nodeServiceMock.getDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_1_ID, COMPONENT_INSTANCE_1_ID))).
         thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_1_NODE_1_ID,
         COMPONENT_INSTANCE_1_ID), "", "", "", "", "",
         1, new NodePK(NodePK.UNDEFINED_NODE_ID, COMPONENT_INSTANCE_1_ID),
         new ArrayList<NodeDetail>()));
-    when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_2_NODE_2_ID, COMPONENT_INSTANCE_2_ID))).
+    when(nodeServiceMock.getDetail(new NodePK(COMPONENT_INSTANCE_2_NODE_2_ID, COMPONENT_INSTANCE_2_ID))).
         thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_2_NODE_2_ID,
         COMPONENT_INSTANCE_2_ID), "", "", "", "", "",
         1, new NodePK(COMPONENT_INSTANCE_2_NODE_1_ID, COMPONENT_INSTANCE_2_ID),
         new ArrayList<NodeDetail>()));
-    when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_2_NODE_1_ID, COMPONENT_INSTANCE_2_ID))).
+    when(nodeServiceMock.getDetail(new NodePK(COMPONENT_INSTANCE_2_NODE_1_ID, COMPONENT_INSTANCE_2_ID))).
         thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_2_NODE_1_ID,
         COMPONENT_INSTANCE_2_ID), "", "", "", "", "",
         1, new NodePK(NodePK.UNDEFINED_NODE_ID, COMPONENT_INSTANCE_2_ID),
         new ArrayList<NodeDetail>()));
-    when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_3_NODE_2_ID, COMPONENT_INSTANCE_3_ID))).
+    when(nodeServiceMock.getDetail(new NodePK(COMPONENT_INSTANCE_3_NODE_2_ID, COMPONENT_INSTANCE_3_ID))).
         thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_3_NODE_2_ID,
         COMPONENT_INSTANCE_3_ID), "", "", "", "", "",
         1, new NodePK(COMPONENT_INSTANCE_3_NODE_1_ID, COMPONENT_INSTANCE_3_ID),
         new ArrayList<NodeDetail>()));
-    when(nodeBmMock.getDetail(new NodePK(COMPONENT_INSTANCE_3_NODE_1_ID, COMPONENT_INSTANCE_3_ID))).
+    when(nodeServiceMock.getDetail(new NodePK(COMPONENT_INSTANCE_3_NODE_1_ID, COMPONENT_INSTANCE_3_ID))).
         thenReturn(new NodeDetail(new NodePK(COMPONENT_INSTANCE_3_NODE_1_ID,
         COMPONENT_INSTANCE_3_ID), "", "", "", "", "",
         1, new NodePK(NodePK.UNDEFINED_NODE_ID, COMPONENT_INSTANCE_3_ID),
         new ArrayList<NodeDetail>()));
 
-    when(nodeBmMock.getDetail(new NodePK(UNEXISTING_NODE_ID, COMPONENT_INSTANCE_1_ID))).thenThrow(
+    when(nodeServiceMock.getDetail(new NodePK(UNEXISTING_NODE_ID, COMPONENT_INSTANCE_1_ID))).thenThrow(
         new NodeRuntimeException("",
         SilverpeasException.ERROR, ""));
-    when(nodeBmMock.getDetail(new NodePK(UNEXISTING_NODE_ID, COMPONENT_INSTANCE_2_ID))).thenThrow(
+    when(nodeServiceMock.getDetail(new NodePK(UNEXISTING_NODE_ID, COMPONENT_INSTANCE_2_ID))).thenThrow(
         new NodeRuntimeException("",
         SilverpeasException.ERROR, ""));
-    when(nodeBmMock.getDetail(new NodePK(UNEXISTING_NODE_ID, COMPONENT_INSTANCE_3_ID))).thenThrow(
+    when(nodeServiceMock.getDetail(new NodePK(UNEXISTING_NODE_ID, COMPONENT_INSTANCE_3_ID))).thenThrow(
         new NodeRuntimeException("",
         SilverpeasException.ERROR, ""));
 

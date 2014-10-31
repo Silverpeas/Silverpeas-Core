@@ -36,9 +36,7 @@ import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -113,17 +111,17 @@ public class AccessPathField extends TextField {
       // Theme > SubTheme
       String pathString = "";
       if (nodeId != null) {
-        NodeBm nodeBm = null;
+        NodeService nodeService = null;
         try {
-          nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+          nodeService = NodeService.getNodeService();
         } catch (Exception e) {
           SilverTrace.error("form", "AccessPathFieldDisplayer.display",
               "form.EX_CANT_CREATE_NODEBM_HOME");
         }
 
-        if (nodeBm != null) {
+        if (nodeService != null) {
           NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection<NodeDetail> listPath = nodeBm.getPath(nodePk);
+          Collection<NodeDetail> listPath = nodeService.getPath(nodePk);
           if (listPath != null) {
             String nodeName;
             for (NodeDetail nodeInPath : listPath) {

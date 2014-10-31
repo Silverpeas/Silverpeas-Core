@@ -33,14 +33,16 @@ import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 
+import javax.inject.Inject;
 import java.io.File;
 
-public class ScheduledImport implements SchedulerEventListener {
+public class ScheduledImport implements SchedulerEventListener, Initialization {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";
   private final ResourceLocator resources = new ResourceLocator(
@@ -48,7 +50,11 @@ public class ScheduledImport implements SchedulerEventListener {
   private File dir = null; // Where the import XML descriptors are stored
   private String postPolicy = null;
 
-  public void initialize() {
+  @Inject
+  private ImportExport importExport;
+
+  @Override
+  public void init() {
     try {
       String cron = resources.getString("cronScheduledImport");
       postPolicy = resources.getString("postPolicy", "remove");
@@ -76,7 +82,6 @@ public class ScheduledImport implements SchedulerEventListener {
         "root.MSG_GEN_ENTER_METHOD");
 
     String userId = resources.getString("userIdAsCreatorId");
-    ImportExport importExport = new ImportExport();
     UserDetail user = OrganizationControllerProvider
         .getOrganisationController().getUserDetail(userId);
     ResourceLocator multilang = new ResourceLocator(

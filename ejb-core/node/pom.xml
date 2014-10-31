@@ -9,8 +9,8 @@
 
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>node</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Node - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Node - ${project.version}</name>
   
   <dependencies>
     <dependency>
@@ -29,16 +29,6 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner-jdbc</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
     </dependency>
     <!--
     <dependency>

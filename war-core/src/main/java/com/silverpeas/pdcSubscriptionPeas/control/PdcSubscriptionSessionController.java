@@ -25,7 +25,7 @@ import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
@@ -45,7 +45,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import java.rmi.RemoteException;
@@ -98,15 +98,15 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return pdcBm;
   }
 
-  private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+  private SubscriptionService getSubscribeService() {
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 
-  public NodeBm getNodeBm() {
+  public NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeBm()",
+      throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
@@ -117,7 +117,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
-    Collection<Subscription> list = getSubscribeBm().getByUserSubscriber(currentUserId);
+    Collection<Subscription> list = getSubscribeService().getByUserSubscriber(currentUserId);
     for (Subscription subscription : list) {
       try {
         // Subscriptions managed at this level are only those of node subscription.
@@ -146,7 +146,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
-    Collection<Subscription> list = getSubscribeBm().getByUserSubscriber(currentUserId);
+    Collection<Subscription> list = getSubscribeService().getByUserSubscriber(currentUserId);
     for (Subscription subscription : list) {
       // Subscriptions managed at this level are only those of node subscription.
       if (SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType())) {
@@ -172,7 +172,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       NodeSubscription subscription =
           new NodeSubscription(UserSubscriptionSubscriber.from(getUserId()),
           new NodePK(nodeId, instanceId), creatorId);
-      getSubscribeBm().unsubscribe(subscription);
+      getSubscribeService().unsubscribe(subscription);
     }
   }
 
@@ -185,7 +185,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       ComponentSubscription subscription =
           new ComponentSubscription(UserSubscriptionSubscriber.from(getUserId()), instanceId,
           creatorId);
-      getSubscribeBm().unsubscribe(subscription);
+      getSubscribeService().unsubscribe(subscription);
     }
   }
 

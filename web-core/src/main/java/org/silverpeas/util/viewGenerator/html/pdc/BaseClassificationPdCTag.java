@@ -28,7 +28,7 @@ import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import java.text.MessageFormat;
@@ -319,11 +319,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     return getJspContext().getOut();
   }
 
-  protected NodeBm getNodeBm() {
+  protected NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (Exception ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeBm()",
+      throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
   }

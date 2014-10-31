@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
@@ -59,9 +59,9 @@ public class GoToTopic extends GoTo {
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
   }
 
-  public NodeBm getNodeBm() {
+  public NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (Exception e) {
       displayError(null);
     }

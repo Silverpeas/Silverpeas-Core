@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
+import com.stratelia.webactiv.coordinates.persistence.CoordinatesDAO;
 import org.dbunit.Assertion;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.Column;

@@ -53,7 +53,7 @@ import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -70,7 +70,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
   private PublicationBm publicationBm = null;
-  private NodeBm nodeBm = null;
+  private NodeService nodeService = NodeService.getNodeService();
   private String searchField = null;
   private String category = null;
   private List<SearchResult> listResult = null;
@@ -115,16 +115,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   /**
    * @return
    */
-  private NodeBm getNodeBm() {
-    if (null == nodeBm) {
-      try {
-        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-      } catch (Exception e) {
-        throw new PublicationRuntimeException("JobSearchPeasSessionController.getNodeBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return nodeService;
   }
 
   /**
@@ -485,7 +477,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       if (null != fatherPKs) {
         for (NodePK pk : fatherPKs) {
           StringBuilder emplacement = new StringBuilder(emplacementEspaceComposant);
-          Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
+          Collection<NodeDetail> path = getNodeService().getAnotherPath(pk);
           List<NodeDetail> pathTab = new ArrayList<NodeDetail>(path);
           Collections.reverse(pathTab);
           for (NodeDetail nodeDetail : pathTab) {

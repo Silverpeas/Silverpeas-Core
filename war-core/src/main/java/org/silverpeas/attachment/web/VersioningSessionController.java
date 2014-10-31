@@ -33,7 +33,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -251,8 +251,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * @return
    */
-  public NodeBm getNodeBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+  public NodeService getNodeBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
   }
 
   /**

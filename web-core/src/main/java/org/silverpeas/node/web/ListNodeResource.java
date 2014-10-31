@@ -23,9 +23,9 @@ package org.silverpeas.node.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
@@ -33,11 +33,8 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 
 import com.stratelia.webactiv.SilverpeasRole;
-import org.silverpeas.util.EJBUtilitaire;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodePK;
-
-import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 
 /**
  * A REST Web resource representing a list of node. It is a web service that provides an access to a
@@ -49,6 +46,9 @@ import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
 @Authorized
 public class ListNodeResource extends RESTWebService {
 
+  @Inject
+  private NodeService nodeService;
+
   @PathParam("instanceId")
   private String instanceId;
 
@@ -57,14 +57,8 @@ public class ListNodeResource extends RESTWebService {
     return instanceId;
   }
 
-  private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
-    try {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
-    } catch (Exception e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return nodeService;
   }
 
   /**
@@ -86,7 +80,6 @@ public class ListNodeResource extends RESTWebService {
    * a 401 HTTP code is returned. If the user isn't authorized to save the node, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    *
-   * @param tab of node to update order
    * @return the new list of node after update
    */
   @PUT
@@ -100,7 +93,7 @@ public class ListNodeResource extends RESTWebService {
       for (NodeEntity nodeEntity : newListNode) {
         nodePKs.add(nodeEntity.toNodePK());
       }
-      getNodeBm().sortNodes(nodePKs);
+      getNodeService().sortNodes(nodePKs);
     }
     return newListNode;
   }

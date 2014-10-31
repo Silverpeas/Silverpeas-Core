@@ -30,7 +30,7 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -56,7 +56,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
   private OrganizationController controller;
 
   @Inject
-  private NodeBm nodeService;
+  private NodeService nodeService;
 
   protected NodeAccessController() {
   }
@@ -130,7 +130,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK> {
     }
   }
 
-  public NodeBm getNodeBm() {
+  public NodeService getNodeBm() {
     return nodeService;
   }
 

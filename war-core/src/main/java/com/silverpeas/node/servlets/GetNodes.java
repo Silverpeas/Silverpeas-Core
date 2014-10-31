@@ -32,7 +32,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.json.JSONArray;
@@ -259,8 +259,8 @@ public class GetNodes extends HttpServlet {
     return flag.toString();
   }
 
-  private NodeBm getNodeBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+  private NodeService getNodeBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
   }
 
   private boolean isPublicationAllowedOnRoot(NodePK pk, MainSessionController session) {

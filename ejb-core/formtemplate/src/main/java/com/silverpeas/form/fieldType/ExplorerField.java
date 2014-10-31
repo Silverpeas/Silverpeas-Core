@@ -30,13 +30,11 @@ import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -288,17 +286,17 @@ public class ExplorerField extends AbstractField {
       // Theme > SubTheme
       String pathString = "";
       if (nodeId != null) {
-        NodeBm nodeBm = null;
+        NodeService nodeService = null;
         try {
-          nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+          nodeService = NodeService.getNodeService();
         } catch (Exception e) {
           SilverTrace.error("form", "ExplorerFieldDisplayer.display",
               "form.EX_CANT_CREATE_NODEBM_HOME", e);
         }
 
-        if (nodeBm != null) {
+        if (nodeService != null) {
           NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection<NodeDetail> listPath = nodeBm.getPath(nodePk);
+          Collection<NodeDetail> listPath = nodeService.getPath(nodePk);
           if (listPath != null) {
             Collections.reverse((List<NodeDetail>) listPath);
             String nodeName;

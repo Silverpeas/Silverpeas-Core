@@ -31,10 +31,9 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -52,8 +51,8 @@ import java.util.Set;
 @Named("subscriptionService")
 public class SimpleSubscriptionService implements SubscriptionService {
 
-  private final String dbName = JNDINames.SUBSCRIBE_DATASOURCE;
-  private final SubscriptionDao subscriptionDao = new SubscriptionDao();
+  @Inject
+  private SubscriptionDao subscriptionDao;
 
   @Inject
   private OrganizationController organisationController;

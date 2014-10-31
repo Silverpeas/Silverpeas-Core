@@ -29,7 +29,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
+import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import java.rmi.RemoteException;
@@ -227,11 +227,11 @@ public class TreeBuilder {
     return item;
   }
 
-  private static NodeBm getNodeBm() {
+  private static NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
     } catch (Exception e) {
-      throw new MenuRuntimeException("TreeBuilder.getNodeBm()", SilverpeasRuntimeException.ERROR,
+      throw new MenuRuntimeException("TreeBuilder.getNodeService()", SilverpeasRuntimeException.ERROR,
           "treeMenu.EX_FAILED_BUILDING_NODEBM_HOME", e);
     }
   }

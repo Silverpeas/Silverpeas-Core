@@ -37,6 +37,7 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.node.model.NodePK;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,6 +55,7 @@ import java.util.Set;
  * Class declaration
  * @author
  */
+@Singleton
 public class SubscriptionDao {
 
   private static final String SUBSCRIBE_COLUMNS =

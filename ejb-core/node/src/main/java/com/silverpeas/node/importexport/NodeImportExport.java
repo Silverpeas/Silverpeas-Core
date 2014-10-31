@@ -25,15 +25,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import com.stratelia.webactiv.node.control.NodeService;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;
 
-import org.exolab.castor.dsml.ImportExportException;
+import javax.inject.Inject;
 
 /**
  * Classe de gestion des node pour le bus d'importExport
@@ -42,8 +40,11 @@ import org.exolab.castor.dsml.ImportExportException;
  */
 public class NodeImportExport {
 
-  // Variables
-  private NodeBm nodeBm;
+  @Inject
+  private NodeService nodeService;
+
+  protected NodeImportExport() {
+  }
 
   // Méthodes
   /**
@@ -53,7 +54,7 @@ public class NodeImportExport {
    * @return une collection des topic composant le chemin
    */
   public Collection<NodeDetail> getPathOfNode(NodePK nodePk) {
-    return getNodeBm().getPath(nodePk);
+    return getNodeService().getPath(nodePk);
   }
 
   /**
@@ -76,12 +77,12 @@ public class NodeImportExport {
 
       NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, "useless", componentId);
       try {// Récupérarion du thème racine
-        NodeDetail nodeDetail = getNodeBm().getDetail(nodePK);
+        NodeDetail nodeDetail = getNodeService().getDetail(nodePK);
         nodeTreeType.setNodeDetail(nodeDetail);
         // Récupération de l'arbre des nodes de façon récursive
         nodeDetail.setChildrenDetails(getRecursiveTree(nodePK));
       } catch (RemoteException ex) {
-        throw new NodeRuntimeException("NodeImportExport.getNodeBm()",
+        throw new NodeRuntimeException("NodeImportExport.getNodeService()",
             SilverpeasRuntimeException.ERROR, "node.GETTING_NODES_BY_FATHER_FAILED", ex);
       }
     }
@@ -97,7 +98,7 @@ public class NodeImportExport {
    * @throws RemoteException
    */
   private Collection<NodeDetail> getRecursiveTree(NodePK nodePK) throws RemoteException {
-    Collection<NodeDetail> listChildrenDetails = getNodeBm().getChildrenDetails(nodePK);
+    Collection<NodeDetail> listChildrenDetails = getNodeService().getChildrenDetails(nodePK);
     if (listChildrenDetails != null && !listChildrenDetails.isEmpty()) {
       for (NodeDetail nodeDetail : listChildrenDetails) {
         nodeDetail.setChildrenDetails(getRecursiveTree(nodeDetail.getNodePK()));
@@ -108,19 +109,7 @@ public class NodeImportExport {
     return listChildrenDetails;
   }
 
-  /**
-   * @return l'EJB NodeBM
-   * @throws ImportExportException
-   */
-  private synchronized NodeBm getNodeBm() throws NodeRuntimeException {
-    if (nodeBm == null) {
-      try {
-        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
-      } catch (Exception e) {
-        throw new NodeRuntimeException("NodeImportExport.getNodeBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return nodeBm;
+  private NodeService getNodeService() {
+    return nodeService;
   }
 }

@@ -26,13 +26,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.transaction.Transactional;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import com.stratelia.webactiv.coordinates.ejb.CoordinatesDAO;
+import com.stratelia.webactiv.coordinates.persistence.CoordinatesDAO;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
@@ -45,13 +43,10 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
  * @author
  * @version %I%, %G%
  */
-@Stateless(name = "Coordinates", description = "Stateless EJB to manage coordinates.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class CoordinatesBmEJB implements CoordinatesBm {
+@Transactional
+public class DefaultCoordinatesService implements CoordinatesService {
 
-  private static final long serialVersionUID = -6692122009364112596L;
-
-  public CoordinatesBmEJB() {
+  protected DefaultCoordinatesService() {
   }
 
   private Connection getConnection() {
@@ -114,7 +109,7 @@ public class CoordinatesBmEJB implements CoordinatesBm {
    * @see
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public int addCoordinate(CoordinatePK pk, List<CoordinatePoint> coordinatePoints) {
     SilverTrace.info("coordinates", "CoordinatesBmEJB.addCoordinate()", "root.MSG_GEN_PARAM_VALUE",
         "coordinatePoints = " + coordinatePoints);
@@ -139,7 +134,7 @@ public class CoordinatesBmEJB implements CoordinatesBm {
    * @see
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void deleteCoordinates(CoordinatePK pk, List<String> coordinates) {
     SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinates()",
         "root.MSG_GEN_PARAM_VALUE", "coordinates = " + coordinates);
@@ -163,7 +158,7 @@ public class CoordinatesBmEJB implements CoordinatesBm {
    * @see
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void deleteCoordinatesByPoints(CoordinatePK pk, List<String> coordinatePoints) {
     SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinatesByPoints()",
         "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = " + coordinatePoints);
@@ -211,7 +206,7 @@ public class CoordinatesBmEJB implements CoordinatesBm {
    * @see
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point) {
     SilverTrace.info("coordinates", "CoordinatesBmEJB.addPointToAllCoordinates()",
         "root.MSG_GEN_PARAM_VALUE", "point = " + point);

@@ -27,12 +27,12 @@ package com.silverpeas.accesscontrol;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.node.control.NodeService;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.accesscontrol.NodeAccessController;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.node.control.NodeBm;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.hamcrest.Matchers;
@@ -88,10 +88,10 @@ public class NodeAccessControllerTest {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = mock(NodeBm.class);
-    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
-        thenReturn(nodeBm);
-    Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
+    NodeService nodeService = mock(NodeService.class);
+    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
+        thenReturn(nodeService);
+    Mockito.when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(true));
@@ -109,10 +109,10 @@ public class NodeAccessControllerTest {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = mock(NodeBm.class);
-    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
-        thenReturn(nodeBm);
-    Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
+    NodeService nodeService = mock(NodeService.class);
+    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
+        thenReturn(nodeService);
+    Mockito.when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(false));
@@ -131,10 +131,10 @@ public class NodeAccessControllerTest {
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = mock(NodeBm.class);
-    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
-        thenReturn(nodeBm);
-    Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
+    NodeService nodeService = mock(NodeService.class);
+    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
+        thenReturn(nodeService);
+    Mockito.when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     OrganizationController orga = mock(DefaultOrganizationController.class);
     Mockito.when(orga.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
         .thenReturn(new String[]{SilverpeasRole.user.name()});
@@ -157,10 +157,10 @@ public class NodeAccessControllerTest {
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    NodeBm nodeBm = mock(NodeBm.class);
-    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
-        thenReturn(nodeBm);
-    Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
+    NodeService nodeService = mock(NodeService.class);
+    Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
+        thenReturn(nodeService);
+    Mockito.when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     OrganizationController orga = mock(DefaultOrganizationController.class);
     NodeAccessController instance = createNodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
