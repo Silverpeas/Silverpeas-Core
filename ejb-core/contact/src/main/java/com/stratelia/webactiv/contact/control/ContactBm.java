@@ -71,24 +71,24 @@ public interface ContactBm {
   /**
    * removeFather() remove a father (designed by "fatherPK") from a contact ("pubPK") The contact
    * won't be visible from its old father node.
-   * @param pubPK
+   * @param contactPK
    * @param fatherPK
    */
-  public void removeFather(ContactPK pubPK, NodePK fatherPK);
+  public void removeFather(ContactPK contactPK, NodePK fatherPK);
 
   /**
    * removeAllFather() remove all father from a contact ("pubPK") The contact won't be visible.
-   * @param pubPK
+   * @param contactPK
    */
-  public void removeAllFather(ContactPK pubPK);
+  public void removeAllFather(ContactPK contactPK);
 
   /**
    * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
    * designed by originPK
    * @param originPK
-   * @param pubPK
+   * @param contactPK
    */
-  public void removeAllIssue(NodePK originPK, ContactPK pubPK);
+  public void removeAllIssue(NodePK originPK, ContactPK contactPK);
 
   /**
    * getOrphanContacts() return the Detail of contact which are not linked to a father
@@ -97,18 +97,18 @@ public interface ContactBm {
    */
   public Collection<ContactDetail> getOrphanContacts(ContactPK contactPK);
 
-  public void deleteOrphanContactsByCreatorId(ContactPK pubPK, String creatorId);
+  public void deleteOrphanContactsByCreatorId(ContactPK contactPK, String creatorId);
 
-  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK pubPK,
+  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK contactPK,
       String publisherId, String nodeId);
 
   /**
    * getAllFatherPK() return a collection, containing all node primary key from where the contact
    * is visible
-   * @param pubPK
+   * @param contactPK
    * @return
    */
-  public Collection<NodePK> getAllFatherPK(ContactPK pubPK);
+  public Collection<NodePK> getAllFatherPK(ContactPK contactPK);
 
   /**
    * getDetailsByFatherPK() return a ContactDetail collection of all contact visible from the node
@@ -125,7 +125,7 @@ public interface ContactBm {
   public Collection<ContactDetail> getDetailsByLastNameAndFirstName(ContactPK pk, String lastName,
       String firstName);
 
-  public void createInfoModel(ContactPK pubPK, String modelId);
+  public void createInfoModel(ContactPK contactPK, String modelId);
 
   public CompleteContact getCompleteContact(ContactPK pubPK, String modelId);
 
@@ -134,7 +134,7 @@ public interface ContactBm {
   public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
 
   public Collection<ContactFatherDetail> getDetailsByFatherPKs(Collection<NodePK> fatherPKs,
-      ContactPK pubPK, NodePK nodePK);
+      ContactPK contactPK, NodePK nodePK);
 
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
 }

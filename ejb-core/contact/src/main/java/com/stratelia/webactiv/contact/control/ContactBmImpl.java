@@ -34,43 +34,42 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-@Stateless(name = "ContactBm", description = "EJB to manage a user's contacts.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class ContactBmEJB implements ContactBm {
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
+public class ContactBmImpl implements ContactBm {
 
   private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   @Override
-  public ContactDetail getDetail(ContactPK pubPK) {
+  public ContactDetail getDetail(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      ContactPK primary = ContactDAO.selectByPrimaryKey(con, pubPK);
+      ContactPK primary = ContactDAO.selectByPrimaryKey(con, contactPK);
       if (primary != null) {
         return primary.contactDetail;
       } else {
-        throw new ContactRuntimeException("ContactBmEJB.getDetail()",
+        throw new ContactRuntimeException("ContactBmImpl.getDetail()",
             SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_NOT_FOUND");
       }
     } catch (SQLException | ParseException re) {
-      throw new ContactRuntimeException("ContactBmEJB.getDetail()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = "
-          + pubPK.getId(), re);
+      throw new ContactRuntimeException("ContactBmImpl.getDetail()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED",
+          "id = " + contactPK.getId(), re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public ContactPK createContact(ContactDetail detail) {
     Connection con = getConnection();
     try {
@@ -81,7 +80,7 @@ public class ContactBmEJB implements ContactBm {
       createIndex(detail);
       return detail.getPK();
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactBmEJB.createContact()",
+      throw new ContactRuntimeException("ContactBmImpl.createContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_FAILED",
           "contactDetail = " + detail.toString(), re);
     } finally {
@@ -90,17 +89,17 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void removeContact(ContactPK pubPK) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void removeContact(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      InfoDAO.deleteInfoDetailByContactPK(con, pubPK);
-      ContactDAO.deleteRow(con, pubPK);
-      deleteIndex(pubPK);
+      InfoDAO.deleteInfoDetailByContactPK(con, contactPK);
+      ContactDAO.deleteRow(con, contactPK);
+      deleteIndex(contactPK);
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactBmEJB.removeContact()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_DELETE_FAILED",
-          "pk = " + pubPK, re);
+      throw new ContactRuntimeException("ContactBmImpl.removeContact()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_DELETE_FAILED", "pk = " + contactPK,
+          re);
     } finally {
       DBUtil.close(con);
     }
@@ -113,8 +112,9 @@ public class ContactBmEJB implements ContactBm {
       ContactDAO.storeRow(con, detail);
       createIndex(detail);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.setDetail()", SilverpeasRuntimeException.ERROR,
-          "contact.EX_SET_CONTACT_DETAIL_FAILED", "contactDetail = " + detail, re);
+      throw new ContactRuntimeException("ContactBmImpl.setDetail()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_SET_CONTACT_DETAIL_FAILED",
+          "contactDetail = " + detail, re);
     } finally {
       DBUtil.close(con);
     }
@@ -123,19 +123,18 @@ public class ContactBmEJB implements ContactBm {
   /**
    * addFather() add a new father (designed by "fatherPK") to a contact ("pubPK") The contact will
    * be visible from its new father node.
-   *
-   * @param pubPK
+   * @param contactPK
    * @param fatherPK
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void addFather(ContactPK pubPK, NodePK fatherPK) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void addFather(ContactPK contactPK, NodePK fatherPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.addFather(con, pubPK, fatherPK);
+      ContactDAO.addFather(con, contactPK, fatherPK);
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactEJB.addFather()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_ADD_TO_FATHER_FAILED", re);
+      throw new ContactRuntimeException("ContactEJB.addFather()", SilverpeasRuntimeException.ERROR,
+          "contact.EX_CONTACT_ADD_TO_FATHER_FAILED", re);
     } finally {
       DBUtil.close(con);
     }
@@ -144,18 +143,17 @@ public class ContactBmEJB implements ContactBm {
   /**
    * removeFather() remove a father (designed by "fatherPK") from a contact ("pubPK") The contact
    * won't be visible from its old father node.
-   *
-   * @param pubPK
+   * @param contactPK
    * @param fatherPK
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void removeFather(ContactPK pubPK, NodePK fatherPK) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void removeFather(ContactPK contactPK, NodePK fatherPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.removeFather(con, pubPK, fatherPK);
+      ContactDAO.removeFather(con, contactPK, fatherPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.removeFather()",
+      throw new ContactRuntimeException("ContactBmImpl.removeFather()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_FROM_FATHER_FAILED",
           "fatherPK = " + fatherPK, re);
     } finally {
@@ -165,40 +163,37 @@ public class ContactBmEJB implements ContactBm {
 
   /**
    * Remove all the fathers from a contact ("pubPK") The contact won't be visible.
-   *
-   * @param pubPK the id of the contact.
+   * @param contactPK the id of the contact.
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void removeAllFather(ContactPK pubPK) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void removeAllFather(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.removeAllFather(con, pubPK);
+      ContactDAO.removeAllFather(con, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.removeAllFather()",
+      throw new ContactRuntimeException("ContactBmImpl.removeAllFather()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_FROM_ALLFATHERS_FAILED",
-          "contactPK = " + pubPK, re);
+          "contactPK = " + contactPK, re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   /**
-   *
    * removeAllIssue() remove all links between contacts and node N N is a descendant of the node
    * designed by originPK.
-   *
    * @param originPK
-   * @param pubPK
+   * @param contactPK
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void removeAllIssue(NodePK originPK, ContactPK pubPK) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void removeAllIssue(NodePK originPK, ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.removeAllIssue(con, originPK, pubPK);
+      ContactDAO.removeAllIssue(con, originPK, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.removeAllIssue()",
+      throw new ContactRuntimeException("ContactBmImpl.removeAllIssue()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_ALLISSUES_FAILED",
           "fatherPK = " + originPK, re);
     } finally {
@@ -212,39 +207,36 @@ public class ContactBmEJB implements ContactBm {
     try {
       return ContactDAO.getOrphanContacts(con, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getOrphanContacts()",
-          SilverpeasRuntimeException.ERROR,
-          "contact.EX_GET_CONTACTS_WITHOUT_FATHERS_FAILED", re);
+      throw new ContactRuntimeException("ContactBmImpl.getOrphanContacts()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_WITHOUT_FATHERS_FAILED", re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void deleteOrphanContactsByCreatorId(ContactPK pubPK, String creatorId) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void deleteOrphanContactsByCreatorId(ContactPK contactPK, String creatorId) {
     Connection con = getConnection();
     try {
-      ContactDAO.deleteOrphanContactsByCreatorId(con, pubPK, creatorId);
+      ContactDAO.deleteOrphanContactsByCreatorId(con, contactPK, creatorId);
     } catch (Exception re) {
-      throw new ContactRuntimeException(
-          "ContactBmEJB.deleteOrphanContactsByCreatorId()",
-          SilverpeasRuntimeException.ERROR,
-          "contact.EX_DELETE_CONTACTS_WITHOUT_FATHERS_FAILED", re);
+      throw new ContactRuntimeException("ContactBmImpl.deleteOrphanContactsByCreatorId()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_DELETE_CONTACTS_WITHOUT_FATHERS_FAILED",
+          re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK pubPK,
-      String publisherId,
-      String nodeId) {
+  public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK contactPK,
+      String publisherId, String nodeId) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getUnavailableContactsByPublisherId(con, pubPK, publisherId, nodeId);
+      return ContactDAO.getUnavailableContactsByPublisherId(con, contactPK, publisherId, nodeId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getUnavailableContactsByPublisherId()",
+      throw new ContactRuntimeException("ContactBmImpl.getUnavailableContactsByPublisherId()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -256,12 +248,12 @@ public class ContactBmEJB implements ContactBm {
    * getAllFatherPK
    */
   @Override
-  public Collection<NodePK> getAllFatherPK(ContactPK pubPK) {
+  public Collection<NodePK> getAllFatherPK(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getAllFatherPK(con, pubPK);
+      return ContactDAO.getAllFatherPK(con, contactPK);
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactBmEJB.getAllFatherPK()",
+      throw new ContactRuntimeException("ContactBmImpl.getAllFatherPK()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_FATHERS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -278,7 +270,7 @@ public class ContactBmEJB implements ContactBm {
     try {
       return ContactDAO.selectByFatherPK(con, fatherPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getDetailsByFatherPK()",
+      throw new ContactRuntimeException("ContactBmImpl.getDetailsByFatherPK()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -291,7 +283,7 @@ public class ContactBmEJB implements ContactBm {
     try {
       return ContactDAO.selectByLastName(con, pk, query);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getDetailsByLastName()",
+      throw new ContactRuntimeException("ContactBmImpl.getDetailsByLastName()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -304,8 +296,7 @@ public class ContactBmEJB implements ContactBm {
     try {
       return ContactDAO.selectByLastNameOrFirstName(con, pk, query);
     } catch (Exception re) {
-      throw new ContactRuntimeException(
-          "ContactBmEJB.getDetailsByLastNameOrFirstName()",
+      throw new ContactRuntimeException("ContactBmImpl.getDetailsByLastNameOrFirstName()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -313,14 +304,13 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  public Collection<ContactDetail> getDetailsByLastNameAndFirstName(ContactPK pk,
-      String lastName, String firstName) {
+  public Collection<ContactDetail> getDetailsByLastNameAndFirstName(ContactPK pk, String lastName,
+      String firstName) {
     Connection con = getConnection();
     try {
       return ContactDAO.selectByLastNameAndFirstName(con, pk, lastName, firstName);
     } catch (Exception re) {
-      throw new ContactRuntimeException(
-          "ContactBmEJB.getDetailsByLastNameAndFirstName()",
+      throw new ContactRuntimeException("ContactBmImpl.getDetailsByLastNameAndFirstName()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -328,13 +318,13 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
-  public void createInfoModel(ContactPK pubPK, String modelId) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void createInfoModel(ContactPK contactPK, String modelId) {
     Connection con = getConnection();
     try {
-      InfoDAO.createInfo(con, modelId, pubPK);
+      InfoDAO.createInfo(con, modelId, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.createInfoModel()",
+      throw new ContactRuntimeException("ContactBmImpl.createInfoModel()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_INFOMODEL_CREATE_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -342,14 +332,14 @@ public class ContactBmEJB implements ContactBm {
   }
 
   @Override
-  public CompleteContact getCompleteContact(ContactPK pubPK, String modelId) {
+  public CompleteContact getCompleteContact(ContactPK contactPK, String modelId) {
     Connection con = getConnection();
     try {
       // get detail
-      ContactDetail pubDetail = ContactDAO.loadRow(con, pubPK);
+      ContactDetail pubDetail = ContactDAO.loadRow(con, contactPK);
       return new CompleteContact(pubDetail, modelId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getCompleteContact()",
+      throw new ContactRuntimeException("ContactBmImpl.getCompleteContact()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -362,7 +352,7 @@ public class ContactBmEJB implements ContactBm {
     try {
       return ContactDAO.selectByContactPKs(con, contactPKs);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getContacts()",
+      throw new ContactRuntimeException("ContactBmImpl.getContacts()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -376,7 +366,7 @@ public class ContactBmEJB implements ContactBm {
       int result = ContactDAO.getNbPubInFatherPKs(con, fatherPKs);
       return result;
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getNbPubInFatherPKs()",
+      throw new ContactRuntimeException("ContactBmImpl.getNbPubInFatherPKs()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -385,12 +375,12 @@ public class ContactBmEJB implements ContactBm {
 
   @Override
   public Collection<ContactFatherDetail> getDetailsByFatherPKs(Collection<NodePK> fatherPKs,
-      ContactPK pubPK, NodePK nodePK) {
+      ContactPK contactPK, NodePK nodePK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByFatherPKs(con, fatherPKs, pubPK, nodePK);
+      return ContactDAO.selectByFatherPKs(con, fatherPKs, contactPK, nodePK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getContacts()",
+      throw new ContactRuntimeException("ContactBmImpl.getContacts()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -403,7 +393,7 @@ public class ContactBmEJB implements ContactBm {
     try {
       return ContactDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getNbPubByFatherPath()",
+      throw new ContactRuntimeException("ContactBmImpl.getNbPubByFatherPath()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
     } finally {
       DBUtil.close(con);
@@ -414,7 +404,7 @@ public class ContactBmEJB implements ContactBm {
     try {
       return DBUtil.openConnection();
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactBmEJB.getConnection()",
+      throw new ContactRuntimeException("ContactBmImpl.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);
     }
   }
@@ -426,8 +416,9 @@ public class ContactBmEJB implements ContactBm {
   private void createIndex(ContactDetail pubDetail) {
     try {
       if (pubDetail != null) {
-        FullIndexEntry indexEntry = new FullIndexEntry(pubDetail.getPK().getComponentName(),
-            "Contact", pubDetail.getPK().getId());
+        FullIndexEntry indexEntry =
+            new FullIndexEntry(pubDetail.getPK().getComponentName(), "Contact",
+                pubDetail.getPK().getId());
         indexEntry.setTitle(pubDetail.getFirstName() + " " + pubDetail.getLastName());
         indexEntry.setLang(I18NHelper.defaultLanguage);
         indexEntry.setCreationDate(formatter.format(pubDetail.getCreationDate()));
@@ -435,7 +426,7 @@ public class ContactBmEJB implements ContactBm {
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.createIndex()",
+      throw new ContactRuntimeException("ContactBmImpl.createIndex()",
           SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_INDEX_FAILED", re);
     }
   }
@@ -443,12 +434,11 @@ public class ContactBmEJB implements ContactBm {
   /**
    * Called on : - deleteContact()
    */
-  private void deleteIndex(ContactPK pubPK) {
-    IndexEntryPK indexEntry = new IndexEntryPK(pubPK.getComponentName(),
-        "Contact", pubPK.getId());
+  private void deleteIndex(ContactPK contactPK) {
+    IndexEntryPK indexEntry = new IndexEntryPK(contactPK.getComponentName(), "Contact", contactPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
-  public ContactBmEJB() {
+  public ContactBmImpl() {
   }
 }

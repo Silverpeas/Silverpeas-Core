@@ -25,10 +25,9 @@
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.contact.info;
 
-import org.silverpeas.util.DBUtil;
 import com.stratelia.webactiv.contact.info.model.InfoPK;
 import com.stratelia.webactiv.contact.model.ContactPK;
-import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,8 +53,9 @@ public class InfoDAO {
     InfoPK infoPK = new InfoPK("unknown", contactPK);
     String tableName = infoPK.getTableName();
 
-    String selectStatement = "select infoId FROM " + tableName
-        + " WHERE contactId = ? and instanceId = ? " + "and modelId = ?";
+    String selectStatement =
+        "select infoId FROM " + tableName + " WHERE contactId = ? and instanceId = ? " +
+            "and modelId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -74,15 +74,14 @@ public class InfoDAO {
   /**
    * create the info reference
    * match the info with a model
-   *
    * @param con the database connection
    * @param modelId the model identifier
    * @param contactPK the contact primary key
    * @return an Info primary key
    * @throws SQLException
    */
-  public static InfoPK createInfo(Connection con, String modelId,
-      ContactPK contactPK) throws SQLException {
+  public static InfoPK createInfo(Connection con, String modelId, ContactPK contactPK)
+      throws SQLException {
     InfoPK infoPK = new InfoPK("unknown", contactPK);
     String tableName = infoPK.getTableName();
 
@@ -109,10 +108,8 @@ public class InfoDAO {
     return infoPK;
   }
 
-  public static void deleteInfo(Connection con, InfoPK infoPK)
-      throws SQLException {
-    String deleteStatement = "delete from " + infoPK.getTableName()
-        + " where infoId=?";
+  public static void deleteInfo(Connection con, InfoPK infoPK) throws SQLException {
+    String deleteStatement = "delete from " + infoPK.getTableName() + " where infoId=?";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(deleteStatement);
@@ -122,13 +119,13 @@ public class InfoDAO {
     }
   }
 
-  public static void deleteInfoDetailByContactPK(Connection con,
-      ContactPK contactPK) throws SQLException {
+  public static void deleteInfoDetailByContactPK(Connection con, ContactPK contactPK)
+      throws SQLException {
     ResultSet rs = null;
     InfoPK infoPK = new InfoPK("unknown", contactPK);
     String tableName = infoPK.getTableName();
-    String selectStatement = "select * from " + tableName
-        + " where contactId = ? and instanceId = ?";
+    String selectStatement =
+        "select * from " + tableName + " where contactId = ? and instanceId = ?";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
