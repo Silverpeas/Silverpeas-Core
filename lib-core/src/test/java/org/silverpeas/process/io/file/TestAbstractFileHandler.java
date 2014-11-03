@@ -27,7 +27,6 @@ import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.process.io.IOAccess;
@@ -38,13 +37,13 @@ import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.rule.CommonAPI4Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.UUID;
 
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**

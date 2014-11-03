@@ -49,6 +49,7 @@ public class TestSystemWrapper implements SystemWrapper {
     if (env == null) {
       env = new HashMap<>();
       env.putAll(System.getenv());
+      env.put("SILVERPEAS_HOME", "");
     }
     return env;
   }

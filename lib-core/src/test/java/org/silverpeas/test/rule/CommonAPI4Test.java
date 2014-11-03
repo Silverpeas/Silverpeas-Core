@@ -29,6 +29,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.util.lang.DefaultSystemWrapper;
 import org.silverpeas.util.lang.SystemWrapper;
 
@@ -54,6 +55,6 @@ public class CommonAPI4Test implements TestRule {
 
   public void systemWrapper() {
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SystemWrapper.class))
-        .thenReturn(new DefaultSystemWrapper());
+        .thenReturn(new TestSystemWrapper());
   }
 }
