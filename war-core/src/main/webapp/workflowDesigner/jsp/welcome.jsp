@@ -97,10 +97,7 @@ out.println(window.printBefore());
 <view:areaOfOperationOfCreation/>
 <!-- help -->
 <div class="inlineMessage">
-	<table border="0"><tr>
-		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
-		<td><%=resource.getString("workflowDesigner.help.toolName") %></td>
-	</tr></table>
+	<%=resource.getString("workflowDesigner.help.toolName") %>
 </div>
 <br/>
 <%
