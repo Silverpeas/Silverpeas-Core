@@ -20,17 +20,14 @@
  */
 package com.stratelia.webactiv.contact.control;
 
-import java.util.Collection;
-
-import javax.ejb.Local;
-
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
 import com.stratelia.webactiv.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.contact.model.ContactPK;
 import com.stratelia.webactiv.node.model.NodePK;
 
-@Local
+import java.util.Collection;
+
 public interface ContactBm {
 
   /**

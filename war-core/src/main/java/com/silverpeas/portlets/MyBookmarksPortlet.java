@@ -20,7 +20,7 @@
  */
 package com.silverpeas.portlets;
 
-import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

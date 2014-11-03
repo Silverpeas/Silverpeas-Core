@@ -25,7 +25,7 @@
 package com.silverpeas.myLinksPeas.control;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
-import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;

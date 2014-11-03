@@ -26,7 +26,7 @@ package org.silverpeas.mylinks.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;

@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.myLinks.ejb;
+package com.silverpeas.myLinks.control;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.dao.LinkDAO;
@@ -27,9 +27,8 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,10 +36,9 @@ import java.util.Collection;
 /**
  * @author
  */
-@Stateless(name = "MyLinks",
-    description = "Stateless session bean to manage personal links to content")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class MyLinksBmEJB implements MyLinksBm {
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
+public class MyLinksBmImpl implements MyLinksBm {
 
   @Override
   public Collection<LinkDetail> getAllLinks(String userId) {
