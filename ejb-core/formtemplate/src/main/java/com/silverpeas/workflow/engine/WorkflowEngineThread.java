@@ -211,6 +211,7 @@ public class WorkflowEngineThread extends Thread {
        */
       SilverTrace.fatal("workflowEngine", "WorkflowEngineThread", "Exit from workflow thread loop",
           error);
+      throw new RuntimeException("End of thread", error);
     }
   }
 
