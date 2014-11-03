@@ -275,13 +275,11 @@ public class GroupDAO {
     ListSlice<Group> groups = new ListSlice<Group>(start, end);
     rs.relative(start);
     int i;
-    for (i = start; rs.next() && i < end; i++) {
-      groups.add(fetchGroup(rs));
+    for (i = start; rs.next(); i++) {
+      if (i < end) {
+        groups.add(fetchGroup(rs));
+      }
     }
-    if (i == end) {
-      i++;
-    }
-    for(;rs.next();i++);
     groups.setOriginalListSize(i);
     return groups;
   }
