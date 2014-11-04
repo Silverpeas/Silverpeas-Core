@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author mmoquillon
@@ -42,7 +43,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "deleteByInstanceId",
         query = "delete from Rating where instanceId = :instanceId"),
     @NamedQuery(name = "findByAuthorRating",
-        query = "from Rating where contributionId = :contributionId and and instanceId = " +
+        query = "from Rating where contributionId = :contributionId and instanceId = " +
             ":instanceId and contributionType = :contributionType and authorId = :authorId"),
     @NamedQuery(name = "findByContributions",
         query = "from Rating where instanceId = :instanceId and contributionType = " +
@@ -52,14 +53,19 @@ import javax.persistence.Table;
             "and contributionId = :contributionId and contributionType = :contributionType")})
 public class Rating extends AbstractJpaCustomEntity<Rating, UniqueIntegerIdentifier> {
 
-  @Column(nullable = false)
+  @Column(name = "author", nullable = false)
+  @NotNull
   private String authorId;
   @Column(nullable = false)
+  @NotNull
   private Integer note;
   @Column(nullable = false)
+  @NotNull
   private String instanceId;
+  @NotNull
   @Column(name = "externalId", nullable = false)
   private String contributionId;
+  @NotNull
   @Column(name = "externalType", nullable = false)
   private String contributionType;
 

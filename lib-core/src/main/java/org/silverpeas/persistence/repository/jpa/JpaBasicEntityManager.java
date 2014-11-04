@@ -503,34 +503,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
    * @return
    */
   private long updateFromQuery(Query updateQuery, NamedParameters parameters) {
-    parameters.add("lastUpdateDate", new Timestamp((new Date()).getTime()));
-    verify(updateQuery, parameters);
     return parameters.applyTo(updateQuery).executeUpdate();
-  }
-
-  /**
-   * Verifies the technical update data are not missing in query and parameters.
-   * @param query
-   * @param parameters
-   */
-  private void verify(Query query, NamedParameters parameters) {
-    String queryString = ((QueryImpl) query).getHibernateQuery().getQueryString();
-    for (String requiredParameterName : new String[]{"lastUpdatedBy", "lastUpdateDate"}) {
-      if (query.getParameter(requiredParameterName) != null) {
-        NamedParameter parameter = parameters.namedParameters.get(requiredParameterName);
-        if (parameter != null && StringUtil.isDefined(parameter.getValue().toString())) {
-          continue;
-        }
-      }
-      throw new IllegalArgumentException(
-          "parameter '" + requiredParameterName + "' is missing from the query '" + queryString +
-              "' or is missing from given parameters.");
-    }
-    if (!Pattern.compile("version.*=.*version[ ]*\\+[ ]*1").matcher(queryString).find()) {
-      throw new IllegalArgumentException(
-          "version management is missing from the query '" + queryString +
-              "' -> expected entity.version = (entity.version + 1)");
-    }
   }
 
   /**

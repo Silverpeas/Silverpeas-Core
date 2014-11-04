@@ -32,7 +32,7 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
-import com.silverpeas.notation.ejb.RatingServiceProvider;
+import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
@@ -1251,7 +1251,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   @Override
   public ContributionRating getRating() {
     if (contributionRating == null) {
-      contributionRating = RatingServiceProvider.getRatingService()
+      contributionRating = RatingService.getInstance()
           .getRating(new ContributionRatingPK(getId(), getInstanceId(), "Publication"));
     }
     return contributionRating;

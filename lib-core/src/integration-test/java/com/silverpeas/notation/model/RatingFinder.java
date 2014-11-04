@@ -19,39 +19,43 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.notificationserver.channel.popup;
+package com.silverpeas.notation.model;
 
+import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean;
+import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author mmoquillon
  */
 @Singleton
-public class POPUPMessageBeanFinder {
+public class RatingFinder {
 
   @PersistenceContext
   private EntityManager entityManager;
 
-  private static POPUPMessageBeanFinder getInstance() {
-    return ServiceProvider.getService(POPUPMessageBeanFinder.class);
+  private static RatingFinder getInstance() {
+    return ServiceProvider.getService(RatingFinder.class);
   }
 
-  public static List<POPUPMessageBean> getSomeByQuery(String query) {
-    return getInstance().entityManager.createQuery(query, POPUPMessageBean.class).getResultList();
+  public static List<Rating> getSomeByQuery(String query) {
+    return getInstance().entityManager.createQuery(query, Rating.class).getResultList();
   }
 
-  public static POPUPMessageBean getById(long id) {
-    return getInstance().entityManager.find(POPUPMessageBean.class, UniqueLongIdentifier.from(id));
+  public static Rating getById(int id) {
+    return getInstance().entityManager.find(Rating.class, UniqueIntegerIdentifier.from(id));
   }
 
   public static long count() {
-    return getInstance().entityManager.createQuery("select count(m) from POPUPMessageBean m",
+    return getInstance().entityManager.createQuery("select count(r) from Rating r",
         Long.class).getSingleResult();
   }
 }

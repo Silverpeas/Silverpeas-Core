@@ -18,16 +18,14 @@
  * You should have received a copy of the GNU Affero General License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notation.ejb;
+package com.silverpeas.notation.control;
 
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.util.ServiceProvider;
 
-import javax.ejb.Local;
-import javax.inject.Singleton;
 import java.util.Map;
 
 public interface RatingService {

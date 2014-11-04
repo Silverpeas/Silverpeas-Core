@@ -39,7 +39,7 @@ public class ServerMessageBeanFinder {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public static ServerMessageBeanFinder getInstance() {
+  private static ServerMessageBeanFinder getInstance() {
     return ServiceProvider.getService(ServerMessageBeanFinder.class);
   }
 

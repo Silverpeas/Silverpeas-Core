@@ -26,13 +26,14 @@ package org.silverpeas.rating.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.notation.control.RatingService;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRating;
 import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -43,8 +44,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import static com.silverpeas.notation.ejb.RatingServiceProvider.getRatingService;
 
 /**
  * A REST Web resource representing a given rating.
@@ -81,7 +80,7 @@ public class RatingResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public RaterRatingEntity getRaterRating() {
     try {
-      ContributionRating contributionRating = getRatingService().getRating(getRatingPK());
+      ContributionRating contributionRating = RatingService.getInstance().getRating(getRatingPK());
       return asWebEntity(contributionRating.getRaterRating(getUserDetail()));
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -91,11 +90,12 @@ public class RatingResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response saveRating(String note) {
+    RatingService ratingService = RatingService.getInstance();
     if (!StringUtil.isDefined(note)) {
-      getRatingService().deleteRaterRating(getRaterRatingPK());
+      ratingService.deleteRaterRating(getRaterRatingPK());
       NotifierUtil.addSuccess(getBundle().getString("notation.vote.delete.ok"));
     } else {
-      getRatingService().updateRating(getRaterRatingPK(), Integer.parseInt(note));
+      ratingService.updateRating(getRaterRatingPK(), Integer.parseInt(note));
       NotifierUtil.addSuccess(getBundle().getString("notation.vote.ok"));
     }
     RaterRatingEntity newRating = getRaterRating();

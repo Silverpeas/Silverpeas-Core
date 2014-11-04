@@ -28,10 +28,7 @@ import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRatingPK;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +38,6 @@ import java.util.Map;
  * ratings.
  * @author mmoquillon
  */
-@Transactional
 public class RatingRepository extends JpaBasicEntityManager<Rating, UniqueIntegerIdentifier> {
 
   public void deleteAllRatingsOfAContribution(ContributionRatingPK contribution) {
@@ -70,7 +66,8 @@ public class RatingRepository extends JpaBasicEntityManager<Rating, UniqueIntege
   public Map<String, ContributionRating> getAllRatingByContributions(String instanceId,
       String contributionType, String... contributionIds) {
     NamedParameters parameters = newNamedParameters();
-    parameters.add("instanceId", instanceId).add("contributionType", contributionType)
+    parameters.add("instanceId", instanceId)
+        .add("contributionType", contributionType)
         .add("contributionIds", Arrays.asList(contributionIds));
     List<Rating> ratings = findByNamedQuery("findByContributions", parameters);
     Map<String, ContributionRating> ratingsByContribution = new HashMap<>(ratings.size());
@@ -80,6 +77,7 @@ public class RatingRepository extends JpaBasicEntityManager<Rating, UniqueIntege
         contributionRating = new ContributionRating(
             new ContributionRatingPK(rating.getContributionId(), rating.getInstanceId(),
                 rating.getContributionType()));
+        ratingsByContribution.put(rating.getContributionId(), contributionRating);
       }
       contributionRating.addRaterRating(rating.getAuthorId(), rating.getNote());
     }

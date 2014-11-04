@@ -25,7 +25,6 @@
     <module>admin</module>
     <module>authentication</module>
     <module>clipboard</module>
-    <module>channels</module>
     <module>personalization</module>
     <module>searchengine</module>
     <module>silverstatistics</module>
@@ -33,7 +32,6 @@
     <module>node</module>
     <module>contact</module>
     <module>calendar</module>
-    <module>notation</module>
     <module>formtemplate</module>
     <module>publication</module>
     <module>statistic</module>

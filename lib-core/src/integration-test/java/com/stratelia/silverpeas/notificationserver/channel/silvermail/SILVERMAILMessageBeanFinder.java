@@ -39,7 +39,7 @@ public class SILVERMAILMessageBeanFinder {
   @PersistenceContext
   private EntityManager entityManager;
 
-  public static SILVERMAILMessageBeanFinder getInstance() {
+  private static SILVERMAILMessageBeanFinder getInstance() {
     return ServiceProvider.getService(SILVERMAILMessageBeanFinder.class);
   }
 
