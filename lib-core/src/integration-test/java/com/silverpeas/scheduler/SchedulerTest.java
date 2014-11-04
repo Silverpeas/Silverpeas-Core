@@ -137,7 +137,7 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(2, SECONDS).until(jobIsFired());
+    await().atMost(3, SECONDS).until(jobIsFired());
     assertTrue(eventHandler.isJobSucceeded());
   }
 
@@ -145,7 +145,7 @@ public class SchedulerTest {
   public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
-    await().atMost(2, SECONDS).until(jobIsFired());
+    await().atMost(3, SECONDS).until(jobIsFired());
     assertFalse(eventHandler.isJobSucceeded());
   }
 
@@ -164,7 +164,7 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertNull(job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(2, SECONDS).until(jobIsExecuted());
+    await().atMost(3, SECONDS).until(jobIsExecuted());
   }
 
   @Test
@@ -177,7 +177,7 @@ public class SchedulerTest {
         throw new Error("Not supported yet.");
       }
     }, trigger, eventHandler);
-    await().atMost(2, SECONDS).until(jobIsFired());
+    await().atMost(3, SECONDS).until(jobIsFired());
     assertFalse(eventHandler.isJobSucceeded());
   }
 
@@ -195,7 +195,7 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(2, SECONDS).until(jobIsExecuted());
+    await().atMost(3, SECONDS).until(jobIsExecuted());
     assertTrue(eventHandler.isJobSucceeded());
   }
 

@@ -260,7 +260,7 @@ public class SQLDomainServiceTest extends DataSetTest {
     Domain domain = new Domain();
     domain.setName("TestCreation");
 
-    File conflictingPropertiesFile = new File(domainPropertyPath, "Domain3TestCrea.properties");
+    File conflictingPropertiesFile = new File(domainPropertyPath, "domain3TestCrea.properties");
     FileUtils.touch(conflictingPropertiesFile);
     service.createDomain(domain);
     fail("Exception must have been thrown");
