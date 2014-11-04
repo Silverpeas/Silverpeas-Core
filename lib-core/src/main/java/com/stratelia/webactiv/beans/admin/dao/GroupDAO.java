@@ -162,7 +162,29 @@ public class GroupDAO {
     } finally {
       DBUtil.close(rs, stmt);
     }
+  }
+  
+  static final private String queryGetUsersDirectlyInGroup = "select userid"
+      + " from st_group_user_rel where groupid = ?";
 
+  public List<String> getUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      List<String> userIds = new ArrayList<String>();
+      stmt = con.prepareStatement(queryGetUsersDirectlyInGroup);
+      stmt.setInt(1, Integer.parseInt(groupId));
+
+      rs = stmt.executeQuery();
+
+      while (rs.next()) {
+        userIds.add(Integer.toString(rs.getInt(1)));
+      }
+      return userIds;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
   }
 
   public List<String> getManageableGroupIds(Connection con, String userId,

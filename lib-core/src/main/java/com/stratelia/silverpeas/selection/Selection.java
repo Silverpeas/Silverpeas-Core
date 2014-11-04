@@ -34,12 +34,15 @@ public final class Selection {
   final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
   final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
-  public static final String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
+  final public static String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
+  final public static String TYPE_SELECTED_SET = "Set"; //group selected
+  final public static String TYPE_SELECTED_ELEMENT = "Element"; //user selected
   protected String goBackURL;
   protected String cancelURL;
   protected String htmlFormName;
   protected String htmlFormElementName;
   protected String htmlFormElementId;
+  protected String htmlFormElementType; //TYPE_SELECTED_SET or TYPE_SELECTED_ELEMENT
   protected String firstPage;
   protected String[] selectedSets;
   protected String[] selectedElements;
@@ -161,9 +164,11 @@ public final class Selection {
   }
 
   /**
-   * Is the set of fields with the selection could be done directly from the user panel? This is can
-   * be done only if the user panel is opened within a window popup and the information about HTML
-   * form of the opener is provided (see the setHtmlForm kind methods).
+   * Is the set of fields with the selection could be done directly from the user panel ? 
+   * This can be done only if : 
+   * - the user panel is opened within a window popup (PopupMode = true), 
+   * - not with multi selection (MultiSelect = false) and 
+   * - the information about HTML form of the opener is provided (see the setHtmlForm kind methods).
    *
    * @return true if the user panel should modify directly the opener with the result of the
    * selection, false otherwise.
@@ -281,5 +286,13 @@ public final class Selection {
 
   public void setHtmlFormName(String formName) {
     htmlFormName = formName;
+  }
+  
+  public String getHtmlFormElementType() { //TYPE_SELECTED_SET or TYPE_SELECTED_ELEMENT
+    return htmlFormElementType;
+  }
+
+  public void setHtmlFormElementType(String formElementType) {
+    htmlFormElementType = formElementType;
   }
 }

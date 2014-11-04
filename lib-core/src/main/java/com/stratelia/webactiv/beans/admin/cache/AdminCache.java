@@ -66,6 +66,9 @@ public class AdminCache {
   static private boolean m_bUseProfileIdsCache = true;
   static private Map<String, String[]> m_hProfileIdsCache
       = new ConcurrentHashMap<String, String[]>();
+  static private boolean m_bUseNodeProfileIdsCache = true;
+  static private Map<String, String[]> m_hNodeProfileIdsCache
+          = new ConcurrentHashMap<String, String[]>();      
 
   /**
    * Admin Constructor
@@ -480,6 +483,14 @@ public class AdminCache {
       m_hProfileIdsCache.put(userId, profileIds);
     }
   }
+  
+  public void putNodeProfileIds(String userId, String[] profileIds) {
+    if (m_bUseCache && m_bUseNodeProfileIdsCache) {
+      SilverTrace.debug("admin", "AdminCache.putNodeProfileIds",
+          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+      m_hNodeProfileIdsCache.put(userId, profileIds);
+    }
+  }
 
   public void removeProfileIds(String userId) {
     if (m_bUseCache && m_bUseProfileIdsCache) {
@@ -492,6 +503,14 @@ public class AdminCache {
   public String[] getProfileIds(String userId) {
     if (m_bUseCache && m_bUseProfileIdsCache) {
       return m_hProfileIdsCache.get(userId);
+    } else {
+      return null;
+    }
+  }
+  
+  public String[] getNodeProfileIds(String userId) {
+    if (m_bUseCache && m_bUseNodeProfileIdsCache) {
+      return m_hNodeProfileIdsCache.get(userId);
     } else {
       return null;
     }

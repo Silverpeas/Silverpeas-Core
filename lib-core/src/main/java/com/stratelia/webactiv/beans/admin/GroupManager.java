@@ -982,6 +982,21 @@ public class GroupManager {
       DBUtil.close(con);
     }
   }
+  
+  public List<String> getUsersDirectlyInGroup(String groupId) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return groupDao.getUsersDirectlyInGroup(con, groupId);
+    } catch (Exception e) {
+      throw new AdminException("GroupManager.getUsersDirectlyInGroup",
+              SilverpeasException.ERROR,
+              "admin.EX_ERR_GET_USER_OF_GROUP", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
   private void setDirectUsersOfGroup(final DomainDriverManager ddManager, final Group group) throws
           AdminPersistenceException {

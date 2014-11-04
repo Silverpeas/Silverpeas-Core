@@ -25,6 +25,7 @@
 package com.silverpeas.jobOrganizationPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.jobOrganizationPeas.JobOrganizationPeasException;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -34,6 +35,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +58,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   private String[] currentSpaces = null;
   private List<String[]> currentProfiles = null;
   private Map<String, WAComponent> componentOfficialNames = getAdminController().getAllComponents();
+  
+  public static final String REPLACE_RIGHTS = "1";
+  public static final String ADD_RIGHTS = "2";
 
   /**
    * Standard Session Controller Constructeur
@@ -205,6 +210,20 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     }
     return currentGroup;
   }
+  
+  /**
+   * @return String
+   */
+  public String getCurrentSuperGroupName() {
+    String currentSuperGroupName = "-";
+    if (currentGroup != null) {
+      String parentId = currentGroup.getSuperGroupId();
+      if (StringUtil.isDefined(parentId)) {
+        currentSuperGroupName = getAdminController().getGroupName(parentId);
+      }
+    }
+    return currentSuperGroupName;
+  }
 
   /**
    * @return array of space names (manageable by the current group or user)
@@ -318,9 +337,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   /*
-   * Retour du initialisation userPanel un user ou (exclusif) un groupe
+   * UserPanel initialization : a user or (exclusive) a group
    */
-  public String initSelectionPeas() {
+  public String initSelectionUserOrGroup() {
     String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
@@ -338,7 +357,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    // Contraintes
     sel.setMultiSelect(false);
     sel.setPopupMode(false);
     sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
@@ -346,21 +364,104 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   /*
-   * Retour du UserPanel
+   * Back from UserPanel
    */
-  public void retourSelectionPeas() {
+  public void backSelectionUserOrGroup() {
     Selection sel = getSelection();
     String id;
 
     id = sel.getFirstSelectedElement();
     setCurrentUserId(id);
-//    if ((id != null) && (id.length() > 0)) {
-//      setCurrentUserId(id);
-//    }
+
     id = sel.getFirstSelectedSet();
     setCurrentGroupId(id);
-//    if ((id != null) && (id.length() > 0)) {
-//      setCurrentGroupId(id);
-//    }
+  }
+  
+  /*
+   * UserPanel initialization : a user or (exclusive) a group
+   */
+  public String initSelectionRightsUserOrGroup() {
+    String hostSpaceName = getString("JOP.pseudoSpace");
+    String cancelUrl = "";
+    PairObject hostComponentName = new PairObject(getString("JOP.pseudoPeas"),
+        cancelUrl);
+    String hostUrl = "";
+
+    Selection sel = getSelection();
+    sel.resetAll();
+    sel.setHostSpaceName(hostSpaceName);
+    sel.setHostComponentName(hostComponentName);
+    sel.setHostPath(null);
+
+    sel.setGoBackURL(hostUrl);
+    sel.setCancelURL(cancelUrl);
+    
+    sel.setHtmlFormName("rightsForm");
+    sel.setHtmlFormElementName("sourceRightsName");
+    sel.setHtmlFormElementId("sourceRightsId");
+    sel.setHtmlFormElementType("sourceRightsType");
+
+    sel.setMultiSelect(false);
+    sel.setPopupMode(true);
+    sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
+    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+  }
+  
+  /*
+   * Assign rights to current selected user or group
+   */
+  public void assignRights(String choiceAssignRights, String sourceRightsId, 
+                            String sourceRightsType, boolean nodeAssignRights) throws JobOrganizationPeasException {
+    
+    try {
+      if (JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights) || 
+          JobOrganizationPeasSessionController.ADD_RIGHTS.equals(choiceAssignRights)) {
+        
+        boolean deleteTargetProfiles = JobOrganizationPeasSessionController.REPLACE_RIGHTS.equals(choiceAssignRights);
+        boolean targetSameSource = false;
+        
+        if(StringUtil.isDefined(sourceRightsId)) {
+          if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+            if (getCurrentUserId() != null && sourceRightsId.equals(getCurrentUserId())) {//target = source
+              targetSameSource = true;
+            }
+          } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+            if (getCurrentGroupId() != null && sourceRightsId.equals(getCurrentGroupId())) {//target = source
+              targetSameSource = true;
+            }
+          }
+        }
+  
+        if(!targetSameSource) {
+          if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+            if (getCurrentUserId() != null) {
+              getAdminController().assignRightsFromUserToUser(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
+            } else if (getCurrentGroupId() != null) {
+              getAdminController().assignRightsFromUserToGroup(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
+            }
+          } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+            if (getCurrentUserId() != null) {
+              getAdminController().assignRightsFromGroupToUser(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentUserId(), nodeAssignRights, getUserId());
+            } else if (getCurrentGroupId() != null) {
+              getAdminController().assignRightsFromGroupToGroup(
+                  deleteTargetProfiles, 
+                  sourceRightsId, getCurrentGroupId(), nodeAssignRights, getUserId());
+            }
+          }
+          
+          //force to refresh
+          currentProfiles = null;
+        }
+      }
+    } catch (AdminException e) {
+      throw new JobOrganizationPeasException("JobOrganizationPeasSessionController.assignRights", SilverpeasException.ERROR,
+          "", e);
+    }
   }
 }
