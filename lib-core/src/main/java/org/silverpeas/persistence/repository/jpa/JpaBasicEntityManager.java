@@ -157,14 +157,29 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
   }
 
   /**
-   * Finds the first or the single entity matching the specified named query (a JPQL instruction)
+   * Finds the single entity matching the specified named query (a JPQL instruction)
    * and with the specified parameters.
    * @param namedQuery the named query. It is an identifier to a JPQL instruction.
    * @param parameters the parameters to apply on the query.
-   * @return the first encountered entity or the single one that matches the specified query.
+   * @return the single entity that matches the specified query or null if no one matches the
+   * query.
+   * @throws java.lang.IllegalArgumentException if there is more than one entity matching the query.
    */
   public ENTITY findOneByNamedQuery(String namedQuery, final NamedParameters parameters) {
     return unique(listFromNamedQuery(namedQuery, parameters));
+  }
+
+  /**
+   * Finds the first entity matching the specified named query (a JPQL instruction)
+   * and with the specified parameters.
+   * @param namedQuery the named query. It is an identifier to a JPQL instruction.
+   * @param parameters the parameters to apply on the query.
+   * @return the first encountered entity that matches the specified query or null if no entities
+   * match the specified query.
+   */
+  public ENTITY findFirstByNamedQuery(String namedQuery, final NamedParameters parameters) {
+    List<ENTITY> results = listFromNamedQuery(namedQuery, parameters);
+    return (results.isEmpty() ? null:results.get(0));
   }
 
   @Override

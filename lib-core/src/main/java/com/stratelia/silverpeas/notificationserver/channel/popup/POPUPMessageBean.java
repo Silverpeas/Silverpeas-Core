@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Column;
@@ -44,7 +44,7 @@ import javax.validation.constraints.NotNull;
         query = "delete from POPUPMessageBean m where m.userId = :userId and m.senderId = " +
             ":senderId")})
 public class POPUPMessageBean
-    extends AbstractJpaCustomEntity<POPUPMessageBean, UniqueIntegerIdentifier> {
+    extends AbstractJpaCustomEntity<POPUPMessageBean, UniqueLongIdentifier> {
 
   private static final long serialVersionUID = 7025111830012761169L;
 
@@ -53,7 +53,7 @@ public class POPUPMessageBean
 
   @Column(nullable = false)
   @NotNull
-  private int userId = -1;
+  private long userId = -1;
   private String body = "";
   private String senderId = null;
   private String senderName = null;
@@ -66,7 +66,7 @@ public class POPUPMessageBean
   }
 
   public void setUserId(long value) {
-    userId = (int) value;
+    userId = value;
   }
 
   public String getBody() {
@@ -129,4 +129,63 @@ public class POPUPMessageBean
     return "1".equals(getAnswerAllowed());
   }
 
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    final POPUPMessageBean that = (POPUPMessageBean) o;
+
+    if ((getId() == null && that.getId() != null) ||
+        (getId() != null && !getId().equals(that.getId()))) {
+      return false;
+    }
+
+    if (userId != that.userId) {
+      return false;
+    }
+    if (answerAllowed != null ? !answerAllowed.equals(that.answerAllowed) :
+        that.answerAllowed != null) {
+      return false;
+    }
+    if (body != null ? !body.equals(that.body) : that.body != null) {
+      return false;
+    }
+    if (msgDate != null ? !msgDate.equals(that.msgDate) : that.msgDate != null) {
+      return false;
+    }
+    if (msgTime != null ? !msgTime.equals(that.msgTime) : that.msgTime != null) {
+      return false;
+    }
+    if (senderId != null ? !senderId.equals(that.senderId) : that.senderId != null) {
+      return false;
+    }
+    if (senderName != null ? !senderName.equals(that.senderName) : that.senderName != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getId() != null ? getId().hashCode() : 0);
+    result = 31 * result + (int) (userId ^ (userId >>> 32));
+    result = 31 * result + (body != null ? body.hashCode() : 0);
+    result = 31 * result + (senderId != null ? senderId.hashCode() : 0);
+    result = 31 * result + (senderName != null ? senderName.hashCode() : 0);
+    result = 31 * result + (answerAllowed != null ? answerAllowed.hashCode() : 0);
+    result = 31 * result + (msgDate != null ? msgDate.hashCode() : 0);
+    result = 31 * result + (msgTime != null ? msgTime.hashCode() : 0);
+    return result;
+  }
 }

@@ -41,11 +41,15 @@ public class UuidIdentifier implements EntityIdentifier {
   @Column(name = "id", columnDefinition = "varchar(40)", length = 40)
   private String id;
 
+  public static final UuidIdentifier from(String value) {
+    return new UuidIdentifier().fromString(value);
+  }
+
   public String getId() {
     return id;
   }
 
-  public void setId(final String id) {
+  private void setId(final String id) {
     this.id = id;
   }
 

@@ -42,11 +42,19 @@ public class UniqueLongIdentifier implements EntityIdentifier {
   @Column(name = "id", nullable = false)
   private Long id;
 
+  public static final UniqueLongIdentifier from(String value) {
+    return new UniqueLongIdentifier().fromString(value);
+  }
+
+  public static final UniqueLongIdentifier from(long value) {
+    return new UniqueLongIdentifier().setId(value);
+  }
+
   public Long getId() {
     return id;
   }
 
-  public UniqueLongIdentifier setId(final Long id) {
+  private UniqueLongIdentifier setId(final Long id) {
     this.id = id;
     return this;
   }

@@ -51,7 +51,7 @@ public class REMOVEListener extends AbstractListener implements MessageListener 
 
   /**
    * listener of NotificationServer JMS message
-   * @param msg 
+   * @param msg
    */
   @Override
   public void onMessage(Message msg) {

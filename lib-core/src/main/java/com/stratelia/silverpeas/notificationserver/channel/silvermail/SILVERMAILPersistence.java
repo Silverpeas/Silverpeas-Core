@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.LongText;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -59,9 +60,9 @@ public class SILVERMAILPersistence {
         smb.setBody(Integer.toString(LongText.addLongText(silverMsg.getBody())));
         smb.setUrl(silverMsg.getUrl());
         smb.setSource(silverMsg.getSource());
-        smb.setDateMsg(silverMsg.getDate());
+        smb.setDateMsg(DateUtil.date2SQLDate(silverMsg.getDate()));
         smb.setReaden(0);
-        getRepository().save(smb);
+        Transaction.performInOne(() -> getRepository().save(smb));
       } catch (Exception e) {
         throw new SILVERMAILException("SILVERMAILPersistence.addMessage()",
             SilverpeasException.ERROR, "silvermail.EX_CANT_WRITE_MESSAGE", e);
@@ -100,7 +101,7 @@ public class SILVERMAILPersistence {
       // find all message
       long folderId = convertFolderNameToId(folderName);
       List<SILVERMAILMessageBean> messageBeans = getRepository()
-          .findFirstByUserIdAndFolderId(String.valueOf(userId), String.valueOf(folderId),
+          .findMessageByUserIdAndFolderId(String.valueOf(userId), String.valueOf(folderId),
               readState);
       // if any
       if (!messageBeans.isEmpty()) {
@@ -127,7 +128,7 @@ public class SILVERMAILPersistence {
           silverMailMessage.setBody(body);
           silverMailMessage.setUrl(pmb.getUrl());
           silverMailMessage.setSource(pmb.getSource());
-          silverMailMessage.setDate(pmb.getDateMsg());
+          silverMailMessage.setDate(DateUtil.parseDate(pmb.getDateMsg()));
           silverMailMessage.setReaden(pmb.getReaden());
           folderMessageList.add(silverMailMessage);
         }
@@ -172,7 +173,7 @@ public class SILVERMAILPersistence {
         result.setBody(body);
         result.setUrl(smb.getUrl());
         result.setSource(smb.getSource());
-        result.setDate(smb.getDateMsg());
+        result.setDate(DateUtil.parse(smb.getDateMsg()));
       }
       markMessageAsReaden(smb);
     } catch (Exception e) {
@@ -233,7 +234,7 @@ public class SILVERMAILPersistence {
       throws SILVERMAILException {
     try {
       smb.setReaden(1);
-      getRepository().save(smb);
+      Transaction.performInOne(() -> getRepository().save(smb));
     } catch (Exception e) {
       throw new SILVERMAILException(
           "SILVERMAILPersistence.markMessageAsReaden()",

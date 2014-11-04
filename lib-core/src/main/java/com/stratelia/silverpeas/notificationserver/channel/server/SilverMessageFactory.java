@@ -123,17 +123,19 @@ public class SilverMessageFactory {
    * -------------------------------------------------------------------------- pop push
    */
   public static void push(String userId, String message, String sessionId) {
-    ServerMessageBean pmb = new ServerMessageBean();
-    try {
-      pmb.setUserId(Long.parseLong(userId));
-      pmb.setBody(Integer.toString(LongText.addLongText(message)));
-      pmb.setSessionId(sessionId);
-      getRepository().save(pmb);
-    } catch (Exception e) {
-      SilverTrace.error("server", "SilverMessageFactory.push()",
-          "server.EX_CANT_PUSH_MSG", "UserId=" + userId + ";Msg=" + message,
-          e);
-    }
+    Transaction.performInOne(() -> {
+      ServerMessageBean pmb = new ServerMessageBean();
+      try {
+        pmb.setUserId(Long.parseLong(userId));
+        pmb.setBody(Integer.toString(LongText.addLongText(message)));
+        pmb.setSessionId(sessionId);
+        getRepository().save(pmb);
+      } catch (Exception e) {
+        SilverTrace.error("server", "SilverMessageFactory.push()", "server.EX_CANT_PUSH_MSG",
+            "UserId=" + userId + ";Msg=" + message, e);
+      }
+      return null;
+    });
   }
 
   private static ServerMessageBeanRepository getRepository() {

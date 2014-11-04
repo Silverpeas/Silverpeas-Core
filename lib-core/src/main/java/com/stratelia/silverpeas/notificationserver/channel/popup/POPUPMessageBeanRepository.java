@@ -19,30 +19,28 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.notificationserver.channel.server;
+package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
-import javax.transaction.Transactional;
-
 /**
+ * JPA repository of <code>POPUPMessageBean</code> instances.
  * @author mmoquillon
  */
-@Transactional
-public class ServerMessageBeanRepository
-    extends JpaBasicEntityManager<ServerMessageBean, UniqueIntegerIdentifier> {
+public class POPUPMessageBeanRepository
+    extends JpaBasicEntityManager<POPUPMessageBean, UniqueLongIdentifier> {
 
-  public ServerMessageBean findFirstMessageByUserIdAndSessionId(String userId, String sessionId) {
+  public POPUPMessageBean findFirstMessageByUserId(String userId) {
     NamedParameters parameters = newNamedParameters();
-    parameters.add("userId", Integer.parseInt(userId)).add("sessionId", sessionId);
-    return findOneByNamedQuery("findByUserIdAndSessionId", parameters);
+    parameters.add("userId", Long.valueOf(userId));
+    return findFirstByNamedQuery("findByUserId", parameters);
   }
 
-  public void deleteAllMessagesByUserIdAndSessionId(String userId, String sessionId) {
+  public void deleteMessagesByUserIdAndSenderId(String userId, String senderId) {
     NamedParameters parameters = newNamedParameters();
-    parameters.add("userId", Integer.parseInt(userId)).add("sessionId", sessionId);
-    deleteFromNamedQuery("deleteByUserIdAndSessionId", parameters);
+    parameters.add("userId", Long.parseLong(userId)).add("senderId", senderId);
+    deleteFromNamedQuery("deleteByUserIdAndSenderId", parameters);
   }
 }

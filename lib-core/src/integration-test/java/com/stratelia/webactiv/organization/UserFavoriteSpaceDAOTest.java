@@ -163,7 +163,9 @@ public class UserFavoriteSpaceDAOTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addJdbcPersistenceFeatures().addSilverpeasExceptionBases()
+    return WarBuilder4LibCore.onWarFor(UserFavoriteSpaceDAOTest.class)
+        .addJdbcPersistenceFeatures()
+        .addSilverpeasExceptionBases()
         .testFocusedOn((warBuilder) -> {
           warBuilder.addClasses(AdminException.class, PersistenceException.class);
           warBuilder.addPackages(true, "com.stratelia.webactiv.persistence");

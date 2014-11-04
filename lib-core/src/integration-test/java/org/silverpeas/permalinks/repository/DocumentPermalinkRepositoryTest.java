@@ -76,8 +76,10 @@ public class DocumentPermalinkRepositoryTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> {
-      warBuilder.addPackages(true, "org.silverpeas.permalinks");
+    return WarBuilder4LibCore.onWarFor(DocumentPermalinkRepositoryTest.class)
+        .addJpaPersistenceFeatures()
+        .testFocusedOn((warBuilder) -> {
+          warBuilder.addPackages(true, "org.silverpeas.permalinks");
     }).build();
   }
 

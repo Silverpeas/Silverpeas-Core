@@ -81,8 +81,11 @@ public class PasswordServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addSilverpeasExceptionBases().addCommonBasicUtilities()
-        .addStringTemplateFeatures().testFocusedOn((warBuilder) -> {
+    return WarBuilder4LibCore.onWarFor(PasswordServiceTest.class)
+        .addSilverpeasExceptionBases()
+        .addCommonBasicUtilities()
+        .addStringTemplateFeatures()
+        .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.password");
           warBuilder.addClasses(ResourceLocator.class, ResourceBundleWrapper.class,
               ConfigurationClassLoader.class, FileUtil.class, MimeTypes.class,

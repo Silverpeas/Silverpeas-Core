@@ -24,14 +24,13 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Entity
 @Table(name = "ST_SilverMailMessage")
@@ -43,40 +42,40 @@ import java.util.Date;
         query = "select m from SILVERMAILMessageBean m where m.userId = :userId and m.folderId = " +
             ":folderId order by m.id desc")})
 public class SILVERMAILMessageBean
-    extends AbstractJpaCustomEntity<SILVERMAILMessageBean, UniqueIntegerIdentifier> {
+    extends AbstractJpaCustomEntity<SILVERMAILMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = -3073514330044912996L;
 
   public SILVERMAILMessageBean() {
   }
 
-  private int userId = -1;
+  private long userId = -1;
 
   public long getUserId() {
     return userId;
   }
 
   public void setUserId(long value) {
-    userId = (int) value;
+    userId = value;
   }
 
-  private int folderid = 0; // 0 = INBOX
+  private long folderId = 0; // 0 = INBOX
 
   public void setFolderId(long value) {
-    folderid = (int) value;
+    folderId = value;
   }
 
   public long getFolderId() {
-    return folderid;
+    return folderId;
   }
 
-  private String sendername = "";
+  private String senderName = "";
 
   public void setSenderName(String value) {
-    sendername = value;
+    senderName = value;
   }
 
   public String getSenderName() {
-    return sendername;
+    return senderName;
   }
 
   private String subject = "";
@@ -109,13 +108,13 @@ public class SILVERMAILMessageBean
     return url;
   }
 
-  private Date dateMsg = new Date();
+  private String dateMsg;
 
-  public void setDateMsg(Date value) {
+  public void setDateMsg(String value) {
     dateMsg = value;
   }
 
-  public Date getDateMsg() {
+  public String getDateMsg() {
     return dateMsg;
   }
 
@@ -129,14 +128,82 @@ public class SILVERMAILMessageBean
     return body;
   }
 
-  private int m_readen = 0;
+  private int readen = 0;
 
   public void setReaden(int readen) {
-    m_readen = readen;
+    readen = readen;
   }
 
   public int getReaden() {
-    return m_readen;
+    return readen;
   }
 
+  private String header;
+
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    final SILVERMAILMessageBean that = (SILVERMAILMessageBean) o;
+
+    if ((getId() == null && that.getId() != null) ||
+        (getId() != null && !getId().equals(that.getId()))) {
+      return false;
+    }
+
+    if (folderId != that.folderId) {
+      return false;
+    }
+    if (readen != that.readen) {
+      return false;
+    }
+    if (userId != that.userId) {
+      return false;
+    }
+    if (body != null ? !body.equals(that.body) : that.body != null) {
+      return false;
+    }
+    if (dateMsg != null ? !dateMsg.equals(that.dateMsg) : that.dateMsg != null) {
+      return false;
+    }
+    if (senderName != null ? !senderName.equals(that.senderName) : that.senderName != null) {
+      return false;
+    }
+    if (source != null ? !source.equals(that.source) : that.source != null) {
+      return false;
+    }
+    if (subject != null ? !subject.equals(that.subject) : that.subject != null) {
+      return false;
+    }
+    if (url != null ? !url.equals(that.url) : that.url != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getId() != null ? getId().hashCode():0);
+    result = 31 * result + (int) (userId ^ (userId >>> 32));
+    result = 31 * result + (int) (folderId ^ (folderId >>> 32));
+    result = 31 * result + (senderName != null ? senderName.hashCode() : 0);
+    result = 31 * result + (subject != null ? subject.hashCode() : 0);
+    result = 31 * result + (source != null ? source.hashCode() : 0);
+    result = 31 * result + (url != null ? url.hashCode() : 0);
+    result = 31 * result + (dateMsg != null ? dateMsg.hashCode() : 0);
+    result = 31 * result + (body != null ? body.hashCode() : 0);
+    result = 31 * result + readen;
+    return result;
+  }
 }

@@ -96,7 +96,9 @@ public class DBUtilIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addBenchmarkTestFeatures().addJdbcPersistenceFeatures()
+    return WarBuilder4LibCore.onWarFor(DBUtilIntegrationTest.class)
+        .addBenchmarkTestFeatures()
+        .addJdbcPersistenceFeatures()
         .build();
   }
 

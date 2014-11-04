@@ -24,22 +24,16 @@
 
 package org.silverpeas.util.pool;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import org.apache.commons.dbcp.BasicDataSource;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-
 import javax.annotation.Resource;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * A pool of JDBC connections. It encapsulates the underlying mechanism to manage a pool of
  * connections to the data source used by Silverpeas.
- *
+ * <p>
  * Currently, it wraps the connection pool spawned by the JEE application server for the data
  * source used by Silverpeas.
  */

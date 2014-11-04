@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
 import javax.persistence.Column;
@@ -43,7 +44,7 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "deleteByUserIdAndSessionId",
         query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = :sessionId")})
 public class ServerMessageBean
-    extends AbstractJpaCustomEntity<ServerMessageBean, UniqueIntegerIdentifier> {
+    extends AbstractJpaCustomEntity<ServerMessageBean, UniqueLongIdentifier> {
 
   private static final long serialVersionUID = 769537113068849221L;
 
@@ -52,14 +53,14 @@ public class ServerMessageBean
 
   @Column(nullable = false)
   @NotNull
-  private int userId = -1;
+  private long userId = -1;
 
   public long getUserId() {
     return userId;
   }
 
   public void setUserId(long value) {
-    userId = (int) value;
+    userId = value;
   }
 
   private String body = "";
@@ -82,5 +83,50 @@ public class ServerMessageBean
     sessionId = value;
   }
 
+  private String header;
+  private String subject;
+  private Character type;
 
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    final ServerMessageBean bean = (ServerMessageBean) o;
+
+    if ((getId() == null && bean.getId() != null) ||
+        (getId() != null && !getId().equals(bean.getId()))) {
+      return false;
+    }
+
+    if (userId != bean.userId) {
+      return false;
+    }
+    if (body != null ? !body.equals(bean.body) : bean.body != null) {
+      return false;
+    }
+    if (sessionId != null ? !sessionId.equals(bean.sessionId) : bean.sessionId != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getId() != null ? getId().hashCode():0);
+    result = 31 * result + (int) (userId ^ (userId >>> 32));
+    result = 31 * result + (body != null ? body.hashCode() : 0);
+    result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
+    return result;
+  }
 }

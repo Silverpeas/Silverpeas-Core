@@ -34,7 +34,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 /**
  * @author Yohann Chastagnier
  */
-public interface CommonArchive<T> {
+public interface CommonArchive<T extends CommonArchive<T>> {
 
   /**
    * Denotes whether this archive contains a resource at the specified path

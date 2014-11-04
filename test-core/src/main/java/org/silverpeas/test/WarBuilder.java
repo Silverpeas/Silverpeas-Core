@@ -44,7 +44,7 @@ import java.util.HashSet;
  * This class permits to setup an integration test
  * @author Yohann Chastagnier
  */
-public abstract class WarBuilder<T extends WarBuilder>
+public abstract class WarBuilder<T extends WarBuilder<T>>
     implements Builder<WebArchive>, CommonWebArchive<T> {
 
   /**
@@ -64,10 +64,14 @@ public abstract class WarBuilder<T extends WarBuilder>
   private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
 
   /**
-   * Hidden constructor.
+   * Constructs a war builder for the specified test class. It will load all the resources in the
+   * same packages of the specified test class.
+   * @param test the class of the test for which a war archive will be build.
+   * @param <T> the type of the test.
    */
-  protected WarBuilder() {
-    // Nothing is done in the constructor.
+  protected <T> WarBuilder(Class<T> test) {
+    String resourcePath = test.getPackage().getName().replaceAll("\\.", "/");
+    war.addAsResource(resourcePath);
   }
 
   /**
@@ -76,9 +80,9 @@ public abstract class WarBuilder<T extends WarBuilder>
    * @return the instance of the configurator.
    */
   @SuppressWarnings("unchecked")
-  public T addMavenDependencies(String... mavenDependencies) {
+  public WarBuilder<T> addMavenDependencies(String... mavenDependencies) {
     Collections.addAll(this.mavenDependencies, mavenDependencies);
-    return (T) this;
+    return this;
   }
 
   @Override
@@ -91,49 +95,44 @@ public abstract class WarBuilder<T extends WarBuilder>
     return war.contains(path);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public T addClasses(final Class<?>... classes) throws IllegalArgumentException {
+  public WarBuilder<T> addClasses(final Class<?>... classes) throws IllegalArgumentException {
     war.addClasses(classes);
-    return (T) this;
+    return this;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public T addPackages(final boolean recursive, final String... packages)
+  public WarBuilder<T> addPackages(final boolean recursive, final String... packages)
       throws IllegalArgumentException {
     war.addPackages(recursive, packages);
-    return (T) this;
+    return this;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public T addAsResource(final String resourceName) throws IllegalArgumentException {
+  public WarBuilder<T> addAsResource(final String resourceName) throws IllegalArgumentException {
     war.addAsResource(resourceName);
-    return (T) this;
+    return this;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public T addAsResource(String resourceName, String target) throws IllegalArgumentException {
+  public WarBuilder<T> addAsResource(String resourceName, String target) throws IllegalArgumentException {
     war.addAsResource(resourceName, target);
-    return (T) this;
+    return this;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public T addAsWebInfResource(final String resourceName, final String target)
+  public WarBuilder<T> addAsWebInfResource(final String resourceName, final String target)
       throws IllegalArgumentException {
     war.addAsWebInfResource(resourceName, target);
-    return (T) this;
+    return this;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public T addAsWebInfResource(final Asset resource, final String target)
+  public WarBuilder<T> addAsWebInfResource(final Asset resource, final String target)
       throws IllegalArgumentException {
     war.addAsWebInfResource(resource, target);
-    return (T) this;
+    return this;
   }
 
   /**
@@ -161,9 +160,9 @@ public abstract class WarBuilder<T extends WarBuilder>
    * @return the instance of the war builder.
    */
   @SuppressWarnings("unchecked")
-  public final T testFocusedOn(TestFocus testFocus) {
+  public final WarBuilder<T> testFocusedOn(TestFocus testFocus) {
     testFocus.focus(this);
-    return (T) this;
+    return this;
   }
 
   /**
@@ -175,15 +174,15 @@ public abstract class WarBuilder<T extends WarBuilder>
    * @return the instance of the war builder.
    */
   @SuppressWarnings("unchecked")
-  public final T applyManually(OnShrinkWrapWar onShrinkWrapWar) {
+  public final WarBuilder<T> applyManually(OnShrinkWrapWar onShrinkWrapWar) {
     onShrinkWrapWar.applyManually(war);
-    return (T) this;
+    return this;
   }
 
   /**
    * In order to highlight the specification of tested classes, packages or resources.
    */
-  public interface TestFocus<B extends CommonArchive<B>> {
-    void focus(B warBuilder);
+  public interface TestFocus<T extends WarBuilder<T>> {
+    void focus(WarBuilder<T> warBuilder);
   }
 }

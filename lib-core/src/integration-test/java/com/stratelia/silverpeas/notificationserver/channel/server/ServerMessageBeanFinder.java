@@ -19,19 +19,40 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.test;
+package com.stratelia.silverpeas.notificationserver.channel.server;
+
+import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
- * A basic war builder that does nothing more that is defined in the abstract class WarBuilder.
  * @author mmoquillon
  */
-public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
-  /**
-   * Constructs a war builder for the specified test class. It will load all the resources in the
-   * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
-   */
-  protected <T> BasicWarBuilder(final Class<T> test) {
-    super(test);
+@Singleton
+public class ServerMessageBeanFinder {
+
+  @PersistenceContext
+  private EntityManager entityManager;
+
+  public static ServerMessageBeanFinder getInstance() {
+    return ServiceProvider.getService(ServerMessageBeanFinder.class);
+  }
+
+  public static List<ServerMessageBean> getSomeByQuery(String query) {
+    return getInstance().entityManager.createQuery(query, ServerMessageBean.class).getResultList();
+  }
+
+  public static ServerMessageBean getById(long id) {
+    return getInstance().entityManager.find(ServerMessageBean.class, UniqueLongIdentifier.from(id));
+  }
+
+  public static long count() {
+    return getInstance().entityManager.createQuery("select count(m) from ServerMessageBean m",
+        Long.class).getSingleResult();
   }
 }

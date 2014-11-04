@@ -56,7 +56,7 @@ public class POPUPPersistence {
         SilverTrace.debug("popup", "POPUPPersistence.getMessage()",
             "Date et time", DateUtil.date2SQLDate(new Date()) + "-"
             + DateUtil.getFormattedTime(new Date()));
-        getRepository().save(smb);
+        Transaction.performInOne(() -> getRepository().save(smb));
       } catch (Exception e) {
         throw new POPUPException("POPUPPersistence.addMessage()",
             SilverpeasException.ERROR, "POPUP.EX_CANT_WRITE_MESSAGE", e);

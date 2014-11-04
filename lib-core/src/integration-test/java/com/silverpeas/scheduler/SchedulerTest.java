@@ -77,7 +77,7 @@ public class SchedulerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar()
+    return WarBuilder4LibCore.onWarFor(SchedulerTest.class)
         .addSchedulerFeatures()
         .addMavenDependencies("com.jayway.awaitility:awaitility", "org.antlr:stringtemplate")
         .testFocusedOn((warBuilder) -> {

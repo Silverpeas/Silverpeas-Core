@@ -25,8 +25,10 @@ package org.silverpeas;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
+import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -35,14 +37,16 @@ import org.junit.Before;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static org.apache.commons.io.FileUtils.getFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Yohann Chastagnier
@@ -54,15 +58,46 @@ public abstract class DataSetTest {
 
   private DbSetupTracker dbSetupTracker = new DbSetupTracker();
 
+  private static Operation UNIQUE_ID_CREATION = Operations.sql(
+      "CREATE TABLE IF NOT EXISTS UniqueId (maxId BIGINT NOT NULL, tableName varchar(100) NOT " +
+          "NULL)");
+
   protected DataSource getDataSource() {
     return dataSource;
   }
 
   @Before
   public final void prepareDataSource() {
-    Operation preparation = getDbSetupOperations();
+    Operation preparation = Operations.sequenceOf(getTablesCreationOperation(), UNIQUE_ID_CREATION,
+        getDbSetupOperations());
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
     dbSetupTracker.launchIfNecessary(dbSetup);
+  }
+
+  /**
+   * @see com.ninja_squad.dbsetup.DbSetupTracker#skipNextLaunch()
+   */
+  protected void skipNextLaunch() {
+    dbSetupTracker.skipNextLaunch();
+  }
+
+  private Operation getTablesCreationOperation() {
+    Operation tablesCreations = null;
+    try {
+      InputStream sqlScriptInput = getClass().getResourceAsStream("create_table.sql");
+      if (sqlScriptInput != null) {
+        StringWriter sqlScriptContent = new StringWriter();
+        IOUtils.copy(sqlScriptInput, sqlScriptContent);
+        if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
+          String[] sqlInstructions = sqlScriptContent.toString().split(";");
+          tablesCreations = Operations.sql(sqlInstructions);
+        }
+      }
+    } catch (IOException e) {
+      Logger.getLogger(getClass().getSimpleName())
+          .log(Level.WARNING, "No create_table.sql file for creating the SQL tables");
+    }
+    return (tablesCreations == null ? Operations.sql("") : tablesCreations);
   }
 
   protected abstract Operation getDbSetupOperations();

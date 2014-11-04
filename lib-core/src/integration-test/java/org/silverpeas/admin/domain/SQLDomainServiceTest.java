@@ -128,8 +128,12 @@ public class SQLDomainServiceTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addCommonBasicUtilities().addSilverpeasExceptionBases()
-        .addFileRepositoryFeatures().addAdministrationFeatures().addClasses(FileServerUtils.class)
+    return WarBuilder4LibCore.onWarFor(SQLDomainServiceTest.class)
+        .addCommonBasicUtilities()
+        .addSilverpeasExceptionBases()
+        .addFileRepositoryFeatures()
+        .addAdministrationFeatures()
+        .addClasses(FileServerUtils.class)
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.admin.domain");
           warBuilder.addAsResource("org/silverpeas/domains/templateDomainSQL.properties");

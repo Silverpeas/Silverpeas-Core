@@ -42,11 +42,19 @@ public class UniqueIntegerIdentifier implements EntityIdentifier {
   @Column(name = "id", nullable = false)
   private Integer id;
 
+  public static final UniqueIntegerIdentifier from(String value) {
+    return new UniqueIntegerIdentifier().fromString(value);
+  }
+
+  public static final UniqueIntegerIdentifier from(int value) {
+    return new UniqueIntegerIdentifier().setId(value);
+  }
+
   public Integer getId() {
     return id;
   }
 
-  public UniqueIntegerIdentifier setId(final Integer id) {
+  private UniqueIntegerIdentifier setId(final Integer id) {
     this.id = id;
     return this;
   }

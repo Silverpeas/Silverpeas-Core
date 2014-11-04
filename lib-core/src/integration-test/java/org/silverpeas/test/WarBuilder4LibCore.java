@@ -25,11 +25,14 @@
 package org.silverpeas.test;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.Message;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.calendar.Datable;
+import com.silverpeas.calendar.DateTime;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
@@ -47,6 +50,7 @@ import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.TransactionRuntimeException;
@@ -67,8 +71,11 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.memory.MemoryData;
+import org.silverpeas.util.memory.MemoryUnit;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.time.TimeData;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -78,14 +85,27 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
 
   /**
-   * Gets an instance of an war archive test builder with the following common stuffs:
+   * Constructs a war builder for the specified test class. It will load all the resources in the
+   * same packages of the specified test class.
+   * @param test the class of the test for which a war archive will be build.
+   */
+  protected <T> WarBuilder4LibCore(final Class<T> test) {
+    super(test);
+  }
+
+  /**
+   * Gets an instance of a war archive builder for the specified test class with the
+   * following common stuffs:
    * <ul>
+   * <li>the resources located in the same package of the specified test class,</li>
    * <li>{@link ServiceProvider} features.</li>
+   * <li>the SilverTrace subsystem subbed,</li>
+   * <li>the base i18n bundle loaded.</li>
    * </ul>
    * @return the instance of the war archive builder.
    */
-  public static WarBuilder4LibCore onWar() {
-    WarBuilder4LibCore warBuilder = new WarBuilder4LibCore();
+  public static <T> WarBuilder4LibCore onWarFor(Class<T> test) {
+    WarBuilder4LibCore warBuilder = new WarBuilder4LibCore(test);
     warBuilder.addServiceProviderFeatures();
     warBuilder.addStubbedSilverTraceFeatures();
     warBuilder.addBundleBaseFeatures();
@@ -502,6 +522,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder with novell jldap
    */
   public WarBuilder4LibCore addLDAPFeatures() {
-    return addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
+    addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
+    return this;
   }
 }

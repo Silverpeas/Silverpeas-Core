@@ -77,8 +77,11 @@ public class JdbcSqlQueryTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addCommonBasicUtilities().addSilverpeasExceptionBases()
-        .addJdbcPersistenceFeatures().build();
+    return WarBuilder4LibCore.onWarFor(JdbcSqlQueryTest.class)
+        .addCommonBasicUtilities()
+        .addSilverpeasExceptionBases()
+        .addJdbcPersistenceFeatures()
+        .build();
   }
 
   @Test

@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.asset.Asset;
 /**
  * @author Yohann Chastagnier
  */
-public interface CommonWebArchive<T> extends CommonArchive<T> {
+public interface CommonWebArchive<T> extends CommonArchive<CommonWebArchive<T>> {
 
   /**
    * Adds the resource as a WEB-INF resource to the container, returning the container itself.
@@ -43,7 +43,7 @@ public interface CommonWebArchive<T> extends CommonArchive<T> {
    * @return This {@link Archive}
    * @throws IllegalArgumentException if resourceName or target is not specified
    */
-  T addAsWebInfResource(String resourceName, String target) throws IllegalArgumentException;
+  CommonWebArchive<T> addAsWebInfResource(String resourceName, String target) throws IllegalArgumentException;
 
   /**
    * Adds the {@link Asset} as a WEB-INF resource to the container, returning the container itself.
@@ -54,5 +54,5 @@ public interface CommonWebArchive<T> extends CommonArchive<T> {
    * @return This {@link Archive}
    * @throws IllegalArgumentException If the resource or target is not specified
    */
-  T addAsWebInfResource(Asset resource, String target) throws IllegalArgumentException;
+  CommonWebArchive<T> addAsWebInfResource(Asset resource, String target) throws IllegalArgumentException;
 }

@@ -19,30 +19,39 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.notificationserver.channel.silvermail;
+package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
-import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.persistence.repository.jpa.NamedParameters;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.transaction.Transactional;
+import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
  * @author mmoquillon
  */
-@Transactional
-public class SILVERMAILMessageBeanRepository
-    extends JpaBasicEntityManager<SILVERMAILMessageBean, UniqueIntegerIdentifier> {
+@Singleton
+public class POPUPMessageBeanFinder {
 
-  public List<SILVERMAILMessageBean> findFirstByUserIdAndFolderId(String userId, String folderId,
-      int readState) {
-    NamedParameters parameters = newNamedParameters();
-    parameters.add("userId", Integer.parseInt(userId)).add("folderId", Integer.parseInt(folderId));
-    if (readState != -1) {
-      parameters.add("readState", readState);
-      return findByNamedQuery("findByUserIdAndFolderIdAndReadState", parameters);
-    }
-    return findByNamedQuery("findByUserIdAndFolderId", parameters);
+  @PersistenceContext
+  private EntityManager entityManager;
+
+  public static POPUPMessageBeanFinder getInstance() {
+    return ServiceProvider.getService(POPUPMessageBeanFinder.class);
+  }
+
+  public static List<POPUPMessageBean> getSomeByQuery(String query) {
+    return getInstance().entityManager.createQuery(query, POPUPMessageBean.class).getResultList();
+  }
+
+  public static POPUPMessageBean getById(long id) {
+    return getInstance().entityManager.find(POPUPMessageBean.class, UniqueLongIdentifier.from(id));
+  }
+
+  public static long count() {
+    return getInstance().entityManager.createQuery("select count(m) from POPUPMessageBean m",
+        Long.class).getSingleResult();
   }
 }

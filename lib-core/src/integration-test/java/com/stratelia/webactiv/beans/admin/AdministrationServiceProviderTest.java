@@ -48,7 +48,7 @@ public class AdministrationServiceProviderTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar()
+    return WarBuilder4LibCore.onWarFor(AdministrationServiceProviderTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .testFocusedOn((warBuilder) -> {

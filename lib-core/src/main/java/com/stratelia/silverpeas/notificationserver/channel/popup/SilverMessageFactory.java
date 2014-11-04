@@ -153,37 +153,38 @@ public class SilverMessageFactory {
    * -------------------------------------------------------------------------- push
    */
   public static void push(String userId, NotificationData notifMsg) {
-    POPUPMessageBean pmb = new POPUPMessageBean();
-    try {
-      SilverTrace.debug("popup", "SilverMessageFactory.push()", "Message = "
-          + notifMsg.toString());
-      SilverTrace.debug("popup", "SilverMessageFactory.push()",
-          "Message.isAnswerAllowed = " + notifMsg.isAnswerAllowed());
-      pmb.setUserId(Long.parseLong(userId));
+    Transaction.performInOne(() -> {
+      POPUPMessageBean pmb = new POPUPMessageBean();
+      try {
+        SilverTrace
+            .debug("popup", "SilverMessageFactory.push()", "Message = " + notifMsg.toString());
+        SilverTrace.debug("popup", "SilverMessageFactory.push()",
+            "Message.isAnswerAllowed = " + notifMsg.isAnswerAllowed());
+        pmb.setUserId(Long.parseLong(userId));
 
-      // CBO : UPDATE
-      // pmb.setBody(
-      // Integer.toString(LongText.addLongText(p_Message.getMessage())) );
-      if ("COMMUNICATION".equals(notifMsg.getComment())) {
-        pmb.setBody(notifMsg.getComment()
-            + Integer.toString(LongText.addLongText(notifMsg.getMessage())));
-      } else {
-        pmb.setBody(Integer.toString(LongText.addLongText(notifMsg
-            .getMessage())));
+        // CBO : UPDATE
+        // pmb.setBody(
+        // Integer.toString(LongText.addLongText(p_Message.getMessage())) );
+        if ("COMMUNICATION".equals(notifMsg.getComment())) {
+          pmb.setBody(notifMsg.getComment() +
+              Integer.toString(LongText.addLongText(notifMsg.getMessage())));
+        } else {
+          pmb.setBody(Integer.toString(LongText.addLongText(notifMsg.getMessage())));
+        }
+        // CBO : FIN UPDATE
+
+        pmb.setSenderId(notifMsg.getSenderId());
+        pmb.setSenderName(notifMsg.getSenderName());
+        pmb.setAnswerAllowed(notifMsg.isAnswerAllowed());
+        pmb.setMsgDate(DateUtil.date2SQLDate(new Date()));
+        pmb.setMsgTime(DateUtil.getFormattedTime(new Date()));
+        getRepository().save(pmb);
+      } catch (Exception e) {
+        SilverTrace.error("popup", "SilverMessageFactory.push()", "popup.EX_CANT_PUSH_MSG",
+            "UserId=" + userId + ";Msg=" + notifMsg, e);
       }
-      // CBO : FIN UPDATE
-
-      pmb.setSenderId(notifMsg.getSenderId());
-      pmb.setSenderName(notifMsg.getSenderName());
-      pmb.setAnswerAllowed(notifMsg.isAnswerAllowed());
-      pmb.setMsgDate(DateUtil.date2SQLDate(new Date()));
-      pmb.setMsgTime(DateUtil.getFormattedTime(new Date()));
-      getRepository().save(pmb);
-    } catch (Exception e) {
-      SilverTrace.error("popup", "SilverMessageFactory.push()",
-          "popup.EX_CANT_PUSH_MSG", "UserId=" + userId + ";Msg=" + notifMsg,
-          e);
-    }
+      return null;
+    });
   }
 
 }

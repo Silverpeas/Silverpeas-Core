@@ -69,7 +69,7 @@ public class ProcessManagementTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar()
+    return WarBuilder4LibCore.onWarFor(ProcessManagementTest.class)
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
         .addCommonUserBeans()

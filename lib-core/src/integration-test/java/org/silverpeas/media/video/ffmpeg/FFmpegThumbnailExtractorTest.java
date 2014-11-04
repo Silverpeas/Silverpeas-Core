@@ -49,7 +49,9 @@ public class FFmpegThumbnailExtractorTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addSilverpeasExceptionBases().addCommonBasicUtilities()
+    return WarBuilder4LibCore.onWarFor(FFmpegThumbnailExtractorTest.class)
+        .addSilverpeasExceptionBases()
+        .addCommonBasicUtilities()
         .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
             "org.apache.commons:commons-exec").testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.media");

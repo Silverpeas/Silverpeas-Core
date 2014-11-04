@@ -102,8 +102,12 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addSilverpeasExceptionBases().addFileRepositoryFeatures()
-        .addJpaPersistenceFeatures().addAdministrationFeatures().testFocusedOn(warBuilder -> {
+    return WarBuilder4LibCore.onWarFor(SQLInternalDomainRepositoryTest.class)
+        .addSilverpeasExceptionBases()
+        .addFileRepositoryFeatures()
+        .addJpaPersistenceFeatures()
+        .addAdministrationFeatures()
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.admin.domain");
         }).build();
   }

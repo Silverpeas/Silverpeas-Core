@@ -61,8 +61,11 @@ public class DomainServiceProviderTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWar().addCommonBasicUtilities().addSilverpeasExceptionBases()
-        .addAdministrationFeatures().testFocusedOn((warBuilder) -> {
+    return WarBuilder4LibCore.onWarFor(DomainServiceProviderTest.class)
+        .addCommonBasicUtilities()
+        .addSilverpeasExceptionBases()
+        .addAdministrationFeatures()
+        .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.admin.domain");
         }).build();
   }
