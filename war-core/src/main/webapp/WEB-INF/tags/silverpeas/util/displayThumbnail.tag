@@ -119,8 +119,8 @@ function updateThumbnail() {
   
   function checkThumbnail(error) {
     <c:if test="${mandatory}">
-      if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == '') {
-        error.msg += " - '<fmt:message key="GML.thumbnail"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+      if ($('#thumbnailFile').val() == '' && $('#thumbnail').is('img') == false) {
+        error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.MustBeFilled" bundle="${generalBundle}"/>\n";
         error.nb++;
       }
     </c:if>
@@ -129,7 +129,7 @@ function updateThumbnail() {
       var logicalName = $('#thumbnailFile').val();
       var extension = getExtension(logicalName);
       if (extension == null || (extension != "gif" && extension != "jpeg" && extension != "jpg" && extension != "png")) {
-        error.msg += " - '<fmt:message key="GML.thumbnail"/>' <fmt:message key="GML.thumbnail.badformat"/>\n";
+        error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.thumbnail.badformat" bundle="${generalBundle}"/>\n";
         error.nb++;
       }
     }
@@ -175,7 +175,9 @@ function updateThumbnail() {
 	<div class="field" id="thumb">
 		<div id="thumbnailPreviewAndActions">
 			<div id="thumbnailPreview">
-				<view:image src="${thumbnail.URL}" type="vignette.thumbnail" id="thumbnail" alt=""/>
+				<c:if test="${thumbnail != null}">
+					<view:image src="${thumbnail.URL}" type="vignette.thumbnail" id="thumbnail" alt=""/>
+				</c:if>
 			</div>
 			<div id="thumbnailActions">
 				<c:if test="${thumbnail != null && thumbnail.cropable}">
