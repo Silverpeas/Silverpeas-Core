@@ -43,9 +43,9 @@
 	    String userId 		= request.getParameter("userId");
 	    String userName		= request.getParameter("userName");
 	    String objectType	= request.getParameter("objectType");		
-	    StatisticBm statisticBm =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);	    
+	    StatisticService statisticService =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
 	    ForeignPK foreignPK = new ForeignPK(objectId, componentId);	    
-	    Collection readingState = statisticBm.getHistoryByObjectAndUser(foreignPK, 1, objectType, userId);
+	    Collection readingState = statisticService.getHistoryByObjectAndUser(foreignPK, 1, objectType, userId);
 	   
 	    // affichage du nom de l'utilisateur
 	    %>

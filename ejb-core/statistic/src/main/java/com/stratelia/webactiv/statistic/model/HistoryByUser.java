@@ -45,11 +45,10 @@ public class HistoryByUser implements Serializable {
   private int nbAccess;
 
   /**
-   * Constructor declaration
-   * @param date
-   * @param userId
-   * @param nbAccess
-   * @see
+   * Default constructor
+   * @param user the user detail
+   * @param lastAccess the last access date
+   * @param nbAccess the number of access
    */
   public HistoryByUser(UserDetail user, Date lastAccess, int nbAccess) {
     this.lastAccess = lastAccess;

@@ -30,15 +30,13 @@ package com.stratelia.webactiv.statistic.model;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
- * Class declaration
- * @author
+ * @see org.silverpeas.util.exception.SilverpeasRuntimeException
  */
 public class StatisticRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  public StatisticRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public StatisticRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -48,10 +46,9 @@ public class StatisticRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
    */
-  public StatisticRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public StatisticRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -61,10 +58,9 @@ public class StatisticRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
    */
-  public StatisticRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public StatisticRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -75,17 +71,15 @@ public class StatisticRuntimeException extends SilverpeasRuntimeException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
    */
-  public StatisticRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public StatisticRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   /**
    * Method declaration
    * @return
-   * @see
    */
   public String getModule() {
     return "statistic";

@@ -33,8 +33,10 @@ import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 
-@Local
-public interface StatisticBm {
+/**
+ * contract interface to manage silverpeas statistics
+ */
+public interface StatisticService {
 
   public void addStat(String userId, ForeignPK foreignPK, int action, String objectType);
 

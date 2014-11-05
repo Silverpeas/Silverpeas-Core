@@ -33,7 +33,6 @@ import java.util.Date;
 import org.silverpeas.util.ForeignPK;
 
 /**
- * Class declaration
  * @author
  */
 public class HistoryObjectDetail implements Serializable {
@@ -58,27 +57,21 @@ public class HistoryObjectDetail implements Serializable {
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public Date getDate() {
     return date;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public String getUserId() {
     return userId;
   }
 
   /**
-   * Method declaration
    * @return
-   * @see
    */
   public ForeignPK getForeignPK() {
     return foreignPK;

@@ -37,6 +37,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
@@ -90,7 +91,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
 import java.io.File;
 import java.io.IOException;
@@ -898,13 +898,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private void setPopularityToResults() {
     List<GlobalSilverResult> results = getGlobalSR();
-    StatisticBm statisticBm = getStatisticBm();
+    StatisticService statisticService = getStatisticBm();
     ForeignPK pk = new ForeignPK("unknown");
     for (GlobalSilverResult result : results) {
       if (isPopularityCompliant(result)) {
         pk.setComponentName(result.getInstanceId());
         pk.setId(result.getId());
-        int nbAccess = statisticBm.getCount(pk, 1, "Publication");
+        int nbAccess = statisticService.getCount(pk, 1, "Publication");
         result.setHits(nbAccess);
       }
     }
@@ -917,9 +917,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         gsr.getURL()) && gsr.getURL().indexOf("Publication") != -1)));
   }
 
-  public StatisticBm getStatisticBm() {
+  public StatisticService getStatisticBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
     } catch (Exception e) {
       throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

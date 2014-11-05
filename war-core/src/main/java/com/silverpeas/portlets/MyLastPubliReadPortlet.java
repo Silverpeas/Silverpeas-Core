@@ -39,7 +39,7 @@ import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticBm;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 
 public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames {
@@ -92,8 +92,8 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
     }
   }
   
-  private StatisticBm getStatisticBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+  private StatisticService getStatisticBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
   }
   
   private PublicationBm getPublicationBm() {

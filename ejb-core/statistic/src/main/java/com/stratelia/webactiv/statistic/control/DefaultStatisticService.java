@@ -20,54 +20,54 @@
  */
 package com.stratelia.webactiv.statistic.control;
 
-import java.sql.Connection;
-import java.util.*;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
 import com.silverpeas.SilverpeasContent;
-import org.silverpeas.util.ForeignPK;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.statistic.ejb.HistoryObjectDAO;
+import com.stratelia.webactiv.statistic.dao.HistoryObjectDAO;
 import com.stratelia.webactiv.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-@Stateless(name = "Statistics", description = "EJB to manage statistics")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class StatisticBmEJB implements StatisticBm {
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
+import java.sql.Connection;
+import java.util.*;
+
+/**
+ * Default implementation of Statistic service layer which manage statistics
+ */
+
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
+public class DefaultStatisticService implements StatisticService {
 
   public final static int ACTION_ACCESS = 1;
 
-  public StatisticBmEJB() {
+  public DefaultStatisticService() {
   }
 
   private Connection getConnection() {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getConnection()",
+      throw new StatisticRuntimeException("DefaultStatisticService().getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
   @Override
   public void addStat(String userId, ForeignPK foreignPK, int actionType, String objectType) {
-    SilverTrace.info("statistic", "StatisticBmEJB.addStat", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("statistic", "DefaultStatisticService.addStat", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       HistoryObjectDAO.add(con, userId, foreignPK, actionType, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().addStat()",
+      throw new StatisticRuntimeException("DefaultStatisticService().addStat()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
     } finally {
       DBUtil.close(con);
@@ -85,8 +85,9 @@ public class StatisticBmEJB implements StatisticBm {
     try {
       return HistoryObjectDAO.getCount(con, foreignPKs, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getCount()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getCount()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -98,8 +99,9 @@ public class StatisticBmEJB implements StatisticBm {
     try {
       return HistoryObjectDAO.getCount(con, foreignPK, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getCount()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getCount()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -123,13 +125,14 @@ public class StatisticBmEJB implements StatisticBm {
   @Override
   public Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
       String objectType) {
-    SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("statistic", "DefaultStatisticService.getHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       return HistoryObjectDAO.getHistoryDetailByObject(con, foreignPK, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getHistoryByAction()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getHistoryByAction()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -138,14 +141,15 @@ public class StatisticBmEJB implements StatisticBm {
   @Override
   public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
       String objectType, String userId) {
-    SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObjectAndUser",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("statistic", "DefaultStatisticService.getHistoryByObjectAndUser", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, foreignPK, objectType, userId);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getHistoryByObjectAndUser()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getHistoryByObjectAndUser()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -154,8 +158,8 @@ public class StatisticBmEJB implements StatisticBm {
   @Override
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType) {
-    UserDetail[] allUsers = OrganizationControllerProvider.getOrganisationController().getAllUsers(
-        foreignPK.getInstanceId());
+    UserDetail[] allUsers = OrganizationControllerProvider.getOrganisationController()
+        .getAllUsers(foreignPK.getInstanceId());
     return getHistoryByObject(foreignPK, action, objectType, allUsers);
   }
 
@@ -172,13 +176,13 @@ public class StatisticBmEJB implements StatisticBm {
 
   private Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType, UserDetail[] users) {
-    SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObject()",
-        "root.MSG_GEN_ENTER_METHOD");
-    Collection<HistoryObjectDetail> list = null;
+    SilverTrace
+        .info("statistic", "DefaultStatisticService.getHistoryByObject()", "root.MSG_GEN_ENTER_METHOD");
+    Collection<HistoryObjectDetail> list;
     try {
       list = getHistoryByAction(foreignPK, action, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB.getHistoryByObject()",
+      throw new StatisticRuntimeException("DefaultStatisticService.getHistoryByObject()",
           SilverpeasRuntimeException.ERROR, "statistic.EX_IMPOSSIBLE_DOBTENIR_LETAT_DES_LECTURES",
           e);
     }
@@ -192,17 +196,15 @@ public class StatisticBmEJB implements StatisticBm {
       date[i] = historyObject.getDate();
       i++;
     }
-    UserDetail[] allUsersByComponent = users;
-    UserDetail[] controlledUsers = OrganizationControllerProvider.getOrganisationController()
-        .getUserDetails(readerIds);
+    UserDetail[] controlledUsers =
+        OrganizationControllerProvider.getOrganisationController().getUserDetails(readerIds);
 
     // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant
     // pas partis d'un rôle
-    Collection<UserDetail> allUsers = new ArrayList<UserDetail>(allUsersByComponent.length
-        + controlledUsers.length);
     int compteur = 0;
-    for (int j = 0; j < allUsersByComponent.length; j++) {
-      allUsers.add(allUsersByComponent[j]);
+    Collection<UserDetail> allUsers = new ArrayList<>(users.length + controlledUsers.length);
+    for (int j = 0; j < users.length; j++) {
+      allUsers.add(users[j]);
       compteur = j + 1;
     }
     for (int j = compteur; j < controlledUsers.length; j++) {
@@ -212,7 +214,7 @@ public class StatisticBmEJB implements StatisticBm {
     }
 
     // création de la liste de tous les utilisateur ayant le droit de lecture
-    Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>(allUsers.size());
+    Collection<HistoryByUser> statByUser = new ArrayList<>(allUsers.size());
     for (UserDetail user : allUsers) {
       if (user != null) {
         HistoryByUser historyByUser = new HistoryByUser(user, null, 0);
@@ -221,9 +223,8 @@ public class StatisticBmEJB implements StatisticBm {
     }
 
     // création d'une liste des accès par utilisateur
-    Map<UserDetail, Date> byUser = new HashMap<UserDetail, Date>(controlledUsers.length);
-    Map<UserDetail, Integer> nbAccessbyUser = new HashMap<UserDetail, Integer>(
-        controlledUsers.length);
+    Map<UserDetail, Date> byUser = new HashMap<>(controlledUsers.length);
+    Map<UserDetail, Integer> nbAccessbyUser = new HashMap<>(controlledUsers.length);
     for (int j = 0; j < controlledUsers.length; j++) {
       if (controlledUsers[j] != null) {
         // regarder si la date en cours est > à la date enregistrée...
@@ -236,55 +237,51 @@ public class StatisticBmEJB implements StatisticBm {
           Object objNb = nbAccessbyUser.get(controlledUsers[j]);
           int nbAccess = 0;
           if (objNb != null) {
-            Integer nb = (Integer) objNb;
-            nbAccess = nb.intValue();
+            nbAccess = (Integer) objNb;
             nbAccess = nbAccess + 1;
           }
-          nbAccessbyUser.put(controlledUsers[j], Integer.valueOf(nbAccess));
+          nbAccessbyUser.put(controlledUsers[j], nbAccess);
         } else {
           byUser.put(controlledUsers[j], date[j]);
-          nbAccessbyUser.put(controlledUsers[j], Integer.valueOf(1));
+          nbAccessbyUser.put(controlledUsers[j], 1);
         }
       }
     }
 
-    // mise à jour de la date de dernier accès et du nombre d'accès pour les
-    // utilisateurs ayant lu
-    Iterator<HistoryByUser> itStat = statByUser.iterator();
-    while (itStat.hasNext()) {
-      HistoryByUser historyByUser = itStat.next();
+    // mise à jour de la date de dernier accès et du nombre d'accès pour les utilisateurs ayant lu
+    for (final HistoryByUser historyByUser : statByUser) {
       UserDetail user = historyByUser.getUser();
       // recherche de la date de dernier accès
       Date lastAccess = byUser.get(user);
       if (lastAccess != null) {
         historyByUser.setLastAccess(lastAccess);
       }
-      // recherche du nombre d'accès
+      // retrieve access number
       Integer nbAccess = nbAccessbyUser.get(user);
       if (nbAccess != null) {
-        historyByUser.setNbAccess(nbAccess.intValue());
+        historyByUser.setNbAccess(nbAccess);
       }
     }
 
-    // tri de la liste pour mettre en premier les users ayant consulté
-    LastAccessComparatorDesc comparateur = new LastAccessComparatorDesc();
-    Collections.sort((List<HistoryByUser>) statByUser, comparateur);
+    // Sort list to get readers first
+    LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
+    Collections.sort((List<HistoryByUser>) statByUser, comparator);
 
-    SilverTrace.info("statistic", "StatisticBmEJB.getHistoryByObject()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("statistic", "DefaultStatisticService.getHistoryByObject()", "root.MSG_GEN_EXIT_METHOD");
     return statByUser;
   }
 
   @Override
   public void deleteStats(ForeignPK foreignPK, String objectType) {
-    SilverTrace.info("statistic", "StatisticBmEJB.deleteStat", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("statistic", "DefaultStatisticService.deleteStat", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       HistoryObjectDAO.deleteHistoryByObject(con, foreignPK, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().deleteHistoryByAction",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_DELETE_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException("DefaultStatisticService().deleteHistoryByAction",
+          SilverpeasRuntimeException.ERROR,
+          "statistic.CANNOT_DELETE_HISTORY_STATISTICS_PUBLICATION", e);
     } finally {
       DBUtil.close(con);
     }
@@ -301,7 +298,7 @@ public class StatisticBmEJB implements StatisticBm {
     try {
       HistoryObjectDAO.deleteStatsOfComponent(con, componentId);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().deleteStatsOfComponent",
+      throw new StatisticRuntimeException("DefaultStatisticService().deleteStatsOfComponent",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_DELETE_HISTORY_STATISTICS", e);
     } finally {
       DBUtil.close(con);
@@ -310,13 +307,13 @@ public class StatisticBmEJB implements StatisticBm {
 
   @Override
   public void moveStat(ForeignPK toForeignPK, int actionType, String objectType) {
-    SilverTrace.info("statistic", "StatisticBmEJB.deleteHistoryByAction",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("statistic", "DefaultStatisticService.deleteHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       HistoryObjectDAO.move(con, toForeignPK, actionType, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().addObjectToHistory()",
+      throw new StatisticRuntimeException("DefaultStatisticService().addObjectToHistory()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
     } finally {
       DBUtil.close(con);
@@ -333,8 +330,9 @@ public class StatisticBmEJB implements StatisticBm {
         nb += HistoryObjectDAO.getCountByPeriod(con, primaryKey, objectType, startDate, endDate);
       }
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getCountByPeriod()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getCountByPeriod()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -350,14 +348,15 @@ public class StatisticBmEJB implements StatisticBm {
       if (!userIds.isEmpty()) {
         for (String userId : userIds) {
           for (WAPrimaryKey primaryKey : primaryKeys) {
-            nb += HistoryObjectDAO.getCountByPeriodAndUser(con, primaryKey, objectType, startDate,
-                endDate, userId);
+            nb += HistoryObjectDAO
+                .getCountByPeriodAndUser(con, primaryKey, objectType, startDate, endDate, userId);
           }
         }
       }
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getCountByPeriodAndUser()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getCountByPeriodAndUser()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -365,18 +364,19 @@ public class StatisticBmEJB implements StatisticBm {
   }
 
   @Override
-  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
-      String objectType, Date startDate, Date endDate) {
+  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+      Date startDate, Date endDate) {
     int nb = 0;
     Connection con = getConnection();
     try {
-      List<String> objectIds = HistoryObjectDAO.getListObjectAccessByPeriod(con, primaryKeys,
-          objectType, startDate, endDate);
+      List<String> objectIds = HistoryObjectDAO
+          .getListObjectAccessByPeriod(con, primaryKeys, objectType, startDate, endDate);
       Set<String> distinctObjectIds = new HashSet<String>(objectIds);
       nb = distinctObjectIds.size();
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getDistinctCountByPeriod()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -389,16 +389,17 @@ public class StatisticBmEJB implements StatisticBm {
     int nb = 0;
     Connection con = getConnection();
     if (userIds != null && !userIds.isEmpty()) {
-      Set<String> distinctObjectIds = new HashSet<String>(userIds.size());
+      Set<String> distinctObjectIds = new HashSet<>(userIds.size());
       try {
         for (String userId : userIds) {
-          List<String> objectIds = HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con,
-              primaryKeys, objectType, startDate, endDate, userId);
+          List<String> objectIds = HistoryObjectDAO
+              .getListObjectAccessByPeriodAndUser(con, primaryKeys, objectType, startDate, endDate,
+                  userId);
           distinctObjectIds.addAll(objectIds);
         }
         nb = distinctObjectIds.size();
       } catch (Exception e) {
-        throw new StatisticRuntimeException("StatisticBmEJB().getDistinctCountByPeriod()",
+        throw new StatisticRuntimeException("DefaultStatisticService().getDistinctCountByPeriod()",
             SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
             e);
       } finally {
@@ -412,15 +413,16 @@ public class StatisticBmEJB implements StatisticBm {
   @Override
   public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
       int actionType, String objectType, int nbObjects) {
-    SilverTrace.info("statistic", "StatisticBmEJB.getLastHistoryOfObjectsForUser",
+    SilverTrace.info("statistic", "DefaultStatisticService.getLastHistoryOfObjectsForUser",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser(con, userId, actionType,
-          objectType, nbObjects);
+      return HistoryObjectDAO
+          .getLastHistoryDetailOfObjectsForUser(con, userId, actionType, objectType, nbObjects);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().getLastHistoryOfObjectsForUser()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().getLastHistoryOfObjectsForUser()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -429,13 +431,14 @@ public class StatisticBmEJB implements StatisticBm {
   public boolean isRead(SilverpeasContent content, String userId) {
     Connection con = getConnection();
     try {
-      int numberOfReading =
-          HistoryObjectDAO.getCountByPeriodAndUser(con, getForeignPK(content),
-              content.getContributionType(), null, null, userId);
+      int numberOfReading = HistoryObjectDAO
+          .getCountByPeriodAndUser(con, getForeignPK(content), content.getContributionType(), null,
+              null, userId);
       return numberOfReading > 0;
     } catch (Exception e) {
-      throw new StatisticRuntimeException("StatisticBmEJB().isRead()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException("DefaultStatisticService().isRead()",
+          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
+          e);
     } finally {
       DBUtil.close(con);
     }

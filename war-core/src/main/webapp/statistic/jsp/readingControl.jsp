@@ -52,10 +52,10 @@
     }
     </script>
     <%    
-    StatisticBm statisticBm =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+    StatisticService statisticService =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
     
     ForeignPK foreignPK = new ForeignPK(id, componentId);
-    Collection<HistoryByUser> readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType, userIds);
+    Collection<HistoryByUser> readingState = statisticService.getHistoryByObject(foreignPK, 1, objectType, userIds);
     
     // displaying reading control
     ArrayPane arrayPane = gef.getArrayPane("readingControl", "ReadingControl", request, session);
