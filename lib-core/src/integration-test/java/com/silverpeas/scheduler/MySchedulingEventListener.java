@@ -32,9 +32,10 @@ import static org.junit.Assert.*;
  */
 public class MySchedulingEventListener implements SchedulerEventListener {
 
-  private boolean executed = false;
+  private boolean fired = false;
   private boolean succeeded = false;
   private boolean mustFail = false;
+  private boolean completed = false;
 
   /**
    * The processing of a scheduler event about a trigger firing must throw an error.
@@ -49,7 +50,7 @@ public class MySchedulingEventListener implements SchedulerEventListener {
    * Resets the counters.
    */
   public void reset() {
-    executed = false;
+    fired = false;
     succeeded = false;
     mustFail = false;
   }
@@ -59,7 +60,7 @@ public class MySchedulingEventListener implements SchedulerEventListener {
    * @return true if an event about a job firing was recieved, false otherwise.
    */
   public boolean isJobFired() {
-    return executed;
+    return fired;
   }
 
   /**
@@ -71,12 +72,25 @@ public class MySchedulingEventListener implements SchedulerEventListener {
     return succeeded;
   }
 
+  /**
+   * Is the treatment of this listener about the job is completed? The treatment is done once the
+   * job performed and the state of its execution treated by this listener.
+   * @return true if the listener has finished to treat the different events triggered from the
+   * scheduler.
+   */
+  public boolean isCompleted() {
+    return completed;
+  }
+
   @Override
   public void triggerFired(SchedulerEvent anEvent) {
-    assertSchedulerEvent(anEvent);
-    executed = true;
-    if (mustFail) {
-      throw new Error();
+    try {
+      assertSchedulerEvent(anEvent);
+      if (mustFail) {
+        throw new UnsupportedOperationException();
+      }
+    } finally {
+      fired = true;
     }
   }
 
@@ -84,6 +98,7 @@ public class MySchedulingEventListener implements SchedulerEventListener {
   public void jobSucceeded(SchedulerEvent anEvent) {
     assertSchedulerEvent(anEvent);
     succeeded = true;
+    completed = true;
   }
 
   @Override
@@ -91,6 +106,7 @@ public class MySchedulingEventListener implements SchedulerEventListener {
     assertSchedulerEvent(anEvent);
     assertNotNull(anEvent.getJobThrowable());
     succeeded = false;
+    completed = true;
   }
 
   /**

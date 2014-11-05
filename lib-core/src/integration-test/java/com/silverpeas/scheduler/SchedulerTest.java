@@ -27,6 +27,7 @@ package com.silverpeas.scheduler;
 import com.silverpeas.scheduler.trigger.CronJobTrigger;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.trigger.TimeUnit;
+import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,6 +35,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.WarBuilder4LibCore;
@@ -44,6 +46,9 @@ import java.util.concurrent.Callable;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -89,7 +94,7 @@ public class SchedulerTest {
   @Before
   public void setUp() {
     scheduler = SchedulerProvider.getScheduler();
-    assertNotNull(scheduler);
+    assertThat(scheduler, notNullValue());
     eventHandler = new MySchedulingEventListener();
     isJobExecuted = false;
   }
@@ -103,8 +108,52 @@ public class SchedulerTest {
    * An empty test just to check the setting up of the fixture is ok.
    */
   @Test
+  @Ignore
   public void emptyTest() {
-    assertTrue(true);
+
+  }
+
+  @Test
+  public void schedulingAJobThatIsPerformedByAnEventListener()
+      throws Exception {
+    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
+    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    assertThat(job, notNullValue());
+    assertThat(JOB_NAME, is(job.getName()));
+    assertThat(eventHandler, is(job.getSchedulerEventListener()));
+    assertThat(trigger, is(job.getTrigger()));
+  }
+
+  @Test
+  public void schedulingAJobWithoutEventListener()
+      throws Exception {
+    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
+    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        jobExecuted();
+      }
+    }, trigger);
+    assertThat(job, notNullValue());
+    assertThat(JOB_NAME, is(job.getName()));
+    assertThat(job.getSchedulerEventListener(), nullValue());
+    assertThat(trigger, is(job.getTrigger()));
+  }
+
+  @Test
+  public void schedulingAJobWithAnEventListener()
+      throws Exception {
+    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
+    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        jobExecuted();
+      }
+    }, trigger, eventHandler);
+    assertThat(job, notNullValue());
+    assertThat(JOB_NAME, is(job.getName()));
+    assertThat(eventHandler, is(job.getSchedulerEventListener()));
+    assertThat(trigger, is(job.getTrigger()));
   }
 
   @Test(expected = SchedulerException.class)
@@ -132,71 +181,59 @@ public class SchedulerTest {
   public void schedulingEveryTimeAJobExecutionShouldSendAnExecutionEventAtTheExpectedTime()
       throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
-    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertNotNull(job);
-    assertEquals(JOB_NAME, job.getName());
-    assertEquals(eventHandler, job.getSchedulerEventListener());
-    assertEquals(trigger, job.getTrigger());
-    await().atMost(3, SECONDS).until(jobIsFired());
-    assertTrue(eventHandler.isJobSucceeded());
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    await().atMost(2, SECONDS).until(eventHandlingCompleted());
+    assertThat(eventHandler.isJobFired(), is(true));
+    assertThat(eventHandler.isJobSucceeded(), is(true));
   }
 
   @Test
   public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
-    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
-    await().atMost(3, SECONDS).until(jobIsFired());
-    assertFalse(eventHandler.isJobSucceeded());
+    scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
+    await().atMost(2, SECONDS).until(eventHandlingCompleted());
+    assertThat(eventHandler.isJobFired(), is(true));
+    assertThat(eventHandler.isJobSucceeded(), is(false));
   }
 
   @Test
   public void schedulingAJobWithoutEventListenerShouldRunThatJobAtTheExpectedTime()
       throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
-    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
-
+    scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
       public void execute(JobExecutionContext context) throws Exception {
         jobExecuted();
       }
     }, trigger);
-    assertNotNull(job);
-    assertEquals(JOB_NAME, job.getName());
-    assertNull(job.getSchedulerEventListener());
-    assertEquals(trigger, job.getTrigger());
-    await().atMost(3, SECONDS).until(jobIsExecuted());
+    await().atMost(2, SECONDS).until(jobIsExecuted());
+    assertThat(isJobExecuted(), is(true));
   }
 
   @Test
   public void aFailureJobShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
-    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
-
+    scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
       public void execute(JobExecutionContext context) throws Exception {
-        throw new Error("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet.");
       }
     }, trigger, eventHandler);
-    await().atMost(3, SECONDS).until(jobIsFired());
-    assertFalse(eventHandler.isJobSucceeded());
+    await().atMost(2, SECONDS).until(eventHandlingCompleted());
+    assertThat(eventHandler.isJobSucceeded(), is(false));
   }
 
   @Test
   public void schedulingEveryTimeAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
-    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
-
+    scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
       public void execute(JobExecutionContext context) throws Exception {
         jobExecuted();
       }
     }, trigger, eventHandler);
-    assertNotNull(job);
-    assertEquals(JOB_NAME, job.getName());
-    assertEquals(eventHandler, job.getSchedulerEventListener());
-    assertEquals(trigger, job.getTrigger());
     await().atMost(3, SECONDS).until(jobIsExecuted());
-    assertTrue(eventHandler.isJobSucceeded());
+    assertThat(eventHandler.isJobSucceeded(), is(true));
   }
 
   @Test
@@ -206,9 +243,9 @@ public class SchedulerTest {
       JobTrigger.triggerAt(cron);
       fail("A SchedulerException should be thrown!");
     } catch (ParseException ex) {
-      assertEquals(
+      assertThat(
           "Support for specifying both a day-of-week AND a day-of-month parameter is not " +
-              "implemented.", ex.getMessage());
+              "implemented.", is(ex.getMessage()));
     }
   }
 
@@ -220,7 +257,7 @@ public class SchedulerTest {
     String cron = minute + " * * * *";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
   }
 
   @Test
@@ -228,7 +265,7 @@ public class SchedulerTest {
     String cron = "0 5 * * *";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
   }
 
   @Test
@@ -236,7 +273,7 @@ public class SchedulerTest {
     String cron = "05 13 * * *";
     CronJobTrigger trigger = (CronJobTrigger) JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
   }
 
   @Test
@@ -244,7 +281,7 @@ public class SchedulerTest {
     String cron = "0 5 * * ?";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
   }
 
   @Test
@@ -252,7 +289,7 @@ public class SchedulerTest {
     String cron = "0 5 ? * *";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
   }
 
   @Test
@@ -260,7 +297,7 @@ public class SchedulerTest {
     String cron = "0 5 * * 6";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    assertTrue(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
   }
 
   @Test(expected = ParseException.class)
@@ -271,7 +308,7 @@ public class SchedulerTest {
 
   @Test
   public void aNonScheduledJobShouldBeNotFound() throws Exception {
-    assertFalse(scheduler.isJobScheduled(JOB_NAME));
+    assertThat(scheduler.isJobScheduled(JOB_NAME), is(false));
   }
 
   @Test
@@ -294,6 +331,14 @@ public class SchedulerTest {
    */
   private Callable<Boolean> jobIsExecuted() {
     return () -> isJobExecuted();
+  }
+
+  /**
+   * Is the event handler completed its treatment?
+   * @return true if the event handler completes its treatment on the event fired by the scheduler.
+   */
+  private Callable<Boolean> eventHandlingCompleted() {
+    return () -> eventHandler.isCompleted();
   }
 
   /**
