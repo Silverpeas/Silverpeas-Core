@@ -132,6 +132,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
+                Thread.sleep(10);
                 synchronized (monitorOfVerification) {
                   assertThat(createDeleteFor("a_table").execute(), is(NB_ROW_AT_BEGINNING));
                   info(result, "DELETION PROCESS - Waiting for verification (lines deleted)");
@@ -140,6 +141,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
+                Thread.sleep(10);
               }
               return null;
             });
@@ -164,6 +166,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
+        Thread.sleep(10);
         synchronized (monitorOfDeletion) {
           info(result,
               "VERIFICATION PROCESS - BEFORE DELETION - " + getTableLines().size() + " line(s)");
@@ -172,6 +175,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
+        Thread.sleep(10);
         synchronized (monitorOfDeletion) {
           info(result,
               "VERIFICATION PROCESS - AFTER DELETION - " + getTableLines().size() + " line(s)");
@@ -180,6 +184,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
+        Thread.sleep(10);
         synchronized (monitorOfDeletion) {
           info(result,
               "VERIFICATION PROCESS - AFTER TRANSACTION - " + getTableLines().size() + " line(s)");
