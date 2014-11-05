@@ -68,6 +68,7 @@
       $.invitMe.currentElement = target;
       $("#invitationDialog").dialog("option", "title", user.fullName);
       $("#invitationDialog").dialog("open");
+      return false;
     });
   }
 
