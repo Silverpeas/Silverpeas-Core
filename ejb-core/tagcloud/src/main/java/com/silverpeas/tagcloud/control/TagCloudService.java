@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.tagcloud.ejb;
+package com.silverpeas.tagcloud.control;
 
 import java.util.Collection;
 
@@ -27,13 +27,24 @@ import javax.ejb.Local;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 
-@Local
-public interface TagCloudBm {
+public interface TagCloudService {
 
+  /**
+   *
+   * @param tagCloud the tagCloud to create
+   */
   public void createTagCloud(TagCloud tagCloud);
 
+  /**
+   * @param pk the tag cloud identifier
+   * @param type the external type (Publication or Forum or Message)
+   */
   public void deleteTagCloud(TagCloudPK pk, int type);
 
+  /**
+   * @param instanceId the instance identifier
+   * @return The list of tagclouds corresponding to the instance
+   */
   public Collection<TagCloud> getInstanceTagClouds(String instanceId);
 
   public Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount);
@@ -42,8 +53,13 @@ public interface TagCloudBm {
 
   public Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type);
 
-  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
-      int type);
+  /**
+   * @param instanceId The id of the instance.
+   * @param externalId The id of the element.
+   * @param type The type of elements referenced by the tagclouds (publications or forums).
+   * @return The list of tagclouds corresponding to the ids given as parameters.
+   */
+  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId, int type);
 
   public String getTagsByElement(TagCloudPK pk);
 }

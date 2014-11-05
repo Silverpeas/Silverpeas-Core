@@ -74,16 +74,14 @@ public class TagCloudPK extends WAPrimaryKey implements Serializable {
   }
 
   public boolean equals(Object other) {
-    return ((other instanceof TagCloudPK)
-        && (id.equals(((TagCloudPK) other).getId()))
-        && (space.equals(((TagCloudPK) other).getSpace())) && (componentName
-        .equals(((TagCloudPK) other).getComponentName())));
+    return ((other instanceof TagCloudPK) && (id.equals(((TagCloudPK) other).getId())) &&
+        (space.equals(((TagCloudPK) other).getSpace())) &&
+        (componentName.equals(((TagCloudPK) other).getComponentName())));
   }
 
   public String toString() {
-    return new StringBuffer().append("(id = ").append(getId()).append(
-        ", space = ").append(getSpace()).append(", componentName = ").append(
-        getComponentName()).append(")").toString();
+    return "(id = " + getId() + ", space = " + getSpace() + ", componentName = " +
+        getComponentName() + ")";
   }
 
   public int hashCode() {

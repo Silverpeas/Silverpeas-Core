@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.tagcloud.ejb;
+package com.silverpeas.tagcloud.control;
 
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -34,23 +34,22 @@ public class TagCloudRuntimeException extends SilverpeasRuntimeException {
     return "tagCloud";
   }
 
-  public TagCloudRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public TagCloudRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public TagCloudRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public TagCloudRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public TagCloudRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public TagCloudRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public TagCloudRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public TagCloudRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
