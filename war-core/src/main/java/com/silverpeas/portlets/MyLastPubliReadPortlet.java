@@ -20,9 +20,16 @@
  */
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.statistic.control.StatisticService;
+import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -31,16 +38,9 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.statistic.control.StatisticService;
-import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames {
   
@@ -93,7 +93,7 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
   }
   
   private StatisticService getStatisticBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+    return ServiceProvider.getService(StatisticService.class);
   }
   
   private PublicationBm getPublicationBm() {

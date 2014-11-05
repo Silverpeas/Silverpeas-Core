@@ -20,19 +20,18 @@
  */
 package org.silverpeas.servlets;
 
-import com.stratelia.webactiv.statistic.control.StatisticService;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
+import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -114,8 +113,7 @@ public class FileServer extends AbstractFileSender {
       String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
       ForeignPK pubPK = new ForeignPK(pubId, componentId);
       try {
-        StatisticService statisticService = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-            StatisticService.class);
+        StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
         statisticService.addStat(userId, pubPK, 1, "Publication");
       } catch (Exception ex) {
         SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",

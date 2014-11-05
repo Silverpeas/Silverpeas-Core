@@ -43,7 +43,7 @@
 	    String userId 		= request.getParameter("userId");
 	    String userName		= request.getParameter("userName");
 	    String objectType	= request.getParameter("objectType");		
-	    StatisticService statisticService =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+	    StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
 	    ForeignPK foreignPK = new ForeignPK(objectId, componentId);	    
 	    Collection readingState = statisticService.getHistoryByObjectAndUser(foreignPK, 1, objectType, userId);
 	   

@@ -58,6 +58,7 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%@ page import="com.stratelia.webactiv.statistic.control.StatisticService"%>
 <%@ page import="org.silverpeas.util.EJBUtilitaire"%>
 <%@ page import="org.silverpeas.util.JNDINames"%>
+<%@ page import="org.silverpeas.util.ServiceProvider" %>
 
 <%@ page import="java.net.*"%>
 

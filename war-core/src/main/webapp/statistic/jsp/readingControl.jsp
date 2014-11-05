@@ -52,7 +52,7 @@
     }
     </script>
     <%    
-    StatisticService statisticService =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticService.class);
+    StatisticService statisticService =  ServiceProvider.getService(StatisticService.class);
     
     ForeignPK foreignPK = new ForeignPK(id, componentId);
     Collection<HistoryByUser> readingState = statisticService.getHistoryByObject(foreignPK, 1, objectType, userIds);
