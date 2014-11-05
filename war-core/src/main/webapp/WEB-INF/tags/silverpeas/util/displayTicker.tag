@@ -33,6 +33,7 @@
 
 <script type="text/javascript">
 function __getTime(news) {
+  __loadI18NProp();
   var date = new Date(news.date);
   var hour = date.getHours();
   var minute = date.getMinutes();
@@ -42,24 +43,39 @@ function __getTime(news) {
   var nbDays = news.publishedForNbDays;
   var label = hour + ":" + minute;
   if (nbDays == 1) {
-    label = $.i18n.prop("lookSilverpeasV5.ticker.date.yesterday") + " " + label;
+    label = __getI18NProp("lookSilverpeasV5.ticker.date.yesterday") + " " + label;
   } else if (nbDays > 1) {
-    label = $.i18n.prop("lookSilverpeasV5.ticker.date.daysAgo", [nbDays]);
+    label = __getI18NProp("lookSilverpeasV5.ticker.date.daysAgo", [nbDays]);
   }
   return label;
 }
 
+var i18nProp = false;
+
+function __loadI18NProp() {
+  if (!i18nProp) {
+    $.i18n.properties({
+   	  name: 'lookBundle',
+  	  path: webContext + '/services/bundles/org/silverpeas/lookSilverpeasV5/multilang/',
+      language: '${language}',
+      mode: 'map'
+    });
+    i18nProp = true;
+  }
+}
+
+function __getI18NProp(prop, params) {
+  __loadI18NProp();
+  return $.i18n.prop(prop, params);
+}
+
 $(document).ready(function() {
-  $.i18n.properties({
-	name: 'lookBundle',
-    path: webContext + '/services/bundles/org/silverpeas/lookSilverpeasV5/multilang/',
-    language: '${language}',
-    mode: 'map'
-  });
+  $("#ticker").hide();
   if (!("Notification" in window) || (Notification && Notification.permission === "granted")) {
     $("#desktop-notifications-permission").remove();
   } else {
-    $("#desktop-notifications-permission").text($.i18n.prop("lookSilverpeasV5.ticker.notifications.permission.request"));
+    
+    $("#desktop-notifications-permission").text(__getI18NProp("lookSilverpeasV5.ticker.notifications.permission.request"));
   }
 });
 
