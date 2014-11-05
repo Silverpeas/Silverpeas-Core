@@ -36,8 +36,8 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class QuestionInstanciator extends SQLRequest {
-  private static ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.question.questionSettings", "fr");
+  private static ResourceLocator settings =
+      new ResourceLocator("com.stratelia.webactiv.question.questionSettings", "fr");
 
   public QuestionInstanciator() {
   }
@@ -46,29 +46,25 @@ public class QuestionInstanciator extends SQLRequest {
     super("com.stratelia.webactiv.question");
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("question", "QuestionInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId
-        + ", componentId = " + componentId);
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace.info("question", "QuestionInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+        "spaceId = " + spaceId + ", componentId = " + componentId);
     try {
       // Create the images directory on the server disk
       createImagesDirectory(spaceId, componentId);
     } catch (Exception e) {
-      throw new InstanciationException("QuestionInstanciator.create()",
-          SilverpeasException.ERROR,
+      throw new InstanciationException("QuestionInstanciator.create()", SilverpeasException.ERROR,
           "question.CREATING_IMAGES_DIRECTORY_FAILED", e);
     }
-    SilverTrace.info("question", "QuestionInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD", "spaceId = " + spaceId + ", componentId = "
-        + componentId);
+    SilverTrace.info("question", "QuestionInstanciator.create()", "root.MSG_GEN_EXIT_METHOD",
+        "spaceId = " + spaceId + ", componentId = " + componentId);
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("question", "QuestionInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId
-        + ", componentId = " + componentId);
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    SilverTrace.info("question", "QuestionInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+        "spaceId = " + spaceId + ", componentId = " + componentId);
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -82,28 +78,25 @@ public class QuestionInstanciator extends SQLRequest {
       // Delete the images directory on the server disk
       deleteImagesDirectory(spaceId, componentId);
     } catch (Exception e) {
-      throw new InstanciationException("QuestionInstanciator.delete()",
-          SilverpeasException.ERROR,
+      throw new InstanciationException("QuestionInstanciator.delete()", SilverpeasException.ERROR,
           "question.DELETING_IMAGES_DIRECTORY_FAILED", e);
     }
 
-    SilverTrace.info("question", "QuestionInstanciator.delete()",
-        "root.MSG_GEN_EXIT_METHOD", "spaceId = " + spaceId + ", componentId = "
-        + componentId);
+    SilverTrace.info("question", "QuestionInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD",
+        "spaceId = " + spaceId + ", componentId = " + componentId);
   }
 
   private void createImagesDirectory(String spaceId, String componentId)
       throws java.lang.Exception {
     // Create the subdirectory for the images
-    FileRepositoryManager.createAbsolutePath(componentId, settings
-        .getString("imagesSubDirectory"));
+    FileRepositoryManager.createAbsolutePath(componentId, settings.getString("imagesSubDirectory"));
   }
 
   private void deleteImagesDirectory(String spaceId, String componentId)
       throws java.lang.Exception {
     // Delete the subdirectory for the images
-    FileRepositoryManager.deleteAbsolutePath(spaceId, componentId, settings
-        .getString("imagesSubDirectory"));
+    FileRepositoryManager
+        .deleteAbsolutePath(spaceId, componentId, settings.getString("imagesSubDirectory"));
   }
 
   /**
@@ -112,8 +105,8 @@ public class QuestionInstanciator extends SQLRequest {
    * @param componentId (String) the instance id of the Silverpeas component forum.
    * @param suffixName (String) the suffixe of a Forum table
    */
-  private void deleteDataOfInstance(Connection con, String componentId,
-      String suffixName) throws InstanciationException {
+  private void deleteDataOfInstance(Connection con, String componentId, String suffixName)
+      throws InstanciationException {
 
     Statement stmt = null;
 
@@ -126,19 +119,16 @@ public class QuestionInstanciator extends SQLRequest {
       stmt.executeUpdate(deleteQuery);
       stmt.close();
     } catch (SQLException se) {
-      throw new InstanciationException("QuestionInstanciator.create()",
-          SilverpeasException.ERROR,
+      throw new InstanciationException("QuestionInstanciator.create()", SilverpeasException.ERROR,
           "question.DELETING_DATA_OF_INSTANCE_FAILED", se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
-        SilverTrace.error("question",
-            "QuestionInstanciator.deleteDataOfInstance()",
+        SilverTrace.error("question", "QuestionInstanciator.deleteDataOfInstance()",
             "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
       }
     }
-
   }
 
 }

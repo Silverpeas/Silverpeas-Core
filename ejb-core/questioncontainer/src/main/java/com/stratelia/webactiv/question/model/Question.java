@@ -29,7 +29,6 @@ import com.stratelia.webactiv.questionResult.model.QuestionResult;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 
 public class Question implements Serializable {
   private static final long serialVersionUID = 3495698479955515991L;
@@ -166,11 +165,10 @@ public class Question implements Serializable {
     int nbMaxPoints = 0;
     int nbMinPoints = 0;
     for (Answer answer1 : answers) {
-      Answer answer = answer1;
-      if (answer.isSolution()) {
-        nbMaxPoints += answer.getNbPoints();
+      if (answer1.isSolution()) {
+        nbMaxPoints += answer1.getNbPoints();
       } else {
-        nbMinPoints += answer.getNbPoints();
+        nbMinPoints += answer1.getNbPoints();
       }
     }
     if (getNbPointsMin() > nbMinPoints) {
@@ -254,15 +252,12 @@ public class Question implements Serializable {
 
   public Answer getAnswer(String answerId) {
     Collection<Answer> answers = getAnswers();
-    Iterator<Answer> it = answers.iterator();
-    Answer answer = null;
-    while (it.hasNext()) {
-      answer = it.next();
+    for (final Answer answer : answers) {
       if (answer.getPK().getId().equals(answerId)) {
         return answer;
       }
     }
-    return answer;
+    return null;
   }
 
   public int getType() {
@@ -292,8 +287,7 @@ public class Question implements Serializable {
   public float getAverageScore() {
     float averageScore = 0;
     for (Answer answer : answers) {
-      Answer answerDetail = answer;
-      averageScore += answerDetail.getNbVoters() * answerDetail.getNbPoints();
+      averageScore += answer.getNbVoters() * answer.getNbPoints();
     }
     return averageScore;
   }

@@ -44,9 +44,10 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   private static final long serialVersionUID = -2502073007907742590L;
   private QuestionContainerHeader header = null;
   private Collection<Question> questions = null;
-  private Collection<Comment> comments = null; // Comments Collection
-  private Collection<QuestionResult> votes = null; // QuestionResult Collection of Current user
-//  private List<PdcPosition> positions = null;
+  // Comments Collection
+  private Collection<Comment> comments = null;
+  // QuestionResult Collection of Current user
+  private Collection<QuestionResult> votes = null;
   private String jsonPosition = null;
   private String silverObjectId = null;
 

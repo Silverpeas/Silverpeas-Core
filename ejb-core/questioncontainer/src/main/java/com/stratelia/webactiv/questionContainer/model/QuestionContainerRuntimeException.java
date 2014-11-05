@@ -30,23 +30,22 @@ public class QuestionContainerRuntimeException extends SilverpeasRuntimeExceptio
 
   private static final long serialVersionUID = 8071006880636054292L;
 
-  public QuestionContainerRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public QuestionContainerRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public QuestionContainerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public QuestionContainerRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public QuestionContainerRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public QuestionContainerRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public QuestionContainerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public QuestionContainerRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

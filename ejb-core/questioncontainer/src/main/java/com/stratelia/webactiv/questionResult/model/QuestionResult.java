@@ -45,12 +45,12 @@ public class QuestionResult implements Serializable {
    * Smallest QuestionResult Constructor
    * @param pk a QuestionResultPK object
    * @param questionPK a ForeignPK object
-   * @param answerPK
-   * @param userId
+   * @param answerPK the answer id
+   * @param userId the user id
    * @param openedAnswer
    */
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK,
-      AnswerPK answerPK, String userId, String openedAnswer) {
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+      String openedAnswer) {
     super();
     this.pk = pk;
     this.answerPK = answerPK;
@@ -59,22 +59,21 @@ public class QuestionResult implements Serializable {
     this.openedAnswer = openedAnswer;
   }
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK,
-      String userId, String openedAnswer, String voteDate) {
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+      String openedAnswer, String voteDate) {
     this(pk, questionPK, answerPK, userId, openedAnswer);
     this.voteDate = voteDate;
   }
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK,
-      String userId, String openedAnswer, String voteDate, int elapsedTime, int participationId) {
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+      String openedAnswer, String voteDate, int elapsedTime, int participationId) {
     this(pk, questionPK, answerPK, userId, openedAnswer, voteDate);
     this.elapsedTime = elapsedTime;
     this.participationId = participationId;
   }
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK,
-      String userId, String openedAnswer, int nbPoints, String voteDate, int elapsedTime,
-      int participationId) {
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+      String openedAnswer, int nbPoints, String voteDate, int elapsedTime, int participationId) {
     this(pk, questionPK, answerPK, userId, openedAnswer, voteDate, elapsedTime, participationId);
     this.nbPoints = nbPoints;
   }

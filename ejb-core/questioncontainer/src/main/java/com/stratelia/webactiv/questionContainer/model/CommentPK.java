@@ -31,7 +31,6 @@ import org.silverpeas.util.WAPrimaryKey;
 /**
  * It's the Publication PrimaryKey object It identify a Publication
  * @author Nicolas Eysseric
- * @version 1.0
  */
 public class CommentPK extends WAPrimaryKey implements Serializable {
 
@@ -39,7 +38,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set only the id
-   * @since 1.0
    */
   public CommentPK(String id) {
     super(id);
@@ -47,7 +45,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @since 1.0
    */
   public CommentPK(String id, String space, String componentName) {
     super(id, space, componentName);
@@ -55,7 +52,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @since 1.0
    */
   public CommentPK(String id, WAPrimaryKey pk) {
     super(id, pk);
@@ -64,7 +60,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
   /**
    * Return the object root table name
    * @return the root table name of the object
-   * @since 1.0
    */
   public String getRootTableName() {
     return "Comment";
@@ -73,7 +68,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
   /**
    * Return the object table name
    * @return the table name of the object
-   * @since 1.0
    */
   public String getTableName() {
     return "SB_QuestionContainer_Comment";
@@ -83,7 +77,6 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * Check if an another object is equal to this object
    * @return true if other is equals to this object
    * @param other the object to compare to this PollPK
-   * @since 1.0
    */
   public boolean equals(Object other) {
     if (!(other instanceof CommentPK)) {

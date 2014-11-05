@@ -172,63 +172,54 @@ public class ScoreDetail implements java.io.Serializable {
   }
 
   /**
-   * @roseuid 3ACC37A6023C
    */
   public String getFatherId() {
     return fatherId;
   }
 
   /**
-   * @roseuid 3ACC37BC0252
    */
   public String getUserId() {
     return userId;
   }
 
   /**
-   * @roseuid 3ACC37C702A8
    */
   public int getParticipationId() {
     return participationId;
   }
 
   /**
-   * @roseuid 3ACC37D302D7
    */
   public String getParticipationDate() {
     return participationDate;
   }
 
   /**
-   * @roseuid 3ACC37DE03AF
    */
   public int getScore() {
     return score;
   }
 
   /**
-   * @roseuid 3ACC37E5030F
    */
   public int getElapsedTime() {
     return elapsedTime;
   }
 
   /**
-   * @roseuid 3ACC37F10212
    */
   public String getSuggestion() {
     return suggestion;
   }
 
   /**
-   * @roseuid 3ACC37FA01C5
    */
   public int getNbParticipations() {
     return nbParticipations;
   }
 
   /**
-   * @roseuid 3ACC38040378
    */
   public int getPosition() {
     return position;

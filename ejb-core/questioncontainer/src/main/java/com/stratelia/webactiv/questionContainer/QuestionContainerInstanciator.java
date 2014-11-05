@@ -33,7 +33,9 @@ import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class QuestionContainerInstanciator extends SQLRequest {
-  /** Creates new QuestionContainerInstanciator */
+  /**
+   * Creates new QuestionContainerInstanciator
+   */
   public QuestionContainerInstanciator() {
   }
 
@@ -41,13 +43,13 @@ public class QuestionContainerInstanciator extends SQLRequest {
     super("com.stratelia.webactiv.questionContainer");
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
 
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
 
@@ -61,8 +63,8 @@ public class QuestionContainerInstanciator extends SQLRequest {
    * @param componentId (String) the instance id of the Silverpeas component forum.
    * @param suffixName (String) the suffixe of a Forum table
    */
-  private void deleteDataOfInstance(Connection con, String componentId,
-      String suffixName) throws InstanciationException {
+  private void deleteDataOfInstance(Connection con, String componentId, String suffixName)
+      throws InstanciationException {
 
     Statement stmt = null;
 
@@ -74,17 +76,14 @@ public class QuestionContainerInstanciator extends SQLRequest {
       stmt = con.createStatement();
       stmt.executeUpdate(deleteQuery);
     } catch (SQLException se) {
-      throw new InstanciationException(
-          "QuestionContainerInstanciator.deleteDataOfInstance()",
+      throw new InstanciationException("QuestionContainerInstanciator.deleteDataOfInstance()",
           SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
-        throw new InstanciationException(
-            "QuestionContainerInstanciator.deleteDataOfInstance()",
-            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED",
-            err_closeStatement);
+        throw new InstanciationException("QuestionContainerInstanciator.deleteDataOfInstance()",
+            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", err_closeStatement);
       }
     }
   }

@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+import org.silverpeas.util.StringUtil;
 
 public class QuestionContainerContentManager {
 
@@ -41,10 +42,8 @@ public class QuestionContainerContentManager {
   // if endDate is null, it will be replace in database with it
   private final static String nullEndDate = "9999/99/99";
 
-  public static int getSilverObjectId(String id, String peasId)
-      throws ContentManagerException {
-    SilverTrace.info("questionContainer",
-        "QuestionContainerContentManager.getSilverObjectId()",
+  public static int getSilverObjectId(String id, String peasId) throws ContentManagerException {
+    SilverTrace.info("questionContainer", "QuestionContainerContentManager.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "id = " + id);
     return getContentManager().getSilverContentId(id, peasId);
   }
@@ -56,68 +55,61 @@ public class QuestionContainerContentManager {
    * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
-  public static int createSilverContent(Connection con,
-      QuestionContainerHeader qC, String userId, boolean isVisible)
-      throws ContentManagerException {
+  public static int createSilverContent(Connection con, QuestionContainerHeader qC, String userId,
+      boolean isVisible) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible);
     setDateAttributes(scv, qC.getBeginDate(), qC.getEndDate());
-    SilverTrace.info("questionContainer",
-        "QuestionContainerContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return getContentManager().addSilverContent(con, qC.getPK().getId(),
-        qC.getPK().getComponentName(), userId, scv);
+    SilverTrace.info("questionContainer", "QuestionContainerContentManager.createSilverContent()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return getContentManager()
+        .addSilverContent(con, qC.getPK().getId(), qC.getPK().getComponentName(), userId, scv);
   }
 
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
-   * @param pubDetail the content
-   * @param silverObjectId the unique identifier of the content
+   * @param qC
+   * @param isVisible
+   * @throws ContentManagerException
    */
-  public static void updateSilverContentVisibility(QuestionContainerHeader qC,
-      boolean isVisible) throws ContentManagerException {
-    int silverContentId = getContentManager().getSilverContentId(
-        qC.getPK().getId(), qC.getPK().getComponentName());
+  public static void updateSilverContentVisibility(QuestionContainerHeader qC, boolean isVisible)
+      throws ContentManagerException {
+    int silverContentId =
+        getContentManager().getSilverContentId(qC.getPK().getId(), qC.getPK().getComponentName());
     if (silverContentId != -1) {
       SilverContentVisibility scv = new SilverContentVisibility(isVisible);
       setDateAttributes(scv, qC.getBeginDate(), qC.getEndDate());
       SilverTrace.info("questionContainer",
           "QuestionContainerContentManager.updateSilverContentVisibility()",
-          "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-          + scv.toString());
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          qC.getPK().getComponentName(), silverContentId);
+          "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+      getContentManager()
+          .updateSilverContentVisibilityAttributes(scv, qC.getPK().getComponentName(),
+              silverContentId);
       ClassifyEngine.clearCache();
     } else {
       createSilverContent(null, qC, qC.getCreatorId(), isVisible);
     }
   }
 
-  private static void setDateAttributes(SilverContentVisibility visibility,
-      String startDate, String endDate) {
-    String updatableStart = (startDate != null && !startDate.equals("")) ? startDate
-        : nullBeginDate;
-    String updatableEnd = (endDate != null && !endDate.equals("")) ? endDate
-        : nullEndDate;
+  private static void setDateAttributes(SilverContentVisibility visibility, String startDate,
+      String endDate) {
+    String updatableStart = (StringUtil.isDefined(startDate)) ? startDate : nullBeginDate;
+    String updatableEnd = (StringUtil.isDefined(endDate)) ? endDate : nullEndDate;
     visibility.setVisibilityAttributes(updatableStart, updatableEnd);
   }
 
   /**
    * delete a content. It is registered to contentManager service
-   * @param con a Connection
-   * @param pubPK the identifiant of the content to unregister
+   * @param con the database connection
+   * @param pk the pk identifier
+   * @throws ContentManagerException
    */
   public static void deleteSilverContent(Connection con, QuestionContainerPK pk)
       throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(pk.getId(),
-        pk.getComponentName());
-    SilverTrace.info("questionContainer",
-        "QuestionContainerContentManager.deleteSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = "
-        + contentId);
-    getContentManager().removeSilverContent(con, contentId,
-        pk.getComponentName());
+    int contentId = getContentManager().getSilverContentId(pk.getId(), pk.getComponentName());
+    SilverTrace.info("questionContainer", "QuestionContainerContentManager.deleteSilverContent()",
+        "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = " + contentId);
+    getContentManager().removeSilverContent(con, contentId, pk.getComponentName());
   }
 
   private static ContentManager getContentManager() {
@@ -125,9 +117,9 @@ public class QuestionContainerContentManager {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("questionContainer",
-            "QuestionContainerContentManager.getContentManager()",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverTrace
+            .fatal("questionContainer", "QuestionContainerContentManager.getContentManager()",
+                "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return contentManager;

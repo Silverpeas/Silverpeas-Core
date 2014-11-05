@@ -30,23 +30,22 @@ public class AnswerRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = -7584480862051850784L;
 
-  public AnswerRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public AnswerRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AnswerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public AnswerRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AnswerRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public AnswerRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AnswerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public AnswerRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

@@ -31,7 +31,6 @@ import org.silverpeas.util.WAPrimaryKey;
 /**
  * It's the Publication PrimaryKey object It identify a Publication
  * @author Nicolas Eysseric
- * @version 1.0
  */
 public class QuestionResultPK extends WAPrimaryKey implements Serializable {
 
@@ -39,7 +38,6 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set only the id
-   * @since 1.0
    */
   public QuestionResultPK(String id) {
     super(id);
@@ -47,7 +45,6 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @since 1.0
    */
   public QuestionResultPK(String id, String space, String componentName) {
     super(id, space, componentName);
@@ -55,7 +52,6 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @since 1.0
    */
   public QuestionResultPK(String id, WAPrimaryKey pk) {
     super(id, pk);
@@ -64,7 +60,6 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
   /**
    * Return the object root table name
    * @return the root table name of the object
-   * @since 1.0
    */
   public String getRootTableName() {
     return "QuestionResult";
@@ -73,7 +68,6 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
   /**
    * Return the object root table name
    * @return the root table name of the object
-   * @since 1.0
    */
   public String getTableName() {
     return "SB_Question_QuestionResult";
@@ -81,17 +75,16 @@ public class QuestionResultPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Check if an another object is equal to this object
-   * @return true if other is equals to this object
    * @param other the object to compare to this PollPK
-   * @since 1.0
+   * @return true if other is equals to this object
    */
   public boolean equals(Object other) {
     if (!(other instanceof QuestionResultPK)) {
       return false;
     }
-    return (id.equals(((QuestionResultPK) other).getId()))
-        && (space.equals(((QuestionResultPK) other).getSpace()))
-        && (componentName.equals(((QuestionResultPK) other).getComponentName()));
+    return (id.equals(((QuestionResultPK) other).getId())) &&
+        (space.equals(((QuestionResultPK) other).getSpace())) &&
+        (componentName.equals(((QuestionResultPK) other).getComponentName()));
   }
 
   /**

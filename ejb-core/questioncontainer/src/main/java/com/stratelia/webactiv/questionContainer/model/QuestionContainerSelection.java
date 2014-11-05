@@ -40,18 +40,20 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
 
   static {
     try {
-      QuestionContainerDetailFlavor = new DataFlavor(Class.forName(
-          "com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail"),
+      QuestionContainerDetailFlavor = new DataFlavor(
+          Class.forName("com.stratelia.webactiv.questionContainer.model.QuestionContainerDetail"),
           "QuestionContainer");
     } catch (ClassNotFoundException e) {
+      SilverTrace.error("questionContainer", "QuestionContainerSelection",
+          "error when initialize static QuestionContainerDetailFlavor", e);
       e.printStackTrace();
     }
   }
+
   private QuestionContainerDetail m_questionContainer;
 
   /**
-   *
-   * @param questionContainer
+   * @param questionContainer a question container detail
    */
   public QuestionContainerSelection(QuestionContainerDetail questionContainer) {
     super();
@@ -60,7 +62,8 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
   }
 
   @Override
-  public synchronized Object getTransferData(DataFlavor parFlavor) throws UnsupportedFlavorException {
+  public synchronized Object getTransferData(DataFlavor parFlavor)
+      throws UnsupportedFlavorException {
     Object transferedData;
     try {
       transferedData = super.getTransferData(parFlavor);
@@ -77,8 +80,9 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
   @Override
   public IndexEntry getIndexEntry() {
     QuestionContainerPK questionContainerPK = m_questionContainer.getHeader().getPK();
-    IndexEntry indexEntry = new IndexEntry(questionContainerPK.getComponentName(),
-        "QuestionContainer", questionContainerPK.getId());
+    IndexEntry indexEntry =
+        new IndexEntry(questionContainerPK.getComponentName(), "QuestionContainer",
+            questionContainerPK.getId());
     indexEntry.setTitle(m_questionContainer.getHeader().getName());
     return indexEntry;
   }

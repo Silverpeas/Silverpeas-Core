@@ -45,7 +45,9 @@ public class Answer implements Serializable {
    */
   private String questionLink;
 
-  /* @deprecated */
+  /**
+   * @deprecated
+   */
   public Answer(AnswerPK pk, ForeignPK questionPK, String label, int nbPointsPos, int nbPointsNeg,
       boolean isSolution, String comment, int nbVoters, boolean isOpened, String image) {
     this.questionPK = questionPK;

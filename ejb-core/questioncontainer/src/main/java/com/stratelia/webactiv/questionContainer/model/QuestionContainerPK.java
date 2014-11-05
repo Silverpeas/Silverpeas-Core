@@ -31,7 +31,6 @@ import org.silverpeas.util.WAPrimaryKey;
 /**
  * It's the QuestionContainer PrimaryKey object It identify a QuestionContainer
  * @author Nicolas Eysseric
- * @version 1.0
  */
 public class QuestionContainerPK extends WAPrimaryKey implements Serializable {
 
