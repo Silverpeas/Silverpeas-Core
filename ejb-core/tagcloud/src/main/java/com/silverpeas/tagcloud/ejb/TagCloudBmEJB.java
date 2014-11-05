@@ -18,19 +18,8 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.tagcloud.control;
+package com.silverpeas.tagcloud.ejb;
 
-import com.silverpeas.tagcloud.model.TagCloud;
-import com.silverpeas.tagcloud.control.dao.TagCloudDAO;
-import com.silverpeas.tagcloud.model.TagCloudPK;
-import com.silverpeas.tagcloud.model.TagCloudUtil;
-import com.silverpeas.tagcloud.model.comparator.TagCloudByCountComparator;
-import com.silverpeas.tagcloud.model.comparator.TagCloudByNameComparator;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,33 +28,47 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * TagCloudService is the service layer to manage tags
- */
-@Singleton
-@Transactional(Transactional.TxType.SUPPORTS)
-public class DefaultTagCloudService implements TagCloudService {
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import com.silverpeas.tagcloud.model.TagCloud;
+import com.silverpeas.tagcloud.model.TagCloudDAO;
+import com.silverpeas.tagcloud.model.TagCloudPK;
+import com.silverpeas.tagcloud.model.TagCloudUtil;
+import com.silverpeas.tagcloud.model.comparator.TagCloudByCountComparator;
+import com.silverpeas.tagcloud.model.comparator.TagCloudByNameComparator;
+
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+@Stateless(name = "TagCloud", description = "EJB to manage tags")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class TagCloudBmEJB implements TagCloudBm {
+
+  private static final long serialVersionUID = 1117565429121769510L;
 
   private Connection openConnection() {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.getConnection()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
   /**
    * @param tagCloud The tagcloud to create in database.
+   *
    */
   @Override
-  @Transactional(Transactional.TxType.REQUIRED)
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void createTagCloud(TagCloud tagCloud) {
     Connection con = openConnection();
     try {
       TagCloudDAO.createTagCloud(con, tagCloud);
     } catch (SQLException e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.createTagCloud()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.createTagCloud()",
           SilverpeasRuntimeException.ERROR, "tagCloud.CREATING_NEW_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -73,8 +76,8 @@ public class DefaultTagCloudService implements TagCloudService {
   }
 
   /**
-   * @param pk the tag cloud identifier
-   * @param type the external tag type
+   * @param pk The primary key of the tagcloud to delete from database.
+   *
    */
   @Override
   public void deleteTagCloud(TagCloudPK pk, int type) {
@@ -82,7 +85,7 @@ public class DefaultTagCloudService implements TagCloudService {
     try {
       TagCloudDAO.deleteTagCloud(con, pk, type);
     } catch (SQLException e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.deleteTagCloud()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.deleteTagCloud()",
           SilverpeasRuntimeException.ERROR, "tagCloud.DELETE_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -92,6 +95,7 @@ public class DefaultTagCloudService implements TagCloudService {
   /**
    * @param instanceId The id of the instance which tagclouds are searched for.
    * @return The list of tagclouds corresponding to the instance.
+   *
    */
   @Override
   public Collection<TagCloud> getInstanceTagClouds(String instanceId) {
@@ -100,16 +104,16 @@ public class DefaultTagCloudService implements TagCloudService {
 
   /**
    * @param instanceId The id of the instance which tagclouds are searched for.
-   * @param maxCount The maximum number of required tagclouds (all are returned it is lower than
-   * 0).
+   * @param maxCount The maximum number of required tagclouds (all are returned it is lower than 0).
    * @return The list of tagclouds corresponding to the instance.
+   *
    */
   @Override
   public Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount) {
     Connection con = openConnection();
     try {
       Collection<TagCloud> tagClouds = TagCloudDAO.getInstanceTagClouds(con, instanceId);
-      List<TagCloud> tagList = new ArrayList<>(tagClouds.size());
+      List<TagCloud> tagList = new ArrayList<TagCloud>(tagClouds.size());
       if (!tagClouds.isEmpty()) {
         Iterator<TagCloud> iter = tagClouds.iterator();
         tagList.add(iter.next());
@@ -140,7 +144,7 @@ public class DefaultTagCloudService implements TagCloudService {
       }
       return tagList;
     } catch (SQLException e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.getInstanceTagClouds()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getInstanceTagClouds()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -150,6 +154,7 @@ public class DefaultTagCloudService implements TagCloudService {
   /**
    * @param pk The id of the element which tagclouds are searched for.
    * @return The list of tagclouds corresponding to the element.
+   *
    */
   @Override
   public Collection<TagCloud> getElementTagClouds(TagCloudPK pk) {
@@ -157,7 +162,7 @@ public class DefaultTagCloudService implements TagCloudService {
     try {
       return TagCloudDAO.getElementTagClouds(con, pk);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.getElementTagClouds()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getElementTagClouds()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -170,6 +175,7 @@ public class DefaultTagCloudService implements TagCloudService {
    * @param type The type of elements referenced by the tagclouds (publications or forums).
    * @return The list of tagclouds which correspond to the tag and the id of the instance given as
    * parameters.
+   *
    */
   @Override
   public Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type) {
@@ -177,7 +183,7 @@ public class DefaultTagCloudService implements TagCloudService {
     try {
       return TagCloudDAO.getTagCloudsByTags(con, TagCloudUtil.getTag(tags), instanceId, type);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.getTagCloudsByTags()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByTags()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -189,15 +195,16 @@ public class DefaultTagCloudService implements TagCloudService {
    * @param externalId The id of the element.
    * @param type The type of elements referenced by the tagclouds (publications or forums).
    * @return The list of tagclouds corresponding to the ids given as parameters.
+   *
    */
   @Override
-  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
-      int type) {
+  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId, int type) {
     Connection con = openConnection();
     try {
-      return TagCloudDAO.getTagCloudsByElement(con, instanceId, externalId, type);
+      return TagCloudDAO.getTagCloudsByElement(con, instanceId, externalId,
+          type);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.getTagCloudsByElement()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagCloudsByElement()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -210,7 +217,7 @@ public class DefaultTagCloudService implements TagCloudService {
     try {
       return TagCloudDAO.getTagsByElement(con, pk);
     } catch (Exception e) {
-      throw new TagCloudRuntimeException("DefaultTagCloudService.getTagsByElement()",
+      throw new TagCloudRuntimeException("TagCloudBmEJB.getTagsByElement()",
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);

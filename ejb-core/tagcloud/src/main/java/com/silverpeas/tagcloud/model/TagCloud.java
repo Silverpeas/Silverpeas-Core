@@ -46,7 +46,8 @@ public class TagCloud implements Serializable {
   // id : ID of the tagcloud.
   private int id;
   // tag : used as a key to retrieve tagclouds which have the same key.
-  // Corresponds to the label of the tagcloud which is uppercased and without accents or special
+  // Corresponds to the label
+  // of the tagcloud which is uppercased and without accents or special
   // characters.
   private String tag;
   // label : label displayed for the tagcloud.
@@ -56,14 +57,14 @@ public class TagCloud implements Serializable {
   // externalId : id of the element (publication or forum) which the tagcloud
   // refers to.
   private String externalId;
-  // externalType : type of the element (Publication, Forum or Message).
+  // externalType : type of the element.
   private int externalType;
-  // count : number of occurrences of the tag for the element which the tagcloud describes
-  // (topic, publication).
+  // count : number of occurrences of the tag for the element which the tagcloud
+  // describes (topic, publication).
   private int count;
 
-  private void init(int id, String tag, String label, String instanceId, String externalId,
-      int externalType, int count) {
+  private void init(int id, String tag, String label, String instanceId,
+      String externalId, int externalType, int count) {
     setId(id);
     setTag(tag);
     setLabel(label);
@@ -73,18 +74,20 @@ public class TagCloud implements Serializable {
     setCount(count);
   }
 
-  public TagCloud(int id, String tag, String label, String instanceId, String externalId,
-      int externalType) {
+  public TagCloud(int id, String tag, String label, String instanceId,
+      String externalId, int externalType) {
     init(id, tag, label, instanceId, externalId, externalType, DEFAULT_COUNT);
   }
 
-  public TagCloud(String tag, String label, String instanceId, String externalId,
-      int externalType) {
-    init(DEFAULT_ID, tag, label, instanceId, externalId, externalType, DEFAULT_COUNT);
+  public TagCloud(String tag, String label, String instanceId,
+      String externalId, int externalType) {
+    init(DEFAULT_ID, tag, label, instanceId, externalId, externalType,
+        DEFAULT_COUNT);
   }
 
   public TagCloud(String instanceId, String externalId, int externalType) {
-    init(DEFAULT_ID, null, null, instanceId, externalId, externalType, DEFAULT_COUNT);
+    init(DEFAULT_ID, null, null, instanceId, externalId, externalType,
+        DEFAULT_COUNT);
   }
 
   public void setId(int id) {
@@ -148,10 +151,13 @@ public class TagCloud implements Serializable {
   }
 
   public String toString() {
-    return "id = " + getId() + ",\n" + "tag = " + getTag() + ",\n" +
-        "label = " + getLabel() + ",\n" + "instanceId = " + getInstanceId() + ",\n" +
-        "externalId = " + getExternalId() + ",\n" + "externalType = " + getExternalType() +
-        ",\n" + "count = " + getCount();
+    return new StringBuffer().append("id           = ").append(getId()).append(
+        ",\n").append("tag          = ").append(getTag()).append(",\n").append(
+        "label        = ").append(getLabel()).append(",\n").append(
+        "instanceId   = ").append(getInstanceId()).append(",\n").append(
+        "externalId   = ").append(getExternalId()).append(",\n").append(
+        "externalType = ").append(getExternalType()).append(",\n").append(
+        "count        = ").append(getCount()).toString();
   }
 
 }

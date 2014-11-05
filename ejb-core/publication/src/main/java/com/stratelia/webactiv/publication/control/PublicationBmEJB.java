@@ -29,7 +29,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.tagcloud.control.TagCloudService;
+import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
@@ -96,7 +96,7 @@ public class PublicationBmEJB implements PublicationBm {
   @Inject
   private RatingService ratingService;
   @Inject
-  private TagCloudService tagCloudService;
+  private TagCloudBm tagCloudBm;
   @Inject
   private ComponentHelper componentHelper;
   @Inject
@@ -1647,7 +1647,7 @@ public class PublicationBmEJB implements PublicationBm {
         if (!tagList.contains(tagKey)) {
           tagCloud.setTag(tagKey);
           tagCloud.setLabel(tag.toLowerCase(I18NHelper.defaultLocale));
-          tagCloudService.createTagCloud(tagCloud);
+          tagCloudBm.createTagCloud(tagCloud);
           tagList.add(tagKey);
         }
       }
@@ -1661,7 +1661,7 @@ public class PublicationBmEJB implements PublicationBm {
    * @
    */
   private void deleteTagCloud(PublicationPK pubPK) {
-    tagCloudService.deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
+    tagCloudBm.deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
         TagCloud.TYPE_PUBLICATION);
   }
 

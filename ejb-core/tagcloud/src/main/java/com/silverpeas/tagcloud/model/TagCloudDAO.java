@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.tagcloud.control.dao;
+package com.silverpeas.tagcloud.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,8 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.silverpeas.tagcloud.model.TagCloud;
-import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 
@@ -47,9 +45,9 @@ public class TagCloudDAO {
   private static final String COLUMN_INSTANCEID = "instanceId";
   private static final String COLUMN_EXTERNALID = "externalId";
   private static final String COLUMN_EXTERNALTYPE = "externalType";
-  private static final String ALL_COLUMNS =
-      COLUMN_ID + ", " + COLUMN_TAG + ", " + COLUMN_LABEL + ", " + COLUMN_INSTANCEID + ", " +
-          COLUMN_EXTERNALID + ", " + COLUMN_EXTERNALTYPE;
+  private static final String ALL_COLUMNS = COLUMN_ID + ", " + COLUMN_TAG
+      + ", " + COLUMN_LABEL + ", " + COLUMN_INSTANCEID + ", "
+      + COLUMN_EXTERNALID + ", " + COLUMN_EXTERNALTYPE;
 
   private TagCloudDAO() {
   }
@@ -59,14 +57,16 @@ public class TagCloudDAO {
    * @param tagCloud The tagcloud to insert into database.
    * @throws SQLException
    */
-  public static void createTagCloud(Connection con, TagCloud tagCloud) throws SQLException {
+  public static void createTagCloud(Connection con, TagCloud tagCloud)
+      throws SQLException {
     String query = "INSERT INTO " + TABLE_NAME + " VALUES (?, ?, ?, ?, ?, ?)";
 
     int newId = 0;
     try {
       newId = DBUtil.getNextId(TABLE_NAME, COLUMN_ID);
     } catch (Exception e) {
-      SilverTrace.warn("tagCloud", "TagCloudDAO.createTagCloud", "root.EX_PK_GENERATION_FAILED", e);
+      SilverTrace.warn("tagCloud", "TagCloudDAO.createTagCloud",
+          "root.EX_PK_GENERATION_FAILED", e);
     }
 
     PreparedStatement prepStmt = con.prepareStatement(query);
@@ -89,9 +89,12 @@ public class TagCloudDAO {
    * @param pk The primary key of the tagcloud to delete from the database.
    * @throws SQLException
    */
-  public static void deleteTagCloud(Connection con, TagCloudPK pk, int type) throws SQLException {
-    String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" + " AND " +
-        COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?";
+  public static void deleteTagCloud(Connection con, TagCloudPK pk, int type)
+      throws SQLException {
+    String query = new StringBuffer(100).append("DELETE FROM ").append(
+        TABLE_NAME).append(" WHERE ").append(COLUMN_INSTANCEID).append(" = ?")
+        .append(" AND ").append(COLUMN_EXTERNALID).append(" = ?").append(
+        " AND ").append(COLUMN_EXTERNALTYPE).append(" = ?").toString();
     PreparedStatement prepStmt = con.prepareStatement(query);
     try {
       int index = 1;
@@ -110,17 +113,18 @@ public class TagCloudDAO {
    * @return The list of tagclouds corresponding to the instance id.
    * @throws SQLException
    */
-  public static Collection<TagCloud> getInstanceTagClouds(Connection con, String instanceId)
-      throws SQLException {
-    String query =
-        "SELECT " + ALL_COLUMNS + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" +
-            " ORDER BY " + COLUMN_TAG + " ASC";
+  public static Collection<TagCloud> getInstanceTagClouds(Connection con,
+      String instanceId) throws SQLException {
+    String query = new StringBuffer(100).append("SELECT ").append(ALL_COLUMNS)
+        .append(" FROM ").append(TABLE_NAME).append(" WHERE ").append(
+        COLUMN_INSTANCEID).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC").toString();
 
     PreparedStatement prepStmt = con.prepareStatement(query);
     prepStmt.setString(1, instanceId);
     ResultSet rs = null;
 
-    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -134,15 +138,18 @@ public class TagCloudDAO {
 
   /**
    * @param con The database connection.
+   * @param externalId The id of the element which the tagclouds are searched for.
    * @return The list of tagclouds corresponding to the element id.
    * @throws SQLException
    */
   public static Collection<TagCloud> getElementTagClouds(Connection con, TagCloudPK pk)
       throws SQLException {
-    String query =
-        "SELECT " + ALL_COLUMNS + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" +
-            " AND " + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?" +
-            " ORDER BY " + COLUMN_TAG + " ASC";
+    String query = new StringBuffer(100).append("SELECT ").append(ALL_COLUMNS)
+        .append(" FROM ").append(TABLE_NAME).append(" WHERE ").append(
+        COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC").toString();
 
     PreparedStatement prepStmt = con.prepareStatement(query);
     prepStmt.setString(1, pk.getInstanceId());
@@ -150,7 +157,7 @@ public class TagCloudDAO {
     prepStmt.setInt(3, pk.getType());
     ResultSet rs = null;
 
-    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -175,9 +182,8 @@ public class TagCloudDAO {
     StringTokenizer st = new StringTokenizer(tags);
     int tagCount = st.countTokens();
     boolean isInstanceIdFilter = (instanceId != null && instanceId.length() > 0);
-    StringBuilder querySb =
-        new StringBuilder(100).append("SELECT ").append(ALL_COLUMNS).append(" FROM ")
-            .append(TABLE_NAME).append(" WHERE (");
+    StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
+        ALL_COLUMNS).append(" FROM ").append(TABLE_NAME).append(" WHERE (");
     for (int i = 0; i < tagCount; i++) {
       if (i > 0) {
         querySb.append(" OR ");
@@ -201,7 +207,7 @@ public class TagCloudDAO {
       prepStmt.setString(index++, instanceId);
     }
 
-    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     ResultSet rs = null;
     try {
       rs = prepStmt.executeQuery();
@@ -221,19 +227,22 @@ public class TagCloudDAO {
    * @return The list of tagclouds corresponding to the ids given as parameters.
    * @throws SQLException
    */
-  public static Collection<TagCloud> getTagCloudsByElement(Connection con, String instanceId,
-      String externalId, int type) throws SQLException {
+  public static Collection<TagCloud> getTagCloudsByElement(Connection con,
+      String instanceId, String externalId, int type) throws SQLException {
+    StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
+        ALL_COLUMNS).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
+        .append(COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC");
 
-    PreparedStatement prepStmt = con.prepareStatement(
-        "SELECT " + ALL_COLUMNS + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" +
-            " AND " + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?" +
-            " ORDER BY " + COLUMN_TAG + " ASC");
+    PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
     prepStmt.setString(1, instanceId);
     prepStmt.setString(2, externalId);
     prepStmt.setInt(3, type);
     ResultSet rs = null;
 
-    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -245,18 +254,22 @@ public class TagCloudDAO {
     return tagClouds;
   }
 
-  public static String getTagsByElement(Connection con, TagCloudPK pk) throws SQLException {
+  public static String getTagsByElement(Connection con, TagCloudPK pk)
+      throws SQLException {
+    StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
+        COLUMN_TAG).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
+        .append(COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
+        COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
+        COLUMN_TAG).append(" ASC");
 
-    PreparedStatement prepStmt = con.prepareStatement(
-        "SELECT " + COLUMN_TAG + " FROM " + TABLE_NAME + " WHERE " + COLUMN_INSTANCEID + " = ?" +
-            " AND " + COLUMN_EXTERNALID + " = ?" + " AND " + COLUMN_EXTERNALTYPE + " = ?" +
-            " ORDER BY " + COLUMN_TAG + " ASC");
+    PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
     prepStmt.setString(1, pk.getInstanceId());
     prepStmt.setString(2, pk.getId());
     prepStmt.setInt(3, pk.getType());
     ResultSet rs = null;
 
-    StringBuilder tags = new StringBuilder();
+    StringBuffer tags = new StringBuffer();
     try {
       rs = prepStmt.executeQuery();
       while (rs.next()) {
@@ -272,15 +285,14 @@ public class TagCloudDAO {
   }
 
   /**
-   * Convert a result set into tagCloud
    * @param rs The resultset describing the tagcloud.
    * @return The tagcloud corresponding to the resultset given as parameter.
    * @throws SQLException
    */
   private static TagCloud resultSet2TagCloud(ResultSet rs) throws SQLException {
-    return new TagCloud(rs.getInt(COLUMN_ID), rs.getString(COLUMN_TAG), rs.getString(COLUMN_LABEL),
-        rs.getString(COLUMN_INSTANCEID), rs.getString(COLUMN_EXTERNALID),
-        rs.getInt(COLUMN_EXTERNALTYPE));
+    return new TagCloud(rs.getInt(COLUMN_ID), rs.getString(COLUMN_TAG), rs
+        .getString(COLUMN_LABEL), rs.getString(COLUMN_INSTANCEID), rs
+        .getString(COLUMN_EXTERNALID), rs.getInt(COLUMN_EXTERNALTYPE));
   }
 
 }
