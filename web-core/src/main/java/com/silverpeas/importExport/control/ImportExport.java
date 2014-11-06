@@ -48,36 +48,41 @@ import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.util.*;
+import org.apache.commons.io.IOUtils;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAAttributeValuePair;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
@@ -86,20 +91,13 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.util.*;
 
 import static java.io.File.separator;
 import static org.silverpeas.util.Charsets.UTF_8;
@@ -123,6 +121,10 @@ public class ImportExport extends AbstractExportProcess {
   private CoordinateImportExport coordinateImportExport;
   @Inject
   private NodeImportExport nodeImportExport;
+  @Inject
+  private PdcImportExport pdcImportExport;
+  @Inject
+  private RepositoriesTypeManager repositoriesTypeManager;
 
   protected ImportExport() {
 
@@ -409,10 +411,10 @@ public class ImportExport extends AbstractExportProcess {
     // Cas des imports en masse de thèmes et de publications
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
-      RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
       ImportSettings importSettings = new ImportSettings(null, userDetail, silverExType.
           getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
-      typeMgr.processImport(silverExType.getRepositoriesType(), importSettings, reportManager);
+      repositoriesTypeManager.processImport(silverExType.getRepositoriesType(), importSettings,
+          reportManager);
     }
     reportManager.reportImportEnd();
     return reportManager.getImportReport();
@@ -441,7 +443,6 @@ public class ImportExport extends AbstractExportProcess {
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.silverpeas.importExport.multilang.importExportBundle", language);
     PublicationsTypeManager pub_Typ_Mger = getPublicationsTypeManager();
-    PdcImportExport pdcIE = new PdcImportExport();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
@@ -514,7 +515,7 @@ public class ImportExport extends AbstractExportProcess {
       silverPeasExch.setNodeTreesType(nodeTreesType);
       // Exportation des pdcs liés aux publications exportées
       if (!listClassifyPosition.isEmpty()) {
-        silverPeasExch.setPdcType(pdcIE.getPdc(listClassifyPosition));
+        silverPeasExch.setPdcType(pdcImportExport.getPdc(listClassifyPosition));
       }
 
       if (rootPK == null) {

@@ -24,19 +24,13 @@
 
 package com.silverpeas.thesaurusPeas.control;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.thesaurus.control.ThesaurusBm;
+import com.silverpeas.thesaurus.control.ThesaurusService;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.thesaurus.model.Synonym;
 import com.silverpeas.thesaurus.model.Vocabulary;
-import org.silverpeas.util.EncodeHelper;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -47,9 +41,15 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.persistence.IdPK;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.PairObject;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class ThesaurusSessionController extends AbstractComponentSessionController {
 
@@ -69,9 +69,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   // n'ayant pas de
   // jargon
   private Vocabulary currentUpdVoca = null; // vocabulaire en cours de création
-  // ou de modification
-  private PdcBm pdcBm;
-  private ThesaurusBm thBm;
 
   // gestions des objets en session
   private void setCurrentVoca(Vocabulary voca) {
@@ -91,16 +88,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   private void setUsersSelected(Collection<String> userIds) {
     usersSelected = userIds;
-  }
-
-  // private void setGroupsSelected(Collection groupIds) {groupsSelected =
-  // groupIds;}
-  private void setPdcBm() {
-    pdcBm = new PdcBmImpl();
-  }
-
-  private void setThBm() {
-    thBm = ThesaurusBm.getInstance();
   }
 
   public Vocabulary getCurrentVoca() {
@@ -131,12 +118,12 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
     return newJargonsSelected;
   }
 
-  private PdcBm getPdcBm() {
-    return pdcBm;
+  private PdcManager getPdcBm() {
+    return PdcServiceProvider.getPdcManager();
   }
 
-  private ThesaurusBm getThBm() {
-    return thBm;
+  private ThesaurusService getThBm() {
+    return ThesaurusService.getInstance();
   }
 
   public void resetCriterias() {
@@ -149,8 +136,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
-    setPdcBm();
-    setThBm();
   }
 
   // *** méthodes métier *** //
@@ -422,7 +407,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idSynonyms
    * @return
    * @throws ThesaurusException
-   * @see getNewSynonym
    */
   public void deleteSynonyms(Collection<Long> idSynonyms) throws ThesaurusException {
     getThBm().deleteSynonyms(idSynonyms);
@@ -654,8 +638,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idVoca
    * @return int
    * @throws ThesaurusException
-   * @see existJargonsConflict
-   * @see createNewJargons
    */
   public int assignVocabulary(long idVoca) throws ThesaurusException {
     int nbConflict = 0;

@@ -116,7 +116,7 @@ public class ApplicationIndexer extends AbstractIndexer {
 
   public void indexPdc() throws Exception {
     setSilverTraceLevel();
-    PdcIndexer indexer = new PdcIndexer();
+    PdcIndexer indexer = PdcIndexer.getInstance();
     indexer.index();
   }
 

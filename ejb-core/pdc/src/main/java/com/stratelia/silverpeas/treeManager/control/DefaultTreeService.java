@@ -43,6 +43,8 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -51,9 +53,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class TreeBmImpl implements TreeBm {
+@Singleton
+public class DefaultTreeService implements TreeService {
 
-  private TreeI18NDAO treeI18NDAO = (TreeI18NDAO) new TreeI18NDAO();
+  @Inject
+  private TreeI18NDAO treeI18NDAO;
+
+  protected DefaultTreeService() {
+
+  }
 
   @SuppressWarnings("unchecked")
   @Override

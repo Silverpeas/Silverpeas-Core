@@ -41,7 +41,7 @@ public class TreeDAO {
 
   private static String TreeTable = "SB_Tree_Tree";
 
-  public TreeDAO() {
+  protected TreeDAO() {
   }
 
   public static String createRoot(Connection con, TreeNode root)

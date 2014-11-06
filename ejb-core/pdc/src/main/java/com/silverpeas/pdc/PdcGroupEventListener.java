@@ -21,7 +21,7 @@
 
 package com.silverpeas.pdc;
 
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import org.silverpeas.admin.user.notification.GroupEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
 
@@ -33,10 +33,10 @@ import javax.inject.Inject;
 public class PdcGroupEventListener extends CDIResourceEventListener<GroupEvent> {
 
   @Inject
-  private PdcBm pdcBm;
+  private PdcManager pdcManager;
 
   @Override
   public void onDeletion(final GroupEvent event) throws Exception {
-    pdcBm.deleteGroupManager(event.getTransition().getBefore().getId());
+    pdcManager.deleteGroupManager(event.getTransition().getBefore().getId());
   }
 }

@@ -36,7 +36,7 @@ import java.util.List;
  * Interface declaration
  * @author
  */
-public interface PdcUtilizationBm {
+public interface PdcUtilizationService {
 
   /**
    * Returns data of an used axis defined by usedAxisId

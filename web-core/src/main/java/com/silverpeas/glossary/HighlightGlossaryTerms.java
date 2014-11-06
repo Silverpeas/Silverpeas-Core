@@ -24,7 +24,7 @@
 
 package com.silverpeas.glossary;
 
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -38,9 +38,9 @@ import java.util.List;
  */
 public class HighlightGlossaryTerms {
 
-  private final PdcBmImpl pdc;
+  private final GlobalPdcManager pdc;
 
-  HighlightGlossaryTerms(PdcBmImpl pdc) {
+  HighlightGlossaryTerms(GlobalPdcManager pdc) {
     this.pdc = pdc;
   }
 
@@ -48,7 +48,7 @@ public class HighlightGlossaryTerms {
    *
    */
   public HighlightGlossaryTerms() {
-    pdc = new PdcBmImpl();
+    pdc = new GlobalPdcManager();
   }
 
   /**

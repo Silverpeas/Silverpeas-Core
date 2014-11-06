@@ -24,10 +24,9 @@
 
 package com.silverpeas.pdc.importExport;
 
-import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -35,6 +34,8 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,10 +46,17 @@ import static org.silverpeas.util.StringUtil.*;
  * Classe gérant la manipulation des axes du pdc pour le module d'importExport.
  * @author sdevolder
  */
+@Singleton
 public class PdcImportExport {
 
-  // Variables
-  PdcBm pdcBm = null;
+  @Inject
+  private PdcManager pdcManager;
+  @Inject
+  private PdcClassificationService pdcClassificationService;
+
+  protected PdcImportExport() {
+
+  }
 
   // Méthodes
   /**
@@ -86,7 +94,7 @@ public class PdcImportExport {
     if (validPositions != null) {
       for (ClassifyPosition classifyPos : validPositions) {
         try {
-          getPdcBm().addPosition(silverObjectId, classifyPos, componentId);
+          getPdcManager().addPosition(silverObjectId, classifyPos, componentId);
         } catch (PdcException ex) {
           result = false;
           SilverTrace.error("Pdc",
@@ -120,7 +128,7 @@ public class PdcImportExport {
       List<ClassifyPosition> positions) throws PdcException {
     List<ClassifyPosition> validPositions = new ArrayList<ClassifyPosition>();
     // récupération des axes à utiliser pour le classement
-    List<UsedAxis> usedAxis = getPdcBm().getUsedAxisToClassify(componentId, silverObjectId);
+    List<UsedAxis> usedAxis = getPdcManager().getUsedAxisToClassify(componentId, silverObjectId);
     if (usedAxis != null && !usedAxis.isEmpty()) {
       if (positions != null) {
         for (ClassifyPosition classifyPos : positions) {
@@ -180,7 +188,7 @@ public class PdcImportExport {
 
     Value existingValue = null;
     try {
-      existingValue = getPdcBm().getValue(Integer.toString(axisId), leafId);
+      existingValue = getPdcManager().getValue(Integer.toString(axisId), leafId);
 
       if (existingValue == null) {
         return false;
@@ -211,7 +219,7 @@ public class PdcImportExport {
    */
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
       throws PdcException {
-    List<ClassifyPosition> list = getPdcBm().getPositions(silverObjectId, sComponentId);
+    List<ClassifyPosition> list = getPdcManager().getPositions(silverObjectId, sComponentId);
     if (list.isEmpty()) {
       return null;
     }
@@ -219,7 +227,7 @@ public class PdcImportExport {
   }
 
   public boolean isClassifyingMandatory(String componentId) throws PdcException {
-    return getPdcBm().isClassifyingMandatory(componentId);
+    return getPdcManager().isClassifyingMandatory(componentId);
   }
 
   /**
@@ -245,7 +253,7 @@ public class PdcImportExport {
     pdcType.setListAxisType(listAxisType);
     for (Integer axis : set) {
       // Récupération de la "value" root de l'axe
-      Value valueRoot = getPdcBm().getRoot(Integer.toString(axis));
+      Value valueRoot = getPdcManager().getRoot(Integer.toString(axis));
       AxisType axisType = new AxisType();
       axisType.setId(axis);
       axisType.setName(valueRoot.getName());
@@ -270,12 +278,12 @@ public class PdcImportExport {
     List<PdcValueType> listChildrenPdcValue = new ArrayList<PdcValueType>();
     // Récupération des ids des valeurs filles directes du value père
     List<String> listValueId =
-        getPdcBm().getDaughterValues(Integer.toString(axisId), fatherValueId);
+        getPdcManager().getDaughterValues(Integer.toString(axisId), fatherValueId);
     if (listValueId != null) {// L'exception oject non trouvé n'est pas gérée
       // dans la méthode DAO!!!
       for (String valueId : listValueId) {
         // Récupération de l'objet value et remplissage de l'objet de mapping
-        Value value = getPdcBm().getValue(Integer.toString(axisId), valueId);
+        Value value = getPdcManager().getValue(Integer.toString(axisId), valueId);
         PdcValueType pdcValueType = new PdcValueType();
         pdcValueType.getPK().setId(valueId);
         pdcValueType.setName(value.getName());
@@ -290,11 +298,11 @@ public class PdcImportExport {
     return listChildrenPdcValue;
   }
 
-  private PdcBm getPdcBm() {
-    return PdcServiceFactory.getFactory().getPdcManager();
+  private PdcManager getPdcManager() {
+    return pdcManager;
   }
 
   private PdcClassificationService getPdcClassificationService() {
-    return PdcServiceFactory.getFactory().getPdcClassificationService();
+    return pdcClassificationService;
   }
 }

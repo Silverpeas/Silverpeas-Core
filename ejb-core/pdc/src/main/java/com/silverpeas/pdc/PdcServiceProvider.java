@@ -26,62 +26,40 @@ package com.silverpeas.pdc;
 
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- * The factory of PdC service instances. It manages the way the services are created and backs the
- * management of their life-cycle. It defines an entry point for no-managed object to get the
- * service instances that are managed by the IoC container.
+ * The provider of services working on the PdC. It defines an entry point for no-managed object
+ * to get the service instances that are managed by the IoC container.
  */
-public class PdcServiceFactory {
-
-  private static PdcServiceFactory instance = new PdcServiceFactory();
-
-  @Inject
-  @Named("pdcBm")
-  private PdcBm pdcBm;
-
-  @Inject
-  private ThesaurusManager thesaurusManager;
-
-  @Inject
-  private PdcClassificationService pdcClassificationService;
-
-  /**
-   * Gets an instance of this factory.
-   * @return a PdcServiceFactory instance.
-   */
-  public static PdcServiceFactory getFactory() {
-    return instance;
-  }
+public class PdcServiceProvider {
 
   /**
    * Gets an instance of a manager of the classification plan (PdC).
    * @return a PdcBm object.
    */
-  public PdcBm getPdcManager() {
-    return pdcBm;
+  public static PdcManager getPdcManager() {
+    return ServiceProvider.getService(PdcManager.class);
   }
 
   /**
    * Gets an instance of a manager of the thesaurus used with the PdC.
    * @return a ThesaurusManager object.
    */
-  public ThesaurusManager getThesaurusManager() {
-    return thesaurusManager;
+  public static ThesaurusManager getThesaurusManager() {
+    return ServiceProvider.getService(ThesaurusManager.class);
   }
 
   /**
    * Gets an instance of the service dedicated to the classification of contents on the PdC.
    * @return a PdcClassificationService object.
    */
-  public PdcClassificationService getPdcClassificationService() {
-    return pdcClassificationService;
+  public static PdcClassificationService getPdcClassificationService() {
+    return ServiceProvider.getService(PdcClassificationService.class);
   }
 
-  private PdcServiceFactory() {
+  private PdcServiceProvider() {
 
   }
 }

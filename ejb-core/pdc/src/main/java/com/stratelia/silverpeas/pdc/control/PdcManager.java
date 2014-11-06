@@ -22,6 +22,7 @@ package com.stratelia.silverpeas.pdc.control;
 
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
+import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -30,12 +31,14 @@ import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.util.ServiceProvider;
+
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
 
-public interface PdcBm {
+public interface PdcManager {
 
   /**
    * The primary axis that made a PdC.
@@ -46,6 +49,14 @@ public interface PdcBm {
    * classification information.
    */
   public static final String SECONDARY_AXIS = "S";
+
+  public static PdcManager getInstance() {
+    return ServiceProvider.getService(PdcManager.class);
+  }
+
+  public List<GlobalSilverContent> findGlobalSilverContents(
+      ContainerPositionInterface containerPosition, List<String> componentIds,
+      boolean recursiveSearch, boolean visibilitySensitive);
 
   public List<AxisHeader> getAxisByType(String type) throws PdcException;
 
@@ -158,8 +169,6 @@ public interface PdcBm {
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
    *
-   * @param axisId
-   * @param valueId
    * @return List
    * @throws PdcException
    * @see
@@ -211,7 +220,6 @@ public interface PdcBm {
   /**
    * retourne les droits sur la valeur
    *
-   * @param current value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
@@ -222,7 +230,6 @@ public interface PdcBm {
   /**
    * retourne les droits hérités sur la valeur
    *
-   * @param current value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
@@ -231,7 +238,6 @@ public interface PdcBm {
   /**
    * met à jour les droits sur la valeur
    *
-   * @param ArrayList ( ArrayList UsersId, ArrayList GroupsId), current value
    * @return
    * @throws PdcException
    */
@@ -241,7 +247,6 @@ public interface PdcBm {
   /**
    * supprime tous les droits sur la valeur
    *
-   * @param current value
    * @return
    * @throws PdcException
    */

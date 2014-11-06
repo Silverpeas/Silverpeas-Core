@@ -23,8 +23,8 @@ package com.silverpeas.pdc.web.mock;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.web.beans.ClassificationPlan;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -48,13 +48,13 @@ import static com.silverpeas.pdc.web.beans.TestPdcClassification.aClassification
  * A decorator of the PdcBm implementation by mocking some of its services for testing purpose.
  */
 @Named("pdcBm")
-public class PdcBmMock extends PdcBmImpl {
+public class PdcBmMock extends GlobalPdcManager {
 
   private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
   private List<UsedAxis> axis = new ArrayList<UsedAxis>();
 
   public PdcBmMock() {
-    PdcBm pdcService = mock(PdcBm.class);
+    PdcManager pdcService = mock(PdcManager.class);
     try {
       when(pdcService.getPositions(anyInt(), anyString())).thenReturn(aListOfPositions());
     } catch (PdcException ex) {

@@ -22,7 +22,7 @@ package com.silverpeas.jobManagerPeas.control;
 
 import com.silverpeas.jobManagerPeas.JobManagerService;
 import com.silverpeas.jobManagerPeas.JobManagerSettings;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -281,7 +281,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     boolean isPDCManager = false;
 
     try {
-      isPDCManager = new PdcBmImpl().isUserManager(getUserId());
+      isPDCManager = new GlobalPdcManager().isUserManager(getUserId());
     } catch (PdcException e) {
       SilverTrace.error("jobManagerPeas",
           "jobManagerPeasSessionController.initServices()",

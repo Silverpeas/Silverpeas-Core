@@ -24,8 +24,8 @@
 
 package com.silverpeas.pdc.model;
 
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.silverpeas.pdc.PdcServiceProvider;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -70,8 +70,8 @@ public class PdcAxisValue implements Serializable, Cloneable {
     try {
       List<? extends TreeNode> parents = null;
       if (treeNode.hasFather()) {
-        PdcBm pdcBm = getPdcBm();
-        parents = pdcBm.getFullPath(treeNode.getFatherId(), treeNode.getTreeId());
+        PdcManager pdcManager = getPdcBm();
+        parents = pdcManager.getFullPath(treeNode.getFatherId(), treeNode.getTreeId());
       }
       return new PdcAxisValue().fromTreeNode(treeNode).withAsTreeNodeParents(parents).
           inAxisId(treeNode.getTreeId());
@@ -227,7 +227,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
    */
   protected UsedAxis getUsedAxis() {
     try {
-      PdcBm pdc = getPdcBm();
+      PdcManager pdc = getPdcBm();
       UsedAxis usedAxis = pdc.getUsedAxis(getAxisId());
       AxisHeader axisHeader = pdc.getAxisHeader(getAxisId());
       usedAxis._setAxisHeader(axisHeader);
@@ -344,7 +344,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
 
   private void loadTreeNodes() {
     try {
-      PdcBm pdc = getPdcBm();
+      PdcManager pdc = getPdcBm();
       String treeId = pdc.getTreeId(getAxisId());
       List<? extends TreeNode> paths = pdc.getFullPath(getId(), treeId);
       int lastNodeIndex = paths.size() - 1;
@@ -356,7 +356,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
     }
   }
 
-  private static PdcBm getPdcBm() {
-    return PdcServiceFactory.getFactory().getPdcManager();
+  private static PdcManager getPdcBm() {
+    return PdcServiceProvider.getPdcManager();
   }
 }

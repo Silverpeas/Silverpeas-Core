@@ -26,8 +26,8 @@
 --%>
 
 
-<%@page import="com.stratelia.silverpeas.pdc.control.PdcBm"%>
-<%@page import="com.silverpeas.pdc.PdcServiceFactory"%>
+<%@page import="com.stratelia.silverpeas.pdc.control.PdcManager"%>
+<%@page import="com.silverpeas.pdc.PdcServiceProvider"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import org.apache.ecs.AlignType;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.A;
@@ -52,8 +53,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.PdcField;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -83,7 +83,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
       "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons";
 
   // Bean to access PDC axis data
-  private PdcBm pdcBm = null;
+  private PdcManager pdcManager = null;
 
   @Override
   public void display(PrintWriter out, PdcField field, FieldTemplate template,
@@ -678,11 +678,11 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   /**
    * @return The bean allowing to access to PDC axis data.
    */
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
+  private PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = new GlobalPdcManager();
     }
-    return pdcBm;
+    return pdcManager;
   }
 
   /**
@@ -691,7 +691,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    */
   private Axis getAxisDetail(String axisId) {
     try {
-      return getPdcBm().getAxisDetail(axisId);
+      return getPdcManager().getAxisDetail(axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getAxisDetail", "form.EX_CANT_GET_AXIS_DETAIL",
           axisId);
@@ -707,7 +707,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   private Value getAxisValue(String valueId, String axisId) {
     Value value = null;
     try {
-      value = getPdcBm().getAxisValue(valueId, axisId);
+      value = getPdcManager().getAxisValue(valueId, axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getAxisValue", "form.EX_CANT_GET_AXIS_VALUE",
           "(" + valueId + " ; " + axisId + ")");
@@ -722,7 +722,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   private List<Value> getAxisValues(int axisId) {
     List<Value> values = null;
     try {
-      values = getPdcBm().getAxisValues(axisId);
+      values = getPdcManager().getAxisValues(axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getAxisValues", "form.EX_CANT_GET_AXIS_VALUES",
           String.valueOf(axisId));
@@ -739,7 +739,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   private List<Value> getFullPath(String valueId, String axisId) {
     List<Value> nodes = null;
     try {
-      return getPdcBm().getFullPath(valueId, axisId);
+      return getPdcManager().getFullPath(valueId, axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getFullPath", "form.EX_CANT_GET_FULL_PATH",
           "(" + valueId + " ; " + axisId + ")");

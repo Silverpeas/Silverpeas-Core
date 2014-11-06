@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import com.silverpeas.session.SessionInfo;
@@ -37,8 +38,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.peasCore.*;
@@ -47,9 +47,7 @@ import com.stratelia.silverpeas.silverStatisticsPeas.vo.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.*;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -92,7 +90,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(
       getLanguage());
   private ResourceLocator settings;
-  private PdcBm pdcBm = null;
+  private PdcManager pdcManager = null;
 
   // init attributes
   private void initYears() {
@@ -1375,11 +1373,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * Add PdC access in order to make PdC statistics
    */
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = (PdcBm) new PdcBmImpl();
+  private PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = (PdcManager) new GlobalPdcManager();
     }
-    return pdcBm;
+    return pdcManager;
   }
 
   /**
@@ -1387,7 +1385,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public List<StatisticAxisVO> getPrimaryAxis() throws PdcException {
     List<StatisticAxisVO> statsAxes = new ArrayList<StatisticAxisVO>();
-    List<AxisHeader> axes = getPdcBm().getAxisByType("P");
+    List<AxisHeader> axes = getPdcManager().getAxisByType("P");
     for (AxisHeader axisHeader : axes) {
       StatisticAxisVO axis =
           new StatisticAxisVO(axisHeader.getPK().getId(), axisHeader.getName(), axisHeader.
@@ -1426,7 +1424,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       if (curAxisId == 0) {
         // Retrieve publication axis
-        List<AxisHeader> axis = getPdcBm().getAxisByType("P");
+        List<AxisHeader> axis = getPdcManager().getAxisByType("P");
 
         // Retrieve publications on axis
         for (AxisHeader axisHeader : axis) {
@@ -1450,7 +1448,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           curLevel = StringUtils.countMatches(axisValue, "/") - 1;
         }
 
-        List<Value> values = getPdcBm().getAxisValues(statsFilter.getAxisId());
+        List<Value> values = getPdcManager().getAxisValues(statsFilter.getAxisId());
         for (Value curValue : values) {
           String curAxisValue = curValue.getFullPath();
           int nbAxisAccess = 0;
@@ -1511,11 +1509,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
     // Retrieve the list of PDC publications using EJB call
     List<GlobalSilverContent> silverContentsMetier = null;
-    com.silverpeas.pdc.ejb.PdcBm pdcBm = getPdcBmEJB();
-    if (pdcBm != null) {
+    PdcManager pdcManager = PdcManager.getInstance();
+    if (pdcManager != null) {
       if (!componentIds.isEmpty()) {
         try {
-          silverContentsMetier = pdcBm.findGlobalSilverContents(context, componentIds, true, true);
+          silverContentsMetier = pdcManager.findGlobalSilverContents(context, componentIds, true, true);
         } catch (Exception e) {
           SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
         }
@@ -1535,11 +1533,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       List<String> componentIds) {
     // Retrieve the list of PDC publications using EJB call
     List<GlobalSilverContent> silverContentsMetier = null;
-    com.silverpeas.pdc.ejb.PdcBm pdcBm = getPdcBmEJB();
-    if (pdcBm != null) {
+    PdcManager pdcManager = PdcManager.getInstance();
+    if (pdcManager != null) {
       if (componentIds.size() > 0) {
         try {
-          silverContentsMetier = pdcBm.findGlobalSilverContents(searchContext, componentIds, true,
+          silverContentsMetier = pdcManager.findGlobalSilverContents(searchContext, componentIds, true,
               true);
         } catch (Exception e) {
           SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
@@ -1547,11 +1545,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       }
     }
     return silverContentsMetier;
-  }
-
-  private com.silverpeas.pdc.ejb.PdcBm getPdcBmEJB() {
-    return EJBUtilitaire.
-        getEJBObjectRef(JNDINames.PDCBM_EJBHOME, com.silverpeas.pdc.ejb.PdcBm.class);
   }
 
   /**
@@ -1611,8 +1604,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           SilverStatisticsPeasDAO.getListPublicationAccess(firstDayStr, lastDayStr);
 
       // Retrieve the list of values from selected axes
-      List<Value> firstValues = getPdcBm().getAxisValues(statsFilter.getFirstAxisId());
-      List<Value> secondValues = getPdcBm().getAxisValues(statsFilter.getSecondAxisId());
+      List<Value> firstValues = getPdcManager().getAxisValues(statsFilter.getFirstAxisId());
+      List<Value> secondValues = getPdcManager().getAxisValues(statsFilter.getSecondAxisId());
 
       // Header and first row list declaration
       List<String> headerColumn = new ArrayList<String>();

@@ -27,32 +27,33 @@ import com.silverpeas.importExport.report.ComponentReport;
 import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
-import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.util.StringUtil.isDefined;
@@ -65,6 +66,9 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class ImportDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  @Inject
+  private PdcClassificationService pdcClassificationService;
 
   @Override
   public void init(ServletConfig config) {
@@ -165,7 +169,7 @@ public class ImportDragAndDrop extends HttpServlet {
           .getOrganisationController().getUserDetail(userId);
 
       try {
-        MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
+        MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
         ImportSettings settings = new ImportSettings(savePath, userDetail, componentId, topicId,
             draftUsed, true, ImportSettings.FROM_DRAGNDROP);
         ImportReport importReport = massiveImporter.importDocuments(settings, massiveReport);
@@ -221,10 +225,8 @@ public class ImportDragAndDrop extends HttpServlet {
    * classification of the imported publications. False otherwise.
    */
   protected boolean isDefaultClassificationModifiable(String topicId, String componentId) {
-    PdcClassificationService classificationService = PdcServiceFactory.getFactory().
-        getPdcClassificationService();
-    PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
-        topicId, componentId);
+    PdcClassification defaultClassification =
+        pdcClassificationService.findAPreDefinedClassification(topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
   }
 }

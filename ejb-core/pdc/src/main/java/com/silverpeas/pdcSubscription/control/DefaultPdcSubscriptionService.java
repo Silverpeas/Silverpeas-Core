@@ -23,13 +23,13 @@
  * Aliaksei_Budnikau
  * Date: Oct 24, 2002
  */
-package com.silverpeas.pdcSubscription.ejb;
+package com.silverpeas.pdcSubscription.control;
 
-import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdcSubscription.PdcResourceClassificationUserNotification;
 import com.silverpeas.pdcSubscription.PdcSubscriptionDeletionUserNotification;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.usernotification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
@@ -38,22 +38,19 @@ import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.core.admin.OrganizationController;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Stateless(name = "PdcSubscription", description = "Stateless bean to manage pdc subscription.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
+@Transactional
+public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
   /**
    * Remote interface method
@@ -101,7 +98,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    * @param subscription
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public int createPDCSubscription(PDCSubscription subscription) {
     try(Connection conn = DBUtil.openConnection()) {
       return PdcSubscriptionDAO.createPDCSubscription(conn, subscription);
@@ -118,7 +115,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    * @param subscription
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void updatePDCSubscription(PDCSubscription subscription) {
     SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.updatePDCSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = " + subscription);
@@ -137,7 +134,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    * @param id
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removePDCSubscriptionById(int id) {
     try(Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, id);
@@ -154,7 +151,7 @@ public class PdcSubscriptionBmEJB implements PdcSubscriptionBm {
    * @param ids
    */
   @Override
-  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removePDCSubscriptionById(int[] ids) {
     try(Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);

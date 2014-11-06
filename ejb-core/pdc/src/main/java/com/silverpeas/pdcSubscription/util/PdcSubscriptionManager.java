@@ -24,65 +24,62 @@
 
 package com.silverpeas.pdcSubscription.util;
 
-import java.rmi.RemoteException;
-import java.util.List;
-
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
+import com.silverpeas.pdcSubscription.control.PdcSubscriptionService;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
-
 import com.stratelia.silverpeas.classifyEngine.Value;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * Utility class. Contains calls of PdcSubscription Ejb
  */
-public class PdcSubscriptionUtil {
-  private PdcSubscriptionBm scBm;
+@Singleton
+public class PdcSubscriptionManager {
 
-  private void initEJB() {
-    if (scBm == null)
-      try {
-        scBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBm.class);
-      } catch (Exception e) {
-        throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
-            PdcSubscriptionRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+  public static PdcSubscriptionManager getInstance() {
+    return ServiceProvider.getService(PdcSubscriptionManager.class);
+  }
+
+  @Inject
+  private PdcSubscriptionService pdcSubscriptionService;
+
+  protected PdcSubscriptionManager() {
+
   }
 
   public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException {
-    initEJB();
-    return scBm.getPDCSubsriptionById(id);
+    return pdcSubscriptionService.getPDCSubsriptionById(id);
   }
 
   public void createPDCSubsription(PDCSubscription subscription) throws RemoteException {
-    initEJB();
-    scBm.createPDCSubscription(subscription);
+    pdcSubscriptionService.createPDCSubscription(subscription);
   }
 
   public void updatePDCSubsription(PDCSubscription subscription)
       throws RemoteException {
-    initEJB();
-    scBm.updatePDCSubscription(subscription);
+    pdcSubscriptionService.updatePDCSubscription(subscription);
   }
 
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid) throws RemoteException {
-    initEJB();
-    scBm.checkSubscriptions(classifyValues, componentId, silverObjectid);
+    pdcSubscriptionService.checkSubscriptions(classifyValues, componentId, silverObjectid);
   }
 
   public void checkAxisOnDelete(int axisId, String axisName)
       throws RemoteException {
-    initEJB();
-    scBm.checkAxisOnDelete(axisId, axisName);
+    pdcSubscriptionService.checkAxisOnDelete(axisId, axisName);
   }
 
   public void checkValueOnDelete(int axiId, String axisName, List<String> oldPath,
       List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo)
       throws RemoteException {
-    initEJB();
-    scBm.checkValueOnDelete(axiId, axisName, oldPath, newPath, pathInfo);
+    pdcSubscriptionService.checkValueOnDelete(axiId, axisName, oldPath, newPath, pathInfo);
   }
 }

@@ -32,23 +32,24 @@ import java.util.List;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.thesaurus.model.Synonym;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
 import org.silverpeas.util.exception.SilverpeasException;
-import javax.inject.Named;
+
+import javax.inject.Inject;
 
 /**
  * Class ThesaurusManager Classe servant d'interface aux autres composants ayant besoin du thesaurus
  * (module pdc et searchEngine)
  */
-@Named
 public class ThesaurusManager {
 
-  private ThesaurusBm thesaurus = ThesaurusBm.getInstance();
+  @Inject
+  private ThesaurusService thesaurus;
 
-  public ThesaurusManager() {
+  protected ThesaurusManager() {
 
   }
 
@@ -59,7 +60,6 @@ public class ThesaurusManager {
    * @param idUser
    * @return Collection
    * @throws ThesaurusException
-   * @see getJargon, getSynonymsTerm, getSynonyms, isExist
    */
   public Collection<String> getSynonyms(String mot, String idUser)
       throws ThesaurusException {
@@ -106,8 +106,6 @@ public class ThesaurusManager {
    * @param term
    * @return Collection
    * @throws ThesaurusException
-   * @see com.stratelia.silverpeas.pdc.control.PdcBm.getValues,
-   * com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
   private Collection<String> getSynonymsTerm(long idVoca, String term)
       throws ThesaurusException {
@@ -115,7 +113,7 @@ public class ThesaurusManager {
     Collection<String> theList = new ArrayList<String>();
     try {
       // recupere les termes correspondant à un nom de terme
-      PdcBm pdc = new PdcBmImpl();
+      PdcManager pdc = new GlobalPdcManager();
       List<Value> valueList = pdc.getAxisValuesByName(term);
 
       for (Value value : valueList) {
@@ -151,8 +149,6 @@ public class ThesaurusManager {
    * @param synonym
    * @return Collection
    * @throws ThesaurusException
-   * @see com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms,
-   * com.stratelia.silverpeas.pdc.control.PdcBm.getValue
    */
   private Collection<String> getSynonyms(long idVoca, String synonym)
       throws ThesaurusException {
@@ -174,7 +170,7 @@ public class ThesaurusManager {
           theList.add(name);
 
           // recupere le nom du terme correspondant
-          PdcBm pdc = new PdcBmImpl();
+          PdcManager pdc = new GlobalPdcManager();
           Value value = pdc.getAxisValue(Long.toString(idTerm), Long.toString(idTree));
           String nameTerm = value.getName();
           theList.add(nameTerm);
@@ -222,7 +218,6 @@ public class ThesaurusManager {
    * @param idUser
    * @return Collection
    * @throws ThesaurusException
-   * @see getJargon, com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
   public Collection<String> getSynonyms(long idTree, long idTerm, String idUser)
       throws ThesaurusException {
@@ -270,8 +265,6 @@ public class ThesaurusManager {
    * @param idUser
    * @return Collection
    * @throws ThesaurusException
-   * @see getJargon, com.stratelia.silverpeas.pdc.control.PdcBm.getRoot,
-   * com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
   public Collection<String> getSynonymsAxis(String axisId, String idUser)
       throws ThesaurusException {
@@ -284,7 +277,7 @@ public class ThesaurusManager {
         long idVoca = jargon.getIdVoca();
 
         // recupere le treeId et le idTerm de l'axe
-        PdcBm pdc = new PdcBmImpl();
+        PdcManager pdc = new GlobalPdcManager();
         Value value = pdc.getRoot(axisId);
 
         long idTree = Long.parseLong(value.getTreeId());
@@ -316,7 +309,6 @@ public class ThesaurusManager {
    * @param idUser
    * @return Jargon
    * @throws ThesaurusException
-   * @see com.silverpeas.thesaurus.control.ThesaurusBm.getJargon
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
 
@@ -336,7 +328,6 @@ public class ThesaurusManager {
    * @param idTree
    * @return
    * @throws ThesaurusException
-   * @see com.silverpeas.thesaurus.control.ThesaurusBm.deleteSynonymsAxis
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
       throws ThesaurusException {
@@ -356,7 +347,6 @@ public class ThesaurusManager {
    * @param idTerms : List de String
    * @return
    * @throws ThesaurusException
-   * @see com.silverpeas.thesaurus.control.ThesaurusBm.deleteSynonymsTerms
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List<String> idTerms)
       throws ThesaurusException {

@@ -28,9 +28,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -57,8 +57,6 @@ public class PdcSessionController extends AbstractComponentSessionController {
   private String currentView = "P";
   private Axis currentAxis = null;
   private Value currentValue = null;
-  private PdcBm pdcBm = null;
-  private ThesaurusManager thBm = null;
   private String values = "";
   private String currentLanguage = null;
 
@@ -76,18 +74,12 @@ public class PdcSessionController extends AbstractComponentSessionController {
     currentLanguage = getLanguage();
   }
 
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
-    }
-    return pdcBm;
+  private PdcManager getPdcBm() {
+    return PdcServiceProvider.getPdcManager();
   }
 
   private ThesaurusManager getThBm() {
-    if (thBm == null) {
-      thBm = (ThesaurusManager) new ThesaurusManager();
-    }
-    return thBm;
+    return PdcServiceProvider.getThesaurusManager();
   }
 
   public ArrayList<String> getComponentList() {
@@ -520,7 +512,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       valueId = getCurrentValue().getPK().getId();
     }
 
-    List<List<String>> managers = pdcBm.getManagers(getCurrentAxis().getAxisHeader().getPK()
+    List<List<String>> managers = getPdcBm().getManagers(getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
 
     List<String> usersId = managers.get(0);
@@ -540,7 +532,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       SQLException {
     List usersAndGroups = new ArrayList();
 
-    List<List<String>> managers = pdcBm.getManagers(axisId, valueId);
+    List<List<String>> managers = getPdcBm().getManagers(axisId, valueId);
 
     List<String> usersId = managers.get(0);
     List<String> groupsId = managers.get(1);
@@ -559,7 +551,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       SQLException {
     List usersAndGroups = new ArrayList();
 
-    List managers = pdcBm.getInheritedManagers(value);
+    List managers = getPdcBm().getInheritedManagers(value);
 
     List<String> usersId = (List) managers.get(0);
     List<String> groupsId = (List) managers.get(1);
@@ -715,7 +707,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       valueId = getCurrentValue().getPK().getId();
     }
 
-    pdcBm.setManagers(userIds, groupIds, getCurrentAxis().getAxisHeader()
+    getPdcBm().setManagers(userIds, groupIds, getCurrentAxis().getAxisHeader()
         .getPK().getId(), valueId);
   }
 
@@ -731,7 +723,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       valueId = getCurrentValue().getPK().getId();
     }
 
-    pdcBm.setManagers(null, null, getCurrentAxis().getAxisHeader().getPK()
+    getPdcBm().setManagers(null, null, getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
   }
 

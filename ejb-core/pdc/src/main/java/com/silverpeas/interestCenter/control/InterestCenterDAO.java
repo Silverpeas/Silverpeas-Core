@@ -23,7 +23,7 @@
  * Aliaksei_Budnikau
  * Date: Oct 14, 2002
  */
-package com.silverpeas.interestCenter.ejb;
+package com.silverpeas.interestCenter.control;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.stratelia.silverpeas.classifyEngine.Criteria;

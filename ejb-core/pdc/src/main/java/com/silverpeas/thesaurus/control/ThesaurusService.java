@@ -34,7 +34,9 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,25 +44,19 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * ThesaurusBm Classe servant à gérer le métier du thesuaurus
+ * Service dedicated to work on the thesaurus.
  */
-public class ThesaurusBm {
+public class ThesaurusService {
 
-  private static ThesaurusBm instance = null;
   private SilverpeasBeanDAO<Vocabulary> vocabularyDao = null;
   private SilverpeasBeanDAO<Synonym> synonymDao = null;
   private SilverpeasBeanDAO<Jargon> jargonDao = null;
 
-  private ThesaurusBm() {
+  private ThesaurusService() {
   }
 
-  static public ThesaurusBm getInstance() {
-    synchronized (ThesaurusBm.class) {
-      if (instance == null) {
-        instance = new ThesaurusBm();
-      }
-    }
-    return instance;
+  public static ThesaurusService getInstance() {
+    return ServiceProvider.getService(ThesaurusService.class);
   }
 
   private SilverpeasBeanDAO<Vocabulary> getVocabularyDao() throws PersistenceException {

@@ -23,15 +23,14 @@
  * Aliaksei_Budnikau
  * Date: Oct 14, 2002
  */
-package com.silverpeas.interestCenter.ejb;
+package com.silverpeas.interestCenter.control;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
@@ -41,17 +40,13 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
- * InterestCenterBm EJB implementation for detailed comments for each method see remote interface
- * class
+ * Default implementation of the service on the interest centers of users.
  *
- * @see InterestCenterBm
+ * @see InterestCenterService
  */
-@Stateless(name = "InterestCenter", description =
-    "Stateless session bean to manage interest centers.")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class InterestCenterBmEJB implements InterestCenterBm {
-
-  private static final long serialVersionUID = -5867239072798551540L;
+@Singleton
+@Transactional
+public class DefaultInterestCenterService implements InterestCenterService {
 
   @Override
   public List<InterestCenter> getICByUserID(int userID) {
@@ -80,7 +75,6 @@ public class InterestCenterBmEJB implements InterestCenterBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public int createIC(InterestCenter ic) {
     try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.createIC(con, ic);
@@ -94,7 +88,6 @@ public class InterestCenterBmEJB implements InterestCenterBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void updateIC(InterestCenter ic) {
     try(Connection con = DBUtil.openConnection()) {
       InterestCenterDAO.updateIC(con, ic);
@@ -108,23 +101,22 @@ public class InterestCenterBmEJB implements InterestCenterBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void removeICByPK(List<Integer> pks, String userId) {
     try(Connection con = DBUtil.openConnection()) {
       //check rights : check that the current user has the rights to delete the interest center
       int userIdInt = Integer.parseInt(userId);
       for (Integer icPk : pks) {
         InterestCenter interestCenter = getICByID(icPk);
-        
+
         if(userIdInt != interestCenter.getOwnerID()) {
           throw new ForbiddenRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
             SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "interest center id="+icPk+", userId="+userId);
         }
       }
-    
+
       //remove
       InterestCenterDAO.removeICByPK(con, pks);
-      
+
     } catch (SQLException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
           "Pdc.CANNOT_DELETE_INTEREST_CENTERS", pks.toString(), e);
@@ -135,7 +127,6 @@ public class InterestCenterBmEJB implements InterestCenterBm {
   }
 
   @Override
-  @TransactionAttribute(TransactionAttributeType.SUPPORTS)
   public void removeICByPK(int pk) {
     try(Connection con = DBUtil.openConnection()) {
       InterestCenterDAO.removeICByPK(con, pk);

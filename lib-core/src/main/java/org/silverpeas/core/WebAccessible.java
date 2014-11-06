@@ -19,26 +19,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.contribution.model;
+package org.silverpeas.core;
+
+import java.net.URI;
 
 /**
- * A translation of an i18n contribution or of a content in a given language. All contributions
- * or contents that represent a translation of a given contribution or content in a given language
- * should implement one of its children interfaces:
- * <ul>
- *   <li>{@code org.silverpeas.contribution.ContributionTranslation} for the contributions,</li>
- *   <li>{@¢ode org.silverpeas.contribution.model.ContributionContentTranslation} for the
- *   contribution content.</li>
- * </ul>
- * <p>
- *   For example, as the <code>Publication</code> is a i18n contribution, it must be capable to
- *   return a <code>PublicationTranslation</code> instance for each asking translation in a given
- *   language.
- * </p>
+ * This interface marks the resource as accessible by the Web. Any contributions or contents or
+ * transverse business entities directly accessible by the Web should implement this interface.
  * @author mmoquillon
  */
-public interface Translation {
+public interface WebAccessible {
 
-  public String getLanguage();
-
+  public URI getURI();
 }

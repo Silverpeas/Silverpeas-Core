@@ -29,7 +29,8 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.interestCenter.model.InterestCenter;
-import com.silverpeas.interestCenter.util.InterestCenterUtil;
+import com.silverpeas.interestCenter.util.InterestCenterManager;
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
@@ -40,6 +41,7 @@ import com.silverpeas.thesaurus.model.Jargon;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.util.*;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
@@ -49,8 +51,7 @@ import com.stratelia.silverpeas.containerManager.ContainerWorkspace;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdc.control.Pdc;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -207,7 +208,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     getExternalSPConfig();
 
     try {
-      platformUsesPDC = !getPdcBm().getAxis().isEmpty();
+      platformUsesPDC = !getPdcManager().getAxis().isEmpty();
     } catch (PdcException e) {
       SilverTrace.info("pdcPeas", "PdcSearchSessionController()", "root.MSG_GEN_ERROR", e);
     }
@@ -1690,11 +1691,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<AxisHeader> getAllAxis() throws PdcException {
-    return getPdcBm().getAxis();
+    return getPdcManager().getAxis();
   }
 
   public List<AxisHeader> getPrimaryAxis() throws PdcException {
-    return getPdcBm().getAxisByType("P");
+    return getPdcManager().getAxisByType("P");
   }
 
   public List<SearchAxis> getAxis(String viewType) throws PdcException {
@@ -1704,13 +1705,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<SearchAxis> getAxis(String viewType, AxisFilter filter) throws PdcException {
     if (componentList == null || componentList.isEmpty()) {
       if (StringUtil.isDefined(getCurrentComponentId())) {
-        return getPdcBm().getPertinentAxisByInstanceId(searchContext, viewType,
+        return getPdcManager().getPertinentAxisByInstanceId(searchContext, viewType,
             getCurrentComponentId());
       }
       return new ArrayList<SearchAxis>();
     } else {
       // we get all axis (pertinent or not) from a type P or S
-      List<AxisHeader> axis = getPdcBm().getAxisByType(viewType);
+      List<AxisHeader> axis = getPdcManager().getAxisByType(viewType);
       // we have to transform all axis (AxisHeader) into SearchAxis to make
       // the display into jsp transparent
       return transformAxisHeadersIntoSearchAxis(axis);
@@ -1726,7 +1727,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // sa.setAxisName(ah.getName());
         sa.setAxis(ah);
         sa.setAxisRootId(Integer.parseInt(
-            getPdcBm().getRoot(ah.getPK().getId()).getValuePK().getId()));
+            getPdcManager().getRoot(ah.getPK().getId()).getValuePK().getId()));
         sa.setNbObjects(1);
         transformedAxis.add(sa);
       }
@@ -1748,14 +1749,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         + valueId);
     List<Value> values;
     if (componentList == null || componentList.isEmpty()) {
-      values = getPdcBm().getPertinentDaughterValuesByInstanceId(searchContext,
+      values = getPdcManager().getPertinentDaughterValuesByInstanceId(searchContext,
           axisId, valueId, getCurrentComponentId());
     } else {
       if (isShowOnlyPertinentAxisAndValues()) {
-        values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
+        values = getPdcManager().getPertinentDaughterValuesByInstanceIds(
             searchContext, axisId, valueId, getCopyOfInstanceIds());
       } else {
-        values = setNBNumbersToOne(getPdcBm().getDaughters(axisId, valueId));
+        values = setNBNumbersToOne(getPdcManager().getDaughters(axisId, valueId));
       }
     }
     SilverTrace.info("pdcPeas", "PdcSearchSessionController.getDaughterValues()",
@@ -1776,10 +1777,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId);
     List<Value> result;
     if (componentList == null || componentList.isEmpty()) {
-      result = getPdcBm().getFirstLevelAxisValuesByInstanceId(searchContext,
+      result = getPdcManager().getFirstLevelAxisValuesByInstanceId(searchContext,
           axisId, getCurrentComponentId());
     } else {
-      result = getPdcBm().getFirstLevelAxisValuesByInstanceIds(searchContext,
+      result = getPdcManager().getFirstLevelAxisValuesByInstanceIds(searchContext,
           axisId, getCopyOfInstanceIds());
     }
     SilverTrace.info("pdcPeas", "PdcSearchSessionController.getFirstLevelAxisValues()",
@@ -1812,25 +1813,25 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public Axis getAxisDetail(String axisId, AxisFilter filter)
       throws PdcException {
-    Axis axis = getPdcBm().getAxisDetail(axisId, filter);
+    Axis axis = getPdcManager().getAxisDetail(axisId, filter);
     return axis;
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {
-    AxisHeader axisHeader = getPdcBm().getAxisHeader(axisId);
+    AxisHeader axisHeader = getPdcManager().getAxisHeader(axisId);
     return axisHeader;
   }
 
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
-    return getPdcBm().getFullPath(valueId, treeId);
+    return getPdcManager().getFullPath(valueId, treeId);
   }
 
   public Value getAxisValue(String valueId, String treeId) throws PdcException {
-    return getPdcBm().getAxisValue(valueId, treeId);
+    return getPdcManager().getAxisValue(valueId, treeId);
   }
 
   public Value getValue(String axisId, String valueId) throws PdcException {
-    return getPdcBm().getValue(axisId, valueId);
+    return getPdcManager().getValue(axisId, valueId);
   }
 
   public void setContainerPeas(ContainerPeas containerGivenPeasPDC) {
@@ -1899,7 +1900,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Thesaurus methods /
    * ****************************************************************************************************************
    */
-  private ThesaurusManager thesaurus = new ThesaurusManager();
+  private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
   private boolean activeThesaurus = false; // thesaurus actif
   private Jargon jargon = null;// jargon utilisé par l'utilisateur
   private Map<String, Collection<String>> synonyms = new HashMap<String, Collection<String>>();
@@ -1996,7 +1997,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return synonyms.get(mot);
     } else {
       try {
-        Collection<String> synos = new ThesaurusManager().getSynonyms(mot, getUserId());
+        Collection<String> synos = thesaurus.getSynonyms(mot, getUserId());
         synonyms.put(mot, synos);
         return synos;
       } catch (ThesaurusException e) {
@@ -2011,7 +2012,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (activeThesaurus) {
       return synonyms;
     }
-    return new HashMap<String, Collection<String>>();
+    return new HashMap<>();
   }
 
   private boolean isKeyword(String mot) {
@@ -2114,7 +2115,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     for (int i = 0; i < allAxis.size(); i++) {
       AxisHeader sa = allAxis.get(i);
       String rootId = String.valueOf(sa.getRootId());
-      List<Value> daughters = getPdcBm().getFilteredAxisValues(rootId, filter);
+      List<Value> daughters = getPdcManager().getFilteredAxisValues(rootId, filter);
       axises.addAll(daughters);
     }
     return axises;
@@ -2122,7 +2123,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public List<AxisHeader> getUsedAxisHeaderByInstanceId(String instanceId)
       throws PdcException {
-    List<UsedAxis> usedAxisList = getPdcBm().getUsedAxisByInstanceId(instanceId);
+    List<UsedAxis> usedAxisList = getPdcManager().getUsedAxisByInstanceId(instanceId);
     List<AxisHeader> allAxis = new ArrayList<AxisHeader>(usedAxisList.size());
     // get all AxisHeader corresponding to usedAxis for this instance
     for (UsedAxis usedAxis : usedAxisList) {
@@ -2147,7 +2148,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public Value getAxisValueAndFullPath(String valueId, String treeId) throws PdcException {
-    Value value = getPdcBm().getAxisValue(valueId, treeId);
+    Value value = getPdcManager().getAxisValue(valueId, treeId);
     if (value != null) {
       value.setPathValues(getFullPath(valueId, treeId));
     }
@@ -2156,7 +2157,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public List<Axis> getUsedAxisByAComponentInstance(String instanceId)
       throws PdcException {
-    List<UsedAxis> usedAxisList = getPdcBm().getUsedAxisByInstanceId(instanceId);
+    List<UsedAxis> usedAxisList = getPdcManager().getUsedAxisByInstanceId(instanceId);
     List<Axis> axisList = new ArrayList<Axis>(usedAxisList.size());
     for (UsedAxis usedAxis : usedAxisList) {
       axisList.add(getAxisDetail(new Integer(usedAxis.getAxisId()).toString()));
@@ -2183,7 +2184,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       int userId = Integer.parseInt(getUserId());
       ic.setOwnerID(userId);
-      return (new InterestCenterUtil()).createIC(ic);
+      return InterestCenterManager.getInstance().createIC(ic);
     } catch (Exception e) {
       throw new PdcPeasRuntimeException(
           "PdcSearchSessionController.saveICenter", SilverpeasException.ERROR,
@@ -2194,7 +2195,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<InterestCenter> getICenters() {
     try {
       int id = Integer.parseInt(getUserId());
-      return (new InterestCenterUtil()).getICByUserId(id);
+      return InterestCenterManager.getInstance().getICByUserId(id);
     } catch (Exception e) {
       throw new PdcPeasRuntimeException(
           "PdcSearchSessionController.getICenters", SilverpeasException.ERROR,
@@ -2205,7 +2206,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public InterestCenter loadICenter(String icId) throws PdcException {
     try {
       int id = Integer.parseInt(icId);
-      InterestCenter ic = (new InterestCenterUtil()).getICByID(id);
+      InterestCenter ic = InterestCenterManager.getInstance().getICByID(id);
       getSearchContext().clearCriterias();
       List<? extends Criteria> criterias = ic.getPdcContext();
       for (Criteria criteria : criterias) {
@@ -2579,14 +2580,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * ******************************************************************************************
    */
-  private PdcBm pdcBm = null; // To retrieve items from PDC
+  private PdcManager pdcManager = null; // To retrieve items from PDC
 
   // searchEngine
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = (PdcBm) new PdcBmImpl();
+  private PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = (PdcManager) new GlobalPdcManager();
     }
-    return pdcBm;
+    return pdcManager;
   }
 
   /**

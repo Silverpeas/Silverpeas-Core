@@ -39,7 +39,7 @@ import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import org.silverpeas.util.JoinStatement;
 
-public interface PdcClassifyBm {
+public interface PdcClassifyManager {
 
   /**
    * Check if the object is already classified on the position
@@ -63,7 +63,6 @@ public interface PdcClassifyBm {
 
   /**
    * Update the position of an object
-   * @param silverObjectId - id of the object
    * @param position - the position of the object
    * @return 0 position is OK, insertion have been done. 1 if variant constraint not respected
    * @throws PdcException
@@ -75,8 +74,7 @@ public interface PdcClassifyBm {
 
   /**
    * Delete the position of an object
-   * @param silverObjectId - id of the object
-   * @param position - the id of the position
+   * @param positionId - the id of the position
    * @throws PdcException
    */
   public void deletePosition(int positionId, String sComponentId)

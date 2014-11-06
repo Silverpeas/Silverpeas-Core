@@ -26,53 +26,38 @@ package com.silverpeas.interestCenter.util;
 
 import java.util.List;
 
-import com.silverpeas.interestCenter.InterestCenterRuntimeException;
-import com.silverpeas.interestCenter.ejb.InterestCenterBm;
+import com.silverpeas.interestCenter.control.InterestCenterService;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 
-public class InterestCenterUtil {
+import javax.inject.Inject;
 
-  private InterestCenterBm icEjb = null;
+public class InterestCenterManager {
 
-  /**
-   * Constructor Creates new Interest Center Util Controller
-   */
-
-  public InterestCenterUtil() {
+  public static final InterestCenterManager getInstance() {
+    return ServiceProvider.getService(InterestCenterManager.class);
   }
 
-  /**
-   * Method initEJB initializes EJB
-   */
-  private void initEJB() {
-    if (icEjb == null) {
-      try {
-        icEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-            InterestCenterBm.class);
-      } catch (Exception e) {
-        throw new InterestCenterRuntimeException("InterestCenterUtil.initEJB()",
-            "root.EX_CANT_GET_REMOTE_OBJECT", "", e);
-      }
-    }
+  @Inject
+  private InterestCenterService interestCenterService;
+
+  protected InterestCenterManager() {
+
   }
 
   /**
    * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
   public List<InterestCenter> getICByUserId(int userId)  {
-    initEJB();
-    return icEjb.getICByUserID(userId);
+    return interestCenterService.getICByUserID(userId);
   }
 
   /**
    * Method getICByPK returns Interest Center given by id
    */
   public InterestCenter getICByID(int id)  {
-    initEJB();
-    return icEjb.getICByID(id);
+    return interestCenterService.getICByID(id);
   }
 
   /**
@@ -94,12 +79,11 @@ public class InterestCenterUtil {
    * Method createIC creates new InterestCenter
    */
   public int createIC(InterestCenter icToCreate)  {
-    initEJB();
     int id = isICExists(icToCreate.getName(), icToCreate.getOwnerID());
     if (id != -1) {
-      icEjb.removeICByPK(id);
+      interestCenterService.removeICByPK(id);
     }
-    return icEjb.createIC(icToCreate);
+    return interestCenterService.createIC(icToCreate);
   }
 
 }

@@ -24,15 +24,28 @@
 
 package com.silverpeas.pdc;
 
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import org.silverpeas.util.ServiceProvider;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class PdcIndexer {
 
-  PdcBm pdc = new PdcBmImpl();
+  public static PdcIndexer getInstance() {
+    return ServiceProvider.getService(PdcIndexer.class);
+  }
+
+  @Inject
+  private PdcManager pdcManager;
+
+  protected PdcIndexer() {
+
+  }
 
   public void index() throws Exception {
-    pdc.indexAllAxis();
+    pdcManager.indexAllAxis();
   }
 
 }

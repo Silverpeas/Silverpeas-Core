@@ -34,24 +34,20 @@ import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.control.PdcSettings;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminUserConnections;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.clipboard.control.Clipboard;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +71,7 @@ public class MainSessionController implements Clipboard {
   private Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
       new AnnotationLiteral<MainClipboard>() {});
   private final UserPreferences userPreferences;
-  private PdcBm pdcBm = null;
+  private PdcManager pdcManager = null;
   private String sessionId = null;
   private String userId = null;
   private OrganizationController organizationController = null;
@@ -411,7 +407,7 @@ public class MainSessionController implements Clipboard {
 
     try {
       // First, check if user is directly manager of a part of PDC
-      return getPdcBm().isUserManager(userId);
+      return getPdcManager().isUserManager(userId);
     } catch (PdcException e) {
       SilverTrace.error("peasCore", "MainSessionController.isPDCBackOfficeVisible",
           "admin.MSG_ERR_GET_PDC_VISIBILITY", e);
@@ -420,12 +416,12 @@ public class MainSessionController implements Clipboard {
     return false;
   }
 
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
+  private PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = new GlobalPdcManager();
     }
 
-    return pdcBm;
+    return pdcManager;
   }
 
   public List<String> getUserManageableGroupIds() {

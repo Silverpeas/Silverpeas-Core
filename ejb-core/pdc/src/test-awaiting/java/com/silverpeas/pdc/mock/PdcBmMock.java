@@ -26,7 +26,7 @@ package com.silverpeas.pdc.mock;
 
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -48,7 +48,7 @@ import javax.inject.Named;
  * A mock of the PdcBm service.
  */
 @Named("pdcBm")
-public class PdcBmMock implements PdcBm {
+public class PdcBmMock implements PdcManager {
 
   private List<TreeNode> treeNodes = new ArrayList<TreeNode>();
 

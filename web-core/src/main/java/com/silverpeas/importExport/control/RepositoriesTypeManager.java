@@ -30,15 +30,9 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -50,17 +44,25 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailAttachment;
 import org.silverpeas.util.mail.MailExtractor;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.File;
@@ -75,10 +77,18 @@ import java.util.List;
  *
  * @author sdevolder
  */
+@Singleton
 public class RepositoriesTypeManager {
 
   public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
       EntityArrays.ISO8859_1_ESCAPE());
+
+  @Inject
+  private PdcImportExport pdcImportExport;
+
+  protected RepositoriesTypeManager() {
+
+  }
 
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
@@ -95,7 +105,6 @@ public class RepositoriesTypeManager {
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
     AttachmentImportExport attachmentIE = new AttachmentImportExport(settings.getUser());
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
-    PdcImportExport pdcIE = new PdcImportExport();
 
     while (itListRep_Type.hasNext()) {
       RepositoryType rep_Type = itListRep_Type.next();
@@ -130,7 +139,7 @@ public class RepositoriesTypeManager {
             File file = itListcontenuPath.next();
             if (file.isFile()) {
               settings.setFolderId(String.valueOf(topicId));
-              importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
+              importFile(file, reportManager, massiveReport, gedIE, pdcImportExport, settings);
             } else if (file.isDirectory()) {
               switch (rep_Type.getMassiveTypeInt()) {
                 case RepositoryType.NO_RECURSIVE:
@@ -140,7 +149,7 @@ public class RepositoriesTypeManager {
                   // traitement récursif spécifique
                   settings.setPathToImport(file.getAbsolutePath());
                   processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE,
-                      attachmentIE, versioningIE, pdcIE, settings);
+                      attachmentIE, versioningIE, pdcImportExport, settings);
                   break;
                 case RepositoryType.RECURSIVE_REPLICATE:
                   try {
@@ -148,8 +157,8 @@ public class RepositoriesTypeManager {
                     // Traitement récursif spécifique
                     settings.setPathToImport(file.getAbsolutePath());
                     settings.setFolderId(nodeDetail.getNodePK().getId());
-                    processImportRecursiveReplicate(reportManager, massiveReport, gedIE, pdcIE,
-                        settings);
+                    processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
+                        pdcImportExport, settings);
                   } catch (ImportExportException ex) {
                     massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
                   }

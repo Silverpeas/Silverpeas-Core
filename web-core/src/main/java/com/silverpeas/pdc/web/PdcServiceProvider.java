@@ -25,7 +25,7 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -56,7 +56,7 @@ import static com.silverpeas.pdc.web.UserThesaurusHolder.forUser;
 public class PdcServiceProvider {
 
   @Inject
-  private PdcBm pdcBm;
+  private PdcManager pdcManager;
   @Inject
   private ThesaurusManager thesaurusManager;
   @Inject
@@ -102,7 +102,7 @@ public class PdcServiceProvider {
   public void addPosition(final ClassifyPosition position, String contentId, String componentId)
       throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
-    int positionId = getPdcBm().addPosition(silverObjectId, position, componentId);
+    int positionId = getPdcManager().addPosition(silverObjectId, position, componentId);
     position.setPositionId(positionId);
   }
 
@@ -121,7 +121,7 @@ public class PdcServiceProvider {
   public void updatePosition(final ClassifyPosition position, String contentId, String componentId)
       throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
-    getPdcBm().updatePosition(position, componentId, silverObjectId);
+    getPdcManager().updatePosition(position, componentId, silverObjectId);
   }
 
   /**
@@ -146,7 +146,7 @@ public class PdcServiceProvider {
         }
       }
     }
-    getPdcBm().deletePosition(positionId, componentId);
+    getPdcManager().deletePosition(positionId, componentId);
   }
 
   /**
@@ -163,7 +163,7 @@ public class PdcServiceProvider {
   public List<ClassifyPosition> getAllPositions(String contentId, String componentId) throws
       ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
-    return getPdcBm().getPositions(silverObjectId, componentId);
+    return getPdcManager().getPositions(silverObjectId, componentId);
   }
 
   /**
@@ -236,7 +236,7 @@ public class PdcServiceProvider {
   public List<UsedAxis> getAxisUsedInPdcToClassify(String contentId, String inComponentId)
       throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, inComponentId);
-    return getPdcBm().getUsedAxisToClassify(inComponentId, silverObjectId);
+    return getPdcManager().getUsedAxisToClassify(inComponentId, silverObjectId);
   }
 
   /**
@@ -247,7 +247,7 @@ public class PdcServiceProvider {
    * @throws PdcException if the axis cannot be fetched.
    */
   public List<UsedAxis> getAxisUsedInPdcFor(String componentId) throws PdcException {
-    return getPdcBm().getUsedAxisToClassify(componentId, -1);
+    return getPdcManager().getUsedAxisToClassify(componentId, -1);
   }
 
   /**
@@ -257,7 +257,7 @@ public class PdcServiceProvider {
    * @return a UserThesaurusHolder instance.
    */
   public UserThesaurusHolder getThesaurusOfUser(final UserDetail user) {
-    return UserThesaurusHolder.holdThesaurus(getThesaurusManager(), forUser(user));
+    return UserThesaurusHolder.holdThesaurus(forUser(user));
   }
 
   /**
@@ -284,12 +284,12 @@ public class PdcServiceProvider {
     List<String> availableComponents = getOrganisationController().
         getSearchableComponentsByCriteria(searchCriteria);
 
-    List<AxisHeader> allAxis = getPdcBm().getAxisByType(PdcBm.PRIMARY_AXIS);
+    List<AxisHeader> allAxis = getPdcManager().getAxisByType(PdcManager.PRIMARY_AXIS);
     List<UsedAxis> filteredAxis = filterAxis(allAxis, searchContext, availableComponents);
     usedAxis.addAll(filteredAxis);
 
     if (criteria.hasSecondaryAxisToBeIncluded()) {
-      allAxis = getPdcBm().getAxisByType(PdcBm.SECONDARY_AXIS);
+      allAxis = getPdcManager().getAxisByType(PdcManager.SECONDARY_AXIS);
       filteredAxis = filterAxis(allAxis, searchContext, availableComponents);
       usedAxis.addAll(filteredAxis);
     }
@@ -304,17 +304,17 @@ public class PdcServiceProvider {
    */
   public List<Axis> getAllAxis() throws PdcException {
     List<Axis> pdcAxis = new ArrayList<Axis>();
-    List<AxisHeader> headers = getPdcBm().getAxis();
+    List<AxisHeader> headers = getPdcManager().getAxis();
     for (AxisHeader aHeader : headers) {
-      String treeId = getPdcBm().getTreeId(aHeader.getPK().getId());
-      List<Value> values = getPdcBm().getAxisValues(Integer.valueOf(treeId));
+      String treeId = getPdcManager().getTreeId(aHeader.getPK().getId());
+      List<Value> values = getPdcManager().getAxisValues(Integer.valueOf(treeId));
       pdcAxis.add(new Axis(aHeader, values));
     }
     return pdcAxis;
   }
 
-  private PdcBm getPdcBm() {
-    return this.pdcBm;
+  private PdcManager getPdcManager() {
+    return this.pdcManager;
   }
 
   private ContentManager getContentManager() {
@@ -354,7 +354,7 @@ public class PdcServiceProvider {
     axis._setAxisType(axisHeader.getAxisType());
     axis._setBaseValueName(axisHeader.getName());
     axis._setAxisRootId(Integer.parseInt(
-        getPdcBm().getRoot(axisHeader.getPK().getId()).getValuePK().getId()));
+        getPdcManager().getRoot(axisHeader.getPK().getId()).getValuePK().getId()));
     axis._setAxisValues(values);
     return axis;
   }
@@ -363,7 +363,7 @@ public class PdcServiceProvider {
       SearchContext searchContext, List<String> availableComponents) throws PdcException {
     List<UsedAxis> filteredAxis = new ArrayList<UsedAxis>();
     for (AxisHeader axisHeader : axisHeaders) {
-      List<Value> values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
+      List<Value> values = getPdcManager().getPertinentDaughterValuesByInstanceIds(
           searchContext, axisHeader.getPK().getId(), "0", availableComponents);
       if (values != null && !values.isEmpty()) {
         UsedAxis usedAxis = createUsedAxis(axisHeader, values);

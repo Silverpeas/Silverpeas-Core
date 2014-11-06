@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
-import com.silverpeas.interestCenter.ejb.InterestCenterBm;
+import com.silverpeas.interestCenter.control.InterestCenterService;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -36,7 +36,7 @@ import org.silverpeas.util.JNDINames;
 
 public class InterestCenterSessionController extends AbstractComponentSessionController {
 
-  private InterestCenterBm icEjb = null;
+  private InterestCenterService icEjb = null;
 
   /**
    * Constructor Creates new InterestCenter Session Controller
@@ -55,7 +55,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
     if (icEjb == null) {
       try {
         icEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-            InterestCenterBm.class);
+            InterestCenterService.class);
       } catch (Exception e) {
         throw new InterestCenterRuntimeException("InterestCenterSessionController.initEJB()", "",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);

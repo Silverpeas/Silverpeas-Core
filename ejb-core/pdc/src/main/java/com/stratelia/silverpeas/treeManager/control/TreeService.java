@@ -30,7 +30,7 @@ import java.sql.Connection;
 import com.stratelia.silverpeas.treeManager.model.*;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 
-public interface TreeBm {
+public interface TreeService {
 
   public String createRoot(Connection con, TreeNode root)
       throws TreeManagerException;

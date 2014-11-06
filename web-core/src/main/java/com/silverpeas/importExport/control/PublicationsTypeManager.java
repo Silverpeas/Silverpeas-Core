@@ -97,6 +97,8 @@ public class PublicationsTypeManager {
   private CoordinateImportExport coordinateImportExport;
   @Inject
   private NodeImportExport nodeImportExport;
+  @Inject
+  private PdcImportExport pdcImportExport;
 
   protected PublicationsTypeManager() {
 
@@ -122,8 +124,7 @@ public class PublicationsTypeManager {
       boolean bExportPublicationPath, NodePK rootPK) throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     PublicationsType publicationsType = new PublicationsType();
-    List<PublicationType> listPubType = new ArrayList<PublicationType>();
-    PdcImportExport pdc_impExp = new PdcImportExport();
+    List<PublicationType> listPubType = new ArrayList<>();
     String wysiwygText = null;
 
     SilverTrace
@@ -201,7 +202,7 @@ public class PublicationsTypeManager {
       }
       exportAttachments(attachmentIE, publicationType, publicationDetail.getPK(),
           exportPublicationRelativePath, exportPublicationPath);
-      exportPdc(pdc_impExp, publicationDetail.getPK(), gedIE, publicationType);
+      exportPdc(pdcImportExport, publicationDetail.getPK(), gedIE, publicationType);
       int nbThemes = 1;
       if (!gedIE.isKmax()) {
         nbThemes = getNbThemes(gedIE, publicationType, rootPK);
@@ -582,7 +583,6 @@ public class PublicationsTypeManager {
     GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(settings.getUser(), settings
         .getComponentId());
     AttachmentImportExport attachmentIE = new AttachmentImportExport(gedIE.getCurentUserDetail());
-    PdcImportExport pdcIE = new PdcImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
 
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
@@ -852,20 +852,21 @@ public class PublicationsTypeManager {
 
                 // Ajout au plan de classement s'il y en a
                 if (pubType.getPdcPositionsType() != null) {
-                  boolean pdcOK = pdcIE
+                  boolean pdcOK = pdcImportExport
                       .addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
                   if (!pdcOK) {
                     unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
                   }
                 }
 
-                List<ClassifyPosition> positions = pdcIE.getPositions(silverObjectId, componentId);
+                List<ClassifyPosition> positions =
+                    pdcImportExport.getPositions(silverObjectId, componentId);
                 if (positions == null) {
                   // La publication n'est pas classée sur le PDC
                   // Si le mode brouillon est activé et que le classement est obligatoire, la
                   // publication passe en mode "Draft"
-                  if (pdcIE.isClassifyingMandatory(componentId) && ImportExportHelper.isDraftUsed(
-                      componentInst)) {
+                  if (pdcImportExport.isClassifyingMandatory(componentId) &&
+                      ImportExportHelper.isDraftUsed(componentInst)) {
                     gedIE.publicationNotClassifiedOnPDC(pubDetail.getId());
                   }
                 }

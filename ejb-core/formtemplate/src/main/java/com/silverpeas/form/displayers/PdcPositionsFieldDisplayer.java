@@ -33,8 +33,8 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.TextField;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -60,14 +60,14 @@ import java.util.Map;
  */
 public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
-  private PdcBm pdcBm = null;
+  private PdcManager pdcManager = null;
   private ContentManager contentManager = null;
 
   /**
    * Constructor uses for test purpose only
    */
-  public PdcPositionsFieldDisplayer(PdcBm pdcBm, ContentManager contentManager) {
-    this.pdcBm = pdcBm;
+  public PdcPositionsFieldDisplayer(PdcManager pdcManager, ContentManager contentManager) {
+    this.pdcManager = pdcManager;
     this.contentManager = contentManager;
   }
 
@@ -129,7 +129,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
         int silverContentId =
             contentManager.getSilverContentId(context.getObjectId(), context.getComponentId());
         List<ClassifyPosition> positions =
-            getPdcBm().getPositions(silverContentId, context.getComponentId());
+            getPdcManager().getPositions(silverContentId, context.getComponentId());
 
         ElementContainer result = new ElementContainer();
         Table positionsTables = new Table();
@@ -141,7 +141,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
             valueId = valueId.substring(valueId.lastIndexOf('/') + 1, valueId.length());
             TR row = new TR();
             TD cell = new TD();
-            Value value = getPdcBm().getValue(axisId, valueId);
+            Value value = getPdcManager().getValue(axisId, valueId);
             cell.addElement(value.getName(language));
             row.addElement(cell);
             positionsTables.addElement(row);
@@ -191,11 +191,11 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
     return 1;
   }
 
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
+  private PdcManager getPdcManager() {
+    if (pdcManager == null) {
+      pdcManager = new GlobalPdcManager();
     }
-    return pdcBm;
+    return pdcManager;
   }
 
 }

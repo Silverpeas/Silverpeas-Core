@@ -24,6 +24,9 @@ import java.util.List;
 
 import com.silverpeas.thesaurus.model.Synonym;
 
+import javax.ejb.Remote;
+
+@Remote
 public interface ThesaurusBm {
 
   /**
@@ -40,7 +43,6 @@ public interface ThesaurusBm {
    * Retourne les synonymes de toutes les valeurs d'un axe pour un vocabulaire donne
    *
    * @param idTree
-   * @param idTerm
    * @param idVoca
    * @return une liste de Synonym
    */

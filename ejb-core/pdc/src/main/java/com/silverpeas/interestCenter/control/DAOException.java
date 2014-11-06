@@ -22,36 +22,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.pdc.ejb;
+/*
+ * Aliaksei_Budnikau
+ * Date: Oct 14, 2002
+ */
+package com.silverpeas.interestCenter.control;
 
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.SilverpeasException;
 
-public class PdcBmRuntimeException extends SilverpeasRuntimeException {
+public class DAOException extends SilverpeasException {
 
-  private static final long serialVersionUID = 6109210792330849912L;
+  private static final long serialVersionUID = 295595784957874204L;
 
-  public PdcBmRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public DAOException(String callingClass, String message) {
+    super(callingClass, ERROR, message);
   }
 
-  public PdcBmRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public DAOException(String callingClass, String message, String extraParams) {
+    super(callingClass, ERROR, message, extraParams);
   }
 
-  public PdcBmRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public DAOException(String callingClass, String message, Exception nested) {
+    super(callingClass, ERROR, message, nested);
   }
 
-  public PdcBmRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public DAOException(String callingClass, String message, String extraParams,
+      Exception nested) {
+    super(callingClass, ERROR, message, extraParams, nested);
   }
 
+  @Override
   public String getModule() {
-    return "pdc";
+    return "InterestCenter";
   }
 
 }

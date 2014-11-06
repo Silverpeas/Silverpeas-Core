@@ -32,7 +32,7 @@ import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -77,7 +77,7 @@ public class PdcTestResources extends TestResources {
    *
    * @return a PdcBm object.
    */
-  public PdcBm getPdcService() {
+  public PdcManager getPdcService() {
     return this.pdcBmMock;
   }
 

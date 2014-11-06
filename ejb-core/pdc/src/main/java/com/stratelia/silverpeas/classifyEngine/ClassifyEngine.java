@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.JoinStatement;
@@ -32,6 +33,10 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -47,29 +52,34 @@ import java.util.concurrent.ConcurrentHashMap;
  * unclassifying and searching SilverObjetIds Assumption : The SilverObjetIds processed are int
  * values from 0 to n The axis processed are int values from 0 to n
  */
-public class ClassifyEngine implements Cloneable {
+@Singleton
+@Transactional
+public class ClassifyEngine {
   // Maximum number of axis processed by the classifyEngine (from properties)
-
-  static private int nbMaxAxis = 0;
+  private int nbMaxAxis = 0;
   // Helper object to build all the SQL statements
-  private static SQLStatement SQLStatement = new SQLStatement();
+  private SQLStatement SQLStatement = new SQLStatement();
   // Registered axis cache
-  static private int[] registeredAxis = null;
+  private int[] registeredAxis = null;
   // GetSinglePertinentAxis Cache
-  static private Map<String, PertinentAxis> m_hSinglePertinentAxis =
+  private Map<String, PertinentAxis> m_hSinglePertinentAxis =
       new ConcurrentHashMap<String, PertinentAxis>(0);
 
-  // Init Function
-  static {
+  private static ClassifyEngine getInstance() {
+    return ServiceProvider.getService(ClassifyEngine.class);
+  }
+
+  @PostConstruct
+  protected void init() {
     // Get the maximum number of axis that the classifyEngine can handle
     ResourceLocator res = new ResourceLocator(
-        "com.stratelia.silverpeas.classifyEngine.ClassifyEngine", "");
+        "org.silverpeas.classifyEngine.ClassifyEngine", "");
     String sMaxAxis = res.getString("MaxAxis");
     nbMaxAxis = Integer.parseInt(sMaxAxis);
     try {
       registeredAxis = loadRegisteredAxis();
     } catch (ClassifyEngineException e) {
-      SilverTrace.error("classifyEngine", "ClassifyEngine.initStatic",
+      SilverTrace.error("classifyEngine", "ClassifyEngine.init()",
           "root.EX_CLASS_NOT_INITIALIZED",
           "registeredAxis initialization failed !", e);
     }
@@ -77,17 +87,17 @@ public class ClassifyEngine implements Cloneable {
 
   // Return the maximum number of supported axis
   static public int getMaxAxis() {
-    return nbMaxAxis;
+    return getInstance().nbMaxAxis;
   }
 
   /*
    * Constructor
    */
-  public ClassifyEngine() {
+  protected ClassifyEngine() {
   }
 
   static public void clearCache() {
-    m_hSinglePertinentAxis.clear();
+    getInstance().m_hSinglePertinentAxis.clear();
   }
 
   /*
@@ -188,7 +198,7 @@ public class ClassifyEngine implements Cloneable {
   }
 
   // Load the registered axis
-  private static int[] loadRegisteredAxis() throws ClassifyEngineException {
+  private int[] loadRegisteredAxis() throws ClassifyEngineException {
     Connection connection = null;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;

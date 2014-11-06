@@ -24,6 +24,16 @@
 
 package com.stratelia.silverpeas.contentManager;
 
+import com.stratelia.silverpeas.containerManager.ContainerManager;
+import com.stratelia.silverpeas.containerManager.URLIcone;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.JoinStatement;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,17 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import javax.inject.Named;
-
-import com.stratelia.silverpeas.containerManager.ContainerManager;
-import com.stratelia.silverpeas.containerManager.URLIcone;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.JoinStatement;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
@@ -130,13 +129,8 @@ public class ContentManager implements Serializable {
   // Container manager
   private ContainerManager m_containerManager = null;
 
-  public ContentManager() throws ContentManagerException {
-    try {
-      m_containerManager = new ContainerManager();
-    } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.ContentManager", SilverpeasException.ERROR,
-          "contentManager.EX_CANT_INSTANCIATE_CONTAINERMANAGER", "", e);
-    }
+  public ContentManager() {
+    m_containerManager = new ContainerManager();
   }
 
   /**

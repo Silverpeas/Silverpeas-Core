@@ -50,7 +50,7 @@ public class TreeI18NDAO {
    * Constructor declaration
    * @see
    */
-  public TreeI18NDAO() {
+  protected TreeI18NDAO() {
 
   }
 

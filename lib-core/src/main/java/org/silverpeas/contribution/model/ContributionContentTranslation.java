@@ -21,9 +21,11 @@
 
 package org.silverpeas.contribution.model;
 
+import org.silverpeas.core.Translation;
+
 /**
  * Translation of a contribution's content in a given language.
  * @author mmoquillon
  */
-public interface ContributionContentTranslation<T> extends ContributionContent<T>, Translation{
+public interface ContributionContentTranslation<T> extends ContributionContent<T>, Translation {
 }

@@ -21,8 +21,7 @@
 
 package org.silverpeas.contribution.model;
 
-import org.silverpeas.contribution.model.Contribution;
-import org.silverpeas.contribution.model.Translation;
+import org.silverpeas.core.Translation;
 
 /**
  * A translation of a i18n contribution. Any classes representing the translation of a i18n

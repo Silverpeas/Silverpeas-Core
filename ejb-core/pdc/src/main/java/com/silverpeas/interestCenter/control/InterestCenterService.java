@@ -19,7 +19,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.interestCenter.ejb;
+package com.silverpeas.interestCenter.control;
 
 import java.util.List;
 
@@ -28,10 +28,9 @@ import javax.ejb.Local;
 import com.silverpeas.interestCenter.model.InterestCenter;
 
 /**
- * InterestCenterBm remote inteface
+ * Transverse business service on the interest centers of users.
  */
-@Local
-public interface InterestCenterBm {
+public interface InterestCenterService {
 
   /**
    * @param userID

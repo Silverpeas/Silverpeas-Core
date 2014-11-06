@@ -45,21 +45,30 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Class declaration
  *
  * @author
  */
-public class PdcUtilizationBmImpl implements PdcUtilizationBm {
+@Singleton
+public class DefaultPdcUtilizationService implements PdcUtilizationService {
+
+  @Inject
+  private ClassifyEngine classifyEngine;
 
   /**
    * SilverpeasBeanDAO is the main link with the SilverPeas persitence. We indicate the Object
    * SilverPeas which map the database.
    */
   private SilverpeasBeanDAO<UsedAxis> dao = null;
-  private PdcUtilizationDAO utilizationDAO = new PdcUtilizationDAO();
 
-  public PdcUtilizationBmImpl() {
+  @Inject
+  private PdcUtilizationDAO utilizationDAO;
+
+  protected DefaultPdcUtilizationService() {
     try {
       dao = SilverpeasBeanDAOFactory.getDAO("com.stratelia.silverpeas.pdc.model.UsedAxis");
     } catch (PersistenceException exce_DAO) {
@@ -134,7 +143,6 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
     Connection con = null;
     try {
-      ClassifyEngine classifyEngine = new ClassifyEngine();
       List<Integer> ids = classifyEngine.getPertinentAxisByInstanceIds(instanceIds);
 
       if (ids == null || ids.isEmpty()) {
@@ -355,7 +363,6 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
   /**
    * Update a base value from the PdcUtilizationDAO
    *
-   * @param valueId - the base value that must be updated
    */
   private void updateBaseValue(Connection con, int oldBaseValue,
       int newBaseValue, int axisId, String treeId, String instanceId)

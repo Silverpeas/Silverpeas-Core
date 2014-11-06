@@ -25,9 +25,25 @@ import com.silverpeas.importExport.report.ImportReport;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 
+import javax.inject.Inject;
+
 public class MassiveDocumentImport {
+
+  @Inject
+  private PdcImportExport pdcImportExport;
+  @Inject
+  private RepositoriesTypeManager repositoriesTypeManager;
+
+  public static MassiveDocumentImport getInstance() {
+    return ServiceProvider.getService(MassiveDocumentImport.class);
+  }
+
+  protected MassiveDocumentImport() {
+
+  }
 
   /**
    * @param importSettings
@@ -39,16 +55,14 @@ public class MassiveDocumentImport {
       MassiveReport massiveReport) throws ImportExportException {
     ImportReportManager reportManager = new ImportReportManager();
     try {
-      PdcImportExport pdcIE = new PdcImportExport();
       massiveReport.setRepositoryPath(importSettings.getPathToImport());
       reportManager.addMassiveReport(massiveReport, importSettings.getComponentId());
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(importSettings.getUser(),
           importSettings.getComponentId());
-      RepositoriesTypeManager rtm = new RepositoriesTypeManager();
       importSettings.setVersioningUsed(ImportExportHelper.isVersioningUsed(importSettings
           .getComponentId()));
-      rtm.processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
-          pdcIE, importSettings);
+      repositoriesTypeManager.processImportRecursiveReplicate(reportManager, massiveReport, gedIE,
+          pdcImportExport, importSettings);
       reportManager.reportImportEnd();
     } finally {
       FileFolderManager.deleteFolder(importSettings.getPathToImport());

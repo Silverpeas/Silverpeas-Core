@@ -25,11 +25,13 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Synonym;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "Thesaurus", description = "Stateless EJB to access the thesaurus.")
@@ -37,22 +39,18 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 public class ThesaurusBmEJB implements ThesaurusBm {
 
   private static final long serialVersionUID = 1L;
-  private ThesaurusManager thesaurus = null;
-
-  public ThesaurusManager getThesaurus() {
-    if (thesaurus == null) {
-      thesaurus = new ThesaurusManager();
-    }
-    return thesaurus;
-  }
 
   public ThesaurusBmEJB() {
+  }
+
+  protected ThesaurusManager getThesaurusManager() {
+    return ServiceProvider.getService(ThesaurusManager.class);
   }
 
   @Override
   public List<String> getSynonyms(long idTree, long idTerm, long idVoca) {
     try {
-      return (List<String>) getThesaurus().getSynonyms(idTree, idTerm, idVoca);
+      return (List<String>) getThesaurusManager().getSynonyms(idTree, idTerm, idVoca);
     } catch (ThesaurusException e) {
       throw new ThesaurusBmRuntimeException("ThesaurusBmEJB.getSynonyms",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "idTree = " + idTree
@@ -63,7 +61,7 @@ public class ThesaurusBmEJB implements ThesaurusBm {
   @Override
   public List<Synonym> getSynonymsByTree(long idTree, long idVoca) {
     try {
-      return (List<Synonym>) getThesaurus().getSynonymsByTree(idTree, idVoca);
+      return (List<Synonym>) getThesaurusManager().getSynonymsByTree(idTree, idVoca);
     } catch (ThesaurusException e) {
       throw new ThesaurusBmRuntimeException("ThesaurusBmEJB.getSynonymsByTree",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "idTree = " + idTree

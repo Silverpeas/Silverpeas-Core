@@ -23,7 +23,7 @@
  * Aliaksei_Budnikau
  * Date: Oct 24, 2002
  */
-package com.silverpeas.pdcSubscription.ejb;
+package com.silverpeas.pdcSubscription.control;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;

@@ -53,7 +53,7 @@ public class PdcUtilizationDAO {
    * Constructor declaration
    * @see
    */
-  public PdcUtilizationDAO() {
+  protected PdcUtilizationDAO() {
   }
 
   /**

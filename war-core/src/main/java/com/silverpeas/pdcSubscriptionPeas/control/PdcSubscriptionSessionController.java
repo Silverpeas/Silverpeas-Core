@@ -21,7 +21,7 @@
 package com.silverpeas.pdcSubscriptionPeas.control;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
+import com.silverpeas.pdcSubscription.control.PdcSubscriptionService;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -30,17 +30,16 @@ import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
@@ -59,8 +58,6 @@ import org.silverpeas.subscription.bean.NodeSubscriptionBean;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
-  private PdcSubscriptionBm scBm = null;
-  private PdcBm pdcBm = null;
   private PDCSubscription currentPDCSubscription = null;
 
   /**
@@ -76,26 +73,12 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
         "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
   }
 
-  /**
-   * Method initEJB initializes EJB
-   */
-  private void initEJB() {
-    if (scBm == null) {
-      try {
-        scBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME,
-            PdcSubscriptionBm.class);
-      } catch (Exception e) {
-        throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
-            SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
+  private PdcSubscriptionService getPdcSubscriptionService() {
+    return ServiceProvider.getService(PdcSubscriptionService.class);
   }
 
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = new PdcBmImpl();
-    }
-    return pdcBm;
+  private PdcManager getPdcBm() {
+    return ServiceProvider.getService(PdcManager.class);
   }
 
   private SubscriptionService getSubscribeService() {
@@ -190,39 +173,32 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public List<PDCSubscription> getUserPDCSubscription() throws RemoteException {
-    initEJB();
-    return scBm.getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
+    return getPdcSubscriptionService().getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
   }
 
   public List<PDCSubscription> getUserPDCSubscription(int userId) throws RemoteException {
-    initEJB();
-    return scBm.getPDCSubscriptionByUserId(userId);
+    return getPdcSubscriptionService().getPDCSubscriptionByUserId(userId);
   }
 
   public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException {
-    initEJB();
-    return scBm.getPDCSubsriptionById(id);
+    return getPdcSubscriptionService().getPDCSubsriptionById(id);
   }
 
   public void createPDCSubscription(PDCSubscription subscription)
       throws RemoteException {
-    initEJB();
-    subscription.setId(scBm.createPDCSubscription(subscription));
+    subscription.setId(getPdcSubscriptionService().createPDCSubscription(subscription));
   }
 
   public void updatePDCSubscription(PDCSubscription subscription) throws RemoteException {
-    initEJB();
-    scBm.updatePDCSubscription(subscription);
+    getPdcSubscriptionService().updatePDCSubscription(subscription);
   }
 
   public void removePDCSubscriptionById(int id) throws RemoteException {
-    initEJB();
-    scBm.removePDCSubscriptionById(id);
+    getPdcSubscriptionService().removePDCSubscriptionById(id);
   }
 
   public void removeICByPK(int[] ids) throws RemoteException {
-    initEJB();
-    scBm.removePDCSubscriptionById(ids);
+    getPdcSubscriptionService().removePDCSubscriptionById(ids);
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {
@@ -274,9 +250,6 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   @Override
   public void close() {
-    if (scBm != null) {
-      scBm = null;
-    }
   }
 
   public PDCSubscription getCurrentPDCSubscription() {

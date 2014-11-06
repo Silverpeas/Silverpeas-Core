@@ -30,7 +30,7 @@ import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
@@ -40,7 +40,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
@@ -53,7 +53,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * or some positions on the PdC.
  */
 @Transactional
-@Named("pdcClassificationService")
+@Singleton
 public class DefaultPdcClassificationService implements PdcClassificationService {
 
   @Inject
@@ -61,7 +61,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
   @Inject
   private PdcAxisValueRepository valueRepository;
   @Inject
-  private PdcBm pdcBm;
+  private PdcManager pdcManager;
   @Inject
   private NodeService nodeService;
 
@@ -245,17 +245,17 @@ public class DefaultPdcClassificationService implements PdcClassificationService
     List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
     try {
       int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
-      List<ClassifyPosition> existingPositions = pdcBm.getPositions(silverObjectId, content.
+      List<ClassifyPosition> existingPositions = pdcManager.getPositions(silverObjectId, content.
           getComponentInstanceId());
       for (ClassifyPosition aClassifyPosition : classifyPositions) {
-        int positionId = pdcBm.addPosition(silverObjectId, aClassifyPosition, content.
+        int positionId = pdcManager.addPosition(silverObjectId, aClassifyPosition, content.
             getComponentInstanceId(), alertSubscribers);
         aClassifyPosition.setPositionId(positionId);
       }
       if (!existingPositions.isEmpty()) {
         for (ClassifyPosition anExistingPosition : existingPositions) {
           if (!isFound(anExistingPosition, classifyPositions)) {
-            pdcBm.deletePosition(anExistingPosition.getPositionId(),
+            pdcManager.deletePosition(anExistingPosition.getPositionId(),
                 content.getComponentInstanceId());
           }
         }

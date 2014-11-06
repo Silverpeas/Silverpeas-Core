@@ -21,7 +21,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -81,7 +81,7 @@ public class PdcAxis {
   public static PdcAxis fromTheUsedAxis(final UsedAxis axis, String inLanguage,
       final UserThesaurusHolder withThesaurus) throws ThesaurusException {
     String andOriginValue = axis._getBaseValuePath() + axis.getBaseValue() + "/";
-    int axisType = (PdcBm.PRIMARY_AXIS.equals(axis._getAxisType()) ? PRIMARY_AXIS : SECONDARY_AXIS);
+    int axisType = (PdcManager.PRIMARY_AXIS.equals(axis._getAxisType()) ? PRIMARY_AXIS : SECONDARY_AXIS);
     List<PdcAxisValueEntity> theAxisValues =
         fromValues(axis._getAxisValues(), andOriginValue, inLanguage, withThesaurus);
     PdcAxis pdcAxis = new PdcAxis(axis.getAxisId(), axis._getAxisName(inLanguage)).
@@ -112,7 +112,7 @@ public class PdcAxis {
   public static PdcAxis fromTheAxis(final Axis axis, String inLanguage,
       final UserThesaurusHolder withThesaurus) throws ThesaurusException {
     String andOriginValue = "/0/";
-    int axisType = (PdcBm.PRIMARY_AXIS.equals(axis.getAxisHeader().getAxisType()) ? PRIMARY_AXIS
+    int axisType = (PdcManager.PRIMARY_AXIS.equals(axis.getAxisHeader().getAxisType()) ? PRIMARY_AXIS
         : SECONDARY_AXIS);
     List<PdcAxisValueEntity> theAxisValues =
         fromValues(axis.getValues(), andOriginValue, inLanguage, withThesaurus);

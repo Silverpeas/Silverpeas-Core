@@ -20,10 +20,6 @@
  */
 package com.stratelia.silverpeas.pdc.control;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngineException;
 import com.stratelia.silverpeas.classifyEngine.ObjectValuePair;
@@ -35,31 +31,32 @@ import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.exception.SilverpeasException;
 
-public class PdcClassifyBmImpl implements PdcClassifyBm {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
-  private ClassifyEngine classifyEngine = null;
+@Singleton
+public class DefaultPdcClassifyManager implements PdcClassifyManager {
+
+  @Inject
+  private ClassifyEngine classifyEngine;
   private ContainerManager containerManager = null;
-  private ContentManager contentManager = null;
-  private String m_dbName = JNDINames.PDC_DATASOURCE;
+  @Inject
+  private ContentManager contentManager;
 
-  public PdcClassifyBmImpl() {
-    try {
-      classifyEngine = new ClassifyEngine();
-      containerManager = new ContainerManager();
-      contentManager = new ContentManager();
-    } catch (ContentManagerException ex) {
-    }
+  protected DefaultPdcClassifyManager() {
+    containerManager = new ContainerManager();
   }
 
   @Override

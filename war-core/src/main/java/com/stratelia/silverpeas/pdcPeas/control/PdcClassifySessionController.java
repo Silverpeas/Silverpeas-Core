@@ -27,11 +27,11 @@ package com.stratelia.silverpeas.pdcPeas.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
@@ -47,10 +47,10 @@ import org.silverpeas.core.admin.OrganizationController;
 public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
   private List<String> currentSilverObjectIds = null;
-  private PdcBm pdcBm = null;
+  private PdcManager pdcManager = PdcServiceProvider.getPdcManager();
   private boolean sendSubscriptions = true;
 
-  private ThesaurusManager thesaurus = new ThesaurusManager();
+  private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
 
   // Positions manager in PDC field mode.
   private PdcFieldPositionsManager pdcFieldPositionsManager = new PdcFieldPositionsManager();
@@ -64,11 +64,8 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
   }
 
-  private PdcBm getPdcBm() {
-    if (pdcBm == null) {
-      pdcBm = (PdcBm) new PdcBmImpl();
-    }
-    return pdcBm;
+  private PdcManager getPdcManager() {
+    return pdcManager;
   }
 
   public void setCurrentSilverObjectId(String silverObjectId) {
@@ -123,7 +120,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.getUsedAxisList();
     } else {
-      return getPdcBm().getUsedAxisToClassify(getCurrentComponentId(), getCurrentSilverObjectId());
+      return getPdcManager().getUsedAxisToClassify(getCurrentComponentId(), getCurrentSilverObjectId());
     }
   }
 
@@ -135,13 +132,13 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
       } else {
         if (getCurrentSilverObjectId() != -1) {
           // classical classification = addPosition to one object
-          result = getPdcBm().addPosition(getCurrentSilverObjectId(), position,
+          result = getPdcManager().addPosition(getCurrentSilverObjectId(), position,
               getCurrentComponentId(), isSendSubscriptions());
         } else if (getCurrentSilverObjectIds() != null) {
           String silverObjectId = null;
           for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
             silverObjectId = (String) getCurrentSilverObjectIds().get(i);
-            getPdcBm().addPosition(Integer.parseInt(silverObjectId), position,
+            getPdcManager().addPosition(Integer.parseInt(silverObjectId), position,
                 getCurrentComponentId(), isSendSubscriptions());
           }
         }
@@ -159,7 +156,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.updatePosition(position);
     } else {
-      return getPdcBm().updatePosition(position, getCurrentComponentId(),
+      return getPdcManager().updatePosition(position, getCurrentComponentId(),
           getCurrentSilverObjectId(), isSendSubscriptions());
     }
   }
@@ -168,7 +165,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     if (pdcFieldPositionsManager.isEnabled()) {
       pdcFieldPositionsManager.deletePosition(positionId);
     } else {
-      getPdcBm().deletePosition(positionId, getCurrentComponentId());
+      getPdcManager().deletePosition(positionId, getCurrentComponentId());
     }
   }
 
@@ -180,7 +177,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.getPositions();
     } else {
-      return getPdcBm().getPositions(getCurrentSilverObjectId(), getCurrentComponentId());
+      return getPdcManager().getPositions(getCurrentSilverObjectId(), getCurrentComponentId());
     }
   }
 
@@ -188,7 +185,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     if (pdcFieldPositionsManager.isEnabled()) {
       return pdcFieldPositionsManager.getUsedAxisList();
     } else {
-      return getPdcBm().getUsedAxisByInstanceId(getCurrentComponentId());
+      return getPdcManager().getUsedAxisByInstanceId(getCurrentComponentId());
     }
   }
 

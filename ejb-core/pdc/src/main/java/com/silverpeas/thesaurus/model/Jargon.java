@@ -25,7 +25,7 @@
 package com.silverpeas.thesaurus.model;
 
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.thesaurus.control.ThesaurusBm;
+import com.silverpeas.thesaurus.control.ThesaurusService;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
@@ -43,7 +43,7 @@ public class Jargon extends SilverpeasBean {
   private int type; // 0=User, 1=Group
   private long idVoca;
   private String idUser;
-  private ThesaurusBm thesaurus = ThesaurusBm.getInstance();
+  private ThesaurusService thesaurus = ThesaurusService.getInstance();
 
   public Jargon() {
   }

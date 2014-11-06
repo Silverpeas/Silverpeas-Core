@@ -51,7 +51,7 @@
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 
-  <bean id="pdcServiceFactory" class="com.silverpeas.pdc.PdcServiceFactory" factory-method="getFactory"/>
+  <bean id="pdcServiceFactory" class="com.silverpeas.pdc.PdcServiceProvider" factory-method="getFactory"/>
 
   <jpa:repositories base-package="com.silverpeas.pdc.dao" transaction-manager-ref="jpaTransactionManager"/>
 

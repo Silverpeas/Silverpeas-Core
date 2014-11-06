@@ -50,7 +50,7 @@ public class AxisHeaderI18NDAO {
    * Constructor declaration
    * @see
    */
-  public AxisHeaderI18NDAO() {
+  protected AxisHeaderI18NDAO() {
 
   }
 

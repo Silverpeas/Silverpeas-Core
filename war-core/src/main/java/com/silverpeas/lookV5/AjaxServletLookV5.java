@@ -33,8 +33,8 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
+import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -565,7 +565,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     List<SearchAxis> primaryAxis = null;
     SearchContext searchContext = new SearchContext();
 
-    PdcBm pdc = new PdcBmImpl();
+    PdcManager pdc = new GlobalPdcManager();
 
     if (StringUtil.isDefined(componentId)) {
       // L'item courant est un composant
@@ -633,7 +633,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     searchContext.setUserId(userId);
 
     if (StringUtil.isDefined(axisId)) {
-      PdcBm pdc = new PdcBmImpl();
+      PdcManager pdc = new GlobalPdcManager();
 
       // TODO : some improvements can be made here !
       // daughters contains all pertinent values of axis instead of pertinent

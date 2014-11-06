@@ -36,7 +36,7 @@ public class TreeCache {
   private static Hashtable<String, List<TreeNode>> allTrees =
       new Hashtable<String, List<TreeNode>>();
 
-  public TreeCache() {
+  protected TreeCache() {
   }
 
   public static List<TreeNode> getTree(String treeId) {

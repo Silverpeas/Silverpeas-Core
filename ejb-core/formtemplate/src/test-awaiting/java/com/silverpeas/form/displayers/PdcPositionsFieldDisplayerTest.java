@@ -39,7 +39,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.TextField;
 
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -104,12 +104,12 @@ public class PdcPositionsFieldDisplayerTest {
     when(template.getParameters(LANGUAGE)).thenReturn(parameters);
 
     PagesContext pagesContext = mockPageContext();
-    PdcBm pdcBm = mockPdcBm();
+    PdcManager pdcManager = mockPdcBm();
 
     ContentManager contentManager = mock(ContentManager.class);
     when(contentManager.getSilverContentId(OBJECT_ID, COMPONENT_ID)).thenReturn(55);
 
-    PdcPositionsFieldDisplayer instance = new PdcPositionsFieldDisplayer(pdcBm, contentManager);
+    PdcPositionsFieldDisplayer instance = new PdcPositionsFieldDisplayer(pdcManager, contentManager);
     instance.display(printer, null, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
     assertNotNull(display);
@@ -129,12 +129,12 @@ public class PdcPositionsFieldDisplayerTest {
     when(template.getParameters(LANGUAGE)).thenReturn(emptyParameters);
 
     PagesContext pagesContext = mockPageContext();
-    PdcBm pdcBm = mockPdcBm();
+    PdcManager pdcManager = mockPdcBm();
 
     ContentManager contentManager = mock(ContentManager.class);
     when(contentManager.getSilverContentId(OBJECT_ID, COMPONENT_ID)).thenReturn(55);
 
-    PdcPositionsFieldDisplayer instance = new PdcPositionsFieldDisplayer(pdcBm, contentManager);
+    PdcPositionsFieldDisplayer instance = new PdcPositionsFieldDisplayer(pdcManager, contentManager);
     instance.display(printer, null, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
     assertNotNull(display);
@@ -171,7 +171,7 @@ public class PdcPositionsFieldDisplayerTest {
     return pagesContext;
   }
 
-  private PdcBm mockPdcBm() throws PdcException {
+  private PdcManager mockPdcBm() throws PdcException {
     ArrayList<ClassifyPosition> positions = buildPositions();
 
     Value value1 = mock(Value.class);
@@ -179,12 +179,12 @@ public class PdcPositionsFieldDisplayerTest {
     Value value2 = mock(Value.class);
     when(value1.getName()).thenReturn("géographie");
 
-    PdcBm pdcBm = mock(PdcBm.class);
-    when(pdcBm.getPositions(55, COMPONENT_ID)).thenReturn(positions);
-    when(pdcBm.getValue(AXIS_ID, "2")).thenReturn(value1);
-    when(pdcBm.getValue(AXIS_ID, "5")).thenReturn(value2);
+    PdcManager pdcManager = mock(PdcManager.class);
+    when(pdcManager.getPositions(55, COMPONENT_ID)).thenReturn(positions);
+    when(pdcManager.getValue(AXIS_ID, "2")).thenReturn(value1);
+    when(pdcManager.getValue(AXIS_ID, "5")).thenReturn(value2);
 
-    return pdcBm;
+    return pdcManager;
   }
 
   private ArrayList<ClassifyPosition> buildPositions() {
