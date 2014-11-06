@@ -24,64 +24,75 @@
 
 package com.silverpeas.directory.model;
 
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import java.util.Date;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
-/**
- * A user as a member of something (silverpeas?).
- * @deprecated use directly UserDetail
- */
-public class Member {
-
-  private UserDetail userDetail = null;
-
-  public boolean isConnected() {
-    return userDetail.isConnected();
+public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem {
+  
+  private UserDetail userDetail;
+  
+  public UserItem(UserDetail user) {
+    this.userDetail = user;
   }
 
-  public UserDetail getUserDetail() {
-    return userDetail;
+  @Override
+  public String getFirstName() {
+    return userDetail.getFirstName();
   }
 
-  public Member(UserDetail ud) {
-    userDetail = ud;
+  @Override
+  public String getLastName() {
+    return userDetail.getLastName();
   }
 
-  public UserAccessLevel getAccessLevel() {
-    return getUserDetail().getAccessLevel();
+  @Override
+  public String getAvatar() {
+    return userDetail.getAvatar();
   }
 
+  @Override
+  public DirectoryItem.ITEM_TYPE getType() {
+    return DirectoryItem.ITEM_TYPE.User;
+  }
+
+  @Override
+  public String getDomainId() {
+    return userDetail.getDomainId();
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return userDetail.getCreationDate();
+  }
+
+  @Override
+  public String getOriginalId() {
+    return userDetail.getId();
+  }
+  
+  public String getAccessLevel() {
+    return userDetail.getAccessLevel().code();
+  }
+  
+  @Override
   public String getMail() {
     return getUserDetail().geteMail();
   }
-
-  public String getFirstName() {
-    return getUserDetail().getFirstName();
-  }
-
-  public String getId() {
-    return getUserDetail().getId();
-  }
-
-  public String getLastName() {
-    return getUserDetail().getLastName();
-  }
-
-  public String getDuration() {
-    return getUserDetail().getDurationOfCurrentSession();
-  }
-
-  public boolean isRelationOrInvitation(String myId) {
-    return getUserDetail().isARelationOrInvitation(myId);
-  }
-
-  public String getStatus() {
-    if (!StringUtil.isDefined(userDetail.getStatus())) {
-      return null;
+  
+  @Override
+  public String getPhone() {
+    UserFull uf = UserFull.getById(getOriginalId());
+    if (uf != null && StringUtil.isDefined(uf.getValue("phone"))) {
+      return uf.getValue("phone");
     }
-    return userDetail.getStatus();
+    return null;
+  }
+  
+  public UserDetail getUserDetail() {
+    return userDetail;
   }
 
 }

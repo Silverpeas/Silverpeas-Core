@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.util.contact.control;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.ejb.Local;
 
@@ -110,8 +111,7 @@ public interface ContactBm {
   public void deleteOrphanContactsByCreatorId(ContactPK pubPK, String creatorId);
 
   public Collection<ContactDetail> getUnavailableContactsByPublisherId(ContactPK pubPK,
-      String publisherId,
-      String nodeId);
+      String publisherId, String nodeId);
 
   /**
    * getAllFatherPK() return a collection, containing all node primary key from where the contact is
@@ -138,6 +138,8 @@ public interface ContactBm {
       String firstName);
 
   public void createInfoModel(ContactPK pubPK, String modelId);
+  
+  public CompleteContact getCompleteContact(ContactPK pubPK);
 
   public CompleteContact getCompleteContact(ContactPK pubPK, String modelId);
 
@@ -149,4 +151,11 @@ public interface ContactBm {
       ContactPK pubPK, NodePK nodePK);
 
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
+  
+  public List<CompleteContact> getVisibleContacts(String instanceId);
+  
+  public void index(ContactPK pk);
+  
+  public void deleteIndex(ContactPK pk);
+
 }

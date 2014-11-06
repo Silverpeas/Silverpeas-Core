@@ -86,7 +86,7 @@ public class ContactBmEJB implements ContactBm {
       
       if (contact instanceof CompleteContact) {
         CompleteContact fullContact = (CompleteContact) contact;
-        fullContact.saveForm("fr");
+        fullContact.saveForm();
         createInfoModel(contact.getPK(), fullContact.getModelId());
       }
       
@@ -138,7 +138,7 @@ public class ContactBmEJB implements ContactBm {
       
       if (contact instanceof CompleteContact) {
         CompleteContact fullContact = (CompleteContact) contact;
-        fullContact.saveForm("fr");
+        fullContact.saveForm();
       }
       
       createIndex(contact);
@@ -382,6 +382,26 @@ public class ContactBmEJB implements ContactBm {
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
     }
   }
+  
+  @Override
+  public CompleteContact getCompleteContact(ContactPK pubPK) {
+    Connection con = getConnection();
+    try {
+      // get detail
+      ContactDetail contact = getDetail(pubPK);
+      List<String> modelIds = InfoDAO.getInfo(con, pubPK);
+      String modelId = null;
+      if (modelIds != null && !modelIds.isEmpty()) {
+        modelId = modelIds.get(0);
+      }
+      return new CompleteContact(contact, modelId);
+    } catch (Exception re) {
+      throw new ContactRuntimeException("ContactBmEJB.getCompleteContact()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
   @Override
   public Collection<ContactDetail> getContacts(Collection<ContactPK> contactPKs) {
@@ -436,6 +456,19 @@ public class ContactBmEJB implements ContactBm {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public List<CompleteContact> getVisibleContacts(String instanceId) {
+    Connection con = getConnection();
+    try {
+      return ContactDAO.getVisibleContacts(con, instanceId);
+    } catch (Exception re) {
+      throw new ContactRuntimeException("ContactBmEJB.getVisibleContacts()",
+          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
   private Connection getConnection() {
     try {
@@ -444,6 +477,11 @@ public class ContactBmEJB implements ContactBm {
       throw new ContactRuntimeException("ContactBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);
     }
+  }
+  
+  public void index(ContactPK pk) {
+    CompleteContact contact = getCompleteContact(pk);
+    createIndex(contact);
   }
 
   /**
@@ -476,7 +514,7 @@ public class ContactBmEJB implements ContactBm {
   /**
    * Called on : - deleteContact()
    */
-  private void deleteIndex(ContactPK pubPK) {
+  public void deleteIndex(ContactPK pubPK) {
     IndexEntryPK indexEntry = new IndexEntryPK(pubPK.getComponentName(),
         "Contact", pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
