@@ -39,16 +39,11 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
 
   private static final long serialVersionUID = -1169335280661356348L;
   static public DataFlavor PublicationDetailFlavor;
-  static public DataFlavor CompletePublicationFlavor;
   static {
     try {
       PublicationDetailFlavor = new DataFlavor(
           Class
           .forName("com.stratelia.webactiv.publication.model.PublicationDetail"),
-          "Publication");
-      CompletePublicationFlavor = new DataFlavor(
-          Class
-          .forName("com.stratelia.webactiv.publication.model.CompletePublication"),
           "Publication");
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
@@ -65,11 +60,6 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
     super();
     m_pub = pub;
     super.addFlavor(PublicationDetailFlavor);
-    super.addFlavor(CompletePublicationFlavor);
-  }
-
-  public PublicationSelection(CompletePublication pub) {
-    this(pub.getPublicationDetail());
   }
 
   /**
