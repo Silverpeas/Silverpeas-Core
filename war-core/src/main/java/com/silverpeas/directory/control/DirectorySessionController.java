@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.silverpeas.util.viewGenerator.html.ImageTag;
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -251,7 +251,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addSpaceComponentPair(null, "users");
     try {
-      List<MatchingIndexEntry> plainSearchResults = SearchEngineFactory.getSearchEngine().search(
+      List<MatchingIndexEntry> plainSearchResults = SearchEngineProvider.getSearchEngine().search(
           queryDescription).getEntries();
       
       if (plainSearchResults != null && !plainSearchResults.isEmpty()) {

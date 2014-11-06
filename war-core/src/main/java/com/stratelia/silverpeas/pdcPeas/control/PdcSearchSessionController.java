@@ -38,6 +38,7 @@ import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.stratelia.webactiv.statistic.control.StatisticService;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.util.*;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
@@ -104,7 +105,6 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.PlainSearchResult;
-import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
@@ -437,7 +437,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String originalQuery = query.getQuery();
         query.setQuery(getSynonymsQueryString(originalQuery));
 
-        PlainSearchResult searchResult = SearchEngineFactory.getSearchEngine().search(query);
+        PlainSearchResult searchResult = SearchEngineProvider.getSearchEngine().search(query);
         plainSearchResults = searchResult.getEntries().toArray(new MatchingIndexEntry[searchResult.
             getEntries().size()]);
         // spelling words
@@ -2069,7 +2069,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       QueryDescription queryDescription = new QueryDescription(query);
       queryDescription.addSpaceComponentPair("transverse", "pdc");
       try {
-        PlainSearchResult result = SearchEngineFactory.getSearchEngine().search(queryDescription);
+        PlainSearchResult result = SearchEngineProvider.getSearchEngine().search(queryDescription);
         glossaryResults = result.getEntries().toArray(new MatchingIndexEntry[result.getEntries().
             size()]);
       } catch (org.silverpeas.search.searchEngine.model.ParseException e) {

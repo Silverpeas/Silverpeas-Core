@@ -23,44 +23,21 @@
 */
 package org.silverpeas.search;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * Factory to obtain a search engine.
  */
-public class SearchEngineFactory {
-
-
-  private static final SearchEngineFactory instance = new SearchEngineFactory();
-
-  @Inject
-  private SearchEngine searchEngine;
-
-  /**
-   * Gets an instance of this SearchEngineFactory class.
-   * @return a SearchEngineFactory instance.
-   */
-  public static SearchEngineFactory getFactory() {
-    return instance;
-  }
+public class SearchEngineProvider {
 
   /**
    * Gets a SearchEngine instance.
    * @return a SearchEngine instance.
    */
   public static SearchEngine getSearchEngine() {
-    return instance.obtainImplementation();
+    return ServiceProvider.getService(SearchEngine.class);
   }
 
-  public SearchEngine obtainImplementation() {
-      if (searchEngine == null) {
-        SilverTrace.warn("SimpleSearchEngine", getClass().getSimpleName() + ".getSearchEngine()",
-            "EX_NO_MESSAGES", "IoC container not bootstrapped or no SearchEngine bean found!");
-      }
-      return searchEngine;
-    }
-
-  private SearchEngineFactory() {
+  private SearchEngineProvider() {
   }
 }

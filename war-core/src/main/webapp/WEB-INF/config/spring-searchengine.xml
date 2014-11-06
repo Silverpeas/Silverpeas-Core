@@ -43,7 +43,7 @@
   <bean id="resultDisplayerFactory" class="com.silverpeas.search.ResultDisplayerFactory" factory-method="getResultDisplayerFactory">
   </bean>
   
-  <bean id="searchEngineFactory" class="org.silverpeas.search.SearchEngineFactory" factory-method="getFactory">
-  </bean>
+  <!-- ebo <bean id="searchEngineFactory" class="org.silverpeas.search.SearchEngineProviderr" factory-method="getFactory">
+  </bean> -->
 
 </beans>

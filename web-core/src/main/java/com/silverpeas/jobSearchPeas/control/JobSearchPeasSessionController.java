@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -244,7 +244,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "Spaces");
       List<MatchingIndexEntry> plainSearchResults =
-          SearchEngineFactory.getSearchEngine().search(query).getEntries();
+          SearchEngineProvider.getSearchEngine().search(query).getEntries();
       for (MatchingIndexEntry result : plainSearchResults) {
         String nomCrea = getUserName(Integer.parseInt(result.getCreationUser()));
 
@@ -384,7 +384,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "Components");
       List<MatchingIndexEntry> plainSearchResults =
-          SearchEngineFactory.getSearchEngine().search(query).getEntries();
+          SearchEngineProvider.getSearchEngine().search(query).getEntries();
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String creationDate = result.getCreationDate();
@@ -570,7 +570,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       query.addSpaceComponentPair(null, "groups");
 
       List<MatchingIndexEntry> plainSearchResults =
-          SearchEngineFactory.getSearchEngine().search(query).getEntries();
+          SearchEngineProvider.getSearchEngine().search(query).getEntries();
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String groupId = result.getObjectId();
@@ -719,7 +719,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       query.addSpaceComponentPair(null, "users");
 
       List<MatchingIndexEntry> plainSearchResults =
-          SearchEngineFactory.getSearchEngine().search(query).getEntries();
+          SearchEngineProvider.getSearchEngine().search(query).getEntries();
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String userId = result.getObjectId();

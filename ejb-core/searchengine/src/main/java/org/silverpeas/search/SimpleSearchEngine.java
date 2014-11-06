@@ -20,6 +20,15 @@
  */
 package org.silverpeas.search;
 
+import org.silverpeas.search.searchEngine.model.DidYouMeanSearcher;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ParseException;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.SearchCompletion;
+import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
+import org.silverpeas.util.ResourceLocator;
+
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,32 +37,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.stereotype.Service;
-
-import org.silverpeas.search.searchEngine.model.DidYouMeanSearcher;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.ParseException;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.search.searchEngine.model.SearchCompletion;
-import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
-
-import org.silverpeas.util.ResourceLocator;
-
 /**
  * A SimpleSearchEngine search silverpeas indexes index and give access to the retrieved index
  * entries.
  */
-@Service
+@Singleton
 public class SimpleSearchEngine implements SearchEngine {
 
-  ResourceLocator pdcSettings = new ResourceLocator(
-      "org.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
+  ResourceLocator pdcSettings =
+      new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
   private final boolean enableWordSpelling = pdcSettings.getBoolean("enableWordSpelling", false);
 
   /**
    * Search the index for the required documents.
-   *
    * @param query the search query.
    * @return the results.
    */
@@ -61,32 +58,30 @@ public class SimpleSearchEngine implements SearchEngine {
   public PlainSearchResult search(QueryDescription query) throws ParseException {
     try {
       List<MatchingIndexEntry> results = Arrays.asList(new WAIndexSearcher().search(query));
-      @SuppressWarnings("unchecked")
-      Set<String> spellingWords = Collections.EMPTY_SET;
+      @SuppressWarnings("unchecked") Set<String> spellingWords = Collections.EMPTY_SET;
       if (enableWordSpelling && isSpellingNeeded(results)) {
         DidYouMeanSearcher searcher = new DidYouMeanSearcher();
 
         String[] suggestions = searcher.suggest(query);
         if (suggestions != null && suggestions.length > 0) {
-          spellingWords = new HashSet<String>(suggestions.length);
+          spellingWords = new HashSet<>(suggestions.length);
           Collections.addAll(spellingWords, suggestions);
         }
       }
-      return new PlainSearchResult(new ArrayList<String>(spellingWords), results);
+      return new PlainSearchResult(new ArrayList<>(spellingWords), results);
     } catch (IOException ioex) {
       throw new ParseException("SimpleSearchEngine.search", ioex);
     }
   }
 
   /**
-   * The no parameters constructor is required for an EJB.
+   * Hide constructor.
    */
-  public SimpleSearchEngine() {
+  private SimpleSearchEngine() {
   }
 
   /**
    * check if the results score is low enough to suggest spelling words
-   *
    * @return true if the max results score is under the defined threshold
    */
   private boolean isSpellingNeeded(List<MatchingIndexEntry> results) {
@@ -100,7 +95,6 @@ public class SimpleSearchEngine implements SearchEngine {
 
   /**
    * gets a list of suggestion from a partial String
-   *
    * @param keywordFragment string to execute the search
    * @return a set of result sorted by alphabetic order
    */
