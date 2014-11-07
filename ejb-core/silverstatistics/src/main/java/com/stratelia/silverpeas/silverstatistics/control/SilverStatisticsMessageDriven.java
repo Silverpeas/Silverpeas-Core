@@ -50,8 +50,6 @@ import static com.stratelia.silverpeas.silverstatistics.control.SilverStatistics
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SilverStatisticsMessageDriven implements MessageListener {
 
-  private static final long serialVersionUID = -7349058052737871887L;
-
   public SilverStatisticsMessageDriven() {
     StatisticsConfig myStatsConfig = new StatisticsConfig();
     try {
@@ -63,9 +61,8 @@ public class SilverStatisticsMessageDriven implements MessageListener {
   }
 
   /**
-   * Method declaration
-   *
-   * @param message
+   * Insert statistics
+   * @param message the message to process
    */
   @Override
   public void onMessage(Message message) {
@@ -87,7 +84,7 @@ public class SilverStatisticsMessageDriven implements MessageListener {
               "after putStats");
         } else {
           SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
-              "Mauvais message", msg);
+              "Wrong message", msg);
         }
       }
     } catch (Exception e) {
@@ -97,6 +94,6 @@ public class SilverStatisticsMessageDriven implements MessageListener {
   }
 
   private SilverStatistics getSilverStatistics() {
-    return SilverStatisticsFactory.getFactory().getSilverStatistics();
+    return SilverStatisticsProvider.getSilverStatistics();
   }
 }

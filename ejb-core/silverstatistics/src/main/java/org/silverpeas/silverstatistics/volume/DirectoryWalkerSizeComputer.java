@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
 /**
- * Compute the size in terms of numbr of files and total size of a directory.
+ * Compute the size in terms of number of files and total size of a directory.
  */
 public class DirectoryWalkerSizeComputer implements Callable<DirectoryStats> {
 

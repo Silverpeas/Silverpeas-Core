@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import com.silverpeas.annotation.Service;
 
@@ -45,16 +46,14 @@ import static com.stratelia.silverpeas.silverstatistics.control.SilverStatistics
  *
  * @author SLR
  */
-@Service
-@Named("SilverStatistics")
+@Singleton
 public class SilverStatisticsService implements SilverStatistics {
 
-  private static final long serialVersionUID = -2084739513469943886L;
   private StatisticsConfig myStatsConfig;
 
   /**
-   * @param type
-   * @param data
+   * @param type the statistic type (Access, Size, Volume, Connexion)
+   * @param data the value to put in statistic
    */
   @Override
   public void putStats(StatType type, String data) {
@@ -67,15 +66,11 @@ public class SilverStatisticsService implements SilverStatistics {
         if (!myCon.getAutoCommit()) {
           myCon.commit();
         }
-      } catch (SQLException e) {
+      } catch (SQLException | StatisticsRuntimeException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "silverstatistics.MSG_ALIMENTATION_BD",
             "typeOfStats = " + type + ", dataArray = " + dataArray, e);
-      } catch (StatisticsRuntimeException e) {
-        SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
-            "MSG_CONNECTION_BD");
       }
-
     } else {
       SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
           "MSG_CONFIG_DATAS", "data en entree=" + data + " pour " + type);

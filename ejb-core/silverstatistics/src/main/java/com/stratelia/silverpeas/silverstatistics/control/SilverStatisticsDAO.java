@@ -40,24 +40,20 @@ import org.silverpeas.util.DBUtil;
 
 /**
  * This is the alimentation statistics DAO Object
- *
  * @author sleroux
  */
 public class SilverStatisticsDAO {
 
   /**
-   * Method declaration
-   *
-   * @param con
-   * @param type
+   * Insert data into statistic table
+   * @param con the database connection
+   * @param type the statistic type
    * @param valueKeys
    * @param conf
-   * @return
    * @throws SQLException
-   * @see
    */
-  static void insertDataStats(Connection con, StatType type,
-      List<String> valueKeys, StatisticsConfig conf) throws SQLException {
+  static void insertDataStats(Connection con, StatType type, List<String> valueKeys,
+      StatisticsConfig conf) throws SQLException {
     StringBuilder insertStatementBuf = new StringBuilder("INSERT INTO ");
     insertStatementBuf.append(conf.getTableName(type)).append("(");
     PreparedStatement prepStmt = null;
@@ -76,8 +72,7 @@ public class SilverStatisticsDAO {
 
     try {
       SilverTrace.info("silverstatistics", "SilverStatisticsDAO.insertDataStats",
-          "root.MSG_GEN_PARAM_VALUE",
-          "insertStatement=" + insertStatement);
+          "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
       prepStmt = con.prepareStatement(insertStatement);
       for (String currentKey : theKeys) {
         i++;
@@ -134,8 +129,9 @@ public class SilverStatisticsDAO {
   }
 
   /**
-   * @param con
-   * @param type
+   * Update or insert statistic inside statistic table defined inside conf parameter
+   * @param con the database connection
+   * @param type the statistic type
    * @param valueKeys
    * @param conf
    * @throws SQLException
@@ -144,7 +140,7 @@ public class SilverStatisticsDAO {
   public static void putDataStats(Connection con, StatType type, List<String> valueKeys,
       StatisticsConfig conf) throws SQLException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
-    StringBuffer updateStatementBuf = new StringBuffer("UPDATE ");
+    StringBuilder updateStatementBuf = new StringBuilder("UPDATE ");
     String tableName = conf.getTableName(type);
     Statement stmt;
     ResultSet rs = null;
@@ -174,10 +170,8 @@ public class SilverStatisticsDAO {
     }
 
     updateStatementBuf.deleteCharAt(updateStatementBuf.length() - 1);
-
     selectStatementBuf.append(" FROM ").append(tableName).append(" WHERE ");
     updateStatementBuf.append(" WHERE ");
-
     iteratorKeys = theKeys.iterator();
     while (iteratorKeys.hasNext()) {
       String keyNameCurrent = iteratorKeys.next();
@@ -231,10 +225,12 @@ public class SilverStatisticsDAO {
 
     String selectStatement = selectStatementBuf.toString();
     String updateStatement = updateStatementBuf.toString();
-    SilverTrace.info("silverstatistics", "SilverStatisticsDAO.putDataStats",
-        "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
-    SilverTrace.info("silverstatistics", "SilverStatisticsDAO.putDataStats",
-        "root.MSG_GEN_PARAM_VALUE", "updateStatementBuf=" + updateStatementBuf);
+    SilverTrace
+        .info("silverstatistics", "SilverStatisticsDAO.putDataStats", "root.MSG_GEN_PARAM_VALUE",
+            "selectStatement=" + selectStatement);
+    SilverTrace
+        .info("silverstatistics", "SilverStatisticsDAO.putDataStats", "root.MSG_GEN_PARAM_VALUE",
+            "updateStatementBuf=" + updateStatementBuf);
     stmt = con.createStatement();
 
     try {
@@ -258,8 +254,7 @@ public class SilverStatisticsDAO {
               String currentType = conf.getKeyType(type, keyNameCurrent);
               if (currentType.equals("INTEGER")) {
                 try {
-                  intToAdd = Integer.parseInt(valueKeys.get(conf.indexOfKey(type,
-                      keyNameCurrent)));
+                  intToAdd = Integer.parseInt(valueKeys.get(conf.indexOfKey(type, keyNameCurrent)));
                 } catch (NumberFormatException e) {
                   intToAdd = 0;
                 }
@@ -267,8 +262,7 @@ public class SilverStatisticsDAO {
               }
               if (currentType.equals("DECIMAL")) {
                 try {
-                  longToAdd = Long.parseLong(
-                      valueKeys.get(conf.indexOfKey(type, keyNameCurrent)));
+                  longToAdd = Long.parseLong(valueKeys.get(conf.indexOfKey(type, keyNameCurrent)));
                 } catch (NumberFormatException e) {
                   longToAdd = 0;
                 }

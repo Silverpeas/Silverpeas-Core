@@ -21,29 +21,86 @@
 
 package com.stratelia.silverpeas.silverstatistics.model;
 
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.TransactionProvider;
+import org.silverpeas.persistence.TransactionRuntimeException;
+import org.silverpeas.test.TestSilverpeasTrace;
+import org.silverpeas.test.lang.TestSystemWrapper;
+import org.silverpeas.util.*;
+import org.silverpeas.util.exception.FromModule;
+import org.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.exception.WithNested;
+import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.pool.ConnectionPool;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import com.silverpeas.jcrutil.RandomGenerator;
-import org.silverpeas.util.FileUtil;
-
-import com.stratelia.silverpeas.silverstatistics.util.StatType;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author ehugonnet
  */
+@RunWith(Arquillian.class)
 public class StatisticsConfigTest {
+
+  @Before
+  public void prepareDataSource() {
+  }
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
+        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
+            WAPrimaryKey.class, ForeignPK.class);
+    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
+        SilverpeasRuntimeException.class, UtilException.class);
+    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
+        ExtractionList.class, ExtractionComplexList.class, AssertArgument.class);
+    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
+        TransactionRuntimeException.class);
+    war.addClasses(ConfigurationClassLoader.class, ConfigurationControl.class, FileUtil.class,
+        MimeTypes.class, RelativeFileAccessException.class, GeneralPropertiesManager.class,
+        ResourceLocator.class, ResourceBundleWrapper.class, SystemWrapper.class,
+        TestSystemWrapper.class);
+    war.addPackages(true, "com.stratelia.silverpeas.silverstatistics").addAsLibraries(
+        Maven.resolver().loadPomFromFile("pom.xml")
+            .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
+                "commons-codec:commons-codec", "commons-io:commons-io",
+                "org.silverpeas.core:test-core", "org.quartz-scheduler:quartz").withTransitivity()
+            .asFile());
+    war.addPackages(true, "com.silverpeas.scheduler");
+
+    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
+        .addPackages(true, "org.silverpeas.initialization")
+        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+            "META-INF/services/org.silverpeas.util.BeanContainer")
+        .addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties")
+        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    return war;
+  }
 
   private StatisticsConfig instance;
 
@@ -53,8 +110,9 @@ public class StatisticsConfigTest {
   @Before
   public void initialiseConfig() throws Exception {
     instance = new StatisticsConfig();
-    ResourceBundle resource = FileUtil.loadBundle(
-        "com.stratelia.silverpeas.silverstatistics.SilverStatisticsTest", Locale.getDefault());
+    ResourceBundle resource = FileUtil
+        .loadBundle("com.stratelia.silverpeas.silverstatistics.SilverStatisticsTest",
+            Locale.getDefault());
     instance.initialize(resource);
   }
 
@@ -180,7 +238,7 @@ public class StatisticsConfigTest {
     String notCumulKeyName = "userId";
     result = instance.isCumulKey(typeOfStats, notCumulKeyName);
     assertFalse(result);
-    notCumulKeyName = RandomGenerator.getRandomString();
+    notCumulKeyName = RandomStringUtils.random(32, true, true);
     result = instance.isCumulKey(typeOfStats, notCumulKeyName);
     assertFalse(result);
   }
@@ -194,7 +252,7 @@ public class StatisticsConfigTest {
     String existingKeyName = "countConnection";
     int result = instance.indexOfKey(typeOfStats, existingKeyName);
     assertEquals(2, result);
-    String notExistingKeyName = RandomGenerator.getRandomString();
+    String notExistingKeyName = RandomStringUtils.random(32, true, true);
     result = instance.indexOfKey(typeOfStats, notExistingKeyName);
     assertEquals(-1, result);
   }
@@ -208,7 +266,8 @@ public class StatisticsConfigTest {
     Collection<StatType> types = instance.getAllTypes();
     assertNotNull(types);
     assertThat(types, hasSize(4));
-    assertThat(types, hasItems(StatType.Connexion, StatType.Size, StatType.Access, StatType.Volume));
+    assertThat(types,
+        hasItems(StatType.Connexion, StatType.Size, StatType.Access, StatType.Volume));
   }
 
   /**
@@ -240,12 +299,13 @@ public class StatisticsConfigTest {
   @Test
   public void testIsGoodDatas() {
     StatType typeOfStats = StatType.Size;
-    List<String> dataArray = new ArrayList<String>(4);
-    dataArray.add(RandomGenerator.getRandomString());
-    dataArray.add(RandomGenerator.getRandomString());
-    dataArray.add(RandomGenerator.getRandomString());
-    dataArray.add(RandomGenerator.getRandomString());
-    assertFalse("Should not have only 3 data elements", instance.isGoodDatas(typeOfStats, dataArray));
+    List<String> dataArray = new ArrayList<>(4);
+    dataArray.add(RandomStringUtils.random(32, true, true));
+    dataArray.add(RandomStringUtils.random(32, true, true));
+    dataArray.add(RandomStringUtils.random(32, true, true));
+    dataArray.add(RandomStringUtils.random(32, true, true));
+    assertFalse("Should not have only 3 data elements",
+        instance.isGoodDatas(typeOfStats, dataArray));
     typeOfStats = StatType.Connexion;
     assertTrue(instance.isGoodDatas(typeOfStats, dataArray));
   }

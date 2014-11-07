@@ -43,7 +43,6 @@ import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_JMS_FACTORY;
 import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_JMS_QUEUE;
 
 /**
- * Class declaration
  * @author
  */
 public final class SilverStatisticsSender implements Closeable {
@@ -66,11 +65,9 @@ public final class SilverStatisticsSender implements Closeable {
   }
 
   /**
-   * Method declaration
    * @param message
    * @throws JMSException
    * @throws NamingException
-   * @see
    */
   public void send(StatType typeOfStats, String message) throws JMSException, NamingException {
     queueConnection = factory.createQueueConnection();

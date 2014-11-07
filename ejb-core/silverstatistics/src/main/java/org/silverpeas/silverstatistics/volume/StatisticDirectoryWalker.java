@@ -27,11 +27,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collection;
+
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 /**
- *
  * @author ehugonnet
  */
 public class StatisticDirectoryWalker extends DirectoryWalker<Object> {
@@ -60,8 +60,7 @@ public class StatisticDirectoryWalker extends DirectoryWalker<Object> {
   }
 
   @Override
-  protected void handleFile(File file, int depth, Collection<Object> results) throws
-      IOException {
+  protected void handleFile(File file, int depth, Collection<Object> results) throws IOException {
     this.stats.addFile(file.length());
     super.handleFile(file, depth, results);
   }

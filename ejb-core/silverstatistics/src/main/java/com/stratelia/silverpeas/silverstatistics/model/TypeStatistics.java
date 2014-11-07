@@ -49,9 +49,9 @@ public class TypeStatistics {
   private StatisticMode modeCumul;
 
   TypeStatistics() {
-    allKeysName = new ArrayList<String>();
-    allKeysValue = new ArrayList<StatDataType>();
-    cumulKeysName = new ArrayList<String>();
+    allKeysName = new ArrayList<>();
+    allKeysValue = new ArrayList<>();
+    cumulKeysName = new ArrayList<>();
     name = "";
     tableName = "";
     purgeInMonth = 3; // use 3 as default
@@ -64,12 +64,10 @@ public class TypeStatistics {
     return name;
   }
 
-  public void setName(String name)
-      throws SilverStatisticsTypeStatisticsException {
+  public void setName(String name) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(name)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL, "silverstatistics.MSG_NAME_STATS_EMPTY",
-          name);
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
+          "silverstatistics.MSG_NAME_STATS_EMPTY", name);
     }
     this.name = name;
   }
@@ -104,8 +102,8 @@ public class TypeStatistics {
 
   public void setPurge(int purgeInMonth) throws SilverStatisticsTypeStatisticsException {
     if (purgeInMonth <= 0) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.ERROR, "silverstatistics.MSG_PURGE_BAD_VALUE", name);
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.ERROR,
+          "silverstatistics.MSG_PURGE_BAD_VALUE", name);
     }
     this.purgeInMonth = purgeInMonth;
   }
@@ -116,8 +114,7 @@ public class TypeStatistics {
 
   public void setTableName(String tableName) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(tableName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_TABLE_NAME_STATS_EMPTY", tableName);
     }
     this.tableName = tableName;
@@ -134,12 +131,12 @@ public class TypeStatistics {
   public void addKey(String keyName, StatDataType keyType)
       throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL, "silverstatistics.MSG_KEY_NAME_STATS_EMPTY", name);
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
+          "silverstatistics.MSG_KEY_NAME_STATS_EMPTY", name);
     }
     if (keyType == null) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL, "silverstatistics.MSG_TYPE_NAME_STATS_EMPTY", name);
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
+          "silverstatistics.MSG_TYPE_NAME_STATS_EMPTY", name);
     }
     allKeysName.add(keyName);
     allKeysValue.add(keyType);
@@ -147,13 +144,11 @@ public class TypeStatistics {
 
   public void addCumulKey(String keyName) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_NAME_STATS_EMPTY", name);
     }
     if (!hasACumulType(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_TYPE_STATS_BAD_VALUE", name, keyName);
     }
     cumulKeysName.add(keyName);

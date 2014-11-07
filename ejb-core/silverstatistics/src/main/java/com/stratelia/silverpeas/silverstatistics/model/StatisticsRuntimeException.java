@@ -30,23 +30,22 @@ public class StatisticsRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = -5832971760523509866L;
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel,
-      String message) {
+  public StatisticsRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public StatisticsRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public StatisticsRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public StatisticsRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

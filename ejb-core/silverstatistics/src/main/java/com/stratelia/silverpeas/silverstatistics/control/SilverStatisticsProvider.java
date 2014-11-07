@@ -22,11 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.silverstatistics.model;
+package com.stratelia.silverpeas.silverstatistics.control;
+
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * @author ehugonnet
  */
-public enum StatisticsModule {
-  Connexion, Size, Access, Volume
+public class SilverStatisticsProvider {
+
+  /**
+   * Gets a SilverStatistics implementation instance.
+   * @return a SilverStatistics implementation instance.
+   */
+  public static SilverStatistics getSilverStatistics() {
+    return ServiceProvider.getService(SilverStatistics.class);
+  }
+
+  private SilverStatisticsProvider() {
+  }
 }

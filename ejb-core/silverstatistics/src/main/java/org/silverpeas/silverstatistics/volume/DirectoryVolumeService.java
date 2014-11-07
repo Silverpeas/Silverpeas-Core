@@ -61,7 +61,7 @@ public class DirectoryVolumeService {
 
   private List<DirectoryWalkerSizeComputer> buildScanners(File dataDirectory, String userId) {
     File[] files = listDirectoriesToScan(dataDirectory, userId);
-    List<DirectoryWalkerSizeComputer> result = new ArrayList<DirectoryWalkerSizeComputer>(
+    List<DirectoryWalkerSizeComputer> result = new ArrayList<>(
         files.length);
     for (File componentDir : files) {
       result.add(new DirectoryWalkerSizeComputer((componentDir)));
@@ -71,7 +71,7 @@ public class DirectoryVolumeService {
 
   private List<DirectorySizeComputer> buildSizeScanners(File dataDirectory, String userId) {
     File[] files = listDirectoriesToScan(dataDirectory, userId);
-    List<DirectorySizeComputer> result = new ArrayList<DirectorySizeComputer>(files.length);
+    List<DirectorySizeComputer> result = new ArrayList<>(files.length);
     for (File componentDir : files) {
       result.add(new DirectorySizeComputer((componentDir)));
     }
@@ -80,7 +80,7 @@ public class DirectoryVolumeService {
 
   private List<FileNumberComputer> buildFileNumberScanners(File dataDirectory, String userId) {
     File[] files = listDirectoriesToScan(dataDirectory, userId);
-    List<FileNumberComputer> result = new ArrayList<FileNumberComputer>(files.length);
+    List<FileNumberComputer> result = new ArrayList<>(files.length);
     for (File componentDir : files) {
       result.add(new FileNumberComputer((componentDir)));
     }
@@ -90,7 +90,7 @@ public class DirectoryVolumeService {
   public List<DirectoryStats> getVolumes(String userId) throws
       InterruptedException, ExecutionException {
     List<DirectoryWalkerSizeComputer> scanners = buildScanners(workspace, userId);
-    List<DirectoryStats> volume = new ArrayList<DirectoryStats>(scanners.size());
+    List<DirectoryStats> volume = new ArrayList<>(scanners.size());
     ExecutorService executor = Executors.newFixedThreadPool(getNumberOfThread());
     List<Future<DirectoryStats>> result = executor.invokeAll(scanners);
     try {
@@ -122,7 +122,7 @@ public class DirectoryVolumeService {
   public Map<String, String[]> getSizeVentilation(String userId) throws
       InterruptedException, ExecutionException {
     List<DirectorySizeComputer> scanners = buildSizeScanners(workspace, userId);
-    Map<String, String[]> volume = new HashMap<String, String[]>(scanners.size());
+    Map<String, String[]> volume = new HashMap<>(scanners.size());
     ExecutorService executor = Executors.newFixedThreadPool(getNumberOfThread());
     List<Future<DirectoryStats>> result = executor.invokeAll(scanners);
     try {
@@ -140,7 +140,7 @@ public class DirectoryVolumeService {
   public Map<String, String[]> getFileNumberVentilation(String userId) throws
       InterruptedException, ExecutionException {
     List<FileNumberComputer> scanners = buildFileNumberScanners(workspace, userId);
-    Map<String, String[]> volume = new HashMap<String, String[]>(scanners.size());
+    Map<String, String[]> volume = new HashMap<>(scanners.size());
     ExecutorService executor = Executors.newFixedThreadPool(getNumberOfThread());
     List<Future<DirectoryStats>> result = executor.invokeAll(scanners);
     try {
@@ -155,7 +155,6 @@ public class DirectoryVolumeService {
     return volume;
   }
 
-  @SuppressWarnings("unchecked")
   private File[] listDirectoriesToScan(File dataDirectory, String userId) {
     FileFilter filter;
     OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
@@ -163,7 +162,7 @@ public class DirectoryVolumeService {
       filter = DirectoryFileFilter.DIRECTORY;
     } else {
       String[] spaceIds = controller.getAllSpaceIds(userId);
-      List<String> componentIds = new ArrayList<String>(spaceIds.length * 10);
+      List<String> componentIds = new ArrayList<>(spaceIds.length * 10);
       for (String spaceId : spaceIds) {
         componentIds.addAll(Arrays.asList(controller.getAllComponentIdsRecur(spaceId)));
       }

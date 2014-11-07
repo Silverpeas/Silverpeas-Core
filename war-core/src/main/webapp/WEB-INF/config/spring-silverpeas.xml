@@ -54,7 +54,7 @@
   <ctx:component-scan base-package="com.stratelia.silverpeas.contentManager"/>
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
-  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control"/>
+  <!-- ebo <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control"/> -->
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
@@ -155,15 +155,14 @@
 
   <!-- the factory of the statistics management services.
   It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
-  <bean id="silverStatisticsFactory"
-        class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
-        factory-method="getFactory"/>
+  <!-- ebo <bean id="silverStatisticsFactory"
+        class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsProvider"
+        factory-method="getFactory"/> -->
 
-  <bean id="silverStatisticsManager"
+  <!-- ebo <bean id="silverStatisticsManager"
         class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager"
         factory-method="getInstance"
-        init-method="initSilverStatisticsManager"
-        />
+        init-method="initSilverStatisticsManager" /> -->
 
   <bean id="userPriviledgeValidationFactory"
         class="com.silverpeas.web.UserPriviledgeValidationFactory"
