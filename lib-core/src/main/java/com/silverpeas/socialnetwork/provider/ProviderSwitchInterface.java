@@ -72,23 +72,10 @@ public interface ProviderSwitchInterface {
   public SocialEventsInterface getSocialEventsInterface();
 
   /**
-   * set SocialEvent providor (by using Inversion of Control Containers )
-   * @param socialEventsInterface
-   */
-
-  public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface);
-
-  /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialGalleryInterface getSocialGalleryInterface();
-
-  /**
-   * set SocialGallery providor (by using Inversion of Control Containers )
-   * @param socialGalleryInterface
-   */
-  public void setSocialGalleryInterface(SocialGalleryInterface socialGalleryInterface);
 
   /**
    * return the SocialPublications providor (by using Inversion of Control Containers )
@@ -97,22 +84,10 @@ public interface ProviderSwitchInterface {
   public SocialPublicationsInterface getSocialPublicationsInterface();
 
   /**
-   * set SocialPublications providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
-   */
-  public void setSocialPublicationsInterface(SocialPublicationsInterface socialPublicationsInterface);
-
-  /**
    * return SocialStatus providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialStatusInterface getSocialStatusInterface();
-
-  /**
-   * set SocialStatus providor (by using Inversion of Control Containers )
-   * @param socialStatusInterface
-   */
-  public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface);
 
   /**
    * return the SocialRelationShips providor (by using Inversion of Control Containers )
@@ -120,10 +95,4 @@ public interface ProviderSwitchInterface {
    */
   public SocialRelationShipsInterface getSocialRelationShipsInterface();
 
-  /**
-   * set SocialRelationShips providor (by using Inversion of Control Containers )
-   * @param socialRelationShipsInterface
-   */
-  public void setSocialRelationShipsInterface(
-      SocialRelationShipsInterface socialRelationShipsInterface);
 }

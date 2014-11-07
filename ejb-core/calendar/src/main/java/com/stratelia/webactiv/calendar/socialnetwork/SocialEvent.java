@@ -36,13 +36,24 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * @author Bensalem Nabil
  */
+@Singleton
 public class SocialEvent implements SocialEventsInterface {
 
+  @Inject
+  private SilverpeasCalendar calendar;
+
   private SilverpeasCalendar getCalendar() throws CalendarException {
-    return ServiceProvider.getService(SilverpeasCalendar.class);
+    return calendar;
+  }
+
+  protected SocialEvent() {
+
   }
 
   /**

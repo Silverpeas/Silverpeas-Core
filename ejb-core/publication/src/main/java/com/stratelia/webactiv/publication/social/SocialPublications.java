@@ -38,14 +38,21 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class SocialPublications implements SocialPublicationsInterface {
+
+  protected SocialPublications() {
+
+  }
 
   /**
    * get my SocialInformationPublication
    *
    * @param userId
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return List
    * @throws SilverpeasException
    */
@@ -69,8 +76,8 @@ public class SocialPublications implements SocialPublicationsInterface {
    *
    * @param myId
    * @param myContactsIds
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return List
    * @throws SilverpeasException
    */

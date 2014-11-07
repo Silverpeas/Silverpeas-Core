@@ -33,9 +33,12 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Singleton;
+
 /**
  * @author Bensalem Nabil
  */
+@Singleton
 public class SocialRelationShips implements SocialRelationShipsInterface {
 
   /**

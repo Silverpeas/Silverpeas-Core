@@ -23,6 +23,7 @@ package org.silverpeas.util;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
@@ -80,7 +81,8 @@ public class JSONCodec {
 
   private static ObjectMapper getObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
-    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(
+        TypeFactory.defaultInstance());
     mapper.setAnnotationIntrospector(introspector);
     return mapper;
   }

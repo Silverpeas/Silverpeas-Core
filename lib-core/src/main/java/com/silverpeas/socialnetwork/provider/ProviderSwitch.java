@@ -30,6 +30,7 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +39,15 @@ import java.util.List;
  */
 public class ProviderSwitch implements ProviderSwitchInterface {
 
+  @Inject
   private SocialEventsInterface socialEventsInterface;
+  @Inject
   private SocialGalleryInterface socialGalleryInterface;
+  @Inject
   private SocialPublicationsInterface socialPublicationsInterface;
+  @Inject
   private SocialStatusInterface socialStatusInterface;
+  @Inject
   private SocialRelationShipsInterface socialRelationShipsInterface;
 
   /**
@@ -54,30 +60,12 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * set SocialEvent providor (by using Inversion of Control Containers )
-   * @param socialEventsInterface
-   */
-  @Override
-  public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface) {
-    this.socialEventsInterface = socialEventsInterface;
-  }
-
-  /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
   public SocialGalleryInterface getSocialGalleryInterface() {
     return socialGalleryInterface;
-  }
-
-  /**
-   * set SocialGallery providor (by using Inversion of Control Containers )
-   * @param socialGalleryInterface
-   */
-  @Override
-  public void setSocialGalleryInterface(SocialGalleryInterface socialGalleryInterface) {
-    this.socialGalleryInterface = socialGalleryInterface;
   }
 
   /**
@@ -159,41 +147,12 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * set SocialPublications providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
-   */
-  @Override
-  public void setSocialPublicationsInterface(
-      SocialPublicationsInterface socialPublicationsInterface) {
-    this.socialPublicationsInterface = socialPublicationsInterface;
-  }
-
-  /**
    * return SocialStatus providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
   public SocialStatusInterface getSocialStatusInterface() {
     return socialStatusInterface;
-  }
-
-  /**
-   * set SocialStatus providor (by using Inversion of Control Containers )
-   * @param socialStatusInterface
-   */
-  @Override
-  public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface) {
-    this.socialStatusInterface = socialStatusInterface;
-  }
-
-  /**
-   * set SocialRelationShips providor (by using Inversion of Control Containers )
-   * @param socialRelationShipsInterface
-   */
-  @Override
-  public void setSocialRelationShipsInterface(
-      SocialRelationShipsInterface socialRelationShipsInterface) {
-    this.socialRelationShipsInterface = socialRelationShipsInterface;
   }
 
   /**

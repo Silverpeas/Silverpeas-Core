@@ -30,10 +30,17 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class SocialStatus implements SocialStatusInterface {
 
   private StatusService getStatusService() {
     return new StatusService();
+  }
+
+  protected SocialStatus() {
+
   }
 
   /**
