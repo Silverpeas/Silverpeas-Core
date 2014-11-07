@@ -57,7 +57,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    */
   private static final ArchivePath PATH_CLASSES = ArchivePaths.create(PATH_WEB_INF, "classes");
 
-  public Collection<String> mavenDependencies = new HashSet<>(Arrays
+  protected Collection<String> mavenDependencies = new HashSet<>(Arrays
       .asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
           "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core"));
 
@@ -138,8 +138,10 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   /**
    * Builds the final WAR archive. The following stuffs are automatically added :
    * <ul>
-   *   <li>The <b>beans.xml</b> in order to activate CDI</li>
-   *   <li>The <b>test-ds.xml</b> resource in order to define a data source for tests</li>
+   *   <li>The <b>beans.xml</b> in order to activate CDI,</li>
+   *   <li>The <b>META-INF/services/org.silverpeas.util.BeanContainer</b> to load the CDI-based bean
+   *   container,</li>
+   *   <li>The <b>test-ds.xml</b> resource in order to define a data source for tests.</li>
    * </ul>
    * @return the built WAR archive.
    */
@@ -149,6 +151,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
         Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
             .asFile();
     war.addAsLibraries(libs);
+    war.addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+        "META-INF/services/org.silverpeas.util.BeanContainer");
     war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
     return war;

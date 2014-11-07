@@ -24,16 +24,26 @@
 
 package com.silverpeas.pdc.model;
 
-import com.silverpeas.pdc.PdcServiceProvider;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
-import com.stratelia.silverpeas.pdc.model.*;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.exception.SilverpeasException;
-import java.io.Serializable;
-import java.util.*;
-import javax.persistence.EmbeddedId;
+
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A value of one of the PdC's axis. A value belongs to an axis. An axis represents a given concept
@@ -46,15 +56,16 @@ import javax.persistence.Transient;
  * it has no parent (one of the root values of the axis).
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "findByAxisId", query = "from PdcAxisValue where axisId = :axisId")
+})
 // @IdClass(PdcAxisValuePk.class) : https://jira.springsource.org/browse/DATAJPA-50
-public class PdcAxisValue implements Serializable, Cloneable {
+public class PdcAxisValue extends AbstractJpaCustomEntity<PdcAxisValue, PdcAxisValuePk> {
 
   private static final long serialVersionUID = 2345886411781136417L;
   /*
    * @Id private Long valueId; @Id private Long axisId;
    */
-  @EmbeddedId
-  PdcAxisValuePk pk = new PdcAxisValuePk();
   @Transient
   private TreeNode treeNode;
   @Transient
@@ -70,7 +81,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
     try {
       List<? extends TreeNode> parents = null;
       if (treeNode.hasFather()) {
-        PdcManager pdcManager = getPdcBm();
+        PdcManager pdcManager = getPdcManager();
         parents = pdcManager.getFullPath(treeNode.getFatherId(), treeNode.getTreeId());
       }
       return new PdcAxisValue().fromTreeNode(treeNode).withAsTreeNodeParents(parents).
@@ -94,8 +105,9 @@ public class PdcAxisValue implements Serializable, Cloneable {
     return new PdcAxisValue().withId(valueId).inAxisId(axisId);
   }
 
+  @Override
   public String getId() {
-    return pk.getValueId().toString();
+    return getNativeId().getValueId().toString();
   }
 
   /**
@@ -103,7 +115,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
    * @return the unique identifier of the axis value.
    */
   public String getAxisId() {
-    return pk.getAxisId().toString();
+    return getNativeId().getAxisId().toString();
   }
 
   /**
@@ -116,7 +128,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
   public Set<PdcAxisValue> getChildValues() {
     try {
       Set<PdcAxisValue> children = new HashSet<PdcAxisValue>();
-      List<String> childNodeIds = getPdcBm().getDaughterValues(getAxisId(), getId());
+      List<String> childNodeIds = getPdcManager().getDaughterValues(getAxisId(), getId());
       for (String aNodeId : childNodeIds) {
         children.add(aPdcAxisValue(aNodeId, getAxisId()));
       }
@@ -209,15 +221,6 @@ public class PdcAxisValue implements Serializable, Cloneable {
     return getTreeNode().getPath() + getId();
   }
 
-  @Override
-  protected PdcAxisValue clone() {
-    try {
-      return (PdcAxisValue) super.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new RuntimeException(ex);
-    }
-  }
-
   protected PdcAxisValue() {
   }
 
@@ -227,7 +230,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
    */
   protected UsedAxis getUsedAxis() {
     try {
-      PdcManager pdc = getPdcBm();
+      PdcManager pdc = getPdcManager();
       UsedAxis usedAxis = pdc.getUsedAxis(getAxisId());
       AxisHeader axisHeader = pdc.getAxisHeader(getAxisId());
       usedAxis._setAxisHeader(axisHeader);
@@ -252,21 +255,21 @@ public class PdcAxisValue implements Serializable, Cloneable {
   }
 
   protected void setId(long id) {
-    pk.setValueId(id);
+    getNativeId().setValueId(id);
   }
 
   protected PdcAxisValue withId(String id) {
-    pk.setValueId(Long.valueOf(id));
+    getNativeId().setValueId(Long.valueOf(id));
     return this;
   }
 
   protected PdcAxisValue inAxisId(String axisId) {
-    pk.setAxisId(Long.valueOf(axisId));
+    getNativeId().setAxisId(Long.valueOf(axisId));
     return this;
   }
 
   protected PdcAxisValue fromTreeNode(final TreeNode treeNode) {
-    pk.setValueId(Long.valueOf(treeNode.getPK().getId()));
+    getNativeId().setValueId(Long.valueOf(treeNode.getPK().getId()));
     this.treeNode = treeNode;
     return this;
   }
@@ -285,12 +288,14 @@ public class PdcAxisValue implements Serializable, Cloneable {
       return false;
     }
     final PdcAxisValue other = (PdcAxisValue) obj;
-    if (this.pk.getValueId() != other.pk.getValueId() &&
-        (this.pk.getValueId() == null || !this.pk.getValueId().equals(other.pk.getValueId()))) {
+    if (this.getNativeId().getValueId() != other.getNativeId().getValueId() &&
+        (this.getNativeId().getValueId() == null ||
+            !this.getNativeId().getValueId().equals(other.getNativeId().getValueId()))) {
       return false;
     }
-    if (this.pk.getAxisId() != other.pk.getAxisId() &&
-        (this.pk.getAxisId() == null || !this.pk.getAxisId().equals(other.pk.getAxisId()))) {
+    if (this.getNativeId().getAxisId() != other.getNativeId().getAxisId() &&
+        (this.getNativeId().getAxisId() == null ||
+            !this.getNativeId().getAxisId().equals(other.getNativeId().getAxisId()))) {
       return false;
     }
     return true;
@@ -299,8 +304,10 @@ public class PdcAxisValue implements Serializable, Cloneable {
   @Override
   public int hashCode() {
     int hash = 5;
-    hash = 89 * hash + (this.pk.getValueId() != null ? this.pk.getValueId().hashCode() : 0);
-    hash = 89 * hash + (this.pk.getAxisId() != null ? this.pk.getAxisId().hashCode() : 0);
+    hash = 89 * hash +
+        (this.getNativeId().getValueId() != null ? this.getNativeId().getValueId().hashCode() : 0);
+    hash = 89 * hash +
+        (this.getNativeId().getAxisId() != null ? this.getNativeId().getAxisId().hashCode() : 0);
     return hash;
   }
 
@@ -344,7 +351,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
 
   private void loadTreeNodes() {
     try {
-      PdcManager pdc = getPdcBm();
+      PdcManager pdc = getPdcManager();
       String treeId = pdc.getTreeId(getAxisId());
       List<? extends TreeNode> paths = pdc.getFullPath(getId(), treeId);
       int lastNodeIndex = paths.size() - 1;
@@ -356,7 +363,7 @@ public class PdcAxisValue implements Serializable, Cloneable {
     }
   }
 
-  private static PdcManager getPdcBm() {
-    return PdcServiceProvider.getPdcManager();
+  private static PdcManager getPdcManager() {
+    return PdcManager.getInstance();
   }
 }

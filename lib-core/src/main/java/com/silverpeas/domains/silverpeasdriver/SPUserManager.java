@@ -26,7 +26,6 @@ package com.silverpeas.domains.silverpeasdriver;
 
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.repository.BasicEntityRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -35,26 +34,26 @@ import java.util.List;
  */
 public interface SPUserManager extends BasicEntityRepository<SPUser, UniqueIntegerIdentifier> {
 
-  List<SPUser> findByFirstname(@Param("firstname") String firstName);
+  List<SPUser> findByFirstname(String firstName);
 
-  List<SPUser> findByLastname(@Param("lastname") String lastName);
+  List<SPUser> findByLastname(String lastName);
 
-  List<SPUser> findByPhone(@Param("phone") String phone);
+  List<SPUser> findByPhone(String phone);
 
-  List<SPUser> findByHomephone(@Param("homephone") String homephone);
+  List<SPUser> findByHomephone(String homephone);
 
-  List<SPUser> findByCellphone(@Param("cellphone") String cellphone);
+  List<SPUser> findByCellphone(String cellphone);
 
-  List<SPUser> findByFax(@Param("fax") String fax);
+  List<SPUser> findByFax(String fax);
 
-  List<SPUser> findByAddress(@Param("address") String address);
+  List<SPUser> findByAddress(String address);
 
-  List<SPUser> findByTitle(@Param("title") String title);
+  List<SPUser> findByTitle(String title);
 
-  List<SPUser> findByCompany(@Param("company") String company);
+  List<SPUser> findByCompany(String company);
 
-  List<SPUser> findByPosition(@Param("position") String position);
+  List<SPUser> findByPosition(String position);
 
-  List<SPUser> findByEmail(@Param("email") String email);
+  List<SPUser> findByEmail(String email);
 
 }

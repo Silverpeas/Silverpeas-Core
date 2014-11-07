@@ -603,30 +603,23 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
   }
 
   @Test
-  public void updateAnimalNamesByType() {
+  public void updateAnimalName() {
     Animal animal = jpaEntityServiceTest.getAnimalById("1");
+    String previousName = animal.getName();
     assertThat(animal, notNullValue());
     assertThat(animal.getLastUpdatedBy(), is("2"));
     assertThat(animal.getLastUpdateDate(), notNullValue());
     assertThat(animal.getVersion(), is(2L));
-    assertThat(jpaEntityServiceTest.updateAnimalNamesByType(animal.getType()), is(1L));
-    assertThat(jpaEntityServiceTest.updateAnimalNamesByType(AnimalType.frog), is(0L));
+    animal.setName(previousName + "_toto");
+    assertThat(jpaEntityServiceTest.updateAnimalName(animal), is(1L));
     Animal animalReloaded = jpaEntityServiceTest.getAnimalById(animal.getId());
     assertThat(animalReloaded, notNullValue());
-    assertThat(animalReloaded.getName(), is(animal.getName() + "_toto"));
+    assertThat(animalReloaded.getName(), is(previousName + "_toto"));
     // In that case of update, last update by, last update date and version must also be handled
     assertThat(animalReloaded.getLastUpdatedBy(), is("dummy"));
     Date lastUpdateDate = animalReloaded.getLastUpdateDate();
     assertThat(lastUpdateDate, greaterThan(animal.getLastUpdateDate()));
     assertThat(animalReloaded.getVersion(), is(3L));
-    assertThat(jpaEntityServiceTest.updateAnimalNamesByType(animal.getType()), is(1L));
-    animalReloaded = jpaEntityServiceTest.getAnimalById(animal.getId());
-    assertThat(animalReloaded, notNullValue());
-    assertThat(animalReloaded.getName(), is(animal.getName() + "_toto_toto"));
-    // Technical data
-    assertThat(animalReloaded.getLastUpdatedBy(), is("dummy"));
-    assertThat(animalReloaded.getLastUpdateDate(), greaterThanOrEqualTo(lastUpdateDate));
-    assertThat(animalReloaded.getVersion(), is(4L));
   }
 
   @Test
@@ -660,6 +653,9 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
     Person person1 = jpaEntityServiceTest.getPersonById("person_1");
     Person person2 = jpaEntityServiceTest.getPersonById("person_2");
     Person person3 = jpaEntityServiceTest.getPersonById("person_3");
+    String previousPerson1Name = person1.getFirstName();
+    String previousPerson2Name = person2.getFirstName();
+    String previousPerson3Name = person3.getFirstName();
     assertThat(person1, notNullValue());
     assertThat(person1.getLastUpdatedBy(), is("1"));
     assertThat(person1.getLastUpdateDate(),
@@ -667,20 +663,26 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
     assertThat(person1.getVersion(), is(0L));
     assertThat(person2, notNullValue());
     assertThat(person3, notNullValue());
-    assertThat(jpaEntityServiceTest.updatePersonFirstNamesHavingAtLeastOneAnimal(), is(4L));
+
+    person1.setFirstName(previousPerson1Name + "_updated");
+    person2.setFirstName(previousPerson2Name + "_updated");
+    person3.setFirstName(previousPerson3Name + "_updated");
+    assertThat(jpaEntityServiceTest.updatePersonFirstNameHavingAtLeastOneAnimal(person1), is(1L));
+    assertThat(jpaEntityServiceTest.updatePersonFirstNameHavingAtLeastOneAnimal(person2), is(1L));
+    assertThat(jpaEntityServiceTest.updatePersonFirstNameHavingAtLeastOneAnimal(person3), is(0L));
     Person person1Reloaded = jpaEntityServiceTest.getPersonById("person_1");
     Person person2Reloaded = jpaEntityServiceTest.getPersonById("person_2");
     Person person3Reloaded = jpaEntityServiceTest.getPersonById("person_3");
     assertThat(person1Reloaded, notNullValue());
-    assertThat(person1Reloaded.getFirstName(), is(person1.getFirstName() + "_updated"));
+    assertThat(person1Reloaded.getFirstName(), is(previousPerson1Name + "_updated"));
     // In that case of update, last update by, last update date and version must also be handled
     assertThat(person1Reloaded.getLastUpdatedBy(), is("dummy"));
     assertThat(person1Reloaded.getLastUpdateDate(), greaterThan(person1.getLastUpdateDate()));
     assertThat(person1Reloaded.getVersion(), is(1L));
     assertThat(person2Reloaded, notNullValue());
-    assertThat(person2Reloaded.getFirstName(), is(person2.getFirstName() + "_updated"));
+    assertThat(person2Reloaded.getFirstName(), is(previousPerson2Name + "_updated"));
     assertThat(person3Reloaded, notNullValue());
-    assertThat(person3Reloaded.getFirstName(), is(person3.getFirstName()));
+    assertThat(person3Reloaded.getFirstName(), is(previousPerson3Name));
   }
 
   @Test

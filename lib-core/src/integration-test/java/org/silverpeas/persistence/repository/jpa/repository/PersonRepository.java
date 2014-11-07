@@ -54,12 +54,14 @@ public class PersonRepository extends SilverpeasJpaEntityManager<Person, UuidIde
         Animal.class);
   }
 
-  public long updatePersonFirstNamesHavingAtLeastOneAnimal() {
-    String jpqlQuery = "update Person p set p.firstName = concat(p.firstName, '_updated'), " +
+  public long updatePersonFirstNameHavingAtLeastOneAnimal(Person person) {
+    String jpqlQuery = "update Person p set p.firstName = :name, " +
         "p.lastUpdatedBy = :lastUpdatedBy, p.lastUpdateDate = :lastUpdateDate, " +
-        "p.version = (p.version + 1) where p.animals is not empty";
-    return updateFromJpqlQuery(jpqlQuery,
-        newNamedParameters().add("lastUpdatedBy", "dummy"));
+        "p.version = :version where p.id = :id and p.animals is not empty";
+    return updateFromJpqlQuery(jpqlQuery, newNamedParameters().add("lastUpdatedBy", "dummy")
+            .add("name", person.getFirstName())
+            .add("id", UuidIdentifier.from(person.getId()))
+            .add("version", person.getVersion() + 1));
   }
 
   /**

@@ -1,14 +1,26 @@
 package org.silverpeas.persistence.repository;
 
+import org.silverpeas.persistence.model.IdentifiableEntity;
+
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.persistence.model.IdentifiableEntity;
-
 /**
+ * It represents the repositories taken in charge the persistence context of the business
+ * entities in Silverpeas. These entities can be a contribution, a contribution's content or
+ * a transverse application bean (user, domain, ...) managed within the Silverpeas Portal.
+ * <p>
+ *   This interface is dedicated to be implemented by abstract repositories that providing each an
+ *   implementation of the persistence technology used to manage the persistence of the entities
+ *   in a data source.
+ * </p>
+ * @param <ENTITY> specify the class name of the entity which is handled by the repository
+ * manager.
+ * @param <ENTITY_IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary
+ * key definition.
  * @author: ebonnet
  */
-public interface BasicEntityRepository<ENTITY extends IdentifiableEntity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE> {
+public interface BasicEntityRepository<ENTITY extends IdentifiableEntity, ENTITY_IDENTIFIER_TYPE> {
   /**
    * Gets all persisted entities.
    * (It is recommended to not use this method on huge persitent containers)
@@ -86,4 +98,13 @@ public interface BasicEntityRepository<ENTITY extends IdentifiableEntity<ENTITY,
    * the repository or of the underlying data source, the flush can not to be working.
    */
   void flush();
+
+  /**
+   * Does this repository contains the specified entity? It contains the entity if its persistence
+   * context is taken in charge by the instances of the repository class.
+   * @param entity an entity.
+   * @return true if the specified entity exists in the persistence context backed by this
+   * repository, false otherwise.
+   */
+  public boolean contains(ENTITY entity);
 }

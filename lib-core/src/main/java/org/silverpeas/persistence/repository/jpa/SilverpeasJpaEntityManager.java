@@ -23,7 +23,6 @@
  */
 package org.silverpeas.persistence.repository.jpa;
 
-import org.hibernate.jpa.internal.QueryImpl;
 import org.silverpeas.persistence.model.Entity;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.repository.OperationContext;
@@ -45,6 +44,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -68,7 +69,8 @@ import java.util.regex.Pattern;
  * primary key definition.
  * @author Yohann Chastagnier
  */
-public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
+    ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
     implements SilverpeasEntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
 
   /**
@@ -183,6 +185,18 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    */
   public void flush() {
     getEntityManager().flush();
+  }
+
+  /**
+   * Does this repository contains the specified entity? It contains the entity if its persistence
+   * context is taken in charge by the instances of the repository class.
+   * @param entity an entity.
+   * @return true if the specified entity exists in the persistence context backed by this
+   * repository, false otherwise.
+   */
+  @Override
+  public boolean contains(ENTITY entity) {
+    return getEntityManager().contains(entity);
   }
 
   /**
@@ -543,8 +557,7 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
    * @param parameters
    */
   private void verify(Query query, NamedParameters parameters) {
-    String queryString = ((QueryImpl) query).getHibernateQuery().getQueryString();
-    for (String requiredParameterName : new String[]{"lastUpdatedBy", "lastUpdateDate"}) {
+    for (String requiredParameterName : new String[]{"lastUpdatedBy", "lastUpdateDate", "version"}) {
       if (query.getParameter(requiredParameterName) != null) {
         NamedParameter parameter = parameters.namedParameters.get(requiredParameterName);
         if (parameter != null && StringUtil.isDefined(parameter.getValue().toString())) {
@@ -552,13 +565,8 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
         }
       }
       throw new IllegalArgumentException(
-          "parameter '" + requiredParameterName + "' is missing from the query '" + queryString +
+          "parameter '" + requiredParameterName + "' is missing from the query '" +
               "' or is missing from given parameters.");
-    }
-    if (!Pattern.compile("version.*=.*version[ ]*\\+[ ]*1").matcher(queryString).find()) {
-      throw new IllegalArgumentException(
-          "version management is missing from the query '" + queryString +
-              "' -> expected entity.version = (entity.version + 1)");
     }
   }
 

@@ -39,7 +39,8 @@ import java.util.List;
  * key definition.
  * @author Yohann Chastagnier
  */
-public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE> {
+public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY_IDENTIFIER_TYPE>,
+    ENTITY_IDENTIFIER_TYPE> {
 
   /**
    * Gets all persisted entities.
@@ -115,5 +116,14 @@ public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY
    * @return number of deleted entities.
    */
   long deleteById(final Collection<String> ids);
+
+  /**
+   * Does this repository contains the specified entity? It contains the entity if its persistence
+   * context is taken in charge by the instances of the repository class.
+   * @param entity an entity.
+   * @return true if the specified entity exists in the persistence context backed by this
+   * repository, false otherwise.
+   */
+  public boolean contains(ENTITY entity);
 
 }

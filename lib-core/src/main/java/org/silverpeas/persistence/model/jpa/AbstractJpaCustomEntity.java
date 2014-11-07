@@ -61,8 +61,8 @@ import java.util.logging.Logger;
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity<ENTITY,
-    IDENTIFIER_TYPE>, IDENTIFIER_TYPE extends EntityIdentifier>
+public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity, IDENTIFIER_TYPE
+    extends EntityIdentifier>
     extends AbstractCustomEntity<ENTITY, IDENTIFIER_TYPE> {
 
   @Transient
@@ -73,6 +73,10 @@ public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity<
 
   @EmbeddedId
   private IDENTIFIER_TYPE id;
+
+  protected IDENTIFIER_TYPE getNativeId() {
+    return id;
+  }
 
   /**
    * Gets the identifier class of the entity managed by the repository.

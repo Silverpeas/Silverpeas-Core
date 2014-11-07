@@ -24,7 +24,8 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
-import com.stratelia.silverpeas.classifyEngine.*;
+
+import com.stratelia.silverpeas.classifyEngine.PertinentValue;
 
 /**
  * @author Nicolas EYSSERIC

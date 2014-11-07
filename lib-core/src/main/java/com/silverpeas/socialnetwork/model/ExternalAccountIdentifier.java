@@ -33,7 +33,7 @@ import javax.persistence.Enumerated;
 import java.io.Serializable;
 
 @Embeddable
-public class ExternalAccountIdentifier implements CompositeEntityIdentifier, Serializable {
+public class ExternalAccountIdentifier implements CompositeEntityIdentifier {
   private static final long serialVersionUID = -9044047461214852788L;
 
   @Enumerated(EnumType.STRING)
@@ -114,13 +114,9 @@ public class ExternalAccountIdentifier implements CompositeEntityIdentifier, Ser
   }
 
   @Override
-  public EntityIdentifier fromString(final String id) {
-    if (StringUtil.isDefined(id)) {
-      String[] accountIds = id.split(COMPOSITE_SEPARATOR);
-      this.networkId = SocialNetworkID.from(accountIds[0]);
-      this.profileId = accountIds[1];
-    }
+  public ExternalAccountIdentifier fromString(final String... values) {
+    this.networkId = SocialNetworkID.from(values[0]);
+    this.profileId = values[1];
     return this;
   }
-
 }

@@ -27,6 +27,12 @@ package com.silverpeas.pdc.dao;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
 import java.util.List;
+
+import com.silverpeas.pdc.model.PdcClassification;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.persistence.repository.jpa.NamedParameter;
+import org.silverpeas.persistence.repository.jpa.NamedParameters;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,13 +40,15 @@ import org.springframework.data.repository.query.Param;
 /**
  * DAO that handles the persistence of PdcAxisValue beans.
  */
-public interface PdcAxisValueRepository extends JpaRepository<PdcAxisValue, PdcAxisValuePk> {
+public class PdcAxisValueRepository extends JpaBasicEntityManager<PdcAxisValue, PdcAxisValuePk> {
 
   /**
    * Finds all the values of the specified PdC's axis.
    * @param axisId the unique identifier of the axis.
    * @return a list of the values of the specified axis.
    */
-  @Query("from PdcAxisValue where axisId = :axisId")
-  List<PdcAxisValue> findByAxisId(@Param("axisId") Long axisId);
+  public List<PdcAxisValue> findByAxisId(Long axisId) {
+    NamedParameters parameters = newNamedParameters().add("axisId", axisId);
+    return findByNamedQuery("findByAxisId", parameters);
+  }
 }

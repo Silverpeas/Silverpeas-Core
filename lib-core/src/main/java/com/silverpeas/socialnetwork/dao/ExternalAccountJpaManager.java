@@ -26,7 +26,6 @@ package com.silverpeas.socialnetwork.dao;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

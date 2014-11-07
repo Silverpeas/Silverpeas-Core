@@ -24,13 +24,25 @@ import com.silverpeas.pdc.model.constraints.UniquePositions;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.exception.SilverpeasException;
-import java.io.Serializable;
-import java.util.*;
-import javax.persistence.*;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -46,24 +58,27 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * modified.
  */
 @Entity
-public class PdcClassification implements Serializable, Cloneable {
+@NamedQueries({
+    @NamedQuery(name = "findByComponentInstanceId", query = "from PdcClassification where " +
+        "instanceId=:instanceId and contentId is null and nodeId is null"),
+    @NamedQuery(name = "findByNodeId", query = "from PdcClassification where " +
+        "instanceId=:instanceId and contentId is null and nodeId=:nodeId"),
+    @NamedQuery(name = "findByPdcAxisValues", query = "select distinct c from PdcClassification c" +
+        " join c.positions p join p.axisValues v where v in :values")})
+public class PdcClassification
+    extends AbstractJpaCustomEntity<PdcClassification, UniqueLongIdentifier> implements Cloneable {
 
   /**
    * Represents an empty classification (id est no classification on the PdC).
    */
   public static final PdcClassification NONE_CLASSIFICATION = new PdcClassification();
-  private static final long serialVersionUID = 4032206628783381447L;
-  @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-      valueColumnName = "maxId", pkColumnValue = "PdcClassification", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  private Long id;
+
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   @NotNull
   @Size(min = 1)
   @UniquePositions
   @Valid
-  private Set<PdcPosition> positions = new HashSet<PdcPosition>();
+  private Set<PdcPosition> positions = new HashSet<>();
   private boolean modifiable = true;
   @Column(nullable = false)
   @NotNull
@@ -75,7 +90,7 @@ public class PdcClassification implements Serializable, Cloneable {
   /**
    * Creates an empty predefined classification for the contents that will published in the
    * specified component instance. By default, a predefined classification isn't modifiable and
-   * servs to classify automatically new contents published in the specied component instance.
+   * serves to classify automatically new contents published in the specied component instance.
    *
    * @param instanceId the unique identifier of the component instance to which the predefined
    * classification will be attached.
@@ -240,7 +255,7 @@ public class PdcClassification implements Serializable, Cloneable {
    * @param deletedValues the values that are removed from a PdC's axis.
    */
   public void updateForPdcAxisValuesDeletion(final List<PdcAxisValue> deletedValues) {
-    List<PdcPosition> positionsToDelete = new ArrayList<PdcPosition>();
+    List<PdcPosition> positionsToDelete = new ArrayList<>();
     for (PdcPosition pdcPosition : getPositions()) {
       for (PdcAxisValue aDeletedValue : deletedValues) {
         if (pdcPosition.getValues().contains(aDeletedValue)) {
@@ -293,30 +308,9 @@ public class PdcClassification implements Serializable, Cloneable {
     return this;
   }
 
-  protected PdcClassification(long id) {
-    this.id = id;
-  }
-
-  /**
-   * Gets the unique identifier of this classification on the PdC. The identifier is set when the
-   * classification is persisted over the Silverpeas runtime. If the content this classification is
-   * about were at a time unclassified, then the identifier of the classification isn't expected to
-   * be not the one of the previous classification as they are considered distinct objects (the
-   * previous classification was removed from the persistence context in Silverpeas).
-   *
-   * @return the classification unique identifier.
-   */
-  public Long getId() {
-    return this.id;
-  }
-
-  protected void setId(Long id) {
-    this.id = id;
-  }
-
   @Override
   public String toString() {
-    return "PdcClassification{" + "id=" + id + ", positions=" + positions + ", modifiable="
+    return "PdcClassification{" + "id=" + getId() + ", positions=" + positions + ", modifiable="
         + modifiable + ", instanceId=" + instanceId + ", contentId=" + contentId + ", nodeId="
         + nodeId + '}';
   }
@@ -340,8 +334,7 @@ public class PdcClassification implements Serializable, Cloneable {
    * @return a list of ClassifyPosition instances, each of them representing a position on the PdC.
    */
   public List<ClassifyPosition> getClassifyPositions() {
-    List<ClassifyPosition> classifyPositions =
-        new ArrayList<ClassifyPosition>(getPositions().size());
+    List<ClassifyPosition> classifyPositions = new ArrayList<>(getPositions().size());
     try {
       for (PdcPosition position : getPositions()) {
         classifyPositions.add(position.toClassifyPosition());

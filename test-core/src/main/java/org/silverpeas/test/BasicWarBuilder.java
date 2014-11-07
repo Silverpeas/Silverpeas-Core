@@ -21,6 +21,10 @@
 
 package org.silverpeas.test;
 
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+
+import java.io.File;
+
 /**
  * A basic war builder that does nothing more that is defined in the abstract class WarBuilder.
  * @author mmoquillon
@@ -34,4 +38,18 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
   protected <T> BasicWarBuilder(final Class<T> test) {
     super(test);
   }
+
+  /**
+   * Constructs an instance of the basic war archive builder for the specified test class.
+   * @param test the test class for which a war will be built. Any resources located in the same
+   * package of the test will be loaded into the war.
+   * @param <T> the type of the test.
+   * @return a basic builder of the war archive.
+   */
+  public static <T> BasicWarBuilder onWarFor(Class<T> test) {
+    BasicWarBuilder warBuilder = new BasicWarBuilder(test);
+    return warBuilder;
+  }
+
+
 }

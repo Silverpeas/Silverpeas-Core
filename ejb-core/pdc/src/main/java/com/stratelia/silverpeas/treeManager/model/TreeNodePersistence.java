@@ -286,7 +286,7 @@ public class TreeNodePersistence extends SilverpeasBean implements java.io.Seria
 
   /**
    * Method declaration
-   * @param levelNumber
+   * @param orderNumber
    * @see
    */
   public void setOrderNumber(int orderNumber) {

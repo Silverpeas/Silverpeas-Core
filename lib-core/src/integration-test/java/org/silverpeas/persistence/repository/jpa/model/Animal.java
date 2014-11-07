@@ -38,10 +38,10 @@ import java.util.List;
 @Table(name = "test_animals")
 @NamedQueries({@NamedQuery(name = "getAnimalsByType", query = "from Animal a where a.type = :type"),
     @NamedQuery(name = "getAnimalsByName", query = "from Animal a where a.name = :name"),
-    @NamedQuery(name = "updateAnimalNamesByType",
-        query = "update Animal a set a.name = concat(a.name, '_toto'), " +
+    @NamedQuery(name = "updateAnimalName",
+        query = "update Animal a set a.name = :name, " +
             "a.lastUpdatedBy = :lastUpdatedBy, a.lastUpdateDate = :lastUpdateDate, " +
-            "a.version = (a.version + 1) where a.type = :type"),
+            "a.version = :version where a.id = :id"),
     @NamedQuery(name = "deleteAnimalsByType", query = "delete from Animal a where a.type = :type")})
 public class Animal extends AbstractJpaEntity<Animal, UniqueLongIdentifier> implements
     Serializable {

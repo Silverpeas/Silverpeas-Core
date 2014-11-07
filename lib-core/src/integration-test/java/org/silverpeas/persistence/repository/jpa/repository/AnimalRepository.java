@@ -53,9 +53,12 @@ public class AnimalRepository extends SilverpeasJpaEntityManager<Animal, UniqueL
         Person.class);
   }
 
-  public long updateAnimalNamesByType(AnimalType type) {
-    return updateFromNamedQuery("updateAnimalNamesByType",
-        newNamedParameters().add("type", type).add("lastUpdatedBy", "dummy"));
+  public long updateAnimalName(Animal animal) {
+    return updateFromNamedQuery("updateAnimalName",
+        newNamedParameters().add("id", UniqueLongIdentifier.from(animal.getId()))
+            .add("name", animal.getName())
+            .add("lastUpdatedBy", "dummy")
+            .add("version", animal.getVersion() + 1));
   }
 
   public long deleteAnimalsByType(AnimalType type) {

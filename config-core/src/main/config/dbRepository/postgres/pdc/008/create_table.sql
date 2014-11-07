@@ -1,83 +1,90 @@
-CREATE TABLE SB_Pdc_Axis
+CREATE TABLE IF NOT EXISTS SB_Pdc_Axis
 (
-	id			int		NOT NULL ,
-	RootId			int		NOT NULL ,
-	Name			varchar (255)	NOT NULL ,
-	AxisType		char(1)		NOT NULL ,
-	AxisOrder		int		NOT NULL ,
-	creationDate		varchar (10)	NULL ,
-	creatorId		varchar (255)	NULL,
-	description             varchar (1000)  NULL,
-	lang			char(2)		NULL
-)
-;
-
-CREATE TABLE SB_Pdc_Utilization
-(
-	id			int		NOT NULL ,
-	instanceId		varchar (100)	NOT NULL ,
-	axisId			int		NOT NULL ,
-	baseValue		int		NOT NULL ,
-	mandatory		int		NOT NULL ,
-	variant			int		NOT NULL
-)
-;
-
-CREATE TABLE SB_Pdc_AxisI18N
-(
-	id			int		NOT NULL ,
-	AxisId			int		NOT NULL ,
-	lang			char(2)		NOT NULL ,
-	Name			varchar (255)	NOT NULL ,
-	description             varchar (1000)  NULL
-)
-;
-
-CREATE TABLE SB_Pdc_User_Rights
-(
-	axisId	int	NOT NULL,
-	valueId	int	NOT NULL,
-	userId	int	NOT NULL
-)
-;
-
-CREATE TABLE SB_Pdc_Group_Rights
-(
-	axisId	int	NOT NULL,
-	valueId	int	NOT NULL,
-	groupId	int	NOT NULL
-)
-;
-create table PdcAxisValue (
-  valueId int8 not null,
-  axisId int8 not null,
-  primary key (valueId, axisId)
+  id           INT           NOT NULL,
+  RootId       INT           NOT NULL,
+  Name         VARCHAR(255)  NOT NULL,
+  AxisType     CHAR(1)       NOT NULL,
+  AxisOrder    INT           NOT NULL,
+  creationDate VARCHAR(10)   NULL,
+  creatorId    VARCHAR(255)  NULL,
+  description  VARCHAR(1000) NULL,
+  lang         CHAR(2)       NULL,
+  CONSTRAINT PK_Pdc_Axis PRIMARY KEY (id)
 );
 
-create table PdcClassification (
-  id int8 not null,
-  contentId varchar(255),
-  instanceId varchar(255) not null,
-  modifiable bool not null,
-  nodeId varchar(255),
-  primary key (id)
+CREATE TABLE IF NOT EXISTS SB_Pdc_Utilization
+(
+  id         INT          NOT NULL,
+  instanceId VARCHAR(100) NOT NULL,
+  axisId     INT          NOT NULL,
+  baseValue  INT          NOT NULL,
+  mandatory  INT          NOT NULL,
+  variant    INT          NOT NULL,
+  CONSTRAINT PK_Pdc_Utilization PRIMARY KEY (id)
 );
 
-create table PdcClassification_PdcPosition (
-  PdcClassification_id int8 not null,
-  positions_id int8 not null,
-  primary key (PdcClassification_id, positions_id),
-  unique (positions_id)
+CREATE TABLE IF NOT EXISTS SB_Pdc_AxisI18N
+(
+  id          INT           NOT NULL,
+  AxisId      INT           NOT NULL,
+  lang        CHAR(2)       NOT NULL,
+  Name        VARCHAR(255)  NOT NULL,
+  description VARCHAR(1000) NULL,
+  CONSTRAINT PK_Pdc_AxisI18N PRIMARY KEY (id)
 );
 
-create table PdcPosition (
-  id int8 not null,
-  primary key (id)
+CREATE TABLE IF NOT EXISTS SB_Pdc_User_Rights
+(
+  axisId  INT NOT NULL,
+  valueId INT NOT NULL,
+  userId  INT NOT NULL,
+  CONSTRAINT FK_Pdc_User_Rights_1 FOREIGN KEY (axisId) REFERENCES SB_Pdc_Axis (id),
+  CONSTRAINT FK_Pdc_User_Rights_2 FOREIGN KEY (userId) REFERENCES ST_User (id)
 );
 
-create table PdcPosition_PdcAxisValue (
-  PdcPosition_id int8 not null,
-  axisValues_valueId int8 not null,
-  axisValues_axisId bigint not null,
-  primary key (PdcPosition_id, axisValues_valueId, axisValues_axisId)
+CREATE TABLE IF NOT EXISTS SB_Pdc_Group_Rights
+(
+  axisId  INT NOT NULL,
+  valueId INT NOT NULL,
+  groupId INT NOT NULL,
+  CONSTRAINT FK_Pdc_Group_Rights_1 FOREIGN KEY (axisId) REFERENCES SB_Pdc_Axis (id),
+  CONSTRAINT FK_Pdc_Group_Rights_2 FOREIGN KEY (groupId) REFERENCES ST_Group (id)
+);
+
+CREATE TABLE IF NOT EXISTS PdcAxisValue (
+  valueId INT8 NOT NULL,
+  axisId  INT8 NOT NULL,
+  PRIMARY KEY (valueId, axisId)
+);
+
+CREATE TABLE IF NOT EXISTS PdcClassification (
+  id         INT8         NOT NULL,
+  contentId  VARCHAR(255),
+  instanceId VARCHAR(255) NOT NULL,
+  modifiable BOOL         NOT NULL,
+  nodeId     VARCHAR(255),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS PdcClassification_PdcPosition (
+  PdcClassification_id INT8 NOT NULL,
+  positions_id         INT8 NOT NULL,
+  PRIMARY KEY (PdcClassification_id, positions_id),
+  UNIQUE (positions_id),
+  CONSTRAINT FK_PdcClassification_PdcPosition_PositionId FOREIGN KEY (positions_id) REFERENCES PdcPosition,
+  CONSTRAINT FK_PdcClassification_PdcPosition_PositionId_PdcClassificationId FOREIGN KEY (PdcClassification_id) REFERENCES PdcClassification
+);
+
+CREATE TABLE IF NOT EXISTS PdcPosition (
+  id INT8 NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS PdcPosition_PdcAxisValue (
+  PdcPosition_id     INT8   NOT NULL,
+  axisValues_valueId INT8   NOT NULL,
+  axisValues_axisId  BIGINT NOT NULL,
+  PRIMARY KEY (PdcPosition_id, axisValues_valueId, axisValues_axisId),
+  CONSTRAINT FK_PdcPosition_PdcAxisValue_PdcAxisValueId FOREIGN KEY (axisValues_valueId, axisValues_axisId) REFERENCES PdcAxisValue,
+  CONSTRAINT FK_PdcPosition_PdcAxisValue_PdcPositionId FOREIGN KEY (PdcPosition_id) REFERENCES PdcPosition
 );

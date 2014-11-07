@@ -48,7 +48,7 @@ import java.util.Date;
  * @author Yohann Chastagnier
  */
 public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFIER_TYPE>
-    extends IdentifiableEntity, Serializable {
+    extends IdentifiableEntity {
 
   /**
    * Gets the identifier of the component instance which the entity is attached.

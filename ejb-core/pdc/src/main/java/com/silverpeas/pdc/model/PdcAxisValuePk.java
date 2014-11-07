@@ -24,12 +24,15 @@
 
 package com.silverpeas.pdc.model;
 
+import org.silverpeas.persistence.model.CompositeEntityIdentifier;
+import org.silverpeas.persistence.model.EntityIdentifier;
+
 import java.io.Serializable;
 
 /**
  * The composite primary key used to store values of PdC's axis.
  */
-public class PdcAxisValuePk implements Serializable {
+public class PdcAxisValuePk implements CompositeEntityIdentifier {
   private static final long serialVersionUID = 6046047003447540458L;
 
   private Long valueId;
@@ -95,5 +98,17 @@ public class PdcAxisValuePk implements Serializable {
   @Override
   public String toString() {
     return "PdcAxisValuePk{" + "valueId=" + valueId + ", axisId=" + axisId + '}';
+  }
+
+  @Override
+  public PdcAxisValuePk fromString(final String... values) {
+    setValueId(Long.valueOf(values[0]));
+    setAxisId(Long.valueOf(values[1]));
+    return this;
+  }
+
+  @Override
+  public String asString() {
+    return String.valueOf(getValueId());
   }
 }

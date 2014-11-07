@@ -26,7 +26,6 @@ package com.silverpeas.domains.silverpeasdriver;
 
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.repository.BasicEntityRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -35,9 +34,9 @@ import java.util.List;
  */
 public interface SPGroupManager extends BasicEntityRepository<SPGroup, UniqueIntegerIdentifier> {
 
-  List<SPGroup> findByName(@Param("name") String name);
+  List<SPGroup> findByName(String name);
 
-  List<SPGroup> findByDescription(@Param("description") String description);
+  List<SPGroup> findByDescription(String description);
 
   List<SPGroup> listAllRootGroups();
 }

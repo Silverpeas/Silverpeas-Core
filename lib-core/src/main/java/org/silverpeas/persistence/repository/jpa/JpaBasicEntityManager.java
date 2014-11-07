@@ -1,33 +1,28 @@
 package org.silverpeas.persistence.repository.jpa;
 
-import org.hibernate.jpa.internal.QueryImpl;
 import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.model.IdentifiableEntity;
 import org.silverpeas.persistence.repository.BasicEntityRepository;
 import org.silverpeas.persistence.repository.QueryCriteria;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.PaginationList;
-import org.silverpeas.util.StringUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.lang.reflect.ParameterizedType;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author: ebonnet
  */
-public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
-    ENTITY_IDENTIFIER_TYPE>, ENTITY_IDENTIFIER_TYPE extends EntityIdentifier>
+public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity, ENTITY_IDENTIFIER_TYPE
+    extends EntityIdentifier>
     implements BasicEntityRepository<ENTITY, ENTITY_IDENTIFIER_TYPE> {
 
   /**
@@ -128,6 +123,18 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity<ENTITY,
       }
     }
     return identifiers;
+  }
+
+  /**
+   * Does this repository contains the specified entity? It contains the entity if its persistence
+   * context is taken in charge by the instances of the repository class.
+   * @param entity an entity.
+   * @return true if the specified entity exists in the persistence context backed by this
+   * repository, false otherwise.
+   */
+  @Override
+  public boolean contains(ENTITY entity) {
+    return getEntityManager().contains(entity);
   }
 
   /**

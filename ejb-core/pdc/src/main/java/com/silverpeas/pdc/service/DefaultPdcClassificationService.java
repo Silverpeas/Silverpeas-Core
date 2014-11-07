@@ -173,14 +173,13 @@ public class DefaultPdcClassificationService implements PdcClassificationService
       throw new IllegalArgumentException("The classification isn't a predefined one");
     }
     PdcClassification savedClassification = NONE_CLASSIFICATION;
-    if (classification.getId() != null && classificationRepository.exists(classification.getId())
+    if (classification.getId() != null && classificationRepository.contains(classification)
         && classification.isEmpty()) {
       classificationRepository.delete(classification);
     } else {
       for (PdcPosition aPosition : classification.getPositions()) {
         for (PdcAxisValue aValue : aPosition.getValues()) {
-          PdcAxisValuePk pk = PdcAxisValuePk.aPdcAxisValuePk(aValue.getId(), aValue.getAxisId());
-          if (!valueRepository.exists(pk)) {
+          if (!valueRepository.contains(aValue)) {
             valueRepository.save(aValue);
           }
         }

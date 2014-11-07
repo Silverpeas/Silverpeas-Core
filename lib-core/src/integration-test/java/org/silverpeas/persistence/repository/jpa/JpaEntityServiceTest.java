@@ -162,8 +162,8 @@ public class JpaEntityServiceTest {
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public long updateAnimalNamesByType(AnimalType type) {
-    return animalRepository.updateAnimalNamesByType(type);
+  public long updateAnimalName(Animal animal) {
+    return animalRepository.updateAnimalName(animal);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
@@ -172,8 +172,8 @@ public class JpaEntityServiceTest {
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
-  public long updatePersonFirstNamesHavingAtLeastOneAnimal() {
-    return personRepository.updatePersonFirstNamesHavingAtLeastOneAnimal();
+  public long updatePersonFirstNameHavingAtLeastOneAnimal(Person person) {
+    return personRepository.updatePersonFirstNameHavingAtLeastOneAnimal(person);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
