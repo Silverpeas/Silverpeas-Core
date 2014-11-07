@@ -28,7 +28,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.WebdavServiceProvider;
@@ -272,13 +272,13 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
    * also used instead at class level for both authentication and authorization.
    *
-   * @see UserPriviledgeValidation
+   * @see com.silverpeas.web.UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.
    */
   @Override
-  public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
       WebApplicationException {
     validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUserDetail(),
         getSimpleDocument(null));

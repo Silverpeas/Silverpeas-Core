@@ -26,7 +26,7 @@ package org.silverpeas.password.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.password.rule.PasswordRule;
 
@@ -64,7 +64,7 @@ public class PasswordResource extends AbstractPasswordResource {
    * @throws WebApplicationException
    */
   @Override
-  public void validateUserAuthentication(final UserPriviledgeValidation validation)
+  public void validateUserAuthentication(final UserPrivilegeValidation validation)
       throws WebApplicationException {
     try {
       super.validateUserAuthentication(validation);

@@ -23,10 +23,16 @@
  */
 package com.silverpeas.annotation;
 
+import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to indicate the access a web resource must be done within an authenticated session.
@@ -34,8 +40,10 @@ import java.lang.annotation.Target;
  * If the user isn't yet authenticated, an authentication challenge is triggered with the
  * credentials from the Authenticate HTTP header of the request.
  */
+@InterceptorBinding
 @Documented
-@Target(ElementType.TYPE)
+@Target(TYPE)
+@Retention(RUNTIME)
 @Inherited
 public @interface Authenticated {
   

@@ -23,50 +23,38 @@
  */
 package com.silverpeas.annotation.processing;
 
+import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
-import com.silverpeas.web.UserPriviledgeValidationFactory;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
+import com.silverpeas.web.UserPrivilegeValidation;
+import com.silverpeas.web.WebResource;
+
+import javax.annotation.Priority;
+import javax.inject.Inject;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
- * A processor working on the classes that are annoted with the @Authenticated annotation. As the
- * annoted classes requires to be modified by adding to them some codes, the processor is actually
- * an aspect.
+ * A processor working on the classes that are annotated with the @Authenticated annotation.
  */
-@Component @Aspect
+@Interceptor
+@Authenticated
+@Priority(APPLICATION)
 public class AuthenticatedAnnotationProcessor {
 
-  @Pointcut(
-  "@within(com.silverpeas.annotation.Authenticated) && this(com.silverpeas.web.RESTWebService)")
-  public void webServicesAnnotatedWithAuthenticated() {
-  }
+  @Inject
+  private UserPrivilegeValidation validation;
 
-  @Pointcut("@annotation(javax.ws.rs.GET) && execution(* *(..))")
-  public void methodAnnotatedWithGET() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.POST) && execution(* *(..))")
-  public void methodAnnotatedWithPOST() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.DELETE) && execution(* *(..))")
-  public void methodAnnotatedWithDELETE() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.PUT) && execution(* *(..))")
-  public void methodAnnotatedWithPUT() {
-  }
-
-  @Before("webServicesAnnotatedWithAuthenticated() && (methodAnnotatedWithGET() || "
-  + "methodAnnotatedWithPOST() || methodAnnotatedWithDELETE() || methodAnnotatedWithPUT()) "
-  + "&& this(service)")
-  public void validateTheAuthentication(RESTWebService service) throws Throwable {
-    UserPriviledgeValidation validation = UserPriviledgeValidationFactory.getFactory().
-            getUserPriviledgeValidation();
-    service.validateUserAuthentication(validation);
+  @AroundInvoke
+  public Object processAuthentication(InvocationContext context) throws Exception {
+    Object target = context.getTarget();
+    if (target instanceof WebResource) {
+      WebResource resource = (WebResource) target;
+      resource.validateUserAuthentication(validation);
+    }
+    return context.proceed();
   }
 
 }

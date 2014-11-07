@@ -23,18 +23,26 @@
  */
 package com.silverpeas.annotation;
 
+import javax.interceptor.InterceptorBinding;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to indicate the access a web resource is protected by authorization schema.
  * With this annotation, for each access to a component instance that provides the web resource,
  * the user authentication is validated and then its access rights are checked.
  */
+@InterceptorBinding
 @Documented
-@Target(ElementType.TYPE)
+@Target(TYPE)
+@Retention(RUNTIME)
 @Inherited
 public @interface Authorized {
   

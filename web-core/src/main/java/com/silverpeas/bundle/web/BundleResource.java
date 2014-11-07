@@ -26,7 +26,7 @@ package com.silverpeas.bundle.web;
 import com.silverpeas.annotation.Authenticated;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class BundleResource extends RESTWebService {
    * @throws WebApplicationException
    */
   @Override
-  public void validateUserAuthentication(final UserPriviledgeValidation validation)
+  public void validateUserAuthentication(final UserPrivilegeValidation validation)
       throws WebApplicationException {
     try {
       super.validateUserAuthentication(validation);

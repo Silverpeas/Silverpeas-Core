@@ -26,7 +26,7 @@ package org.silverpeas.notification.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.notification.message.MessageManager;
 
 import javax.ws.rs.GET;
@@ -56,7 +56,7 @@ public class MessageResource extends AbstractMessageResource {
    * @throws javax.ws.rs.WebApplicationException
    */
   @Override
-  public void validateUserAuthentication(final UserPriviledgeValidation validation)
+  public void validateUserAuthentication(final UserPrivilegeValidation validation)
       throws WebApplicationException {
     try {
       super.validateUserAuthentication(

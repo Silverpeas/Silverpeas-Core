@@ -39,8 +39,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import static com.silverpeas.authentication.web.WebTestResources.*;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 
 /**
  * Tests on the authentication process when accessing the WEB resources published as REST services.

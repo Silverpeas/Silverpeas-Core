@@ -31,7 +31,7 @@ import com.silverpeas.subscribe.service.NodeSubscription;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIBE_RESOURCE_PATH;
 import com.silverpeas.web.RESTWebServiceTest;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;

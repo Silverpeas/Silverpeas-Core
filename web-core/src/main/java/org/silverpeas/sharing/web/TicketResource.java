@@ -53,7 +53,7 @@ import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.sharing.services.SharingTicketService;
 import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import com.silverpeas.web.UserPriviledgeValidationFactory;
 
 @Service
@@ -115,7 +115,7 @@ public class TicketResource extends RESTWebService {
   private void validateUserAuthorizationOn(String componentId) {
     this.componentId = componentId;
     UserPriviledgeValidationFactory factory = UserPriviledgeValidationFactory.getFactory();
-    UserPriviledgeValidation validation = factory.getUserPriviledgeValidation();
+    UserPrivilegeValidation validation = factory.getUserPriviledgeValidation();
     validateUserAuthorization(validation);
   }
 

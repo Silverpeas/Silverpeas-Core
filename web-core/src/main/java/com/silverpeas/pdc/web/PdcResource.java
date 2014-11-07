@@ -25,7 +25,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import com.silverpeas.web.UserPriviledgeValidationFactory;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.Axis;
@@ -164,7 +164,7 @@ public class PdcResource extends RESTWebService {
       this.componentId = componentId;
     }
     UserPriviledgeValidationFactory factory = UserPriviledgeValidationFactory.getFactory();
-    UserPriviledgeValidation validation = factory.getUserPriviledgeValidation();
+    UserPrivilegeValidation validation = factory.getUserPriviledgeValidation();
     validateUserAuthorization(validation);
   }
 

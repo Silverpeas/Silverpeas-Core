@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourceLocator;
 
@@ -74,7 +74,7 @@ public class WebCORSFilter implements Filter {
     if (HttpMethod.OPTIONS.name().equals(httpRequest.getMethod())) {
       httpResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
       httpResponse.addHeader("Access-Control-Allow-Headers", "Content-Type, " +
-          UserPriviledgeValidation.HTTP_SESSIONKEY);
+          UserPrivilegeValidation.HTTP_SESSIONKEY);
     }
 
     // The request treatment continue.

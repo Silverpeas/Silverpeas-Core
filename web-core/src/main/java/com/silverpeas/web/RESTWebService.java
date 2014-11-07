@@ -48,14 +48,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
  * the web services in Silverpeas like the user priviledge checking.
  */
-public abstract class RESTWebService {
+public abstract class RESTWebService implements WebResource {
   public static final String REST_WEB_SERVICES_URI_BASE =
       SilverpeasSettings.getRestWebServicesUriBase();
 
@@ -94,12 +94,13 @@ public abstract class RESTWebService {
    * This method should be invoked for web service requiring an authenticated user. Otherwise, the
    * annotation Authenticated can be also used instead at class level.
    *
-   * @see UserPriviledgeValidation
+   * @see UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the authentication isn't valid (no authentication and
    * authentication failure).
    */
-  public void validateUserAuthentication(final UserPriviledgeValidation validation) throws
+  @Override
+  public void validateUserAuthentication(final UserPrivilegeValidation validation) throws
       WebApplicationException {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
@@ -132,12 +133,13 @@ public abstract class RESTWebService {
    * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
    * also used instead at class level for both authentication and authorization.
    *
-   * @see UserPriviledgeValidation
+   * @see UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.
    */
-  public void validateUserAuthorization(final UserPriviledgeValidation validation) throws
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
       WebApplicationException {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }

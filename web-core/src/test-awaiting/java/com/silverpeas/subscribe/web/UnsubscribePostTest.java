@@ -44,7 +44,7 @@ import javax.ws.rs.core.Response.Status;
 
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.UNSUBSCRIBE_RESOURCE_PATH;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;

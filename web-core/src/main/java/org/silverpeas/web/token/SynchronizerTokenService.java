@@ -28,7 +28,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.token.Token;
 import org.silverpeas.token.TokenGenerator;
@@ -242,7 +242,7 @@ public class SynchronizerTokenService {
       }
     }
     if (token == null) {
-      String sessionId = request.getHeader(UserPriviledgeValidation.HTTP_SESSIONKEY);
+      String sessionId = request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY);
       if (StringUtil.isDefined(sessionId)) {
         SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionId);

@@ -33,7 +33,7 @@ import javax.inject.Inject;
 public class UserPriviledgeValidationFactory {
   
   @Inject
-  private UserPriviledgeValidation validation;
+  private UserPrivilegeValidation validation;
 
   private static final UserPriviledgeValidationFactory instance =
           new UserPriviledgeValidationFactory();
@@ -42,7 +42,7 @@ public class UserPriviledgeValidationFactory {
     return instance;
   }
   
-  public UserPriviledgeValidation getUserPriviledgeValidation() {
+  public UserPrivilegeValidation getUserPriviledgeValidation() {
     return validation;
   }
   

@@ -50,7 +50,7 @@ import java.util.List;
 import org.silverpeas.util.CollectionUtil;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;

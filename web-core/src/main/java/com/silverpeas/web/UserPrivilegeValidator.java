@@ -64,7 +64,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * externally the validation triggering,
  */
 @Named
-public class UserPriviledgeValidation {
+public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   @Inject
   private SessionManagement sessionManagement;
@@ -77,23 +77,6 @@ public class UserPriviledgeValidation {
 
   @Inject
   private OrganizationController organisationController;
-
-  /**
-   * The HTTP header paremeter in an incoming request that carries the user session key. By the user
-   * session key could be passed a user token to perform a HTTP request without opening a session.
-   * This parameter isn't mandatory as the session key can be found from an active HTTP session. If
-   * neither HTTP session nor session key is available for the incoming request, user credentials
-   * must be passed in the standard HTTP header parameter Authorization.
-   */
-  public static final String HTTP_SESSIONKEY = "X-Silverpeas-Session";
-  /**
-   * The standard HTTP header parameter in an incoming request that carries user credentials
-   * information in order to open an authorized connexion with the web service that backs the
-   * refered resource. This parameter must be used when requests aren't sent through an opened HTTP
-   * session. It should be the prefered way for a REST client to access resources in Silverpeas as
-   * it offers better scalability.
-   */
-  public static final String HTTP_AUTHORIZATION = "Authorization";
 
   /**
    * This constant is used to specify into the request attributes if the registering of "the last
@@ -120,6 +103,7 @@ public class UserPriviledgeValidation {
    * @return the opened session of the user at the origin of the specified request.
    * @throws WebApplicationException exception if the validation failed.
    */
+  @Override
   public SessionInfo validateUserAuthentication(final HttpServletRequest request) throws
       WebApplicationException {
     SessionInfo userSession;
@@ -144,19 +128,20 @@ public class UserPriviledgeValidation {
 
   /**
    * Sets into the request attributes the {@link
-   * UserPriviledgeValidation#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute to true.
+   * UserPrivilegeValidator#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute to true.
    * @param request the current request performed.
    * @return itself.
    */
-  public UserPriviledgeValidation skipLastUserAccessTimeRegistering(
-      final HttpServletRequest request) {
+  @Override
+  public UserPrivilegeValidation skipLastUserAccessTimeRegistering(final HttpServletRequest
+      request) {
     request.setAttribute(SKIP_LAST_USER_ACCESS_TIME_REGISTERING, true);
     return this;
   }
 
   /**
    * Indicates if the last user access time registering must be skipped from the value of {@link
-   * UserPriviledgeValidation#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute contained into the
+   * UserPrivilegeValidator#SKIP_LAST_USER_ACCESS_TIME_REGISTERING} attribute contained into the
    * request attributes.
    * @param request the current request performed.
    * @return true to skip, false otherwise.
@@ -189,6 +174,7 @@ public class UserPriviledgeValidation {
    * @param instanceId the unique identifier of the accessed component instance.
    * @throws WebApplicationException exception if the validation failed.
    */
+  @Override
   public void validateUserAuthorizationOnComponentInstance(final UserDetail user, String instanceId)
       throws WebApplicationException {
     if (user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
@@ -204,6 +190,7 @@ public class UserPriviledgeValidation {
    * @param doc the document accessed.
    * @throws WebApplicationException exception if the validation failed.
    */
+  @Override
   public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
       final UserDetail user, SimpleDocument doc) throws WebApplicationException {
     AccessControlContext context = AccessControlContext.init();

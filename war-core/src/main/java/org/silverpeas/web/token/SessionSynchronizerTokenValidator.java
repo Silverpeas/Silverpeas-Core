@@ -27,7 +27,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.GeneralPropertiesManager;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -154,14 +154,14 @@ public class SessionSynchronizerTokenValidator implements Filter {
     String uri = request.getRequestURI();
     return uri.contains("/CredentialsServlet/") || uri.contains("/services/password/") || uri.
         contains("/AuthenticationServlet") || (isWebServiceRequested(request)
-        && StringUtil.isDefined(request.getHeader(UserPriviledgeValidation.HTTP_AUTHORIZATION)));
+        && StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION)));
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
     SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
     return service.isAProtectedResource(request) && !isFileDragAndDrop(request)
         && !(isWebServiceRequested(request) && StringUtil.isDefined(request.getHeader(
-                UserPriviledgeValidation.HTTP_SESSIONKEY)));
+                UserPrivilegeValidation.HTTP_SESSIONKEY)));
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
