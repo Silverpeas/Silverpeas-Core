@@ -30,6 +30,7 @@ import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -133,8 +134,7 @@ public class AuthenticationParameters {
 
   private void decodePassword(boolean cookieEnabled, String stringKey,
       boolean newEncryptMode) {
-    CredentialEncryption encryption = CredentialEncryptionFactory.getInstance()
-        .getEncryption();
+    CredentialEncryption encryption = CredentialEncryption.getInstance();
     if (newEncryptMode) {
       String decodedLogin = encryption.decode(login, stringKey, false);
       clearPassword = ((!StringUtil.isDefined(cryptedPassword)) ? encryption

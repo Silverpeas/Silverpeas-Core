@@ -24,12 +24,19 @@
 
 package com.silverpeas.authentication;
 
+import org.silverpeas.util.ServiceProvider;
+
 /**
  * Encryption of the user credentials before recording them into a given storage (cookies, ...)
  * All encryption algorithms available in Silverpeas to encrypt the user credentials must implement
  * this interface.
  */
 public interface CredentialEncryption {
+
+  public static CredentialEncryption getInstance() {
+    return ServiceProvider.getService(CredentialEncryption.class);
+  }
+
   public String encode(String str);
 
   public String decode(String str);

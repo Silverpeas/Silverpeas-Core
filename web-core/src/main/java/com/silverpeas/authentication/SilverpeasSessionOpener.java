@@ -39,6 +39,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
+import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.UserAuthenticationListener;
@@ -54,11 +55,12 @@ import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
  *
  * @author ehugonnet
  */
+@Singleton
 public class SilverpeasSessionOpener {
   
   private static final int HTTP_DEFAULT_PORT = 80;
 
-  public SilverpeasSessionOpener() {
+  protected SilverpeasSessionOpener() {
   }
   
   /**
@@ -308,5 +310,9 @@ public class SilverpeasSessionOpener {
     notifMetaData.setSender(fromUserId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
     sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+  }
+
+  public static SilverpeasSessionOpener getInstance() {
+    return ServiceProvider.getService(SilverpeasSessionOpener.class);
   }
 }

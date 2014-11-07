@@ -33,6 +33,7 @@ import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,8 +50,8 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = 3879578969267125005L;
 
-  private static final SilverpeasSessionOpener silverpeasSessionOpener =
-      new SilverpeasSessionOpener();
+  @Inject
+  private SilverpeasSessionOpener silverpeasSessionOpener;
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)

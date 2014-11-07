@@ -31,9 +31,11 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+@Singleton
 public class MandatoryQuestionChecker {
 
   private final static ResourceLocator general = new ResourceLocator(
@@ -44,7 +46,7 @@ public class MandatoryQuestionChecker {
     return destination;
   }
 
-  public MandatoryQuestionChecker() {
+  protected MandatoryQuestionChecker() {
   }
 
   public boolean check(HttpServletRequest req, String authenticationKey) {

@@ -20,29 +20,13 @@
  */
 package com.silverpeas.authentication;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-import javax.inject.Inject;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
@@ -51,7 +35,23 @@ import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.inject.Inject;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -65,9 +65,13 @@ public class AuthenticationServlet extends HttpServlet {
 
   @Inject
   private AuthenticationService authService;
+  @Inject
+  private SilverpeasSessionOpener silverpeasSessionOpener;
+  @Inject
+  private CredentialEncryption credentialEncryption;
+  @Inject
+  private MandatoryQuestionChecker mandatoryQuestionChecker;
   private static final long serialVersionUID = -8695946617361150513L;
-  private static final SilverpeasSessionOpener silverpeasSessionOpener
-      = new SilverpeasSessionOpener();
   private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
@@ -140,9 +144,8 @@ public class AuthenticationServlet extends HttpServlet {
         }
       }
 
-      MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
-      if (checker.check(request, authenticationKey)) {
-        forward(request, servletResponse, checker.getDestination());
+      if (mandatoryQuestionChecker.check(request, authenticationKey)) {
+        forward(request, servletResponse, mandatoryQuestionChecker.getDestination());
         return;
       }
 
@@ -253,21 +256,14 @@ public class AuthenticationServlet extends HttpServlet {
       SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
           "root.MSG_GEN_ENTER_METHOD", "Ok");
       if (newEncryptMode) {
-        writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().
-            encode(
-                clearPassword), -1, secured);
-        writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().
-            encode(
-                clearPassword), 31536000, secured);
+        writeCookie(response, "var2", credentialEncryption.encode(clearPassword), -1, secured);
+        writeCookie(response, "var2", credentialEncryption.encode(clearPassword), 31536000,
+            secured);
       } else {
-        writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().
-            getEncryption()
-            .encode(
-                clearPassword), -1, secured);
-        writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().
-            getEncryption()
-            .encode(
-                clearPassword), 31536000, secured);
+        writeCookie(response, "svpPassword", credentialEncryption.encode(clearPassword), -1,
+            secured);
+        writeCookie(response, "svpPassword", credentialEncryption.encode(clearPassword), 31536000,
+            secured);
       }
     }
   }
@@ -280,11 +276,9 @@ public class AuthenticationServlet extends HttpServlet {
   private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin,
       boolean secured) {
     if (newEncryptMode) {
-      writeCookie(response, "var1", CredentialEncryptionFactory.getInstance().getEncryption().
-          encode(sLogin),
+      writeCookie(response, "var1", credentialEncryption.encode(sLogin),
           -1, secured);
-      writeCookie(response, "var1", CredentialEncryptionFactory.getInstance().getEncryption().
-          encode(sLogin),
+      writeCookie(response, "var1", credentialEncryption.encode(sLogin),
           31536000, secured);
     } else {
       writeCookie(response, "svpLogin", sLogin, -1, secured);

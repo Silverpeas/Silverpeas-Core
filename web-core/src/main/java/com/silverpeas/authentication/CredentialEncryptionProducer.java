@@ -26,20 +26,23 @@ package com.silverpeas.authentication;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
 /**
- * Factory of CredentialEncryption instances. It constructs an instance from the correct
+ * Producer of CredentialEncryption instances. It constructs an instance from the correct
  * encryption implementation after identifying it from the settings.
  */
-public class CredentialEncryptionFactory {
+public class CredentialEncryptionProducer {
 
   private Class<? extends CredentialEncryption> encryptionClass;
-  private static final CredentialEncryptionFactory instance = new CredentialEncryptionFactory();
 
   /**
    * -------------------------------------------------------------------------- constructor
    */
-  private CredentialEncryptionFactory() {
+  private CredentialEncryptionProducer() {
     ResourceLocator settingsFile = new ResourceLocator(
         "com.silverpeas.authentication.settings.authenticationSettings", "");
     try {
@@ -53,14 +56,11 @@ public class CredentialEncryptionFactory {
     }
   }
 
-  public static CredentialEncryptionFactory getInstance() {
-    return instance;
-  }
-
   /**
    * Get standard Encryption class
    * @return
    */
+  @Produces
   public CredentialEncryption getEncryption() {
     try {
       return encryptionClass.newInstance();
