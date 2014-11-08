@@ -4,6 +4,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<%@ page import="com.stratelia.silverpeas.selection.Selection"%>
+
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -527,8 +529,12 @@
               var selectedUserNames = $scope.selectedUsers.itemNamesAsString();
               var selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
               var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
+              var selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
               window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds));
               window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames));
+              if(selectionTypeField != null && selectionTypeField.length > 0) {
+              	window.opener.$('#' + selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
+              }
               window.close();
         </c:when>
         <c:otherwise>

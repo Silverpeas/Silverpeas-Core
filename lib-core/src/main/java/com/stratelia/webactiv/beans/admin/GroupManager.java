@@ -22,6 +22,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
@@ -34,7 +35,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.silverpeas.util.ListSlice;
 
 public class GroupManager {
@@ -61,8 +65,7 @@ public class GroupManager {
     try {
       connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      ListSlice<Group> groups = groupDao.getGroupsByCriteria(connection,
-              (GroupSearchCriteriaForDAO) criteria);
+      ListSlice<Group> groups = groupDao.getGroupsByCriteria(connection, criteria);
 
       String domainIdConstraint = null;
       List<String> domainIds = criteria.getCriterionOnDomainIds();
@@ -139,8 +142,8 @@ public class GroupManager {
   }
 
   /**
-   * Get the direct groups id containing a user
-   *
+   * Get the direct groups id containing a user. Groups that the user is linked to by
+   * transitivity are not returned.
    * @param ddManager
    * @param sUserId
    * @return
@@ -164,6 +167,34 @@ public class GroupManager {
     } finally {
       ddManager.releaseOrganizationSchema();
     }
+  }
+
+  /**
+   * Get all group ids containing a user. So, groups that the user is linked to by
+   * transitivity are returned too (recursive treatment).
+   * @param ddManager
+   * @param userId
+   * @return
+   * @throws AdminException
+   */
+  public List<String> getAllGroupsOfUser(DomainDriverManager ddManager, String userId) throws AdminException {
+    Set<String> allGroupsOfUser = new HashSet<String>();
+
+    String[] directGroupIds = getDirectGroupsOfUser(ddManager, userId);
+    for (String directGroupId : directGroupIds) {
+      Group group = getGroup(ddManager, directGroupId);
+      if (group != null) {
+        allGroupsOfUser.add(group.getId());
+        while (group != null && StringUtil.isDefined(group.getSuperGroupId())) {
+          group = getGroup(ddManager, group.getSuperGroupId());
+          if (group != null) {
+            allGroupsOfUser.add(group.getId());
+          }
+        }
+      }
+    }
+
+    return new ArrayList<String>(allGroupsOfUser);
   }
 
   /**
@@ -976,6 +1007,21 @@ public class GroupManager {
       return groupDao.getNBUsersDirectlyInGroup(con, groupId);
     } catch (Exception e) {
       throw new AdminException("GroupManager.getNBUsersDirectlyInGroup",
+              SilverpeasException.ERROR,
+              "admin.EX_ERR_GET_USER_OF_GROUP", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  public List<String> getUsersDirectlyInGroup(String groupId) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return groupDao.getUsersDirectlyInGroup(con, groupId);
+    } catch (Exception e) {
+      throw new AdminException("GroupManager.getUsersDirectlyInGroup",
               SilverpeasException.ERROR,
               "admin.EX_ERR_GET_USER_OF_GROUP", e);
     } finally {

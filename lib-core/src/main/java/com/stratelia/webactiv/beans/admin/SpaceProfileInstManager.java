@@ -36,6 +36,67 @@ public class SpaceProfileInstManager {
    */
   public SpaceProfileInstManager() {
   }
+  
+  /**
+   * Get all the space profile Ids for the given user
+   * @param domainManager
+   * @param sUserId
+   * @return spaceProfile ids
+   * @throws AdminException
+   */
+  public String[] getSpaceProfileIdsOfUserType(DomainDriverManager domainManager, String sUserId)
+      throws AdminException {
+    try {
+      domainManager.getOrganizationSchema();
+      
+      List<String> roleIds = new ArrayList<String>();
+      
+      //space user role
+      SpaceUserRoleRow[] tabSpaceUserRole = domainManager.getOrganization().spaceUserRole
+          .getDirectSpaceUserRolesOfUser(Integer.parseInt(sUserId));
+      for (SpaceUserRoleRow role : tabSpaceUserRole) {
+        roleIds.add(Integer.toString(role.id));
+      }
+      
+      return roleIds.toArray(new String[roleIds.size()]);
+      
+    } catch (Exception e) {
+      throw new AdminException("SpaceProfileInstManager.getSpaceProfileIdsOfUser",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      domainManager.releaseOrganizationSchema();
+    }
+  }
+  
+  /**
+   * Get all the space profile Ids for the given group
+   * @param domainManager
+   * @param groupId
+   * @return spaceProfile ids
+   * @throws AdminException
+   */
+  public String[] getSpaceProfileIdsOfGroupType(DomainDriverManager domainManager, String groupId)
+      throws AdminException {
+    try {
+      domainManager.getOrganizationSchema();
+      
+      List<String> roleIds = new ArrayList<String>();
+      
+      //space group role
+      SpaceUserRoleRow[] tabSpaceGroupRole = domainManager.getOrganization().spaceUserRole
+          .getDirectSpaceUserRolesOfGroup(Integer.parseInt(groupId));
+      for (SpaceUserRoleRow role : tabSpaceGroupRole) {
+        roleIds.add(Integer.toString(role.id));
+      }
+      return roleIds.toArray(new String[roleIds.size()]);
+      
+    } catch (Exception e) {
+      throw new AdminException("SpaceProfileInstManager.getSpaceProfileIdsOfGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      domainManager.releaseOrganizationSchema();
+    }
+  }
 
   /**
    * Create a new space profile instance in database
@@ -43,7 +104,7 @@ public class SpaceProfileInstManager {
    *
    * @param spaceProfileInst
    * @param domainManager
-   * @param sFatherId
+   * @param parentSpaceId
    * @return
    * @throws AdminException
    */

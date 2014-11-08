@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+
+  <!-- Domains -->
+  <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine"
+             propFileName="-" className="-" authenticationServer="-"/>
+  <st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas"
+             propFileName="com.stratelia.silverpeas.domains.domainSP"
+             className="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver"
+             authenticationServer="autDomainSP"/>
+  <st_domain id="1" name="SILVERPEAS" description="Zimbra Silverpeas"
+             propFileName="com.stratelia.silverpeas.domains.domainSILVERPEAS"
+             className="com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver"
+             authenticationServer="autDomainSILVERPEAS"/>
+
+  <!-- Components -->
+  <st_component id="1" componentname="blog"/>
+  <st_component id="2" componentname="kmelia"/>
+  <st_component id="3" componentname="almanach"/>
+
+  <!-- Users -->
+  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur"
+           email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A" state='VALID'
+           stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson"
+           email="ehu@silverpeas.com" login="user_a" loginmail="" accesslevel="U" loginquestion=""
+           loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson"
+           email="homer@simpson.com" login="user_b" loginmail="" accesslevel="U"
+           loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="3" domainid="1" specificid="3" firstname="Marge" lastname="Simpson" email=""
+           login="user_c" loginmail="" accesslevel="U" loginquestion="" loginanswer=""
+           state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="4" domainid="1" specificid="f6632e21-9990-4393-9d65-4bdfebf7163f" firstname="Lisa"
+           lastname="Simpson" email="lisa@simpson.com" login="user_d" loginmail="" accesslevel="U"
+           loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="38" domainid="1" specificid="target_38" firstname="target"
+           lastname="target" email="target@simpson.com" login="user_target" loginmail=""
+           accesslevel="U" loginquestion="" loginanswer="" state='VALID'
+           stateSaveDate='2012-01-01 00:00:00 0'/>
+
+  <!-- Groups
+  G1 (domain 0)
+  ...G1-1
+  ...G1-2
+  G2 (domain 1)
+  G_TARGET (domain 1)
+  -->
+  <st_group id="1" domainid="0" specificid="1" name="G1_D0" description="G1_D0 description"
+            synchrorule="" supergroupid="[NULL]"/>
+  <st_group id="2" domainid="0" specificid="2" name="G1-1_D0" description="G1-1_D0 description"
+            synchrorule="" supergroupid="1"/>
+  <st_group id="3" domainid="0" specificid="3" name="G1-2_D0" description="G1-2_D0 description"
+            synchrorule="" supergroupid="1"/>
+  <st_group id="10" domainid="1" specificid="10" name="G2_D1" description="G2_D1 description"
+            synchrorule="" supergroupid="[NULL]"/>
+  <st_group id="26" domainid="1" specificid="26" name="G_TARGET_D1"
+            description="G_TARGET_D1 description" synchrorule="" supergroupid="[NULL]"/>
+
+  <!--
+  G1-2 (domain 0)
+  .....User id 1 (domain 0)
+  .....User id 2 (domain 0)
+  G2 (domain 1)
+  ... User id 4 (domain 1)
+  -->
+  <st_group_user_rel groupid="3" userid="1"/>
+  <st_group_user_rel groupid="3" userid="2"/>
+  <st_group_user_rel groupid="10" userid="4"/>
+
+  <!-- Spaces
+  Space-A_Level-1
+  ...Space-A_Level_2
+  Space-B_Level-1
+  -->
+  <st_space id="1" domainFatherId="[NULL]" name="Space-A_Level-1" firstpagetype="2" ordernum="0"
+            isinheritanceblocked="0"/>
+  <st_space id="2" domainFatherId="1" name="Space-A_Level-2" firstpagetype="2" ordernum="0"
+            isinheritanceblocked="0"/>
+  <st_space id="10" domainFatherId="[NULL]" name="Space-B_Level-1" firstpagetype="2" ordernum="1"
+            isinheritanceblocked="0"/>
+
+  <!-- Components instances
+  Space-A_Level-1
+  ¤¤ kmelia_1
+  ...Space-A_Level_2
+  ¤¤¤¤ blog_2
+  Space-B_Level-1
+  ¤¤ almanach_3
+  -->
+  <st_componentinstance id="1" spaceid="1" componentname="kmelia" ordernum="0" ispublic="0"
+                        name="kmelia-Space-A_Level-1" isinheritanceblocked="0" ishidden="0"/>
+  <st_componentinstance id="2" spaceid="2" componentname="blog" ordernum="0" ispublic="0"
+                        name="blog-Space-A_Level-2" isinheritanceblocked="0" ishidden="0"/>
+  <st_componentinstance id="3" spaceid="10" componentname="almanach" ordernum="1" ispublic="0"
+                        name="almanach-Space-B_Level-1" isinheritanceblocked="0" ishidden="0"/>
+
+  <!-- Node of kmelia-Space-A_Level-1
+  Root
+  ... Folder-1
+  ...... Folder-1-1
+  -->
+  <sb_node_node nodeId="10" instanceid="1" nodeName="Root" nodePath="/"
+                nodefatherid="-1" nodeCreationDate="2014/11/06" nodeCreatorId="0"
+                rightsdependson="-1" nodelevelnumber="1"/>
+  <sb_node_node nodeId="101" instanceid="1" nodeName="Folder-1" nodePath="/10/"
+                nodefatherid="10" nodeCreationDate="2014/11/06" nodeCreatorId="0"
+                rightsdependson="-1" nodelevelnumber="2"/>
+  <sb_node_node nodeId="1011" instanceid="1" nodeName="Folder-1-1" nodePath="/10/101"
+                nodefatherid="101" nodeCreationDate="2014/11/06" nodeCreatorId="0"
+                rightsdependson="1011" nodelevelnumber="3"/>
+
+  <!-- Space User roles
+  - Space-A_Level-1:
+        > group G1_D0
+        > user id 3
+        >>> InHeritage:
+        ..... Space-A_Level_2
+        ........ blog_2
+        ..... kmelia_1
+  - Space-B_Level-1:
+  -->
+  <st_spaceuserrole id="10" spaceid="1" rolename="admin" isinherited="0"/>
+  <st_spaceuserrole id="100" spaceid="2" rolename="admin" isinherited="1"/>
+  <st_spaceuserrole id="11" spaceid="1" rolename="writer" isinherited="0"/>
+  <st_spaceuserrole id="30" spaceid="10" rolename="admin" isinherited="0"/>
+  <st_spaceuserrole id="31" spaceid="10" rolename="writer" isinherited="0"/>
+  <st_spaceuserrole id="32" spaceid="10" rolename="publisher" isinherited="0"/>
+
+  <!-- Component User roles -->
+  <st_userrole id="10" instanceid="1" rolename="admin" isinherited="0" objectid="[NULL]"
+               objecttype="[NULL]"/>
+  <st_userrole id="100" instanceid="1" rolename="admin" isinherited="1"/>
+  <st_userrole id="11" instanceid="1" rolename="writer" isinherited="0"/>
+  <st_userrole id="110" instanceid="1" rolename="writer" isinherited="1"/>
+  <st_userrole id="910" instanceid="1" rolename="admin" isinherited="0" objectid="101"
+               objecttype="O"/>
+  <st_userrole id="9100" instanceid="1" rolename="admin" isinherited="1" objectid="101"
+               objecttype="O"/>
+  <st_userrole id="911" instanceid="1" rolename="writer" isinherited="0" objectid="1011"
+               objecttype="O"/>
+  <st_userrole id="9110" instanceid="1" rolename="writer" isinherited="1" objectid="1011"
+               objecttype="O"/>
+  <st_userrole id="20" instanceid="2" rolename="admin" isinherited="0"/>
+  <st_userrole id="200" instanceid="2" rolename="admin" isinherited="1"/>
+  <st_userrole id="21" instanceid="2" rolename="writer" isinherited="0"/>
+  <st_userrole id="210" instanceid="2" rolename="writer" isinherited="1"/>
+  <st_userrole id="30" instanceid="3" rolename="admin" isinherited="0"/>
+  <st_userrole id="300" instanceid="3" rolename="admin" isinherited="1"/>
+  <st_userrole id="31" instanceid="3" rolename="writer" isinherited="0"/>
+  <st_userrole id="310" instanceid="3" rolename="writer" isinherited="1"/>
+  <st_userrole id="41" instanceid="3" rolename="publisher" isinherited="0"/>
+  <st_userrole id="410" instanceid="3" rolename="publisher" isinherited="1"/>
+
+  <!-- Space GROUP Role Relations -->
+  <st_spaceuserrole_group_rel spaceuserroleid="10" groupid="1"/>
+  <st_spaceuserrole_group_rel spaceuserroleid="100" groupid="1"/>
+  <st_spaceuserrole_group_rel spaceuserroleid="30" groupid="3"/>
+
+  <!-- Space USER Role Relations -->
+  <st_spaceuserrole_user_rel spaceuserroleid="32" userid="2"/>
+  <st_spaceuserrole_user_rel spaceuserroleid="10" userid="3"/>
+  <st_spaceuserrole_user_rel spaceuserroleid="100" userid="3"/>
+
+  <!-- Component GROUP Role Relations -->
+  <st_userrole_group_rel userroleid="100" groupid="1"/>
+  <st_userrole_group_rel userroleid="200" groupid="1"/>
+  <st_userrole_group_rel userroleid="911" groupid="1"/>
+  <st_userrole_group_rel userroleid="300" groupid="3"/>
+  <st_userrole_group_rel userroleid="30" groupid="10"/>
+
+  <!-- Component USER Role Relations -->
+  <st_userrole_user_rel userroleid="11" userid="1"/>
+  <st_userrole_user_rel userroleid="10" userid="2"/>
+  <st_userrole_user_rel userroleid="410" userid="2"/>
+  <st_userrole_user_rel userroleid="911" userid="2"/>
+  <st_userrole_user_rel userroleid="100" userid="3"/>
+  <st_userrole_user_rel userroleid="200" userid="3"/>
+</dataset>

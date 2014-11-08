@@ -24,6 +24,7 @@
 
 package com.silverpeas.jobOrganizationPeas.servlets;
 
+import com.silverpeas.jobOrganizationPeas.JobOrganizationPeasException;
 import com.silverpeas.jobOrganizationPeas.control.JobOrganizationPeasSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -80,14 +81,37 @@ public class JobOrganizationPeasRequestRouter extends
         "root.MSG_GEN_PARAM_VALUE",
         "User=" + jobOrganizationSC.getUserId() + " Function=" + function);
 
+    request.setAttribute("isRightCopyReplaceActivated",
+        jobOrganizationSC.isRightCopyReplaceActivated());
+
     try {
-      if (function.startsWith("ViewUserOrGroup")) {
+      if (function.equals("Main")) {
+        destination = jobOrganizationSC.initSelectionUserOrGroup();
+      } else if (function.equals("ViewUserOrGroup")) {
         // get user panel data
-        jobOrganizationSC.retourSelectionPeas();
+        jobOrganizationSC.backSelectionUserOrGroup();
         destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
-      } else {
-        destination = jobOrganizationSC.initSelectionPeas();
-      }
+      } else if (function.equals("SelectRightsUserOrGroup")) {
+        destination = jobOrganizationSC.initSelectionRightsUserOrGroup();
+      } else if (function.startsWith("AssignRights")) {
+        if (!jobOrganizationSC.isRightCopyReplaceActivated()) {
+          throwHttpForbiddenError();
+        }
+        String choiceAssignRights = request.getParameter("choiceAssignRights"); //1 = replace rights | 2 = add rights
+        String sourceRightsId = request.getParameter("sourceRightsId");
+        String sourceRightsType = request.getParameter("sourceRightsType"); //Set | Element
+        boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights"); //true | false
+        
+        try {
+          jobOrganizationSC.assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
+          request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageOk"));
+        } catch(JobOrganizationPeasException e) {
+          request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageNOk"));
+        }
+        
+        destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
+      } 
+      
       if (destination.endsWith("jopUserView.jsp")) {
         if (jobOrganizationSC.getCurrentUserId() != null) { // l'utilisateur a sélectionné un user
           request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
@@ -96,7 +120,7 @@ public class JobOrganizationPeasRequestRouter extends
         } else if (jobOrganizationSC.getCurrentGroupId() != null) {// l'utilisateur a sélectionné un
           // group
           request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
-          request.setAttribute("adminController", jobOrganizationSC.getAdminController());
+          request.setAttribute("superGroupName", jobOrganizationSC.getCurrentSuperGroupName());
         }
         request.setAttribute("spaces", jobOrganizationSC.getCurrentSpaces());
         request.setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());

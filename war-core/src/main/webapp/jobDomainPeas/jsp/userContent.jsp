@@ -21,10 +21,10 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
 <%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -33,6 +33,19 @@
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
+
+<c:set var="userInfos" value="${requestScope.userObject}" />
+
+<c:set var="lastName" value="${userInfos.lastName}" />
+<c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
+<c:set var="firstName" value="${userInfos.firstName}" />
+<c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
+<c:set var="firstName" value="${userInfos.firstName}" />
+<c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
+<c:set var="email" value="${userInfos.eMail}" />
+<c:set var="displayedEmail"><view:encodeHtml string="${email}" /></c:set>
+<c:set var="login" value="${userInfos.login}" />
+<c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>
 
 <%@ include file="check.jsp" %>
 <%
@@ -101,11 +114,12 @@
   }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
   <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-  <script language="JavaScript">
+  <script type="text/javascript">
     function ConfirmAndSend(textToDisplay, userId) {
       if (window.confirm(textToDisplay)) {
         jQuery('#Iduser').val(userId);
@@ -115,130 +129,133 @@
   </script>
 </head>
 <body>
-
-<style type="text/css">
-  .txtlibform {
-    width: 300px;
-  }
-</style>
-
-<%
-  out.println(window.printBefore());
+<% 
+out.println(window.printBefore());
 %>
 <view:frame>
 <fieldset id="identity-main" class="skinFieldset">
-  <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
-  <table cellpadding="5" cellspacing="0" border="0" width="100%">
-    <tr>
-      <td class="txtlibform"><%=resource.getString("GML.lastName") %> :</td>
-      <td><%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%></td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("GML.surname") %> :</td>
-      <td><%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%></td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("GML.eMail") %> :</td>
-      <td><%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%></td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("JDP.userRights") %> :</td>
-      <td>
-        <%
-          switch (userObject.getAccessLevel()) {
-            case ADMINISTRATOR:
-              out.print(resource.getString("GML.administrateur"));
-              break;
-            case GUEST:
-              out.print(resource.getString("GML.guest"));
-              break;
-            case PDC_MANAGER:
-              out.print(resource.getString("GML.kmmanager"));
-              break;
-            case DOMAIN_ADMINISTRATOR:
-              out.print(resource.getString("GML.domainManager"));
-              break;
-            default:
-              out.print(resource.getString("GML.user"));
-          }
-        %>
-      </td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("JDP.userState") %> :</td>
-      <td>
-        <fmt:message key="GML.user.account.state.${userObject.state.name}"/>
-      </td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("GML.login") %> :</td>
-      <td><%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%></td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resource.getString("JDP.silverPassword") %> :</td>
-      <td>
-        <%
-          if (userObject.isPasswordAvailable() && userObject.isPasswordValid()) {
-            out.print(resource.getString("GML.yes"));
-          } else {
-            out.print(resource.getString("GML.no"));
-          }
-        %>
-      </td>
-    </tr>
-  </table>
+  <legend><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
+  <ul class="fields">
+	<!--Last name-->
+	<li id="form-row-lastname" class="field">
+    	<label class="txtlibform"><fmt:message key="GML.lastName"/></label>
+     	<div class="champs">${displayedLastName}</div>
+	</li>
+	<!--Surname-->
+	<li id="form-row-surname" class="field">
+		<label class="txtlibform"><fmt:message key="GML.surname"/></label>
+		<div class="champs">${displayedFirstName}</div>
+	</li>
+	<!---Email-->
+	<li id="form-row-email" class="field">
+		<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
+		<div class="champs"><a href="mailto:${displayedEmail}">${displayedEmail}</a></div>
+	</li>
+	<!---Rights-->
+	<li id="form-row-rights" class="field">
+		<label class="txtlibform"><fmt:message key="JDP.userRights"/></label>
+		<div class="champs">
+			<c:choose>
+				<c:when test="${userInfos.accessLevel.code == 'A'}">
+					<fmt:message key="GML.administrateur"/>
+				</c:when>
+				<c:when test="${userInfos.accessLevel.code == 'G'}">
+					<fmt:message key="GML.guest"/>
+				</c:when>
+				<c:when test="${userInfos.accessLevel.code == 'K'}">
+					<fmt:message key="GML.kmmanager"/>
+				</c:when>
+				<c:when test="${userInfos.accessLevel.code == 'D'}">
+					<fmt:message key="GML.domainManager"/>
+				</c:when>
+				<c:when test="${userInfos.accessLevel.code == 'U'}">
+					<fmt:message key="GML.user"/>
+				</c:when>
+				<c:otherwise>
+					<fmt:message key="GML.no"/>
+				</c:otherwise>
+			</c:choose>
+		</div>
+   		</li>
+   		<!---State-->
+		<li id="form-row-rights" class="field">
+     		<label class="txtlibform"><fmt:message key="JDP.userState"/></label>
+     		<div class="champs"><fmt:message key="GML.user.account.state.${userInfos.state.name}"/></div>
+   		</li>
+		<!--Login-->
+		<li id="form-row-login" class="field">
+     		<label class="txtlibform"><fmt:message key="GML.login"/></label>
+     		<div class="champs">${displayedLogin}</div>
+   		</li>
+   		<!--Password Silverpeas ?-->
+		<li id="form-row-passwordsp" class="field">
+			<label class="txtlibform"><fmt:message key="JDP.silverPassword"/></label>
+     		<div class="champs">
+     			<c:choose>
+      				<c:when test="${userInfos.passwordAvailable && userInfos.passwordValid}">
+      					<fmt:message key="GML.yes"/>
+      				</c:when>
+      				<c:otherwise>
+      					<fmt:message key="GML.no"/>
+      				</c:otherwise>
+      			</c:choose>
+     		</div>
+   		</li>
+	</ul>
 </fieldset>
-  <fieldset id="identity-extra" class="skinFieldset">
-    <legend class="without-img">
-      <fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-    <table border="0" cellspacing="0" cellpadding="5" width="100%">
+<fieldset id="identity-extra" class="skinFieldset">
+	<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+	<ul class="fields">
       <%
-        //if (isUserRW)
-        //{
         String[] properties = userObject.getPropertiesNames();
         for (final String property : properties) {
+       	  // Not display the password !
           if (!property.startsWith("password")) {
       %>
-      <tr>
-        <td class="txtlibform">
-          <%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
-        </td>
-
-        <td>
-          <%
-            if ("STRING".equals(userObject.getPropertyType(property)) ||
-                "USERID".equals(userObject.getPropertyType(property))) {
-
-              out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
-
-            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-
-              if (userObject.getValue(property) != null &&
-                  "1".equals(userObject.getValue(property))) {
-                out.print(resource.getString("GML.yes"));
-              } else if (userObject.getValue(property) == null ||
-                  "".equals(userObject.getValue(property)) ||
-                  "0".equals(userObject.getValue(property))) {
-                out.print(resource.getString("GML.no"));
-              }
-            }
-          %>
-        </td>
-      </tr>
+      	<!--Specific Info-->
+		<li id="form-row-<%=property%>" class="field">
+			<label class="txtlibform">
+			<%=EncodeHelper.javaStringToHtmlString(userObject.
+	        		    getSpecificLabel(resource.getLanguage(),
+	        		        property))%>
+		 	</label>
+			<div class="champs">
+				<%
+	            if ("STRING".equals(userObject.getPropertyType(property)) ||
+	                "USERID".equals(userObject.getPropertyType(property))) {
+				%>
+				<%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
+				<%
+	            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
+	
+	              if (userObject.getValue(property) != null &&
+	                  "1".equals(userObject.getValue(property))) {
+	            %>
+	            	<fmt:message key="GML.yes"/>
+	            <%
+	              } else if (userObject.getValue(property) == null ||
+	                  "".equals(userObject.getValue(property)) ||
+	                  "0".equals(userObject.getValue(property))) {
+	            %>
+	            	<fmt:message key="GML.no"/>
+	           <%
+	              }
+	            }
+	           %>
+			</div>
+        </li>
       <%
           }
         }
-        //}
       %>
-
-    </table>
-  </fieldset>
+	</ul>
+</fieldset>
   <form id="deletionForm" action="userDelete" method="POST">
     <input id="Iduser" type="hidden" name="Iduser"/>
   </form>
-  </view:frame>
-<%
-  out.println(window.printAfter());
+</view:frame>
+<% 
+out.println(window.printAfter());
 %>
 </body>
 </html>
