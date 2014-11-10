@@ -366,7 +366,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
       userId = AUTHLESS_USER_ID;
     }
     if (isWSRPRequest()) {
-      return Base64.encode(userId);
+      return StringUtil.asBase64(userId.getBytes());
     }
     return userId;
   }
