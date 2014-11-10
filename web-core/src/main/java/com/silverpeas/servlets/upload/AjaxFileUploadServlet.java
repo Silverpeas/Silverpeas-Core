@@ -20,13 +20,13 @@
  */
 package com.silverpeas.servlets.upload;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.silverpeas.util.StringUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -99,13 +99,13 @@ public class AjaxFileUploadServlet extends HttpServlet {
     try {
       session.setAttribute(UPLOAD_ERRORS, "");
       session.setAttribute(UPLOAD_FATAL_ERROR, "");
-      List<String> paths = new ArrayList<String>();
+      List<String> paths = new ArrayList<>();
       session.setAttribute(FILE_UPLOAD_PATHS, paths);
       FileUploadListener listener = new FileUploadListener(request.getContentLength());
       session.setAttribute(FILE_UPLOAD_STATS, listener.getFileUploadStats());
       FileItemFactory factory = new MonitoringFileItemFactory(listener);
       ServletFileUpload upload = new ServletFileUpload(factory);
-      List<FileItem> items = (List<FileItem>) upload.parseRequest(request);
+      List<FileItem> items = upload.parseRequest(request);
       startingToSaveUploadedFile(session);
       String errorMessage = "";
       for (FileItem fileItem : items) {
@@ -241,7 +241,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
   @SuppressWarnings("unchecked")
   private String getUploadedFilePaths(List<String> paths) throws IOException {
     if (paths == null) {
-      paths = new ArrayList<String>();
+      paths = new ArrayList<>();
     }
     ObjectMapper mapper = new ObjectMapper();
     return mapper.writeValueAsString(paths);
