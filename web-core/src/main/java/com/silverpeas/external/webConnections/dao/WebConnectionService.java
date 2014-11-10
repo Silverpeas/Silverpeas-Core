@@ -24,18 +24,17 @@
 
 package com.silverpeas.external.webConnections.dao;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
 import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
+
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @author
@@ -55,7 +54,7 @@ public class WebConnectionService implements WebConnectionsInterface {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
     } finally {
-      fermerCon(con);
+      closeCon(con);
     }
   }
 
@@ -76,7 +75,7 @@ public class WebConnectionService implements WebConnectionsInterface {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnectionById()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
     } finally {
-      fermerCon(con);
+      closeCon(con);
     }
   }
 
@@ -88,7 +87,7 @@ public class WebConnectionService implements WebConnectionsInterface {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.createConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_CREATE", e);
     } finally {
-      fermerCon(con);
+      closeCon(con);
     }
   }
 
@@ -105,7 +104,7 @@ public class WebConnectionService implements WebConnectionsInterface {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.deleteConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_DELETE", e);
     } finally {
-      fermerCon(con);
+      closeCon(con);
     }
   }
 
@@ -122,7 +121,7 @@ public class WebConnectionService implements WebConnectionsInterface {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.updateConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_UPDATE", e);
     } finally {
-      fermerCon(con);
+      closeCon(con);
     }
   }
 
@@ -134,12 +133,12 @@ public class WebConnectionService implements WebConnectionsInterface {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnectionsByUser()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTIONS_NOT_EXIST", e);
     } finally {
-      fermerCon(con);
+      closeCon(con);
     }
   }
 
   private Connection initCon() {
-    Connection con = null;
+    Connection con;
     try {
       con = DBUtil.openConnection();
     } catch (SQLException e) {
@@ -149,13 +148,13 @@ public class WebConnectionService implements WebConnectionsInterface {
     return con;
   }
 
-  private void fermerCon(Connection con) {
+  private void closeCon(Connection con) {
     try {
       if (con != null) {
         con.close();
       }
     } catch (SQLException e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.fermerCon()",
+      throw new WebConnectionsRuntimeException("WebConnectionsInterface.closeCon()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
     }
   }

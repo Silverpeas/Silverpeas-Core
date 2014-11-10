@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
@@ -45,21 +46,20 @@ import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.UtilException;
 
 public class ConnectionDAO {
   private static String tableName = "SB_webConnections_info";
   private static ResourceLocator settings =
       new ResourceLocator("com.silverpeas.external.webConnections.settings.webConnectionsSettings",
-      "fr");
+          "fr");
   // warning: the key code should be in hexadecimal!
   private static String keyCode = settings.getString("keycode");
 
   /**
    * Return a connection for componentId and userId
    * @param con : Connection
-   * @param componentId : String
-   * @param userId : String
+   * @param componentId : String component identifier
+   * @param userId : String user identifier
    * @return connection : ConnectionDetail
    */
   public ConnectionDetail getConnection(Connection con, String componentId, String userId)
@@ -74,7 +74,7 @@ public class ConnectionDAO {
       prepStmt.setInt(2, Integer.parseInt(userId));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        connection = recupConnection(rs);
+        connection = getConnectionFrom(rs);
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -85,7 +85,7 @@ public class ConnectionDAO {
   /**
    * Return a connection corresponding to connectionId
    * @param con : Connection
-   * @param connectionId : String
+   * @param connectionId : String the connection identifier
    * @return connection : ConnectionDetail
    * @throws SQLException
    */
@@ -100,7 +100,7 @@ public class ConnectionDAO {
       prepStmt.setInt(1, Integer.parseInt(connectionId));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        connection = recupConnection(rs);
+        connection = getConnectionFrom(rs);
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -114,7 +114,6 @@ public class ConnectionDAO {
    * @param connection : ConnectionDetail
    * @return the connectionId : String
    * @throws SQLException
-   * @throws UtilException
    */
   public String createConnection(Connection con, ConnectionDetail connection) throws SQLException {
     String id = "";
@@ -122,8 +121,7 @@ public class ConnectionDAO {
     try {
       int newId = DBUtil.getNextId(tableName, "connectionId");
       id = String.valueOf(newId);
-      String query =
-          "INSERT INTO " + tableName +
+      String query = "INSERT INTO " + tableName +
           " (connectionId, userId, componentId, paramLogin, paramPassword) " +
           "VALUES (?,?,?,?,?)";
       prepStmt = con.prepareStatement(query);
@@ -138,7 +136,7 @@ public class ConnectionDAO {
   /**
    * delete the connection corresponding to connectionId
    * @param con : Connection
-   * @param connectionId : String
+   * @param connectionId : String the connection identifier
    * @throws SQLException
    */
   public void deleteConnection(Connection con, String connectionId) throws SQLException {
@@ -169,7 +167,7 @@ public class ConnectionDAO {
           "update " + tableName + " set paramLogin = ? , paramPassword = ? where connectionId = ? ";
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, login);
-      byte[] crypPassword = null;
+      byte[] crypPassword;
       try {
         crypPassword = getCryptString(password);
       } catch (CryptoException e) {
@@ -186,7 +184,7 @@ public class ConnectionDAO {
   /**
    * return all connections of the user corresponding to userId
    * @param con : Connection
-   * @param userId : String
+   * @param userId : String the user identifier
    * @return connections : a list of ConnectionDetail
    * @throws SQLException
    */
@@ -200,9 +198,9 @@ public class ConnectionDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(userId));
       rs = prepStmt.executeQuery();
-      connections = new ArrayList<ConnectionDetail>();
+      connections = new ArrayList<>();
       while (rs.next()) {
-        ConnectionDetail connection = recupConnection(rs);
+        ConnectionDetail connection = getConnectionFrom(rs);
         connections.add(connection);
       }
     } finally {
@@ -217,12 +215,12 @@ public class ConnectionDAO {
    * @return the connection : ConnectionDetail
    * @throws SQLException
    */
-  protected ConnectionDetail recupConnection(ResultSet rs) throws SQLException {
+  protected ConnectionDetail getConnectionFrom(ResultSet rs) throws SQLException {
     ConnectionDetail connection = new ConnectionDetail();
     connection.setConnectionId(rs.getInt("connectionId"));
     connection.setUserId(rs.getString("userId"));
     connection.setComponentId(rs.getString("componentId"));
-    Map<String, String> param = new HashMap<String, String>();
+    Map<String, String> param = new HashMap<>();
     String login = rs.getString("paramLogin");
     byte[] password = rs.getBytes("paramPassword");
     ComponentInst inst = OrganizationControllerProvider.getOrganisationController()
@@ -254,15 +252,15 @@ public class ConnectionDAO {
     prepStmt.setInt(1, id);
     prepStmt.setInt(2, Integer.parseInt(connection.getUserId()));
     prepStmt.setString(3, connection.getComponentId());
-    ComponentInst inst = OrganizationControllerProvider
-        .getOrganisationController().getComponentInst(connection.getComponentId());
+    ComponentInst inst = OrganizationControllerProvider.getOrganisationController()
+        .getComponentInst(connection.getComponentId());
     String login = connection.getParam().get(inst.getParameterValue("login"));
     String password = connection.getParam().get(inst.getParameterValue("password"));
     byte[] crypPassword = null;
     try {
       crypPassword = getCryptString(password);
     } catch (CryptoException e) {
-      e.printStackTrace();
+      SilverTrace.error("webConnections", "ConnectionDAO", "initParam encryption error", e);
     }
     prepStmt.setString(4, login);
     prepStmt.setBytes(5, crypPassword);
