@@ -24,19 +24,23 @@
 package com.silverpeas.bundle.web;
 
 import com.silverpeas.annotation.Authenticated;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.i18n.I18NHelper;
+
+import javax.enterprise.context.RequestScoped;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.MissingResourceException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 /**
  * The bundle resource represents either a settings bundle or an i18n messages bundle.
@@ -45,7 +49,7 @@ import org.springframework.stereotype.Service;
  * be accessed only by authenticated users so that is is easy to know the language of the bundle to
  * sent back.
  *
- * The i18n bundled is refered in the URI by its absolute location in the classpath of the
+ * The i18n bundled is referred in the URI by its absolute location in the classpath of the
  * Silverpeas portal with as well / or . as path separators, and it can be or not suffixed with
  * properties. For i18n bundles, the language can be indicated with the resource bundle name,
  * otherwise the language of the current user underlying at the HTTP request is taken. If the
@@ -53,13 +57,13 @@ import org.springframework.stereotype.Service;
  * the French), is taken.
  *
  * In order to add some flexibility, particularly with client-side scripts, the language of the user
- * can be explictly indicated with the i18n bundle name, whatever it is and without knowing it, by
+ * can be explicitly indicated with the i18n bundle name, whatever it is and without knowing it, by
  * using the wildcard $$ as language code; this wildcard means whatever the language (then takes the
- * prefered language of the current user in the session). This parameter isn't taken into account
+ * preferred language of the current user in the session). This parameter isn't taken into account
  * with the settings bundles.
  */
-@Service
-@Scope("request")
+
+@RequestScoped
 @Path("bundles")
 @Authenticated
 public class BundleResource extends RESTWebService {
