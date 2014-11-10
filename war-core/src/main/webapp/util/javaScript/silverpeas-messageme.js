@@ -84,13 +84,13 @@
         'id': 'notificationDialog'
       }).append($('<form>').append($('<table>').append($('<tr>').
               append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.subject') + '&nbsp;:')).
-              append($('<td>').append($('<input size="50">', {
+              append($('<td>').append($('<input>', {
                 'type': 'text',
                 'name': 'textSubject',
                 'id': 'notification-subject',
                 'maxlength': '1023',
-                'value': 'fdffdgfdd'
-              })).append('&nbsp;').append($('<img>', {
+                'value': ''
+              }).attr('size', 50)).append('&nbsp;').append($('<img>', {
                 'src': webContext + '/util/icons/mandatoryField.gif',
                 'width': '5',
                 'height': '5',
@@ -110,7 +110,8 @@
                 'width': '5',
                 'height': '5',
                 'alt': 'mandatoryField'
-              })).append('&nbsp;: ' + $.i18n.prop('GML.requiredField')))))).appendTo($(document.body));
+              })).append('&nbsp;: ' + $.i18n.prop('GML.requiredField')))))
+      ).appendTo($(document.body));
 
       $("#notificationDialog").dialog({
         autoOpen: false,
