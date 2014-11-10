@@ -24,11 +24,11 @@
 
 package com.silverpeas.glossary;
 
-import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.inject.Inject;
@@ -44,7 +44,7 @@ public class HighlightGlossaryTerms {
   private PdcManager pdc;
 
   /**
-   *
+   * default constructor
    */
   protected HighlightGlossaryTerms() {
   }
@@ -74,12 +74,15 @@ public class HighlightGlossaryTerms {
         Collections.sort(glossary, new TermComparator());
       }
     } catch (PdcException pdcEx) {
+      SilverTrace.warn("glossary", HighlightGlossaryTerms.class.getSimpleName(),
+          "Search replace pdc exception", pdcEx);
     }
     // highlight the term retrieved in the content
     if (glossary != null && !glossary.isEmpty()) {
       for (Value node : glossary) {
-        replacedContent = highlight(node.getName(language), replacedContent, node.getDescription(
-            language), className, onlyFirst);
+        replacedContent =
+            highlight(node.getName(language), replacedContent, node.getDescription(language),
+                className, onlyFirst);
       }
     }
     return replacedContent;
@@ -90,14 +93,13 @@ public class HighlightGlossaryTerms {
       boolean onlyFirst) {
     // escape HTML character
     String escapedTerm = StringEscapeUtils.escapeHtml4(term);
-    // regular expression which allows to search all the term except the HTML tag
-    // Searches the exact term
+    // regular expression which allows to search all the term except the HTML tag Searches the
+    // exact term
     String regex = "((?i)\\b" + escapedTerm + "\\b)(?=[^>]*<(?!/a))";
 
     // highlights the term
-    String replacement =
-        "<a href=\"#\" class=\"" + className + "\" title=\"" + definition.replaceAll("\"",
-        "&quot;") + "\">" + escapedTerm + "</a>";
+    String replacement = "<a href=\"#\" class=\"" + className + "\" title=\"" +
+        definition.replaceAll("\"", "&quot;") + "\">" + escapedTerm + "</a>";
 
     if (onlyFirst) {
       // highlights only the first occurrence
