@@ -184,7 +184,7 @@ Definition des class de style Silverpeas
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
   -moz-background-size: 100%;
   -pie-background: linear-gradient(#ffffff, #e5e5e5);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
 }
 
 .bgDegradeGris{
@@ -204,7 +204,7 @@ Definition des class de style Silverpeas
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
   -moz-background-size: 100%;
   -pie-background: linear-gradient(#ffffff, #e5e5e5);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
   min-height:14px;
 }
 
@@ -450,7 +450,7 @@ Definition des class de style Silverpeas
   border: 1px solid;
   margin-right: 10px;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degrade20px.jpg);
   background-repeat: repeat-x;
   white-space: nowrap;
   padding: 5px;
@@ -492,7 +492,7 @@ Definition des class de style Silverpeas
   border: 1px solid;
   margin-right: 10px;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degrade20px.jpg);
   background-repeat: repeat-x;
   white-space: nowrap;
   padding: 5px;
@@ -584,7 +584,7 @@ Definition des class de style Silverpeas
 
 .intfdcolor {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degrade20px.jpg);
   background-repeat: repeat-x;
   white-space: nowrap;
 }
@@ -716,7 +716,7 @@ Style Utilise par le ViewGenerator
 *********************************/ /* OBJETS : ButtonWA - ButtonWA2 */
 .buttonStyle {
   background-image:
-    url(/silverpeas/util/viewGenerator/icons/fondButton.gif);
+    url(../../util/viewGenerator/icons/fondButton.gif);
   background-repeat: repeat-x;
   font-weight: normal;
 }
@@ -794,7 +794,7 @@ Style Utilise par le ViewGenerator
 
 /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
 .ongletOn {
-  background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif)
+  background-image: url(../../util/viewGenerator/icons/ongletOn.gif)
     ;
   background-repeat: repeat-x;
   font-weight: bold;
@@ -802,7 +802,7 @@ Style Utilise par le ViewGenerator
 
 .ongletOff {
   background-image:
-    url(/silverpeas/util/viewGenerator/icons/ongletOff.gif);
+    url(../../util/viewGenerator/icons/ongletOff.gif);
   background-repeat: repeat-x;
   font-weight: normal;
   color: #999999;
@@ -1006,7 +1006,7 @@ td.browsebar a:hover {
 
 .navigationListTitle {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
+    url(../../admin/jsp/icons/silverpeasV5/fondOn.gif);
   background-repeat: repeat-x;
   font-size: 11px;
   font-weight: bold;
@@ -1026,7 +1026,7 @@ td.browsebar a:hover {
 
 .operationStyle {
   background-image:
-    url(/silverpeas/util/viewGenerator/icons/fondOperation.gif);
+    url(../../util/viewGenerator/icons/fondOperation.gif);
   background-repeat: no-repeat;
 }
 
@@ -1087,7 +1087,7 @@ td.browsebar a:hover {
 
 #shortcuts td {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/topOff.jpg);
   border-width: 1px;
   border-top-style: solid;
   border-color: #FFFFFF;
@@ -1096,7 +1096,7 @@ td.browsebar a:hover {
 #shortcuts td.gaucheShortcuts {
   border-style: none;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheTop.gif);
+    url(../../admin/jsp/icons/silverpeasV5/gaucheTop.gif);
   width: 5px;
   height: 20px;
   background-repeat: no-repeat;
@@ -1109,7 +1109,7 @@ td.browsebar a:hover {
 
 #shortcuts td.activeShortcut {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/topOn.jpg);
   border-width: 1px;
   border-top-style: solid;
   border-color: #FFFFFF;
@@ -1133,7 +1133,7 @@ td.browsebar a:hover {
   width: 120px;
   text-align: center;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOn.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/topOn.jpg);
   background-repeat: repeat-x;
   border-width: 1px;
   border-top-style: solid;
@@ -1188,7 +1188,7 @@ td.browsebar a:hover {
 
 #recherche {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/recherche.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/recherche.jpg);
   background-repeat: no-repeat;
   margin-bottom: 10px;
   height: 60px;
@@ -1242,7 +1242,7 @@ td.browsebar a:hover {
 #spaces {
   background-color: #C5ED95;
   background-image:
-    url("/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg");
+    url("../../admin/jsp/icons/silverpeasV5/fondSpace.jpg");
   background-repeat: repeat-x;
   /*background-position: top;*/
   position:relative;
@@ -1301,7 +1301,7 @@ td.browsebar a:hover {
 }
 
 #spaceTransverse {
-  /*background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondSpace.jpg);
+  /*background-image: url(../../admin/jsp/icons/silverpeasV5/fondSpace.jpg);
   background-repeat: repeat-x;
   background-position: top;*/
   background-color: #8BD039;
@@ -1317,7 +1317,7 @@ td.browsebar a:hover {
 
 #basSpaceTransverse .basSpacesGauche {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
+    url(../../admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
   background-repeat: no-repeat;
   background-position: left bottom;
   background-color: #8BD039;
@@ -1330,7 +1330,7 @@ td.browsebar a:hover {
 
 #basSpaceTransverse .basSpacesDroite {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
+    url(../../admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
   background-repeat: no-repeat;
   background-position: right bottom;
   background-color: #8BD039;
@@ -1371,7 +1371,7 @@ td.browsebar a:hover {
   border-right-color: #C9C9C9;
   border-left-color: #C9C9C9;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/topOff.jpg);
   background-repeat: repeat-x;
   border-width: 1px;
 }
@@ -1413,7 +1413,7 @@ td.browsebar a:hover {
 
 .basSpacesGauche {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
+    url(../../admin/jsp/icons/silverpeasV5/basSpacesGauche.gif);
   background-repeat: no-repeat;
   background-position: left bottom;
   background-color: #C5ED95;
@@ -1426,7 +1426,7 @@ td.browsebar a:hover {
 
 .basSpacesDroite {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
+    url(../../admin/jsp/icons/silverpeasV5/basSpacesDroite.gif);
   background-repeat: no-repeat;
   background-position: right bottom;
   background-color: #C5ED95;
@@ -1512,7 +1512,7 @@ td.browsebar a:hover {
 
 .cellBodyWindows {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeCellBody.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degradeCellBody.jpg);
   background-repeat: repeat-x;
   background-position: top;
   border-width: 1px;
@@ -1523,7 +1523,7 @@ td.browsebar a:hover {
 
 .basGaucheWindow {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/basGaucheFrame.gif);
+    url(../../admin/jsp/icons/silverpeasV5/basGaucheFrame.gif);
   background-repeat: no-repeat;
   background-position: left;
   width: 15px;
@@ -1539,7 +1539,7 @@ td.browsebar a:hover {
 
 .basDroiteWindow {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/basDroiteFrame.gif);
+    url(../../admin/jsp/icons/silverpeasV5/basDroiteFrame.gif);
   background-repeat: no-repeat;
   background-position: right;
   width: 15px;
@@ -1549,7 +1549,7 @@ td.browsebar a:hover {
 /* Objet Button */
 .gaucheBoutonV5 {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheBouton.gif);
+    url(../../admin/jsp/icons/silverpeasV5/gaucheBouton.gif);
   background-repeat: no-repeat;
   background-position: left;
   width: 5px;
@@ -1557,7 +1557,7 @@ td.browsebar a:hover {
 
 .milieuBoutonV5 {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+    url(../../admin/jsp/icons/silverpeasV5/milieuBouton.gif);
   background-repeat: repeat-x;
   color: #FFFFFF;
   height: 20px;
@@ -1569,7 +1569,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .droiteBoutonV5 {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteBouton.gif);
+    url(../../admin/jsp/icons/silverpeasV5/droiteBouton.gif);
   background-repeat: no-repeat;
   background-position: right;
   width: 5px;
@@ -1590,7 +1590,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .gaucheOngletOn {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);
+    url(../../admin/jsp/icons/silverpeasV5/gaucheOngletOn.gif);
   background-repeat: no-repeat;
   background-position: left;
   width: 5px;
@@ -1598,7 +1598,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .milieuOngletOn {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+    url(../../admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
   background-repeat: repeat-x;
   color: #FFFFFF;
   height: 20px;
@@ -1610,7 +1610,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .droiteOngletOn {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOn.gif);
+    url(../../admin/jsp/icons/silverpeasV5/droiteOngletOn.gif);
   background-repeat: no-repeat;
   background-position: right;
   width: 5px;
@@ -1618,7 +1618,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .gaucheOngletOff {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/gaucheOngletOff.gif);
+    url(../../admin/jsp/icons/silverpeasV5/gaucheOngletOff.gif);
   background-repeat: no-repeat;
   background-position: left;
   width: 5px;
@@ -1626,7 +1626,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .milieuOngletOff {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+    url(../../admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
   background-repeat: repeat-x;
   color: #FFFFFF;
   height: 20px;
@@ -1638,7 +1638,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .droiteOngletOff {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/droiteOngletOff.gif);
+    url(../../admin/jsp/icons/silverpeasV5/droiteOngletOff.gif);
   background-repeat: no-repeat;
   background-position: right;
   width: 5px;
@@ -1646,7 +1646,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .sousOnglets {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/sousOnglets.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/sousOnglets.jpg);
   background-repeat: repeat-x;
   height: 10px;
 }
@@ -1685,7 +1685,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   border-color: #CCCCCC;
   background-color: #FFFFFF;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg);
   background-repeat: no-repeat;
   background-position: right top;
   margin-left: auto;
@@ -1700,7 +1700,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 /* Objet ArrayPane */
 .ArrayColumn {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+    url(../../admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
   background-repeat: repeat-x;
   font-size: 11px;
   font-weight: bold;
@@ -1725,7 +1725,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 .ArrayNavigation {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degrade20px.jpg);
   background-repeat: repeat-x;
   background-color: transparent;
   font-size: 10px;
@@ -2098,7 +2098,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   margin: 0;
   padding: 0;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
   background-repeat: repeat-y;
   background-position: right;
   border-width: 1px;
@@ -2150,20 +2150,20 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 #portletPages dl.sort dt span.options a.up {
   margin-top: 2px;
   margin-right: 3px;
-  background-image: url(/silverpeas/admin/jsp/icons/fo_flechehaut.gif);
+  background-image: url(../../admin/jsp/icons/fo_flechehaut.gif);
   background-repeat: no-repeat;
 }
 
 #portletPages dl.sort dt span.options a.down {
   margin-top: 2px;
   margin-right: 3px;
-  background-image: url(/silverpeas/admin/jsp/icons/fo_flechebas.gif);
+  background-image: url(../../admin/jsp/icons/fo_flechebas.gif);
   background-repeat: no-repeat;
 }
 
 #portletPages dl.sort dt span.options a.remove {
   margin-right: 3px;
-  background-image: url(/silverpeas/util/icons/delete.gif);
+  background-image: url(../icons/delete.gif);
   background-repeat: no-repeat;
 }
 
@@ -2196,7 +2196,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   margin: 0;
   padding: 0;
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
+    url(../../admin/jsp/icons/silverpeasV5/degradeEnteteBox.jpg);
   background-repeat: repeat-y;
   background-position: right;
   border-width: 1px;
@@ -2679,12 +2679,12 @@ ul#globalResultListDetails {
   line-height:16px;
   white-space: nowrap;
   text-align: center;
-  background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
+  background-image: url(../../admin/jsp/icons/silverpeasV5/milieuOngletOn.gif);
   background-repeat: repeat-x;
 }
 
 #searchGroupTitle span.author {
-  background:url("/silverpeas/util/icons/user.gif") no-repeat scroll left top transparent;
+  background:url("../icons/user.gif") no-repeat scroll left top transparent;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2693,7 +2693,7 @@ ul#globalResultListDetails {
 }
 
 #searchGroupTitle span.file {
-  background:url("/silverpeas/util/icons/file-icon.gif") no-repeat scroll left top transparent;
+  background:url("../icons/file-icon.gif") no-repeat scroll left top transparent;
   color: #FFFFFF;
   display:block;
   font-weight:bold;
@@ -2703,7 +2703,7 @@ ul#globalResultListDetails {
 }
 
 #searchGroupTitle span.component {
-  background:url("/silverpeas/util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
+  background:url("../icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2749,11 +2749,11 @@ ul#globalResultListDetails {
 }
 
 #searchGroupValues a.toggle.less {
-  background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+  background: transparent url(../icons/arrow/arrowTop.gif) right 1px no-repeat;
 }
 
 #searchGroupValues a.toggle.more {
-  background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+  background: transparent url(../icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
 div.silverpeas-toggle {
@@ -2792,7 +2792,7 @@ div.silverpeas-toggle {
 }
 
 .attachments h4 {
-  background:transparent url(/silverpeas/util/icons/attachedFiles.gif)  top right no-repeat;
+  background:transparent url(../icons/attachedFiles.gif)  top right no-repeat;
   height:16px;
 }
 
@@ -3093,7 +3093,7 @@ caption {
 
 #invitation #navigation .box {
   background-color:#FFFFFF;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-image:url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg);
   background-position:right top;
   background-repeat:no-repeat;
   margin-left:auto;
@@ -3186,7 +3186,7 @@ caption {
 
 #newsFeed #navigation .box {
   background-color:#FFFFFF;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-image:url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg);
   background-position:right top;
   background-repeat:no-repeat;
   margin-left:auto;
@@ -3210,7 +3210,7 @@ caption {
   padding: 0;
 }
 #newsFeed .ItemOn{
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
+  background-image:url(../../admin/jsp/icons/silverpeasV5/topOff.jpg);
   background-repeat:repeat-x;
   color:#FFFFFF;
   font-size:11px;
@@ -3329,7 +3329,7 @@ caption {
 #privateProfile #navigation {
   float: left;
   width: 20%;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-image:url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg);
   background-position:right top;
   background-repeat:no-repeat;
   margin-left:auto;
@@ -3341,7 +3341,7 @@ caption {
 #privateProfile #navigation .box
 {
   background-color:#FFFFFF;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-image:url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg);
   background-position:right top;
   background-repeat:no-repeat;
   margin-left:auto;
@@ -3354,7 +3354,7 @@ caption {
 {
   float: left;
   width: 98%;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+  background-image:url(../../admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
   background-repeat:repeat-x;
   font-size:11px;
   font-weight:bold;
@@ -4356,7 +4356,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 /* slt pour ie8 bug sous ie7*/
 html>/**/body .commentaires #edition-box ,
 html>/**/body .commentaires .oneComment{
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
 }
 
 .commentaires div.avatar {
@@ -4549,7 +4549,7 @@ table.pdcPositionsField {
 
 button {
   background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+    url(../../admin/jsp/icons/silverpeasV5/milieuBouton.gif);
   background-repeat: repeat-x;
   color: #FFFFFF;
 }
@@ -4604,7 +4604,7 @@ button {
 }
 
 .add_position {
-  background:url(/silverpeas/util/icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
+  background:url(../icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
   padding:1px 8px 0 22px;
   margin:0;
   cursor:pointer;
@@ -4646,7 +4646,7 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .classification legend {
-  background:transparent url('/silverpeas/util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
+  background:transparent url('../icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
 .classification .another-value img,
@@ -4664,11 +4664,11 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification-mo legend {
-  background:transparent url('/silverpeas/util/icons/ok.gif') 11px 0px no-repeat;
+  background:transparent url('../icons/ok.gif') 11px 0px no-repeat;
 }
 
 #classification-modification  legend {
-  background:transparent url('/silverpeas/util/icons/update.gif') 11px 0px no-repeat;
+  background:transparent url('../icons/update.gif') 11px 0px no-repeat;
 }
 
 .classification .pdc-edition-box .field,
@@ -4721,7 +4721,7 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .classification.preview .header h4 {
-  background:transparent url("/silverpeas/util/icons/component/pdcPeasSmall.gif") right top no-repeat;
+  background:transparent url("../icons/component/pdcPeasSmall.gif") right top no-repeat;
   height: 16px;
 }
 
@@ -4746,7 +4746,7 @@ html:not([lang*=""]) .add_position:hover {
 
 #classification-modification span.header {
   display:block;
-  background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
+  background:transparent url("../icons/mini_publi.gif") 4px 5px no-repeat ;
   background-color:#F0F0F0;
   border:1px solid #CDCDCD;
   border-left:0;
@@ -4757,11 +4757,11 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #okForAll, #modifyForAll, #modifyForEach {
-  background:transparent url("/silverpeas/util/icons/update.gif") right 0 no-repeat ;
+  background:transparent url("../icons/update.gif") right 0 no-repeat ;
   padding:2px 20px 2px 0;
 }
 #okForAll {
-  background-image:url("/silverpeas/util/icons/ok.gif") ;
+  background-image:url("../icons/ok.gif") ;
 }
 
 
@@ -4821,7 +4821,7 @@ ul.applicationsTypeList {
   -moz-background-size: 100%;
 
   -pie-background: linear-gradient(#CCCCCC, #333333);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
 }
 li.applicationsType{
   width:206px;
@@ -4888,7 +4888,7 @@ li.application {
 /* pour ie8 je veux mettre le pie et virer le bord qui d�conne*/
 li.application {
   -pie-background: linear-gradient(#f5f5f5, #EAEAEA);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
   border:0px;
 }
 
@@ -5099,7 +5099,7 @@ li.application  .applicationName {
   background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=333333&vertical=0&horizontal=100);
   -moz-background-size: 100%;
   -pie-background: linear-gradient(#CCCCCC, #333333);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
   color:#FFF;
 }
 .userPanel .users_results_userPanel,
@@ -5170,7 +5170,7 @@ li.application  .applicationName {
   background-image: url(../icons/gradientSVG.jsp?from=6f6f6f&to=444444&vertical=0&horizontal=100);
   -moz-background-size: 100%;
   -pie-background: linear-gradient(#CCCCCC, #333333);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
 }
 
 #filter_userPanel .filter.select a,
@@ -5212,7 +5212,7 @@ li.application  .applicationName {
   border-radius: 10px;
   moz-border-radius: 10px;
   webkit-border-radius: 10px;
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
   position:relative;
   height:2em;
   font-size: 1em;
@@ -5363,7 +5363,7 @@ input.search:focus {
 #sharing-overview a.Node,
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned  {
-  background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
+  background: transparent url(../icons/folder.gif) top left no-repeat;
   padding: 2px 0px 0px 20px;
   display: block;
   line-height: 16px;
@@ -5371,7 +5371,7 @@ input.search:focus {
 
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
-  background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+  background-image:url(../icons/fileType/unknown.gif);
 }
 
 /* subscription-management */
@@ -5853,7 +5853,7 @@ div.fileUpload {
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
   -moz-background-size: 100%;
   -pie-background: linear-gradient(#ffffff, #e5e5e5);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  behavior: url("PIE.htc");
   padding:2px 5px;
   margin:4px 0;
   cursor:pointer;
@@ -6517,7 +6517,7 @@ form .forms .fields > li:nth-child(even) {
 }
 
 #identity-main legend {
-    background: url("/silverpeas/util/icons/contactCard.gif") no-repeat scroll 11px 0 transparent;
+    background: url("../icons/contactCard.gif") no-repeat scroll 11px 0 transparent;
 }
 
 #profil table.tableArrayPane {
@@ -6525,15 +6525,15 @@ form .forms .fields > li:nth-child(even) {
 }
 
 #profil-groups-belong legend {
-    background: url("/silverpeas/util/icons/groups.png") no-repeat scroll 7px 0 transparent;
+    background: url("../icons/groups.png") no-repeat scroll 7px 0 transparent;
 }
 
 #profil-spaces-management legend {
-    background: url("/silverpeas/util/icons/cog.png") no-repeat scroll 11px 0 transparent;
+    background: url("../icons/cog.png") no-repeat scroll 11px 0 transparent;
 }
 
 #profiles legend {
-    background: url("/silverpeas/util/icons/characteristic.png") no-repeat scroll 11px 0 transparent;
+    background: url("../icons/characteristic.png") no-repeat scroll 11px 0 transparent;
 }
 
 #affected-profil .champ-ui-dialog img{
@@ -6756,7 +6756,7 @@ div.user-card .field{
 
 /*********************** advanced search help *********************/
 input[title] {
-  background-image:url(/silverpeas/util/icons/input-info.png);
+  background-image:url(../icons/input-info.png);
   background-position:top right;
   background-repeat:no-repeat;
 }
