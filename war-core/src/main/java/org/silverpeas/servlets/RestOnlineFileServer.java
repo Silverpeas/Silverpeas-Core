@@ -59,6 +59,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
 
   @Inject
   private ComponentAccessController componentAccessController;
+  @Inject
+  private SilverpeasWebUtil silverpeasWebUtil;
 
   @Override
   public void init(ServletConfig config) {
@@ -158,8 +160,8 @@ public class RestOnlineFileServer extends AbstractFileSender {
 
   private boolean isUserAuthorized(RestRequest request, String componentId, Object object)
       throws Exception {
-    SilverpeasWebUtil util = new SilverpeasWebUtil();
-    MainSessionController controller = util.getMainSessionController(request.getWebRequest());
+    MainSessionController controller =
+        silverpeasWebUtil.getMainSessionController(request.getWebRequest());
     if (controller != null) {
 
       if (object instanceof SimpleDocument) {

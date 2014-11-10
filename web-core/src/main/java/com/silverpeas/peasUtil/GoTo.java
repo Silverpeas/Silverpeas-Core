@@ -22,15 +22,16 @@
 package com.silverpeas.peasUtil;
 
 import com.silverpeas.look.LookHelper;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,9 @@ import java.io.OutputStream;
 public abstract class GoTo extends HttpServlet {
 
   private static final long serialVersionUID = -8381001443484846645L;
-  protected static SilverpeasWebUtil util = new SilverpeasWebUtil();
+
+  @Inject
+  protected SilverpeasWebUtil util;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)

@@ -25,6 +25,8 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -39,13 +41,17 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 /**
  * @author ehugonnet
  */
+@Singleton
 public class SilverpeasWebUtil {
 
-  public SilverpeasWebUtil() {
+  @Inject
+  private OrganizationController organizationController;
+
+  protected SilverpeasWebUtil() {
   }
 
   public OrganizationController getOrganisationController() {
-    return OrganizationControllerProvider.getOrganisationController();
+    return organizationController;
   }
 
   /**

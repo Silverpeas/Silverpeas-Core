@@ -23,7 +23,6 @@ package com.stratelia.silverpeas.peasCore.servlets;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -33,13 +32,15 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
@@ -58,7 +59,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
-  private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
   private final UserAndGroupSelectionProcessor selectionProcessor =
       new UserAndGroupSelectionProcessor();
   private static final Collection<Pattern> SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS;
@@ -326,6 +326,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   @SuppressWarnings("UnusedParameters")
   static public String[] getComponentId(HttpServletRequest request,
       MainSessionController mainSessionCtrl) {
+    SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     return webUtil.getComponentId(request);
   }
 
