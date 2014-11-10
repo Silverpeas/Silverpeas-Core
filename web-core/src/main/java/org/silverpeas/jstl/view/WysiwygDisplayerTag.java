@@ -23,15 +23,16 @@
  */
 package org.silverpeas.jstl.view;
 
-import java.util.Iterator;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.silverpeas.glossary.HighlightGlossaryTerms;
+import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.util.Iterator;
 
 /**
  *
@@ -108,7 +109,9 @@ public class WysiwygDisplayerTag extends TagSupport {
 
       //highlight glossary term
       if (StringUtil.isDefined(getAxisId())) {
-        content = new HighlightGlossaryTerms().searchReplace(content, "highlight-silver",
+        HighlightGlossaryTerms highlightGlossaryTerms =
+            ServiceProvider.getService(HighlightGlossaryTerms.class);
+        content = highlightGlossaryTerms.searchReplace(content, "highlight-silver",
             getAxisId(), highlightFirst, currentLang);
       }
       pageContext.getOut().println(content);

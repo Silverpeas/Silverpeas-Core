@@ -25,11 +25,13 @@
 package com.silverpeas.glossary;
 
 import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,17 +40,13 @@ import java.util.List;
  */
 public class HighlightGlossaryTerms {
 
-  private final GlobalPdcManager pdc;
-
-  HighlightGlossaryTerms(GlobalPdcManager pdc) {
-    this.pdc = pdc;
-  }
+  @Inject
+  private PdcManager pdc;
 
   /**
    *
    */
-  public HighlightGlossaryTerms() {
-    pdc = new GlobalPdcManager();
+  protected HighlightGlossaryTerms() {
   }
 
   /**

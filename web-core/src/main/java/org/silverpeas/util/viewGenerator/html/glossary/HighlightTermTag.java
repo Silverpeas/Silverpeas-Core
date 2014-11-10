@@ -25,18 +25,21 @@
 package org.silverpeas.util.viewGenerator.html.glossary;
 
 import com.silverpeas.glossary.HighlightGlossaryTerms;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import java.io.IOException;
+
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.io.IOException;
 
 /**
  * @author David Derigent
  */
 public class HighlightTermTag extends BodyTagSupport {
 
-  private static final HighlightGlossaryTerms highlighter = new HighlightGlossaryTerms();
+  private static final HighlightGlossaryTerms highlighter =
+      ServiceProvider.getService(HighlightGlossaryTerms.class);
   private String className = null;
   private String axisId = null;
   private boolean onlyFirst = false;
