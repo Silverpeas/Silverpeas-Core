@@ -58,7 +58,7 @@ public class Member {
         return;
       }
     }
-    this.duration = "";
+    this.duration = StringUtil.EMPTY;
     this.connected = false;
   }
 
