@@ -36,6 +36,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -686,8 +687,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public String getStatus() {
+    StatusService statusService = ServiceProvider.getService(StatusService.class);
     String status =
-        new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
+        statusService.getLastStatusService(Integer.parseInt(getId())).getDescription();
     if (isDefined(status)) {
       return status;
     }

@@ -20,12 +20,14 @@
  */
 package com.silverpeas.socialnetwork.connectors;
 
+import com.silverpeas.socialnetwork.qualifiers.Facebook;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.exception.SilverpeasException;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
@@ -35,7 +37,8 @@ import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 
-@Named("facebookConnector")
+@Facebook
+@Singleton
 public class FacebookConnector extends AbstractSocialNetworkConnector {
 
   private FacebookConnectionFactory connectionFactory = null;

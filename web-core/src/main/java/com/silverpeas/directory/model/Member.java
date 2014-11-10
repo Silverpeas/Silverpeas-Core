@@ -100,8 +100,8 @@ public class Member {
   }
 
   public boolean isRelationOrInvitation(String myId) {
-    RelationShipService relation = new RelationShipService();
-    InvitationService invitation = new InvitationService();
+    RelationShipService relation = RelationShipService.getInstance();
+    InvitationService invitation = InvitationService.getInstance();
     try {
       return relation.isInRelationShip(Integer.parseInt(myId), Integer.parseInt(getId())) ||
           (invitation.getInvitation(Integer.parseInt(myId), Integer.parseInt(getId())) != null);

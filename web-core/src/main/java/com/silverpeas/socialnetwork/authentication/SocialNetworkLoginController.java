@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import java.io.IOException;
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,7 +52,9 @@ import org.springframework.social.connect.UserProfile;
 public class SocialNetworkLoginController extends HttpServlet {
 
   private static final long serialVersionUID = 3019716885114707069L;
-  private UserService userService = null;
+
+  @Inject
+  private UserService userService;
   private RegistrationSettings registrationSettings = null;
 
   @Override
@@ -69,7 +72,6 @@ public class SocialNetworkLoginController extends HttpServlet {
   @Override
   public void init() throws ServletException {
     super.init();
-    userService = UserServiceProvider.getUserService();
     registrationSettings = RegistrationSettings.getSettings();
   }
 

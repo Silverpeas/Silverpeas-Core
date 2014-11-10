@@ -44,6 +44,7 @@ public class SocialNetworkServiceTest {
   @Inject
   OrganizationControllerMock organisationController;
 
+  @Inject
   SocialNetworkService service;
 
   public static final Operation TABLES_CREATION =
@@ -56,15 +57,12 @@ public class SocialNetworkServiceTest {
   public static final Operation INSERT_DATA = Operations.insertInto("sb_sn_externalaccount")
       .columns("profileId", "networkId", "silverpeasUserId").values("1233", "LINKEDIN", "10")
       .values("1234", "LINKEDIN", "11").values("1235", "LINKEDIN", "12").build();
-  ;
 
   @Before
   public void prepareDataSource() {
     Operation preparation = Operations.sequenceOf(TABLES_CREATION, CLEAN_UP, INSERT_DATA);
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
     dbSetupTracker.launchIfNecessary(dbSetup);
-
-    service = ServiceProvider.getService(SocialNetworkService.class);
   }
 
   @Deployment

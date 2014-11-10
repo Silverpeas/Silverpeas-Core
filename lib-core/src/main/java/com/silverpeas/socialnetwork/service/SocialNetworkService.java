@@ -29,40 +29,40 @@ import com.silverpeas.socialnetwork.dao.ExternalAccountManager;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.ExternalAccountIdentifier;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import com.silverpeas.socialnetwork.qualifiers.Facebook;
+import com.silverpeas.socialnetwork.qualifiers.LinkedIn;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class SocialNetworkService {
   static private String AUTHORIZATION_TOKEN_SESSION_ATTR = "socialnetwork_authorization_token_";
   static private String SOCIALNETWORK_ID_SESSION_ATTR = "socialnetwork_id";
 
   @Inject
-  @Named("facebookConnector")
-  private SocialNetworkConnector facebook = null;
+  @Facebook
+  private SocialNetworkConnector facebook;
 
   @Inject
-  @Named("linkedInConnector")
-  private SocialNetworkConnector linkedIn = null;
+  @LinkedIn
+  private SocialNetworkConnector linkedIn;
 
   @Inject
-  private ExternalAccountManager dao = null;
+  private ExternalAccountManager dao;
 
-  private static SocialNetworkService instance = null;
-
-  public SocialNetworkService() {
+  protected SocialNetworkService() {
   }
 
-  static public SocialNetworkService getInstance() {
-    if (instance == null) {
-      instance = new SocialNetworkService();
-    }
-    return instance;
+  public static SocialNetworkService getInstance() {
+    return ServiceProvider.getService(SocialNetworkService.class);
   }
 
   /**

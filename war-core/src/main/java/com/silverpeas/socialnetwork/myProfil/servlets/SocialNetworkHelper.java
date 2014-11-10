@@ -28,10 +28,19 @@ import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkAuthorizationException;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import java.util.Map;
+
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 public class SocialNetworkHelper {
+
+  @Inject
+  private SocialNetworkService socialNetworkService;
+
+  protected SocialNetworkHelper() {
+
+  }
 
   public void getAllMyNetworks(MyProfilSessionController mpsc, HttpServletRequest request) {
     request.setAttribute("userNetworks", mpsc.getAllMyNetworks());
@@ -68,16 +77,14 @@ public class SocialNetworkHelper {
 
   public String buildAuthenticationURL(HttpServletRequest request, MyProfileRoutes route) {
     SocialNetworkID networkId = SocialNetworkID.valueOf(request.getParameter("networkId"));
-    SocialNetworkConnector connector =
-        SocialNetworkService.getInstance().getSocialNetworkConnector(networkId);
+    SocialNetworkConnector connector = socialNetworkService.getSocialNetworkConnector(networkId);
 
     return connector.buildAuthenticateUrl(getRedirectURL(networkId, request, route));
   }
 
   public void linkToSilverpeas(MyProfilSessionController mpsc, HttpServletRequest request) {
     SocialNetworkID networkId = SocialNetworkID.valueOf(request.getParameter("networkId"));
-    SocialNetworkConnector connector =
-        SocialNetworkService.getInstance().getSocialNetworkConnector(networkId);
+    SocialNetworkConnector connector = socialNetworkService.getSocialNetworkConnector(networkId);
 
     AccessToken authorizationToken;
     try {
@@ -92,8 +99,7 @@ public class SocialNetworkHelper {
     SocialNetworkService.getInstance().storeAuthorizationToken(request.getSession(true), networkId,
         authorizationToken);
     String profileId = connector.getUserProfileId(authorizationToken);
-    SocialNetworkService.getInstance()
-        .createExternalAccount(networkId, mpsc.getUserId(), profileId);
+    socialNetworkService.createExternalAccount(networkId, mpsc.getUserId(), profileId);
   }
 
   public void unlinkFromSilverpeas(MyProfilSessionController myProfilSC, HttpServletRequest request) {
@@ -103,8 +109,7 @@ public class SocialNetworkHelper {
 
   public void publishStatus(MyProfilSessionController myProfilSC, HttpServletRequest request) {
     SocialNetworkID networkId = SocialNetworkID.valueOf(request.getParameter("networkId"));
-    SocialNetworkConnector connector =
-        SocialNetworkService.getInstance().getSocialNetworkConnector(networkId);
+    SocialNetworkConnector connector = socialNetworkService.getSocialNetworkConnector(networkId);
 
     AccessToken authorizationToken;
     try {
@@ -117,7 +122,7 @@ public class SocialNetworkHelper {
     }
 
     String status = myProfilSC.getUserFul(myProfilSC.getUserId()).getStatus();
-    SocialNetworkService.getInstance().storeAuthorizationToken(request.getSession(true), networkId,
+    socialNetworkService.storeAuthorizationToken(request.getSession(true), networkId,
         authorizationToken);
     connector.updateStatus(authorizationToken, status);
   }

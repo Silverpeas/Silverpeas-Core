@@ -101,7 +101,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       String anotherUserId = request.getParameter("userId");
       if (StringUtil.isDefined(anotherUserId) && !anotherUserId.equals(userId)) {
         view = "MyContactWall"; // forcing to display my contact wall, ensuring to not display feed
-        RelationShipService rss = new RelationShipService();
+        RelationShipService rss = RelationShipService.getInstance();
         if (!rss.isInRelationShip(Integer.parseInt(m_MainSessionCtrl.getUserId()), Integer
             .parseInt(anotherUserId))) {
           // Current user and target user are not in a relation

@@ -35,12 +35,16 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class StatusService {
 
+  @Inject
   private StatusDao statusDao;
 
-  public StatusService() {
-    statusDao = new StatusDao();
+  protected StatusService() {
   }
 
   /**

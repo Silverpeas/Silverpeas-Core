@@ -27,15 +27,15 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.web.RESTWebService;
-import java.util.List;
+
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 /**
  * It represents a resource published in the WEB that represents an invitation emitted by a user to
@@ -45,8 +45,7 @@ import org.springframework.stereotype.Service;
  * request. Then, it represents an invitation either sent or received by him. With a such policy,
  * the invitations belonging to another user cannot be fetched by him.
  */
-@Service
-@Scope("request")
+@RequestScoped
 @Path("invitations")
 @Authenticated
 public class InvitationResource extends RESTWebService {

@@ -72,9 +72,9 @@ import org.silverpeas.authentication.exception.AuthenticationException;
  */
 public class MyProfilSessionController extends AbstractComponentSessionController {
 
-  private AdminController adminCtrl = null;
-  private RelationShipService relationShipService = new RelationShipService();
-  private InvitationService invitationService = null;
+  private AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
+  private RelationShipService relationShipService = RelationShipService.getInstance();
+  private InvitationService invitationService = InvitationService.getInstance();
   private long domainActions = -1;
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
@@ -83,8 +83,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         "org.silverpeas.social.multilang.socialNetworkBundle",
         "org.silverpeas.social.settings.socialNetworkIcons",
         "org.silverpeas.social.settings.socialNetworkSettings");
-    adminCtrl = ServiceProvider.getService(AdminController.class);
-    invitationService = new InvitationService();
   }
 
   /**

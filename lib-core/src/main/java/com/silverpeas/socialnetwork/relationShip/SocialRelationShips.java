@@ -33,6 +33,7 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -40,6 +41,9 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SocialRelationShips implements SocialRelationShipsInterface {
+
+  @Inject
+  private RelationShipService relationShipService;
 
   /**
    * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
@@ -54,7 +58,7 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException {
     try {
-      return new RelationShipService().getAllMyRelationShips(userId, begin, end);
+      return relationShipService.getAllMyRelationShips(userId, begin, end);
     } catch (SQLException ex) {
       throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
@@ -75,7 +79,7 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     try {
-      return new RelationShipService().getAllRelationShipsOfMyContact(myId, myContactsIds, begin,
+      return relationShipService.getAllRelationShipsOfMyContact(myId, myContactsIds, begin,
           end);
     } catch (SQLException ex) {
       throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",

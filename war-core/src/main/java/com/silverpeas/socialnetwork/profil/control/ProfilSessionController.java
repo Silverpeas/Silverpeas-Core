@@ -24,15 +24,15 @@
 
 package com.silverpeas.socialnetwork.profil.control;
 
+import com.silverpeas.socialnetwork.SocialNetworkException;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import java.sql.SQLException;
-
-import com.silverpeas.socialnetwork.SocialNetworkException;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import java.sql.SQLException;
 
 /**
  * @author Bensalem Nabil
@@ -65,7 +65,8 @@ public class ProfilSessionController extends AbstractComponentSessionController 
   public boolean isInMyContact(String userId) throws SocialNetworkException {
     try {
       int id = Integer.parseInt(userId);
-      return new RelationShipService().isInRelationShip(Integer.parseInt(this.getUserId()), id);
+      return RelationShipService.getInstance()
+          .isInRelationShip(Integer.parseInt(this.getUserId()), id);
     } catch (SQLException ex) {
       throw new SocialNetworkException(
           "ProfilSessionController.isInMyContact(String userId)",

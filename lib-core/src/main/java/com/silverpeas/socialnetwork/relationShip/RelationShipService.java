@@ -33,16 +33,24 @@ import java.util.List;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.UtilException;
-import javax.inject.Named;
 
-@Named
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+@Singleton
 public class RelationShipService {
 
-  private final RelationShipDao relationShipDao;
+  public static RelationShipService getInstance() {
+    return ServiceProvider.getService(RelationShipService.class);
+  }
 
-  public RelationShipService() {
-    relationShipDao = new RelationShipDao();
+  @Inject
+  private RelationShipDao relationShipDao;
+
+  protected RelationShipService() {
   }
 
   private Connection getConnection(boolean useAutoCommit) throws UtilException, SQLException {

@@ -28,18 +28,25 @@ import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
 import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -49,11 +56,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.crypto.CryptMD5;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
 
@@ -89,7 +91,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = valueOf(function);
-    SocialNetworkHelper socialNetworkHelper = new SocialNetworkHelper();
+    SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
 
     try {
       if (route == MyInfos) {

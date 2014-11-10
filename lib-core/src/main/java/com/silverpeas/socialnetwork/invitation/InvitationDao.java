@@ -26,6 +26,7 @@ package com.silverpeas.socialnetwork.invitation;
 
 import org.silverpeas.util.DBUtil;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Singleton
 public class InvitationDao {
 
   private static final String INSERT_INVITATION =

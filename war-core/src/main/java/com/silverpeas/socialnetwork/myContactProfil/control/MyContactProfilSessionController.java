@@ -42,7 +42,7 @@ import java.util.ArrayList;
  */
 public class MyContactProfilSessionController extends AbstractComponentSessionController {
 
-  private RelationShipService relationShipService = new RelationShipService();
+  private RelationShipService relationShipService = RelationShipService.getInstance();
 
   /**
    * @param mainSessionCtrl
@@ -75,7 +75,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
   public boolean isInMyContact(String userId) throws SocialNetworkException {
     try {
       int id = Integer.parseInt(userId);
-      return new RelationShipService().isInRelationShip(Integer.parseInt(this.getUserId()), id);
+      return relationShipService.isInRelationShip(Integer.parseInt(this.getUserId()), id);
     } catch (SQLException ex) {
       throw new SocialNetworkException(
           "ProfilSessionController.isInMyContact(String userId)",

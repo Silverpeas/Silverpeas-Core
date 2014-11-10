@@ -54,7 +54,7 @@ public class MyContactsPortlet extends GenericPortlet implements FormNames {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
             PortletSession.APPLICATION_SCOPE);
 
-    RelationShipService relationShipService = new RelationShipService();
+    RelationShipService relationShipService = RelationShipService.getInstance();
     List<String> listContactIds = null;
     try {
       listContactIds = relationShipService.getMyContactsIds(Integer.parseInt(m_MainSessionCtrl.getUserId()));

@@ -29,8 +29,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.socialnetwork.qualifiers.LinkedIn;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
@@ -40,7 +42,8 @@ import org.springframework.social.oauth1.OAuthToken;
 
 import com.silverpeas.socialnetwork.service.AccessToken;
 
-@Named("linkedInConnector")
+@LinkedIn
+@Singleton
 public class LinkedInConnector extends AbstractSocialNetworkConnector {
   private Map<String, OAuthToken> requestTokens = new HashMap<>();
   private LinkedInConnectionFactory connectionFactory = null;

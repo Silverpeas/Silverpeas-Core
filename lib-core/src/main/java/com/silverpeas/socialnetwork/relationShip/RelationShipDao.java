@@ -38,6 +38,9 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class RelationShipDao {
 
   private static final String INSERT_RELATIONSHIP =

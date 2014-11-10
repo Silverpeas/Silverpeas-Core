@@ -115,7 +115,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", 10);
 
-    relationShipService = new RelationShipService();
+    relationShipService = RelationShipService.getInstance();
   }
 
   public int getElementsByPage() {

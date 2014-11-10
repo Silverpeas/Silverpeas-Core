@@ -166,7 +166,7 @@ public class SocialNetworkService {
    */
   public String changeStatusService(String textStatus) {
     Status status = new Status(Integer.parseInt(myId), new Date(), textStatus);
-    return new StatusService().changeStatusService(status);
+    return getStatusService().changeStatusService(status);
 
   }
 
@@ -175,7 +175,7 @@ public class SocialNetworkService {
    * @return String
    */
   public String getLastStatusService() {
-    Status status = new StatusService().getLastStatusService(Integer.parseInt(myId));
+    Status status = getStatusService().getLastStatusService(Integer.parseInt(myId));
     if (StringUtil.isDefined(status.getDescription())) {
       return status.getDescription();
     }
@@ -184,7 +184,7 @@ public class SocialNetworkService {
 
   public List<String> getMyContactsIds() {
     try {
-      return new RelationShipService().getMyContactsIds(Integer.parseInt(myId));
+      return getRelationShipService().getMyContactsIds(Integer.parseInt(myId));
     } catch (SQLException ex) {
       SilverTrace.error("socialNetworkService", "SocialNetworkService.getMyContactsIds", "", ex);
     }
@@ -193,7 +193,7 @@ public class SocialNetworkService {
   
   public List<String> getTheContactsIds(String myContactId) {
     try {
-      return new RelationShipService().getMyContactsIds(Integer.parseInt(myContactId));
+      return getRelationShipService().getMyContactsIds(Integer.parseInt(myContactId));
     } catch (SQLException ex) {
       SilverTrace.error("socialNetworkService", "SocialNetworkService.getTheContactsIds", "", ex);
     }
@@ -202,6 +202,14 @@ public class SocialNetworkService {
 
   private SocialInformationService socialInformationService() {
     return ServiceProvider.getService(SocialInformationService.class);
+  }
+
+  private RelationShipService getRelationShipService() {
+    return ServiceProvider.getService(RelationShipService.class);
+  }
+
+  private StatusService getStatusService() {
+    return ServiceProvider.getService(StatusService.class);
   }
 
 }

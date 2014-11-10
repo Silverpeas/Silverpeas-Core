@@ -28,29 +28,36 @@ import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipDao;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.UtilException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author Bensalem Nabil
  */
-@Named
+@Singleton
 public class InvitationService {
 
+  public static InvitationService getInstance() {
+    return ServiceProvider.getService(InvitationService.class);
+  }
+
+  @Inject
   private InvitationDao invitationDao;
+  @Inject
   private RelationShipDao relationShipDao;
 
   /**
    * Default Constructor
    */
   public InvitationService() {
-    invitationDao = new InvitationDao();
-    relationShipDao = new RelationShipDao();
   }
 
   /**
