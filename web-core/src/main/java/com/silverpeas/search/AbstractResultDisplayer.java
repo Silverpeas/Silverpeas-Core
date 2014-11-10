@@ -26,14 +26,12 @@ package com.silverpeas.search;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourcesWrapper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import org.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.util.DateUtil;
-
-import javax.servlet.jsp.JspTagException;
 
 /**
  * This class shares common method to implement ResultDisplayer interface.
@@ -79,7 +77,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
     componentTemplate.setAttribute("spaceId", silverResult.getSpaceId());
     componentTemplate.setAttribute("instanceId", silverResult.getInstanceId());
 
-    String sCreationDate = null;
+    String sCreationDate;
     try {
       if (searchResult.getSortValue() == 4) {
         sCreationDate =
@@ -120,45 +118,11 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
     componentTemplate.setAttribute("exportEnabled", searchResult.getExportEnabled());
     componentTemplate.setAttribute("type", silverResult.getType());
 
-    // if (silverResult.getType() != null &&
-    // (silverResult.getType().startsWith("Attachment") ||
-    // silverResult.getType().startsWith("Versioning") || silverResult
-    // .getType().equals("LinkedFile"))) {
-    // String fileType = sName.substring(sName.lastIndexOf(".") + 1, sName.length());
-    // String fileIcon = FileRepositoryManager.getFileIcon(fileType);
-    // sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
-    // // no preview, display this is an attachment
-    // if (silverResult.getType().startsWith("Attachment") ||
-    // silverResult.getType().equals("LinkedFile")) {
-    // sDescription = null;
-    // }
-    // }
-    //
-    // result.append("<td class=\"content\">");
-    //
-    // result.append("<table cellspacing=\"0\" cellpadding=\"0\"><tr>");
-    //
-    // if (silverResult.getThumbnailURL() != null && silverResult.getThumbnailURL().length() > 0) {
-    // if ("UserFull".equals(silverResult.getType())) {
-    // result.append("<td><img class=\"avatar\" src=\"" + URLManager.getApplicationURL() +
-    // silverResult.getThumbnailURL() +
-    // "\" /></td>");
-    // } else {
-    // result.append("<td><img src=\"" + silverResult.getThumbnailURL() +
-    // "\" border=\"0\" width=\""
-    // +
-    // silverResult.getThumbnailWidth() + "\" height=\"" + silverResult.getThumbnailHeight() +
-    // "\"/></td>");
-    // }
-    // result.append("<td>&nbsp;</td>");
-    // }
-
     return componentTemplate;
   }
 
   /**
    * @return a UserPreferences object from Personalization service.
-   * @throws JspTagException
    */
   protected UserPreferences getUserPreferences(String userId) {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);

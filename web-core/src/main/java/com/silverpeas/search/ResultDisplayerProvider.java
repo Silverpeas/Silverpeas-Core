@@ -24,9 +24,7 @@
 
 package com.silverpeas.search;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This class represents a ResultDisplayer object factory. It gives a main point to access each
@@ -37,28 +35,15 @@ import org.springframework.context.ApplicationContextAware;
  * componentName + &quot;ResultDisplayer&quot;
  * </pre>
  */
-public class ResultDisplayerFactory implements ApplicationContextAware {
+public class ResultDisplayerProvider {
   private static final String BEAN_NAME_POSTFIX = "ResultDisplayer";
-
-  private static ResultDisplayerFactory instance = new ResultDisplayerFactory();
-
-  private ApplicationContext context;
-
-  public static ResultDisplayerFactory getResultDisplayerFactory() {
-    return instance;
-  }
 
   /**
    * @param name the component name
    * @return a component ResultDisplayer using dependency injection
    */
-  public ResultDisplayer getResultDisplayer(String name) {
-    return context.getBean(name + BEAN_NAME_POSTFIX, ResultDisplayer.class);
-  }
-
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    this.context = applicationContext;
+  public static ResultDisplayer getResultDisplayer(String name) {
+    return ServiceProvider.getService(name + BEAN_NAME_POSTFIX);
   }
 
 }

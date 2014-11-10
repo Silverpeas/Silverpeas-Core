@@ -28,7 +28,7 @@ package org.silverpeas.util.viewGenerator.html.result;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.search.ResultDisplayer;
-import com.silverpeas.search.ResultDisplayerFactory;
+import com.silverpeas.search.ResultDisplayerProvider;
 import com.silverpeas.search.ResultSearchRendererUtil;
 import com.silverpeas.search.SearchResultContentVO;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -168,27 +168,27 @@ public class HtmlSearchResultTag extends TagSupport {
     // Create a new added information
     String addedInformation = null;
 
-    if (StringUtil.isDefined(instanceId) && !(instanceId.startsWith("user")
-        || instanceId.startsWith("pdc"))) {
+    if (StringUtil.isDefined(instanceId) &&
+        !(instanceId.startsWith("user") || instanceId.startsWith("pdc"))) {
 
       // Check if this component has a specific template result
-      ComponentInstLight component = OrganizationControllerProvider
-          .getOrganisationController().getComponentInstLight(instanceId);
+      ComponentInstLight component = OrganizationControllerProvider.getOrganisationController()
+          .getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();
 
         boolean processResultTemplating = isResultTemplating(instanceId, componentName);
         if (processResultTemplating) {
-          // Retrieve the component result displayer class from a factory
+          // Retrieve the component result displayer class from a CDI provider
           ResultDisplayer resultDisplayer =
-              ResultDisplayerFactory.getResultDisplayerFactory().getResultDisplayer(componentName);
+              ResultDisplayerProvider.getResultDisplayer(componentName);
           SilverTrace.debug("viewgenerator", HtmlSearchResultTag.class.getName(),
               "load specific for current result: instanceid=" + instanceId + ", contentid=" +
-              gsr.getId());
+                  gsr.getId());
           if (resultDisplayer != null) {
-            addedInformation = resultDisplayer.getResultContent(new SearchResultContentVO(
-                this.userId, this.gsr, this.sortValue, this.activeSelection, this.exportEnabled,
-                settings));
+            addedInformation = resultDisplayer.getResultContent(
+                new SearchResultContentVO(this.userId, this.gsr, this.sortValue,
+                    this.activeSelection, this.exportEnabled, settings));
           }
         }
       }
@@ -259,9 +259,8 @@ public class HtmlSearchResultTag extends TagSupport {
 
     String serverName = "";
     if (settings.getSetting("external.search.enable", false) && gsr.getIndexEntry() != null) {
-      serverName = "external_server_" +
-          (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ? gsr.getIndexEntry()
-          .getServerName() : "unknown");
+      serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ?
+          gsr.getIndexEntry().getServerName() : "unknown");
     }
 
     result.append("<li class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
@@ -275,15 +274,15 @@ public class HtmlSearchResultTag extends TagSupport {
         if (gsr.isSelected()) {
           checked = "checked=\"checked\"";
         }
-        result.append("<input class=\"selection\" type=\"checkbox\" ").append(checked).append(
-            " name=\"resultObjects\" value=\"").append(gsr.getId()).append("-").append(
-            gsr.getInstanceId()).append("\"/>");
+        result.append("<input class=\"selection\" type=\"checkbox\" ").append(checked)
+            .append(" name=\"resultObjects\" value=\"").append(gsr.getId()).append("-")
+            .append(gsr.getInstanceId()).append("\"/>");
       }
     }
 
     if (settings.getSetting("PertinenceVisible", false)) {
-      result.append("<div class=\"pertinence\">").append(
-          ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("</div>");
+      result.append("<div class=\"pertinence\">")
+          .append(ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("</div>");
     }
 
     result.append("<div class=\"content\">");
@@ -291,19 +290,19 @@ public class HtmlSearchResultTag extends TagSupport {
     if (StringUtil.isDefined(gsr.getThumbnailURL())) {
       result.append("<div class=\"thumb\">");
       if ("UserFull".equals(gsr.getType())) {
-        result.append("<img class=\"avatar\" src=\"").append(
-            URLManager.getApplicationURL()).append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
+        result.append("<img class=\"avatar\" src=\"").append(URLManager.getApplicationURL())
+            .append(gsr.getThumbnailURL()).append("\" border=\"0\" />");
       } else {
-        result.append("<img src=\"").append(gsr.getThumbnailURL()).append(
-            "\" border=\"0\" width=\"").append(gsr.getThumbnailWidth()).append(
-            "\" height=\"").append(gsr.getThumbnailHeight()).append("\"/>");
+        result.append("<img src=\"").append(gsr.getThumbnailURL())
+            .append("\" border=\"0\" width=\"").append(gsr.getThumbnailWidth())
+            .append("\" height=\"").append(gsr.getThumbnailHeight()).append("\"/>");
       }
       result.append("</div>");
     }
 
     if (gsr.getType() != null &&
-        (gsr.getType().startsWith("Attachment") || gsr.getType().startsWith("Versioning") || gsr
-        .getType().equals("LinkedFile"))) {
+        (gsr.getType().startsWith("Attachment") || gsr.getType().startsWith("Versioning") ||
+            gsr.getType().equals("LinkedFile"))) {
       String fileType = FilenameUtils.getExtension(gsr.getAttachmentFilename());
       String fileIcon = FileRepositoryManager.getFileIcon(fileType);
       if (!StringUtil.isDefined(sName)) {
@@ -344,15 +343,17 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (StringUtil.isDefined(sDownloadURL) && gsr.isUserAllowedToDownloadFile()) {
       // affiche le lien pour le téléchargement
-      result.append("<a href=\"").append(sDownloadURL).append("\" class=\"fileDownload\" target=\"_blank\">").append(
-          downloadSrc).append("</a>");
+      result.append("<a href=\"").append(sDownloadURL)
+          .append("\" class=\"fileDownload\" target=\"_blank\">").append(downloadSrc)
+          .append("</a>");
     }
 
     if (gsr.isPreviewable()) {
       result.append(" <img onclick=\"javascript:previewFile(this, '").append(gsr.getAttachmentId())
           .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
-          .append("');\" class=\"preview-file\" src=\"").append(settings.getIcon("pdcPeas.file.preview"))
-          .append("\" alt=\"").append(settings.getString("GML.preview")).append("\" title=\"")
+          .append("');\" class=\"preview-file\" src=\"")
+          .append(settings.getIcon("pdcPeas.file.preview")).append("\" alt=\"")
+          .append(settings.getString("GML.preview")).append("\" title=\"")
           .append(settings.getString("GML.preview")).append("\"/>");
     }
     if (gsr.isViewable()) {
@@ -376,7 +377,8 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append("</div>");
 
     if (StringUtil.isDefined(sDescription)) {
-      result.append("<div class=\"description\">").append(EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</div>");
+      result.append("<div class=\"description\">")
+          .append(EncodeHelper.javaStringToHtmlParagraphe(sDescription)).append("</div>");
     }
 
     if (StringUtil.isDefined(extraInformation)) {
@@ -387,8 +389,8 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (sortValue == 7 && gsr.getHits() >= 0) {
       result.append("<div class=\"popularity\">").append(
-          settings.getStringWithParam("pdcPeas.popularity",
-          Integer.toString(gsr.getHits()))).append(" | </div>");
+          settings.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits())))
+          .append(" | </div>");
     }
 
     if (StringUtil.isDefined(sCreationDate)) {
@@ -396,8 +398,8 @@ public class HtmlSearchResultTag extends TagSupport {
     }
 
     if (StringUtil.isDefined(sCreatorName)) {
-      result.append("<div class=\"creatorName\">").append(
-          EncodeHelper.javaStringToHtmlString(sCreatorName)).append(" | </div>");
+      result.append("<div class=\"creatorName\">")
+          .append(EncodeHelper.javaStringToHtmlString(sCreatorName)).append(" | </div>");
     }
 
     if (StringUtil.isDefined(serverName)) {
@@ -405,7 +407,8 @@ public class HtmlSearchResultTag extends TagSupport {
     }
 
     if (StringUtil.isDefined(sLocation)) {
-      result.append("<div class=\"location\">").append(EncodeHelper.javaStringToHtmlString(sLocation)).append("</div>");
+      result.append("<div class=\"location\">")
+          .append(EncodeHelper.javaStringToHtmlString(sLocation)).append("</div>");
     }
 
     result.append("</div>");
@@ -431,11 +434,9 @@ public class HtmlSearchResultTag extends TagSupport {
       String language = getUserPreferences().getLanguage();
       ResourceLocator messages =
           new ResourceLocator("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
-      settings =
-          new ResourcesWrapper(messages,
+      settings = new ResourcesWrapper(messages,
           new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
-          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
-          language);
+          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", ""), language);
     }
     return settings;
   }

@@ -35,25 +35,19 @@ public class ResultSearchRendererUtil {
    * @return an HTML empty star icon img element
    */
   private static String getEmptyStarIcon() {
-    String emptyStarSrc =
-        "<img src=\"" + URLManager.getApplicationURL() +
-        "/pdcPeas/jsp/icons/pdcPeas_emptyStar.gif\"/>";
-    return emptyStarSrc;
+    return "<img src=\"" + URLManager.getApplicationURL() +
+    "/pdcPeas/jsp/icons/pdcPeas_emptyStar.gif\"/>";
   }
 
   /**
    * @return an HTML full star icon img element
    */
   private static String getFullStarIcon() {
-    String fullStarSrc =
-        "<img src=\"" + URLManager.getApplicationURL() + "/pdcPeas/jsp/icons/starGreen.gif\"/>";
-    return fullStarSrc;
+    return "<img src=\"" + URLManager.getApplicationURL() + "/pdcPeas/jsp/icons/starGreen.gif\"/>";
   }
 
   /**
    * @param score the relevant score
-   * @param fullStarSrc the full star source icon string
-   * @param emptyStarSrc the emty star source icon string
    * @return HTML relevant display
    */
   public static String displayPertinence(float score) {

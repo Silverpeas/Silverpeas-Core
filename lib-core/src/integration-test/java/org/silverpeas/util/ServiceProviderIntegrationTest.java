@@ -47,13 +47,15 @@ public class ServiceProviderIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar").addClass(ServiceProvider.class)
+    return ShrinkWrap.create(JavaArchive.class, "test.jar")
+        .addClass(ServiceProvider.class)
         .addClass(BeanContainer.class)
         .addClass(CDIContainer.class)
         .addClass(TestQualifier.class)
         .addClass(org.silverpeas.util.Test.class)
         .addClass(TestManagedBean.class)
         .addClass(TestManagedAndQualifiedBean.class)
+        .addClasses(AnotherTest.class, TestAnotherManagedBean1.class, TestAnotherManagedBean2.class)
         .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
             "services/org.silverpeas.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -79,7 +81,18 @@ public class ServiceProviderIntegrationTest {
   @Test
   public void fetchAManagedAndQualifiedBeanTypeByTheServiceProviderShouldSucceed() {
     org.silverpeas.util.Test bean = ServiceProvider
-        .getService(org.silverpeas.util.Test.class, new AnnotationLiteral<TestQualifier>() {});
+        .getService(org.silverpeas.util.Test.class, new AnnotationLiteral<TestQualifier>() {
+        });
     assertThat(bean, instanceOf(TestManagedAndQualifiedBean.class));
+  }
+
+  @Test
+  public void fetchAManagedBeanByNameByTheServiceProviderShouldSucceed() {
+    AnotherTest bean1 = ServiceProvider.getService("name1ManagedBean");
+    assertThat(bean1, instanceOf(AnotherTest.class));
+    assertThat(bean1, instanceOf(TestAnotherManagedBean1.class));
+    AnotherTest bean2 = ServiceProvider.getService("name2ManagedBean");
+    assertThat(bean2, instanceOf(AnotherTest.class));
+    assertThat(bean2, instanceOf(TestAnotherManagedBean2.class));
   }
 }
