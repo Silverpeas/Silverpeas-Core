@@ -145,9 +145,7 @@ function getFooterHeight() {
 	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="middle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
     <div id="backHome">
         <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
-    <div id="ticker">
 	  <viewTags:displayTicker/>
-	</div>
 	    <div id="outils">
         	<% if (!isAnonymousAccess) { %>
 	        	<div class="avatarName">
