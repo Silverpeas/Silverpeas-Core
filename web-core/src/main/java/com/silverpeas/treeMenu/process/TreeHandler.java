@@ -24,22 +24,16 @@
 
 package com.silverpeas.treeMenu.process;
 
-import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_COMPONENT_ID;
-import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_ITEM_MENU_ID;
-import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_LEAF;
-import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_MENU_LEVEL;
-import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_NODE_TYPE;
-
-import java.rmi.RemoteException;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.treeMenu.model.MenuItem;
 import com.silverpeas.treeMenu.model.NodeType;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import java.rmi.RemoteException;
+
+import static com.silverpeas.treeMenu.model.MenuConstants.*;
 
 /**
  *
@@ -63,15 +57,14 @@ public class TreeHandler {
   public static String ProcessMenu(HttpServletRequest request, String menuType) {
     MainSessionController mainSessionCtrl =
         new SilverpeasWebUtil().getMainSessionController(request);
-    OrganizationController controller = mainSessionCtrl.getOrganisationController();
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();
     MenuItem items =
         TreeBuilder.buildLevelMenu(TreeFilterFactory.getTreeFilter(menuType),
-        getMenuItemFather(request), userId, language, controller);
+            getMenuItemFather(request), userId, language);
 
     // transform the children to json
-    return TreeMenuJason.getListAsJSONArray(items.getChildren()).toString();
+    return TreeMenuJSON.getListAsJSONArray(items.getChildren());
   }
 
   /**

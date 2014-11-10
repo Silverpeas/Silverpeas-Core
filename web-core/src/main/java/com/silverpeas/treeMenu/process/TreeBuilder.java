@@ -26,18 +26,20 @@ import com.silverpeas.treeMenu.model.NodeType;
 import com.silverpeas.treeMenu.model.TreeFilter;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.owasp.encoder.Encode;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.admin.OrganizationController;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
@@ -58,18 +60,16 @@ public class TreeBuilder {
    * @param father the father of menu level to build
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
-   * @param controller OrganizatioCnontroller object used to get the data from the database
-   * @return a level of the menu
    * @throws RemoteException throws if a error occurred during a ejb call
    */
   public static MenuItem buildLevelMenu(TreeFilter filter, MenuItem father, String userId,
-      String language, OrganizationController controller) {
+      String language) {
     if (father == null) {
       // build the first level of menu
-      return buildFirstLevel(filter, userId, language, controller);
+      return buildFirstLevel(filter, userId, language);
     } else {
       // build the other level
-      return buildOtherLevel(filter, father, userId, language, controller);
+      return buildOtherLevel(filter, father, userId, language);
     }
 
   }
@@ -81,12 +81,11 @@ public class TreeBuilder {
    * @param father the father of menu level to build
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
-   * @param controller OrganizatioCnontroller object used to get the data from the database
    * @return a level of the menu
    * @throws RemoteException
    */
   private static MenuItem buildOtherLevel(TreeFilter filter, MenuItem father, String userId,
-      String language, OrganizationController controller) {
+      String language) {
 
     ArrayList<MenuItem> children = new ArrayList<MenuItem>();
     father.setChildren(children);
@@ -112,6 +111,8 @@ public class TreeBuilder {
     }
     // the space displaying
     if (father.getType() == NodeType.SPACE) {
+      OrganizationController controller =
+          OrganizationControllerProvider.getOrganisationController();
       // gets the sub space
       List<SpaceInstLight> subspaces =
           controller.getSubSpacesContainingComponent(father.getKey(), userId, "kmelia");
@@ -186,17 +187,15 @@ public class TreeBuilder {
    * @param filter determines what type of node and/or component must be display in the menu
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
-   * @param controller OrganizatioCnontroller object used to get the data from the database
    * @return the first level of the menu
    */
-  private static MenuItem buildFirstLevel(TreeFilter filter, String userId,
-      String language, OrganizationController controller) {
+  private static MenuItem buildFirstLevel(TreeFilter filter, String userId, String language) {
     MenuItem item = new MenuItem("root");
     ArrayList<MenuItem> children = new ArrayList<MenuItem>();
     item.setChildren(children);
     // the space
+    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
     if (filter.acceptNodeType(NodeType.SPACE)) {
-
       List<SpaceInstLight> rootSpaces =
           controller.getRootSpacesContainingComponent(userId, "kmelia");
       for (SpaceInstLight space : rootSpaces) {

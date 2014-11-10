@@ -24,14 +24,16 @@
 
 package com.silverpeas.treeMenu.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- *
- */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class MenuItem implements Serializable {
   /**
    * 
@@ -46,24 +48,29 @@ public class MenuItem implements Serializable {
   /**
    * the label to display for current element label must be in the correct language
    */
+  @XmlElement
   private String label = null;
 
   /**
    * component identifier for example "kmelia1" This attribute is used only to identify the theme
    * component. Otherwise the component identifier is stored in the key attribute
    */
+  @XmlElement
   private String componentId = null;
   /**
    * unique key to identify the item
    */
+  @XmlElement(name = "id")
   private String key = null;
   /**
    * item level in the tree menu
    */
+  @XmlElement
   private int level = -1;
   /**
    * type of node (component, space or theme)
    */
+  @XmlElement(name = "nodeType")
   private NodeType type = null;
 
   /**
@@ -79,14 +86,17 @@ public class MenuItem implements Serializable {
   /**
    * number of results contained in a node
    */
+  @XmlElement
   private int nbObjects = -1;
   /**
    * indicates if a node is a leaf or a branch
    */
+  @XmlElement(name = "isLeaf")
   private boolean leaf = false;
   /**
    * style to apply on label
    */
+  @XmlElement
   private String labelStyle = null;
 
   /**
@@ -97,6 +107,7 @@ public class MenuItem implements Serializable {
   /**
    * if the element is a component indicates the component type.
    */
+  @XmlElement
   private String componentName = null;
 
   /**

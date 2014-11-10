@@ -24,58 +24,37 @@
 
 package com.silverpeas.treeMenu.process;
 
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.silverpeas.treeMenu.model.MenuItem;
+import org.silverpeas.util.JSONCodec;
+
+import java.util.List;
 
 /**
  * Allows transforming menuItem to Json objects
  */
-public class TreeMenuJason {
+public class TreeMenuJSON {
 
   /**
-   * 
+   *
    */
-  private TreeMenuJason() {
+  private TreeMenuJSON() {
   }
 
   /**
    * @param item
    * @return
    */
-  public static JSONObject getMenuItemAsJSONObject(MenuItem item) {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("id", item.getKey());
-    jsonObject.put("label", item.getLabel());
-
-    jsonObject.put("level", item.getLevel());
-
-    jsonObject.put("isLeaf", item.isLeaf());
-    jsonObject.put("componentId", item.getComponentId());
-
-    jsonObject.put("nbObjects", item.getNbObjects());
-    jsonObject.put("nodeType", item.getType().toString());
-    jsonObject.put("level", item.getLevel());
-    jsonObject.put("componentName", item.getComponentName());
-    jsonObject.put("labelStyle", item.getLabelStyle());
-
-    return jsonObject;
+  public static String getMenuItemAsJSONObject(MenuItem item) {
+    return JSONCodec.encode(item);
   }
 
   /**
    * @param items
    * @return
    */
-  public static JSONArray getListAsJSONArray(List<MenuItem> items) {
-    JSONArray jsonArray = new JSONArray();
-    for (MenuItem menuItem : items) {
-      JSONObject jsonObject = getMenuItemAsJSONObject(menuItem);
-      jsonArray.put(jsonObject);
-    }
-    return jsonArray;
+  public static String getListAsJSONArray(List<MenuItem> items) {
+    MenuItem[] arrayOfItems = items.toArray(new MenuItem[items.size()]);
+    return JSONCodec.encode(arrayOfItems);
   }
 
 }
