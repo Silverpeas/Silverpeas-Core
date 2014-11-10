@@ -70,7 +70,6 @@ function __getI18NProp(prop, params) {
 }
 
 $(document).ready(function() {
-  $("#ticker").hide();
   if (!("Notification" in window) || (Notification && Notification.permission === "granted")) {
     $("#desktop-notifications-permission").remove();
   } else {
@@ -196,7 +195,9 @@ var tickerNews = [];
   });
 })();
 </script>
-<span id="sp-ticker">
-Chargement...
-</span>
-<a href="#" onclick="requestNotificationPermission()" id="desktop-notifications-permission"></a>
+<div id="ticker" style="display: none">
+  <span id="sp-ticker">
+  Chargement...
+  </span>
+  <a href="#" onclick="requestNotificationPermission()" id="desktop-notifications-permission"></a>
+</div>

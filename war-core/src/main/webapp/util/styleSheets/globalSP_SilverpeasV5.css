@@ -6548,6 +6548,7 @@ form .forms .fields > li:nth-child(even) {
 
 #profil .ui-dialog #sourceRightsName{
 	width:88%;
+}
 
 /**** Surchage plugin jquery rate it ****/
 div.silverpeas-rating {
@@ -6689,7 +6690,7 @@ div.user-card .field{
 
 /****** Ticker ******/
 #topBar #desktop-notifications-permission {
-	background: url('/silverpeas/util/icons/cog.png') no-repeat scroll 0 0 transparent;
+	background: url('../icons/cog.png') no-repeat scroll 0 0 transparent;
     line-height: 17px;
     padding-left: 20px;
 	position: absolute;
