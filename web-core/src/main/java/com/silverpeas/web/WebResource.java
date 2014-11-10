@@ -28,24 +28,28 @@ import javax.ws.rs.WebApplicationException;
  * Web. This entity can a be contribution, a contribution's content, or a any business entities
  * (like the user profiles for example).
  * <p>
- * In fact, the Web resource acts as a proxy to one entity or to all the entities of the same type.
- * It listens for incoming HTTP requests and answers them by working on the entity they represent
- * in the Web side; for example it can sent back the entity under the negotiated representation form
- * (defined as a MIME type) or it can update it or it can delete it.
+ * Named as <code>Target</code> in the JAX-RS jargon, as being the endpoint of an URI-based HTTP
+ * communication, the Web resource acts in fact, for the Web clients, as a proxy of the entities it
+ * is intended to represent and, as such it is uniquely identified by a base URI at which the
+ * entities are meant be exposed on the Web. As a proxy, it plays the role of a translator, as it
+ * translates the expected HTTP requests in business methods implying the entity(ies) targeted by
+ * the requested URI, and then it translates the answer of those methods in an HTTP response that
+ * is sent back to the requester; usually, the response carries a representation of the entity(ies)
+ * implying in the treatment according to the negotiated format (specified in MIME).
  * </p>
  * <p>
- *   An entity that is accessible to the Web is then structured in the following way:
+ *   So, an entity that is accessible on the Web is then structured in the following way:
  * </p>
  * <ul>
  *   <li>The entity itself defining the business operations through which the applications in
  *   Silverpeas manage it. This entity has no knowledge of the Web and of how to be interfaced
  *   with.</li>
- *   <li>The Web resource, proxying the entity for the Web and answering the expected HTTP requests.
- *   It decorates the entity with the mechanism to interact with the Web.
+ *   <li>The Web resource, proxying the entity for the Web and translating the HTTP-verbs in
+ *   business operations implying the entity(ies) targeted by the exact requested URI.
  *   </li>
- *   <li>the entity Web state (aka representation of it for the Web), ready to be encoded into
- *   the negotiated representation format (usually in JSON) and that represents the state of the
- *   entity at the time the HTTP request is answered.</li>
+ *   <li>The entity Web state (aka entity state representation for the Web), ready to be encoded
+ *   into the negotiated representation format (usually in JSON) and that represents the state of
+ *   the entity at the time the HTTP request is answered.</li>
  * </ul>
  * @author mmoquillon
  */
