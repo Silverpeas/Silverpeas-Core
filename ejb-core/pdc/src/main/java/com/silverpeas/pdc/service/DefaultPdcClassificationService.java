@@ -27,7 +27,6 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.dao.PdcAxisValueRepository;
 import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
-import com.silverpeas.pdc.model.PdcAxisValuePk;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
@@ -37,11 +36,11 @@ import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;

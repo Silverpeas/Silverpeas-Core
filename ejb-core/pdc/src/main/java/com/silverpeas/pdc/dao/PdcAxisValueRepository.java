@@ -26,16 +26,10 @@ package com.silverpeas.pdc.dao;
 
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcAxisValuePk;
-import java.util.List;
-
-import com.silverpeas.pdc.model.PdcClassification;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.persistence.repository.jpa.NamedParameter;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * DAO that handles the persistence of PdcAxisValue beans.
