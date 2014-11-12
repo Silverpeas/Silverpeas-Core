@@ -69,7 +69,7 @@ import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 public class JobSearchPeasSessionController extends AbstractComponentSessionController {
 
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
-  private PublicationBm publicationBm = null;
+  private PublicationBm publicationBm = ServiceProvider.getService(PublicationBm.class);
   private NodeService nodeService = NodeService.getInstance();
   private String searchField = null;
   private String category = null;
@@ -100,15 +100,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private PublicationBm getPublicationBm() {
-    if (null == publicationBm) {
-      try {
-        publicationBm =EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
-      } catch (Exception e) {
-        throw new PublicationRuntimeException("JobSearchPeasSessionController.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
     return publicationBm;
   }
 
