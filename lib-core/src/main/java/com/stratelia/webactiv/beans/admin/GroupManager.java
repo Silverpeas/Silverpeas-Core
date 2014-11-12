@@ -20,7 +20,6 @@
 */
 package com.stratelia.webactiv.beans.admin;
 
-import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
@@ -43,8 +42,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.silverpeas.util.ListSlice;
 
 @Singleton
 public class GroupManager {
@@ -188,7 +185,7 @@ public class GroupManager {
    * @throws AdminException
    */
   public List<String> getAllGroupsOfUser(DomainDriverManager ddManager, String userId) throws AdminException {
-    Set<String> allGroupsOfUser = new HashSet<String>();
+    Set<String> allGroupsOfUser = new HashSet<>();
 
     String[] directGroupIds = getDirectGroupsOfUser(ddManager, userId);
     for (String directGroupId : directGroupIds) {
@@ -204,7 +201,7 @@ public class GroupManager {
       }
     }
 
-    return new ArrayList<String>(allGroupsOfUser);
+    return new ArrayList<>(allGroupsOfUser);
   }
 
   /**
@@ -349,7 +346,7 @@ public class GroupManager {
           AdminException {
     try {
       ddManager.getOrganizationSchema();
-      List<String> path = new ArrayList<String>();
+      List<String> path = new ArrayList<>();
       GroupRow superGroup = ddManager.getOrganization().group.getSuperGroup(idAsInt(groupId));
       while (superGroup != null) {
         path.add(0, idAsString(superGroup.id));
@@ -472,7 +469,7 @@ public class GroupManager {
   }
 
   private List<String> getSubGroupIds(Connection con, String groupId) throws SQLException {
-    List<String> groupIds = new ArrayList<String>();
+    List<String> groupIds = new ArrayList<>();
     List<Group> groups = groupDao.getSubGroups(con, groupId);
     for (Group group : groups) {
       groupIds.add(group.getId());
@@ -839,8 +836,8 @@ public class GroupManager {
    */
   public String updateGroup(DomainDriverManager ddManager, Group group, boolean onlyInSilverpeas)
           throws AdminException {
-    ArrayList<String> alRemUsers = new ArrayList<String>();
-    ArrayList<String> alAddUsers = new ArrayList<String>();
+    ArrayList<String> alRemUsers = new ArrayList<>();
+    ArrayList<String> alAddUsers = new ArrayList<>();
 
     if (group == null || !StringUtil.isDefined(group.getName()) || !StringUtil.isDefined(
             group.getId())) {
@@ -953,7 +950,7 @@ public class GroupManager {
         aGroup[nI] = this.getGroup(ddManager, asGroupIds[nI]);
       }
       // Search the root groups
-      ArrayList<Integer> alRoot = new ArrayList<Integer>();
+      ArrayList<Integer> alRoot = new ArrayList<>();
       for (int nI = 0; nI < aGroup.length; nI++) {
         if (aGroup[nI].getSuperGroupId() == null) {
           alRoot.add(nI);
@@ -980,7 +977,7 @@ public class GroupManager {
    */
   private ArrayList<AdminGroupInst> getChildrenGroupInst(DomainDriverManager ddManager,
           String sFatherGroupId, Group[] aGroup) {
-    ArrayList<AdminGroupInst> alChildrenGroupInst = new ArrayList<AdminGroupInst>();
+    ArrayList<AdminGroupInst> alChildrenGroupInst = new ArrayList<>();
 
     // Search the children group
     for (Group anAGroup : aGroup) {
@@ -1030,7 +1027,7 @@ public class GroupManager {
   public List<String> getUsersDirectlyInGroup(String groupId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       return groupDao.getUsersDirectlyInGroup(con, groupId);
     } catch (Exception e) {

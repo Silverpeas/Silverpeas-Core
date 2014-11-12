@@ -1148,4 +1148,32 @@ public class StubbedAdministration implements Administration {
       throws AdminException, QuotaException {
     return null;
   }
+
+  @Override
+  public void assignRightsFromUserToUser(final RightAssignationContext.MODE operationMode,
+      final String sourceUserId, final String targetUserId, final boolean nodeAssignRights,
+      final String authorId) throws AdminException {
+
+  }
+
+  @Override
+  public void assignRightsFromUserToGroup(final RightAssignationContext.MODE operationMode,
+      final String sourceUserId, final String targetGroupId, final boolean nodeAssignRights,
+      final String authorId) throws AdminException {
+
+  }
+
+  @Override
+  public void assignRightsFromGroupToUser(final RightAssignationContext.MODE operationMode,
+      final String sourceGroupId, final String targetUserId, final boolean nodeAssignRights,
+      final String authorId) throws AdminException {
+
+  }
+
+  @Override
+  public void assignRightsFromGroupToGroup(final RightAssignationContext.MODE operationMode,
+      final String sourceGroupId, final String targetGroupId, final boolean nodeAssignRights,
+      final String authorId) throws AdminException {
+
+  }
 }

@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.StringUtil;
 
 /**
  * This class permits to specify the context of a right assignation operations (copy or replace for

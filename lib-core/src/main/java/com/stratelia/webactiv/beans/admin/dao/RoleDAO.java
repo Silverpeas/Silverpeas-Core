@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.beans.admin.dao;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.UserRoleRow;
-import com.stratelia.webactiv.util.DBUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,10 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.organization.UserRoleRow;
-import org.silverpeas.util.DBUtil;
 
 public class RoleDAO {
 

@@ -37,6 +37,11 @@ import java.util.logging.Logger;
 import static org.junit.Assert.fail;
 
 /**
+ * This rule permits to get some technical path information about maven target directory during a
+ * test. This is useful for treatments that manipulates file creation, deletion, etc.
+ * <p/>
+ * The resource {@code maven.properties} has to be in the test resource path in order to make
+ * this rule functional.
  * @author Yohann Chastagnier
  */
 public class MavenTargetDirectoryRule implements TestRule {
@@ -62,6 +67,11 @@ public class MavenTargetDirectoryRule implements TestRule {
     return getPath("test-resources.directory");
   }
 
+  /**
+   * Mandatory constructor.
+   * @param testInstance the instance of the current test in order to use class loader mechanism in
+   * right context.
+   */
   public MavenTargetDirectoryRule(Object testInstance) {
     this.testInstance = testInstance;
   }

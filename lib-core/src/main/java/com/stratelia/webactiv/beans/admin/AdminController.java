@@ -777,7 +777,7 @@ public class AdminController implements java.io.Serializable {
       return null;
     }
   }
-  
+
   /*
    * Assign rights of a user to a user
    * @param operationMode : value of {@link RightAssignationContext.MODE}
@@ -791,11 +791,9 @@ public class AdminController implements java.io.Serializable {
       throws AdminException {
     SilverTrace
         .info("admin", "AdminController.assignRightsFromUserToUser", "root.MSG_GEN_ENTER_METHOD");
-    getAdminService()
-        .assignRightsFromUserToUser(operationMode, sourceUserId, targetUserId, nodeAssignRights,
-            authorId);
+    admin.assignRightsFromUserToUser(operationMode, sourceUserId, targetUserId, nodeAssignRights,
+        authorId);
   }
-
 
   /*
    * Assign rights of a user to a group
@@ -810,9 +808,8 @@ public class AdminController implements java.io.Serializable {
       throws AdminException {
     SilverTrace
         .info("admin", "AdminController.assignRightsFromUserToGroup", "root.MSG_GEN_ENTER_METHOD");
-    getAdminService()
-        .assignRightsFromUserToGroup(operationMode, sourceUserId, targetGroupId, nodeAssignRights,
-            authorId);
+    admin.assignRightsFromUserToGroup(operationMode, sourceUserId, targetGroupId, nodeAssignRights,
+        authorId);
   }
 
   /*
@@ -828,9 +825,8 @@ public class AdminController implements java.io.Serializable {
       throws AdminException {
     SilverTrace
         .info("admin", "AdminController.assignRightsFromGroupToUser", "root.MSG_GEN_ENTER_METHOD");
-    getAdminService()
-        .assignRightsFromGroupToUser(operationMode, sourceGroupId, targetUserId, nodeAssignRights,
-            authorId);
+    admin.assignRightsFromGroupToUser(operationMode, sourceGroupId, targetUserId, nodeAssignRights,
+        authorId);
   }
 
   /*
@@ -846,7 +842,7 @@ public class AdminController implements java.io.Serializable {
       throws AdminException {
     SilverTrace
         .info("admin", "AdminController.assignRightsFromGroupToGroup", "root.MSG_GEN_ENTER_METHOD");
-    getAdminService()
+    admin
         .assignRightsFromGroupToGroup(operationMode, sourceGroupId, targetGroupId, nodeAssignRights,
             authorId);
   }

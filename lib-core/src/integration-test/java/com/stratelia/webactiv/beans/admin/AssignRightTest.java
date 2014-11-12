@@ -28,22 +28,27 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.notification.AdminNotificationService;
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.util.StringUtil;
+import com.ninja_squad.dbsetup.operation.Operation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.jdbc.JdbcSqlQuery;
-import org.silverpeas.jdbc.ResultSetWrapper;
-import org.silverpeas.jdbc.SelectResultRowProcess;
+import org.junit.runner.RunWith;
+import org.silverpeas.DataSetTest;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -51,12 +56,11 @@ import java.util.logging.Logger;
 
 import static com.stratelia.webactiv.beans.admin.RightAssignationContext.MODE.COPY;
 import static com.stratelia.webactiv.beans.admin.RightAssignationContext.MODE.REPLACE;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.fail;
 
-/**
- * @author ehugonnet
- */
-public class AssignRightTest extends AbstractTestDao {
+
+@RunWith(Arquillian.class)
+public class AssignRightTest extends DataSetTest {
 
   private final static boolean BUT_NOT_RIGHT_OBJECTS = false;
   private final static boolean WITH_RIGHT_OBJECTS = true;
@@ -74,15 +78,21 @@ public class AssignRightTest extends AbstractTestDao {
 
   private final static String AUTHOR = null;
 
-  private Admin administrationService;
+  @Inject
+  private Administration administrationService;
+
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule(this, "create-assign-rights-database.sql",
+          "test-admin-assign-rights-dataset.xml");
 
   @Override
+  protected Operation getDbSetupOperations() {
+    return null;
+  }
+
   @Before
   public void setUp() throws Exception {
-    super.setUp();
-    administrationService = new Admin();
-    administrationService.reloadCache();
-    administrationService.adminNotificationService = mock(AdminNotificationService.class);
     try {
       verifyCurrentDirectRights("test-assign-rights-expected-initial.txt");
     } catch (Throwable t) {
@@ -91,22 +101,16 @@ public class AssignRightTest extends AbstractTestDao {
     }
   }
 
-  @Override
   @After
   public void tearDown() throws Exception {
-    super.tearDown();
     administrationService.reloadCache();
   }
 
-  @Override
-  protected String getDatasetFileName() {
-    return "test-admin-assign-rights-dataset.xml";
-  }
-
-
-  @Override
-  protected String getTableCreationFileName() {
-    return "create-assign-rights-database.sql";
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarFor(AssignRightTest.class).addCommonBasicUtilities()
+        .addSilverpeasExceptionBases().testFocusedOn(
+            (warBuilder) -> ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
   }
 
   /*
@@ -166,9 +170,8 @@ public class AssignRightTest extends AbstractTestDao {
     // Verifying that the writer right on component has been removed,
     // but not the one on the sub node as the user is in a group that has yet right on kmelia
     // component
-    verifyCurrentDirectRights(
-        "test-assign-rights-expected-userAWithKmeliaSubNodeRight" +
-            "-removedFromGoupG1_2AndDirectRightRemovedFromKmelia.txt");
+    verifyCurrentDirectRights("test-assign-rights-expected-userAWithKmeliaSubNodeRight" +
+        "-removedFromGoupG1_2AndDirectRightRemovedFromKmelia.txt");
   }
 
   /*
@@ -327,8 +330,7 @@ public class AssignRightTest extends AbstractTestDao {
   public void testAssignFromUserNoRightsToGroupG1ByReplaceModeButNotObjectRights()
       throws AdminException {
     administrationService
-        .assignRightsFromUserToGroup(REPLACE, USER_NO_RIGHTS, G1_D0, BUT_NOT_RIGHT_OBJECTS,
-            AUTHOR);
+        .assignRightsFromUserToGroup(REPLACE, USER_NO_RIGHTS, G1_D0, BUT_NOT_RIGHT_OBJECTS, AUTHOR);
     verifyCurrentDirectRights(
         "test-assign-rights-expected-UserNoRightsToGroupG1-ReplaceMode-ButNotObjectRights.txt");
   }
@@ -607,22 +609,18 @@ public class AssignRightTest extends AbstractTestDao {
   private String getCurrentDirectRights() {
     try {
       final StringBuilder result = new StringBuilder();
-      JdbcSqlQuery.create(getFileContent("select-verifying-direct-rights.sql"))
-          .execute(new SelectResultRowProcess<Object>() {
-            @Override
-            public Object currentRow(final ResultSetWrapper row) throws SQLException {
-              if (result.length() > 0) {
-                result.append("\n");
-              }
-              for (int i = 0; i < row.getMetaData().getColumnCount(); i++) {
-                if (i > 0) {
-                  result.append("\t");
-                }
-                result.append(row.getString(i + 1));
-              }
-              return null;
-            }
-          });
+      JdbcSqlQuery.create(getFileContent("select-verifying-direct-rights.sql")).execute(row -> {
+        if (result.length() > 0) {
+          result.append("\n");
+        }
+        for (int i = 0; i < row.getMetaData().getColumnCount(); i++) {
+          if (i > 0) {
+            result.append("\t");
+          }
+          result.append(row.getString(i + 1));
+        }
+        return null;
+      });
       return result.toString();
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -630,8 +628,7 @@ public class AssignRightTest extends AbstractTestDao {
   }
 
   private String getFileContent(String fileName) {
-    try {
-      InputStream fileStream = getClass().getResourceAsStream(fileName);
+    try (InputStream fileStream = getClass().getResourceAsStream(fileName)) {
       return StringUtil.join(IOUtils.readLines(fileStream), '\n');
     } catch (Exception e) {
       throw new RuntimeException(e);

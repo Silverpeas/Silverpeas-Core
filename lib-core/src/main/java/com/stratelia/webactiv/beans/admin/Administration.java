@@ -1210,4 +1210,49 @@ public interface Administration {
   String copyAndPasteComponent(PasteDetail pasteDetail) throws AdminException, QuotaException;
 
   String copyAndPasteSpace(PasteDetail pasteDetail) throws AdminException, QuotaException;
+
+  /*
+   * Assign rights of a user to a user
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceUserId : the user id of the source user
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  void assignRightsFromUserToUser(RightAssignationContext.MODE operationMode, String sourceUserId,
+      String targetUserId, boolean nodeAssignRights, String authorId) throws AdminException;
+
+  /*
+   * Assign rights of a user to a group
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceUserId : the user id of the source user
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  void assignRightsFromUserToGroup(RightAssignationContext.MODE operationMode, String sourceUserId,
+      String targetGroupId, boolean nodeAssignRights, String authorId) throws AdminException;
+
+  /*
+   * Assign rights of a group to a user
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceGroupId : the group id of the source group
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  void assignRightsFromGroupToUser(RightAssignationContext.MODE operationMode, String sourceGroupId,
+      String targetUserId, boolean nodeAssignRights, String authorId) throws AdminException;
+
+  /*
+   * Assign rights of a group to a group
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceGroupId : the group id of the source group
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  void assignRightsFromGroupToGroup(RightAssignationContext.MODE operationMode,
+      String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
+      throws AdminException;
 }

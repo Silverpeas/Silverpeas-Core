@@ -68,8 +68,9 @@ public abstract class DataSetTest {
 
   @Before
   public final void prepareDataSource() {
+    Operation dbSetupOperations = getDbSetupOperations();
     Operation preparation = Operations.sequenceOf(getTablesCreationOperation(), UNIQUE_ID_CREATION,
-        getDbSetupOperations());
+        dbSetupOperations != null ? dbSetupOperations : Operations.sql(""));
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
     dbSetupTracker.launchIfNecessary(dbSetup);
   }
@@ -107,7 +108,7 @@ public abstract class DataSetTest {
    * @return the database connection.
    * @throws java.sql.SQLException
    */
-  protected Connection getConnection() throws SQLException {
+  public Connection getConnection() throws SQLException {
     return getDataSource().getConnection();
   }
 

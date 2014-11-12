@@ -534,7 +534,7 @@ public class ProfileInstManager {
       throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
           RoleDAO.getAllComponentObjectRoles(con, groupIds, Integer.parseInt(sUserId));
@@ -619,7 +619,7 @@ public class ProfileInstManager {
   public String[] getAllComponentObjectProfileIdsOfGroup(String groupId) throws AdminException {
     Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      con = DBUtil.openConnection();
 
       List<UserRoleRow> roles = RoleDAO.getAllComponentObjectRoles(con,
           Collections.singletonList(groupId), -1);
