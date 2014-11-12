@@ -56,8 +56,8 @@ public final class FeedUtilities {
 
   // --- CONSTANTS ---
 
-  private static final String USER_AGENT = "Mozilla/5.0 (Windows; U;"
-      + " Windows NT 5.1; hu; rv:1.8.0.8) Gecko/20061025 Thunderbird/1.5.0.8";
+  private static final String USER_AGENT = "Mozilla/5.0 (Windows; U;" +
+      " Windows NT 5.1; hu; rv:1.8.0.8) Gecko/20061025 Thunderbird/1.5.0.8";
 
   private static final long REMOTE_CALENDAR_RETURNCODE_OK = 200;
   private static final long FEED_RETRY_MILLIS = 1000L;
@@ -74,46 +74,43 @@ public final class FeedUtilities {
     return loadFeed(feedURL, null, null);
   }
 
-  public static final byte[] loadFeed(String feedURL, String username,
-      String password) throws Exception {
+  public static final byte[] loadFeed(String feedURL, String username, String password)
+      throws Exception {
     // Load feed
     GetMethod get = new GetMethod(feedURL);
     get.addRequestHeader("User-Agent", USER_AGENT);
     get.setFollowRedirects(true);
-    SilverTrace.info("agenda", "FeedUtilities.loadFeed()",
-        "root.MSG_GEN_PARAM_VALUE", "username=" + username + " - pwd="
-        + password);
+    SilverTrace.info("agenda", "FeedUtilities.loadFeed()", "root.MSG_GEN_PARAM_VALUE",
+        "username=" + username + " - pwd=" + password);
     if (StringUtil.isDefined(username)) {
       // Set username/password
-      byte[] auth = StringUtils.encodeString(username + ':'
-          + StringUtils.decodePassword(password), Charsets.UTF_8);
-      get.addRequestHeader("Authorization", "Basic "
-          + StringUtils.encodeBASE64(auth));
+      byte[] auth = StringUtils
+          .encodeString(username + ':' + StringUtils.decodePassword(password), Charsets.UTF_8);
+      get.addRequestHeader("Authorization", "Basic " + StringUtils.encodeBASE64(auth));
 
     }
     byte[] bytes = null;
     for (int tries = 0; tries < 5; tries++) {
       try {
         int status = httpClient.executeMethod(get);
-        SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
-            "Http connection status : " + status);
+        SilverTrace
+            .warn("agenda", "FeedUtilities.loadFeed()", "Http connection status : " + status);
         if (status == REMOTE_CALENDAR_RETURNCODE_OK) {
           bytes = get.getResponseBody();
-          SilverTrace.info("agenda", "FeedUtilities.loadFeed()",
-              "agenda.FEED_LOADING_SUCCESSFULLY", bytes.length + " bytes.");
+          SilverTrace.info("agenda", "FeedUtilities.loadFeed()", "agenda.FEED_LOADING_SUCCESSFULLY",
+              bytes.length + " bytes.");
         } else {
-          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
-              "agenda.FEED_LOADING_FAILED", "Status Http Client=" + status
-              + " Content=" + Arrays.toString(bytes));
+          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "agenda.FEED_LOADING_FAILED",
+              "Status Http Client=" + status + " Content=" + Arrays.toString(bytes));
           bytes = null;
         }
       } catch (Exception loadError) {
-        SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "Attempt #"
-            + tries + " Status=", loadError.getMessage());
+        SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "Attempt #" + tries + " Status=",
+            loadError.getMessage());
         if (tries == 5) {
           bytes = null;
-          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()",
-              "agenda.CONNECTIONS_REFUSED", loadError.getMessage());
+          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "agenda.CONNECTIONS_REFUSED",
+              loadError.getMessage());
         }
         Thread.sleep(FEED_RETRY_MILLIS);
       } finally {
@@ -123,8 +120,7 @@ public final class FeedUtilities {
     return bytes;
   }
 
-  public static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength)
-      throws Exception {
+  public static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength) throws Exception {
 
     // Create new calendar
     Calendar calendar = new Calendar();
@@ -198,8 +194,7 @@ public final class FeedUtilities {
     return calendar;
   }
 
-  private static final SyndEntry[] getFeedEntries(SyndFeed feed)
-      throws Exception {
+  private static final SyndEntry[] getFeedEntries(SyndFeed feed) throws Exception {
     List list = feed.getEntries();
     SyndEntry[] entries = new SyndEntry[list.size()];
     list.toArray(entries);
@@ -213,8 +208,7 @@ public final class FeedUtilities {
       XmlReader xmlReader = new XmlReader(new ByteArrayInputStream(feedBytes));
       synFeed = input.build(xmlReader);
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "FeedUtilities.parseFeed()",
-          "agenda.EX_CANT_PARSE_FEED", e);
+      SilverTrace.warn("agenda", "FeedUtilities.parseFeed()", "agenda.EX_CANT_PARSE_FEED", e);
     }
     return synFeed;
   }

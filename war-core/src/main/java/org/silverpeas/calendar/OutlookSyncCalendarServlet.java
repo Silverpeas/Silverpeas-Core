@@ -20,6 +20,25 @@
  */
 package org.silverpeas.calendar;
 
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagementProvider;
+import com.stratelia.silverpeas.peasCore.PeasCoreException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.calendar.control.CalendarException;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import com.stratelia.webactiv.calendar.model.Classification;
+import com.stratelia.webactiv.calendar.model.JournalHeader;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.silverpeas.util.Charsets;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,30 +51,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagementProvider;
-
-import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.control.CalendarException;
-import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import com.stratelia.webactiv.calendar.model.Classification;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-
 /**
  * @author Ludovic Bertin
  *
@@ -67,24 +62,12 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   private static final int ELEMENT_UPDATED = 2;
   private static final int SYNCHRO_ERROR = -1;
   private static final int NB_DAYS_BEFORE = 7;
+  @Inject
   private SilverpeasCalendar calendarBm;
 
   @Override
   public void init() throws ServletException {
     super.init();
-    initEJB();
-  }
-
-  private void initEJB() {
-    calendarBm = null;
-    setCalendarBm();
-  }
-
-  private void setCalendarBm() {
-    if (calendarBm == null) {
-      calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-          SilverpeasCalendar.class);
-    }
   }
 
   public List<CalendarEntry> read(InputStream in) throws IOException {

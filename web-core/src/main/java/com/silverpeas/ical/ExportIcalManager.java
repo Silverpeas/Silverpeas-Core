@@ -26,8 +26,6 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterProvider;
 import com.silverpeas.export.ical.ExportableCalendar;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
@@ -38,10 +36,11 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.ParticipationStatus;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
@@ -193,123 +192,6 @@ public class ExportIcalManager {
   }
 
   /**
-   * Get Ical header
-   *
-   * @return CalendarIcs
-   */
-  // private SilverpeasCalendar getIcsCalendarHeader() {
-  // SilverpeasCalendar calendarIcs = new SilverpeasCalendar();
-  // calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
-  // calendarIcs.getProperties().add(Version.VERSION_2_0);
-  // calendarIcs.getProperties().add(CalScale.GREGORIAN);
-  // return calendarIcs;
-  // }
-  /**
-   * Get Ical contents
-   *
-   * @param calendarIcs
-   * @param startDate
-   * @param endDate
-   * @return CalendarIcs
-   * @throws ParseException
-   * @throws RemoteException
-   * @throws SocketException
-   */
-  // private SilverpeasCalendar getIcsCalendarContent(SilverpeasCalendar calendarIcs,
-  // String startDate, String endDate) throws ParseException, RemoteException,
-  // SocketException, AgendaException, URISyntaxException {
-  // SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
-  // "root.MSG_GEN_ENTER_METHOD");
-  // SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
-  // "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
-  // + endDate);
-  // boolean exportAll = true;
-  // if (StringUtil.isDefined(startDate) && StringUtil.isDefined(startDate)) {
-  // exportAll = false;
-  // }
-  // if (exportAll) {
-  // startDate = DateUtil.getInputDate(firstDate, getLanguage());
-  // endDate = DateUtil.getInputDate(lastDate, getLanguage());
-  // SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
-  // "root.MSG_GEN_PARAM_VALUE", "exportAll");
-  // SilverTrace.debug("agenda", "ExportIcalManager.getIcsCalendarContent()",
-  // "root.MSG_GEN_PARAM_VALUE", "startDate=" + startDate + " endDate="
-  // + endDate);
-  // }
-  //
-  // Iterator itSchedules = getSchedulableCalendar(startDate, endDate).iterator();
-  // final List events = new ArrayList();
-  // while (itSchedules.hasNext()) {
-  // Object obj = itSchedules.next();
-  //
-  // if (obj instanceof Schedulable) {
-  // Schedulable eventAgenda = (Schedulable) obj;
-  //
-  // SilverTrace.debug("agenda",
-  // "ExportIcalManager.getIcsCalendarContent()",
-  // "root.MSG_GEN_PARAM_VALUE", "eventAgenda.getStartDay()="
-  // + eventAgenda.getStartDay() + " eventAgenda.getStartDate()="
-  // + eventAgenda.getStartDate());
-  //
-  // // Conv startDateTime and endDateTime in ICal format
-  // DateTime startDateTime = new DateTime(eventAgenda.getStartDate());
-  // DateTime endDateTime = new DateTime(eventAgenda.getEndDate());
-  //
-  // // Define event
-  // VEvent event = new VEvent(startDateTime, endDateTime, eventAgenda.getName());
-  // event.getProperties().add(new UidGenerator(Uid.UID).generateUid());
-  //
-  // // Add Description
-  // event.getProperties().add(new Description(eventAgenda.getDescription()));
-  // // Add Classification
-  // event.getProperties().add(
-  // new Clazz(eventAgenda.getClassification().getString()));
-  // // Add Priority
-  // event.getProperties().add(
-  // new Priority(eventAgenda.getPriority().getValue()));
-  //
-  // // Add Categories
-  // Collection categories = calendarBm.getJournalCategories(eventAgenda.getId());
-  // if (!categories.isEmpty()) {
-  // CategoryList categoryList = new CategoryList();
-  // Iterator categoriesIt = categories.iterator();
-  // while (categoriesIt.hasNext()) {
-  // Category categorie = (Category) categoriesIt.next();
-  // categoryList.add(categorie.getName());
-  // }
-  // event.getProperties().add(new Categories(categoryList));
-  // }
-  //
-  // // Add attendees
-  // Collection attendees = calendarBm.getJournalAttendees(eventAgenda.getId());
-  // if (!attendees.isEmpty()) {
-  // Iterator attendeesIt = attendees.iterator();
-  // while (attendeesIt.hasNext()) {
-  // Attendee attendeeAgenda = (Attendee) attendeesIt.next();
-  // OrganizationController oc = new OrganizationController();
-  // UserDetail user = oc.getUserDetail(attendeeAgenda.getUserId());
-  // if (user != null) {
-  // String email = user.geteMail();
-  // if (StringUtil.isDefined(email)) {
-  // event.getProperties().add(
-  // new net.fortuna.ical4j.model.property.Attendee(email));
-  // }
-  // }
-  // }
-  // }
-  //
-  // // Add this event
-  // events.add(event);
-  // }
-  // }
-  // if (!events.isEmpty()) {
-  // calendarIcs.getComponents().addAll(events);
-  // }
-  // SilverTrace.info("agenda", "ExportIcalManager.getIcsCalendarContent()",
-  // "root.MSG_GEN_EXIT_METHOD");
-  // return calendarIcs;
-  // }
-  /**
    * Get All events between the specified interval of time.
    *
    * @param startDate the start date of the interval.
@@ -338,7 +220,7 @@ public class ExportIcalManager {
   @SuppressWarnings("rawtypes")
   private List<CalendarEvent> getCalendarEvents(String startDate, String endDate) throws
       ParseException {
-    List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+    List<CalendarEvent> events = new ArrayList<>();
     String fromDate = at(startDate, or(firstDate));
     String toDate = at(endDate, or(lastDate));
 
@@ -385,14 +267,11 @@ public class ExportIcalManager {
 
   /**
    * Gets the remote EJB that provides an access to the user calendar.
-   *
-   * @return the user calendar.
    */
   private void setCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
+        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new AgendaRuntimeException("ExportIcalManager.setCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

@@ -23,14 +23,8 @@
  */
 package com.stratelia.webactiv.agenda.notification;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import org.silverpeas.util.template.SilverpeasTemplate;
-
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
@@ -39,9 +33,13 @@ import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.template.SilverpeasTemplate;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -308,8 +306,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   protected SilverpeasCalendar getCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
+        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (final Exception e) {
         throw new AgendaRuntimeException("AgendaUserNotification.getCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

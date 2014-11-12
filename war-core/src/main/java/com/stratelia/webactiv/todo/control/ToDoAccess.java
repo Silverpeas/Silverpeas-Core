@@ -20,14 +20,13 @@
  */
 package com.stratelia.webactiv.todo.control;
 
-import java.util.Collection;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import java.util.Collection;
 
 public class ToDoAccess {
 
@@ -36,8 +35,7 @@ public class ToDoAccess {
   private static SilverpeasCalendar getEJB() throws TodoException {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
+        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new TodoException("ToDoAccess.getEJB()", SilverpeasException.ERROR,
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -48,8 +46,7 @@ public class ToDoAccess {
 
   /**
    * getNotCompletedToDos
-   *
-   * @param userId
+   * @param userId the user identifier
    * @return Collection of TodoHeaders
    * @throws TodoException
    */

@@ -20,16 +20,15 @@
  */
 package com.silverpeas.ical;
 
-import java.io.File;
-import java.net.URL;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import java.io.File;
+import java.net.URL;
 
 /**
  * @author dle
@@ -47,15 +46,14 @@ public class SynchroIcalManager {
 
   /**
    * Import remote calendar into Silverpeas calendar (update event if necessary)
-   *
    * @param urlCalendar
    * @param localCalendar
    * @param loginICalendar
    * @param pwdIcalendar
    * @return ReturnCode
    */
-  public String synchroIcalAgenda(URL urlCalendar, File localCalendar,
-      String loginICalendar, String pwdIcalendar) {
+  public String synchroIcalAgenda(URL urlCalendar, File localCalendar, String loginICalendar,
+      String pwdIcalendar) {
     String returnCodeSynchro = AgendaSessionController.SYNCHRO_FAILED;
     try {
       // Private iCal URL
@@ -65,12 +63,11 @@ public class SynchroIcalManager {
       SyncEngine engine = new SyncEngine();
       // Do the synchronization :
       // Remote SilverpeasCalendar -> localfile SilverpeasCalendar
-      String remoteConnect = engine.synchronize(localCalendar, remoteCalendar,
-          loginICalendar, pwdIcalendar);
+      String remoteConnect =
+          engine.synchronize(localCalendar, remoteCalendar, loginICalendar, pwdIcalendar);
       if (SyncEngine.REMOTE_CONNECT_SUCCEEDED.equals(remoteConnect)) {
         // localfile -> Silverpeas Agenda
-        ImportIcalManager impIcalManager = new ImportIcalManager(
-            agendaSessionController);
+        ImportIcalManager impIcalManager = new ImportIcalManager(agendaSessionController);
         String returnImport = impIcalManager.importIcalAgenda(localCalendar);
         if (returnImport.equals(AgendaSessionController.IMPORT_FAILED)) {
           returnCodeSynchro = AgendaSessionController.SYNCHRO_FAILED;
@@ -81,22 +78,20 @@ public class SynchroIcalManager {
         returnCodeSynchro = remoteConnect;
       }
     } catch (Exception e) {
-      SilverTrace.error("agenda", "SynchroIcalManager.synchroIcalAgenda()", "",
-          e.fillInStackTrace());
+      SilverTrace
+          .error("agenda", "SynchroIcalManager.synchroIcalAgenda()", "", e.fillInStackTrace());
     }
     return returnCodeSynchro;
   }
 
   /**
    * Method declaration
-   *
    * @see
    */
   private void setCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
+        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new AgendaRuntimeException("ImportIcalManager.setCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

@@ -24,28 +24,12 @@
 
 package com.silverpeas.ical;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.StringTokenizer;
-
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.Schedulable;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasException;
-
 import com.sun.syndication.io.XmlReader;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
@@ -60,6 +44,19 @@ import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
 
 public class ImportIcalManager {
 
@@ -82,8 +79,8 @@ public class ImportIcalManager {
    * @throws Exception
    */
   public String importIcalAgenda(File file) throws Exception {
-    SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .debug("agenda", "ImportIcalManager.importIcalAgenda()", "root.MSG_GEN_ENTER_METHOD");
     String returnCode = AgendaSessionController.IMPORT_FAILED;
     InputStreamReader inputStream = null;
     XmlReader xr = null;
@@ -139,8 +136,8 @@ public class ImportIcalManager {
 
         // All day case
         // I don't know why ??
-        if (("00:00".equals(startHour) && "00:00".equals(endHour))
-            || (!StringUtil.isDefined(startHour) && !StringUtil.isDefined(endHour))) {
+        if (("00:00".equals(startHour) && "00:00".equals(endHour)) ||
+            (!StringUtil.isDefined(startHour) && !StringUtil.isDefined(endHour))) {
           // For complete Day
           startHour = "";
           endHour = "";
@@ -155,12 +152,13 @@ public class ImportIcalManager {
           String idEvent = isExist(eventIcal);
           // update if event already exists, create if does not exist
           if (StringUtil.isDefined(idEvent)) {
-            agendaSessionController.updateJournal(idEvent, name, description,
-                priority, classification, startDay, startHour, endDay, endHour);
+            agendaSessionController
+                .updateJournal(idEvent, name, description, priority, classification, startDay,
+                    startHour, endDay, endHour);
           } else {
-            idEvent = agendaSessionController.addJournal(name, description, priority,
-                classification,
-                startDay, startHour, endDay, endHour);
+            idEvent = agendaSessionController
+                .addJournal(name, description, priority, classification, startDay, startHour,
+                    endDay, endHour);
           }
 
           // Get Categories
@@ -183,17 +181,18 @@ public class ImportIcalManager {
             // update if event already exists, create if does not exist
             if (StringUtil.isDefined(idEvent)) {
               SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-                  "root.MSG_GEN_PARAM_VALUE" + "Update event: " + DateUtil.date2SQLDate(startDay)
-                  + " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
-              agendaSessionController.updateJournal(idEvent, name, description,
-                  priority, classification, startDay, startHour, endDay,
-                  endHour);
+                  "root.MSG_GEN_PARAM_VALUE" + "Update event: " + DateUtil.date2SQLDate(startDay) +
+                      " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
+              agendaSessionController
+                  .updateJournal(idEvent, name, description, priority, classification, startDay,
+                      startHour, endDay, endHour);
             } else {
               SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-                  "root.MSG_GEN_PARAM_VALUE" + "Create event: " + DateUtil.date2SQLDate(startDay)
-                  + " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
-              idEvent = agendaSessionController.addJournal(name, description, priority,
-                  classification, startDay, startHour, endDay, endHour);
+                  "root.MSG_GEN_PARAM_VALUE" + "Create event: " + DateUtil.date2SQLDate(startDay) +
+                      " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
+              idEvent = agendaSessionController
+                  .addJournal(name, description, priority, classification, startDay, startHour,
+                      endDay, endHour);
             }
             // Get Categories
             processCategories(eventIcal, idEvent);
@@ -208,8 +207,7 @@ public class ImportIcalManager {
       IOUtils.closeQuietly(inputStream);
       IOUtils.closeQuietly(xr);
     }
-    SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()", "root.MSG_GEN_EXIT_METHOD");
     return returnCode;
   }
 
@@ -229,10 +227,9 @@ public class ImportIcalManager {
    * @return id or null
    * @throws Exception
    */
-  private String isExist(Component eventIcal, Date startDateReccurent,
-      Date endDateReccurent, String startHourReccurent) throws Exception {
-    SilverTrace.debug("agenda", "ImportIcalManager.isExist()",
-        "root.MSG_GEN_ENTER_METHOD");
+  private String isExist(Component eventIcal, Date startDateReccurent, Date endDateReccurent,
+      String startHourReccurent) throws Exception {
+    SilverTrace.debug("agenda", "ImportIcalManager.isExist()", "root.MSG_GEN_ENTER_METHOD");
     String name = getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
     String description = null;
     if (StringUtil.isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION)))) {
@@ -245,10 +242,10 @@ public class ImportIcalManager {
         name = " ";
       }
     }
-    String startDate = DateUtil.date2SQLDate(getDay(getFieldEvent(eventIcal.getProperty(
-        Property.DTSTART))));
-    String endDate = DateUtil.date2SQLDate(getDay(getFieldEvent(
-        eventIcal.getProperty(Property.DTEND))));
+    String startDate =
+        DateUtil.date2SQLDate(getDay(getFieldEvent(eventIcal.getProperty(Property.DTSTART))));
+    String endDate =
+        DateUtil.date2SQLDate(getDay(getFieldEvent(eventIcal.getProperty(Property.DTEND))));
     String startHour = getHour(getFieldEvent(eventIcal.getProperty(Property.DTSTART)));
     // Reccurrent case
     if (startDateReccurent != null) {
@@ -258,17 +255,18 @@ public class ImportIcalManager {
     }
 
     // Get Events within this period to know if event already exists
-    Collection events = calendarBm.getPeriodSchedulablesForUser(startDate, endDate,
-        agendaSessionController.getAgendaUserId(), null, agendaSessionController.
-        getParticipationStatus().getString());
+    Collection events = calendarBm
+        .getPeriodSchedulablesForUser(startDate, endDate, agendaSessionController.getAgendaUserId(),
+            null, agendaSessionController.
+                getParticipationStatus().getString());
     if (!events.isEmpty()) {
       for (Object obj : events) {
         if (obj instanceof Schedulable) {
           Schedulable eventAgenda = (Schedulable) obj;
-          if (eventAgenda.getName().equals(name)
-              && DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(startDate)) {
-            if (StringUtil.isDefined(eventAgenda.getStartHour()) && StringUtil.isDefined(
-                startHour)) {
+          if (eventAgenda.getName().equals(name) &&
+              DateUtil.date2SQLDate(eventAgenda.getStartDate()).equals(startDate)) {
+            if (StringUtil.isDefined(eventAgenda.getStartHour()) &&
+                StringUtil.isDefined(startHour)) {
               if (eventAgenda.getStartHour().equals(startHour)) {
                 return eventAgenda.getId();
               }
@@ -285,11 +283,10 @@ public class ImportIcalManager {
   /**
    * Add or update categories of the event
    * @param eventIcal
-   * @param idEvent
+   * @param idEvent the event identifier
    * @throws Exception
    */
-  private void processCategories(Component eventIcal, String idEvent)
-      throws Exception {
+  private void processCategories(Component eventIcal, String idEvent) throws Exception {
     if (eventIcal.getProperty(Property.CATEGORIES) != null) {
       String categories = eventIcal.getProperty(Property.CATEGORIES).getValue();
       StringTokenizer st = new StringTokenizer(categories, ",");
@@ -313,14 +310,12 @@ public class ImportIcalManager {
   }
 
   /**
-   * Method declaration
-   * @see
+   *
    */
   private void setCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
+        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new AgendaRuntimeException("ImportIcalManager.setCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -329,9 +324,9 @@ public class ImportIcalManager {
   }
 
   /**
-   * Return Date from a datetime string
+   * getDay from a givent string date parameter
    * @param dateTime
-   * @return
+   * @return Date from a datetime string
    * @throws ParseException
    */
   private Date getDay(String dateTime) throws ParseException {
@@ -345,9 +340,9 @@ public class ImportIcalManager {
   }
 
   /**
-   * Extract hour from a date
+   * Extract hour from a date string
    * @param dateTime
-   * @return
+   * @return an extract hour from a date string
    * @throws ParseException
    */
   private String getHour(String dateTime) throws ParseException {
@@ -360,7 +355,7 @@ public class ImportIcalManager {
 
   /**
    * Get value of the Ical property
-   * @param property
+   * @param property an icalendar property
    * @return String
    */
   private String getFieldEvent(Property property) {
@@ -373,7 +368,7 @@ public class ImportIcalManager {
   }
 
   /**
-   * Get start dates of a reccurrent Event
+   * Get start dates of a recurrent Event
    * @param event
    * @return Collection of DateTime
    */

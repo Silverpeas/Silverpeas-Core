@@ -20,15 +20,6 @@
  */
 package com.stratelia.webactiv.todo.control;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -39,18 +30,26 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.PairObject;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
+
+import javax.inject.Inject;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -63,6 +62,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   public final static int ORGANIZER_TODO_VIEW = 2;
   public final static int CLOSED_TODO_VIEW = 3;
   private int viewType = PARTICIPANT_TODO_VIEW;
+  @Inject
   private SilverpeasCalendar calendarBm;
   private ResourceLocator settings;
   private ToDoHeader currentToDoHeader = null;
@@ -79,12 +79,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   public ToDoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.todo.multilang.todo");
     setComponentRootName(URLManager.CMP_TODO);
-    try {
-      calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-          SilverpeasCalendar.class);
-    } catch (Exception e) {
+    if (calendarBm == null) {
       throw new UtilException("ToDoSessionControl.ToDoSessionControl()", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          "root.EX_CANT_GET_REMOTE_OBJECT");
     }
   }
 

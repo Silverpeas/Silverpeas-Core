@@ -20,16 +20,15 @@
  */
 package com.stratelia.webactiv.agenda.control;
 
-import java.util.Collection;
-import java.util.Date;
-
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.ParticipationStatus;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
+
+import java.util.Collection;
+import java.util.Date;
 
 public class AgendaAccess {
 
@@ -38,8 +37,7 @@ public class AgendaAccess {
   private static SilverpeasCalendar getEJB() throws AgendaException {
     if (calendarBm == null) {
       try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
+        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new AgendaException("AgendaAccess.getEJB()", SilverpeasException.ERROR,
             "root.EX_CANT_GET_REMOTE_OBJECT", e);

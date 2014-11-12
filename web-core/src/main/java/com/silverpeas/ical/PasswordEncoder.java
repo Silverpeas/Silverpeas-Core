@@ -27,8 +27,7 @@ package com.silverpeas.ical;
 import org.silverpeas.util.Charsets;
 
 /**
- * Simple password encoder. Note, this is not meant to keep your password secure. Created: Jan 03,
- * 2007 12:50:56 PM
+ * Simple password encoder. Note, this is not meant to keep your password secure.
  * @author Andras Berkes
  */
 public final class PasswordEncoder {

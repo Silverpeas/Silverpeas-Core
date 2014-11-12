@@ -191,7 +191,6 @@ public final class StringUtils {
    * Decodes a BASE64-encoded string.
    * @param string BASE64 string
    * @return String the decoded bytes
-   * @throws UnsupportedEncodingException
    */
   public static String decodeBASE64(String string) {
     return decodeToString(DatatypeConverter.parseBase64Binary(string), CharEncoding.UTF_8);

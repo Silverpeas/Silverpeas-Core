@@ -27,6 +27,7 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
@@ -49,6 +50,10 @@ public class SocialEvent implements SocialEventsInterface {
   private SilverpeasCalendar calendar;
 
   private SilverpeasCalendar getCalendar() throws CalendarException {
+    if (calendar == null) {
+      throw new CalendarException(SocialEvent.class.getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR,
+          "IoC error to get SilverpeasCalendar implementation");
+    }
     return calendar;
   }
 
@@ -57,11 +62,10 @@ public class SocialEvent implements SocialEventsInterface {
   }
 
   /**
-   *
-   * @param userId
+   * @param userId the user identifier
    * @param classification
-   * @param begin
-   * @param end
+   * @param begin date
+   * @param end date
    * @return
    * @throws CalendarException
    * @throws UtilException
@@ -71,11 +75,11 @@ public class SocialEvent implements SocialEventsInterface {
       Date begin, Date end) throws CalendarException {
     try {
       String now = DateUtil.date2SQLDate(new java.util.Date());
-      List<JournalHeader> list = getCalendar().getNextEventsForUser(now, userId, classification, begin,
-          end);
-      List<SocialInformation> listEvent = new ArrayList<SocialInformation>(list.size());
+      List<JournalHeader> list =
+          getCalendar().getNextEventsForUser(now, userId, classification, begin, end);
+      List<SocialInformation> listEvent = new ArrayList<>(list.size());
       for (JournalHeader jh : list) {
-        SocialInformationEvent event = new SocialInformationEvent((Schedulable) jh);
+        SocialInformationEvent event = new SocialInformationEvent(jh);
         listEvent.add(event);
       }
       return listEvent;
@@ -88,17 +92,16 @@ public class SocialEvent implements SocialEventsInterface {
 
   /**
    * get the next socialEvents of my contacts according to number of Item and the first Index
-   *
    * @param myId
    * @param myContactsIds
-   * @param begin
-   * @param end
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */
   @Override
-  public List getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
+  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      Date begin, Date end) throws SilverpeasException {
     String day = DateUtil.date2SQLDate(new java.util.Date());
     try {
       return getCalendar().getNextEventsForMyContacts(day, myId, myContactsIds, begin, end);
@@ -110,9 +113,10 @@ public class SocialEvent implements SocialEventsInterface {
 
   /**
    * get the Last socialEvents of my contacts according to number of Item and the first Index
-   *
    * @param myId
    * @param myContactsIds
+   * @param begin date
+   * @param end date
    * @return
    * @throws SilverpeasException
    */
@@ -130,14 +134,13 @@ public class SocialEvent implements SocialEventsInterface {
 
   /**
    * get the my last socialEvents according to number of Item and the first Index
-   *
    * @param myId
    * @return
    * @throws SilverpeasException
    */
   @Override
-  public List getMyLastSocialInformationsList(String myId, Date begin, Date end) throws
-      SilverpeasException {
+  public List getMyLastSocialInformationsList(String myId, Date begin, Date end)
+      throws SilverpeasException {
     String day = DateUtil.date2SQLDate(new java.util.Date());
     try {
       return getCalendar().getMyLastEvents(day, myId, begin, end);

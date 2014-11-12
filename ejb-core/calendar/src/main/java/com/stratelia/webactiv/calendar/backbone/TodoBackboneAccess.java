@@ -20,11 +20,6 @@
  */
 package com.stratelia.webactiv.calendar.backbone;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -34,12 +29,13 @@ import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
-import javax.ejb.EJB;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
 public class TodoBackboneAccess {
 
@@ -99,8 +95,7 @@ public class TodoBackboneAccess {
           "id=" + id);
 
       if (todo.getAttendees() != null) {
-        Collection<UserRecipient> selectedUsers = new ArrayList<UserRecipient>(todo.getAttendees()
-            .size());
+        Collection<UserRecipient> selectedUsers = new ArrayList<>(todo.getAttendees().size());
         for (Attendee attendee : todo.getAttendees()) {
           getCalendarBm().addToDoAttendee(id, attendee);
           if (notifyAttendees && (!todo.getDelegatorId().equals(attendee.getUserId()))) {
@@ -108,8 +103,8 @@ public class TodoBackboneAccess {
           }
         }
         if (!selectedUsers.isEmpty()) {
-          NotificationMetaData notifMetaData = new NotificationMetaData(
-              NotificationParameters.NORMAL, txtTitle, txtMessage);
+          NotificationMetaData notifMetaData =
+              new NotificationMetaData(NotificationParameters.NORMAL, txtTitle, txtMessage);
           notifMetaData.setSender(todo.getDelegatorId());
           notifMetaData.setUserRecipients(selectedUsers);
           notifSender.notifyUser(notifMetaData);
@@ -117,8 +112,8 @@ public class TodoBackboneAccess {
       }
       return id;
     } catch (Exception e) {
-      SilverTrace.error("calendar", "TodoBackboneAcess.addEntry()",
-          "calendar.MSG_ADD_ENTRY_FAILED", "value return id= null", e);
+      SilverTrace.error("calendar", "TodoBackboneAcess.addEntry()", "calendar.MSG_ADD_ENTRY_FAILED",
+          "value return id= null", e);
       return null;
     }
   }
@@ -144,18 +139,20 @@ public class TodoBackboneAccess {
   }
 
   public TodoDetail getEntry(String id) {
-    SilverTrace.info("calendar", "TodoBackboneAcess.getEntry(String id)",
-        "root.MSG_GEN_ENTER_METHOD", "id=" + id);
+    SilverTrace
+        .info("calendar", "TodoBackboneAcess.getEntry(String id)", "root.MSG_GEN_ENTER_METHOD",
+            "id=" + id);
     try {
       ToDoHeader header = getCalendarBm().getToDoHeader(id);
       TodoDetail detail = todoHeaderToDetail(header);
       Collection<Attendee> list = getCalendarBm().getToDoAttendees(id);
-      List<Attendee> vector = new ArrayList<Attendee>(list);
+      List<Attendee> vector = new ArrayList<>(list);
       detail.setAttendees(vector);
       return detail;
     } catch (Exception e) {
-      SilverTrace.error("calendar", "TodoBackboneAcess.getEntry(TodoDetail todo)",
-          "calendar.MSG_CANT_GET", "return null", e);
+      SilverTrace
+          .error("calendar", "TodoBackboneAcess.getEntry(TodoDetail todo)", "calendar.MSG_CANT_GET",
+              "return null", e);
       return null;
     }
   }
@@ -163,23 +160,25 @@ public class TodoBackboneAccess {
   public Vector<TodoDetail> getEntriesFromExternal(String spaceId, String componentId,
       String externalId) {
     SilverTrace.info("calendar",
-        "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, String externalId)",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId + ", componentId=" + componentId
-        + ", externalId=" + externalId);
+        "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, " +
+            "String externalId)",
+        "root.MSG_GEN_ENTER_METHOD",
+        "spaceId=" + spaceId + ", componentId=" + componentId + ", externalId=" + externalId);
     try {
-      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId,
-          componentId, externalId);
-      Vector<TodoDetail> result = new Vector<TodoDetail>();
+      Collection<ToDoHeader> headers =
+          getCalendarBm().getExternalTodos(spaceId, componentId, externalId);
+      Vector<TodoDetail> result = new Vector<>();
       for (ToDoHeader header : headers) {
         TodoDetail detail = todoHeaderToDetail(header);
         Collection<Attendee> list = getCalendarBm().getToDoAttendees(detail.getId());
-        detail.setAttendees(new Vector<Attendee>(list));
+        detail.setAttendees(new Vector<>(list));
         result.add(detail);
       }
       return result;
     } catch (Exception e) {
       SilverTrace.error("calendar",
-          "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, String externalId)",
+          "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, " +
+              "String externalId)",
           "calendar.MSG_CANT_GET", "return null", e);
       return null;
     }
@@ -187,45 +186,51 @@ public class TodoBackboneAccess {
   }
 
   public void removeEntry(String id) {
-    SilverTrace.info("calendar", "TodoBackboneAcess.removeEntry(String id)",
-        "root.MSG_GEN_ENTER_METHOD", "id=" + id);
+    SilverTrace
+        .info("calendar", "TodoBackboneAcess.removeEntry(String id)", "root.MSG_GEN_ENTER_METHOD",
+            "id=" + id);
     try {
       getCalendarBm().removeToDo(id);
     } catch (Exception e) {
-      SilverTrace.error("calendar", "TodoBackboneAcess.removeEntry(String id)",
-          "calendar.MSG_CANT_REMOVE", "", e);
+      SilverTrace
+          .error("calendar", "TodoBackboneAcess.removeEntry(String id)", "calendar.MSG_CANT_REMOVE",
+              "", e);
     }
   }
 
   public void removeEntriesFromExternal(String spaceId, String componentId, String externalId) {
     SilverTrace.info("calendar",
-        "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, String externalId)",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId + ", componentId=" + componentId
-        + ", externalId=" + externalId);
+        "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, " +
+            "String externalId)",
+        "root.MSG_GEN_ENTER_METHOD",
+        "spaceId=" + spaceId + ", componentId=" + componentId + ", externalId=" + externalId);
     try {
-      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId, componentId,
-          externalId);
+      Collection<ToDoHeader> headers =
+          getCalendarBm().getExternalTodos(spaceId, componentId, externalId);
       for (ToDoHeader header : headers) {
         getCalendarBm().removeToDo(header.getId());
       }
     } catch (Exception e) {
       SilverTrace.error("calendar",
-          "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, String externalId)",
+          "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, " +
+              "String externalId)",
           "calendar.MSG_CANT_REMOVE", "return null", e);
     }
   }
 
-  public void removeAttendeeToEntryFromExternal(String componentId, String externalId, String userId) {
+  public void removeAttendeeToEntryFromExternal(String componentId, String externalId,
+      String userId) {
     SilverTrace.info("calendar",
-        "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, String externalId, String userId)",
-        "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId + ", externalId=" + externalId
-        + ", userId = " + userId);
+        "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, " +
+            "String externalId, String userId)",
+        "root.MSG_GEN_ENTER_METHOD",
+        "componentId=" + componentId + ", externalId=" + externalId + ", userId = " + userId);
     try {
       Attendee attendee = new Attendee();
       attendee.setUserId(userId);
 
-      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos("useless",
-          componentId, externalId);
+      Collection<ToDoHeader> headers =
+          getCalendarBm().getExternalTodos("useless", componentId, externalId);
       for (ToDoHeader header : headers) {
         if (header != null) {
           getCalendarBm().removeToDoAttendee(header.getId(), attendee);
@@ -233,7 +238,8 @@ public class TodoBackboneAccess {
       }
     } catch (Exception e) {
       SilverTrace.error("calendar",
-          "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, String externalId)",
+          "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, " +
+              "String externalId)",
           "calendar.MSG_CANT_REMOVE", "return null", e);
     }
   }
@@ -246,19 +252,14 @@ public class TodoBackboneAccess {
     } catch (Exception e) {
       SilverTrace.
           error("calendar", "TodoBackboneAcess.removeEntriesByInstanceId(String instanceId)",
-          "calendar.MSG_CANT_REMOVE", "return null", e);
+              "calendar.MSG_CANT_REMOVE", "return null", e);
     }
   }
 
   private synchronized SilverpeasCalendar getCalendarBm() {
     if (calendarBm == null) {
-      try {
-        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            SilverpeasCalendar.class);
-      } catch (Exception e) {
-        throw new CalendarRuntimeException("TodoBackboneAcessB.getCalendarBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+      throw new CalendarRuntimeException("TodoBackboneAcessB.getCalendarBm()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT");
     }
     return calendarBm;
   }
