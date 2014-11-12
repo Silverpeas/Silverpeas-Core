@@ -31,8 +31,38 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.util.ServiceProvider;
 
+import javax.servlet.http.HttpSession;
+
+/**
+ * A LookHelper is an utility class aiming to facilitate the access of the current Web
+ * navigation of the user in the Silverpeas Web interface as well of some settings on the Web
+ * displaying. As such a LookHelper is instantiated once per user session.
+ */
 public interface LookHelper {
+
+  /**
+   * Creates a new look helper instance and put it into the current user session.
+   * @param session a user HTTP session.
+   * @return a new look helper.
+   */
+  public static LookHelper newLookHelper(HttpSession session) {
+    LookHelper lookHelper = new LookSilverpeasV5Helper(session);
+    session.setAttribute(LookHelper.SESSION_ATT, lookHelper);
+    return lookHelper;
+  }
+
+  /**
+   * Gets the look helper actually set in the user session.
+   * @param session an HTTP user session.
+   * @return a look helper or null if no one was registered into the current user session.
+   */
+  public static LookHelper getLookHelper(HttpSession session) {
+    return (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+  }
+
+  public String getURLOfLastVisitedCollaborativeSpace();
 
   public final String SESSION_ATT = "Silverpeas_LookHelper";
 

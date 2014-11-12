@@ -125,7 +125,7 @@ public class AjaxActionServlet extends HttpServlet {
         // Add list of spaces in JSon response
         JSONArray jsonAddedSpaces = getJSONSpaces(addedSubSpaceIds);
         jsonRslt.put("spaceids", jsonAddedSpaces);
-        LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+        LookHelper helper = LookHelper.getLookHelper(session);
 
         if (helper.isEnableUFSContainsState()) {
           // Retrieve all current space path (parent and root space identifier)
@@ -238,7 +238,7 @@ public class AjaxActionServlet extends HttpServlet {
 
         List<UserFavoriteSpaceVO> listUFS = ufsDAO.getListUserFavoriteSpace(userId);
         // Check user favorite space state (enable contains state)
-        LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+        LookHelper helper = LookHelper.getLookHelper(session);
         String spaceState = "empty";
         if (helper.isEnableUFSContainsState()) {
           if (UserFavoriteSpaceManager.containsFavoriteSubSpace(spaceInst, listUFS, userId)) {

@@ -69,7 +69,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     HttpSession session = req.getSession(true);
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+    LookHelper helper = LookHelper.getLookHelper(session);
     OrganizationController orgaController = m_MainSessionCtrl.getOrganisationController();
     String userId = m_MainSessionCtrl.getUserId();
 

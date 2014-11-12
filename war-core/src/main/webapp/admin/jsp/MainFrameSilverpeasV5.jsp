@@ -40,8 +40,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="com.silverpeas.look.LookHelper" %>
 
 <%
 String			componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");
@@ -62,12 +62,10 @@ if (m_MainSessionCtrl == null) {
 	</script>
 <%
 } else {
-	LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+	LookHelper 	helper 	= LookHelper.getLookHelper(session);
 	if (helper == null) {
-		helper = new LookSilverpeasV5Helper(session);
+		helper = LookHelper.newLookHelper(session);
 		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
-
-		session.setAttribute("Silverpeas_LookHelper", helper);
 		login = true;
 	}
 

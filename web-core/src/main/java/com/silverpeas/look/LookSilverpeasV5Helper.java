@@ -44,10 +44,13 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.ejb.EJBException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
@@ -63,7 +66,7 @@ import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
-  private OrganizationController orga = null;
+  private OrganizationController organizationController;
   private ResourceLocator resources = null;
   private ResourceLocator messages = null;
   private ResourceLocator defaultMessages = null;
@@ -149,7 +152,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public void setSpaceIdAndSubSpaceId(String spaceId) {
     if (StringUtil.isDefined(spaceId)) {
-      List<SpaceInst> spacePath = orga.getSpacePath(spaceId);
+      List<SpaceInst> spacePath = organizationController.getSpacePath(spaceId);
       if (!spacePath.isEmpty()) {
         SpaceInst space = spacePath.get(0);
         SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
@@ -170,7 +173,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     setComponentId(componentId);
 
     if (!StringUtil.isDefined(spaceId)) {
-      List<SpaceInst> spacePath = orga.getSpacePathToComponent(componentId);
+      List<SpaceInst> spacePath = organizationController.getSpacePathToComponent(componentId);
       if (!spacePath.isEmpty()) {
         SpaceInst space = spacePath.get(0);
         SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
@@ -183,18 +186,11 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
   }
 
-  /*
-   * Use LookSilverpeasV5Helper(HttpSession session)
-   * As HttpSession can be reused in a same Silverpeas session (anonymous case), so MainSessionController can not be stored.
-   * It must be retrieved from HttpSession only.
+  /**
+   * Constructs a new LookSilverpeasV5Helper instance for the specified session.
+   * @param session the session of a user.
    */
-  @Deprecated
-  public LookSilverpeasV5Helper(MainSessionController mainSessionController,
-      ResourceLocator resources) {
-    init(mainSessionController, resources);
-  }
-  
-  public LookSilverpeasV5Helper(HttpSession session) {
+  protected LookSilverpeasV5Helper(HttpSession session) {
     this.session = session;
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
@@ -214,7 +210,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
   
   private final void init(ResourceLocator resources) {
-    this.orga = OrganizationControllerProvider.getOrganisationController();
+    this.organizationController = OrganizationControllerProvider.getOrganisationController();
+    this.publicationBm = ServiceProvider.getService(PublicationBm.class);
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
         "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
@@ -262,7 +259,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   protected OrganizationController getOrganisationController() {
-    return orga;
+    return organizationController;
   }
 
   /*
@@ -271,7 +268,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getUserFullName(String userId) {
-    return orga.getUserDetail(userId).getDisplayedName();
+    return organizationController.getUserDetail(userId).getDisplayedName();
   }
 
   /*
@@ -297,7 +294,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   public UserFull getUserFull() {
-    return orga.getUserFull(getUserId());
+    return organizationController.getUserFull(getUserId());
   }
 
   /*
@@ -356,7 +353,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getSpaceId(String componentId) {
-    ComponentInstLight component = orga.getComponentInstLight(componentId);
+    ComponentInstLight component = organizationController.getComponentInstLight(componentId);
     if (component != null) {
       return component.getDomainFatherId();
     }
@@ -468,9 +465,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
       String itemId = tokenizer.nextToken();
 
       if (itemId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
-        if (orga.isSpaceAvailable(itemId, getUserId())) {
-          SpaceInstLight space = orga.getSpaceInstLightById(itemId);
-          SpaceInstLight rootSpace = orga.getRootSpace(itemId);
+        if (organizationController.isSpaceAvailable(itemId, getUserId())) {
+          SpaceInstLight space = organizationController.getSpaceInstLightById(itemId);
+          SpaceInstLight rootSpace = organizationController.getRootSpace(itemId);
           TopItem item = new TopItem();
           item.setLabel(space.getName(getLanguage()));
           item.setSpaceId(rootSpace.getId());
@@ -479,10 +476,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
           topSpaceIds.add(item.getSpaceId());
         }
       } else {
-        if (orga.isComponentAvailable(itemId, getUserId())) {
-          ComponentInstLight component = orga.getComponentInstLight(itemId);
+        if (organizationController.isComponentAvailable(itemId, getUserId())) {
+          ComponentInstLight component = organizationController.getComponentInstLight(itemId);
           String currentSpaceId = component.getDomainFatherId();
-          SpaceInstLight rootSpace = orga.getRootSpace(currentSpaceId);
+          SpaceInstLight rootSpace = organizationController.getRootSpace(currentSpaceId);
           TopItem item = new TopItem();
           item.setLabel(component.getLabel(getLanguage()));
           item.setComponentId(itemId);
@@ -630,14 +627,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   public PublicationBm getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
-      } catch (Exception e) {
-        throw new EJBException(e);
-      }
-    }
     return publicationBm;
   }
 
@@ -744,17 +733,19 @@ public class LookSilverpeasV5Helper implements LookHelper {
   /**
    * @return the displayPDCInHomePage
    */
+  @Override
   public boolean isDisplayPDCInHomePage() {
     return displayPDCInHomePage;
   }
-  
+
+  @Override
   public DefaultSpaceHomePage getSpaceHomePage(String spaceId) {
     setSpaceIdAndSubSpaceId(spaceId);
     String currentSpaceId = getSubSpaceId();
     DefaultSpaceHomePage homepage = new DefaultSpaceHomePage();
     
     // get main information of space
-    SpaceInstLight space = orga.getSpaceInstLightById(currentSpaceId);
+    SpaceInstLight space = organizationController.getSpaceInstLightById(currentSpaceId);
     homepage.setSpace(space);
 
     // get latest publications
@@ -878,7 +869,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     return result;
   }
-  
+
+  @Override
   public TickerSettings getTickerSettings() {
     TickerSettings tickerSettings = new TickerSettings(resources);
     String labelParam = getSettings("ticker.label", "");
@@ -887,7 +879,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     return tickerSettings;
   }
-  
+
+  @Override
   public String getURLOfLastVisitedCollaborativeSpace() {
     String spaceId = getSpaceId();
     if (StringUtil.isDefined(getSubSpaceId())) {

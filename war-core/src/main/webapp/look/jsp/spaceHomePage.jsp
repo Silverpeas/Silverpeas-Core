@@ -55,7 +55,7 @@
 <view:timeout />
 
 <%
-LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+LookHelper helper = LookHelper.getLookHelper(session);
 DefaultSpaceHomePage homepage =  helper.getSpaceHomePage(request.getParameter("SpaceId"));
 List<PublicationDetail> publications = homepage.getPublications();
 List<PublicationDetail> news = homepage.getNews();

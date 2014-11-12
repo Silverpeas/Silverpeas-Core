@@ -87,7 +87,7 @@ public class AjaxServletLookV5 extends HttpServlet {
             MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
             GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+    LookHelper helper = LookHelper.getLookHelper(session);
     OrganizationController orgaController = mainSessionController.getOrganisationController();
 
     String userId = mainSessionController.getUserId();

@@ -32,10 +32,12 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +49,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * It is a singleton that represents the current look of the running Silverpeas. Its single object
  * provides an access to the different look of the widgets that compound Silverpeas.
  */
+@Singleton
 public class SilverpeasLook {
 
   /**
@@ -57,7 +60,6 @@ public class SilverpeasLook {
    */
   public static final String DEFAULT_WALLPAPER_PROPERTY = "wallPaper";
   public static final String SPACE_CSS = "styles";
-  private static SilverpeasLook look = new SilverpeasLook();
   @Inject
   private OrganizationController organizationController;
 
@@ -66,7 +68,7 @@ public class SilverpeasLook {
    * @return an instance representing the current look of the Silverpeas application.
    */
   public static SilverpeasLook getSilverpeasLook() {
-    return look;
+    return ServiceProvider.getService(SilverpeasLook.class);
   }
 
   /**

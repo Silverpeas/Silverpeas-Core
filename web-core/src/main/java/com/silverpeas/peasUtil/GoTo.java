@@ -155,7 +155,7 @@ public abstract class GoTo extends HttpServlet {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+      LookHelper helper = LookHelper.getLookHelper(session);
       if (gef != null && helper != null) {
         helper.setComponentIdAndSpaceIds(null, null, componentId);
         String helperSpaceId = helper.getSubSpaceId();

@@ -28,10 +28,9 @@
 
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.silverpeas.look.TopItem"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="com.silverpeas.look.LookHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -40,7 +39,7 @@
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
 
 <%
-LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+LookHelper 	helper 	= LookHelper.getLookHelper(session);
 ResourceLocator settings 		= gef.getFavoriteLookSettings();
 
 String currentComponentId 	= helper.getComponentId();

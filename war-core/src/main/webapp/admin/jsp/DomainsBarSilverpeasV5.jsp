@@ -57,7 +57,7 @@
 String          m_sContext      = URLManager.getApplicationURL();
 
 GraphicElementFactory   gef         = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-LookHelper  helper        = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+LookHelper  helper        = LookHelper.getLookHelper(session);
 
 String spaceId    	= request.getParameter("privateDomain");
 String subSpaceId   = request.getParameter("privateSubDomain");

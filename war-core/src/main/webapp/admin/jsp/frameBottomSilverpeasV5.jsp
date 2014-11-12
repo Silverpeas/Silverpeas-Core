@@ -26,9 +26,8 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="importFrameSet.jsp" %>
 
@@ -39,7 +38,7 @@ String subSpaceId 	= request.getParameter("SubSpaceId");
 String componentId	= request.getParameter("ComponentId");
 String login		= request.getParameter("Login");
 
-LookSilverpeasV5Helper 	helper = (LookSilverpeasV5Helper) session.getAttribute(LookSilverpeasV5Helper.SESSION_ATT);
+LookHelper helper = LookHelper.getLookHelper(session);
 
 int framesetWidth = helper.getSettings("domainsBarFramesetWidth", 255);
 

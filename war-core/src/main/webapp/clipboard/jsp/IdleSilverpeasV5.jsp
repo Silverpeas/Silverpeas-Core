@@ -59,7 +59,7 @@
     clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
     javascripTask = clipboardSC.getHF_JavaScriptTask(request);
   }
-  LookHelper lookHelper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+  LookHelper lookHelper = LookHelper.getLookHelper(session);
 
   int nbConnectedUsers = 0;
   String language = m_MainSessionCtrl.getFavoriteLanguage();

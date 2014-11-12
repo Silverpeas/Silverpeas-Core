@@ -378,6 +378,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   private LookHelper getLookHelper(HttpServletRequest request) {
-    return (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
+    return LookHelper.getLookHelper(request.getSession());
   }
 }

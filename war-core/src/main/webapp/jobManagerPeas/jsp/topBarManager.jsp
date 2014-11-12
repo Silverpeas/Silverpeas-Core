@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
+<%@ page import="com.silverpeas.look.LookHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -39,7 +39,7 @@
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
 <%
-LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+LookHelper 	helper 	= LookHelper.getLookHelper(session);
 
 String frontOfficeURL = (gef.getLookFrame().startsWith("/") ? m_context : m_context+"/admin/jsp/")+gef.getLookFrame()+"?Login=1";
 if (helper.getURLOfLastVisitedCollaborativeSpace() != null) {

@@ -54,8 +54,7 @@ public class MapTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     try {
-      LookHelper helper =
-          (LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT);
+      LookHelper helper = LookHelper.getLookHelper(pageContext.getSession());
       boolean showHiddenComponents = helper.getSettings("display.all.components", false);
       pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, 0, showHiddenComponents));
     } catch (IOException e) {

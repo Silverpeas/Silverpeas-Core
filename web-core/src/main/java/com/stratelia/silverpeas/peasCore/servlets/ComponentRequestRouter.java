@@ -372,7 +372,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     HttpSession session = req.getSession(true);
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+    LookHelper helper = LookHelper.getLookHelper(session);
     if (StringUtil.isDefined(componentId)) {
       if (gef != null && helper != null) {
         helper.setComponentIdAndSpaceIds(null, null, componentId);

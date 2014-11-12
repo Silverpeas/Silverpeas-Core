@@ -47,7 +47,7 @@ public class GoToSpace extends GoTo {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+      LookHelper helper = LookHelper.getLookHelper(session);
       if (gef != null && helper != null) {
         gef.setSpaceIdForCurrentRequest(space.getId());
         helper.setSpaceIdAndSubSpaceId(space.getId());

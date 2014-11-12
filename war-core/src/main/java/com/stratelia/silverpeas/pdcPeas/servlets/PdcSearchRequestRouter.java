@@ -1006,7 +1006,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_EXPERT) {
       HttpSession session = request.getSession(true);
-      LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+      LookHelper helper = LookHelper.getLookHelper(session);
       if (!StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
         // Context is different of PDC frame, always process PDC axis
         initializePdcAxis(pdcSC, request);
