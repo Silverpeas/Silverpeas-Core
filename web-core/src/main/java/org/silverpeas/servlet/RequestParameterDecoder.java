@@ -33,7 +33,7 @@ import java.util.Date;
 /**
  * This class decodes the request parameters in order to set them to a simple specified POJO which
  * attributes are annotated by {@link javax.ws.rs.FormParam} annotation.
- * WARNING : for now, the decoder is not compatible with Inner Classes.
+ * WARNING: for now, the decoder is not compatible with Inner Classes.
  * @author: Yohann Chastagnier
  */
 public class RequestParameterDecoder {

@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
+ * A file embedded into the body of an HTTP request.
  * @author: Yohann Chastagnier
  */
 public class RequestFile {
