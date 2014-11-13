@@ -47,7 +47,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author sdevolder Classe generant le code html du sommaire d une exportation
+ * HTML summary export generator
+ * @author sdevolder
  */
 public class HtmlExportGenerator {
 
@@ -103,7 +104,7 @@ public class HtmlExportGenerator {
 
   /**
    * @param text
-   * @return
+   * @return xhtml string of summary header
    */
   String writeEnTeteSommaire(String text) {
     ElementContainer xhtmlcontainer = new ElementContainer();
@@ -157,8 +158,8 @@ public class HtmlExportGenerator {
   }
 
   /**
-   * @param fileName
-   * @param pubIds
+   * @param fileName the file export directory name
+   * @param pubIds a list of publication identifier
    * @return
    */
   public String toHTML(String fileName, Collection<String> pubIds) {
@@ -167,17 +168,17 @@ public class HtmlExportGenerator {
 
     sb.append(getBeginningOfPage(htmlFileExportDir, false));
     sb.append("<body>\n");
-    // ajout des publications dans le fichier HTML
+    // Add publications inside HTML file
     Map<String, HtmlExportPublicationGenerator> map = exportReport.getMapIndexHtmlPaths();
     if (map != null) {
-      StringBuilder entete = new StringBuilder();
-      entete.append(pubIds.size()).append(" ");
+      StringBuilder header = new StringBuilder();
+      header.append(pubIds.size()).append(" ");
       if (pubIds.size() == 1) {
-        entete.append(resourceLocator.getString("importExport.document"));
+        header.append(resourceLocator.getString("importExport.document"));
       } else {
-        entete.append(resourceLocator.getString("importExport.documents"));
+        header.append(resourceLocator.getString("importExport.documents"));
       }
-      sb.append(writeEnTeteSommaire(entete.toString()));
+      sb.append(writeEnTeteSommaire(header.toString()));
       sb.append(NEW_LINE);
       for (Map.Entry<String, HtmlExportPublicationGenerator> entry : map.entrySet()) {
         String pubId = entry.getKey();
@@ -213,9 +214,8 @@ public class HtmlExportGenerator {
     sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") + " "
         + htmlFileExportDir, true));
     sb.append("<body>\n");
-    sb.append("<div id=\"treeview\">\n");
-    // Le fameux treeview
     // creation du treeview avec la liste des topics
+    sb.append("<div id=\"treeview\">\n");
     sb.append("<script language=\"JavaScript\" type=\"text/javascript\">\n");
     sb.append("var elements_treeview = new TreeViewElements();\n");
     List<NodeTreeType> nodeTrees = nodeTreesType.getListNodeTreeType();
@@ -352,19 +352,13 @@ public class HtmlExportGenerator {
   }
 
   String emptyTreeElement(String name, String nodeId, String fatherId) {
-    StringBuilder sb = new StringBuilder(200);
-    sb.append("elements_treeview.addElement(\"").append(name).append("\", ");
-    sb.append(nodeId).append(", ").append(fatherId);
-    sb.append(", \"dossier\", \"folder\", \"Empty\");\n");
-    return sb.toString();
+    return "elements_treeview.addElement(\"" + name + "\", " + nodeId + ", " + fatherId +
+        ", \"dossier\", \"folder\", \"Empty\");\n";
   }
 
   String filledTreeElement(String name, String nodeId, String fatherId) {
-    StringBuilder sb = new StringBuilder(200);
-    sb.append("elements_treeview.addElement(\"").append(name).append("\", ");
-    sb.append(nodeId).append(", ").append(fatherId).append(", \"dossier\", \"folder\", ");
-    sb.append(nodeId).append(");\n");
-    return sb.toString();
+    return "elements_treeview.addElement(\"" + name + "\", " + nodeId + ", " + fatherId +
+        ", \"dossier\", \"folder\", " + nodeId + ");\n";
   }
 
   /**

@@ -37,7 +37,7 @@ public class ImportReportManager {
    */
   public ImportReportManager() {
     importReport = new ImportReport();
-    componentReportMap = new HashMap<String, ComponentReport>();
+    componentReportMap = new HashMap<>();
     importReport.setStartDate(new Date());
   }
 

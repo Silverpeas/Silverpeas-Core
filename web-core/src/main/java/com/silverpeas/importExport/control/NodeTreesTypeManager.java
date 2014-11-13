@@ -36,9 +36,6 @@ import java.util.List;
 /**
  * Classe de gestion des importations unitaires de thèmes dans KMelia pour le moteur d'importExport
  * de SilverPeas.
- *
- * @author $Author$
- * @version $Revision$
  */
 public class NodeTreesTypeManager {
 

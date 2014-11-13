@@ -32,19 +32,19 @@ public class ComponentImportExport {
    final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
     
-  private UserDetail curentUserDetail = null;
+  private UserDetail currentUserDetail = null;
   private String currentComponentId = null;
 
   public ComponentImportExport() {
   }
 
-  public ComponentImportExport(UserDetail curentUserDetail, String currentComponentId) {
-    this.curentUserDetail = curentUserDetail;
+  public ComponentImportExport(UserDetail currentUserDetail, String currentComponentId) {
+    this.currentUserDetail = currentUserDetail;
     this.currentComponentId = currentComponentId;
   }
 
-  public UserDetail getCurentUserDetail() {
-    return curentUserDetail;
+  public UserDetail getCurrentUserDetail() {
+    return currentUserDetail;
   }
 
   public String getCurrentComponentId() {

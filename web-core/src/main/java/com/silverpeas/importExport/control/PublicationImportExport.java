@@ -20,37 +20,30 @@
  */
 package com.silverpeas.importExport.control;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.antlr.stringtemplate.StringTemplate;
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.mail.Extractor;
+import org.silverpeas.util.mail.Mail;
+import org.silverpeas.util.mail.MailExtractor;
+
+import javax.mail.internet.InternetAddress;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.mail.internet.InternetAddress;
-
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.mail.Extractor;
-import org.silverpeas.util.mail.Mail;
-import org.silverpeas.util.mail.MailExtractor;
-
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.MetaData;
-import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.coordinates.model.CoordinateRuntimeException;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-
-import org.antlr.stringtemplate.StringTemplate;
-import org.apache.commons.lang3.StringUtils;
 
 public class PublicationImportExport {
 
@@ -66,7 +59,7 @@ public class PublicationImportExport {
    * dans le cas des fichiers MSoffice.
    * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
    * informations qui iront renseigner les méta-données de la publication à creer
-   * @param settings
+   * @param settings the import export settings
    * @return renvoie un objet PublicationDetail
    */
   public static PublicationDetail convertFileInfoToPublicationDetail(File file, ImportSettings settings) {
@@ -86,7 +79,7 @@ public class PublicationImportExport {
         creationDate = mail.getDate();
 
         // define StringTemplate attributes
-        Map<String, String> attributes = new HashMap<String, String>();
+        Map<String, String> attributes = new HashMap<>();
         attributes.put("subject", mail.getSubject());
         InternetAddress address = mail.getFrom();
         if (StringUtil.isDefined(address.getPersonal())) {
@@ -152,7 +145,7 @@ public class PublicationImportExport {
 
   /**
    * Add nodes (coordinatesId) to a publication.
-   * @param pubPK
+   * @param pubPK the publication identifier (primary key)
    * @param nodes List of coordinateId.
    */
   public static void addNodesToPublication(PublicationPK pubPK, List<Integer> nodes) {
@@ -162,20 +155,19 @@ public class PublicationImportExport {
   }
 
   /**
-   * @return l'EJB PublicationBm
-   * @throws CoordinateRuntimeException
+   * @return PublicationBm service layer
    */
   private static PublicationBm getPublicationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+    return ServiceProvider.getService(PublicationBm.class);
   }
 
   /**
    * Get unbalanced publications
-   * @param componentId
+   * @param componentId the component instance identifier
    * @return ArrayList of publicationDetail
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
-    return new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
+    return new ArrayList<>(getPublicationBm().getOrphanPublications(
         new PublicationPK("useless", componentId)));
   }
 

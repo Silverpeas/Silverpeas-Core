@@ -35,8 +35,7 @@ public class ExportPDFReport {
   private String pdfFileName;
   private String pdfFilePath;
   private long pdfFileSize;
-  private Map<String, HtmlExportPublicationGenerator> mapPublicationPath =
-      new HashMap<String, HtmlExportPublicationGenerator>();
+  private Map<String, HtmlExportPublicationGenerator> mapPublicationPath = new HashMap<>();
 
   public void addHtmlIndex(String publicationId, HtmlExportPublicationGenerator sommaireEntry) {
     mapPublicationPath.put(publicationId, sommaireEntry);

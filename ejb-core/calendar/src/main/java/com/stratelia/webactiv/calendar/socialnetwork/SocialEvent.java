@@ -20,25 +20,21 @@
  */
 package com.stratelia.webactiv.calendar.socialnetwork;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
-import com.stratelia.webactiv.calendar.model.Schedulable;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Bensalem Nabil

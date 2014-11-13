@@ -38,7 +38,7 @@ public class ImportReport {
   private Date endDate;
   private int nbFilesProcessed;
   private int nbFilesNotImported;
-  private List<ComponentReport> listComponentReport = new ArrayList<ComponentReport>();
+  private List<ComponentReport> listComponentReport = new ArrayList<>();
 
   public void addComponentReport(ComponentReport componentReport) {
     listComponentReport.add(componentReport);

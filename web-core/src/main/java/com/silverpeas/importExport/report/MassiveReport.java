@@ -37,7 +37,7 @@ public class MassiveReport {
   private int nbPublicationsUpdated = -1;
   private int nbTopicsCreated = 0;
 
-  private List<UnitReport> listUnitReports = new ArrayList<UnitReport>();
+  private List<UnitReport> listUnitReports = new ArrayList<>();
 
   /**
    * @return

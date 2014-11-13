@@ -29,6 +29,7 @@
 package com.silverpeas.importExport.control;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
@@ -39,31 +40,19 @@ import java.util.logging.Logger;
  */
 public class ImportExportFactory {
 
-  public static GEDImportExport createGEDImportExport(UserDetail curentUserDetail,
+  public static GEDImportExport createGEDImportExport(UserDetail currentUserDetail,
       String currentComponentId) {
     Class<? extends GEDImportExport> gedImportExportClass;
     try {
-      gedImportExportClass =
-          (Class<? extends GEDImportExport>) Class
+      gedImportExportClass = (Class<? extends GEDImportExport>) Class
           .forName("com.silverpeas.kmelia.importexport.KmeliaImportExport");
       Constructor gedImportExportConstructor =
-          gedImportExportClass.getConstructor(UserDetail.class,
-          String.class);
-      return (GEDImportExport) gedImportExportConstructor.newInstance(curentUserDetail,
-          currentComponentId);
-    } catch (InstantiationException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IllegalArgumentException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InvocationTargetException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (NoSuchMethodException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (SecurityException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (ClassNotFoundException ex) {
+          gedImportExportClass.getConstructor(UserDetail.class, String.class);
+      return (GEDImportExport) gedImportExportConstructor
+          .newInstance(currentUserDetail, currentComponentId);
+    } catch (InstantiationException | ClassNotFoundException | SecurityException |
+        NoSuchMethodException | InvocationTargetException | IllegalArgumentException |
+        IllegalAccessException ex) {
       Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;

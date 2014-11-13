@@ -46,7 +46,7 @@ public class ExportReport {
   public ExportReport() {
     dateDebut = new Date();
     dateFin = dateDebut;
-    mapPublicationPath = new HashMap<String, HtmlExportPublicationGenerator>();
+    mapPublicationPath = new HashMap<>();
   }
 
   public ExportReport(Exception error) {

@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author tleroi To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author tleroi
  */
 public class ComponentReport {
 
@@ -41,8 +40,8 @@ public class ComponentReport {
   private int nbTopicsCreated = -1;
   private long totalImportedFileSize = 0;
 
-  private List<MassiveReport> listMassiveReports = new ArrayList<MassiveReport>();
-  private List<UnitReport> listUnitReports = new ArrayList<UnitReport>();
+  private List<MassiveReport> listMassiveReports = new ArrayList<>();
+  private List<UnitReport> listUnitReports = new ArrayList<>();
 
   public ComponentReport(String componentId) {
     this.componentId = componentId;

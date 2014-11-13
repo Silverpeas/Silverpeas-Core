@@ -177,7 +177,7 @@ public class RepositoriesTypeManager {
     SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
         "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
     String componentId = gedIE.getCurrentComponentId();
-    UserDetail userDetail = gedIE.getCurentUserDetail();
+    UserDetail userDetail = gedIE.getCurrentUserDetail();
     PublicationDetail pubDetailToCreate = null;
     try {
       // Création du rapport unitaire
@@ -266,7 +266,7 @@ public class RepositoriesTypeManager {
       ImportExportException {
 
     String componentId = gedIE.getCurrentComponentId();
-    UserDetail userDetail = gedIE.getCurentUserDetail();
+    UserDetail userDetail = gedIE.getCurrentUserDetail();
     MailExtractor extractor = null;
     Mail mail = null;
     try {
@@ -283,7 +283,7 @@ public class RepositoriesTypeManager {
       PublicationContentType pubContent = new PublicationContentType();
       XMLModelContentType modelContent = new XMLModelContentType("mail");
       pubContent.setXMLModelContentType(modelContent);
-      List<XMLField> fields = new ArrayList<XMLField>();
+      List<XMLField> fields = new ArrayList<>();
       modelContent.setFields(fields);
 
       XMLField subject = new XMLField("subject", mail.getSubject());
@@ -323,7 +323,7 @@ public class RepositoriesTypeManager {
 
       // extract each file from mail...
       try {
-        List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
+        List<AttachmentDetail> documents = new ArrayList<>();
 
         List<MailAttachment> attachments = extractor.getAttachments();
         for (MailAttachment attachment : attachments) {
@@ -349,7 +349,7 @@ public class RepositoriesTypeManager {
         } else {
           // classic mode
           AttachmentImportExport attachmentIE =
-              new AttachmentImportExport(gedIE.getCurentUserDetail());
+              new AttachmentImportExport(gedIE.getCurrentUserDetail());
           attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId, documents,
               pubDetail.isIndexable());
         }
@@ -366,7 +366,6 @@ public class RepositoriesTypeManager {
    *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
-   * @throws ImportExportException
    */
   public void processImportRecursiveNoReplicate(ImportReportManager reportManager,
       MassiveReport massiveReport, GEDImportExport gedIE, AttachmentImportExport attachmentIE,
@@ -397,7 +396,7 @@ public class RepositoriesTypeManager {
   public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
       MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings)
       throws ImportExportException {
-    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> publications = new ArrayList<>();
     File path = new File(settings.getPathToImport());
     Iterator<File> itListcontenuPath = getPathContent(path);
     while (itListcontenuPath.hasNext()) {
@@ -446,7 +445,7 @@ public class RepositoriesTypeManager {
    * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres
    */
   private List<File> convertListStringToListFile(String[] listFileName, String path) {
-    List<File> listFile = new ArrayList<File>();
+    List<File> listFile = new ArrayList<>();
     if (listFileName == null) {
       return null;
     }

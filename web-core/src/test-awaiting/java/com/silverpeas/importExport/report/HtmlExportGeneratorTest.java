@@ -24,15 +24,75 @@
 
 package com.silverpeas.importExport.report;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author ehugonnet
  */
+@RunWith(Arquillian.class)
 public class HtmlExportGeneratorTest {
+
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
+    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
+        .resolve("com.sun.jndi:fscontext").withTransitivity().asFile());
+    war.addAsResource("jndi.properties");
+    /*
+        <groupId></groupId>
+        <artifactId>fscontext</artifactId>
+     */
+//        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
+//            WAPrimaryKey.class, ForeignPK.class);
+//    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
+//        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
+//            "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core",
+//            "org.quartz-scheduler:quartz").withTransitivity().asFile());
+//    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
+//        SilverpeasRuntimeException.class, UtilException.class);
+//    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
+//        ExtractionList.class, ExtractionComplexList.class, AssertArgument.class);
+//    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
+//        TransactionRuntimeException.class);
+//    war.addClasses(ConfigurationClassLoader.class, ConfigurationControl.class, FileUtil.class,
+//        MimeTypes.class, RelativeFileAccessException.class, GeneralPropertiesManager.class,
+//        ResourceLocator.class, ResourceBundleWrapper.class, SystemWrapper.class);
+//    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
+//        TransactionRuntimeException.class);
+//    war.addPackages(false, "org.silverpeas.persistence.jdbc");
+//    war.addPackages(true, "com.silverpeas.scheduler");
+
+//    war.addPackages(true, "com.silverpeas.importExport.report");
+//    war.addPackages(true, "com.silverpeas.importExport.control");
+//    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
+//        .addPackages(true, "org.silverpeas.initialization")
+//        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+//            "META-INF/services/org.silverpeas.util.BeanContainer")
+//        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
+    return war;
+  }
+
+  @Before
+  public void setUp() {
+  }
+
+  @After
+  public void tearDown() {
+  }
 
   /**
    * Test of encode method, of class HtmlExportGenerator.
