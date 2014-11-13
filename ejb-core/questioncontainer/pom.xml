@@ -10,8 +10,8 @@
   
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>questioncontainer</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Question Container - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Question Container - ${project.version}</name>
 
   <dependencies>
     <dependency>

@@ -9,8 +9,8 @@
 	
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>statistic</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Statistic - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Statistic - ${project.version}</name>
   
   <dependencies>
     <dependency>

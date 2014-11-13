@@ -9,8 +9,9 @@
 
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>silverstatistics</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Silver Statistics - ${project.version}</name>
+  <packaging>jar</packaging>
+  <name>Silver Statistics - ${project.version}</name>
+
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
@@ -19,17 +20,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-ejb-plugin</artifactId>
-        <configuration>
-          <ejbVersion>3.0</ejbVersion>
-          <generateClient>false</generateClient>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
