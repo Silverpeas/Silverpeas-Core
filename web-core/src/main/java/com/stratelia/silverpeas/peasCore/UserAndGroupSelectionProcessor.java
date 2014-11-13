@@ -26,6 +26,8 @@ package com.stratelia.silverpeas.peasCore;
 import static org.silverpeas.util.StringUtil.getBooleanValue;
 import static org.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.selection.Selection;
+
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
  * both prepares the required resources required by the selection form and provides to the selection
  * caller (a component instance) the users and group users that were selected throught the form.
  */
+@Singleton
 public class UserAndGroupSelectionProcessor {
   // resource provided to the selection form
 
@@ -43,6 +46,10 @@ public class UserAndGroupSelectionProcessor {
   private static final String GROUP_SELECTION_PARAMETER = "GroupSelection";
   // URI of the selection form
   private static final String SELECTION_FORM_PATH = Selection.USER_SELECTION_PANEL_PATH;
+
+  protected UserAndGroupSelectionProcessor() {
+
+  }
 
   /**
    * Prepares the specified selection to be carried by the specified HTTP request.

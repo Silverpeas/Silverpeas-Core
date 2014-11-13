@@ -38,13 +38,17 @@ import java.util.List;
  * <p/>
  * The navigation context can be see as a stack of {@link NavigationStep} elements. Each time a
  * new step is defined, it is pushed into the stack. If the step already exists from the stack,
- * then the navigation context is reset to this.
+ * then the navigation context is reset to this. The usual needs of the use of a navigation context
+ * for a developer is to track the different steps of the user's Web navigation in Silverpeas in
+ * order to be able to go back to a previous step (generally a Web page) whatever it is. It is
+ * useful when it exists several navigation paths to a given Web page and from which the user can
+ * be go back to one of its previous steps of its navigation.
  * <p/>
  * The creation of navigation steps must be defined manually in web controllers by the programmer.
  * For doing, it can use the following tools:
  * <ul>
  *   <li>{@link com.stratelia.silverpeas.peasCore.servlets.annotation.NavigationStep}: it permits
- *   to define a navigation step identifier and optinally a context identifier</li>
+ *   to define a navigation step identifier and optionally a context identifier</li>
  *   <li>{@link WebComponentRequestContext#getNavigationContext()}: provides methods that permits
  *   to the user to set manually a navigation step without defining navigation step annotations</li>
  *   <li>{@link RedirectToPreviousNavigationStep}: when defined the user is redirected to the

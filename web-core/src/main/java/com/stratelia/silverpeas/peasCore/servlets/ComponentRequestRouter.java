@@ -45,6 +45,7 @@ import org.silverpeas.web.token.SynchronizerTokenService;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
+import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,8 +60,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
-  private final UserAndGroupSelectionProcessor selectionProcessor =
-      new UserAndGroupSelectionProcessor();
+  @Inject
+  private UserAndGroupSelectionProcessor selectionProcessor;
   private static final Collection<Pattern> SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS;
 
   static {

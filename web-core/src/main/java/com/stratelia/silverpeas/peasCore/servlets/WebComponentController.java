@@ -67,7 +67,7 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
   }
 
   /**
-   * This method is called one times just after the web controller is instancied and just before
+   * This method is called one times just after the web controller is instantiated and just before
    * the call of the HTTP web controller method.
    * @param context the web request context.
    */

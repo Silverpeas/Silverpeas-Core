@@ -23,9 +23,15 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.EventListener;
 
 /**
+ * A listener of events on the navigation context of a user. By implementing this interface, the
+ * bean will be informed about change on the user's Web navigation so that is can be able to
+ * perform some specific tasks relative to the navigation change.
  * @author: Yohann Chastagnier
  */
 public interface NavigationContextListener<WEB_COMPONENT_REQUEST_CONTEXT extends
