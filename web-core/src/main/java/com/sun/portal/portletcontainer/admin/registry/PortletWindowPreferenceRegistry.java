@@ -44,20 +44,22 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 public class PortletWindowPreferenceRegistry implements PortletRegistryTags, PortletRegistryObject {
 
   private String version;
-  private Map portletWindowPreferenceTable;
-  private List portletWindowPreferenceList;
+  private Map<String, PortletRegistryElement> portletWindowPreferenceTable;
+  private List<PortletRegistryElement> portletWindowPreferenceList;
 
   public PortletWindowPreferenceRegistry() {
     portletWindowPreferenceTable = new LinkedHashMap();
     portletWindowPreferenceList = new ArrayList();
   }
 
+  @Override
   public void read(Document document) throws PortletRegistryException {
     Element root = PortletRegistryHelper.getRootElement(document);
     if (root != null)
       populate(root);
   }
 
+  @Override
   public void addRegistryElement(PortletRegistryElement portletWindowPreference) {
     // The unique key is the combination of portletwindowname and username;
     portletWindowPreferenceTable.put(getUniqueName(portletWindowPreference),
@@ -65,14 +67,17 @@ public class PortletWindowPreferenceRegistry implements PortletRegistryTags, Por
     portletWindowPreferenceList.add(portletWindowPreference);
   }
 
+  @Override
   public PortletRegistryElement getRegistryElement(String name) {
-    return (PortletRegistryElement) portletWindowPreferenceTable.get(name);
+    return portletWindowPreferenceTable.get(name);
   }
 
-  public List getRegistryElements() {
+  @Override
+  public List<PortletRegistryElement> getRegistryElements() {
     return this.portletWindowPreferenceList;
   }
 
+  @Override
   public boolean removeRegistryElement(
       PortletRegistryElement portletWindowPreference) {
     portletWindowPreferenceTable.remove(getUniqueName(portletWindowPreference));
@@ -86,17 +91,14 @@ public class PortletWindowPreferenceRegistry implements PortletRegistryTags, Por
 
   private void populate(Element root) {
     // Get the attributes for PortletWindowPreferenceRegistry Tag.
-    Map portletWindowPreferencesAttributes = XMLDocumentHelper
+    Map<String, String> portletWindowPreferencesAttributes = XMLDocumentHelper
         .createAttributeTable(root);
-    setVersion((String) portletWindowPreferencesAttributes
+    setVersion(portletWindowPreferencesAttributes
         .get(PortletRegistryTags.VERSION_KEY));
     // Get a list of PortletWindowPreference tags and populate values from it.
-    List portletWindowPrefTags = XMLDocumentHelper.createElementList(root);
-    int numOfPortletWindowPrefTags = portletWindowPrefTags.size();
+    List<Element> portletWindowPrefTags = XMLDocumentHelper.createElementList(root);
     PortletWindowPreference portletWindowPreference;
-    for (int i = 0; i < numOfPortletWindowPrefTags; i++) {
-      Element portletWindowPreferenceTag = (Element) portletWindowPrefTags
-          .get(i);
+    for (Element portletWindowPreferenceTag: portletWindowPrefTags) {
       portletWindowPreference = new PortletWindowPreference();
       portletWindowPreference.populateValues(portletWindowPreferenceTag);
       addRegistryElement(portletWindowPreference);
@@ -114,16 +116,16 @@ public class PortletWindowPreferenceRegistry implements PortletRegistryTags, Por
     this.version = version;
   }
 
+  @Override
   public void write(Document document) {
     Element rootTag = XMLDocumentHelper.createElement(document,
         PORTLET_WINDOW_PREFERENCE_REGISTRY_TAG);
-    // Add the atribute to the child
+    // Add the attribute to the child
     rootTag.setAttribute(VERSION_KEY, getVersion());
     document.appendChild(rootTag);
-    Iterator itr = portletWindowPreferenceTable.values().iterator();
     PortletWindowPreference portletWindowPreference;
-    while (itr.hasNext()) {
-      portletWindowPreference = (PortletWindowPreference) itr.next();
+    for(PortletRegistryElement portletWindowPreferenceElt: portletWindowPreferenceTable.values()) {
+      portletWindowPreference = (PortletWindowPreference) portletWindowPreferenceElt;
       portletWindowPreference.create(document, rootTag);
     }
   }

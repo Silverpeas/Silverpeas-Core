@@ -73,6 +73,6 @@ public interface PortletRegistryObject {
    * Returns a list of all portlet registry elements in the portlet registry.
    * @return a <code>List</code> of all portlet registry elements in the portlet registr.
    */
-  public List getRegistryElements();
+  public List<PortletRegistryElement> getRegistryElements();
 
 }

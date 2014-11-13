@@ -39,11 +39,13 @@ public class DriverPortletRegistryContextFactory implements PortletRegistryConte
    * Returns a new instance of the Portlet Registry
    */
 
+  @Override
   public PortletRegistryContext getPortletRegistryContext()
       throws PortletRegistryException {
     return getPortletRegistryContext(null);
   }
 
+  @Override
   public PortletRegistryContext getPortletRegistryContext(String context)
       throws PortletRegistryException {
     Object classInstance = null;
@@ -58,6 +60,7 @@ public class DriverPortletRegistryContextFactory implements PortletRegistryConte
     return portletRegistryContext;
   }
 
+  @Override
   public PortletRegistryContext getPortletRegistryContext(String portalId,
       String namespace) throws PortletRegistryException {
     return getPortletRegistryContext();

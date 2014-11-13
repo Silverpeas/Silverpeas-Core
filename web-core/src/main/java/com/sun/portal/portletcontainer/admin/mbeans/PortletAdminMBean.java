@@ -47,7 +47,7 @@ public interface PortletAdminMBean {
   /**
    * Performs the following two operations.. 1. Unregistering the portlet from the portlet driver 2.
    * Undeploying the portlet webapplication from the webcontainer
-   * @param warFileName the portlet webapplication
+   * @param warName the portlet web application
    * @param undeployFromContainer true if the application is to be undeployed from the webcontainer
    * @return true if the undeployment is successful.
    */

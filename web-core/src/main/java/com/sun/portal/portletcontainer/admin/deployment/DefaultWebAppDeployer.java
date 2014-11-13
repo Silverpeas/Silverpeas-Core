@@ -32,10 +32,12 @@ public class DefaultWebAppDeployer implements WebAppDeployer {
   public DefaultWebAppDeployer() {
   }
 
+  @Override
   public boolean deploy(String warFileName) throws WebAppDeployerException {
     throw new WebAppDeployerException("Deploy failed");
   }
 
+  @Override
   public boolean undeploy(String warFileName) throws WebAppDeployerException {
     throw new WebAppDeployerException("undeploy failed");
   }

@@ -25,6 +25,7 @@ package com.sun.portal.portletcontainer.admin.registry;
 
 import java.util.List;
 
+import com.silverpeas.portlets.portal.PortletWindowData;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletLang;
 import com.sun.portal.container.PortletType;
@@ -55,7 +56,7 @@ public interface PortletWindowRegistryContext {
 
   public void removePortletWindows(String portletName) throws PortletRegistryException;
 
-  public void movePortletWindows(List portletWindows) throws PortletRegistryException;
+  public void movePortletWindows(List<PortletWindowData> portletWindows) throws PortletRegistryException;
 
   public void showPortletWindow(String portletWindowName, boolean visible)
       throws PortletRegistryException;
@@ -64,7 +65,7 @@ public interface PortletWindowRegistryContext {
 
   public String getPortletName(String portletWindowName) throws PortletRegistryException;
 
-  public List getPortletWindows(String portletName) throws PortletRegistryException;
+  public List<String> getPortletWindows(String portletName) throws PortletRegistryException;
 
   public Integer getRowNumber(String portletWindowName) throws PortletRegistryException;
 
@@ -81,9 +82,9 @@ public interface PortletWindowRegistryContext {
 
   public boolean isRemote(String portletWindowName) throws PortletRegistryException;
 
-  public List getVisiblePortletWindows(PortletType portletType) throws PortletRegistryException;
+  public List<String> getVisiblePortletWindows(PortletType portletType) throws PortletRegistryException;
 
-  public List getAllPortletWindows(PortletType portletType) throws PortletRegistryException;
+  public List<String> getAllPortletWindows(PortletType portletType) throws PortletRegistryException;
 
   public List<String> getRemotePortletWindows() throws PortletRegistryException;
 

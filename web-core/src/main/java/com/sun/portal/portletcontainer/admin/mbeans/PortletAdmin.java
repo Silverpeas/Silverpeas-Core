@@ -91,6 +91,7 @@ public class PortletAdmin implements PortletAdminMBean {
     return Boolean.TRUE;
   }
 
+  @Override
   public Boolean deploy(String warFileName, Properties roles,
       Properties userinfo, boolean deployToContainer) throws Exception {
 
@@ -145,6 +146,7 @@ public class PortletAdmin implements PortletAdminMBean {
     }
   }
 
+  @Override
   public Boolean undeploy(String warFileName, boolean undeployFromContainer)
       throws Exception {
     Boolean value = unregisterPortlet(warFileName);

@@ -48,8 +48,8 @@ public class PortletUndeployerInfo {
         + File.separator + UNDEPLOY_PORTLET_FILE;
   }
 
-  public List read() {
-    List list = new ArrayList();
+  public List<String> read() {
+    List<String> list = new ArrayList<>();
     BufferedReader reader = null;
     File file = null;
     try {

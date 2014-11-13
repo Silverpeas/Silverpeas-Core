@@ -42,7 +42,8 @@ public class PortletAppRegistryWriter extends PortletRegistryWriter {
     super(registryLocation, PortletRegistryFile.PORTLET_APP_REGISTRY_FILE, null);
   }
 
-  public void appendDocument(List portletAppElementList)
+  @Override
+  public void appendDocument(List<PortletRegistryElement> portletAppElementList)
       throws PortletRegistryException {
     PortletRegistryReader portletAppRegistryReader = new PortletAppRegistryReader(
         registryLocation);
@@ -51,7 +52,8 @@ public class PortletAppRegistryWriter extends PortletRegistryWriter {
     write(portletAppElementList, portletAppRegistry);
   }
 
-  public void writeDocument(List portletAppElementList)
+  @Override
+  public void writeDocument(List<PortletRegistryElement> portletAppElementList)
       throws PortletRegistryException {
     // TODO: Not in use. Should be removed?
     // PortletRegistryReader portletAppRegistryReader = new
@@ -60,12 +62,9 @@ public class PortletAppRegistryWriter extends PortletRegistryWriter {
     write(portletAppElementList, portletAppRegistry);
   }
 
-  private void write(List portletAppElementList,
+  private void write(List<PortletRegistryElement> portletAppElementList,
       PortletRegistryObject portletAppRegistry) throws PortletRegistryException {
-    int size = portletAppElementList.size();
-    PortletRegistryElement portletApp;
-    for (int i = 0; i < size; i++) {
-      portletApp = (PortletRegistryElement) portletAppElementList.get(i);
+    for (PortletRegistryElement portletApp: portletAppElementList) {
       portletAppRegistry.addRegistryElement(portletApp);
     }
     write(portletAppRegistry);

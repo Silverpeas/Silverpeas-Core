@@ -23,6 +23,11 @@
  */
 package com.sun.portal.portletcontainer.admin;
 
+import com.sun.portal.portletcontainer.admin.registry.PortletAppRegistryContext;
+import com.sun.portal.portletcontainer.admin.registry.PortletWindowPreferenceRegistryContext;
+import com.sun.portal.portletcontainer.admin.registry.PortletWindowRegistryContext;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,11 +35,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-
-import com.sun.portal.portletcontainer.admin.registry.PortletAppRegistryContext;
-import com.sun.portal.portletcontainer.admin.registry.PortletWindowPreferenceRegistryContext;
-import com.sun.portal.portletcontainer.admin.registry.PortletWindowRegistryContext;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
  * PortletRegistryCache maintains the cache of Portlet registry objects.
@@ -200,7 +200,7 @@ public class PortletRegistryCache {
    */
   public static String getMonitoredFileName(String fileName) {
     String registryLocation = null;
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     try {
       registryLocation = PortletRegistryHelper.getRegistryLocation();
     } catch (PortletRegistryException ignored) {

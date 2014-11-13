@@ -34,7 +34,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  */
 public interface PortletAppRegistryContext {
 
-  public List getMarkupTypes(String portletName)
+  public List<String> getMarkupTypes(String portletName)
       throws PortletRegistryException;
 
   public String getDescription(String portletName, String desiredLocale)
@@ -46,15 +46,15 @@ public interface PortletAppRegistryContext {
   public String getTitle(String portletName, String desiredLocales)
       throws PortletRegistryException;
 
-  public List getKeywords(String portletName, String desiredLocale)
+  public List<String> getKeywords(String portletName, String desiredLocale)
       throws PortletRegistryException;
 
   public String getDisplayName(String portletName, String desiredLocale)
       throws PortletRegistryException;
 
-  public Map getRoleMap(String portletName) throws PortletRegistryException;
+  public Map<String, Object> getRoleMap(String portletName) throws PortletRegistryException;
 
-  public Map getUserInfoMap(String portletName) throws PortletRegistryException;
+  public Map<String, Object> getUserInfoMap(String portletName) throws PortletRegistryException;
 
   public void removePortlet(String portletName) throws PortletRegistryException;
 
@@ -64,5 +64,5 @@ public interface PortletAppRegistryContext {
 
   public boolean hasHelp(String portletName) throws PortletRegistryException;
 
-  public List getAvailablePortlets() throws PortletRegistryException;
+  public List<String> getAvailablePortlets() throws PortletRegistryException;
 }

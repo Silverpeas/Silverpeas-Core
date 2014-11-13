@@ -23,18 +23,17 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.admin.PortletRegistryReader;
 import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * PortletAppRegistryContextImpl is a concrete implementation of the PortletAppRegistryContext
@@ -50,27 +49,31 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     portletAppRegistry = portletAppRegistryReader.readDocument();
   }
 
-  public List getMarkupTypes(String portletName) throws PortletRegistryException {
+  @Override
+  public List<String> getMarkupTypes(String portletName) throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map map =
+    Map<String, Object> map =
         portletRegistryElement
         .getCollectionProperty(PortletRegistryTags.SUPPORTED_CONTENT_TYPES_KEY);
-    List markupTypes = null;
+    List<String> markupTypes = null;
     if (map != null)
       markupTypes = mapValuesToList(map);
     return markupTypes;
   }
 
+  @Override
   public String getDescription(String portletName, String desiredLocale)
       throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map map = portletRegistryElement.getCollectionProperty(PortletRegistryTags.DESCRIPTION_MAP_KEY);
+    Map<String, Object> map =
+        portletRegistryElement.getCollectionProperty(PortletRegistryTags.DESCRIPTION_MAP_KEY);
     String description = null;
     if (map != null)
       description = (String) map.get(desiredLocale);
     return description;
   }
 
+  @Override
   public String getShortTitle(String portletName, String desiredLocale)
       throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
@@ -78,25 +81,30 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     return shortTitle;
   }
 
+  @Override
   public String getTitle(String portletName, String desiredLocale) throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
     String title = portletRegistryElement.getStringProperty(PortletRegistryTags.TITLE_KEY);
     return title;
   }
 
-  public List getKeywords(String portletName, String desiredLocale) throws PortletRegistryException {
+  @Override
+  public List<String> getKeywords(String portletName, String desiredLocale)
+      throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map map = portletRegistryElement.getCollectionProperty(PortletRegistryTags.KEYWORDS_KEY);
-    List keywords = null;
+    Map<String, Object> map =
+        portletRegistryElement.getCollectionProperty(PortletRegistryTags.KEYWORDS_KEY);
+    List<String> keywords = null;
     if (map != null)
       keywords = mapValuesToList(map);
     return keywords;
   }
 
+  @Override
   public String getDisplayName(String portletName, String desiredLocale)
       throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map map =
+    Map<String, Object> map =
         portletRegistryElement.getCollectionProperty(PortletRegistryTags.DISPLAY_NAME_MAP_KEY);
     String displayName = null;
     if (map != null)
@@ -104,37 +112,36 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     return displayName;
   }
 
-  public Map getRoleMap(String portletName) throws PortletRegistryException {
+  @Override
+  public Map<String, Object> getRoleMap(String portletName) throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map roleMap = portletRegistryElement.getCollectionProperty(PortletRegistryTags.ROLE_MAP_KEY);
+    Map<String, Object> roleMap =
+        portletRegistryElement.getCollectionProperty(PortletRegistryTags.ROLE_MAP_KEY);
     return roleMap;
   }
 
-  public Map getUserInfoMap(String portletName) throws PortletRegistryException {
+  @Override
+  public Map<String, Object> getUserInfoMap(String portletName) throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map userInfoMap =
+    Map<String, Object> userInfoMap =
         portletRegistryElement.getCollectionProperty(PortletRegistryTags.USER_INFO_MAP_KEY);
     return userInfoMap;
   }
 
+  @Override
   public void removePortlet(String portletName) throws PortletRegistryException {
     // Prepare a list of portlet app that are based on the portletName
-    List portletApps = portletAppRegistry.getRegistryElements();
+    List<PortletRegistryElement> portletApps = portletAppRegistry.getRegistryElements();
     // Maintains a list of portlet apps to be removed
-    List removeablePortletApps = new ArrayList();
-    PortletRegistryElement portletApp;
+    List<PortletRegistryElement> removeablePortletApps = new ArrayList<>();
     boolean remove = false;
-    int size = portletApps.size();
-    for (int i = 0; i < size; i++) {
-      portletApp = (PortletRegistryElement) portletApps.get(i);
+    for (PortletRegistryElement portletApp: portletApps) {
       if (portletApp.getPortletName().equals(portletName)) {
         remove = true;
         removeablePortletApps.add(portletApp);
       }
     }
-    size = removeablePortletApps.size();
-    for (int i = 0; i < size; i++) {
-      portletApp = (PortletRegistryElement) removeablePortletApps.get(i);
+    for (PortletRegistryElement portletApp: removeablePortletApps) {
       portletAppRegistry.removeRegistryElement(portletApp);
     }
     if (remove) {
@@ -142,28 +149,29 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     }
   }
 
+  @Override
   public boolean hasView(String portletName) throws PortletRegistryException {
     return true;
   }
 
+  @Override
   public boolean hasEdit(String portletName) throws PortletRegistryException {
     List<String> list = getSupportedPortletModes(portletName);
     return list.contains("EDIT");
   }
 
+  @Override
   public boolean hasHelp(String portletName) throws PortletRegistryException {
     List<String> list = getSupportedPortletModes(portletName);
     return list.contains("HELP");
   }
 
-  public List getAvailablePortlets() throws PortletRegistryException {
-    List portlets = portletAppRegistry.getRegistryElements();
-    List availablePortlets = new ArrayList();
-    int size = portlets.size();
-    PortletApp portletApp;
+  @Override
+  public List<String> getAvailablePortlets() throws PortletRegistryException {
+    List<PortletRegistryElement> portlets = portletAppRegistry.getRegistryElements();
+    List<String> availablePortlets = new ArrayList<>();
     String portletName;
-    for (int i = 0; i < size; i++) {
-      portletApp = (PortletApp) portlets.get(i);
+    for (PortletRegistryElement portletApp: portlets) {
       portletName = portletApp.getPortletName();
       availablePortlets.add(portletName);
     }
@@ -173,11 +181,12 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
   // TODO - should be based on mime-type
   private List<String> getSupportedPortletModes(String portletName) throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletName);
-    Map map = portletRegistryElement.getCollectionProperty(PortletRegistryTags.SUPPORTS_MAP_KEY);
-    List<String> list = new ArrayList<String>();
-    Set<Map.Entry<String, List<String>>> entries = map.entrySet();
-    for (Map.Entry<String, List<String>> mapEntry : entries) {
-      for (String s : mapEntry.getValue()) {
+    Map<String, Object> map = portletRegistryElement.getCollectionProperty(PortletRegistryTags.SUPPORTS_MAP_KEY);
+    List<String> list = new ArrayList<>();
+    Set<Map.Entry<String, Object>> entries = map.entrySet();
+    for (Map.Entry<String, Object> mapEntry : entries) {
+      List<String> value = (List<String>) mapEntry.getValue();
+      for (String s : value) {
         list.add(s);
       }
     }
@@ -191,12 +200,11 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
     return portletRegistryElement;
   }
 
-  private List mapValuesToList(Map map) {
-    List list = new ArrayList();
-    Set keys = map.keySet();
-    Iterator itr = keys.iterator();
-    while (itr.hasNext()) {
-      list.add(map.get(itr.next()));
+  private List<String> mapValuesToList(Map<String, Object> map) {
+    List<String> list = new ArrayList<>();
+    Set<String> keys = map.keySet();
+    for (String key : keys) {
+      list.add((String) map.get(key));
     }
     return list;
   }
@@ -218,7 +226,7 @@ public class PortletAppRegistryContextImpl implements PortletAppRegistryContext 
   private void writeDocument(PortletRegistryObject portletAppRegistry)
       throws PortletRegistryException {
     PortletRegistryWriter portletAppRegistryWriter = getPortletRegistryWriter();
-    List portletAppElementList = portletAppRegistry.getRegistryElements();
+    List<PortletRegistryElement> portletAppElementList = portletAppRegistry.getRegistryElements();
     try {
       portletAppRegistryWriter.writeDocument(portletAppElementList);
     } catch (Exception e) {

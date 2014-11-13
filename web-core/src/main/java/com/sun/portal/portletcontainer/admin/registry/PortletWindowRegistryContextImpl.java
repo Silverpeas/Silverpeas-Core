@@ -23,9 +23,6 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.portlets.portal.PortletWindowData;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletLang;
@@ -36,6 +33,9 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.admin.PortletRegistryReader;
 import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PortletWindowRegistryContextImpl is a concrete implementation of the PortletWindowRegistryContext
@@ -66,18 +66,16 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
     defaultPortletWindowRegistry = portletWindowRegistryReader.readDocument();
   }
 
-  private List getAllPortletWindows(PortletType portletType, boolean allPortlets)
+  private List<String> getAllPortletWindows(PortletType portletType, boolean allPortlets)
       throws PortletRegistryException {
-    List portletWindows = portletWindowRegistry.getRegistryElements();
-    List visiblePortletWindows = new ArrayList();
+    List<PortletRegistryElement> portletWindows = portletWindowRegistry.getRegistryElements();
+    List<String> visiblePortletWindows = new ArrayList<>();
     if (portletType == null) {
       portletType = PortletType.ALL;
     }
-    int size = portletWindows.size();
-    PortletWindow portletWindow;
     String portletWindowName;
-    for (int i = 0; i < size; i++) {
-      portletWindow = (PortletWindow) portletWindows.get(i);
+    for (PortletRegistryElement portletWindowElt : portletWindows) {
+      PortletWindow portletWindow = (PortletWindow) portletWindowElt;
       portletWindowName = portletWindow.getName();
       boolean isRemote = isRemote(portletWindowName);
       if (portletType.equals(PortletType.ALL)
@@ -92,13 +90,15 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   }
 
   @Override
-  public List getVisiblePortletWindows(PortletType portletType) throws PortletRegistryException {
+  public List<String> getVisiblePortletWindows(PortletType portletType)
+      throws PortletRegistryException {
     // Return only visible portlet windows
     return getAllPortletWindows(portletType, false);
   }
 
   @Override
-  public List getAllPortletWindows(PortletType portletType) throws PortletRegistryException {
+  public List<String> getAllPortletWindows(PortletType portletType)
+      throws PortletRegistryException {
     // Return all portlet windows
     return getAllPortletWindows(portletType, true);
   }
@@ -127,13 +127,11 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
 
   @Override
   public List<EntityID> getEntityIds() throws PortletRegistryException {
-    List portletWindows = portletWindowRegistry.getRegistryElements();
-    List<EntityID> entityIds = new ArrayList();
-    int size = portletWindows.size();
-    PortletWindow portletWindow;
+    List<PortletRegistryElement> portletWindows = portletWindowRegistry.getRegistryElements();
+    List<EntityID> entityIds = new ArrayList<>();
     String portletWindowName;
-    for (int i = 0; i < size; i++) {
-      portletWindow = (PortletWindow) portletWindows.get(i);
+    for (PortletRegistryElement portletWindowElt : portletWindows) {
+      PortletWindow portletWindow = (PortletWindow) portletWindowElt;
       portletWindowName = portletWindow.getName();
       entityIds.add(getEntityId(portletWindow, portletWindowName));
     }
@@ -244,22 +242,17 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   @Override
   public void removePortletWindows(String portletName) throws PortletRegistryException {
     // Prepare a list of portlet windows that are based on the portletName
-    List portletWindows = portletWindowRegistry.getRegistryElements();
+    List<PortletRegistryElement> portletWindows = portletWindowRegistry.getRegistryElements();
     // Maintains a list of portlet windows to be removed
-    List removeablePortletWindows = new ArrayList();
-    PortletRegistryElement portletWindow;
+    List<PortletRegistryElement> removeablePortletWindows = new ArrayList<>();
     boolean remove = false;
-    int size = portletWindows.size();
-    for (int i = 0; i < size; i++) {
-      portletWindow = (PortletRegistryElement) portletWindows.get(i);
+    for (PortletRegistryElement portletWindow : portletWindows) {
       if (portletWindow.getPortletName().equals(portletName)) {
         remove = true;
         removeablePortletWindows.add(portletWindow);
       }
     }
-    size = removeablePortletWindows.size();
-    for (int i = 0; i < size; i++) {
-      portletWindow = (PortletRegistryElement) removeablePortletWindows.get(i);
+    for (PortletRegistryElement portletWindow : removeablePortletWindows) {
       portletWindowRegistry.removeRegistryElement(portletWindow);
     }
     if (remove) {
@@ -268,14 +261,14 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   }
 
   @Override
-  public void movePortletWindows(List portletWindows) throws PortletRegistryException {
-    PortletWindowData window;
-    for (Object portletWindow : portletWindows) {
-      window = (PortletWindowData) portletWindow;
+  public void movePortletWindows(List<PortletWindowData> portletWindows)
+      throws PortletRegistryException {
+    for (PortletWindowData portletWindow : portletWindows) {
       PortletRegistryElement element =
-          portletWindowRegistry.getRegistryElement(window.getPortletWindowName());
-      element.setStringProperty(PortletRegistryTags.WIDTH_KEY, window.getWidth());
-      element.setStringProperty(PortletRegistryTags.ROW_KEY, window.getRowNumber().toString());
+          portletWindowRegistry.getRegistryElement(portletWindow.getPortletWindowName());
+      element.setStringProperty(PortletRegistryTags.WIDTH_KEY, portletWindow.getWidth());
+      element.setStringProperty(PortletRegistryTags.ROW_KEY,
+          portletWindow.getRowNumber().toString());
     }
     writeDocument(portletWindowRegistry);
   }
@@ -309,13 +302,11 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   }
 
   @Override
-  public List getPortletWindows(String portletName) throws PortletRegistryException {
-    List portletWindows = portletWindowRegistry.getRegistryElements();
-    List list = new ArrayList();
-    int size = portletWindows.size();
-    PortletWindow portletWindow;
-    for (int i = 0; i < size; i++) {
-      portletWindow = (PortletWindow) portletWindows.get(i);
+  public List<String> getPortletWindows(String portletName) throws PortletRegistryException {
+    List<PortletRegistryElement> portletWindows = portletWindowRegistry.getRegistryElements();
+    List<String> list = new ArrayList<>();
+    for (PortletRegistryElement portletWindowElt : portletWindows) {
+      PortletWindow portletWindow = (PortletWindow) portletWindowElt;
       if (portletWindow.getPortletName().equals(portletName)) {
         list.add(portletWindow.getName());
       }
@@ -395,7 +386,7 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   private void appendDocument(PortletRegistryElement portletRegistryElement)
       throws PortletRegistryException {
     PortletRegistryWriter portletWindowRegistryWriter = getPortletRegistryWriter(context);
-    List portletWindowElementList = new ArrayList();
+    List<PortletRegistryElement> portletWindowElementList = new ArrayList<>();
     portletWindowElementList.add(portletRegistryElement);
     try {
       portletWindowRegistryWriter.appendDocument(portletWindowElementList);
@@ -407,7 +398,8 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   private void writeDocument(PortletRegistryObject portletWindowRegistry)
       throws PortletRegistryException {
     PortletRegistryWriter portletWindowRegistryWriter = getPortletRegistryWriter(context);
-    List portletWindowElementList = portletWindowRegistry.getRegistryElements();
+    List<PortletRegistryElement> portletWindowElementList =
+        portletWindowRegistry.getRegistryElements();
     try {
       portletWindowRegistryWriter.writeDocument(portletWindowElementList);
     } catch (Exception e) {
@@ -417,13 +409,11 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
 
   @Override
   public List<String> getRemotePortletWindows() throws PortletRegistryException {
-    List portletWindows = portletWindowRegistry.getRegistryElements();
-    List<String> remotePortletWindows = new ArrayList<String>();
-    int size = portletWindows.size();
-    PortletWindow portletWindow;
+    List<PortletRegistryElement> portletWindows = portletWindowRegistry.getRegistryElements();
+    List<String> remotePortletWindows = new ArrayList<>();
     boolean isRemote;
-    for (Object portletWindowObject : portletWindows) {
-      portletWindow = (PortletWindow) portletWindowObject;
+    for (PortletRegistryElement portletWindowObject : portletWindows) {
+      PortletWindow portletWindow = (PortletWindow) portletWindowObject;
       isRemote = Boolean.valueOf(portletWindow.getRemote());
       if (isRemote) {
         remotePortletWindows.add(portletWindow.getName());

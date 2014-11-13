@@ -26,6 +26,7 @@ package com.sun.portal.portletcontainer.context.registry;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.portlets.portal.PortletWindowData;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletLang;
 import com.sun.portal.container.PortletType;
@@ -46,7 +47,7 @@ public interface PortletRegistryContext {
    * @param portletName the name of the portlet
    * @return a <code>List</code> of the markup types.
    */
-  public List getMarkupTypes(String portletName) throws PortletRegistryException;
+  public List<String> getMarkupTypes(String portletName) throws PortletRegistryException;
 
   /**
    * Returns the description for a portlet for a locale as specified in portlet.xml
@@ -80,7 +81,7 @@ public interface PortletRegistryContext {
    * @param desiredLocale the locale
    * @return a <code>List</code> of keywords
    */
-  public List getKeywords(String portletName, String desiredLocale) throws PortletRegistryException;
+  public List<String> getKeywords(String portletName, String desiredLocale) throws PortletRegistryException;
 
   /**
    * Returns the displayname for a portlet for a locale as specified in portlet.xml
@@ -96,14 +97,14 @@ public interface PortletRegistryContext {
    * @param portletName the name of the portlet
    * @return a <code>Map</code> of the roles
    */
-  public Map getRoleMap(String portletName) throws PortletRegistryException;
+  public Map<String, Object> getRoleMap(String portletName) throws PortletRegistryException;
 
   /**
    * Returns the userinfo map for a portlet specified during deploying of the portlet
    * @param portletName the name of the portlet
    * @return a <code>Map</code> of the user information
    */
-  public Map getUserInfoMap(String portletName) throws PortletRegistryException;
+  public Map<String, Object> getUserInfoMap(String portletName) throws PortletRegistryException;
 
   /**
    * Checks whether the portlet supports VIEW mode
@@ -130,7 +131,7 @@ public interface PortletRegistryContext {
    * Returns all the available portlets.
    * @return a <code>List</code> of portlets.
    */
-  public List getAvailablePortlets() throws PortletRegistryException;
+  public List<String> getAvailablePortlets() throws PortletRegistryException;
 
   /**
    * Returns the portletName associated with the portlet window
@@ -144,7 +145,7 @@ public interface PortletRegistryContext {
    * @param portletName the name of the portlet
    * @return a <code>List</code> of portlet windows.
    */
-  public List getPortletWindows(String portletName) throws PortletRegistryException;
+  public List<String> getPortletWindows(String portletName) throws PortletRegistryException;
 
   /**
    * Returns true if the Portlet Window is visible, otherwise returns false.
@@ -160,7 +161,7 @@ public interface PortletRegistryContext {
    * PortletType.LOCAL and PortletType.REMOTE
    * @return a <code>List</code> of the visible portlet windows
    */
-  public List getVisiblePortletWindows(PortletType portletType) throws PortletRegistryException;
+  public List<String> getVisiblePortletWindows(PortletType portletType) throws PortletRegistryException;
 
   /**
    * Returns the portlet windows based on the portlet type. This returns both hidden as well as
@@ -170,7 +171,7 @@ public interface PortletRegistryContext {
    * PortletType.LOCAL and PortletType.REMOTE
    * @return a <code>List</code> of all portlet windows.
    */
-  public List getAllPortletWindows(PortletType portletType) throws PortletRegistryException;
+  public List<String> getAllPortletWindows(PortletType portletType) throws PortletRegistryException;
 
   /**
    * Returns the row number of the portlet window
@@ -194,7 +195,7 @@ public interface PortletRegistryContext {
   public void setWidth(String portletWindowName, String width, String row)
       throws PortletRegistryException;
 
-  public void movePortletWindows(List portletWindows) throws PortletRegistryException;
+  public void movePortletWindows(List<PortletWindowData> portletWindows) throws PortletRegistryException;
 
   /**
    * Returns the entityID for a portlet window
@@ -268,7 +269,7 @@ public interface PortletRegistryContext {
    * @param userName the name of the user
    * @return a <code>Map</code>, the preferences.
    */
-  public Map getPreferences(String portletWindowName, String userName)
+  public Map<String, Object> getPreferences(String portletWindowName, String userName)
       throws PortletRegistryException;
 
   /**
@@ -280,7 +281,7 @@ public interface PortletRegistryContext {
    * @param userName the name of the user
    * @return a <code>Map</code>, the read only information for preferences.
    */
-  public Map getPreferencesReadOnly(String portletWindowName, String userName)
+  public Map<String, Object> getPreferencesReadOnly(String portletWindowName, String userName)
       throws PortletRegistryException;
 
   /**
@@ -291,7 +292,7 @@ public interface PortletRegistryContext {
    * @param prefMap the preferences to be saved
    */
   public void savePreferences(String portletName, String portletWindowName, String userName,
-      Map prefMap) throws PortletRegistryException;
+      Map<String, Object> prefMap) throws PortletRegistryException;
 
   /**
    * Returns the portletID for a portlet window

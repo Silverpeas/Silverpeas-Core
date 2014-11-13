@@ -48,7 +48,7 @@ public interface PortletRegistryElement {
 
   /**
    * Set the value of the "portletName" attribute of the registry element.
-   * @param name the value of the "portletName" attribute of the registry element.
+   * @param portletName the value of the "portletName" attribute of the registry element.
    */
   public void setPortletName(String portletName);
 
@@ -60,7 +60,7 @@ public interface PortletRegistryElement {
 
   /**
    * Set the value of the "userName" attribute of the registry element.
-   * @param name the value of the "userName" attribute of the registry element.
+   * @param userName the value of the "userName" attribute of the registry element.
    */
   public void setUserName(String userName);
 
@@ -72,7 +72,7 @@ public interface PortletRegistryElement {
 
   /**
    * Set the value of the "isRemote" attribute of the registry element.
-   * @param name the value of the "isRemote" attribute of the registry element.
+   * @param isRemote the value of the "isRemote" attribute of the registry element.
    */
   public void setRemote(String isRemote);
 
@@ -89,7 +89,7 @@ public interface PortletRegistryElement {
    * @param key the value for the "name" attribute of the Collection tag.
    * @param values represented by "value" attribute of the String tags.
    */
-  public void setCollectionProperty(String key, List values)
+  public void setCollectionProperty(String key, List<String> values)
       throws PortletRegistryException;
 
   /**
@@ -100,7 +100,7 @@ public interface PortletRegistryElement {
    * @param key the value for the "name" attribute of the Collection tag.
    * @param values represented by "name" and "value" attribute of the String tags.
    */
-  public void setCollectionProperty(String key, Map values)
+  public void setCollectionProperty(String key, Map<String, Object> values)
       throws PortletRegistryException;
 
   /**
@@ -112,12 +112,8 @@ public interface PortletRegistryElement {
    * "value" attribute as value.
    * @return a <code>Map</code>, the value of attributes "name" and "value" of String tag.
    */
-  public Map getCollectionProperty(String key) throws PortletRegistryException;
+  public Map<String, Object> getCollectionProperty(String key) throws PortletRegistryException;
 
-  /**
-   * Set the value of the "name" attribute of the String tag.
-   * @param name the value represented by the "name" attribute for the String tag
-   */
   public void setStringProperty(String key, String value)
       throws PortletRegistryException;
 

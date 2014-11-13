@@ -43,7 +43,8 @@ public class PortletWindowRegistryWriter extends PortletRegistryWriter {
         context);
   }
 
-  public void appendDocument(List portletWindowElementList)
+  @Override
+  public void appendDocument(List<PortletRegistryElement> portletWindowElementList)
       throws PortletRegistryException {
     PortletRegistryReader portletWindowRegistryReader = new PortletWindowRegistryReader(
         registryLocation, context);
@@ -52,7 +53,8 @@ public class PortletWindowRegistryWriter extends PortletRegistryWriter {
     write(portletWindowElementList, portletWindowRegistry);
   }
 
-  public void writeDocument(List portletWindowElementList)
+  @Override
+  public void writeDocument(List<PortletRegistryElement> portletWindowElementList)
       throws PortletRegistryException {
     // TODO: Not in use. Should be removed?
     // PortletRegistryReader portletWindowRegistryReader = new
@@ -61,13 +63,10 @@ public class PortletWindowRegistryWriter extends PortletRegistryWriter {
     write(portletWindowElementList, portletWindowRegistry);
   }
 
-  private void write(List portletWindowElementList,
+  private void write(List<PortletRegistryElement> portletWindowElementList,
       PortletRegistryObject portletWindowRegistry)
       throws PortletRegistryException {
-    int size = portletWindowElementList.size();
-    PortletRegistryElement portletWindow;
-    for (int i = 0; i < size; i++) {
-      portletWindow = (PortletRegistryElement) portletWindowElementList.get(i);
+    for(PortletRegistryElement portletWindow: portletWindowElementList) {
       portletWindowRegistry.addRegistryElement(portletWindow);
     }
     write(portletWindowRegistry);

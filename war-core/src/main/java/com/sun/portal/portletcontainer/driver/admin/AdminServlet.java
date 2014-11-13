@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.portlets.portal.DesktopMessages;
+import com.silverpeas.portlets.portal.PortletWindowData;
 import com.silverpeas.portlets.portal.PortletWindowDataImpl;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -303,7 +304,7 @@ public class AdminServlet extends HttpServlet {
     String column1 = request.getParameter("column1");
     String column2 = request.getParameter("column2");
 
-    List<PortletWindowDataImpl> windows = new ArrayList<PortletWindowDataImpl>();
+    List<PortletWindowData> windows = new ArrayList<>();
     List<String> portletWindowNames = portletAdminData.getPortletWindowNames();
 
     StringTokenizer tokenizer = new StringTokenizer(column1, ",");

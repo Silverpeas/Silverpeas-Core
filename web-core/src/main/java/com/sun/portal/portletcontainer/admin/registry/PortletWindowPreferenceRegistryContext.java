@@ -32,17 +32,17 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  * preference registry. This includes information about portlet preferences.
  */
 public interface PortletWindowPreferenceRegistryContext {
-  public Map getPreferences(String portletWindowName, String userName)
+  public Map<String, Object> getPreferences(String portletWindowName, String userName)
       throws PortletRegistryException;
 
-  public Map getPreferencesReadOnly(String portletWindowName, String userName)
+  public Map<String, Object> getPreferencesReadOnly(String portletWindowName, String userName)
       throws PortletRegistryException;
 
   public void savePreferences(String portletName, String portletWindowName,
-      String userName, Map prefMap) throws PortletRegistryException;
+      String userName, Map<String, Object> prefMap) throws PortletRegistryException;
 
   public void savePreferences(String portletName, String portletWindowName,
-      String userName, Map prefMap, boolean readOnly)
+      String userName, Map<String, Object> prefMap, boolean readOnly)
       throws PortletRegistryException;
 
   public void removeWindowPreference(String portletWindowName)

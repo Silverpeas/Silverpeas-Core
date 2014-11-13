@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 
 import com.silverpeas.portlets.portal.PortletAppData;
 import com.silverpeas.portlets.portal.PortletAppDataImpl;
+import com.silverpeas.portlets.portal.PortletWindowData;
 import org.silverpeas.util.StringUtil;
 import com.sun.portal.container.EntityID;
 import com.sun.portal.container.PortletType;
@@ -111,7 +112,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
 
   @Override
   public List<PortletAppData> getPortlets(String locale) {
-    List<PortletAppData> portlets = new ArrayList<PortletAppData>();
+    List<PortletAppData> portlets = new ArrayList<>();
 
     List<String> portletNames = getPortletNames();
     if (portletNames != null) {
@@ -196,7 +197,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
   }
 
   @Override
-  public List getPortletWindowNames() {
+  public List<String> getPortletWindowNames() {
     try {
       return portletRegistryContext.getAllPortletWindows(PortletType.LOCAL);
     } catch (PortletRegistryException pre) {
@@ -247,7 +248,7 @@ public class PortletAdminDataImpl implements PortletAdminData, Serializable {
   }
 
   @Override
-  public boolean movePortletWindows(List portletWindows) throws Exception {
+  public boolean movePortletWindows(List<PortletWindowData> portletWindows) throws Exception {
     portletRegistryContext.movePortletWindows(portletWindows);
     return true;
   }

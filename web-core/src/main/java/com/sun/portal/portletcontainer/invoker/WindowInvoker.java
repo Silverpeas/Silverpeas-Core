@@ -1150,7 +1150,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
    * A provider can specify on-screen strings to be localized in a resource bundle file, as
    * described in the Java <code>ResourceBundle</code> class.
    * @param base a specified <code>ResourceBundle</code> name.
-   * @see java.util.ResourceBundle.
+   * @see java.util.ResourceBundle
    * @return <code>ResourceBundle</code>.
    */
   public ResourceBundle getResourceBundle(String base) {

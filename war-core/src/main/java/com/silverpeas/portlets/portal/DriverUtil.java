@@ -228,7 +228,7 @@ public class DriverUtil {
 
   private static void removeUnusedObjects(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
-    List undeployedPortlets = null;
+    List<String> undeployedPortlets = null;
     PortletUndeployerInfo portletUndeployerInfo;
     try {
       portletUndeployerInfo = new PortletUndeployerInfo();

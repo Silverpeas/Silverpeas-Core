@@ -23,10 +23,10 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
-import java.util.Map;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.util.Map;
 
 /**
  * PortletWindowPreference represents the PortletWindowPreference Element in
@@ -37,7 +37,7 @@ public class PortletWindowPreference extends AbstractPortletRegistryElement {
   }
 
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append("PortletName:");
     buffer.append(getPortletName());
     buffer.append(";Name:");
@@ -51,12 +51,12 @@ public class PortletWindowPreference extends AbstractPortletRegistryElement {
 
   protected void populateValues(Element portletWindowPrefTag) {
     // Get the attributes for PortletWindowPreference Tag.
-    Map portletWindowPreferenceAttributes = XMLDocumentHelper
+    Map<String, String> portletWindowPreferenceAttributes = XMLDocumentHelper
         .createAttributeTable(portletWindowPrefTag);
-    setName((String) portletWindowPreferenceAttributes.get(NAME_KEY));
-    setPortletName((String) portletWindowPreferenceAttributes
+    setName(portletWindowPreferenceAttributes.get(NAME_KEY));
+    setPortletName(portletWindowPreferenceAttributes
         .get(PORTLET_NAME_KEY));
-    setUserName((String) portletWindowPreferenceAttributes.get(USER_NAME_KEY));
+    setUserName(portletWindowPreferenceAttributes.get(USER_NAME_KEY));
     super.populateValues(portletWindowPrefTag);
   }
 

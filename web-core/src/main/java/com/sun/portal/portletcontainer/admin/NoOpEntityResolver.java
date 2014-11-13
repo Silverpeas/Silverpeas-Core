@@ -34,6 +34,8 @@ import org.xml.sax.InputSource;
  * network disabled environment.
  */
 public class NoOpEntityResolver implements EntityResolver {
+
+  @Override
   public InputSource resolveEntity(String publicId, String systemId) {
     return new InputSource(new StringReader(""));
   }

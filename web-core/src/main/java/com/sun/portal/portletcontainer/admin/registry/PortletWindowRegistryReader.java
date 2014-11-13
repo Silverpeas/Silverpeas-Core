@@ -37,6 +37,7 @@ public class PortletWindowRegistryReader extends PortletRegistryReader {
         context);
   }
 
+  @Override
   public PortletRegistryObject create() {
     return new PortletWindowRegistry();
   }

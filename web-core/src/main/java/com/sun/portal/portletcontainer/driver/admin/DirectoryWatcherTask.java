@@ -53,6 +53,7 @@ public class DirectoryWatcherTask extends TimerTask {
     if (fileFilter == null) {
       filter = new FileFilter() {
         // Default FileFilter accepts all files.
+        @Override
         public boolean accept(File pathname) {
           return true;
         }
@@ -62,6 +63,7 @@ public class DirectoryWatcherTask extends TimerTask {
     }
   }
 
+  @Override
   public void run() {
     File[] fileArray = new File(directoryToWatch).listFiles(filter);
     if (fileArray != null) {

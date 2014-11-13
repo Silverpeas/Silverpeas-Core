@@ -43,37 +43,38 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 public class PortletWindowRegistry implements PortletRegistryTags, PortletRegistryObject {
 
   private String version;
-  private Map portletWindowTable;
-  private List portletWindowList;
+  private Map<String, PortletRegistryElement> portletWindowTable;
+  private List<PortletRegistryElement> portletWindowList;
 
   public PortletWindowRegistry() {
-    portletWindowTable = new LinkedHashMap();
-    portletWindowList = new ArrayList();
+    portletWindowTable = new LinkedHashMap<>();
+    portletWindowList = new ArrayList<>();
   }
 
-  public Map getPortletWindowRegistryTable() {
-    return this.portletWindowTable;
-  }
-
+  @Override
   public void read(Document document) throws PortletRegistryException {
     Element root = PortletRegistryHelper.getRootElement(document);
     if (root != null)
       populate(root);
   }
 
+  @Override
   public void addRegistryElement(PortletRegistryElement portletWindow) {
     portletWindowTable.put(portletWindow.getName(), portletWindow);
     portletWindowList.add(portletWindow);
   }
 
+  @Override
   public PortletRegistryElement getRegistryElement(String name) {
-    return (PortletRegistryElement) portletWindowTable.get(name);
+    return portletWindowTable.get(name);
   }
 
-  public List getRegistryElements() {
+  @Override
+  public List<PortletRegistryElement> getRegistryElements() {
     return this.portletWindowList;
   }
 
+  @Override
   public boolean removeRegistryElement(PortletRegistryElement portletWindow) {
     portletWindowTable.remove(portletWindow.getName());
     return portletWindowList.remove(portletWindow);
@@ -81,21 +82,17 @@ public class PortletWindowRegistry implements PortletRegistryTags, PortletRegist
 
   private void populate(Element root) {
     // Get the attributes for PortletWindowRegistry Tag.
-    Map portletWindowRegistryAttributes = XMLDocumentHelper
+    Map<String, String> portletWindowRegistryAttributes = XMLDocumentHelper
         .createAttributeTable(root);
-    setVersion((String) portletWindowRegistryAttributes
-        .get(PortletRegistryTags.VERSION_KEY));
+    setVersion(portletWindowRegistryAttributes.get(PortletRegistryTags.VERSION_KEY));
     // Get a list of PortletWindow tags and populate values from it.
-    List portletWindowTags = XMLDocumentHelper.createElementList(root);
-    int numOfPortletWindowTags = portletWindowTags.size();
+    List<Element> portletWindowTags = XMLDocumentHelper.createElementList(root);
     PortletWindow portletWindow;
-    for (int i = 0; i < numOfPortletWindowTags; i++) {
-      Element portletWindowTag = (Element) portletWindowTags.get(i);
+    for (Element portletWindowTag: portletWindowTags) {
       portletWindow = new PortletWindow();
       portletWindow.populateValues(portletWindowTag);
       addRegistryElement(portletWindow);
     }
-    // System.out.println(portletWindowTable);
   }
 
   public String getVersion() {
@@ -108,17 +105,16 @@ public class PortletWindowRegistry implements PortletRegistryTags, PortletRegist
     this.version = version;
   }
 
+  @Override
   public void write(Document document) {
     Element rootTag = XMLDocumentHelper.createElement(document,
         PORTLET_WINDOW_REGISTRY_TAG);
     // Add the atribute to the child
     rootTag.setAttribute(VERSION_KEY, getVersion());
     document.appendChild(rootTag);
-    Iterator itr = portletWindowTable.values().iterator();
-    PortletWindow portletWindow;
     int newRow = -1;
-    while (itr.hasNext()) {
-      portletWindow = (PortletWindow) itr.next();
+    for (PortletRegistryElement portletWindowElt: portletWindowTable.values()) {
+      PortletWindow portletWindow = (PortletWindow) portletWindowElt;
       // Get the new row number.
       int row = portletWindow.getRow();
       if (row == -1) {

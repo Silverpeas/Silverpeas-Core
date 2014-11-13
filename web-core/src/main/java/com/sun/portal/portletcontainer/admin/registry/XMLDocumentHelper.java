@@ -62,8 +62,8 @@ public class XMLDocumentHelper {
     return null;
   }
 
-  protected static List createElementList(Element element) {
-    List elementList = new ArrayList();
+  protected static List<Element> createElementList(Element element) {
+    List<Element> elementList = new ArrayList<>();
 
     NodeList childNodes = element.getChildNodes();
     int numChildren = childNodes.getLength();
@@ -73,14 +73,14 @@ public class XMLDocumentHelper {
       if (childNode.getNodeType() != Node.ELEMENT_NODE) {
         continue;
       }
-      elementList.add(childNode);
+      elementList.add((Element)childNode);
     }
 
     return elementList;
   }
 
-  protected static Map createAttributeTable(Element e) {
-    Map attributeTable = new HashMap();
+  protected static Map<String, String> createAttributeTable(Element e) {
+    Map<String, String> attributeTable = new HashMap<>();
     NamedNodeMap attrs = e.getAttributes();
     if (attrs != null) {
       int numAttrs = attrs.getLength();

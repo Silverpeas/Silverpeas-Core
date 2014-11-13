@@ -23,11 +23,6 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
@@ -35,6 +30,11 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryReader;
 import com.sun.portal.portletcontainer.admin.PortletRegistryWriter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * PortletWindowPreferenceRegistryContextImpl is a concrete implementation of the
@@ -72,28 +72,30 @@ public class PortletWindowPreferenceRegistryContextImpl implements
         .readDocument();
   }
 
-  public Map getPreferencesReadOnly(String portletWindowName, String userName)
+  @Override
+  public Map<String, Object> getPreferencesReadOnly(String portletWindowName, String userName)
       throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getDefaultRegistryElement(portletWindowName
         + getDefaultUserName());
-    Map map = portletRegistryElement
+    Map<String, Object> map = portletRegistryElement
         .getCollectionProperty(PortletRegistryTags.PREFERENCE_READ_ONLY_KEY);
     return map;
   }
 
-  public Map getPreferences(String portletWindowName, String userName)
+  @Override
+  public Map<String, Object> getPreferences(String portletWindowName, String userName)
       throws PortletRegistryException {
     // PortletRegistryElement predefinedPortletRegistryElement =
     // getDefaultRegistryElement(portletWindowName+getDefaultUserName());
     PortletRegistryElement predefinedPortletRegistryElement = null;
-    Map predefinedPrefMap = null;
+    Map<String, Object> predefinedPrefMap = null;
     if (predefinedPortletRegistryElement != null) {
       predefinedPrefMap = predefinedPortletRegistryElement
           .getCollectionProperty(PortletRegistryTags.PREFERENCE_PROPERTIES_KEY);
     }
     PortletRegistryElement userPortletRegistryElement = portletWindowPreferenceRegistry
         .getRegistryElement(portletWindowName + userName);
-    Map tempUserPrefMap = null;
+    Map<String, Object> tempUserPrefMap = null;
     if (userPortletRegistryElement != null) {
       tempUserPrefMap = userPortletRegistryElement
           .getCollectionProperty(PortletRegistryTags.PREFERENCE_PROPERTIES_KEY);
@@ -101,11 +103,11 @@ public class PortletWindowPreferenceRegistryContextImpl implements
     // The Pref Map of the user has the same content as that of the predefined
     // map
     // And its overwritten by user customizations
-    Map userPrefMap;
+    Map<String, Object> userPrefMap;
     if (predefinedPrefMap != null) {
-      userPrefMap = new HashMap(predefinedPrefMap);
+      userPrefMap = new HashMap<>(predefinedPrefMap);
     } else {
-      userPrefMap = new HashMap();
+      userPrefMap = new HashMap<>();
     }
 
     if (tempUserPrefMap != null) {
@@ -114,22 +116,24 @@ public class PortletWindowPreferenceRegistryContextImpl implements
     return userPrefMap;
   }
 
-  public void savePreferences(String portletName, String portletWindowName,
-      String userName, Map prefMap) throws PortletRegistryException {
+  @Override
+  public void savePreferences(String portletName, String portletWindowName, String userName,
+      Map<String, Object> prefMap) throws PortletRegistryException {
     savePreferences(portletName, portletWindowName, userName, prefMap, false);
   }
 
-  public void savePreferences(String portletName, String portletWindowName,
-      String userName, Map prefMap, boolean readOnly)
+  @Override
+  public void savePreferences(String portletName, String portletWindowName, String userName,
+      Map<String, Object> prefMap, boolean readOnly)
       throws PortletRegistryException {
     // if readOnly save readOnly preferences also
-    Map readOnlyMap = null;
+    Map<String, Object> readOnlyMap = null;
     if (readOnly) {
       readOnlyMap = getPreferencesReadOnly(portletName, userName);
     }
     PortletRegistryElement userPortletRegistryElement = portletWindowPreferenceRegistry
         .getRegistryElement(portletWindowName + userName);
-    Map userPrefMap = null;
+    Map<String, Object> userPrefMap = null;
     if (userPortletRegistryElement == null) {
       userPortletRegistryElement = new PortletWindowPreference();
       userPortletRegistryElement.setName(portletWindowName);
@@ -141,7 +145,7 @@ public class PortletWindowPreferenceRegistryContextImpl implements
     }
     // If there is an exisiting content, override it with fresh content
     if (userPrefMap == null) {
-      userPrefMap = new HashMap();
+      userPrefMap = new HashMap<>();
     }
     userPrefMap.putAll(prefMap);
     userPortletRegistryElement.setCollectionProperty(
@@ -153,29 +157,23 @@ public class PortletWindowPreferenceRegistryContextImpl implements
     appendDocument(userPortletRegistryElement);
   }
 
+  @Override
   public void removeWindowPreference(String portletWindowName)
       throws PortletRegistryException {
     // Prepare a list of portlet window preference that are based on the
     // portletName
-    List portletWindowPreferences = portletWindowPreferenceRegistry
+    List<PortletRegistryElement> portletWindowPreferences = portletWindowPreferenceRegistry
         .getRegistryElements();
     // Maintains a list of portlet window preferences to be removed
-    List removeablePortletWindowPreferences = new ArrayList();
-    PortletRegistryElement portletWindowPreference;
+    List<PortletRegistryElement> removeablePortletWindowPreferences = new ArrayList<>();
     boolean remove = false;
-    int size = portletWindowPreferences.size();
-    for (int i = 0; i < size; i++) {
-      portletWindowPreference = (PortletRegistryElement) portletWindowPreferences
-          .get(i);
+    for (PortletRegistryElement portletWindowPreference : portletWindowPreferences) {
       if (portletWindowPreference.getName().equals(portletWindowName)) {
         remove = true;
         removeablePortletWindowPreferences.add(portletWindowPreference);
       }
     }
-    size = removeablePortletWindowPreferences.size();
-    for (int i = 0; i < size; i++) {
-      portletWindowPreference = (PortletRegistryElement) removeablePortletWindowPreferences
-          .get(i);
+    for (PortletRegistryElement portletWindowPreference : removeablePortletWindowPreferences) {
       portletWindowPreferenceRegistry
           .removeRegistryElement(portletWindowPreference);
     }
@@ -184,29 +182,23 @@ public class PortletWindowPreferenceRegistryContextImpl implements
     }
   }
 
+  @Override
   public void removePreferences(String portletName)
       throws PortletRegistryException {
     // Prepare a list of portlet window preference that are based on the
     // portletName
-    List portletWindowPreferences = portletWindowPreferenceRegistry
+    List<PortletRegistryElement> portletWindowPreferences = portletWindowPreferenceRegistry
         .getRegistryElements();
     // Maintains a list of portlet window preferences to be removed
-    List removeablePortletWindowPreferences = new ArrayList();
-    PortletRegistryElement portletWindowPreference;
+    List<PortletRegistryElement> removeablePortletWindowPreferences = new ArrayList<>();
     boolean remove = false;
-    int size = portletWindowPreferences.size();
-    for (int i = 0; i < size; i++) {
-      portletWindowPreference = (PortletRegistryElement) portletWindowPreferences
-          .get(i);
+    for (PortletRegistryElement portletWindowPreference : portletWindowPreferences) {
       if (portletWindowPreference.getPortletName().equals(portletName)) {
         remove = true;
         removeablePortletWindowPreferences.add(portletWindowPreference);
       }
     }
-    size = removeablePortletWindowPreferences.size();
-    for (int i = 0; i < size; i++) {
-      portletWindowPreference = (PortletRegistryElement) removeablePortletWindowPreferences
-          .get(i);
+    for (PortletRegistryElement portletWindowPreference : removeablePortletWindowPreferences) {
       portletWindowPreferenceRegistry
           .removeRegistryElement(portletWindowPreference);
     }
@@ -245,7 +237,7 @@ public class PortletWindowPreferenceRegistryContextImpl implements
 
   private void appendDocument(PortletRegistryElement portletRegistryElement)
       throws PortletRegistryException {
-    List portletWindowPreferenceElementList = new ArrayList();
+    List<PortletRegistryElement> portletWindowPreferenceElementList = new ArrayList<>();
     portletWindowPreferenceElementList.add(portletRegistryElement);
     PortletRegistryWriter portletWindowPreferenceRegistryWriter = getPortletRegistryWriter();
     try {
@@ -260,8 +252,8 @@ public class PortletWindowPreferenceRegistryContextImpl implements
       PortletRegistryObject portletWindowPreferenceRegistry)
       throws PortletRegistryException {
     PortletRegistryWriter portletWindowPreferenceRegistryWriter = getPortletRegistryWriter();
-    List portletWindowPreferenceElementList = portletWindowPreferenceRegistry
-        .getRegistryElements();
+    List<PortletRegistryElement> portletWindowPreferenceElementList =
+        portletWindowPreferenceRegistry.getRegistryElements();
     try {
       portletWindowPreferenceRegistryWriter
           .writeDocument(portletWindowPreferenceElementList);

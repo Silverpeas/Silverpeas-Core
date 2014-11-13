@@ -55,7 +55,7 @@ public class PortletWindow extends AbstractPortletRegistryElement {
   }
 
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append("PortletName:");
     buffer.append(getPortletName());
     buffer.append(";Name:");
@@ -69,12 +69,12 @@ public class PortletWindow extends AbstractPortletRegistryElement {
 
   protected void populateValues(Element portletWindowTag) {
     // Get the attributes for PortletWindow Tag.
-    Map portletWindowAttributes = XMLDocumentHelper
+    Map<String, String> portletWindowAttributes = XMLDocumentHelper
         .createAttributeTable(portletWindowTag);
-    setName((String) portletWindowAttributes.get(NAME_KEY));
-    setPortletName((String) portletWindowAttributes.get(PORTLET_NAME_KEY));
-    setRemote((String) portletWindowAttributes.get(REMOTE_KEY));
-    setLang((String) portletWindowAttributes.get(LANG));
+    setName(portletWindowAttributes.get(NAME_KEY));
+    setPortletName(portletWindowAttributes.get(PORTLET_NAME_KEY));
+    setRemote(portletWindowAttributes.get(REMOTE_KEY));
+    setLang(portletWindowAttributes.get(LANG));
     super.populateValues(portletWindowTag);
   }
 

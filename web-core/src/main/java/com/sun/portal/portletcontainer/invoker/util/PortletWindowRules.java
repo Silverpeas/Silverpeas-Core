@@ -53,13 +53,13 @@ public class PortletWindowRules {
    */
   public final static int NOT_DEFINED = -1;
 
-  private static final Map windowStateMap = getWindowStateMap();
-  private static final Map windowStateReverseMap = getWindowStateReverseMap();
+  private static final Map<Integer, ChannelState> windowStateMap = getWindowStateMap();
+  private static final Map<ChannelState, Integer> windowStateReverseMap = getWindowStateReverseMap();
 
-  private static List portletWindowModeALL = new ArrayList();
-  private static List portletWindowModeV = new ArrayList();
-  private static List windowStateMN = new ArrayList();
-  private static List windowStateALL = new ArrayList();
+  private static List<ChannelMode> portletWindowModeALL = new ArrayList<>();
+  private static List<ChannelMode> portletWindowModeV = new ArrayList<>();
+  private static List<ChannelState> windowStateMN = new ArrayList<>();
+  private static List<ChannelState> windowStateALL = new ArrayList<>();
 
   static {
     portletWindowModeALL.add(ChannelMode.VIEW);
@@ -79,8 +79,8 @@ public class PortletWindowRules {
 
   }
 
-  private static Map getWindowStateMap() {
-    Map windowStateMap = new HashMap();
+  private static Map<Integer, ChannelState> getWindowStateMap() {
+    Map<Integer, ChannelState> windowStateMap = new HashMap<>();
 
     windowStateMap.put(Integer.valueOf(MINIMIZE), ChannelState.MINIMIZED);
     windowStateMap.put(Integer.valueOf(MAXIMIZE), ChannelState.MAXIMIZED);
@@ -89,9 +89,9 @@ public class PortletWindowRules {
 
   }
 
-  private static Map getWindowStateReverseMap() {
+  private static Map<ChannelState, Integer> getWindowStateReverseMap() {
 
-    Map windowStateReverseMap = new HashMap();
+    Map<ChannelState, Integer> windowStateReverseMap = new HashMap<>();
     windowStateReverseMap.put(ChannelState.MINIMIZED, Integer.valueOf(MINIMIZE));
     windowStateReverseMap.put(ChannelState.MAXIMIZED, Integer.valueOf(MAXIMIZE));
     windowStateReverseMap.put(ChannelState.NORMAL, Integer.valueOf(NORMAL));
@@ -99,7 +99,7 @@ public class PortletWindowRules {
     return windowStateReverseMap;
   }
 
-  public static List getAllowablePortletWindowModes(ChannelMode mode,
+  public static List<ChannelMode> getAllowablePortletWindowModes(ChannelMode mode,
       boolean authless) {
 
     if (mode == null) {
@@ -123,7 +123,7 @@ public class PortletWindowRules {
     return portletWindowModeALL;
   }
 
-  public static List getDefaultAllowableWindowStates(ChannelMode mode) {
+  public static List<ChannelState> getDefaultAllowableWindowStates(ChannelMode mode) {
 
     if (mode == null) {
       throw new RuntimeException(
@@ -166,11 +166,10 @@ public class PortletWindowRules {
    * Convert the window state representation used by the provider layer to the representation
    * understood by the container layer
    */
-  public static List mapToStandards(int[] portalWindowStates) {
-    List newList = new ArrayList();
+  public static List<ChannelState> mapToStandards(int[] portalWindowStates) {
+    List<ChannelState> newList = new ArrayList<>();
     for (int i = 0; portalWindowStates != null && i < portalWindowStates.length; i++) {
-      ChannelState winState = (ChannelState) windowStateMap.get(
-          Integer.valueOf(portalWindowStates[i]));
+      ChannelState winState = windowStateMap.get(Integer.valueOf(portalWindowStates[i]));
       if (winState != null) {
         newList.add(winState);
       }
@@ -184,8 +183,7 @@ public class PortletWindowRules {
    * understood by the container layer
    */
   public static ChannelState mapToStandards(int portalWindowState) {
-    ChannelState winState = (ChannelState) windowStateMap.get(Integer.valueOf(
-        portalWindowState));
+    ChannelState winState = windowStateMap.get(Integer.valueOf(portalWindowState));
     return winState;
   }
 

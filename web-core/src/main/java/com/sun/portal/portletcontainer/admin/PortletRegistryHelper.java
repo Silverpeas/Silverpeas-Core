@@ -24,12 +24,14 @@
 package com.sun.portal.portletcontainer.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.portal.portletcontainer.admin.registry.PortletRegistryTags;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.ResourceLocator;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,17 +43,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import org.silverpeas.util.ResourceLocator;
-import com.sun.portal.portletcontainer.admin.registry.PortletRegistryTags;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
-import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
+import java.io.File;
 import java.io.FileOutputStream;
-import org.apache.commons.lang3.CharEncoding;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * PortletRegistryHelper is a Helper class to write to and read from the portlet registry xml files.
@@ -218,7 +216,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
   }
 
   public static String getUpdatedAbsoluteWarFileName(String warFileName) {
-    StringBuffer warFileLocation = new StringBuffer();
+    StringBuilder warFileLocation = new StringBuilder();
     try {
       warFileLocation.append(PortletRegistryHelper.getWarFileLocation());
     } catch (PortletRegistryException pre) {

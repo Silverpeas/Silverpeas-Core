@@ -26,6 +26,7 @@ package com.sun.portal.portletcontainer.driver.admin;
 import java.util.List;
 
 import com.silverpeas.portlets.portal.PortletAppData;
+import com.silverpeas.portlets.portal.PortletWindowData;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
@@ -59,7 +60,7 @@ public interface PortletAdminData {
   public boolean modifyPortletWindow(String portletWindowName, String width, boolean visible,
       String row) throws Exception;
 
-  public boolean movePortletWindows(List portletWindows) throws Exception;
+  public boolean movePortletWindows(List<PortletWindowData> portletWindows) throws Exception;
 
   public boolean isVisible(String portletWindowName) throws Exception;
 

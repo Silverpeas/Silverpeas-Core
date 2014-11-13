@@ -72,13 +72,13 @@ public abstract class PortletRegistryWriter {
    * Appends contents in the list to the specified registry xml file in the file system.
    * @param portletRegistryElementList a <code>List</code> of Portlet registry elements
    */
-  public abstract void appendDocument(List portletRegistryElementList)
+  public abstract void appendDocument(List<PortletRegistryElement> portletRegistryElementList)
       throws PortletRegistryException;
 
   /**
    * Writes the contents in the list to the specified registry xml file in the file system.
    * @param portletRegistryElementList a <code>List</code> of Portlet registry elements
    */
-  public abstract void writeDocument(List portletRegistryElementList)
+  public abstract void writeDocument(List<PortletRegistryElement> portletRegistryElementList)
       throws PortletRegistryException;
 }

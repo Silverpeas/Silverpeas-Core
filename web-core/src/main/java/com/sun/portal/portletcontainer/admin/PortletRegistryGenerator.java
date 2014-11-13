@@ -91,9 +91,9 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
   private String portletAppName;
   private String warName;
   private Properties configProps = null;
-  private List portletAppElementList;
-  private List portletWindowElementList;
-  private List portletWindowPreferenceElementList;
+  private List<PortletRegistryElement> portletAppElementList;
+  private List<PortletRegistryElement> portletWindowElementList;
+  private List<PortletRegistryElement> portletWindowPreferenceElementList;
 
   // Create a logger for this class
   private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
@@ -122,9 +122,9 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     return in;
   }
 
-  private List getWebAppRoles(JarFile jar) throws Exception {
+  private List<String> getWebAppRoles(JarFile jar) throws Exception {
     InputStream webXMLStream = null;
-    List roles = new ArrayList();
+    List<String> roles = new ArrayList<>();
     try {
       ZipEntry webXMLEntry = jar.getEntry(WEB_INF_PREFIX + WEB_XML);
       webXMLStream = jar.getInputStream(webXMLEntry);
@@ -226,14 +226,13 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
   private void createPortletRegistryElements(Properties roleProperties,
       Properties userInfoProperties, List webAppRoles, PortletLang portletLang)
       throws PortletRegistryException {
-    List portletDescriptors = portletsDescriptor.getPortletDescriptors();
+    List<PortletDescriptor> portletDescriptors = portletsDescriptor.getPortletDescriptors();
     PortletRegistryElement portletApp, portletWindow, portletWindowPreference;
-    int size = portletDescriptors.size();
-    if (size == 0) {
+    if (portletDescriptors.isEmpty()) {
       Object[] tokens = { "portlet.xml" };
       throw new PortletRegistryException("invalidWar", tokens);
     }
-    for (int i = 0; i < portletDescriptors.size(); i++) {
+    for (PortletDescriptor portletDescriptor: portletDescriptors) {
       // Instantiate the objects required to write to the registry files
       portletApp = new PortletApp();
       portletWindow = new PortletWindow();
@@ -243,7 +242,6 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       portletWindowElementList.add(portletWindow);
       portletWindowPreferenceElementList.add(portletWindowPreference);
 
-      PortletDescriptor portletDescriptor = (PortletDescriptor) portletDescriptors.get(i);
       String portletName = portletDescriptor.getPortletName();
       logger.log(Level.FINE, "PSPL_CSPPAM0007", portletName);
 
@@ -297,8 +295,8 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       if (ppd != null) {
         preferenceDescriptors = ppd.getPreferenceDescriptors();
         if (preferenceDescriptors != null && !preferenceDescriptors.isEmpty()) {
-          Map preferences = new HashMap();
-          Map preferencesReadOnly = new HashMap();
+          Map<String, Object> preferences = new HashMap<>();
+          Map<String, Object> preferencesReadOnly = new HashMap<>();
           for (int j = 0; j < preferenceDescriptors.size(); j++) {
             PreferenceDescriptor prd = (PreferenceDescriptor) preferenceDescriptors.get(j);
             String name = prd.getPrefName();
@@ -316,12 +314,11 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
 
       // Create roleMapping collection
       // validate roles
-      List securityRoleRefDescriptors = portletDescriptor.getSecurityRoleRefDescriptors();
+      List<SecurityRoleRefDescriptor> securityRoleRefDescriptors =
+          portletDescriptor.getSecurityRoleRefDescriptors();
       if (securityRoleRefDescriptors != null && securityRoleRefDescriptors.size() > 0) {
-        List<String> roles = new ArrayList<String>();
-        for (int k = 0; k < securityRoleRefDescriptors.size(); k++) {
-          SecurityRoleRefDescriptor srd =
-              (SecurityRoleRefDescriptor) securityRoleRefDescriptors.get(k);
+        List<String> roles = new ArrayList<>();
+        for (SecurityRoleRefDescriptor srd: securityRoleRefDescriptors) {
           String roleLink = srd.getRoleLink();
           String portletRole = srd.getRoleName();
           if (webAppRoles.contains(roleLink)) {
@@ -334,7 +331,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
           }
         }
 
-        Map<String, String> roleMap = new HashMap<String, String>();
+        Map<String, Object> roleMap = new HashMap<>();
         for (Iterator j = roleProperties.entrySet().iterator(); j.hasNext();) {
           Map.Entry entry = (Map.Entry) j.next();
           String key = (String) entry.getKey(); // webcontainer role
@@ -356,11 +353,8 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
 
         // create role descriptions
         boolean hasRoleDescriptions = false;
-        HashMap roleDescriptions = new HashMap();
-
-        for (int k = 0; k < securityRoleRefDescriptors.size(); k++) {
-          SecurityRoleRefDescriptor srd =
-              (SecurityRoleRefDescriptor) securityRoleRefDescriptors.get(k);
+        HashMap<String, Object> roleDescriptions = new HashMap<>();
+        for (SecurityRoleRefDescriptor srd: securityRoleRefDescriptors) {
           Map roleDescMap = srd.getDescriptionMap();
           if (roleDescMap != null && roleDescMap.size() > 0) {
             hasRoleDescriptions = true;
@@ -370,7 +364,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
               String[] tokens = { srd.getRoleName() };
               throw new PortletRegistryException("errorReverseRoleMapping", tokens);
             }
-            HashMap descriptions = new HashMap();
+            HashMap<String, Object> descriptions = new HashMap<>();
             for (Iterator j = roleDescMap.entrySet().iterator(); j.hasNext();) {
               Map.Entry entry = (Map.Entry) j.next();
               String lang = (String) entry.getKey();
@@ -388,7 +382,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
 
       // create user info collection
       if (userInfoProperties != null && !userInfoProperties.isEmpty()) {
-        HashMap userInfoMap = new HashMap();
+        Map<String, Object> userInfoMap = new HashMap<>();
         Set keys = userInfoProperties.keySet();
         for (Iterator j = keys.iterator(); j.hasNext();) {
           String key = (String) j.next();
@@ -398,12 +392,12 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
         portletApp.setCollectionProperty(USER_INFO_MAP_KEY, userInfoMap);
       } else {
         // Check if portlet.xml has user info attributes
-        List userAttrDescriptors = portletAppDescriptor.getUserAttributeDescriptors();
+        List<UserAttributeDescriptor> userAttrDescriptors =
+            portletAppDescriptor.getUserAttributeDescriptors();
         if (userAttrDescriptors != null && userAttrDescriptors.size() > 0) {
-          HashMap userInfoMap = new HashMap();
+          Map<String, Object> userInfoMap = new HashMap<>();
 
-          for (Iterator di = userAttrDescriptors.iterator(); di.hasNext();) {
-            UserAttributeDescriptor uad = (UserAttributeDescriptor) di.next();
+          for (UserAttributeDescriptor uad: userAttrDescriptors) {
             String attrName = uad.getName();
             userInfoMap.put(attrName, attrName);
           }
@@ -413,15 +407,15 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       }
       // create user info descriptions
       boolean hasUserAttrDescriptions = false;
-      List userAttrDescriptors = portletAppDescriptor.getUserAttributeDescriptors();
+      List<UserAttributeDescriptor> userAttrDescriptors =
+          portletAppDescriptor.getUserAttributeDescriptors();
       if (userAttrDescriptors != null && userAttrDescriptors.size() > 0) {
-        HashMap userAttrDescriptions = new HashMap();
+        Map<String, Object> userAttrDescriptions = new HashMap<>();
 
-        for (Iterator di = userAttrDescriptors.iterator(); di.hasNext();) {
-          UserAttributeDescriptor uad = (UserAttributeDescriptor) di.next();
+        for (UserAttributeDescriptor uad: userAttrDescriptors) {
           Map userAttrDescMap = uad.getDescriptionMap();
           if (userAttrDescMap.size() > 0) {
-            HashMap descriptions = new HashMap();
+            Map<String, Object> descriptions = new HashMap<>();
             for (Iterator j = userAttrDescMap.entrySet().iterator(); j.hasNext();) {
               Map.Entry entry = (Map.Entry) j.next();
               String lang = (String) entry.getKey();
@@ -438,15 +432,14 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       }
 
       // create supports collection
-      List supportsDescriptors = portletDescriptor.getSupportsDescriptors();
+      List<SupportsDescriptor> supportsDescriptors = portletDescriptor.getSupportsDescriptors();
       if (supportsDescriptors != null && supportsDescriptors != null) {
-        HashMap supportsMap = new HashMap();
-        List contentTypes = new ArrayList();
-        for (Iterator j = supportsDescriptors.iterator(); j.hasNext();) {
-          SupportsDescriptor sd = (SupportsDescriptor) j.next();
+        Map<String, Object> supportsMap = new HashMap<>();
+        List<String> contentTypes = new ArrayList<>();
+        for (SupportsDescriptor sd: supportsDescriptors) {
           String mimeType = sd.getMimeType();
           contentTypes.add(mimeType);
-          List portletModes = sd.getPortletModes();
+          List<String> portletModes = sd.getPortletModes();
           supportsMap.put(mimeType, portletModes);
         }
         portletApp.setCollectionProperty(SUPPORTS_MAP_KEY, supportsMap);
@@ -457,7 +450,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       Map displayNameMap = portletDescriptor.getDisplayNameMap();
       // TODO Why we are creating HashMap again????
       if (displayNameMap != null) {
-        HashMap displayNames = new HashMap();
+        Map<String, Object> displayNames = new HashMap<>();
 
         for (Iterator j = displayNameMap.entrySet().iterator(); j.hasNext();) {
           Map.Entry entry = (Map.Entry) j.next();
@@ -469,10 +462,10 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       }
 
       // create descriptions properties
-      Map descriptionMap = portletDescriptor.getDescriptionMap();
+      Map<String, String> descriptionMap = portletDescriptor.getDescriptionMap();
       // TODO Why we are creating HashMap again????
       if (descriptionMap != null) {
-        HashMap descriptions = new HashMap();
+        Map<String, Object> descriptions = new HashMap<>();
 
         for (Iterator j = descriptionMap.entrySet().iterator(); j.hasNext();) {
           Map.Entry entry = (Map.Entry) j.next();
@@ -484,7 +477,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       }
 
       // create supported locales collection
-      List supportedLocales = portletDescriptor.getSupportedLocales();
+      List<String> supportedLocales = portletDescriptor.getSupportedLocales();
       if (supportedLocales != null) {
         portletApp.setCollectionProperty(SUPPORTED_LOCALES_KEY, supportedLocales);
       }
@@ -492,7 +485,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
       // create transport-guarantee property, if required
       SecurityConstraintDescriptor scd = portletAppDescriptor.getSecurityConstraintDescriptor();
       if (scd != null) {
-        List constrainedPortlets = scd.getConstrainedPortlets();
+        List<String> constrainedPortlets = scd.getConstrainedPortlets();
         if (constrainedPortlets != null && constrainedPortlets.contains(portletName)) {
           String tgType = scd.getTransportGuaranteeType();
           if (tgType != null && tgType.length() > 0) {
@@ -540,11 +533,9 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     this.portletAppName = warName;
 
     portletsDescriptor = portletAppDescriptor.getPortletsDescriptor();
-    List portletDescriptors = portletsDescriptor.getPortletDescriptors();
+    List<PortletDescriptor> portletDescriptors = portletsDescriptor.getPortletDescriptors();
     PortletRegistryContext portletRegistryContext = getPortletRegistryContext();
-    for (int i = 0; i < portletDescriptors.size(); i++) {
-      PortletDescriptor portletDescriptor = (PortletDescriptor) portletDescriptors
-          .get(i);
+    for (PortletDescriptor portletDescriptor: portletDescriptors) {
       String portletName = portletDescriptor.getPortletName();
       logger.log(Level.FINE, "PSPL_CSPPAM0007", portletName);
       PortletID portletID = new PortletID(getPortletAppName(), portletName);
@@ -600,7 +591,7 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
     portletWindowPreferenceElementList.add(portletWindowPreference);
     portletWindowPreference.setPortletName(portletId);
     portletWindowPreference.setName(portletWindowName);
-    Map preferences = new HashMap();
+    Map<String, Object> preferences = new HashMap<>();
     preferences.put(PORTLET_HANDLE, portletHandle);
     portletWindowPreference.setCollectionProperty(PREFERENCE_PROPERTIES_KEY,
         preferences);

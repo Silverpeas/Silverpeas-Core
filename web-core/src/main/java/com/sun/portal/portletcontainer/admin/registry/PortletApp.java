@@ -37,7 +37,7 @@ public class PortletApp extends AbstractPortletRegistryElement {
   }
 
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     buffer.append("PortletName:");
     buffer.append(getName());
     buffer.append(";Collections(Map):");
@@ -49,10 +49,10 @@ public class PortletApp extends AbstractPortletRegistryElement {
 
   protected void populateValues(Element portletAppTag) {
     // Get the attributes for PortletApp Tag.
-    Map portletAppAttributes = XMLDocumentHelper
+    Map<String, String> portletAppAttributes = XMLDocumentHelper
         .createAttributeTable(portletAppTag);
-    setName((String) portletAppAttributes.get(NAME_KEY));
-    setPortletName((String) portletAppAttributes.get(PORTLET_NAME_KEY));
+    setName(portletAppAttributes.get(NAME_KEY));
+    setPortletName(portletAppAttributes.get(PORTLET_NAME_KEY));
     super.populateValues(portletAppTag);
   }
 

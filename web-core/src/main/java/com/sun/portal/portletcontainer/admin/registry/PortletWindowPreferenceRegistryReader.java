@@ -39,6 +39,7 @@ public class PortletWindowPreferenceRegistryReader extends PortletRegistryReader
         PortletRegistryFile.PORTLET_WINDOW_PREFERENCE_REGISTRY_FILE, context);
   }
 
+  @Override
   public PortletRegistryObject create() {
     return new PortletWindowPreferenceRegistry();
   }

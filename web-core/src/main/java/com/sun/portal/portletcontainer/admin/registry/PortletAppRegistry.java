@@ -23,73 +23,74 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
 import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 import com.sun.portal.portletcontainer.admin.PortletRegistryObject;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * PortletAppRegistry represents the PortletAppRegistry Element in portlet-app-registry.xml
  */
 public class PortletAppRegistry implements PortletRegistryTags, PortletRegistryObject {
   private String version;
-  private Map portletAppTable;
-  private List portletAppList;
+  private Map<String, PortletRegistryElement> portletAppTable;
+  private List<PortletRegistryElement> portletAppList;
 
   public PortletAppRegistry() {
-    portletAppTable = new LinkedHashMap();
-    portletAppList = new ArrayList();
+    portletAppTable = new LinkedHashMap<>();
+    portletAppList = new ArrayList<>();
   }
 
+  @Override
   public void read(Document document) throws PortletRegistryException {
     Element root = PortletRegistryHelper.getRootElement(document);
     if (root != null)
       populate(root);
   }
 
+  @Override
   public void addRegistryElement(PortletRegistryElement portletApp) {
     portletAppTable.put(portletApp.getName(), portletApp);
     portletAppList.add(portletApp);
   }
 
+  @Override
   public PortletRegistryElement getRegistryElement(String name) {
-    return (PortletRegistryElement) portletAppTable.get(name);
+    return portletAppTable.get(name);
   }
 
-  public List getRegistryElements() {
+  @Override
+  public List<PortletRegistryElement> getRegistryElements() {
     return this.portletAppList;
   }
 
+  @Override
   public boolean removeRegistryElement(PortletRegistryElement portletApp) {
     portletAppTable.remove(portletApp.getName());
     return portletAppList.remove(portletApp);
   }
 
-  private Map getPortletAppTable() {
+  private Map<String, PortletRegistryElement> getPortletAppTable() {
     return this.portletAppTable;
   }
 
   private void populate(Element root) {
     // Get the attributes for PortletAppRegistry Tag.
-    Map portletAppRegistryAttributes = XMLDocumentHelper
+    Map<String, String> portletAppRegistryAttributes = XMLDocumentHelper
         .createAttributeTable(root);
-    setVersion((String) portletAppRegistryAttributes.get(VERSION_KEY));
+    setVersion(portletAppRegistryAttributes.get(VERSION_KEY));
     // Get a list of PortletApp tags and populate values from it.
-    List portletAppTags = XMLDocumentHelper.createElementList(root);
-    int numOfPortletAppTags = portletAppTags.size();
+    List<Element> portletAppTags = XMLDocumentHelper.createElementList(root);
     PortletApp portletApp;
-    for (int i = 0; i < numOfPortletAppTags; i++) {
-      Element portletAppTag = (Element) portletAppTags.get(i);
+    for (Element portletAppTag : portletAppTags) {
       portletApp = new PortletApp();
       portletApp.populateValues(portletAppTag);
       addRegistryElement(portletApp);
@@ -107,17 +108,17 @@ public class PortletAppRegistry implements PortletRegistryTags, PortletRegistryO
     this.version = version;
   }
 
+  @Override
   public void write(Document document) {
     Element rootTag = XMLDocumentHelper.createElement(document,
         PORTLET_APP_REGISTRY_TAG);
-    // Add the atribute to the child
+    // Add the attribute to the child
     rootTag.setAttribute(VERSION_KEY, getVersion());
     document.appendChild(rootTag);
-    Collection collection = getPortletAppTable().values();
-    Iterator itr = collection.iterator();
+    Collection<PortletRegistryElement> collection = getPortletAppTable().values();
     PortletApp portletApp;
-    while (itr.hasNext()) {
-      portletApp = (PortletApp) itr.next();
+    for (PortletRegistryElement portletAppElt : collection) {
+      portletApp = (PortletApp) portletAppElt;
       portletApp.create(document, rootTag);
     }
   }

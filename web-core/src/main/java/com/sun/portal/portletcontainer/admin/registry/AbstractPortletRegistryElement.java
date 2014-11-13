@@ -27,6 +27,7 @@ import com.sun.portal.portletcontainer.admin.PortletRegistryElement;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,93 +49,106 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
   private String portletName;
   private String isRemote;
   private String lang;
-  private Map collectionMapTable;
-  private Map collectionStringTable;
+  private Map<String, Map<String, Object>> collectionMapTable;
+  private Map<String, String> collectionStringTable;
 
   public AbstractPortletRegistryElement() {
     isRemote = Boolean.FALSE.toString(); // By default the Portlet Window is not
     // remote
-    collectionMapTable = new HashMap();
-    collectionStringTable = new HashMap();
+    collectionMapTable = new HashMap<>();
+    collectionStringTable = new HashMap<>();
   }
 
-  public void setCollectionProperty(String key, Map values) {
+  @Override
+  public void setCollectionProperty(String key, Map<String, Object> values) {
     setMap(key, values);
   }
 
-  public Map getCollectionProperty(String key) {
+  @Override
+  public Map<String, Object> getCollectionProperty(String key) {
     return getMapValue(key);
   }
 
-  public void setCollectionProperty(String key, List values) {
+  @Override
+  public void setCollectionProperty(String key, List<String> values) {
     setList(key, values);
   }
 
+  @Override
   public void setStringProperty(String key, String value) {
     setString(key, value);
   }
 
+  @Override
   public String getStringProperty(String key) {
     return getStringValue(key);
   }
 
+  @Override
   public String getName() {
     if (this.name == null || this.name.trim().length() == 0)
       return getPortletName();
     return this.name;
   }
 
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
+  @Override
   public String getPortletName() {
     return this.portletName;
   }
 
+  @Override
   public void setPortletName(String portletName) {
     this.portletName = portletName;
   }
 
+  @Override
   public String getLang() {
     return lang;
   }
 
+  @Override
   public void setLang(String lang) {
     this.lang = lang;
   }
 
+  @Override
   public String getUserName() {
     if (this.userName == null)
       return PortletRegistryContext.USER_NAME_DEFAULT;
     return this.userName;
   }
 
+  @Override
   public void setUserName(String userName) {
     this.userName = userName;
   }
 
+  @Override
   public String getRemote() {
     return this.isRemote;
   }
 
+  @Override
   public void setRemote(String isRemote) {
     this.isRemote = isRemote;
   }
 
-  private void setList(String key, List values) {
-    Map m = new HashMap();
+  private void setList(String key, List<String> values) {
+    Map<String, Object> m = new HashMap<>();
     if (values != null) {
-      int size = values.size();
-      for (int i = 0; i < size; i++) {
-        String s = (String) values.get(i);
+      for(String s: values) {
         m.put(s, s);
       }
     }
     setMap(key, m);
   }
 
-  private void setMap(String key, Map values) {
+  private void setMap(String key, Map<String, Object> values) {
     collectionMapTable.put(key, values);
   }
 
@@ -142,19 +156,19 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
     collectionStringTable.put(key, value);
   }
 
-  private Map getMapValue(String key) {
-    return (Map) collectionMapTable.get(key);
+  private Map<String, Object> getMapValue(String key) {
+    return collectionMapTable.get(key);
   }
 
   private String getStringValue(String key) {
     return (String) collectionStringTable.get(key);
   }
 
-  protected Map getMapCollectionTable() {
+  protected Map<String, Map<String, Object>> getMapCollectionTable() {
     return this.collectionMapTable;
   }
 
-  protected Map getStringCollectionTable() {
+  protected Map<String, String> getStringCollectionTable() {
     return this.collectionStringTable;
   }
 
@@ -162,33 +176,28 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
     // Get the child element of Properties Tag and a list of Child element,
     // which will be
     // a list of Collection/String tags
-    Element propertiesTag = XMLDocumentHelper.getChildElement(rootTag,
-        PROPERTIES_TAG);
-    List tags = XMLDocumentHelper.createElementList(propertiesTag);
-    int numOfTags = tags.size();
+    Element propertiesTag = XMLDocumentHelper.getChildElement(rootTag, PROPERTIES_TAG);
+    List<Element> tags = XMLDocumentHelper.createElementList(propertiesTag);
     String tagName;
-    for (int j = 0; j < numOfTags; j++) {
-      Element tag = (Element) tags.get(j);
+    for (Element tag: tags) {
       // Check the name of the tag
       tagName = tag.getTagName();
       // Get the attributes for the Tag.
-      Map attributes = XMLDocumentHelper.createAttributeTable(tag);
-      String name = (String) attributes.get(NAME_KEY);
+      Map<String, String> attributes = XMLDocumentHelper.createAttributeTable(tag);
+      String name = attributes.get(NAME_KEY);
       if (tagName.equals(STRING_TAG)) {
-        setStringProperty(name, (String) attributes.get(VALUE_KEY));
+        setStringProperty(name, attributes.get(VALUE_KEY));
       } else if (tagName.equals(COLLECTION_TAG)) {
-        List innerTags = XMLDocumentHelper.createElementList(tag);
-        int numOfInnerTags = innerTags.size();
-        Map mapValues = new HashMap();
-        for (int k = 0; k < numOfInnerTags; k++) {
-          Element innerTag = (Element) innerTags.get(k);
+        List<Element> innerTags = XMLDocumentHelper.createElementList(tag);
+        Map<String, Object> mapValues = new HashMap<>();
+        for (Element innerTag: innerTags) {
           String innerTagName = innerTag.getTagName();
           if (innerTagName.equals(STRING_TAG)) {
             // Get the attributes for String Tag.
-            Map stringAttributes = XMLDocumentHelper
+            Map<String, String> stringAttributes = XMLDocumentHelper
                 .createAttributeTable(innerTag);
-            String innerName = (String) stringAttributes.get(NAME_KEY);
-            String innerValue = (String) stringAttributes.get(VALUE_KEY);
+            String innerName = stringAttributes.get(NAME_KEY);
+            String innerValue = stringAttributes.get(VALUE_KEY);
             if (innerName == null) // If there is no name, use the value for key
               // also
               mapValues.put(innerValue, innerValue);
@@ -196,16 +205,14 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
               mapValues.put(innerName, innerValue);
           } else if (innerTagName.equals(COLLECTION_TAG)) {
             // Get the attributes for the Tag.
-            Map innerAttributes = XMLDocumentHelper
+            Map<String, String> innerAttributes = XMLDocumentHelper
                 .createAttributeTable(innerTag);
-            String innerName = (String) innerAttributes.get(NAME_KEY);
-            List stringTags = XMLDocumentHelper.createElementList(innerTag);
-            int numOfStringTags = stringTags.size();
-            List listValues = new ArrayList();
-            for (int l = 0; l < numOfStringTags; l++) {
-              Element stringTag = (Element) stringTags.get(l);
+            String innerName = innerAttributes.get(NAME_KEY);
+            List<Element> stringTags = XMLDocumentHelper.createElementList(innerTag);
+            List<String> listValues = new ArrayList<>();
+            for (Element stringTag: stringTags) {
               // Get the attributes for String Tag.
-              Map stringAttributes = XMLDocumentHelper
+              Map<String, String> stringAttributes = XMLDocumentHelper
                   .createAttributeTable(stringTag);
               listValues.add(stringAttributes.get(VALUE_KEY));
             }
@@ -223,15 +230,13 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
     // value is the key of the map.
     // and with attribute "value" whose value is the value for the key in the
     // map.
-    Map stringTags = getStringCollectionTable();
-    Set mappings = stringTags.entrySet();
-    Iterator itr = mappings.iterator();
+    Map<String, String> stringTags = getStringCollectionTable();
+    Set<Map.Entry<String, String>> mappings1 = stringTags.entrySet();
     Element stringTag;
     String name, value;
-    while (itr.hasNext()) {
-      Map.Entry me = (Map.Entry) itr.next();
-      name = (String) me.getKey();
-      value = (String) me.getValue();
+    for(Map.Entry<String, String> me: mappings1) {
+      name = me.getKey();
+      value = me.getValue();
       // If there is no value, continue
       if (value == null || value.trim().length() == 0)
         continue;
@@ -254,37 +259,33 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
     // b. if key and value of the HashMap are different, create "String" Tag
     // with both "name"
     // and "value" attribute.
-    Map collectionTags = getMapCollectionTable();
-    mappings = collectionTags.entrySet();
-    itr = mappings.iterator();
+    Map<String, Map<String, Object>> collectionTags = getMapCollectionTable();
+    Set<Map.Entry<String, Map<String, Object>>> mappings2 = collectionTags.entrySet();
     Element collectionTag, innerCollectionTag;
-    Map values;
+    Map<String, Object> values;
     String key;
     Object obj;
-    while (itr.hasNext()) {
-      Map.Entry me = (Map.Entry) itr.next();
-      name = (String) me.getKey();
-      values = (Map) me.getValue();
-      Set keys = values.entrySet();
-      Iterator keysItr = keys.iterator();
+    for(Map.Entry<String, Map<String, Object>> me: mappings2) {
+      name = me.getKey();
+      values = me.getValue();
+      Set<Map.Entry<String, Object>> keys = values.entrySet();
 
       // If there are no values, do not create collections tag.
-      if (keysItr.hasNext()) {
+      if (!keys.isEmpty()) {
         // Create Collections tag, add String child elements and append it to
         // the document
         collectionTag = XMLDocumentHelper.createElement(document,
             COLLECTION_TAG);
         collectionTag.setAttribute(NAME_KEY, name);
         propertiesTag.appendChild(collectionTag);
-        while (keysItr.hasNext()) {
-          Map.Entry entry = (Map.Entry) keysItr.next();
-          key = (String) entry.getKey();
+        for(Map.Entry<String, Object> entry: keys) {
+          key = entry.getKey();
           obj = entry.getValue();
           if (obj instanceof String) {
             value = (String) obj;
             createStringTag(document, collectionTag, key, value);
           } else if (obj instanceof List) { // If its a List
-            List innerValuesList = (List) obj;
+            List<String> innerValuesList = (List<String>) obj;
             innerCollectionTag = XMLDocumentHelper.createElement(document,
                 COLLECTION_TAG);
             innerCollectionTag.setAttribute(NAME_KEY, key);
@@ -295,17 +296,15 @@ public abstract class AbstractPortletRegistryElement implements PortletRegistryT
               createStringTag(document, innerCollectionTag, value, value);
             }
           } else if (obj instanceof Map) { // If its a Map
-            Map innerValuesMap = (Map) obj;
-            Set innerKeys = values.keySet();
-            Iterator innerkeysItr = innerKeys.iterator();
+            Map<String, String> innerValuesMap = (Map<String, String>) obj;
+            Set<String> innerKeys = values.keySet();
             innerCollectionTag = XMLDocumentHelper.createElement(document,
                 COLLECTION_TAG);
             innerCollectionTag.setAttribute(NAME_KEY, key);
             collectionTag.appendChild(innerCollectionTag);
-            while (innerkeysItr.hasNext()) {
-              key = (String) innerkeysItr.next();
-              value = (String) innerValuesMap.get(key);
-              createStringTag(document, innerCollectionTag, key, value);
+            for(String innerKey: innerKeys) {
+              value = innerValuesMap.get(innerKey);
+              createStringTag(document, innerCollectionTag, innerKey, value);
             }
           }
         }

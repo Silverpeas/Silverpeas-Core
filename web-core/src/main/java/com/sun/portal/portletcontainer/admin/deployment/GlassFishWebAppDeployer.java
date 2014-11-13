@@ -80,6 +80,7 @@ public class GlassFishWebAppDeployer implements WebAppDeployer {
    * @param warFileName The complete path to the Portlet war file.
    * @return boolean Returns true if the deployment is successful.
    */
+  @Override
   public boolean deploy(String warFileName) throws WebAppDeployerException {
     boolean success = false;
     String warFileLocation = null;
@@ -112,6 +113,7 @@ public class GlassFishWebAppDeployer implements WebAppDeployer {
    * @param warFileName The complete path to the Portlet war file.
    * @return boolean Returns true if the deployment is successful.
    */
+  @Override
   public boolean undeploy(String warFileName) throws WebAppDeployerException {
     boolean success = false;
     try {
