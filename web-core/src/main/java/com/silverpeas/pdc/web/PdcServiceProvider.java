@@ -274,7 +274,7 @@ public class PdcServiceProvider {
    */
   public List<UsedAxis> getAxisUsedInClassificationsByCriteria(final PdcFilterCriteria criteria)
       throws PdcException {
-    List<UsedAxis> usedAxis = new ArrayList<UsedAxis>();
+    List<UsedAxis> usedAxis = new ArrayList<>();
 
     ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().
         onComponentInstance(criteria.getComponentInstanceId()).
@@ -303,7 +303,7 @@ public class PdcServiceProvider {
    * @throws PdcException if an error occurs while getting the PdC's axis.
    */
   public List<Axis> getAllAxis() throws PdcException {
-    List<Axis> pdcAxis = new ArrayList<Axis>();
+    List<Axis> pdcAxis = new ArrayList<>();
     List<AxisHeader> headers = getPdcManager().getAxis();
     for (AxisHeader aHeader : headers) {
       String treeId = getPdcManager().getTreeId(aHeader.getPK().getId());
@@ -361,7 +361,7 @@ public class PdcServiceProvider {
 
   private List<UsedAxis> filterAxis(List<AxisHeader> axisHeaders,
       SearchContext searchContext, List<String> availableComponents) throws PdcException {
-    List<UsedAxis> filteredAxis = new ArrayList<UsedAxis>();
+    List<UsedAxis> filteredAxis = new ArrayList<>();
     for (AxisHeader axisHeader : axisHeaders) {
       List<Value> values = getPdcManager().getPertinentDaughterValuesByInstanceIds(
           searchContext, axisHeader.getPK().getId(), "0", availableComponents);

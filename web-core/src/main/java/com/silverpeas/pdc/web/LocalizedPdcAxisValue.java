@@ -140,9 +140,9 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
       throw new IndexOutOfBoundsException("The indexes are out of bounds (startIndex=" + startIndex
           + ", endIndex=" + endIndex + ")");
     }
-    String path = "";
+    StringBuilder path = new StringBuilder();
     for (int i = startIndex; i < endIndex; i++) {
-      path += splitedPath[i] + SEPARATOR_PATH;
+      path.append(splitedPath[i]).append(SEPARATOR_PATH);
     }
     return path.substring(0, path.length() - 2);
   }

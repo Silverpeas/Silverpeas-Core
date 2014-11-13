@@ -61,7 +61,7 @@ public class PdcClassificationEntity implements Exposable {
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement
-  private List<PdcPositionEntity> positions = new ArrayList<PdcPositionEntity>();
+  private List<PdcPositionEntity> positions = new ArrayList<>();
   @XmlElement
   private boolean modifiable = true;
 
@@ -77,7 +77,7 @@ public class PdcClassificationEntity implements Exposable {
   /**
    * Creates a web entity from the specified positions on the PdC in the specified language and
    * identified by the specified URI.
-   * @param classification the classification on the PdC for which the web entity should represent.
+   * @param fromPositions list of Classify Position of this entity.
    * @param inLanguage the language in which the entity should be translated.
    * @param atURI the URI identified the classification in the web.
    * @return a PdcClassificationEntity instance.
@@ -179,7 +179,7 @@ public class PdcClassificationEntity implements Exposable {
 
   /**
    * A convenient method to enhance the readability of creators.
-   * @param a PdC classification.
+   * @param classification PdC classification.
    * @return the PdC classification.
    */
   public static PdcClassification fromPdcClassification(final PdcClassification classification) {
@@ -235,7 +235,7 @@ public class PdcClassificationEntity implements Exposable {
    */
   @XmlTransient
   public List<PdcPosition> getPdcPositions() {
-    List<PdcPosition> pdcPositions = new ArrayList<PdcPosition>(positions.size());
+    List<PdcPosition> pdcPositions = new ArrayList<>(positions.size());
     for (PdcPositionEntity position : positions) {
       pdcPositions.add(position.toPdcPosition());
     }
@@ -293,22 +293,20 @@ public class PdcClassificationEntity implements Exposable {
       final List<ClassifyPosition> positions,
       String inLanguage,
       final URI atBaseURI) {
-    SortedSet<PdcPositionEntity> positionEntities =
-        new TreeSet<PdcPositionEntity>(new PositionComparator());
+    SortedSet<PdcPositionEntity> positionEntities = new TreeSet<>(new PositionComparator());
     for (ClassifyPosition position : positions) {
       positionEntities.add(PdcPositionEntity.fromClassifyPosition(position, inLanguage, atBaseURI));
     }
-    return new ArrayList<PdcPositionEntity>(positionEntities);
+    return new ArrayList<>(positionEntities);
   }
 
   private static List<PdcPositionEntity> fromPdcPositions(final Collection<PdcPosition> positions,
       String inLanguage, final URI atBaseURI) {
-    SortedSet<PdcPositionEntity> positionEntities =
-        new TreeSet<PdcPositionEntity>(new PositionComparator());
+    SortedSet<PdcPositionEntity> positionEntities = new TreeSet<>(new PositionComparator());
     for (PdcPosition position : positions) {
       positionEntities.add(PdcPositionEntity.fromPdcPosition(position, inLanguage, atBaseURI));
     }
-    return new ArrayList<PdcPositionEntity>(positionEntities);
+    return new ArrayList<>(positionEntities);
   }
 
   private PdcClassificationEntity() {

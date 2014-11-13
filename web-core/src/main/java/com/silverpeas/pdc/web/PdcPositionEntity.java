@@ -59,7 +59,7 @@ public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;
   @XmlElement(required = true) @NotNull @Size(min=1)
-  private List<PdcPositionValueEntity> values = new ArrayList<PdcPositionValueEntity>();
+  private List<PdcPositionValueEntity> values = new ArrayList<>();
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -115,7 +115,7 @@ public class PdcPositionEntity implements Exposable {
    * @return a ClassifyPosition instance represented by this web entity.
    */
   public ClassifyPosition toClassifyPosition() {
-    List<ClassifyValue> classifyValues = new ArrayList<ClassifyValue>(this.values.size());
+    List<ClassifyValue> classifyValues = new ArrayList<>(this.values.size());
     for (PdcPositionValueEntity value : values) {
       classifyValues.add(value.toClassifyValue());
     }
@@ -200,8 +200,7 @@ public class PdcPositionEntity implements Exposable {
 
   private static List<PdcPositionValueEntity> fromClassifyValues(final List<ClassifyValue> values,
       String inLanguage) {
-    List<PdcPositionValueEntity> positionValues =
-        new ArrayList<PdcPositionValueEntity>(values.size());
+    List<PdcPositionValueEntity> positionValues = new ArrayList<>(values.size());
     for (ClassifyValue value : values) {
       positionValues.add(PdcPositionValueEntity.fromClassifiyValue(value, inLanguage));
     }
@@ -211,8 +210,7 @@ public class PdcPositionEntity implements Exposable {
   private static List<PdcPositionValueEntity> fromPdcAxisValues(
       final Collection<PdcAxisValue> values,
       String inLanguage) {
-    List<PdcPositionValueEntity> positionValues =
-        new ArrayList<PdcPositionValueEntity>(values.size());
+    List<PdcPositionValueEntity> positionValues = new ArrayList<>(values.size());
     for (PdcAxisValue value : values) {
       positionValues.add(PdcPositionValueEntity.fromPdcAxisValue(value, inLanguage));
     }

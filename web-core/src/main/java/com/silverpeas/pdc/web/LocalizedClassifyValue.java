@@ -135,7 +135,7 @@ public class LocalizedClassifyValue extends ClassifyValue implements LocalizedVa
 
   @Override
   public boolean equals(Object o) {
-    return getDecoratedValue().equals(o);
+    return getClass() == o.getClass() && getDecoratedValue().equals(o);
   }
 
   @Override
@@ -164,10 +164,10 @@ public class LocalizedClassifyValue extends ClassifyValue implements LocalizedVa
       throw new IndexOutOfBoundsException("The indexes are out of bounds (startIndex=" + startIndex
           + ", endIndex=" + endIndex + ")");
     }
-    String path = "";
+    StringBuilder path = new StringBuilder();
     for (int i = 0; i < endIndex; i++) {
       Value value = getFullPath().get(i);
-      path += value.getName(getLanguage()) + SEPARATOR_PATH;
+      path.append(value.getName(getLanguage())).append(SEPARATOR_PATH);
     }
     return path.substring(0, path.length() - 2);
   }

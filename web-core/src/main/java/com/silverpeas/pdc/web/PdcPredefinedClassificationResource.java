@@ -31,6 +31,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.net.URI;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
@@ -39,7 +40,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.pdc.model.PdcClassification.aPredefinedPdcClassificationForComponentInstance;
+import static com.silverpeas.pdc.model.PdcClassification
+    .aPredefinedPdcClassificationForComponentInstance;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 import javax.ws.rs.*;
@@ -48,31 +50,34 @@ import javax.ws.rs.*;
  * A REST Web resource that represents the predefined classifications on the PdC to classify the
  * contents that are published into a given node of a given component instance or in a whole
  * component instance.
- *
- * A predefined classification on the PdC can be created and attached either to a component instance
+ * <p/>
+ * A predefined classification on the PdC can be created and attached either to a component
+ * instance
  * or to a a node of a component instance. It then can be used as a default classification to
  * automatically classify the contents or as a classification template from which the contents can
  * be classified on the PdC.
- *
+ * <p/>
  * A predefined classification associated with a given node or with a given component instance
- * follows the hierarchical structure of the node tree; it is also applicable to all contents in the
+ * follows the hierarchical structure of the node tree; it is also applicable to all contents in
+ * the
  * children of the given node (or of all nodes in the component instance) in the case they aren't
  * associated explictly with a predefined classification. So, when classifying on the PdC of a
- * content published in a given node, a predefined classification is then looked for backward in the
+ * content published in a given node, a predefined classification is then looked for backward in
+ * the
  * hierarchical tree of nodes, from the given node upto the component instance itself; once found,
  * this predefined classification will be used to classify the content. Similarly, when editing a
  * predefined classification associated with a node, it is seeked backward in the hierarchical tree
  * of nodes but the predefined classification found will be modified only for the given node.
- *
+ * <p/>
  * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
  * contents; they are divided into a tree of nodes. A node can represent a topic, a tag or a folder
  * for example.
- *
+ * <p/>
  * A classification on the PdC is defined by a set of different positions on the axis of the PdC. A
  * position is a set of one or more values of axis. A classification can be modifiable or not. By
  * default, a predefined classification is set as unmodifiable whereas the classification of a
  * content is modifiable by default.
- *
+ * <p/>
  * The positions of a given classification can be accessed with this Web resource by the URI of the
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus
  * uniquely identified by an URI in the Web.
@@ -98,16 +103,16 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * Gets the predefined classification on the PdC that is set for the contents in the node
    * identified by the query part of the request URI. If no node identifier is provided in the URI,
    * the predefined classification set for the whole component instance is seeked.
-   *
+   * <p/>
    * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
    * contents of the component instance. If no predefined classification on the PdC is defined for
    * the requested node, a predefined one is then looked backward among the parent nodes up to the
    * component instance itself.
-   *
-   * The PdC classification is sent back in JSON. If the user isn't authentified, a 401 HTTP code is
+   * <p/>
+   * The PdC classification is sent back in JSON. If the user isn't authentified, a 401 HTTP code
+   * is
    * returned. If the user isn't authorized to access the requested resource, a 403 is returned. If
    * a problem occurs when processing the request, a 503 HTTP code is returned.
-   *
    * @return a web entity representing the requested predefined PdC classification. If no predefined
    * classification is defined along the path of the nodes up to the component instance, then an
    * empty classification is sent back.
@@ -129,13 +134,12 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
 
   /**
    * Creates a new predefined classification
-   *
+   * <p/>
    * If the JSON representation of the classification isn't correct (no values), then a 400 HTTP
    * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the user
    * isn't authorized to access the classification, a 403 is returned. If the resource refered by
    * the URI already exists, a 409 HTTP core is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
-   *
    * @param nodeId the unique identifier of the node with which the classification to create is
    * associated. Can be null, in that case, the classification is associated with the component
    * instance.
@@ -158,8 +162,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       PdcClassification savedClassification = pdcServiceProvider().
           saveOrUpdatePredefinedClassification(fromWebEntity(classification));
       URI theClassificationURI = theUriOf(savedClassification);
-      return Response.created(theClassificationURI).entity(asWebEntity(savedClassification,
-          identifiedBy(theClassificationURI))).build();
+      return Response.created(theClassificationURI)
+          .entity(asWebEntity(savedClassification, identifiedBy(theClassificationURI))).build();
     } catch (ConstraintViolationException ex) {
       throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (PdcException ex) {
@@ -172,19 +176,21 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   /**
    * Updates an existing position on the PdC in the predefined classification refered by the
    * requested URI.
-   *
+   * <p/>
    * If no predefined classification is associated with the specified node, it inherits of the
-   * predefined classification of its closest parent node. So, as the updated predefined position on
+   * predefined classification of its closest parent node. So, as the updated predefined position
+   * on
    * the PdC concerns only the specified node (and not the parent node), it is actually updated in
-   * the new predefined classification that is created for the specified node from of the one of the
+   * the new predefined classification that is created for the specified node from of the one of
+   * the
    * parent node.
-   *
+   * <p/>
    * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
    * returned. If the user isn't authentified, a 401 HTTP code is returned. If the user isn't
    * authorized to access the comment, a 403 is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
-   *
-   * @param modifiedPosition a web entity representing the new state of the PdC position to update.
+   * @param classification a pdc classification entity representing the new state of the
+   * PdCClassification to update.
    * The entity is passed within the request and it is serialized in JSON.
    * @return the response with the status of the position update and, in the case of a successful
    * operation, the new PdC classification of the resource resulting of the position update.
@@ -193,8 +199,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public PdcClassificationEntity updatePredefinedPdcClassification(
-      @QueryParam("nodeId") String nodeId,
-      final PdcClassificationEntity classification) {
+      @QueryParam("nodeId") String nodeId, final PdcClassificationEntity classification) {
     try {
       PdcClassification classificationToUpdate = pdcServiceProvider().
           findPredefinedClassificationForContentsIn(nodeId, getComponentId());
@@ -202,9 +207,10 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
         throw new PdcException(PdcPredefinedClassificationResource.class.getSimpleName(),
             SilverpeasException.ERROR, "root.EX_NO_MESSAGE");
       }
-      classificationToUpdate = (classification.isModifiable() ? classificationToUpdate.modifiable()
-          : classificationToUpdate.unmodifiable()).withPositions(
-          classification.getPdcPositions());
+      classificationToUpdate =
+          (classification.isModifiable() ? classificationToUpdate.modifiable() :
+              classificationToUpdate.unmodifiable())
+              .withPositions(classification.getPdcPositions());
       PdcClassification updatedClassification = pdcServiceProvider().
           saveOrUpdatePredefinedClassification(classificationToUpdate);
       return asWebEntity(updatedClassification, identifiedBy(theUriOf(updatedClassification)));
@@ -225,10 +231,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       theClassificationEntity.setModifiable(false);
     } else {
       UserPreferences userPreferences = getUserPreferences();
-      theClassificationEntity = aPdcClassificationEntity(
-          fromPdcClassification(classification),
-          inLanguage(userPreferences.getLanguage()),
-          atURI(uri));
+      theClassificationEntity = aPdcClassificationEntity(fromPdcClassification(classification),
+          inLanguage(userPreferences.getLanguage()), atURI(uri));
       theClassificationEntity.setModifiable(classification.isModifiable());
       if (userPreferences.isThesaurusEnabled()) {
         UserThesaurusHolder theUserThesaurus =
@@ -243,8 +247,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
     String nodeId = getUriInfo().getQueryParameters().getFirst("nodeId");
     PdcClassification classification =
         aPredefinedPdcClassificationForComponentInstance(getComponentId()).
-        forNode(nodeId).
-        withPositions(entity.getPdcPositions());
+            forNode(nodeId).
+            withPositions(entity.getPdcPositions());
     if (entity.isModifiable()) {
       classification.modifiable();
     } else {
@@ -262,10 +266,11 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   private URI theUriOf(final PdcClassification classification) {
-    URI uri = null;
+    URI uri;
     if (classification.isPredefinedForANode()) {
-      uri = getUriInfo().getBaseUriBuilder().path(BASE_URI_PATH).queryParam("nodeId",
-          classification.getNodeId()).build(classification.getComponentInstanceId());
+      uri = getUriInfo().getBaseUriBuilder().path(BASE_URI_PATH)
+          .queryParam("nodeId", classification.getNodeId())
+          .build(classification.getComponentInstanceId());
     } else {
       uri = getUriInfo().getBaseUriBuilder().path(BASE_URI_PATH).build(classification.
           getComponentInstanceId());

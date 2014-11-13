@@ -24,11 +24,11 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.*;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -71,7 +71,7 @@ public class UserThesaurusHolder {
           Long.valueOf(value.getTermId()), idUser);
     }
     if (synonyms == null) {
-      synonyms = new ArrayList<String>();
+      synonyms = new ArrayList<>();
     }
     return synonyms;
   }

@@ -46,7 +46,7 @@ public class AxisValueCriterion extends SearchCriteria {
    * @return a list of AxisValueCriterion instances for each value encoded into the string.
    */
   public static List<AxisValueCriterion> fromFlattenedAxisValues(String flattenAxisValues) {
-    List<AxisValueCriterion> criteria = new ArrayList<AxisValueCriterion>();
+    List<AxisValueCriterion> criteria = new ArrayList<>();
     if (StringUtil.isDefined(flattenAxisValues)) {
       String[] allAxisValues = flattenAxisValues.split(",");
       for (String anAxisValue : allAxisValues) {

@@ -62,7 +62,7 @@ public class PdcAxis {
   @XmlElement(defaultValue = "0")
   private int type = PRIMARY_AXIS;
   @XmlElement(required = true)
-  private List<PdcAxisValueEntity> values = new ArrayList<PdcAxisValueEntity>();
+  private List<PdcAxisValueEntity> values = new ArrayList<>();
 
   /**
    * Creates a PdC axis from the specified configured axis for a specific component instance and in

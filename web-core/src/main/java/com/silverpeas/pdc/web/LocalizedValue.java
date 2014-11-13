@@ -69,5 +69,5 @@ public interface LocalizedValue {
    * Gets the language in which the path of the value is localized.
    * @return
    */
-  public String getLanguage();
+  String getLanguage();
 }

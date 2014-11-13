@@ -40,7 +40,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@org.springframework.stereotype.Service
 public @interface Service {
 
   public String value() default "";

@@ -163,7 +163,7 @@ public class PdcAxisValueEntity extends PdcValueEntity {
 
   @Override
   public int hashCode() {
-    int hash = 3;
+    int hash;
     hash = 83 * super.hashCode();
     hash = 83 * hash + (this.term != null ? this.term.hashCode() : 0);
     hash = 83 * hash + this.level;

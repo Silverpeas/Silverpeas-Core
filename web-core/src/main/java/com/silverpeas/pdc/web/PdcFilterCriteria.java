@@ -38,7 +38,7 @@ public class PdcFilterCriteria {
 
   private String componentInstanceId;
   private String workspaceId;
-  private Set<AxisValueCriterion> axisValues = new HashSet<AxisValueCriterion>();
+  private Set<AxisValueCriterion> axisValues = new HashSet<>();
   private boolean secondaryAxisInclusion = false;
   private UserDetail user;
 
