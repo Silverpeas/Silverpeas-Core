@@ -823,6 +823,15 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
+   * Methode recuperant le silverObjectId d'un objet d'id id
+   *
+   * @param id - id de la publication
+   * @return le silverObjectId de l'objet d'id id
+   * @throws Exception
+   */
+  public abstract int getSilverObjectId(String id) throws Exception;
+
+  /**
    * Methode de recuperation de la publication complete utilisee pour l'exportation
    * @param pubId the publication identifier
    * @param componentId the component instance identifier
@@ -899,7 +908,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   public List<NodePK> getTopicTree(NodePK pk) throws ImportExportException {
-    List<NodePK> listNodePk = new ArrayList<NodePK>();
+    List<NodePK> listNodePk = new ArrayList<>();
     Collection<NodeDetail> path = getNodeService().getPath(pk);
     for (NodeDetail detail : path) {
       listNodePk.add(detail.getNodePK());
@@ -915,6 +924,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public void setCurrentComponentId(String string) {
     super.setCurrentComponentId(string);
   }
+
+  public abstract void publicationNotClassifiedOnPDC(String pubId) throws Exception;
 
   /**
    * Specific Kmax: Create publication with no nodeFather
