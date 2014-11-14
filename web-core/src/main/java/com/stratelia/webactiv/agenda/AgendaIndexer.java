@@ -62,6 +62,7 @@ public class AgendaIndexer implements ComponentIndexerInterface {
    * @throws Exception
    * @see
    */
+  @Override
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
     AgendaSessionController agenda = new AgendaSessionController(

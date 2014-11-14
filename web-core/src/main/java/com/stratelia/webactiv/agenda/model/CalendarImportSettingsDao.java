@@ -25,8 +25,14 @@
 package com.stratelia.webactiv.agenda.model;
 
 import com.stratelia.webactiv.agenda.control.AgendaException;
+import org.silverpeas.util.ServiceProvider;
 
 public interface CalendarImportSettingsDao {
+
+  public static CalendarImportSettingsDao getInstance() {
+    return ServiceProvider.getService(CalendarImportSettingsDao.class);
+  }
+
   /**
    * Get synchronisation user settings
    * @param userId Id of user whose settings belong to

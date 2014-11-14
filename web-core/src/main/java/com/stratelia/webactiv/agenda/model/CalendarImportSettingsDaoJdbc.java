@@ -34,6 +34,9 @@ import com.stratelia.webactiv.agenda.control.AgendaException;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao {
 
   /**

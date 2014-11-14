@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.model.CalendarImportSettings;
 import com.stratelia.webactiv.agenda.model.CalendarImportSettingsDao;
-import com.stratelia.webactiv.agenda.model.CalendarImportSettingsDaoJdbc;
 import com.stratelia.webactiv.agenda.notification.AgendaUserNotification;
 import com.stratelia.webactiv.agenda.view.AgendaHtmlView;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -86,7 +85,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   private String serverURL = null;
   private String agendaUserId = getUserId();
   private UserDetail agendaUserDetail = getUserDetail();
-  private final CalendarImportSettingsDao importSettingsDao = new CalendarImportSettingsDaoJdbc();
+  private final CalendarImportSettingsDao importSettingsDao =
+      CalendarImportSettingsDao.getInstance();
   public final static String ICALENDAR_MIME_TYPE = "text/calendar";
   public final static String EXPORT_SUCCEEDED = "0";
   public final static String EXPORT_FAILED = "1";
