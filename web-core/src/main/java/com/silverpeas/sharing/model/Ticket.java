@@ -22,22 +22,14 @@ package com.silverpeas.sharing.model;
 
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UuidPk;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -50,7 +42,13 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "shared_object_type")
 @Table(name = "sb_filesharing_ticket")
-public abstract class Ticket implements Serializable {
+@NamedQueries({@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
+    query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
+        ".sharedObjectType = :ticketType"),
+    @NamedQuery(name = "Ticket.findAllReservationsForUser",
+        query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")})
+public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentifier>
+    implements Serializable {
 
   public static final String FILE_TYPE = "Attachment";
   public static final String VERSION_TYPE = "Versionned";
@@ -77,24 +75,24 @@ public abstract class Ticket implements Serializable {
   protected int nbAccessMax;
   @Column(name = "nbaccess")
   protected int nbAccess;
-  @AttributeOverride(name = "uuid", column =
-  @Column(name = "keyfile", columnDefinition = "varchar(255)", length = 255))
+  @AttributeOverride(name = "uuid",
+      column = @Column(name = "keyfile", columnDefinition = "varchar(255)", length = 255))
   @EmbeddedId
   protected UuidPk token;
   @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "ticket",
-  cascade = CascadeType.REMOVE)
-  protected List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
+      cascade = CascadeType.REMOVE)
+  protected List<DownloadDetail> downloads = new ArrayList<>();
 
   protected Ticket() {
   }
 
-  protected Ticket(int sharedObjectId, String componentId, UserDetail creator,
-          Date creationDate, Date endDate, int nbAccessMax) {
+  protected Ticket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
+      Date endDate, int nbAccessMax) {
     this(sharedObjectId, componentId, creator.getId(), creationDate, endDate, nbAccessMax);
   }
 
-  protected Ticket(int sharedObjectId, String componentId, String creatorId,
-          Date creationDate, Date endDate, int nbAccessMax) {
+  protected Ticket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
+      Date endDate, int nbAccessMax) {
     this.token = new UuidPk();
     this.sharedObjectId = sharedObjectId;
     this.componentId = componentId;
@@ -204,7 +202,6 @@ public abstract class Ticket implements Serializable {
 
   /**
    * Gets the URL of this ticket relative to the web context it belongs to.
-   *
    * @return the relative path of the URL of this ticket.
    */
   private String getRelativeUrl() {
@@ -215,7 +212,7 @@ public abstract class Ticket implements Serializable {
     if (StringUtil.isDefined(getToken())) {
       boolean isValid = true;
       if (getEndDate() != null) {
-        isValid &= getEndDate().after(new Date());
+        isValid = getEndDate().after(new Date());
       }
       if (getNbAccessMax() > 0) {
         isValid &= getNbAccess() < getNbAccessMax();
@@ -227,7 +224,6 @@ public abstract class Ticket implements Serializable {
 
   /**
    * Is this ticket was modified?
-   *
    * @return true if this ticket was modified, false otherwise.
    */
   public boolean isModified() {
@@ -236,7 +232,6 @@ public abstract class Ticket implements Serializable {
 
   /**
    * Is this ticket a continuous one, that is with no limitation in time and in quantity.
-   *
    * @return true if this ticket is a continuous one, false otherwise.
    */
   public boolean isContinuous() {
@@ -279,7 +274,11 @@ public abstract class Ticket implements Serializable {
 
   @Override
   public String toString() {
-    return "Ticket{" + "sharedObjectType=" + sharedObjectType + ", sharedObjectId=" + sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" + updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" + nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
+    return "Ticket{" + "sharedObjectType=" + sharedObjectType + ", sharedObjectId=" +
+        sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId +
+        ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" +
+        updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" +
+        nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
   }
 
   public void addDownload() {

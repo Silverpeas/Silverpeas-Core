@@ -27,11 +27,11 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.sharing.bean.SharingNotificationVO;
 import org.silverpeas.sharing.notification.FileSharingUserNotification;
 
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.sharing.services.SharingTicketService;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -75,7 +75,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   }
 
   private SharingTicketService getFileSharingService() {
-    return SharingServiceFactory.getSharingTicketService();
+    return SharingServiceProvider.getSharingTicketService();
   }
 
   public void notifyUsers(Ticket ticket, SharingNotificationVO sharingParam) {

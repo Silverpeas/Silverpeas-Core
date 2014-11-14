@@ -46,7 +46,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 public class NodeTicket extends Ticket {
   private static final long serialVersionUID = 8560572170859334369L;
 
-  private static final NodeAccessControl<Object> accessControl = new NodeAccessControl<Object>();
+  private static final NodeAccessControl<Object> accessControl = new NodeAccessControl<>();
 
   public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
       Date endDate, int nbAccessMax) {

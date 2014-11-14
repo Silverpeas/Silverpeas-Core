@@ -20,6 +20,10 @@
  */
 package com.silverpeas.sharing.model;
 
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -34,20 +38,16 @@ import javax.persistence.TableGenerator;
 
 @Entity
 @Table(name = "sb_filesharing_history")
-public class DownloadDetail implements Serializable {
+public class DownloadDetail extends AbstractJpaCustomEntity<Ticket, UniqueLongIdentifier>
+    implements Serializable {
 
   private static final long serialVersionUID = -3552579238204831286L;
-  @Id
-  @GeneratedValue(strategy = GenerationType.TABLE,generator="UNIQUE_ID_GEN")
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-    valueColumnName = "maxId", pkColumnValue = "sb_filesharing_history", allocationSize = 1)
-  private Long id;
   @ManyToOne
-  @JoinColumn(name = "keyFile", columnDefinition="varchar(255)",  nullable=false)
+  @JoinColumn(name = "keyFile", columnDefinition = "varchar(255)", nullable = false)
   private Ticket ticket;
-  @Column(name = "downloaddate", nullable=false)
-  private Long downloadDate;  
-  @Column(name = "downloadIp",  nullable=false)
+  @Column(name = "downloaddate", nullable = false)
+  private Long downloadDate;
+  @Column(name = "downloadIp", nullable = false)
   private String userIP;
 
   public DownloadDetail() {
@@ -59,12 +59,8 @@ public class DownloadDetail implements Serializable {
     this.userIP = userIP;
   }
 
-  public Long getId() {
-    return id;
-  }
-
   public void setId(final Long id) {
-    this.id = id;
+    setId(Long.toString(id));
   }
 
   public String getKeyFile() {

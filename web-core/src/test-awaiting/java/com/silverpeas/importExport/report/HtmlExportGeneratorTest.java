@@ -48,13 +48,6 @@ public class HtmlExportGeneratorTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
-    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
-        .resolve("com.sun.jndi:fscontext").withTransitivity().asFile());
-    war.addAsResource("jndi.properties");
-    /*
-        <groupId></groupId>
-        <artifactId>fscontext</artifactId>
-     */
 //        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
 //            WAPrimaryKey.class, ForeignPK.class);
 //    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")

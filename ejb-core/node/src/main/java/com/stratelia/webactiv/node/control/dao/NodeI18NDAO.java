@@ -200,7 +200,7 @@ public class NodeI18NDAO {
     PreparedStatement prepStmt = null;
     SilverTrace.debug("node", "NodeI18NDAO.getTranslations", "root.MSG_QUERY",
         SELECT_TRANSLATIONS + "  nodeId: " + nodeId);
-    List<NodeI18NDetail> result = new ArrayList<NodeI18NDetail>();
+    List<NodeI18NDetail> result = new ArrayList<>();
     try {
       prepStmt = con.prepareStatement(SELECT_TRANSLATIONS);
       prepStmt.setInt(1, nodeId);

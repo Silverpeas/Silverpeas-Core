@@ -20,32 +20,28 @@
  */
 package com.silverpeas.sharing.model;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-
-import javax.ejb.CreateException;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
-
 import com.silverpeas.sharing.security.AbstractShareableAccessControl;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.apache.commons.collections.CollectionUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.WAPrimaryKey;
+
+import javax.ejb.CreateException;
+import java.rmi.RemoteException;
+import java.util.Collection;
 
 /**
  * Access control to shared nodes and their content.
  */
 public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
 
-  private PublicationBm publicationBm;
   private NodeService nodeService = NodeService.getInstance();
 
   NodeAccessControl() {
@@ -71,12 +67,12 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
 
   protected Collection<NodePK> getPublicationFathers(WAPrimaryKey pk)
       throws CreateException, RemoteException {
-    return findPublicationBm().getAllFatherPK(new PublicationPK(pk.getId(), pk.getInstanceId()));
+    return getPublicationBm().getAllFatherPK(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
 
   protected Collection<Alias> getPublicationAliases(WAPrimaryKey pk)
       throws CreateException, RemoteException {
-    return findPublicationBm().getAlias(new PublicationPK(pk.getId(), pk.getInstanceId()));
+    return getPublicationBm().getAlias(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
 
   protected Collection<NodePK> getNodeDescendants(NodePK pk)
@@ -103,12 +99,8 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
     return false;
   }
 
-  private PublicationBm findPublicationBm() {
-    if (publicationBm == null) {
-      publicationBm =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
-    }
-    return publicationBm;
+  private PublicationBm getPublicationBm() {
+    return ServiceProvider.getService(PublicationBm.class);
   }
 
   private NodeService getNodeService() {

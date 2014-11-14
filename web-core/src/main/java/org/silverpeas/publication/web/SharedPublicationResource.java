@@ -31,6 +31,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.sharing.SharingContext;
 
 import com.silverpeas.annotation.RequestScoped;
@@ -38,7 +39,6 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
-import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -114,7 +114,7 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   }
   
   private Ticket checkTicket(String token) {
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     if (ticket != null) {
       componentId = ticket.getComponentId();
     }

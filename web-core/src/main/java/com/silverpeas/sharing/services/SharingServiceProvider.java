@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7,35 +7,38 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.sharing.repository;
 
-import com.silverpeas.sharing.model.Ticket;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
-import org.silverpeas.persistence.repository.BasicEntityRepository;
+package com.silverpeas.sharing.services;
 
-import java.util.List;
+import org.silverpeas.util.ServiceProvider;
 
 /**
- *
- * @author ehugonnet
+ * A factory of SharingTicketService instances.
+ * This factory wraps the concrete implementation of the SharingTicketService and the way the
+ * life-cycle of theses instances are managed.
  */
-public interface TicketRepository extends BasicEntityRepository<Ticket, UuidIdentifier> {
+public class SharingServiceProvider {
 
-  public List<Ticket> findAllTicketForSharedObjectId(Long sharedObjectId, String ticketType);
+  /**
+   * Gets an instance of the file sharing service.
+   * @return a SharingTicketService instance.
+   */
+  public static SharingTicketService getSharingTicketService() {
+    return ServiceProvider.getService(SharingTicketService.class);
+  }
 
-  public List<Ticket> findAllReservationsForUser(String userId);
 }

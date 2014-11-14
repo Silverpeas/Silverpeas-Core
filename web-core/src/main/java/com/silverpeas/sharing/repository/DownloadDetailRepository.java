@@ -25,12 +25,13 @@
 package com.silverpeas.sharing.repository;
 
 import com.silverpeas.sharing.model.DownloadDetail;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.repository.BasicEntityRepository;
 
 /**
  *
  * @author ehugonnet
  */
-public interface DownloadDetailRepository extends JpaRepository<DownloadDetail, Long> {
+public interface DownloadDetailRepository extends BasicEntityRepository<DownloadDetail, UniqueLongIdentifier> {
   
 }

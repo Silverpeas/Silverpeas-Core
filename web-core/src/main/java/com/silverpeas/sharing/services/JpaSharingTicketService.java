@@ -28,11 +28,11 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.repository.DownloadDetailRepository;
 import com.silverpeas.sharing.repository.TicketRepository;
 import org.silverpeas.util.UuidPk;
-import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import java.util.List;
  * @author ehugonnet
  */
 @Named("sharingTicketService")
-@Service
+@Singleton
 @Transactional
 public class JpaSharingTicketService implements SharingTicketService {
 
@@ -65,7 +65,7 @@ public class JpaSharingTicketService implements SharingTicketService {
 
   @Override
   public Ticket getTicket(String key) {
-    return repository.findOne(new UuidPk(key));
+    return repository.getById(key);
   }
 
   @Override
@@ -76,9 +76,9 @@ public class JpaSharingTicketService implements SharingTicketService {
 
   @Override
   public void addDownload(DownloadDetail download) {
-    Ticket ticket = repository.findOne(new UuidPk(download.getKeyFile()));
+    Ticket ticket = repository.getById(download.getKeyFile());
     if (ticket != null) {
-      List<DownloadDetail> downloads = new ArrayList<DownloadDetail>(ticket.getDownloads());
+      List<DownloadDetail> downloads = new ArrayList<>(ticket.getDownloads());
       downloads.add(download);
       ticket.setDownloads(downloads);
       historyRepository.saveAndFlush(download);
@@ -94,6 +94,6 @@ public class JpaSharingTicketService implements SharingTicketService {
 
   @Override
   public void deleteTicket(String key) {
-    repository.delete(new UuidPk(key));
+    repository.delete(repository.getById(key));
   }
 }

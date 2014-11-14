@@ -70,9 +70,9 @@ public class EJBUtilitaire {
   }
 
   private Context initialiseContext() {
-    Context ic = null;
+    Context ic;
     try {
-      Hashtable<String, String> env = new Hashtable<String, String>();
+      Hashtable<String, String> env = new Hashtable<>();
       String jnfi = resources.getString("java.naming.factory.initial", null);
       String jnpu = resources.getString("java.naming.provider.url", null);
       if (jnfi != null && jnfi.length() > 0) {
@@ -83,9 +83,8 @@ public class EJBUtilitaire {
       }
       ic = new InitialContext(env);
     } catch (NamingException e) {
-      UtilException ue = new UtilException("EJBUtilitaire.getEJBObjectRef",
+      throw new UtilException("EJBUtilitaire.getEJBObjectRef",
           "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
-      throw ue;
     }
     return ic;
   }
@@ -107,9 +106,8 @@ public class EJBUtilitaire {
       Object ref = ic.lookup(name);
       return (T) PortableRemoteObject.narrow(ref, classObj);
     } catch (Exception e) {
-      UtilException ue = new UtilException("EJBUtilitaire.getEJBObjectRef", new MultilangMessage(
+      throw new UtilException("EJBUtilitaire.getEJBObjectRef", new MultilangMessage(
           "util.MSG_EJB_REF_NOT_FOUND", name).toString(), e);
-      throw ue;
     }
   }
 

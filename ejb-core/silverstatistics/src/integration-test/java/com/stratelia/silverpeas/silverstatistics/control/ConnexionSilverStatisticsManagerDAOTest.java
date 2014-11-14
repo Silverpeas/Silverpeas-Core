@@ -99,21 +99,6 @@ public class ConnexionSilverStatisticsManagerDAOTest {
   public static final Operation DROP_ALL = Operations.sql("DROP TABLE IF EXISTS SB_Stat_Connection",
       "DROP TABLE IF EXISTS SB_Stat_ConnectionCumul");
 
-//  public static final Operation INSERT_DATA = Operations.insertInto("SB_QuestionContainer_QC")
-//      .columns("qcId", "qcTitle", "qcDescription", "qcComment", "qcCreatorId", "qcCreationDate",
-//          "qcBeginDate", "qcEndDate", "qcIsClosed", "qcNbVoters", "qcNbQuestionsPage",
-//          "qcNbMaxParticipations", "qcNbTriesBeforeSolution", "qcMaxTime", "instanceId",
-//          "anonymous", "resultMode", "resultView")
-//      .values(1, "Quiz express", "Description express du quiz", "Remarque express", "0",
-//          "2012-01-13", "2012-01-13", "9999-99-99", 0, 1, 1, 10, 2, 0, "quizz83", 0, 1, 4)
-//      .values(2, "Quiz expression sur les légumes",
-//          "Expression française sur les fruits et légumes", "RAS", "0", "2012-01-12",
-// "2012-01-12",
-//          "9999-99-99", 0, 2, 1, 1, 1, 0, "quizz83", 0, 1, 4)
-//      .values(3, "Quiz clos", "Description d'un quizz à ouvrir", "RAS", "0", "2012-01-12",
-//          "2012-01-12", "9999-99-99", 1, 2, 1, 1, 1, 0, "quizz83", 0, 1, 4).build();
-
-
   @Deployment
   public static Archive<?> createTestArchive() {
     WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")

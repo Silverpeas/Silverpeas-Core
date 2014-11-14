@@ -42,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.sharing.bean.SharingNotificationVO;
 import org.silverpeas.sharing.notification.FileSharingUserNotification;
 
@@ -49,7 +50,6 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.sharing.services.SharingTicketService;
 import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
@@ -74,7 +74,7 @@ public class TicketResource extends RESTWebService {
   public List<TicketEntity> getMyTickets() {
     String baseUri = getUriInfo().getBaseUri().toString();
     List<Ticket> sharingTickets =
-        SharingServiceFactory.getSharingTicketService().getTicketsByUser(getUserDetail().getId());
+        SharingServiceProvider.getSharingTicketService().getTicketsByUser(getUserDetail().getId());
     if (CollectionUtil.isEmpty(sharingTickets)) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
@@ -131,7 +131,7 @@ public class TicketResource extends RESTWebService {
   }
 
   private SharingTicketService getFileSharingService() {
-    return SharingServiceFactory.getSharingTicketService();
+    return SharingServiceProvider.getSharingTicketService();
   }
 
 }

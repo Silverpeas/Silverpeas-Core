@@ -33,11 +33,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
   
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.sharing.control"/>
-  
-  <bean name="sharingServiceFactory"
-        class="com.silverpeas.sharing.services.SharingServiceFactory" factory-method="getFactory"/>
-  <bean name="sharingTicketService"
-        class="com.silverpeas.sharing.services.JpaSharingTicketService"/>
+  <!-- ebo <ctx:component-scan base-package="com.silverpeas.sharing.control"/> -->
+
+  <!-- ebo <bean name="sharingServiceFactory"
+        class="com.silverpeas.sharing.services.SharingServiceProviderr" factory-method="getFactory"/> -->
+  <!-- ebo <bean name="sharingTicketService"
+        class="com.silverpeas.sharing.services.JpaSharingTicketService"/> -->
 
 </beans>

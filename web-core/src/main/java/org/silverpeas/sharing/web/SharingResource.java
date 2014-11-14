@@ -39,7 +39,7 @@ import javax.ws.rs.core.Response;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import com.silverpeas.web.RESTWebService;
 
 @Service
@@ -59,7 +59,7 @@ public class SharingResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public SharingEntity getSharing() {
     String baseUri = getUriInfo().getBaseUri().toString();
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     if (ticket == null || !ticket.isValid()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }

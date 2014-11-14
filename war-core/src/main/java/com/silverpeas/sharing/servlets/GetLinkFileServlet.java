@@ -24,7 +24,7 @@ import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.web.servlet.RestRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -51,7 +51,7 @@ public class GetLinkFileServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(keyFile);
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
     if (ticket != null && ticket.isValid()) {
       // recherche des infos sur le fichier...
       String filePath = null;
@@ -80,7 +80,7 @@ public class GetLinkFileServlet extends HttpServlet {
         input = new BufferedInputStream(FileUtils.openInputStream(realFile));
         IOUtils.copy(input, out);
         DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
-        SharingServiceFactory.getSharingTicketService().addDownload(download);
+        SharingServiceProvider.getSharingTicketService().addDownload(download);
         return;
       } catch (Exception ignored) {
       } finally {

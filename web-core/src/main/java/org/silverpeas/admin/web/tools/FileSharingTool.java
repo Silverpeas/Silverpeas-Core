@@ -24,7 +24,7 @@
 package org.silverpeas.admin.web.tools;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -51,7 +51,7 @@ public class FileSharingTool extends AbstractTool {
       if (isVisible) {
         try {
           isVisible =
-              !SharingServiceFactory.getSharingTicketService()
+              !SharingServiceProvider.getSharingTicketService()
                   .getTicketsByUser(getLookHelper().getUserId()).isEmpty();
         } catch (final Exception e) {
           SilverTrace.error("admin", "FileSharingTool.isVisible", "root.CANT_GET_TICKETS", e);

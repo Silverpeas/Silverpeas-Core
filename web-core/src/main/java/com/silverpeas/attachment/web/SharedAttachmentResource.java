@@ -24,7 +24,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAttachment;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ZipUtil;
 import org.silverpeas.util.FileRepositoryManager;
@@ -144,7 +144,7 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @SuppressWarnings("unchecked")
   protected boolean isFileReadable(SimpleDocument attachment) {
     ShareableAttachment attachmentResource = new ShareableAttachment(getToken(), attachment);
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(getToken());
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(getToken());
     return ticket != null && ticket.getAccessControl().isReadable(attachmentResource);
   }
   

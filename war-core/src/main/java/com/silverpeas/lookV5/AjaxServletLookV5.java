@@ -30,7 +30,7 @@ import com.silverpeas.look.LookHelper;
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
@@ -750,7 +750,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 + "Main\"/>");
       }
       if (settings.getBoolean("fileSharingVisible", true)) {
-        if (!SharingServiceFactory.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
+        if (!SharingServiceProvider.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"sharingTicket\" name=\""
                   + EncodeHelper.escapeXml(message.getString("FileSharing"))
                   +

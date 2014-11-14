@@ -24,7 +24,7 @@
 package com.silverpeas.sharing.security;
 
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 
 /**
  * User: Yohann Chastagnier
@@ -42,7 +42,7 @@ public abstract class AbstractShareableAccessControl<T extends Ticket, R>
   final public boolean isReadable(final ShareableResource<R> resource) {
     try {
       Ticket ticket =
-          SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
+          SharingServiceProvider.getSharingTicketService().getTicket(resource.getToken());
       return !(ticket == null || !ticket.isValid()) &&
           isReadable((T) ticket, resource.getAccessedObject());
     } catch (Exception e) {

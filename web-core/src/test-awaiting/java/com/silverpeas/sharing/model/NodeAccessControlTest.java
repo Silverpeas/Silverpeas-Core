@@ -28,7 +28,7 @@ import com.silverpeas.sharing.mock.NodeSharingTicketService;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({EJBUtilitaire.class, SharingServiceFactory.class})
+@PrepareForTest({EJBUtilitaire.class, SharingServiceProvider.class})
 public class NodeAccessControlTest {
 
   public NodeAccessControlTest() {
@@ -103,9 +103,9 @@ public class NodeAccessControlTest {
     document.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableVersionDocument resource = new ShareableVersionDocument(token, document);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
+    PowerMockito.mockStatic(SharingServiceProvider.class);
 
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService())
+    PowerMockito.when(SharingServiceProvider.getSharingTicketService())
         .thenReturn(new NodeSharingTicketService(token, pk));
     NodeAccessControl instance = new NodeAccessControl();
     assertThat(instance.isReadable(resource), is(true));
@@ -144,9 +144,9 @@ public class NodeAccessControlTest {
     document.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableVersionDocument resource = new ShareableVersionDocument(token, document);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
+    PowerMockito.mockStatic(SharingServiceProvider.class);
 
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService())
+    PowerMockito.when(SharingServiceProvider.getSharingTicketService())
         .thenReturn(new NodeSharingTicketService(token, pk));
     NodeAccessControl instance = new NodeAccessControl();
     boolean result = instance.isReadable(resource);
@@ -191,9 +191,9 @@ public class NodeAccessControlTest {
     attachmentDetail.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableAttachment resource = new ShareableAttachment(token, attachmentDetail);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
+    PowerMockito.mockStatic(SharingServiceProvider.class);
 
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService())
+    PowerMockito.when(SharingServiceProvider.getSharingTicketService())
         .thenReturn(new NodeSharingTicketService(token, pk));
     NodeAccessControl instance = new NodeAccessControl();
     boolean result = instance.isReadable(resource);
@@ -232,9 +232,9 @@ public class NodeAccessControlTest {
     attachmentDetail.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableAttachment resource = new ShareableAttachment(token, attachmentDetail);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
+    PowerMockito.mockStatic(SharingServiceProvider.class);
 
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService())
+    PowerMockito.when(SharingServiceProvider.getSharingTicketService())
         .thenReturn(new NodeSharingTicketService(token, pk));
     NodeAccessControl instance = new NodeAccessControl();
     boolean result = instance.isReadable(resource);
@@ -259,9 +259,9 @@ public class NodeAccessControlTest {
     nodeDetail.setNodePK(pk);
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableNode resource = new ShareableNode(token, nodeDetail);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
+    PowerMockito.mockStatic(SharingServiceProvider.class);
 
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService())
+    PowerMockito.when(SharingServiceProvider.getSharingTicketService())
         .thenReturn(new NodeSharingTicketService(token, pk));
     NodeAccessControl instance = new NodeAccessControl();
     boolean result = instance.isReadable(resource);
@@ -288,9 +288,9 @@ public class NodeAccessControlTest {
     nodeDetail.setNodePK(new NodePK("15", "kmelia10"));
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableNode resource = new ShareableNode(token, nodeDetail);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
+    PowerMockito.mockStatic(SharingServiceProvider.class);
 
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService())
+    PowerMockito.when(SharingServiceProvider.getSharingTicketService())
         .thenReturn(new NodeSharingTicketService(token, pk));
     NodeAccessControl instance = new NodeAccessControl();
     boolean result = instance.isReadable(resource);

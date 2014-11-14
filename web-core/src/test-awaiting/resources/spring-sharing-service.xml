@@ -22,7 +22,7 @@
   </context:component-scan>
 
   <bean name="sharingServiceFactory"
-        class="com.silverpeas.sharing.services.SharingServiceFactory" factory-method="getFactory"/>
+        class="com.silverpeas.sharing.services.SharingServiceProvider" factory-method="getFactory"/>
 
   <jpa:repositories base-package="com.silverpeas.sharing" transaction-manager-ref="jpaTransactionManager"/>
 

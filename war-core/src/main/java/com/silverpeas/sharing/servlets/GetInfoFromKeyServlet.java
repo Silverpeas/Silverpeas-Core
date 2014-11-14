@@ -31,7 +31,7 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -56,7 +56,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
   protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     String token = request.getParameter(PARAM_KEYFILE);
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     request.setAttribute(ATT_TICKET, ticket);
     if (ticket == null || !ticket.isValid()) {
       getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp").forward(

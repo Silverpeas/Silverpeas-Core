@@ -30,7 +30,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
-import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.sharing.services.SharingServiceProvider;
 import com.stratelia.webactiv.node.model.NodeDetail;
 
 /**
@@ -73,7 +73,7 @@ public class SharedNodeResource extends AbstractNodeResource {
   @SuppressWarnings("unchecked")
   protected boolean isNodeReadable(NodeDetail node) {
     ShareableNode nodeResource = new ShareableNode(token, node);
-    Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
+    Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
   }
 
