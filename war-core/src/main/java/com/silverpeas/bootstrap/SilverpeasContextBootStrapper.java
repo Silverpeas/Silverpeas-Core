@@ -20,107 +20,54 @@
  */
 package com.silverpeas.bootstrap;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.GeneralSecurityException;
-import java.security.Provider;
-import java.security.Security;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
+import org.springframework.web.context.ContextLoaderListener;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-
-import org.apache.commons.io.IOUtils;
-import org.springframework.web.context.ContextLoaderListener;
-
-import static java.io.File.separatorChar;
+import java.security.GeneralSecurityException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
 
-  /**
-   * Classes to load for bypassing the JBoss VFS interferences.
-   */
-  private static final String CLASSES_TO_LOAD = "bypass.jboss.vfs";
-  private ContextLoaderListener springContextListener = new ContextLoaderListener();
-
   @Override
-  /**
-   * Do nothing
-   */
   public void contextDestroyed(ServletContextEvent sce) {
-    springContextListener.contextDestroyed(sce);
   }
 
   /**
-   * Initialise the System.properties according to Silverpeas needs and configuration.
+   * Loads the system settings from the systemSettings.properties and apply the corresponding
+   * configuration. It is mainly used to perform the proxy and SSL setting up.
    *
    * @param sce
    */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    ResourceBundle silverpeasInitialisationSettings = FileUtil.loadBundle(
-        "org.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
-        new Locale("fr", ""));
-
-    loadExternalJarLibraries();
-
-    String systemSettingsPath = silverpeasInitialisationSettings.getString("pathInitialize");
-    if (!StringUtil.isDefined(systemSettingsPath)) {
-      Logger.getLogger("bootstrap").log(Level.SEVERE,
-          "Repository Initialize for systemSettings.properties file is not defined in Settings.");
-    } else {
-      File pathInitialize = new File(systemSettingsPath);
-      FileInputStream fis = null;
+    ResourceLocator systemSettings = new ResourceLocator("org.silverpeas.systemSettings", "");
       try {
-        fis = new FileInputStream(new File(pathInitialize, "systemSettings.properties"));
-        Properties systemFileProperties = new Properties(System.getProperties());
-        systemFileProperties.load(fis);
+        Properties systemProperties = systemSettings.getProperties();
 
         // Fix - empty proxy port and proxy host not supported by Spring Social
-        if (!StringUtil.isDefined(systemFileProperties.getProperty("http.proxyPort"))) {
-          systemFileProperties.remove("http.proxyPort");
+        if (!StringUtil.isDefined(systemProperties.getProperty("http.proxyPort"))) {
+          systemProperties.remove("http.proxyPort");
         }
-        if (!StringUtil.isDefined(systemFileProperties.getProperty("http.proxyHost"))) {
-          systemFileProperties.remove("http.proxyHost");
+        if (!StringUtil.isDefined(systemProperties.getProperty("http.proxyHost"))) {
+          systemProperties.remove("http.proxyHost");
         }
-
-        System.setProperties(systemFileProperties);
+        System.setProperties(systemProperties);
         if (isTrustoreConfigured()) {
           registerSSLSocketFactory();
         }
-      } catch (FileNotFoundException e) {
-        Logger.getLogger("bootstrap").log(Level.SEVERE,
-            "File systemSettings.properties in directory {0} not found.", pathInitialize);
-      } catch (IOException e) {
-        Logger.getLogger("bootstrap")
-            .log(Level.SEVERE, "Unable to read systemSettings.properties.");
       } catch (GeneralSecurityException e) {
-        Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the trustore.");
-      } finally {
-        IOUtils.closeQuietly(fis);
+        Logger.getLogger("bootstrap")
+            .log(Level.SEVERE, "Unable to configure the keystore/trustore.");
       }
 
-    }
     URLManager.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));
-    springContextListener.contextInitialized(sce);
   }
 
   boolean isTrustoreConfigured() {
@@ -147,54 +94,5 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
     System.setProperty("mail.imaps.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
     System.setProperty("mail.imap.ssl.socketFactory.fallback", "false");
-  }
-
-  /**
-   * Loads all the JAR libraries available in the SILVERPEAS_HOME/repository/lib directory by using
-   * our own classloader so that we avoid JBoss loads them with its its asshole VFS.
-   */
-  private static void loadExternalJarLibraries() {
-    String libPath = SystemWrapper.get().getenv("SILVERPEAS_HOME") + separatorChar + "repository" +
-        separatorChar + "lib";
-    File libDir = new File(libPath);
-    File[] jars = libDir.listFiles();
-    URL[] jarURLs = new URL[jars.length];
-    try {
-      for (int i = 0; i < jars.length; i++) {
-        jarURLs[i] = jars[i].toURI().toURL();
-      }
-      addURLs(jarURLs);
-      String[] classNames = GeneralPropertiesManager.getString(CLASSES_TO_LOAD).split(",");
-      for (String className : classNames) {
-        try {
-          Class aClass = ClassLoader.getSystemClassLoader().loadClass(className);
-          Class<? extends Provider> jceProvider = aClass.asSubclass(Provider.class);
-          Security.insertProviderAt(jceProvider.newInstance(), 0);
-        } catch (Throwable t) {
-          Logger.getLogger(SilverpeasContextBootStrapper.class.getSimpleName()).log(Level.SEVERE,
-              t.getMessage(), t);
-        }
-      }
-    } catch (Exception ex) {
-      Logger.getLogger(SilverpeasContextBootStrapper.class.getSimpleName()).log(Level.SEVERE,
-          ex.getMessage(), ex);
-    }
-  }
-
-  private static void addURLs(URL[] urls) throws NoSuchMethodException, IllegalArgumentException,
-      IllegalAccessException, InvocationTargetException {
-    ClassLoader cl = ClassLoader.getSystemClassLoader();
-    if (cl instanceof URLClassLoader) {
-      URLClassLoader urlClassloader = (URLClassLoader) cl;
-      // addURL is a protected method, but we can use reflection to call it
-      Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
-      // change access to true, otherwise, it will throw exception
-      method.setAccessible(true);
-      for (URL url : urls) {
-        method.invoke(urlClassloader, new Object[]{url});
-      }
-    } else {
-      // SystemClassLoader is not URLClassLoader....
-    }
   }
 }
