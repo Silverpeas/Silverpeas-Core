@@ -32,6 +32,8 @@ import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
@@ -286,7 +288,7 @@ public class ContactDAO {
     }
   }
 
-  public static void insertRow(Connection con, ContactDetail detail)
+  public static void insertRow(Connection con, Contact detail)
       throws SQLException {
     String insertStatement = "INSERT INTO " + detail.getPK().getTableName()
         + " VALUES ( ? , ? , ? , ? , ? , ? , ? , ?, ? , ?)";
@@ -302,7 +304,7 @@ public class ContactDAO {
       prepStmt.setString(5, detail.getPhone());
       prepStmt.setString(6, detail.getFax());
       prepStmt.setString(7, detail.getUserId());
-      prepStmt.setString(8, DateUtil.date2SQLDate(detail.getCreationDate()));
+      prepStmt.setString(8, DateUtil.today2SQLDate());
       prepStmt.setString(9, detail.getCreatorId());
       prepStmt.setString(10, detail.getPK().getComponentName());
       prepStmt.executeUpdate();
@@ -566,7 +568,7 @@ public class ContactDAO {
     }
   }
 
-  public static void storeRow(Connection con, ContactDetail detail)
+  public static void storeRow(Connection con, Contact detail)
       throws SQLException {
     int rowCount = 0;
     String insertStatement = "update " + detail.getPK().getTableName()
@@ -649,6 +651,33 @@ public class ContactDAO {
       while (rs.next()) {
         ContactDetail pub = resultSet2ContactDetail(rs, pk);
         list.add(pub);
+      }
+      return list;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+  
+  public static List<CompleteContact> getVisibleContacts(Connection con, String instanceId)
+      throws SQLException, ParseException {
+    ResultSet rs = null;
+    ContactPK pubPK = new ContactPK("unknown", instanceId);
+    String selectStatement = "select  P.*, I.modelId from " + pubPK.getTableName()
+        + " P, " + pubPK.getTableName() + "father F, sb_contact_info I "
+        + "where F.nodeId <> ? and F.contactId = P.contactId and P.contactId = I.contactId "
+        + " and P.instanceId = ? ";
+
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setInt(1, Integer.parseInt(NodePK.BIN_NODE_ID));
+      prepStmt.setString(2, instanceId);
+      rs = prepStmt.executeQuery();
+      List<CompleteContact> list = new ArrayList<CompleteContact>();
+      while (rs.next()) {
+        ContactDetail pub = resultSet2ContactDetail(rs, pubPK);
+        CompleteContact contact = new CompleteContact(pub, rs.getString("modelId"));
+        list.add(contact);
       }
       return list;
     } finally {

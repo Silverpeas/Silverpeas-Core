@@ -1,5 +1,5 @@
 <div class="profilPhoto">
-	$avatar$
+	<a href="$context$/Rprofil/jsp/Main?userId=$user.id$">$avatar$</a>
  </div>
  <div class="info">
    <ul>
@@ -13,28 +13,28 @@
 			$else$
 				<img src="$context$/util/icons/online.gif" alt="connected"/> 
 			$endif$
-			Verbunden seit $user.duration$
+			Verbunden seit $user.durationOfCurrentSession$
 		$else$
 			<img src="$context$/util/icons/offline.gif" alt="deconnected"/> Offline
         $endif$
      </li>
-     $if(user.status)$
+     $if(status)$
      	<li class="status">
-     	  "$user.status$"
+     	  "$status$"
      	</li>
      $endif$
      <li class="userType">
      	$type$
      </li>
      <li class="userMail">
-	<a href="#" onclick="OpenPopup($user.id$,'$user.lastName$ $user.firstName$')">$user.mail$</a>
+	<a href="#" onclick="OpenPopup($user.id$,'$user.lastName$ $user.firstName$')">$mail$</a>
      </li>
      <li class="extra">
      	$if(extra.title)$
      	  $extra.title$<br/>
      	$endif$
-     	$if(extra.phone)$
-	  Telefon : $extra.phone$
+     	$if(phone)$
+	  Telefon : $phone$
 	$endif$
      </li>
    </ul>

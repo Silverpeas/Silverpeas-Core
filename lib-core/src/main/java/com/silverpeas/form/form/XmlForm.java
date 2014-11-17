@@ -41,9 +41,16 @@ import java.util.Map;
  * @see FieldDisplayer
  */
 public class XmlForm extends AbstractForm {
+  
+  private boolean viewForm = false;
 
   public XmlForm(RecordTemplate template) throws FormException {
     super(template);
+  }
+  
+  public XmlForm(RecordTemplate template, boolean viewForm) throws FormException {
+    super(template);
+    this.viewForm = viewForm;
   }
 
   /**
@@ -145,8 +152,13 @@ public class XmlForm extends AbstractForm {
             SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
           }
         }
+        
+        boolean displayField = true;
+        if (viewForm && !Util.isEmptyFieldsDisplayed()) {
+          displayField = StringUtil.isDefined(field.getStringValue());
+        }
 
-        if (record == null || (record != null && field != null)) {
+        if (displayField && (record == null || (record != null && field != null))) {
           FieldDisplayer fieldDisplayer = null;
           try {
             if (!StringUtil.isDefined(fieldDisplayerName)) {

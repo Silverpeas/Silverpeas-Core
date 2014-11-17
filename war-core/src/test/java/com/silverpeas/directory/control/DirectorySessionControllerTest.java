@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.directory.model.DirectoryItemList;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -78,7 +79,7 @@ public class DirectorySessionControllerTest {
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
     // All users
-    List<UserDetail> userscalled = directoryDSC.getAllUsers();
+    DirectoryItemList userscalled = directoryDSC.getAllUsers();
     assertNotNull(userscalled);
     assertEquals(3, userscalled.size());
     assertEquals(users.get(0), userscalled.get(0));
@@ -130,8 +131,7 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> userscalled;
-    userscalled = directoryDSC.getAllUsersByGroup("2");
+    DirectoryItemList userscalled = directoryDSC.getAllUsersByGroup("2");
     // All users By group
     assertNotNull(userscalled);
     assertEquals(2, userscalled.size());
@@ -200,7 +200,7 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> userscalled = directoryDSC.getAllUsersByDomain("3");
+    DirectoryItemList userscalled = directoryDSC.getAllUsersByDomain("3");
     // All users By domain
     assertNotNull(userscalled);
     assertEquals(3, userscalled.size());
@@ -276,7 +276,7 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> userscalled = directoryDSC.getAllUsersBySpace("0");
+    DirectoryItemList userscalled = directoryDSC.getAllUsersBySpace("0");
     // All users By domain
     assertNotNull(userscalled);
     assertEquals(3, userscalled.size());
@@ -334,7 +334,8 @@ public class DirectorySessionControllerTest {
     nl[1].setId("3");
     nl[2] = new UserDetail();
     nl[2].setId("4");
-    directoryDSC.fillList(ol, nl);
+    DirectoryItemList dil = new DirectoryItemList(ol);
+    directoryDSC.fillList(dil, nl);
     assertNotNull(ol);
     assertEquals("size 5", ol.size(), 5);
     assertEquals(ol.get(0), ol.get(0));

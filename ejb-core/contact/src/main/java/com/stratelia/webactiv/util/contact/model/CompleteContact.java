@@ -24,7 +24,35 @@
 
 package com.stratelia.webactiv.util.contact.model;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
  * This object contains the description of a complete contact (contact parameter, model detail,
@@ -32,10 +60,15 @@ import java.io.Serializable;
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class CompleteContact implements Serializable {
+public class CompleteContact implements Contact, Serializable {
 
-  private ContactDetail pubDetail;
+  private ContactDetail contactDetail;
   private String modelId;
+  private List<FileItem> formItems;
+  private List<String> formValues;
+  private Map<String, String> formNamedValues;
+  
+  private String creatorLanguage;
 
   /**
    * Create a new CompleteContact
@@ -45,8 +78,12 @@ public class CompleteContact implements Serializable {
    * @since 1.0
    */
   public CompleteContact(ContactDetail pubDetail, String modelId) {
-    this.pubDetail = pubDetail;
+    this.contactDetail = pubDetail;
     this.modelId = modelId;
+  }
+
+  public CompleteContact(String instanceId, String modelId) {
+    this(new ContactDetail(new ContactPK(null, instanceId)), modelId);
   }
 
   /**
@@ -56,7 +93,7 @@ public class CompleteContact implements Serializable {
    * @since 1.0
    */
   public ContactDetail getContactDetail() {
-    return pubDetail;
+    return contactDetail;
   }
 
   /**
@@ -71,6 +108,263 @@ public class CompleteContact implements Serializable {
    */
   public void setModelId(String modelId) {
     this.modelId = modelId;
+  }
+
+  @Override
+  public ContactPK getPK() {
+    return contactDetail.getPK();
+  }
+
+  @Override
+  public String getFirstName() {
+    return contactDetail.getFirstName();
+  }
+
+  @Override
+  public String getLastName() {
+    return contactDetail.getLastName();
+  }
+
+  @Override
+  public String getEmail() {
+    return contactDetail.getEmail();
+  }
+
+  @Override
+  public String getPhone() {
+    return contactDetail.getPhone();
+  }
+
+  @Override
+  public String getFax() {
+    return contactDetail.getFax();
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return contactDetail.getCreationDate();
+  }
+
+  public void setCreationDate(Date date) {
+    contactDetail.setCreationDate(date);
+  }
+
+  @Override
+  public String getCreatorId() {
+    return contactDetail.getCreatorId();
+  }
+
+  public void setCreatorId(String id) {
+    contactDetail.setCreatorId(id);
+  }
+
+  @Override
+  public String getUserId() {
+    return contactDetail.getUserId();
+  }
+
+  @Override
+  public UserFull getUserFull() {
+    return contactDetail.getUserFull();
+  }
+
+  public Form getUpdateForm() {
+    return getForm(true);
+  }
+
+  public Form getViewForm() {
+    return getForm(false);
+  }
+
+  private boolean isFormDefined() {
+    return StringUtil.isDefined(modelId) && modelId.endsWith(".xml");
+  }
+
+  private String getFullTemplateId() {
+    return getPK().getInstanceId() + ":" + getFormName();
+  }
+
+  private String getFormName() {
+    return FilenameUtils.getBaseName(modelId);
+  }
+
+  private Form getForm(boolean updateMode) {
+    Form form = null;
+    try {
+      if (isFormDefined()) {
+        // création du PublicationTemplate
+        PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.
+            getPublicationTemplate(getFullTemplateId());
+
+        // création du formulaire et du DataRecord
+        if (updateMode) {
+          form = pubTemplate.getUpdateForm();
+        } else {
+          form = pubTemplate.getViewForm();
+        }
+        RecordSet recordSet = pubTemplate.getRecordSet();
+        DataRecord data = recordSet.getRecord(getPK().getId());
+        if (data == null) {
+          data = recordSet.getEmptyRecord();
+          data.setId(getPK().getId());
+        }
+        form.setData(data);
+      }
+    } catch (Exception e) {
+      SilverTrace.
+          error("yellowpages", getClass().getSimpleName() + ".setForm()", "root.NO_EX_MESSAGE", e);
+    }
+    return form;
+  }
+
+  public void saveForm() throws PublicationTemplateException, FormException {
+    if (isFormDefined()) {
+      String xmlFormName = modelId;
+      // création du PublicationTemplate
+      String key = getFullTemplateId();
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.
+          getPublicationTemplate(key, xmlFormName);
+
+      Form formUpdate = pubTemplate.getUpdateForm();
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord(getPK().getId());
+      if (data == null) {
+        data = recordSet.getEmptyRecord();
+        data.setId(getPK().getId());// id contact
+      }
+
+      // sauvegarde des données du formulaire
+      PagesContext context =
+          new PagesContext("useless", "0", getCreatorLanguage(), false, getPK().getInstanceId(), getCreatorId());
+      context.setObjectId(getPK().getId());
+
+      if (getFormItems() != null && !getFormItems().isEmpty()) {
+        formUpdate.update(getFormItems(), data, context);
+      } else if (getFormValues() != null && !getFormValues().isEmpty()) {
+        // getting fields using data.xml ordering
+        FieldTemplate[] fieldTemplates = pubTemplate.getRecordTemplate().getFieldTemplates();
+
+        int fieldIndex = 0;
+        for (String value : getFormValues()) {
+          if (StringUtil.isDefined(value)) {
+            FieldTemplate fieldTemplate = fieldTemplates[fieldIndex];
+            if (fieldTemplate != null) {
+              String fieldName = fieldTemplate.getFieldName();
+              data.getField(fieldName).setObjectValue(value);
+            }
+          }
+          fieldIndex++;
+        }
+      } else if (getFormNamedValues() != null) {
+        FieldTemplate[] fieldTemplates = pubTemplate.getRecordTemplate().getFieldTemplates();
+        for (FieldTemplate fieldTemplate : fieldTemplates) {
+          String fieldName = fieldTemplate.getFieldName();
+          data.getField(fieldName).setObjectValue(getFormNamedValues().get(fieldName));
+        }
+      }
+      recordSet.save(data);
+    }
+  }
+
+  public void removeForm() throws PublicationTemplateException, FormException {
+    if (isFormDefined()) {
+      // recuperation des donnees du formulaire (via le DataRecord)
+      PublicationTemplate pubTemplate =
+          PublicationTemplateManager.getInstance().getPublicationTemplate(
+              getFullTemplateId());
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord(getPK().getId());
+      recordSet.delete(data);
+    }
+  }
+
+  public void indexForm(FullIndexEntry indexEntry) {
+    if (isFormDefined()) {
+      try {
+        PublicationTemplate pub =
+            PublicationTemplateManager.getInstance().getPublicationTemplate(getFullTemplateId());
+        RecordSet set = pub.getRecordSet();
+        set.indexRecord(contactDetail.getPK().getId(), getFormName(), indexEntry);
+      } catch (Exception e) {
+        SilverTrace.error("contact", "CompleteContact.indexForm", "", e);
+      }
+    }
+  }
+
+  public void setFormItems(List<FileItem> formItems) {
+    this.formItems = formItems;
+  }
+
+  public List<FileItem> getFormItems() {
+    return formItems;
+  }
+
+  public void setFormValues(List<String> formValues) {
+    this.formValues = formValues;
+  }
+
+  public List<String> getFormValues() {
+    return formValues;
+  }
+
+  public Map<String, String> getFormValues(String language, boolean onlyDefinedValues) {
+    HashMap<String, String> formValues = new HashMap<String, String>();
+    if (isFormDefined()) {
+      DataRecord data = null;
+      PublicationTemplate pub = null;
+      try {
+        pub = PublicationTemplateManager.getInstance().getPublicationTemplate(getFullTemplateId());
+        data = pub.getRecordSet().getRecord(getPK().getId());
+      } catch (Exception e) {
+        SilverTrace.warn("contact", "CompleteContact.getFormValues", "CANT_GET_FORM_RECORD",
+            "id = " + getPK().getId() + "infoId = " + getModelId());
+      }
+
+      if (data != null) {
+        String fieldNames[] = data.getFieldNames();
+        PagesContext pageContext = new PagesContext();
+        pageContext.setLanguage(language);
+        for (String fieldName : fieldNames) {
+          try {
+            Field field = data.getField(fieldName);
+            GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) pub.getRecordTemplate()
+                .getFieldTemplate(fieldName);
+            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate
+                .getTypeName(), "simpletext");
+            StringWriter sw = new StringWriter();
+            PrintWriter out = new PrintWriter(sw);
+            fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+            String value = sw.toString();
+            if (!onlyDefinedValues || (onlyDefinedValues && StringUtil.isDefined(value))) {
+              formValues.put(fieldName, sw.toString());
+            }
+          } catch (Exception e) {
+            SilverTrace.warn("contact", "CompleteContact.getFormValues", "CANT_GET_FIELD_VALUE",
+                "id = " + getPK().getId() + "fieldName = " + fieldName, e);
+          }
+        }
+      }
+    }
+    return formValues;
+  }
+
+  public void setFormNamedValues(Map<String, String> formNamedValues) {
+    this.formNamedValues = formNamedValues;
+  }
+
+  public Map<String, String> getFormNamedValues() {
+    return formNamedValues;
+  }
+  
+  public void setCreatorLanguage(String creatorLanguage) {
+    this.creatorLanguage = creatorLanguage;
+  }
+
+  public String getCreatorLanguage() {
+    return creatorLanguage;
   }
 
 }

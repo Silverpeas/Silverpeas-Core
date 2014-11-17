@@ -24,6 +24,8 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.socialnetwork.invitation.InvitationService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -763,6 +765,25 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin())
         && StringUtil.isDefined(getLastName());
   }
+  
+  public String getDurationOfCurrentSession() {
+    if (isConnected()) {
+      return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
+    }
+    return "";
+  }
+  
+  public boolean isARelationOrInvitation(String userId) {
+    RelationShipService relation = new RelationShipService();
+    InvitationService invitation = new InvitationService();
+    try {
+      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId())) ||
+          (invitation.getInvitation(Integer.parseInt(userId), Integer.parseInt(getId())) != null);
+    } catch (Exception e) {
+      SilverTrace.warn("admin", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
+    }
+    return false;
+  }
 
   /**
    * Gets the unique identifier of the anonymous user as set in the general look properties.
@@ -774,6 +795,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   protected static OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getFactory().getOrganisationController();
+    return OrganisationControllerFactory.getOrganisationController();
   }
 }

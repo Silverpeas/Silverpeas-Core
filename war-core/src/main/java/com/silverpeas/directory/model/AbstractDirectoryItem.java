@@ -24,37 +24,20 @@
 
 package com.silverpeas.directory.model;
 
-public class UserFragmentVO {
+public abstract class AbstractDirectoryItem implements DirectoryItem {
 
-  private String userId;
-  private String fragment;
-  private DirectoryItem.ITEM_TYPE type;
-
-  public UserFragmentVO(String userId, String fragment, DirectoryItem.ITEM_TYPE type) {
-    super();
-    this.userId = userId;
-    this.fragment = fragment;
-    this.type = type;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public String getFragment() {
-    return fragment;
-  }
-
-  public void setFragment(String fragment) {
-    this.fragment = fragment;
+  @Override
+  public int compareTo(DirectoryItem other) {
+    return (getLastName() + getFirstName()).toLowerCase().compareTo(
+        (other.getLastName() + other.getFirstName()).toLowerCase());
   }
   
-  public String getType() {
-    return type.toString();
+  public boolean equals(DirectoryItem other) {
+    return getUniqueId().equals(other.getUniqueId());
+  }
+  
+  public String getUniqueId() {
+    return getType().toString() + getOriginalId();
   }
 
 }

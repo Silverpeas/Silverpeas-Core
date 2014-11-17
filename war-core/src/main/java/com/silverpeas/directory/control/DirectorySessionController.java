@@ -24,23 +24,28 @@
 package com.silverpeas.directory.control;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.directory.DirectoryException;
-import com.silverpeas.directory.model.Member;
+import com.silverpeas.directory.model.ContactItem;
+import com.silverpeas.directory.model.DirectoryItem;
+import com.silverpeas.directory.model.DirectoryItemList;
+import com.silverpeas.directory.model.DirectoryUserItem;
 import com.silverpeas.directory.model.UserFragmentVO;
+import com.silverpeas.directory.model.UserItem;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
@@ -48,7 +53,6 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -64,15 +68,22 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.contact.control.ContactBm;
+import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.ContactPK;
+import com.stratelia.webactiv.util.viewGenerator.html.ImageTag;
 
 /**
  * @author Nabil Bensalem
  */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
-  private List<UserDetail> lastAllListUsersCalled;
-  private List<UserDetail> lastListUsersCalled; // cache for pagination
+  private DirectoryItemList lastAllListUsersCalled;
+  private DirectoryItemList lastListUsersCalled; // cache for pagination
   private int elementsByPage = 10;
   public static final String VIEW_ALL = "tous";
   public static final String VIEW_CONNECTED = "connected";
@@ -126,14 +137,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * get All Users
    * @see
    */
-  public List<UserDetail> getAllUsers() {
+  public DirectoryItemList getAllUsers() {
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_DEFAULT);
     setCurrentQuery(null);
     return getUsers();
   }
 
-  private List<UserDetail> getUsers() {
+  private DirectoryItemList getUsers() {
     switch (GeneralPropertiesManager.getDomainVisibility()) {
       case GeneralPropertiesManager.DVIS_ALL:
         // all users are visible
@@ -153,12 +164,21 @@ public class DirectorySessionController extends AbstractComponentSessionControll
           lastAllListUsersCalled = getUsersOfCurrentUserDomain();
         }
     }
+    
+    //add contacts
+    DirectoryItemList contacts = getContacts();
+    if (!contacts.isEmpty()) {
+      lastAllListUsersCalled.addAll(contacts);
+      lastListUsersCalled = lastAllListUsersCalled;
+      sort(getCurrentSort());
+    }
+    
     setInitialSort(getCurrentSort());
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
   }
 
-  private List<UserDetail> getUsersSorted() {
+  private DirectoryItemList getUsersSorted() {
     if (getCurrentDirectory() == DIRECTORY_DOMAIN) {
       return getUsersOfDomainsSorted();
     } else {
@@ -166,20 +186,20 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
   }
 
-  private List<UserDetail> getAllUsersSorted() {
+  private DirectoryItemList getAllUsersSorted() {
     if (SORT_NEWEST.equals(getCurrentSort())) {
-      return getOrganisationController().getAllUsersFromNewestToOldest();
+      return new DirectoryItemList(getOrganisationController().getAllUsersFromNewestToOldest());
     } else {
-      return Arrays.asList(getOrganisationController().getAllUsers());
+      return new DirectoryItemList(getOrganisationController().getAllUsers());
     }
   }
 
-  private List<UserDetail> getUsersOfDomainsSorted() {
+  private DirectoryItemList getUsersOfDomainsSorted() {
     List<String> domainIds = getCurrentDomainIds();
     if (SORT_NEWEST.equals(getCurrentSort())) {
-      return getOrganisationController().getUsersOfDomainsFromNewestToOldest(domainIds);
+      return new DirectoryItemList(getOrganisationController().getUsersOfDomainsFromNewestToOldest(domainIds));
     } else {
-      return getOrganisationController().getUsersOfDomains(domainIds);
+      return new DirectoryItemList(getOrganisationController().getUsersOfDomains(domainIds));
     }
   }
 
@@ -191,11 +211,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return ids;
   }
 
-  private List<UserDetail> getUsersOfCurrentUserDomain() {
+  private DirectoryItemList getUsersOfCurrentUserDomain() {
     String currentUserDomainId = getUserDetail().getDomainId();
-    List<UserDetail> allUsers = getAllUsersSorted();
-    List<UserDetail> users = new ArrayList<UserDetail>();
-    for (UserDetail var : allUsers) {
+    List<DirectoryUserItem> allUsers = (List) getAllUsersSorted();
+    DirectoryItemList users = new DirectoryItemList();
+    for (DirectoryUserItem var : allUsers) {
       if (currentUserDomainId.equals(var.getDomainId())) {
         users.add(var);
       }
@@ -208,24 +228,23 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param index:Alphabetical Index like A,B,C,E......
    * @see
    */
-  public List<UserDetail> getUsersByIndex(String index) {
+  public DirectoryItemList getUsersByIndex(String index) {
     setCurrentView(index);
     setCurrentQuery(null);
     if (getCurrentSort().equals(SORT_PERTINENCE)) {
       setCurrentSort(getPreviousSort());
     }
-    lastListUsersCalled = new ArrayList<UserDetail>();
-    for (UserDetail varUd : lastAllListUsersCalled) {
+    lastListUsersCalled = new DirectoryItemList();
+    for (DirectoryItem varUd : lastAllListUsersCalled) {
       if (varUd.getLastName().toUpperCase().startsWith(index)) {
         lastListUsersCalled.add(varUd);
       }
     }
-    if (getCurrentSort().equals(getInitialSort())) {
-      return lastListUsersCalled;
-    } else {
+    if (!getCurrentSort().equals(getInitialSort())) {
       // force results to be sorted cause original list is used
-      return sort(getCurrentSort());
+      sort(getCurrentSort());
     }
+    return lastListUsersCalled;
   }
 
   /**
@@ -235,7 +254,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @throws DirectoryException
    * @see
    */
-  public List<UserDetail> getUsersByQuery(String query, boolean globalSearch)
+  public DirectoryItemList getUsersByQuery(String query, boolean globalSearch)
       throws DirectoryException {
     setCurrentView(VIEW_QUERY);
     setCurrentQuery(query);
@@ -246,26 +265,33 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       setPreviousSort(getCurrentSort());
     }
     setCurrentSort(SORT_PERTINENCE);
-    List<UserDetail> results = new ArrayList<UserDetail>();
+    DirectoryItemList results = new DirectoryItemList();
 
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addSpaceComponentPair(null, "users");
+    for (String appId : getContactAppIds()) {
+      queryDescription.addComponent(appId);
+    }
+    
     try {
       List<MatchingIndexEntry> plainSearchResults = SearchEngineFactory.getSearchEngine().search(
           queryDescription).getEntries();
       
       if (plainSearchResults != null && !plainSearchResults.isEmpty()) {
-        List<UserDetail> allUsers = lastAllListUsersCalled;
+        DirectoryItemList allUsers = lastAllListUsersCalled;
         if (globalSearch) {
           // forcing to get all users to re-init list of visible users
           allUsers = getUsers();
         }
         for (MatchingIndexEntry result : plainSearchResults) {
-          String userId = result.getObjectId();
-          for (UserDetail varUd : allUsers) {
-            if (varUd.getId().equals(userId)) {
-              results.add(varUd);
-            }
+          String objectId = result.getObjectId();
+          String itemId = DirectoryItem.ITEM_TYPE.User.toString()+objectId;
+          if ("Contact".equals(result.getObjectType())) {
+            itemId = DirectoryItem.ITEM_TYPE.Contact.toString()+objectId;
+          }
+          DirectoryItem item = allUsers.getItemByUniqueId(itemId);
+          if (item != null) {
+            results.add(item);
           }
         }
       }
@@ -282,12 +308,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param groupId:the ID of group
    * @see
    */
-  public List<UserDetail> getAllUsersByGroup(String groupId) {
+  public DirectoryItemList getAllUsersByGroup(String groupId) {
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
     currentGroup = getOrganisationController().getGroup(groupId);
-    lastAllListUsersCalled = Arrays.asList(getOrganisationController().getAllUsersOfGroup(groupId));
+    lastAllListUsersCalled = new DirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
   }
@@ -297,16 +323,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param groupIds:a list of groups' ids
    * @see
    */
-  public List<UserDetail> getAllUsersByGroups(List<String> groupIds) {
+  public DirectoryItemList getAllUsersByGroups(List<String> groupIds) {
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
 
-    List<UserDetail> tmpList = new ArrayList<UserDetail>();
+    DirectoryItemList tmpList = new DirectoryItemList();
 
     for (String groupId : groupIds) {
-      fillList(tmpList, getOrganisationController().getAllUsersOfGroup(
-          groupId));
+      fillList(tmpList, getOrganisationController().getAllUsersOfGroup(groupId));
     }
 
     lastAllListUsersCalled = tmpList;
@@ -320,7 +345,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * get all User "we keep the last list of All users"
    * @see
    */
-  public List<UserDetail> getLastListOfAllUsers() {
+  public DirectoryItemList getLastListOfAllUsers() {
     setCurrentView(VIEW_ALL);
     setCurrentQuery(null);
     if (getCurrentSort().equals(SORT_PERTINENCE)) {
@@ -335,7 +360,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * get the last list of users called "keep the session"
    * @see
    */
-  public List<UserDetail> getLastListOfUsersCalled() {
+  public DirectoryItemList getLastListOfUsersCalled() {
     return lastListUsersCalled;
   }
 
@@ -344,23 +369,19 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param spaceId:the ID of Space
    * @see
    */
-  public List<UserDetail> getAllUsersBySpace(String spaceId) {
+  public DirectoryItemList getAllUsersBySpace(String spaceId) {
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_SPACE);
     setCurrentQuery(null);
     currentSpace = getOrganisationController().getSpaceInstLightById(spaceId);
-    List<UserDetail> lus = new ArrayList<UserDetail>();
+    DirectoryItemList lus = new DirectoryItemList();
     String[] componentIds = getOrganisationController().getAllComponentIdsRecur(spaceId);
     for (String componentId : componentIds) {
       fillList(lus, getOrganisationController().getAllUsers(componentId));
     }
     
     //sort list
-    if (getCurrentSort().equals(SORT_ALPHA)) {
-      Collections.sort(lus);
-    } else if (getCurrentSort().equals(SORT_NEWEST)) {
-      Collections.sort(lus, new UserIdComparator());
-    }
+    sort(getCurrentSort());
     
     lastAllListUsersCalled = lus;
 
@@ -369,7 +390,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   }
 
-  public void fillList(List<UserDetail> ol, UserDetail[] nl) {
+  public void fillList(DirectoryItemList ol, UserDetail[] nl) {
     for (UserDetail var : nl) {
       if (!ol.contains(var)) {
         ol.add(var);
@@ -382,13 +403,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param domainId:the ID of Domain
    * @see
    */
-  public List<UserDetail> getAllUsersByDomain(String domainId) {
+  public DirectoryItemList getAllUsersByDomain(String domainId) {
     List<String> domainIds = new ArrayList<String>();
     domainIds.add(domainId);
     return getAllUsersByDomains(domainIds);
   }
 
-  public List<UserDetail> getAllUsersByDomains(List<String> domainIds) {
+  public DirectoryItemList getAllUsersByDomains(List<String> domainIds) {
     setCurrentDirectory(DIRECTORY_DOMAIN);
     setCurrentQuery(null);
     currentDomains = new ArrayList<Domain>();
@@ -398,7 +419,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return getUsers();
   }
 
-  public List<UserDetail> getAllContactsOfUser(String userId) {
+  public DirectoryItemList getAllContactsOfUser(String userId) {
     setCurrentView(VIEW_ALL);
     setCurrentQuery(null);
     if (getUserId().equals(userId)) {
@@ -407,11 +428,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       setCurrentDirectory(DIRECTORY_OTHER);
       otherUserDetail = getUserDetail(userId);
     }
-    lastAllListUsersCalled = new ArrayList<UserDetail>();
+    lastAllListUsersCalled = new DirectoryItemList();
     try {
       List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAllListUsersCalled.add(getOrganisationController().getUserDetail(contactId));
+        lastAllListUsersCalled.add(new UserItem(getOrganisationController().getUserDetail(contactId)));
       }
     } catch (SQLException ex) {
       SilverTrace.error("directory", "DirectorySessionController.getAllContactsOfUser", "", ex);
@@ -420,16 +441,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastAllListUsersCalled;
   }
 
-  public List<UserDetail> getCommonContacts(String userId) {
+  public DirectoryItemList getCommonContacts(String userId) {
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_COMMON);
     commonUserDetail = getUserDetail(userId);
-    lastAllListUsersCalled = new ArrayList<UserDetail>();
+    lastAllListUsersCalled = new DirectoryItemList();
     try {
       List<String> contactsIds = relationShipService.getAllCommonContactsIds(Integer.parseInt(
           getUserId()), Integer.parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAllListUsersCalled.add(getOrganisationController().getUserDetail(contactId));
+        lastAllListUsersCalled.add(new UserItem(getOrganisationController().getUserDetail(contactId)));
       }
     } catch (SQLException ex) {
       SilverTrace.error("directory", "DirectorySessionController.getCommonContacts", "", ex);
@@ -472,13 +493,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return currentView;
   }
 
-  public List<UserDetail> getConnectedUsers() {
+  public DirectoryItemList getConnectedUsers() {
     setCurrentView(VIEW_CONNECTED);
     setCurrentQuery(null);
     if (getCurrentSort().equals(SORT_PERTINENCE)) {
       setCurrentSort(getPreviousSort());
     }
-    List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
+    DirectoryItemList connectedUsers = new DirectoryItemList();
 
     SessionManagement sessionManagement = SessionManagementFactory.getFactory().
         getSessionManagement();
@@ -488,16 +509,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       connectedUsers.add(session.getUserDetail());
     }
     
-    if (getCurrentSort().equals(SORT_ALPHA)) {
-      Collections.sort(connectedUsers);
-    } else if (getCurrentSort().equals(SORT_NEWEST)) {
-      Collections.sort(connectedUsers, new UserIdComparator());
-    }
-
+    sort(connectedUsers);
+    
     if (getCurrentDirectory() != DIRECTORY_DEFAULT) {
       // all connected users must be filtered according to directory scope
-      lastListUsersCalled = new ArrayList<UserDetail>();
-      for (UserDetail connectedUser : connectedUsers) {
+      lastListUsersCalled = new DirectoryItemList();
+      for (DirectoryItem connectedUser : connectedUsers) {
         if (lastAllListUsersCalled.contains(connectedUser)) {
           lastListUsersCalled.add(connectedUser);
         }
@@ -509,53 +526,86 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastListUsersCalled;
   }
 
-  public List<UserFragmentVO> getFragments(List<Member> membersToDisplay) {
+  public List<UserFragmentVO> getFragments(DirectoryItemList itemsToDisplay) {
     // using StringTemplate to personalize display of members
     List<UserFragmentVO> fragments = new ArrayList<UserFragmentVO>();
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
         "directory");
-    for (Member member : membersToDisplay) {
-      template.setAttribute("user", member);
-      template.setAttribute("type", getString("GML.user.type." + member.getAccessLevel().code()));
-      template.setAttribute("avatar", getAvatarFragment(member));
+    for (DirectoryItem item : itemsToDisplay) {
+      template.setAttribute("mail", item.getMail());
+      template.setAttribute("phone", item.getPhone());
+      template.setAttribute("avatar", getAvatarFragment(item));
       template.setAttribute("context", URLManager.getApplicationURL());
-      template.setAttribute("notMyself", !member.getId().equals(getUserId()));
-      template.setAttribute("notAContact", !member.isRelationOrInvitation(getUserId()));
-
-      UserFull userFull = getUserFul(member.getId());
-      HashMap<String, String> extra = new HashMap<String, String>();
-      if (userFull != null) {
-        Set<String> keys = userFull.getSpecificDetails().keySet();
-        // put only defined values
-        for (String key : keys) {
-          String value = userFull.getValue(key);
-          if (StringUtil.isDefined(value)) {
-            extra.put(key, value);
-          }
-        }
+      if (item instanceof UserItem) {
+        UserItem user = (UserItem) item;  
+        fragments.add(getUserFragment(user, template));
+      } else if (item instanceof ContactItem) {
+        ContactItem contact = (ContactItem) item;
+        fragments.add(getContactFragment(contact, template));
       }
-      template.setAttribute("extra", extra);
-
-      fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_"
-          + getLanguage())));
     }
     return fragments;
+  }
+  
+  private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
+    template.setAttribute("user", user.getUserDetail());
+    if (StringUtil.isDefined(user.getUserDetail().getStatus())) {
+      template.setAttribute("status", user.getUserDetail().getStatus());
+    } else {
+      template.setAttribute("status", null);
+    }
+    template.setAttribute("type", getString("GML.user.type." + user.getAccessLevel()));
+    template.setAttribute("context", URLManager.getApplicationURL());
+    template.setAttribute("notMyself", !user.getOriginalId().equals(getUserId()));
+    template.setAttribute("notAContact", !user.getUserDetail().isARelationOrInvitation(getUserId()));
 
+    UserFull userFull = getUserFul(user.getOriginalId());
+    HashMap<String, String> extra = new HashMap<String, String>();
+    if (userFull != null) {
+      Set<String> keys = userFull.getSpecificDetails().keySet();
+      // put only defined values
+      for (String key : keys) {
+        String value = userFull.getValue(key);
+        if (StringUtil.isDefined(value)) {
+          extra.put(key, value);
+        }
+      }
+    }
+    template.setAttribute("extra", extra);
+    
+    return new UserFragmentVO(user.getOriginalId(), template.applyFileTemplate("user_" +
+        getLanguage()), user.getType());
+  }
+  
+  private UserFragmentVO getContactFragment(ContactItem contact, SilverpeasTemplate template) {
+    ContactPK pk = contact.getContact().getPK();
+    template.setAttribute("contact", contact.getContact());
+    template.setAttribute("context", URLManager.getApplicationURL());
+    template.setAttribute("url", URLManager.getComponentInstanceURL(pk.getInstanceId())+"ContactExternalView?Id="+pk.getId());
+    
+    CompleteContact completeContact = (CompleteContact) contact.getContact();
+    Map<String, String> extra = completeContact.getFormValues(getLanguage(), true);
+    
+    template.setAttribute("extra", extra);
+    
+    return new UserFragmentVO(contact.getOriginalId(), template.applyFileTemplate("contact_" +
+        getLanguage()), contact.getType());
   }
 
-  private String getAvatarFragment(Member member) {
-    StringBuilder sb = new StringBuilder();
-    String webcontext = URLManager.getApplicationURL();
+  private String getAvatarFragment(DirectoryItem item) {
     ImageTag imageTag = new ImageTag();
     imageTag.setType("avatar.profil");
-    imageTag.setSrc(member.getUserDetail().getAvatar());
     imageTag.setAlt("viewUser");
     imageTag.setCss("avatar");
-    sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
-        member.getId()).append("\">");
-
-    sb.append(imageTag.generateHtml());
-    return sb.toString();
+    
+    if (item instanceof UserItem) {
+      UserItem user = (UserItem) item;
+      imageTag.setSrc(user.getAvatar());
+    } else {
+      imageTag.setSrc("/directory/jsp/icons/avatar.png");
+    }
+    
+    return imageTag.generateHtml();
   }
 
   private void setCurrentDirectory(int currentDirectory) {
@@ -618,7 +668,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     initSort = sort;
   }
 
-  public List<UserDetail> sort(String sort) {
+  public void sort(String sort) {
     setCurrentSort(sort);
     
     // sort lists
@@ -626,23 +676,64 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       Collections.sort(lastAllListUsersCalled);
       Collections.sort(lastListUsersCalled);
     } else if (getCurrentSort().equals(SORT_NEWEST)) {
-      Collections.sort(lastAllListUsersCalled, new UserIdComparator());
-      Collections.sort(lastListUsersCalled, new UserIdComparator());
+      Collections.sort(lastAllListUsersCalled, new CreationDateComparator());
+      Collections.sort(lastListUsersCalled, new CreationDateComparator());
     }
-    
-    return lastListUsersCalled;
+  }
+  
+  private void sort(DirectoryItemList list) {
+    if (getCurrentSort().equals(SORT_ALPHA)) {
+      Collections.sort(list);
+    } else if (getCurrentSort().equals(SORT_NEWEST)) {
+      Collections.sort(list, new CreationDateComparator());
+    }
   }
 
   /**
    * Used to sort user id from highest to lowest
    */
-  private class UserIdComparator implements Comparator<UserDetail> {
+  private class CreationDateComparator implements Comparator<DirectoryItem> {
 
     @Override
-    public int compare(UserDetail o1, UserDetail o2) {
-      return 0 - (Integer.parseInt(o1.getId()) - Integer.parseInt(o2.getId()));
+    public int compare(DirectoryItem o1, DirectoryItem o2) {
+      return getSureCreationDate(o2).compareTo(getSureCreationDate(o1));
+    }
+    
+    private Date getSureCreationDate(DirectoryItem item) {
+      if (item.getCreationDate() != null) {
+        return item.getCreationDate();
+      }
+      try {
+        return DateUtil.parse("1970/01/01");
+      } catch (ParseException e) {
+        return new Date();
+      }
     }
 
   }
-
+  
+  private ContactBm getContactBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.CONTACTBM_EJBHOME, ContactBm.class);
+  }
+  
+  private List<String> getContactAppIds() {
+    String[] appIds = getOrganisationController().getComponentIdsForUser(getUserId(), "yellowpages");
+    List<String> result = new ArrayList<String>();
+    for (String appId : appIds) {
+      String param = getOrganisationController().getComponentParameterValue(appId, "displayedInDirectory");
+      if (StringUtil.getBooleanValue(param)) {
+        result.add(appId);
+      }
+    }
+    return result;
+  }
+  
+  private DirectoryItemList getContacts() {
+    DirectoryItemList items = new DirectoryItemList();
+    for (String appId : getContactAppIds()) {
+      List<CompleteContact> appContacts = getContactBm().getVisibleContacts(appId);
+      items.addContacts(appContacts);
+    }
+    return items;
+  }
 }
