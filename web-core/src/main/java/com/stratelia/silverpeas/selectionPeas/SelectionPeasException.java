@@ -44,8 +44,7 @@ public class SelectionPeasException extends SilverpeasException {
    * @param message
    * @see
    */
-  public SelectionPeasException(String callingClass, int errorLevel,
-      String message) {
+  public SelectionPeasException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -57,8 +56,8 @@ public class SelectionPeasException extends SilverpeasException {
    * @param extraParams
    * @see
    */
-  public SelectionPeasException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public SelectionPeasException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -70,8 +69,8 @@ public class SelectionPeasException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public SelectionPeasException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public SelectionPeasException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -84,8 +83,8 @@ public class SelectionPeasException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public SelectionPeasException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public SelectionPeasException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

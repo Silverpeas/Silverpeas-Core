@@ -49,10 +49,10 @@ import java.util.Set;
 
 abstract public class CacheManager {
 
-  protected Map<String, PanelLine> elementCache = new HashMap<String, PanelLine>();
-  protected Map<String, PanelLine> setCache = new HashMap<String, PanelLine>();
-  protected Set<String> selectedElements = new HashSet<String>();
-  protected Set<String> selectedSets = new HashSet<String>();
+  protected Map<String, PanelLine> elementCache = new HashMap<>();
+  protected Map<String, PanelLine> setCache = new HashMap<>();
+  protected Set<String> selectedElements = new HashSet<>();
+  protected Set<String> selectedSets = new HashSet<>();
   protected ResourceLocator localResourceLocator = null;
   protected ResourceLocator globalResourceLocator = null;
   protected ResourceLocator iconResourceLocator = null;
@@ -169,7 +169,6 @@ abstract public class CacheManager {
   }
 
   public String[] getSelectedIds(CacheType what) {
-    Set<String> selectedStrings = getSelected(what);
     return getSelected(what).toArray(new String[getSelected(what).size()]);
   }
 
@@ -178,7 +177,7 @@ abstract public class CacheManager {
   }
 
   public PanelLine[] getSelectedLines(CacheType what) {
-    List<PanelLine> en = new ArrayList<PanelLine>(getCache(what).values());
+    List<PanelLine> en = new ArrayList<>(getCache(what).values());
     Collections.sort(en, new Comparator<PanelLine>() {
         @Override
       public int compare(PanelLine o1, PanelLine o2) {

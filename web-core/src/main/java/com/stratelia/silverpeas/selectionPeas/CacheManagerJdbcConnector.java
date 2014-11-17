@@ -126,21 +126,21 @@ public class CacheManagerJdbcConnector extends CacheManager {
   }
 
   public PanelOperation getPanelOperation(String operation) {
-    if ("DisplayBrowse".equals(operation)) {
-      return new PanelOperation(
-          localResourceLocator.getString("selectionPeas.helpBrowse"),
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.browseArb"),
-          operation);
-    } else if ("DisplaySearchElement".equals(operation)) {
-      return new PanelOperation(localResourceLocator
-          .getString("selectionPeas.helpSearchElement"), URLManager.getApplicationURL()
-          + iconResourceLocator.getString("selectionPeas.userSearc"), operation);
-    } else if ("DisplaySearchSet".equals(operation)) {
-      return new PanelOperation(localResourceLocator
-          .getString("selectionPeas.helpSearchSet"), URLManager.getApplicationURL()
-          + iconResourceLocator.getString("selectionPeas.groupSearc"), operation);
-    } else {
-      return null;
+    switch (operation) {
+      case "DisplayBrowse":
+        return new PanelOperation(localResourceLocator.getString("selectionPeas.helpBrowse"),
+            URLManager.getApplicationURL() +
+                iconResourceLocator.getString("selectionPeas.browseArb"), operation);
+      case "DisplaySearchElement":
+        return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchElement"),
+            URLManager.getApplicationURL() +
+                iconResourceLocator.getString("selectionPeas.userSearc"), operation);
+      case "DisplaySearchSet":
+        return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchSet"),
+            URLManager.getApplicationURL() +
+                iconResourceLocator.getString("selectionPeas.groupSearc"), operation);
+      default:
+        return null;
     }
   }
 
@@ -178,10 +178,10 @@ public class CacheManagerJdbcConnector extends CacheManager {
   }
 
   protected SelectionUsersGroups getSureExtraParams(SelectionExtraParams sep) {
-    SelectionUsersGroups valret = (SelectionUsersGroups) sep;
-    if (valret == null) {
-      valret = new SelectionUsersGroups();
+    SelectionUsersGroups valRet = (SelectionUsersGroups) sep;
+    if (valRet == null) {
+      valRet = new SelectionUsersGroups();
     }
-    return valret;
+    return valRet;
   }
 }

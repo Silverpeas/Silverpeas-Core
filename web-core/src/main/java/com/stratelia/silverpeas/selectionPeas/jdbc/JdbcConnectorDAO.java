@@ -53,7 +53,6 @@ public class JdbcConnectorDAO {
 
   ArrayList<String[]> data;
   String[] columnsNames;
-  String[] ids;
 
   public JdbcConnectorDAO(SelectionJdbcParams jdbcParams) {
     driverClassName = jdbcParams.getDriverClassName();
@@ -68,7 +67,7 @@ public class JdbcConnectorDAO {
    */
   public String[] getColumnsNames() {
     if (columnsNames == null) {
-      List<String> columns = new ArrayList<String>();
+      List<String> columns = new ArrayList<>();
 
       Connection con = null;
       ResultSet columnsRs = null;
@@ -111,12 +110,11 @@ public class JdbcConnectorDAO {
   public void loadData() {
     StringBuilder columnNameSb = new StringBuilder(100);
     int columnsNamesCount = columnsNames.length;
-    for (int i = 0; i < columnsNamesCount; i++) {
-      columnNameSb.append(columnsNames[i]).append(",");
+    for (final String columnsName : columnsNames) {
+      columnNameSb.append(columnsName).append(",");
     }
-    final String query = new StringBuffer(100).append("select ").append(
-        columnNameSb.substring(0, columnNameSb.length() - 1)).append(" from ")
-        .append(tableName).toString();
+    final String query =
+        "select " + columnNameSb.substring(0, columnNameSb.length() - 1) + " from " + tableName;
     Connection con = null;
     Statement stmt = null;
     ResultSet rs = null;
@@ -127,7 +125,7 @@ public class JdbcConnectorDAO {
       con = getDriver().connect(url, info);
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
-      data = new ArrayList<String[]>();
+      data = new ArrayList<>();
       int i;
       while (rs.next()) {
         i = 0;

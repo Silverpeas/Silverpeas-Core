@@ -24,7 +24,6 @@
 package com.silverpeas.annotation;
 
 import java.lang.annotation.*;
-import org.springframework.context.annotation.Scope;
 
 /**
  * This annotation is to tag an object as being request scoped, that is to say its lifecycle belongs
@@ -37,7 +36,7 @@ import org.springframework.context.annotation.Scope;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Scope("request")
+@javax.enterprise.context.RequestScoped
 public @interface RequestScoped {
   
 }
