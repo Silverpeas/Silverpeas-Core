@@ -24,17 +24,15 @@
 
 package com.silverpeas.admin;
 
-import java.io.IOException;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.json.JSONObject;
-
-import org.silverpeas.util.StringUtil;
+import java.io.IOException;
 
 public class QaptchaServlet extends HttpServlet {
 
@@ -60,18 +58,17 @@ public class QaptchaServlet extends HttpServlet {
 
     String action = req.getParameter("action");
     String key = req.getParameter("qaptcha_key");
-    JSONObject result = new JSONObject();
-
+    boolean error;
     if ("qaptcha".equals(action) && StringUtil.isDefined(key)) {
       session.setAttribute("qaptcha_key", key);
-      result.put("error", false);
+      error = false;
     }
     else {
       session.removeAttribute("qaptcha_key");
-      result.put("error", true);
+      error = true;
     }
-
-    resp.getWriter().append(result.toString());
+    String result = JSONCodec.encodeObject(o -> o.put("error", error));
+    resp.getWriter().append(result);
   }
 
 }

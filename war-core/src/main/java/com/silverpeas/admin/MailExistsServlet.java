@@ -26,8 +26,10 @@ package com.silverpeas.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Administration;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,9 +37,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
-
 public class MailExistsServlet extends HttpServlet {
+
+  @Inject
+  private Administration admin;
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -58,7 +61,7 @@ public class MailExistsServlet extends HttpServlet {
     String email = req.getParameter("email");
     if (StringUtil.isDefined(email)) {
       try {
-        if (getAdminService().isEmailExisting(email)) {
+        if (admin.isEmailExisting(email)) {
           out.print("MailExists");
         }
       } catch (AdminException e) {
