@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class CDIContainer implements BeanContainer {
 
   @Override
-  public <T> T getBeanByName(final String name) {
+  public <T> T getBeanByName(final String name) throws IllegalStateException {
     BeanManager beanManager = CDI.current().getBeanManager();
     Bean<T> bean = (Bean<T>) beanManager.getBeans(name).stream()
         .findFirst()
@@ -28,7 +28,8 @@ public class CDIContainer implements BeanContainer {
   }
 
   @Override
-  public <T> T getBeanByType(final Class<T> type, Annotation... qualifiers) {
+  public <T> T getBeanByType(final Class<T> type, Annotation... qualifiers)
+      throws IllegalStateException {
     BeanManager beanManager = CDI.current().getBeanManager();
     Bean<T> bean = (Bean<T>) beanManager.getBeans(type, qualifiers).stream().findFirst()
         .orElseThrow(

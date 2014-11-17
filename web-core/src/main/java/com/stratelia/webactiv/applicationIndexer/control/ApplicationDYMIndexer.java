@@ -30,13 +30,18 @@ import java.io.FilenameFilter;
 import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * Executes a partial or full reindexing of spelling indexes
  */
 public class ApplicationDYMIndexer extends AbstractIndexer {
 
-  public ApplicationDYMIndexer() {
+  public static ApplicationDYMIndexer getInstance() {
+    return ServiceProvider.getService(ApplicationDYMIndexer.class);
+  }
+
+  protected ApplicationDYMIndexer() {
     setSilverTraceLevel();
   }
 

@@ -43,14 +43,25 @@ public final class ServiceProvider {
   private ServiceProvider() {
   }
 
-  public static <T> T getService(Class<T> type, Annotation... qualifiers) {
+
+  /**
+   * @see org.silverpeas.util.BeanContainer#getBeanByType(Class, java.lang.annotation.Annotation...)
+   */
+  public static <T> T getService(Class<T> type, Annotation... qualifiers)
+      throws IllegalStateException {
     return beanContainer().getBeanByType(type, qualifiers);
   }
 
-  public static <T> T getService(String name) {
+  /**
+   * @see org.silverpeas.util.BeanContainer#getBeanByName(String)
+   */
+  public static <T> T getService(String name) throws IllegalStateException {
     return beanContainer().getBeanByName(name);
   }
 
+  /**
+   * @see org.silverpeas.util.BeanContainer#getAllBeansByType(Class, java.lang.annotation.Annotation...) 
+   */
   public static <T> Set<T> getAllServices(Class<T> type, Annotation... qualifiers) {
     return beanContainer().getAllBeansByType(type, qualifiers);
   }

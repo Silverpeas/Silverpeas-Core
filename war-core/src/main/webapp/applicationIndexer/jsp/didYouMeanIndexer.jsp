@@ -132,7 +132,7 @@ String personalCompo 	= request.getParameter("PersonalCompo");
 String indexMessage		= "";
 
 if (action != null) {
-  ApplicationDYMIndexer ai = new ApplicationDYMIndexer();
+  ApplicationDYMIndexer ai = ApplicationDYMIndexer.getInstance();
     if (action.equals("Index")) {
     	ai.index(spaceId, componentId);
     } else if (action.equals("IndexPerso")) {

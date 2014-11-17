@@ -24,20 +24,19 @@
 
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
 /**
  * @author ehugonnet
  */
-public class ComponentIndexerAdapter implements ComponentIndexerInterface {
+public class ComponentIndexerAdapter implements ComponentIndexation {
 
   public ComponentIndexerAdapter() {
   }
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+  public void index(ComponentInst componentInst) throws
       Exception {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.getIndexer()",
         "Fake indexer when we have problems loading a real one.");

@@ -24,52 +24,21 @@
 
 package com.stratelia.webactiv.agenda;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.applicationIndexer.control.PersonalToolIndexation;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 
-/*
- * CVS Informations
- *
- * $Id: AgendaIndexer.java,v 1.2 2004/12/22 15:18:31 neysseri Exp $
- *
- * $Log: AgendaIndexer.java,v $
- * Revision 1.2  2004/12/22 15:18:31  neysseri
- * Possibilité d'indiquer les jours non sélectionnables
- * + nettoyage sources
- * + précompilation jsp
- *
- * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
- * no message
- *
- * Revision 1.2  2002/01/18 15:00:31  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- *
- */
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * Class declaration
- * @author
- */
-public class AgendaIndexer implements ComponentIndexerInterface {
+@Singleton
+public class AgendaIndexer implements PersonalToolIndexation {
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param context
-   * @throws Exception
-   * @see
-   */
+  @Inject
+  private SilverpeasCalendar calendar;
+
   @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
-    AgendaSessionController agenda = new AgendaSessionController(
-        mainSessionCtrl, context);
-
-    agenda.indexAll();
-
+  public void index() throws Exception {
+    calendar.indexAllJournal();
   }
 
 }

@@ -147,7 +147,7 @@ public class ApplicationIndexerTest {
     when(stub.getName()).thenReturn("stub");
     assertThat(instance.getClassName(stub), is("Stub"));
     assertThat(instance.getPackage(stub), is("stub"));
-    ComponentIndexerInterface result = instance.getIndexer(stub);
+    ComponentIndexation result = instance.getIndexer(stub);
     assertThat(result, is(notNullValue()));
     assertThat(result.getClass().getName(), is("com.stratelia.webactiv.stub.StubIndexer"));
   }

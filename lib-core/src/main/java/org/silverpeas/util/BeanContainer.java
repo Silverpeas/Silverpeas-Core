@@ -40,6 +40,7 @@ public interface BeanContainer {
    * @param name the name of the bean.
    * @param <T> the type of the bean to return.
    * @return the bean matching the specified name.
+   * @throws java.lang.IllegalStateException if no bean can be found with the specified name.
    */
   public <T> T getBeanByName(String name) throws IllegalStateException;
 
@@ -50,7 +51,9 @@ public interface BeanContainer {
    * @param type the type of the bean.
    * @param qualifiers zero, one or more qualifiers annotating the bean to look for.
    * @param <T> the type of the bean to return.
-   * @return the bean matching the specified name.
+   * @return the bean satisfying the expected type and, if any, the expected qualifiers.
+   * @throws java.lang.IllegalStateException if no bean of the specified type and with the
+   * specified qualifiers can be found.
    */
   public <T> T getBeanByType(Class<T> type, Annotation... qualifiers) throws IllegalStateException;
 
@@ -60,7 +63,8 @@ public interface BeanContainer {
    * @param type the type of the bean.
    * @param qualifiers zero, one or more qualifiers annotating the bean to look for.
    * @param <T> the type of the bean to return.
-   * @return the bean matching the specified name.
+   * @return a set of beans satisfying the expected type and, if any, the expected qualifiers, or
+   * an empty set otherwise.
    */
   public <T> Set<T> getAllBeansByType(Class<T> type, Annotation... qualifiers);
 }

@@ -227,6 +227,10 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     profiles.add(profileInst);
   }
 
+  public String getSpaceId() {
+    return domainFatherId;
+  }
+
   public void deleteProfileInst(ProfileInst profileInst) {
     for (int nI = 0; nI < profiles.size(); nI++) {
       if (profiles.get(nI).getName().equals(profileInst.getName())) {

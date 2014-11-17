@@ -363,25 +363,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Method declaration
-   *
-   * @throws TodoException
-   * @see
-   */
-  public void indexAll() throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.indexAll()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      calendarBm.indexAllTodo();
-      SilverTrace.info("todo", "ToDoSessionController.indexAll()",
-          "root.MSG_GEN_EXIT_METHOD");
-    } catch (Exception e) {
-      throw new TodoException("ToDoSessionController.indexAll()",
-          SilverpeasException.ERROR, "todo.MSG_CANT_INDEX_TODOS", e);
-    }
-  }
-
-  /**
    * methods for attendees
    */
   public Collection<Attendee> getToDoAttendees(String todoId) throws TodoException {

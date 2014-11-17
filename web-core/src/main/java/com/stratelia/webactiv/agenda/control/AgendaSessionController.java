@@ -438,15 +438,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Method declaration
-   * @throws RemoteException
-   * @see
-   */
-  public void indexAll() throws RemoteException {
-    calendarBm.indexAllJournal();
-  }
-
-  /**
-   * Method declaration
    * @return
    * @see
    */

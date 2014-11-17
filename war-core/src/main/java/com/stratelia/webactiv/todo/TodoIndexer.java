@@ -27,50 +27,22 @@
 
 package com.stratelia.webactiv.todo;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.todo.control.ToDoSessionController;
+import com.stratelia.webactiv.applicationIndexer.control.PersonalToolIndexation;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.todo.control.TodoException;
 
-/*
- * CVS Informations
- * 
- * $Id: TodoIndexer.java,v 1.2 2004/11/17 19:46:02 neysseri Exp $
- * 
- * $Log: TodoIndexer.java,v $
- * Revision 1.2  2004/11/17 19:46:02  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.3  2002/01/18 14:35:01  lbertin
- * Stabilisation lot 2 : Request routers et sessioncontrollers
- *
- * Revision 1.2  2002/01/02 09:54:58  mmarengo
- * Stabilisation Lot 2
- *
- */
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * Class declaration
- * @author
- */
-public class TodoIndexer implements ComponentIndexerInterface {
+@Singleton
+public class TodoIndexer implements PersonalToolIndexation {
 
-  private ToDoSessionController todo = null;
+  @Inject
+  private SilverpeasCalendar calendar;
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @throws TodoException
-   * @see
-   */
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws TodoException {
-    todo = new ToDoSessionController(mainSessionCtrl, context);
-    todo.indexAll();
+  @Override
+  public void index() throws TodoException {
+    calendar.indexAllTodo();
   }
 
 }

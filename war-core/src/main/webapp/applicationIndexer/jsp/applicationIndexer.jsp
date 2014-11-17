@@ -135,7 +135,7 @@ String personalCompo 	= request.getParameter("PersonalCompo");
 String indexMessage		= "";
 
 if (action != null) {
-    ApplicationIndexer ai = new ApplicationIndexer(m_MainSessionCtrl);
+    ApplicationIndexer ai = ApplicationIndexer.getInstance();
     if (action.equals("Index")) {
     	ai.index(spaceId, componentId);
     } else if (action.equals("IndexPerso")) {

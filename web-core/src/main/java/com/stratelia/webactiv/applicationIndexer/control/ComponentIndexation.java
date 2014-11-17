@@ -24,10 +24,19 @@
 
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public interface ComponentIndexerInterface {
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
-      throws Exception;
+/**
+ * Indexation of the data managed by a given component instance. Each Application in Silverpeas
+ * should provide an implementation of this interface as it knows how to index it own data. The
+ * implementation will be then lookable by the index engine.
+ */
+public interface ComponentIndexation {
+
+  /**
+   * Indexes the data managed by the specified component instance.
+   * @param componentInst the instance of the component managing the data to index or to reindex.
+   * @throws Exception if an error occurs during the indexation.
+   */
+  public void index(ComponentInst componentInst) throws Exception;
 }
