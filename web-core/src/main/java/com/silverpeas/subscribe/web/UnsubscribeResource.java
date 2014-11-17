@@ -86,7 +86,7 @@ public class UnsubscribeResource extends RESTWebService {
 
   /**
    * Centralizing component unsubscribe
-   * @param subscriber
+   * @param subscriber a subscription subscriber
    * @return
    */
   private Response unsubscribeSubscriberFromComponent(SubscriptionSubscriber subscriber) {
@@ -131,8 +131,8 @@ public class UnsubscribeResource extends RESTWebService {
 
   /**
    * Centralizing topic unsubscribe
-   * @param topicId
-   * @param subscriber
+   * @param topicId the topic identifier
+   * @param subscriber a subscription subscriber
    * @return
    */
   private Response unsubscribeSubscriberFromTopic(@PathParam("topicId") String topicId,
