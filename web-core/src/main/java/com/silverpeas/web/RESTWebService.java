@@ -26,18 +26,17 @@ package com.silverpeas.web;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.settings.SilverpeasSettings;
 import org.silverpeas.token.Token;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +65,8 @@ public abstract class RESTWebService implements WebResource {
   public static final String RESPONSE_HEADER_ARRAYSIZE = "X-Silverpeas-Size";
   @Inject
   private OrganizationController organizationController;
+  @Inject
+  private SynchronizerTokenService tokenService;
   @Context
   private UriInfo uriInfo;
   @Context
@@ -110,8 +111,6 @@ public abstract class RESTWebService implements WebResource {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
       if (request.getHeader(HTTP_AUTHORIZATION) != null
           && session.getLastAccessTimestamp() == session.getOpeningTimestamp()) {
-        SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-            getSynchronizerTokenService();
         tokenService.setUpSessionTokens(session);
         Token token = tokenService.getSessionToken(session);
         getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.

@@ -23,8 +23,6 @@ package com.silverpeas.authentication;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -35,17 +33,19 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-
-import javax.inject.Singleton;
-import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.web.token.SynchronizerTokenService;
+
+import javax.inject.Singleton;
+import javax.servlet.http.HttpSession;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
@@ -111,8 +111,7 @@ public class SilverpeasSessionOpener {
           if (!UserDetail.isAnonymousUser(controller.getUserId())) {
             sessionInfo = sessionManagement.openSession(controller.getCurrentUserDetail(), request);
             registerSuccessfulConnexion(controller);
-            SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(
-                sessionInfo);
+            SynchronizerTokenService.getInstance().setUpSessionTokens(sessionInfo);
           }
         }
       } else {

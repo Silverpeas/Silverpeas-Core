@@ -28,10 +28,10 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.web.token.SynchronizerTokenService;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -52,6 +52,8 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
 
   @Inject
   private SilverpeasSessionOpener silverpeasSessionOpener;
+  @Inject
+  private SynchronizerTokenService tokenService;
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
@@ -108,7 +110,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   protected void renewSessionSecurityToken(final HttpServletRequest request) {
     SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
         .getSessionInfo(getMainSessionController(request).getSessionId());
-    SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(sessionInfo);
+    getSynchronizerTokenService().setUpSessionTokens(sessionInfo);
   }
 
   /**
@@ -139,5 +141,9 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
       return (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
     }
     return null;
+  }
+
+  protected SynchronizerTokenService getSynchronizerTokenService() {
+    return tokenService;
   }
 }

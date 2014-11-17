@@ -82,7 +82,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
-    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+    SynchronizerTokenService service = SynchronizerTokenService.getInstance();
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     if (SecuritySettings.isWebSecurityByTokensEnabled() && isProtectedResource(httpRequest)) {
       try {
@@ -158,7 +158,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
-    SynchronizerTokenService service = SynchronizerTokenServiceFactory.getSynchronizerTokenService();
+    SynchronizerTokenService service = SynchronizerTokenService.getInstance();
     return service.isAProtectedResource(request) && !isFileDragAndDrop(request)
         && !(isWebServiceRequested(request) && StringUtil.isDefined(request.getHeader(
                 UserPrivilegeValidation.HTTP_SESSIONKEY)));

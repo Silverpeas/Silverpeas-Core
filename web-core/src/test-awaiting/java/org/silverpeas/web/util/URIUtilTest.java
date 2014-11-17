@@ -46,13 +46,13 @@ public class URIUtilTest {
     UriInfo uriInfoMock = mock(UriInfo.class);
     URI uriMock = new URI(URI_BASE);
     when(uriInfoMock.getBaseUri()).thenReturn(uriMock);
-    assertThat(URIUtil.buildURI(uriInfoMock, "part1", "part2").toString(),
+    assertThat(URIBuilder.buildURI(uriInfoMock, "part1", "part2").toString(),
         is(URI_BASE + "/part1/part2"));
   }
 
   @Test
   public void testBuildURIFromBaseUri() throws Exception {
-    assertThat(URIUtil.buildURI(URI_BASE, "part1", "part2").toString(),
+    assertThat(URIBuilder.buildURI(URI_BASE, "part1", "part2").toString(),
         is(URI_BASE + "/part1/part2"));
   }
 }

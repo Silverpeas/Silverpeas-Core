@@ -32,7 +32,6 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -166,8 +165,7 @@ public abstract class FunctionHandler {
   }
 
   protected void renewSecurityToken(HttpServletRequest request) {
-    SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-        getSynchronizerTokenService();
+    SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
     tokenService.setUpNavigationTokens(request);
   }
 

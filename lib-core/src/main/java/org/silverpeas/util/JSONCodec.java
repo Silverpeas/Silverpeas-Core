@@ -22,15 +22,19 @@
 package org.silverpeas.util;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.function.Function;
 
 /**
  * An encoder of Java bean to a JSON representation and a decoder of JSON stream into the
@@ -49,11 +53,57 @@ public class JSONCodec {
    * @return the JSON representation of the bean in a String.
    * @throws EncodingException if an error occurs while encoding a bean in JSON.
    */
-  public static <T extends Serializable> String encode(T bean) throws EncodingException {
+  public static <T> String encode(T bean) throws EncodingException {
     ObjectMapper mapper = getObjectMapper();
     StringWriter writer = new StringWriter();
     try {
       mapper.writeValue(writer, bean);
+    } catch (IOException ex) {
+      throw new EncodingException(ex.getMessage(), ex);
+    }
+    return writer.toString();
+  }
+
+  /**
+   * Encodes the bean dynamically built by the specified builder. This method is just a convenient
+   * one to dynamically build a JSON representation of a simple bean.
+   * We recommend to represent the bean to serialize as a Java object and then
+   * to use the method {@code org.silverpeas.util.JSONCodec#encode(T bean)}.
+   * @param beanBuilder a function that accepts as argument a JSONObject instance and that returns
+   * the JSONObject instance enriched with the attributes set by the function.
+   * @return the JSON representation of the bean in a String.
+   * @throws EncodingException if an error occurs while encoding a bean in JSON.
+   */
+  public static String encodeObject(Function<JSONObject, JSONObject> beanBuilder) {
+    ObjectMapper mapper = getObjectMapper();
+    StringWriter writer = new StringWriter();
+    JsonNode node = mapper.createObjectNode();
+    JSONObject bean = beanBuilder.apply(new JSONObject((ObjectNode) node));
+    try {
+      mapper.writeValue(writer, bean);
+    } catch (IOException ex) {
+      throw new EncodingException(ex.getMessage(), ex);
+    }
+    return writer.toString();
+  }
+
+  /**
+   * Encodes an array of beans that are dynamically built thank to the specified builder.
+   * This method is just a convenient one to dynamically build a JSON representation of an array
+   * of simple beans. We recommend to represent the bean to serialize as a Java object and then
+   * to use the method {@code org.silverpeas.util.JSONCodec#encode(T bean)}.
+   * @param arrayBuilder a function that accepts as argument a JSONObject instance and that returns
+   * the JSONObject instance enriched with the attributes set by the function.
+   * @return the JSON representation of the bean in a String.
+   * @throws EncodingException if an error occurs while encoding a bean in JSON.
+   */
+  public static String encodeArray(Function<JSONArray, JSONArray> arrayBuilder) {
+    ObjectMapper mapper = getObjectMapper();
+    StringWriter writer = new StringWriter();
+    ArrayNode node = mapper.createArrayNode();
+    JSONArray array = arrayBuilder.apply(new JSONArray(node));
+    try {
+      mapper.writeValue(writer, array);
     } catch (IOException ex) {
       throw new EncodingException(ex.getMessage(), ex);
     }
@@ -67,7 +117,7 @@ public class JSONCodec {
    * @return the bean decoded from JSON.
    * @throws EncodingException if an error occurs while decoding a JSON String into a bean.
    */
-  public static <T extends Serializable> T decode(String json, Class<T> beanType)
+  public static <T> T decode(String json, Class<T> beanType)
       throws DecodingException {
     ObjectMapper mapper = getObjectMapper();
     T bean;
@@ -85,5 +135,87 @@ public class JSONCodec {
         TypeFactory.defaultInstance());
     mapper.setAnnotationIntrospector(introspector);
     return mapper;
+  }
+
+  public static class JSONObject {
+
+    private ObjectNode objectNode;
+
+    protected JSONObject(ObjectNode objectNode) {
+      this.objectNode = objectNode;
+    }
+
+    protected ObjectNode getObjectNode() {
+      return this.objectNode;
+    }
+
+    public JSONObject putNull(final String fieldName) {
+      objectNode.putNull(fieldName);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final Short v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final Integer v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final Long v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final Float v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final Double v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final BigDecimal v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final String v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final Boolean v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+
+    public JSONObject put(final String fieldName, final byte[] v) {
+      objectNode.put(fieldName, v);
+      return this;
+    }
+  }
+
+  public static class JSONArray {
+
+    private ArrayNode jsonArray;
+
+    protected JSONArray(ArrayNode arrayNode) {
+      this.jsonArray = arrayNode;
+    }
+
+    protected ArrayNode getJsonArray() {
+      return this.jsonArray;
+    }
+
+    public JSONArray addJSONObject(Function<JSONObject, JSONObject> beanBuilder) {
+      ObjectNode node = jsonArray.addObject();
+      beanBuilder.apply(new JSONObject(node));
+      return this;
+    }
   }
 }

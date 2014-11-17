@@ -74,8 +74,7 @@ public class ProtectedWebPageUpdater extends HttpServlet {
 
   protected String applyTemplate(TokenSettingTemplate template, HttpServletRequest request) {
     String result = "";
-    SynchronizerTokenService service = SynchronizerTokenServiceFactory.
-        getSynchronizerTokenService();
+    SynchronizerTokenService service = SynchronizerTokenService.getInstance();
     List<Parameter> parameters = new ArrayList<Parameter>(4);
     Token token = service.getSessionToken(request);
     if (token.isDefined()) {

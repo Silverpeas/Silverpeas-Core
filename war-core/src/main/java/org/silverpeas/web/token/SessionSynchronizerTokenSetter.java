@@ -55,8 +55,7 @@ public class SessionSynchronizerTokenSetter implements HttpSessionListener {
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     SessionInfo session = sessionManagement.getSessionInfo(httpSession.getId());
     if (session.isDefined()) {
-      SynchronizerTokenService tokenservice = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
+      SynchronizerTokenService tokenservice = SynchronizerTokenService.getInstance();
       tokenservice.setUpSessionTokens(session);
     }
   }

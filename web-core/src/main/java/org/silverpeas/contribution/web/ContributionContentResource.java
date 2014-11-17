@@ -25,7 +25,6 @@ package org.silverpeas.contribution.web;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordTemplate;
@@ -39,6 +38,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -46,11 +46,14 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  * User: Yohann Chastagnier
  * Date: 21/05/13
  */
-@Service
 @RequestScoped
 @Path("contribution/{componentInstanceId}/{contributionId}/content")
 @Authorized
 public class ContributionContentResource extends AbstractContributionResource {
+
+  private static final String CONTRIBUTION_BASE_URI = "contribution";
+  private static final String CONTRIBUTION_CONTENT_URI_PART = "content";
+  private static final String CONTRIBUTION_CONTENT_FORM_URI_PART = "form";
 
   @PathParam("componentInstanceId")
   private String componentInstanceId;
@@ -136,7 +139,11 @@ public class ContributionContentResource extends AbstractContributionResource {
       }
 
       // Returning the contribution content entity
-      return form.withURI(ContributionResourceURIs.buildURIOfContributionFormContent(this, formId));
+      URI formUri = getUriInfo().getBaseUriBuilder()
+          .segment(CONTRIBUTION_BASE_URI, getComponentId(), getContributionId(),
+              CONTRIBUTION_CONTENT_URI_PART, CONTRIBUTION_CONTENT_FORM_URI_PART, formId)
+          .build();
+      return form.withURI(formUri);
 
     } catch (final WebApplicationException ex) {
       throw ex;

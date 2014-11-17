@@ -26,10 +26,8 @@ package org.silverpeas.upload.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -38,6 +36,9 @@ import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.json.JSONObject;
 import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
 
 import javax.ws.rs.Consumes;
@@ -59,8 +60,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packJSonDataWithHtmlContainer;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  * A REST Web resource that permits to upload files. It has to be used with silverpeas-filUpload.js
@@ -97,12 +99,13 @@ public class FileUploadResource extends RESTWebService {
   public Response uploadFiles() {
     try {
       String uploadId = UUID.randomUUID().toString();
-      List<JSONObject> jsonFiles = new ArrayList<JSONObject>();
       UploadedRequestFile uploadedRequestFile =
           RequestParameterDecoder.decode(getHttpRequest(), UploadedRequestFile.class);
-      jsonFiles.add(uploadFile(uploadId, uploadedRequestFile.getRequestFile().getName(),
-          uploadedRequestFile.getRequestFile().getInputStream()));
-      return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFiles)).build();
+      Function<JSONCodec.JSONObject, JSONCodec.JSONObject> builder =
+          uploadFile(uploadId, uploadedRequestFile.getRequestFile().getName(),
+              uploadedRequestFile.getRequestFile().getInputStream());
+      String jsonFiles = packJSonArrayWithHtmlContainer(a -> a.addJSONObject(builder));
+      return Response.ok().entity(jsonFiles).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -137,8 +140,8 @@ public class FileUploadResource extends RESTWebService {
       }
       String fileId = UUID.randomUUID().toString();
       String fileName = URLDecoder.decode(brutFileName, Charsets.UTF_8.name());
-      JSONObject jsonFile = uploadFile(fileId, fileName, inputStream);
-      return Response.ok().entity(packJSonDataWithHtmlContainer(jsonFile)).build();
+      String jsonFile = packJSonObjectWithHtmlContainer(uploadFile(fileId, fileName, inputStream));
+      return Response.ok().entity(jsonFile).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -151,11 +154,12 @@ public class FileUploadResource extends RESTWebService {
    * @param fileId
    * @param fileName
    * @param inputStream
-   * @return a JSON representation of the uploaded file. (more informations on {@link
-   *         FileUploadResource#uploadFiles()})
+   * @return a builder of the JSON representation of the uploaded file (more information on
+   * {@link FileUploadResource#uploadFiles()})
    * @throws IOException
    */
-  private JSONObject uploadFile(String fileId, String fileName, InputStream inputStream)
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> uploadFile(String fileId,
+      String fileName, InputStream inputStream)
       throws IOException {
 
     // Destination of the file that going to be upload
@@ -165,26 +169,23 @@ public class FileUploadResource extends RESTWebService {
     saveToFile(inputStream, uploadedFileLocation);
 
     // JSON response
-    return toJSONObject(fileId, uploadedFileLocation);
+    return asJSON(fileId, uploadedFileLocation);
   }
 
   /**
    * Builds a JSON representation of the given uploaded file.
    * @param fileId
    * @param file
-   * @return a JSON representation of the uploaded file.(more informations on {@link
-   *         FileUploadResource#uploadFiles()})
+   * @return a builder of the JSON representation of the uploaded file (more information on
+   * {@link FileUploadResource#uploadFiles()})
    */
-  private JSONObject toJSONObject(String fileId, File file) {
-    JSONObject fileInfos = new JSONObject();
-    fileInfos.put("fileId", fileId);
-    fileInfos.put("name", file.getName().substring(fileId.length() + 1));
-    fileInfos.put("size", file.length());
-    fileInfos.put("formattedSize",
-        UnitUtil.formatMemSize(new BigDecimal(String.valueOf(file.length()))));
-    fileInfos.put("iconUrl",
-        FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(file.getName())));
-    return fileInfos;
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> asJSON(String fileId, File file) {
+    return (o -> o.put("fileId", fileId)
+        .put("name", file.getName().substring(fileId.length() + 1))
+        .put("size", file.length())
+        .put("formattedSize", UnitUtil.formatMemSize(new BigDecimal(String.valueOf(file.length()))))
+        .put("iconUrl",
+            FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(file.getName()))));
   }
 
   /**

@@ -27,6 +27,7 @@ import com.silverpeas.calendar.DateTime;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPrivilegeValidation;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -37,6 +38,7 @@ import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.synchronizer.SynchronizerToken;
 import org.silverpeas.util.security.SecuritySettings;
 
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
@@ -56,6 +58,7 @@ import java.util.logging.Logger;
  *
  * @author mmoquillon
  */
+@Singleton
 public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";
@@ -67,6 +70,11 @@ public class SynchronizerTokenService {
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
   private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList(new String[]{"POST",
     "PUT", "DELETE"});
+
+
+  public static SynchronizerTokenService getInstance() {
+    return ServiceProvider.getService(SynchronizerTokenService.class);
+  }
 
   protected SynchronizerTokenService() {
 

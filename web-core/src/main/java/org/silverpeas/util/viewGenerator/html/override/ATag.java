@@ -24,12 +24,11 @@
 
 package org.silverpeas.util.viewGenerator.html.override;
 
-import org.silverpeas.util.StringUtil;
 import org.apache.ecs.xhtml.a;
 import org.silverpeas.token.Token;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -77,8 +76,7 @@ public class ATag extends BodyTagSupport {
       a.setName(name);
     }
     if (SecuritySettings.isWebSecurityByTokensEnabled() && !"#".equals(href)) {
-      SynchronizerTokenService service = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
+      SynchronizerTokenService service = SynchronizerTokenService.getInstance();
       Token token = service.getSessionToken((HttpServletRequest) pageContext.getRequest());
       if (token.isDefined()) {
         href += (href.contains("?") ? "&" : "?");

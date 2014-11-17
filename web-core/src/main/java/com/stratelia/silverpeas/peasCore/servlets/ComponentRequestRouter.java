@@ -42,7 +42,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
 
 import javax.inject.Inject;
@@ -282,9 +281,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
             request.getRequestURI());
         // set the session token so that is can be available for all JSPs in the case some of them
         // require it for some specific protected actions.
-        SynchronizerTokenService tokenService = SynchronizerTokenServiceFactory.
-            getSynchronizerTokenService();
-        Token token = tokenService.getSessionToken(request);
+        Token token = getSynchronizerTokenService().getSessionToken(request);
         request.setAttribute(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
 
         RequestDispatcher requestDispatcher =

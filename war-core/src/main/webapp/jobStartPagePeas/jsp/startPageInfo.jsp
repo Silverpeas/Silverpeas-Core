@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
 <%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
 <%@page import="org.silverpeas.quota.constant.QuotaLoad" %>

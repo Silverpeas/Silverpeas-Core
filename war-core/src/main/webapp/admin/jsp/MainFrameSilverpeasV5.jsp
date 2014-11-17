@@ -24,8 +24,6 @@
 
 --%>
 
-<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
-<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%

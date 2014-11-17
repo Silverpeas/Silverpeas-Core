@@ -23,21 +23,20 @@
  */
 package org.silverpeas.web.util;
 
-import org.silverpeas.util.StringUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.textarea;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * This class provides some tools to more effectively use the technique of ajax iframe transport.
@@ -60,8 +59,7 @@ public class IFrameAjaxTransportUtil {
     String messageKey = MessageManager.getRegistredKey();
     final String errorEntity;
     if (StringUtil.isDefined(messageKey)) {
-      errorEntity =
-          packJSonDataWithHtmlContainer(new JSONObject().put("iframeMessageKey", messageKey));
+      errorEntity = packJSonObjectWithHtmlContainer(o -> o.put("iframeMessageKey", messageKey));
     } else {
       errorEntity = packObjectToJSonDataWithHtmlContainer(wae.getResponse().getEntity());
     }
@@ -77,10 +75,11 @@ public class IFrameAjaxTransportUtil {
    * @return
    */
   public static String packObjectToJSonDataWithHtmlContainer(Object object) throws IOException {
+    String json = StringUtil.EMPTY;
     if (object != null) {
-      return packJSonDataWithHtmlContainer(new ObjectMapper().writeValueAsString(object));
+      json = JSONCodec.encode(object);
     }
-    return packJSonDataWithHtmlContainer(StringUtil.EMPTY);
+    return packJSonDataWithHtmlContainer(json);
   }
 
   /**
@@ -91,45 +90,51 @@ public class IFrameAjaxTransportUtil {
    */
   public static String packObjectToJSonDataWithHtmlContainer(List<Object> objects)
       throws IOException {
+    String jsonArray = StringUtil.EMPTY;
     if (CollectionUtils.isNotEmpty(objects)) {
-      ObjectMapper mapper = new ObjectMapper();
-      JSONArray jsonArray = new JSONArray();
-      for (Object object : objects) {
-        jsonArray.put(mapper.writeValueAsString(object));
-      }
-      return packJSonDataWithHtmlContainer(jsonArray.toString());
+      jsonArray = JSONCodec.encode(objects);
     }
-    return packJSonDataWithHtmlContainer(StringUtil.EMPTY);
+    return packJSonDataWithHtmlContainer(jsonArray);
   }
 
   /**
    * Packaging a JSon object as HTML to be performed by IFrame Ajax Transport Javascript
    * Plugin.
-   * @param jsonObject
+   * @param jsonObjectBuilder a dynamic builder of a JSON object.
    * @return
    */
-  public static String packJSonDataWithHtmlContainer(JSONObject jsonObject) {
-    if (jsonObject != null) {
-      return packJSonDataWithHtmlContainer(jsonObject.toString());
+  public static String packJSonObjectWithHtmlContainer(
+      Function<JSONCodec.JSONObject, JSONCodec.JSONObject> jsonObjectBuilder) {
+    String json = StringUtil.EMPTY;
+    if (jsonObjectBuilder != null) {
+      try {
+        json = JSONCodec.encodeObject(jsonObjectBuilder);
+      } catch (Exception ex) {
+      }
     }
-    return packJSonDataWithHtmlContainer(StringUtil.EMPTY);
+    return packJSonDataWithHtmlContainer(json);
   }
 
   /**
    * Packaging a JSon object list as HTML to be performed by IFrame Ajax Transport Javascript
    * Plugin.
-   * @param jsonObjects
+   * @param jsonArrayBuilder a dynamic builder of a JSON array of JSON objects.
    * @return
    */
-  public static String packJSonDataWithHtmlContainer(List<JSONObject> jsonObjects) {
-    if (CollectionUtils.isNotEmpty(jsonObjects)) {
-      JSONArray jsonArray = new JSONArray();
-      for (JSONObject jsonObject : jsonObjects) {
-        jsonArray.put(jsonObject);
+  public static String packJSonArrayWithHtmlContainer(
+      Function<JSONCodec.JSONArray, JSONCodec.JSONArray> jsonArrayBuilder) {
+    String json = StringUtil.EMPTY;
+    if (jsonArrayBuilder != null) {
+      try {
+        json = JSONCodec.encodeArray(jsonArrayBuilder);
+        if (json.trim().equals("[]")) {
+          json = StringUtil.EMPTY;
+        }
+      } catch(Exception ex) {
+
       }
-      return packJSonDataWithHtmlContainer(jsonArray.toString());
     }
-    return packJSonDataWithHtmlContainer(StringUtil.EMPTY);
+    return packJSonDataWithHtmlContainer(json);
   }
 
   /**

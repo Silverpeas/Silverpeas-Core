@@ -24,14 +24,13 @@
 
 package org.silverpeas.util.viewGenerator.html.override;
 
-import org.silverpeas.util.StringUtil;
 import org.apache.ecs.xhtml.form;
 import org.apache.ecs.xhtml.input;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.token.SynchronizerTokenService;
-import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -72,8 +71,7 @@ public class FormTag extends BodyTagSupport {
       form.setID(getId());
     }
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
-      SynchronizerTokenService service = SynchronizerTokenServiceFactory.
-          getSynchronizerTokenService();
+      SynchronizerTokenService service = SynchronizerTokenService.getInstance();
       Token token = service.getSessionToken((HttpServletRequest) pageContext.getRequest());
       if (token.isDefined()) {
         form.addElement(
