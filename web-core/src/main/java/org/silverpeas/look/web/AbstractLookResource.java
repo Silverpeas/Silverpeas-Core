@@ -41,7 +41,7 @@ public abstract class AbstractLookResource extends RESTWebService {
 
   /**
    * Not recognized object : error.
-   * @param component the component to convert.
+   * @param object
    * @return the corresponding component entity.
    */
   protected AbstractLookEntity<?> asWebEntity(final Object object) {
@@ -58,8 +58,7 @@ public abstract class AbstractLookResource extends RESTWebService {
   }
 
   /**
-   * Verifies the requester user is authorized to access the given space
-   * @param spaceId
+   * Verifies the requester user is authorized to access the look context
    */
   protected void verifyUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized
@@ -69,8 +68,7 @@ public abstract class AbstractLookResource extends RESTWebService {
   }
 
   /**
-   * Indicates if the requester user is authorized to access the given space
-   * @param spaceId
+   * Indicates if the requester user is authorized to access the look context
    */
   protected boolean isUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized

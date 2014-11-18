@@ -49,8 +49,8 @@ public class DisplayUserContextEntity extends AbstractLookEntity<DisplayUserCont
 
   /**
    * Creates user display context entity.
-   * @param lookHelper
-   * @param userPreferences
+   * @param lookHelper the look helper
+   * @param userPreferences the user preferences
    * @return
    */
   public static DisplayUserContextEntity createFrom(final LookHelper lookHelper,
@@ -60,8 +60,8 @@ public class DisplayUserContextEntity extends AbstractLookEntity<DisplayUserCont
 
   /**
    * Instantiating a new web entity from the corresponding data
-   * @param lookHelper
-   * @param userPreferences
+   * @param lookHelper the look helper
+   * @param userPreferences the user preferences
    */
   private DisplayUserContextEntity(final LookHelper lookHelper,
       final UserPreferences userPreferences) {
