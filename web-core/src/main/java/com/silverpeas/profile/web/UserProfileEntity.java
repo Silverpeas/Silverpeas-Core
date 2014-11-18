@@ -28,12 +28,11 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import org.owasp.encoder.Encode;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -59,6 +58,9 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class UserProfileEntity extends UserDetail implements Exposable {
 
   private static final long serialVersionUID = -5011846708353591604L;
+
+  @Inject
+  ServletContext context;
 
   /**
    * Decorates the specified user details with the required WEB exposition features.
@@ -344,18 +346,16 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   private String getAvatarURI() {
     String avatarURI = this.user.getSmallAvatar();
-    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
-      avatarURI = context.getServletContext().getContextPath() + avatarURI;
+      avatarURI = context.getContextPath() + avatarURI;
     }
     return avatarURI;
   }
 
   private String getUserProfileWebPageURI() {
     String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
-    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
-      pageUri = context.getServletContext().getContextPath() + pageUri;
+      pageUri = context.getContextPath() + pageUri;
     } else {
       pageUri = URLManager.getApplicationURL() + pageUri;
     }
@@ -364,9 +364,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   private String getTchatWebPageURI() {
     String pageUri = "/RcommunicationUser/jsp/OpenDiscussion?userId=" + this.user.getId();
-    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
     if (context != null) {
-      pageUri = context.getServletContext().getContextPath() + pageUri;
+      pageUri = context.getContextPath() + pageUri;
     } else {
       pageUri = URLManager.getApplicationURL() + pageUri;
     }
