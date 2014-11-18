@@ -41,8 +41,7 @@ import java.util.Map;
  * Date: 17/04/13
  */
 public class CalendarViewContext {
-  private final static Map<String, ResourceLocator> bundles =
-      new HashMap<String, ResourceLocator>();
+  private final static Map<String, ResourceLocator> bundles = new HashMap<>();
   private final static EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
       EnumSet.of(PeriodType.week, PeriodType.day);
 
@@ -55,8 +54,8 @@ public class CalendarViewContext {
 
   /**
    * Default constructor.
-   * @param componentInstanceId
-   * @param locale
+   * @param componentInstanceId the component instance identifier
+   * @param locale the locale
    */
   public CalendarViewContext(final String componentInstanceId, final String locale) {
     this.componentInstanceId = componentInstanceId;

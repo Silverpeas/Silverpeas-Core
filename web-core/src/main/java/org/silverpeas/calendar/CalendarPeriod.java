@@ -57,16 +57,14 @@ public class CalendarPeriod {
   }
 
   /**
-   * Get the begin date of the period.
-   * @return
+   * @return the begin date of the period.
    */
   public CalendarDateTime getBeginDate() {
     return beginDate;
   }
 
   /**
-   * Get the end date of the period.
-   * @return
+   * @return the end date of the period.
    */
   public CalendarDateTime getEndDate() {
     return endDate;

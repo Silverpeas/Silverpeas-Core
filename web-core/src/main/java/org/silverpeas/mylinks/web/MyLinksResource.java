@@ -102,9 +102,7 @@ public class MyLinksResource extends RESTWebService {
     Collection<LinkDetail> links = getMyLinksBm().getAllLinks(getUserDetail().getId());
     for (LinkDetail linkDetail : links) {
       if (linkDetail.getLinkId() == Integer.parseInt(linkId)) {
-        MyLinkEntity myLinkEntity =
-            MyLinkEntity.fromLinkDetail(linkDetail, getUriInfo().getAbsolutePath());
-        return myLinkEntity;
+        return MyLinkEntity.fromLinkDetail(linkDetail, getUriInfo().getAbsolutePath());
       }
     }
     throw new WebApplicationException(Status.FORBIDDEN);

@@ -55,7 +55,7 @@ public class LanguageResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<LanguageEntity> getAvailableLanguages() {
-    List<LanguageEntity> languages = new ArrayList<LanguageEntity>();
+    List<LanguageEntity> languages = new ArrayList<>();
     ResourceLocator multilang =
         new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle",
             getUserPreferences().getLanguage());

@@ -95,8 +95,8 @@ public class MyLinkEntity implements Exposable {
 
   /**
    * Constructor using linkDetail and uri
-   * @param link
-   * @param uri
+   * @param link the link detail
+   * @param uri an URI
    */
   public MyLinkEntity(LinkDetail link, URI uri) {
     this.uri = uri;
