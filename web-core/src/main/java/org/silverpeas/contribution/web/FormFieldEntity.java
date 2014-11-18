@@ -49,10 +49,10 @@ public class FormFieldEntity {
 
   /**
    * Creates a new form field entity from the specified field data.
-   * @param type
-   * @param name
-   * @param label
-   * @param value
+   * @param type the type
+   * @param name the name
+   * @param label the label
+   * @param value the value
    * @return the entity representing the specified field data.
    */
   public static FormFieldEntity createFrom(String type, String name, String label,
@@ -71,7 +71,6 @@ public class FormFieldEntity {
   }
 
   protected FormFieldEntity() {
-
   }
 
   protected String getType() {

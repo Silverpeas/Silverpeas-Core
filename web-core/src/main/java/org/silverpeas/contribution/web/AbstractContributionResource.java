@@ -53,8 +53,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
   public abstract String getContributionId();
 
   /**
-   * Gets the default form id
-   * @return
+   * @return the default form id
    */
   protected String getDefaultFormId() {
     String xmlFormName =
@@ -66,8 +65,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
   }
 
   /**
-   * Gets the default publication template language
-   * @return
+   * @return the default publication template language
    */
   protected String getDefaultPublicationTemplateLanguage() {
     return getUserPreferences().getLanguage();
@@ -75,7 +73,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
 
   /**
    * Creating the external id from the specified form id
-   * @param formId
+   * @param formId the form identifier
    * @return
    */
   private String createExternalId(String formId) {

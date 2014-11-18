@@ -44,12 +44,12 @@ public class FormEntity extends AbstractContentEntity {
 
   /* List of form fields indexed by their names */
   @XmlElement(defaultValue = "")
-  private Map<String, FormFieldEntity> fields = new LinkedHashMap<String, FormFieldEntity>();
+  private Map<String, FormFieldEntity> fields = new LinkedHashMap<>();
 
   /**
    * Creates a new form entity from the specified form.
    *
-   * @param formId
+   * @param formId the form identifier
    * @return the entity representing the specified form.
    */
   public static FormEntity createFrom(final String formId) {

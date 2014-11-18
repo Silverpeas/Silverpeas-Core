@@ -91,8 +91,8 @@ public class ContributionContentResource extends AbstractContributionResource {
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param formId
-   * @param lang
+   * @param formId the form identifier
+   * @param lang the language
    * @return the response to the HTTP GET request with the JSON representation of form
    *         informations.
    */
