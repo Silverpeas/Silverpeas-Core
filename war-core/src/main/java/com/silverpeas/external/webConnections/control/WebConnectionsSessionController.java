@@ -27,12 +27,11 @@ package com.silverpeas.external.webConnections.control;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.util.StringUtil;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -74,8 +73,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   private void addParamToConnection(ConnectionDetail connection) {
     // ajouter les données venue de hyperlink
-    ComponentInst inst = OrganizationControllerProvider
-        .getOrganisationController().getComponentInst(connection.getComponentId());
+    ComponentInst inst = getOrganisationController().getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("Url");
     Map<String, String> param = connection.getParam();

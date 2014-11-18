@@ -27,12 +27,12 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController, org.silverpeas.util.ResourceLocator, org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   org.silverpeas.core.admin.OrganizationController organizationCtrl =
-      m_MainSessionCtrl.getOrganisationController();
+      OrganizationControllerProvider.getOrganisationController();
   GraphicElementFactory gef =
       (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 

@@ -88,7 +88,6 @@ public class AjaxServletLookV5 extends HttpServlet {
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
             GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     LookHelper helper = LookHelper.getLookHelper(session);
-    OrganizationController orgaController = mainSessionController.getOrganisationController();
 
     String userId = mainSessionController.getUserId();
     UserPreferences preferences = mainSessionController.getPersonalization();
@@ -155,7 +154,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 helper, writer, listUserFS, displayMode);
       } else {
         // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
+        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
 
         // space transverse
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
@@ -188,7 +187,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                 settings, message);
       } else {
         // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
+        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
                 defaultLook, displayPDC, false, helper, writer, listUserFS,
                 displayMode,restrictedPath);

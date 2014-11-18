@@ -24,6 +24,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.statistic.control.StatisticService;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
@@ -33,6 +34,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +47,9 @@ import static org.silverpeas.util.FileServerUtils.*;
 public class FileServer extends AbstractFileSender {
 
   private static final long serialVersionUID = 6377810839728682983L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -133,8 +138,8 @@ public class FileServer extends AbstractFileSender {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
-        isAllowed = controller.getOrganisationController()
-            .isComponentAvailable(componentId, controller.getUserId());
+        isAllowed =
+            organizationController.isComponentAvailable(componentId, controller.getUserId());
       }
     }
     return isAllowed;

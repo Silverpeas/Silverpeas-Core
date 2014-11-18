@@ -24,6 +24,7 @@
 
 package com.silverpeas.node.servlets;
 
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -38,6 +39,7 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +58,9 @@ import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSI
 public class GetNodes extends HttpServlet {
 
   private static final long serialVersionUID = -6406943829713290811L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -87,7 +92,7 @@ public class GetNodes extends HttpServlet {
       // retain only available instances for current user
       List<String> availableComponentIds = new ArrayList<String>();
       for (String componentId : componentIds) {
-        if (mainSessionCtrl.getOrganisationController().isComponentAvailable(componentId,
+        if (organizationController.isComponentAvailable(componentId,
             mainSessionCtrl.getUserId())) {
           availableComponentIds.add(componentId);
         }
@@ -129,7 +134,7 @@ public class GetNodes extends HttpServlet {
   private NodeDetail getRoot(String componentId, MainSessionController session) {
     NodeDetail node = getNodeBm().getHeader(new NodePK("0", componentId));
     ComponentInstLight component =
-        session.getOrganisationController().getComponentInstLight(componentId);
+        organizationController.getComponentInstLight(componentId);
     if (component != null) {
       node.setName(component.getLabel(session.getFavoriteLanguage()));
     }
@@ -148,7 +153,7 @@ public class GetNodes extends HttpServlet {
       } else {
         int rightsDependsOn = child.getRightsDependsOn();
         boolean nodeAvailable =
-            session.getOrganisationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE,
+            organizationController.isObjectAvailable(rightsDependsOn, ObjectType.NODE,
             child.getNodePK().getInstanceId(), session.getUserId());
         if (nodeAvailable) {
           availableChildren.add(child);
@@ -162,7 +167,7 @@ public class GetNodes extends HttpServlet {
               // same rights of father (which is not available) so it is not available too
             } else {
               // different rights of father check if it is available
-              if (session.getOrganisationController().isObjectAvailable(
+              if (organizationController.isObjectAvailable(
                   descendant.getRightsDependsOn(), ObjectType.NODE, child.getNodePK().
                   getInstanceId(), session.getUserId())) {
                 childAllowed = true;
@@ -221,17 +226,17 @@ public class GetNodes extends HttpServlet {
       return SilverpeasRole.user.toString();
     }
     if (!isRightsEnabled(session, node.getNodePK().getInstanceId())) {
-      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
+      return getProfile(organizationController.getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId()));
     }
 
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
       int rightsDependsOn = node.getRightsDependsOn();
-      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
+      return getProfile(organizationController.getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId(), rightsDependsOn, ObjectType.NODE));
     } else {
-      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
+      return getProfile(organizationController.getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId()));
     }
   }

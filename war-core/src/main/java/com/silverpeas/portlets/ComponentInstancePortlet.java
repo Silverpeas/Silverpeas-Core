@@ -34,6 +34,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ValidatorException;
 
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -52,7 +53,7 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
     PortletPreferences pref = request.getPreferences();
     String instanceId = pref.getValue("instanceId", "");
 
-    if (m_MainSessionCtrl.getOrganisationController().isComponentAvailable(
+    if (OrganizationControllerProvider.getOrganisationController().isComponentAvailable(
         instanceId, m_MainSessionCtrl.getUserId())) {
       request.setAttribute("URL", URLManager.getURL(null, null, instanceId) + "portlet");
     }

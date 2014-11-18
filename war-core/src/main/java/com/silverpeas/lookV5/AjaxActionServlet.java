@@ -24,10 +24,21 @@
 
 package com.silverpeas.lookV5;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.look.LookHelper;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
+import com.stratelia.webactiv.organization.DAOProvider;
+import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
+import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -35,23 +46,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.silverpeas.look.LookHelper;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
-import com.stratelia.webactiv.organization.DAOProvider;
-import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
-import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.OrganizationController;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AjaxActionServlet extends HttpServlet {
 
@@ -246,9 +244,9 @@ public class AjaxActionServlet extends HttpServlet {
             jsonRslt.put("spacestate", spaceState);
           }
           // Retrieve father space identifiers
-          OrganizationController orga = m_MainSessionCtrl.getOrganisationController();
           ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId);
-          JSONArray parentSpaceJA = buildParentJA(userId, listUFS, orga, parentSpaceIds);
+          JSONArray parentSpaceJA =
+              buildParentJA(userId, listUFS, organisationController, parentSpaceIds);
           jsonRslt.put("spacestate", spaceState);
           jsonRslt.put("parentids", parentSpaceJA);
         } else {

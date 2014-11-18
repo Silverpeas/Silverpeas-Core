@@ -20,6 +20,7 @@
  */
 package com.silverpeas.portlets.portal;
 
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -579,9 +580,8 @@ public class SPDesktopServlet extends HttpServlet {
         if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
           return null;
         }
-        MainSessionController m_MainSessionCtrl = getMainSessionController(request);
         SpaceInst spaceStruct =
-            m_MainSessionCtrl.getOrganisationController().getSpaceInstById(spaceId);
+            getOrganizationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           return null;
@@ -612,8 +612,8 @@ public class SPDesktopServlet extends HttpServlet {
     return null;
   }
 
-  private OrganizationController getOrganizationController(final HttpServletRequest request) {
-    return getMainSessionController(request).getOrganisationController();
+  private OrganizationController getOrganizationController() {
+    return OrganizationControllerProvider.getOrganisationController();
   }
 
   private boolean isSpaceBackOffice(final HttpServletRequest request) {
@@ -629,7 +629,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   private String getSpaceHomepageURL(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
-    OrganizationController organizationCtrl = getOrganizationController(request);
+    OrganizationController organizationCtrl = getOrganizationController();
     SpaceInst spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
 
     if (spaceStruct != null) {

@@ -23,13 +23,11 @@
  */
 package org.silverpeas.jstl;
 
-import javax.servlet.jsp.JspException;
-
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.jstl.util.AbstractSetVarTagSupport;
-
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import javax.servlet.jsp.JspException;
 
 /**
  * Simple tag to obtain the value of the parameter for the specified component.
@@ -53,10 +51,8 @@ public class ComponentParameterTag extends AbstractSetVarTagSupport {
 
   @Override
   public int doEndTag() throws JspException {
-    MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
-        getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if (mainSessionCtrl != null && StringUtil.isDefined(getVar())) {
-      pageContext.setAttribute(getVar(), mainSessionCtrl.getOrganisationController().
+    if (StringUtil.isDefined(getVar())) {
+      pageContext.setAttribute(getVar(), OrganizationControllerProvider.getOrganisationController().
           getComponentParameterValue(componentId, parameter), getScope());
     }
     return EVAL_PAGE;

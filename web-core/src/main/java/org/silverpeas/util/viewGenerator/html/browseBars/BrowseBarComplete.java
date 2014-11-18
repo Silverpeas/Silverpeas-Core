@@ -20,16 +20,19 @@
  */
 package org.silverpeas.util.viewGenerator.html.browseBars;
 
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import java.io.IOException;
-import java.util.List;
 import org.apache.xerces.xni.XNIException;
 import org.owasp.encoder.Encode;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.html.HtmlCleaner;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The default implementation of ArrayPane interface
@@ -90,11 +93,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     if (StringUtil.isDefined(getComponentId()) || StringUtil.isDefined(getSpaceId())) {
       List<SpaceInst> spaces;
 
+      OrganizationController organizationController =
+          OrganizationControllerProvider.getOrganisationController();
       if (StringUtil.isDefined(getComponentId())) {
-        spaces = getMainSessionController().getOrganisationController().getSpacePathToComponent(
-            getComponentId());
+        spaces = organizationController.getSpacePathToComponent(getComponentId());
       } else {
-        spaces = getMainSessionController().getOrganisationController().getSpacePath(getSpaceId());
+        spaces = organizationController.getSpacePath(getSpaceId());
       }
       boolean firstSpace = true;
       for (SpaceInst spaceInst : spaces) {
@@ -123,8 +127,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
       if (StringUtil.isDefined(getComponentId())) {
         // Display component's label
-        ComponentInstLight componentInstLight = getMainSessionController().
-            getOrganisationController().getComponentInstLight(
+        ComponentInstLight componentInstLight = organizationController.getComponentInstLight(
                 getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);

@@ -73,7 +73,7 @@
   top.location = "../../Login.jsp";
 </script>
 <%  } else {
-    organizationCtrl = m_MainSessionCtrl.getOrganisationController();
+    organizationCtrl =OrganizationControllerProvider.getOrganisationController();
     gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     language = m_MainSessionCtrl.getFavoriteLanguage();

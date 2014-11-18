@@ -28,16 +28,17 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.socialnetwork.myProfil.control.SocialNetworkService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +59,9 @@ import java.util.logging.Logger;
 public class NewsFeedJSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7056446975706739300L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   /**
    * servlet method for returning JSON format
@@ -129,7 +133,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");
     PrintWriter out = response.getWriter();
-    out.println(toJsonS(map, m_MainSessionCtrl.getOrganisationController(), multilang));
+    out.println(toJsonS(map, multilang));
   }
 
   private com.silverpeas.calendar.Date[] getPeriod(HttpSession session, ResourceLocator settings) {
@@ -189,14 +193,13 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param information
    * @return JSONObject
    */
-  private JSONObject toJson(SocialInformation information, OrganizationController oc,
-      ResourceLocator multilang) {
+  private JSONObject toJson(SocialInformation information, ResourceLocator multilang) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
     JSONObject valueObj = new JSONObject();
-    UserDetail contactUser1 = oc.getUserDetail(information.getAuthor());
+    UserDetail contactUser1 = UserDetail.getById(information.getAuthor());
     if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
-      UserDetail contactUser2 = oc.getUserDetail(information.getTitle());
+      UserDetail contactUser2 = UserDetail.getById(information.getTitle());
       String avatarURL = URLManager.getApplicationURL() + contactUser2.getSmallAvatar();
       valueObj.put("type", information.getType());
       valueObj.put("author", userDetailToJSON(contactUser1));
@@ -238,8 +241,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param map
    * @return JSONArray
    */
-  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganizationController oc,
-      ResourceLocator multilang) {
+  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, ResourceLocator multilang) {
     SimpleDateFormat formatDate =
         new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale(multilang.getLanguage()));
     JSONArray result = new JSONArray();
@@ -252,7 +254,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       jsonObject.put("day", formatDate.format(key));
       List<SocialInformation> informations = entry.getValue();
       for (SocialInformation si : informations) {
-        jsonArray.put(toJson(si, oc, multilang));
+        jsonArray.put(toJson(si, multilang));
       }
       jsonArrayDateWithValues.put(jsonObject);
       jsonArrayDateWithValues.put(jsonArray);

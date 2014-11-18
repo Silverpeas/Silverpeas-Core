@@ -36,6 +36,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
@@ -126,7 +127,8 @@ public class SilverpeasSessionOpener {
       String redirectURL = null;
       if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
         redirectURL = alertUserAboutPwdExpiration(controller.getUserId(),
-            controller.getOrganisationController().getAdministratorUserIds(controller.getUserId())[0],
+            OrganizationControllerProvider.getOrganisationController()
+                .getAdministratorUserIds(controller.getUserId())[0],
             controller.getFavoriteLanguage(),
             StringUtil.getBooleanValue(allowPasswordChange));
       }

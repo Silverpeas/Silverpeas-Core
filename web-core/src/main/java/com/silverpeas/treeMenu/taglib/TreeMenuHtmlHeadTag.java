@@ -24,17 +24,16 @@
 
 package com.silverpeas.treeMenu.taglib;
 
-import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
-
-import java.io.IOException;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.core.admin.OrganizationController;
-
+import java.io.IOException;
 import java.util.Map;
+
+import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
 /**
  * @author David Derigent
@@ -120,9 +119,8 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
       if (displayIconsStyles) {
         if (iconStyle == null) {
           StringBuilder iconStyleBuilder = new StringBuilder();
-          MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
-              getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-          OrganizationController controller = mainSessionCtrl.getOrganisationController();
+          OrganizationController controller =
+              OrganizationControllerProvider.getOrganisationController();
           Map<String, String> componentsNames = controller.getAllComponentsNames();
 
           if (!componentsNames.isEmpty()) {
@@ -195,7 +193,7 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
   }
 
   /**
-   * @param displayIconsStyles the displayIconsStyles to set
+   * @param displayIconStyle the displayIconsStyles to set
    */
   public void setDisplayIconsStyles(boolean displayIconStyle) {
     this.displayIconsStyles = displayIconStyle;

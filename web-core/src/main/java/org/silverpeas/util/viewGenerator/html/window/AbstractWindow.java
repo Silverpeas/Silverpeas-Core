@@ -24,17 +24,19 @@
 
 package org.silverpeas.util.viewGenerator.html.window;
 
-import org.apache.ecs.xhtml.script;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.apache.ecs.xhtml.script;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar;
 import org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane;
@@ -149,7 +151,9 @@ public abstract class AbstractWindow implements Window {
 
   private void addOperationToSetupComponent() {
     MainSessionController msc = getGEF().getMainSessionController();
-    if (msc.getOrganisationController().isComponentManageable(getGEF().getComponentIdOfCurrentRequest(),
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    if (organizationController.isComponentManageable(getGEF().getComponentIdOfCurrentRequest(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
       String label =
           GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
@@ -265,8 +269,7 @@ public abstract class AbstractWindow implements Window {
       String componentId = getGEF().getComponentIdOfCurrentRequest();
       if (StringUtil.isDefined(componentId)) {
         StringBuilder sb = new StringBuilder(300);
-        ComponentInstLight component =
-            getGEF().getMainSessionController().getOrganisationController()
+        ComponentInstLight component = OrganizationControllerProvider.getOrganisationController()
                 .getComponentInstLight(componentId);
         String language = getGEF().getMainSessionController().getFavoriteLanguage();
         if (component != null) {

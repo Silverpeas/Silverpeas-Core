@@ -27,6 +27,7 @@ import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
@@ -43,6 +44,9 @@ import java.io.OutputStream;
 public abstract class GoTo extends HttpServlet {
 
   private static final long serialVersionUID = -8381001443484846645L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Inject
   protected SilverpeasWebUtil util;
@@ -118,7 +122,7 @@ public abstract class GoTo extends HttpServlet {
       // Personal space
       return true;
     }
-    return mainSessionCtrl.getOrganisationController().isComponentAvailable(componentId,
+    return organizationController.isComponentAvailable(componentId,
         mainSessionCtrl.getUserId());
   }
 

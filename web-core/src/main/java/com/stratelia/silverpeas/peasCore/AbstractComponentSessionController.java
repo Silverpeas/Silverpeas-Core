@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -259,7 +260,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    */
   @Override
   public OrganizationController getOrganisationController() {
-    return controller.getOrganisationController();
+    return OrganizationControllerProvider.getOrganisationController();
   }
 
   /**
@@ -581,7 +582,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     builder.append("?userId=").append(getUserId()).append("&login=");
     builder.append(getUrlEncodedParameter(getUserDetail().getLogin()));
     builder.append("&password=");
-    builder.append(getUrlEncodedParameter(controller.getOrganisationController().getUserFull(
+    builder.append(getUrlEncodedParameter(getOrganisationController().getUserFull(
         getUserId()).getPassword()));
     return builder.toString();
   }

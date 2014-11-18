@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -61,6 +62,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   private static final long serialVersionUID = -8055016885655445663L;
   @Inject
   private UserAndGroupSelectionProcessor selectionProcessor;
+  @Inject
+  private OrganizationController organizationController;
   private static final Collection<Pattern> SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS;
 
   static {
@@ -263,7 +266,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller, String componentId) {
-    return componentId == null || controller.getOrganisationController()
+    return componentId == null || getOrganizationController()
         .isComponentAvailable(componentId, controller.getUserId());
   }
 
@@ -326,6 +329,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       MainSessionController mainSessionCtrl) {
     SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     return webUtil.getComponentId(request);
+  }
+
+  protected OrganizationController getOrganizationController() {
+    return organizationController;
   }
 
   // Get xoxoxSessionController from session

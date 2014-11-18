@@ -27,8 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="importFrameSet.jsp" %>
-<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 
@@ -46,9 +45,11 @@ BrowseBar 	browseBar 	= window.getBrowseBar();
 Frame 		frame 		= gef.getFrame();
 
 // Get Emails Admins
-String[] idAdmins = new String[0];
-idAdmins = m_MainSessionCtrl.getOrganisationController().getAdministratorUserIds(userId);
-UserDetail[] listAdmins = m_MainSessionCtrl.getOrganisationController().getUserDetails(idAdmins);
+  String[] idAdmins;
+  OrganizationController organizationController =
+      OrganizationControllerProvider.getOrganisationController();
+  idAdmins = organizationController.getAdministratorUserIds(userId);
+  UserDetail[] listAdmins = organizationController.getUserDetails(idAdmins);
 
 %>
 <title></title>

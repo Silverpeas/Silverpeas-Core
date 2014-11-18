@@ -25,12 +25,13 @@
 package org.silverpeas.util.viewGenerator.html.map;
 
 import com.silverpeas.look.LookHelper;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -67,7 +68,8 @@ public class MapTag extends TagSupport {
     String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
     MainSessionController sessionController = (MainSessionController) pageContext.getSession().
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    OrganizationController organisationController = sessionController.getOrganisationController();
+    OrganizationController organisationController =
+        OrganizationControllerProvider.getOrganisationController();
     SpaceInst spaceInst = organisationController.getSpaceInstById(spaceId);
     StringBuilder result = new StringBuilder(500);
     if (spaceInst != null) {

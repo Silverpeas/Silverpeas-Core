@@ -24,12 +24,11 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.EncodeHelper"%>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.publication.model.PublicationDetail" %>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
@@ -67,7 +66,7 @@ if (publications.isEmpty()) { %>
 <% } else {
 	boolean first = true;
 	for (PublicationDetail pub : publications) {
-		UserDetail pubUpdater = m_MainSessionCtrl.getOrganisationController().getUserDetail(pub.getUpdaterId());
+      UserDetail pubUpdater = UserDetail.getById(pub.getUpdaterId());
 		String url = m_sContext + URLManager.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.getURL();
 		if (!first) {
 %>			

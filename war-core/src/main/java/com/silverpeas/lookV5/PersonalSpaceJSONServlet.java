@@ -42,6 +42,7 @@ import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,9 @@ import org.silverpeas.core.admin.OrganizationController;
 public class PersonalSpaceJSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = 8565616592829678418L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
@@ -70,7 +74,6 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     LookHelper helper = LookHelper.getLookHelper(session);
-    OrganizationController orgaController = m_MainSessionCtrl.getOrganisationController();
     String userId = m_MainSessionCtrl.getUserId();
 
     res.setContentType("application/json");
@@ -80,7 +83,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     Writer writer = res.getWriter();
     PersonalSpaceController psc = new PersonalSpaceController();
     if ("GetAvailableComponents".equals(action)) {
-      Collection<WAComponent> components = psc.getVisibleComponents(orgaController);
+      Collection<WAComponent> components = psc.getVisibleComponents(organizationController);
       SpaceInst space = psc.getPersonalSpace(userId);
       if (space != null) {
         writer.write(getWAComponentsAsJSONArray(getNotUsedComponents(components, space), helper));

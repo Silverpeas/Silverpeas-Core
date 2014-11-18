@@ -24,23 +24,26 @@
 
 package com.silverpeas.core;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
-import java.io.IOException;
-import java.io.PrintWriter;
+
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static javax.servlet.http.HttpServletResponse.SC_CREATED;
+import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
 
 /**
@@ -48,6 +51,9 @@ import static org.silverpeas.util.viewGenerator.html.GraphicElementFactory.GE_FA
  */
 public class AutoRedirectServlet extends HttpServlet {
   private static final long serialVersionUID = -8962464286320797737L;
+
+  @Inject
+  private OrganizationController organizationController;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -173,16 +179,14 @@ public class AutoRedirectServlet extends HttpServlet {
   }
 
   private boolean isAccessibleSpace(String spaceId, MainSessionController mainController) {
-    return StringUtil.isDefined(spaceId) && !mainController.getOrganisationController().
-        isSpaceAvailable(spaceId, mainController.getUserId());
+    return StringUtil.isDefined(spaceId) &&
+        !organizationController.isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
   private boolean isAccessibleComponent(String componentId, MainSessionController mainController) {
     return StringUtil.isDefined(componentId) &&
         !StringUtil.isAlpha(componentId) &&
-        !mainController.
-            getOrganisationController().isComponentAvailable(componentId,
-        mainController.getUserId());
+        !organizationController.isComponentAvailable(componentId, mainController.getUserId());
   }
 
   private boolean isSilverpeasIdValid(String silverpeasId) {
