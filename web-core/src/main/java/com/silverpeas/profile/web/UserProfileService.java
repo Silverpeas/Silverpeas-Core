@@ -23,19 +23,19 @@
  */
 package com.silverpeas.profile.web;
 
-import com.stratelia.webactiv.beans.admin.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Named;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This service provides several common operations for the REST-based resources representing the
  * users and the user groups.
  *
  */
-@Named
 class UserProfileService {
 
   /**

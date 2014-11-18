@@ -69,7 +69,7 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
   public Map<String, String> getMoreLabelData() {
     final String[] propertyNames = user.getPropertiesNames();
     final Map<String, String> labels = user.getSpecificLabels(getLanguage());
-    final Map<String, String> result = new LinkedHashMap<String, String>();
+    final Map<String, String> result = new LinkedHashMap<>();
     for (final String propertyName : propertyNames) {
       result.put(propertyName, labels.get(propertyName));
     }
@@ -79,7 +79,7 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
   @XmlElement
   public Map<String, String> getMoreData() {
     final String[] propertyNames = user.getPropertiesNames();
-    final Map<String, String> result = new LinkedHashMap<String, String>();
+    final Map<String, String> result = new LinkedHashMap<>();
     for (final String propertyName : propertyNames) {
       result.put(propertyName, user.getValue(propertyName));
     }
