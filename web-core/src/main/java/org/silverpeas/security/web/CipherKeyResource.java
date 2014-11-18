@@ -1,6 +1,8 @@
 package org.silverpeas.security.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Administration;
 import org.silverpeas.util.ResourceLocator;
@@ -8,8 +10,6 @@ import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.security.CipherKeyUpdateException;
 import org.silverpeas.util.security.ContentEncryptionService;
 import org.silverpeas.util.security.DefaultContentEncryptionService;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * A WEB resource representing the cipher key used in Silverpeas to encrypt and decrypt content.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path(CipherKeyResource.WEB_PATH)
 @Authorized
 public class CipherKeyResource extends RESTWebService {
