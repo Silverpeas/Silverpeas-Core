@@ -25,15 +25,16 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.IOException;
-import java.io.Writer;
+import org.owasp.encoder.Encode;
+import org.silverpeas.util.JSONCodec;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.json.JSONObject;
-import org.owasp.encoder.Encode;
+import java.io.IOException;
+import java.io.Writer;
 
 public class DirectoryJSONServlet extends HttpServlet {
 
@@ -61,7 +62,7 @@ public class DirectoryJSONServlet extends HttpServlet {
     res.setContentType("application/json");
     String action = req.getParameter("Action");
     Writer writer = res.getWriter();
-    JSONObject jsonObject = new JSONObject();
+    String jsonStatus = "";
     if ("SendMessage".equals(action) && dsc != null) {
       try {
         UserRecipient[] selectedUsers = new UserRecipient[1];
@@ -69,13 +70,13 @@ public class DirectoryJSONServlet extends HttpServlet {
         String title = req.getParameter("Title");
         String message = Encode.forHtml(req.getParameter("Message"));
         dsc.sendMessage(null, title, message, selectedUsers);
-        jsonObject.put("success", true);
+        jsonStatus = JSONCodec.encodeObject(o -> o.put("success", true));
       } catch (NotificationManagerException ex) {
         SilverTrace.error("directory", "DirectoryRequestRouter.sendMessage", "ERROR", ex);
-        jsonObject.put("success", false);
-        jsonObject.put("error", ex.toString());
+        jsonStatus =
+            JSONCodec.encodeObject(o -> o.put("success", false).put("error", ex.toString()));
       }
     }
-    writer.write(jsonObject.toString());
+    writer.write(jsonStatus);
   }
 }
