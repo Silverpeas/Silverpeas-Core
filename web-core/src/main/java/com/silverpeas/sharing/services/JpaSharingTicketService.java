@@ -27,12 +27,11 @@ import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.repository.DownloadDetailRepository;
 import com.silverpeas.sharing.repository.TicketRepository;
-import org.silverpeas.util.UuidPk;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
