@@ -87,7 +87,7 @@ public class TicketEntity implements Exposable {
   @XmlElement(defaultValue = "")
   protected String token;
   @XmlElement
-  protected List<DownloadDetail> downloads = new ArrayList<DownloadDetail>();
+  protected List<DownloadDetail> downloads = new ArrayList<>();
   @XmlElement(defaultValue = "")
   protected String url;
 
@@ -425,7 +425,7 @@ public class TicketEntity implements Exposable {
     if (StringUtil.isDefined(getToken())) {
       boolean isValid = true;
       if (getEndDate() != null) {
-        isValid &= (getEndDate().compareTo(new Date().getTime()) < 0);
+        isValid = (getEndDate().compareTo(new Date().getTime()) < 0);
       }
 
       if (getNbAccessMax() > 0) {

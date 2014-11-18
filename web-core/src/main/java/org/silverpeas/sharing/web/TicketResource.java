@@ -78,7 +78,7 @@ public class TicketResource extends RESTWebService {
     if (CollectionUtil.isEmpty(sharingTickets)) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    List<TicketEntity> tickets = new ArrayList<TicketEntity>(sharingTickets.size());
+    List<TicketEntity> tickets = new ArrayList<>(sharingTickets.size());
     for (Ticket ticket : sharingTickets) {
       tickets.add(TicketEntity.fromTicket(ticket, getMyTicketUri(baseUri, ticket.getToken())));
     }

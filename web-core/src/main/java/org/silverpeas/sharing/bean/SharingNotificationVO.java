@@ -28,9 +28,9 @@ public class SharingNotificationVO {
   private String attachmentUrl;
 
   /**
-   * @param selectedUsers
-   * @param externalEmails
-   * @param additionalMessage
+   * @param selectedUsers list of selected users separated by comma
+   * @param externalEmails list of external emails separated by comma
+   * @param additionalMessage an additional message
    */
   public SharingNotificationVO(String selectedUsers, String externalEmails,
       String additionalMessage, String attachmentUrl) {

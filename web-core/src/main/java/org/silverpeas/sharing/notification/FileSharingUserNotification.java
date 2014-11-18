@@ -47,7 +47,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   private static final String FOLDER_SHARING_BUNDLE_SUBJECT_KEY =
       "sharing.notification.message.subject.folder";
   private static final String PUBLICATION_SHARING_BUNDLE_SUBJECT_KEY =
-    "sharing.notification.message.subject.publication";
+      "sharing.notification.message.subject.publication";
 
   private static final String FILE_SHARING_TEMPLATE_PATH = "fileSharing";
   private static final String FILE_SHARING_TEMPLATE_FILE_NAME = "fileSharing";
@@ -59,8 +59,9 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   private SharingNotificationVO fileSharingParam;
 
   /**
-   * @param resource
-   * @param fileSharingParam
+   * @param resource the sharing ticket entity
+   * @param fileSharingParam file sharing parameters which contains selected users and external
+   * emails ...
    */
   public FileSharingUserNotification(Ticket resource, SharingNotificationVO fileSharingParam) {
     super(resource);
@@ -80,11 +81,13 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   }
 
   @Override
-  protected void performTemplateData(String language, Ticket resource, SilverpeasTemplate template) {
+  protected void performTemplateData(String language, Ticket resource,
+      SilverpeasTemplate template) {
     Ticket ticket = getResource();
     String userId = getUserId();
-    getNotificationMetaData().addLanguage(language,
-        getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("senderUser", OrganizationControllerProvider.getOrganisationController().
         getUserDetail(userId));
     template.setAttribute("attachmentUrl", fileSharingParam.getAttachmentUrl());
@@ -137,10 +140,10 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
     return NotifAction.UPDATE;
   }
 
-  /*
+  /**
    * Core service, component instance identifier is useless
-   * @see
-   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getComponentInstanceId()
+   * @see com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder
+   * #getComponentInstanceId()
    */
   @Override
   protected String getComponentInstanceId() {
@@ -155,7 +158,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   @Override
   protected Collection<String> getUserIdsToNotify() {
     String selectedUsersStr = this.fileSharingParam.getSelectedUsers();
-    List<String> listUsers = new ArrayList<String>();
+    List<String> listUsers = new ArrayList<>();
     if (StringUtil.isDefined(selectedUsersStr)) {
       Collections.addAll(listUsers, selectedUsersStr.split(COMMA_CHARACTER));
     }
@@ -164,7 +167,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
 
   @Override
   protected Collection<String> getExternalAddressesToNotify() {
-    List<String> externalAddresses = new ArrayList<String>();
+    List<String> externalAddresses = new ArrayList<>();
     String externalAddressesStr = this.fileSharingParam.getExternalEmails();
     if (StringUtil.isDefined(externalAddressesStr)) {
       String[] externalAddressesArray = externalAddressesStr.split(COMMA_CHARACTER);
@@ -184,8 +187,8 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
    */
   public static void notify(final Ticket resource, final SharingNotificationVO fileSharingParam) {
     try {
-      UserNotificationHelper.buildAndSend(new FileSharingUserNotification(resource,
-          fileSharingParam));
+      UserNotificationHelper
+          .buildAndSend(new FileSharingUserNotification(resource, fileSharingParam));
     } catch (final Exception e) {
       SilverTrace.warn("webPages", "FileSharingUserNotification.notify()",
           "fileSharing.EX_ALERT_USERS_ERROR", "tocken = " + resource.getToken(), e);
