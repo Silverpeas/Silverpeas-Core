@@ -171,8 +171,7 @@ public class SpaceEntity extends StructureElementEntity<SpaceEntity> {
   }
 
   /**
-   * Gets the URI base of the current entity
-   * @return
+   * @return the URI base of the current entity
    */
   @Override
   protected String getStringBaseURI() {

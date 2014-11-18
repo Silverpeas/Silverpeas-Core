@@ -138,18 +138,17 @@ public class SpaceResource extends AbstractAdminResource {
       verifyUserAuthorizedToAccessSpace(spaceId);
 
       // Initializing the result
-      Map<SilverpeasRole, UsersAndGroupsRoleEntity> result =
-          new LinkedHashMap<SilverpeasRole, UsersAndGroupsRoleEntity>();
+      Map<SilverpeasRole, UsersAndGroupsRoleEntity> result = new LinkedHashMap<>();
 
       // Aimed roles or all roles ?
-      Collection<String> aimedRoles = new ArrayList<String>(0);
+      Collection<String> aimedRoles = new ArrayList<>(0);
       if (StringUtil.isDefined(roles)) {
         aimedRoles = CollectionUtil.asList(StringUtils.split(roles, ","));
       }
 
       // Getting space profiles
       SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
-      List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
+      List<SpaceProfileInst> profiles = new ArrayList<>();
       profiles.addAll(spaceInst.getInheritedProfiles());
       profiles.addAll(spaceInst.getProfiles());
 
@@ -304,7 +303,7 @@ public class SpaceResource extends AbstractAdminResource {
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
-      final Collection<AbstractTypeEntity> content = new ArrayList<AbstractTypeEntity>();
+      final Collection<AbstractTypeEntity> content = new ArrayList<>();
       content.addAll(getSpaces(spaceId, forceGettingFavorite));
       content.addAll(getComponents(spaceId));
       return content;
@@ -367,8 +366,7 @@ public class SpaceResource extends AbstractAdminResource {
       // return all personal entities
       final boolean getAll = !getNotUsedComponents && !getUsedComponents && !getUsedTools;
 
-      final Collection<AbstractPersonnalEntity> personals =
-          new ArrayList<AbstractPersonnalEntity>();
+      final Collection<AbstractPersonnalEntity> personals = new ArrayList<>();
 
       if (getAll || getNotUsedComponents) {
         personals.addAll(asWebPersonalEntities(PersonalComponentEntity.class,

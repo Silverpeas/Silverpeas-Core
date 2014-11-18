@@ -146,14 +146,12 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
   }
 
   /**
-   * Gets the URI base of the current entity
-   * @return
+   * @return the URI base of the current entity
    */
   protected abstract String getStringBaseURI();
 
   /**
-   * Gets the parent URI base of the current entity
-   * @return
+   * @return the parent URI base of the current entity
    */
   protected abstract String getStringParentBaseURI();
 

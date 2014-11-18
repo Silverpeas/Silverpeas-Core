@@ -64,7 +64,7 @@ public class AdminPersonalWebDelegate {
   /**
    * Gets the WAComponent label
    * @param component
-   * @return
+   * @return the component label
    */
   public String getComponentLabel(final WAComponent component) {
     String label =
@@ -77,24 +77,21 @@ public class AdminPersonalWebDelegate {
   }
 
   /**
-   * Gets all components that can be handled in personnal space but not used yet.
-   * @return
+   * @return all components that can be handled in personnal space but not used yet.
    */
   public Collection<WAComponent> getNotUsedComponents() {
     return getCachedNotUsedComponents().values();
   }
 
   /**
-   * Gets used components instanciated in the user personal space.
-   * @return
+   * @return used components instanciated in the user personal space.
    */
   public Collection<ComponentInst> getUsedComponents() {
     return getCachedUsedComponents().values();
   }
 
   /**
-   * Gets used tools in the user personal space.
-   * @return
+   * @return used tools in the user personal space.
    */
   public Collection<AbstractTool> getUsedTools() {
     return getCachedUsedTools().values();
@@ -160,7 +157,7 @@ public class AdminPersonalWebDelegate {
    */
   private Map<String, WAComponent> getCachedNotUsedComponents() {
     if (indexedNotUsedComponents == null) {
-      indexedNotUsedComponents = new LinkedHashMap<String, WAComponent>();
+      indexedNotUsedComponents = new LinkedHashMap<>();
       for (final WAComponent component : getPersonalSpaceController().getVisibleComponents(
           getOrganisationController())) {
         if (!isComponentUsed(component)) {
@@ -179,7 +176,7 @@ public class AdminPersonalWebDelegate {
    */
   private Map<String, ComponentInst> getCachedUsedComponents() {
     if (indexedUsedComponents == null) {
-      indexedUsedComponents = new LinkedHashMap<String, ComponentInst>();
+      indexedUsedComponents = new LinkedHashMap<>();
       final SpaceInst space = getPersonalSpaceController().getPersonalSpace(getUserId());
       if (space != null) {
         for (final ComponentInst component : space.getAllComponentsInst()) {
@@ -198,7 +195,7 @@ public class AdminPersonalWebDelegate {
    */
   private Map<String, AbstractTool> getCachedUsedTools() {
     if (indexedUsedTools == null) {
-      indexedUsedTools = new LinkedHashMap<String, AbstractTool>();
+      indexedUsedTools = new LinkedHashMap<>();
       if (!getLookDelegate().getHelper().isAnonymousAccess() &&
           getLookDelegate().getHelper().getSettings("personnalSpaceVisible", true)) {
         for (final AbstractTool tool : getToolDelegate().getAllTools()) {
@@ -212,9 +209,8 @@ public class AdminPersonalWebDelegate {
   }
 
   /**
-   * Indicates if the WAComponent is already used in the user personal space or not.
    * @param component
-   * @return
+   * @return if the WAComponent is already used in the user personal space or not.
    */
   private boolean isComponentUsed(final WAComponent component) {
     return getCachedUsedComponents().containsKey(component.getName().toLowerCase());
@@ -231,8 +227,8 @@ public class AdminPersonalWebDelegate {
 
   /**
    * Easy way to instance the look service provider.
-   * @param user
-   * @param userPreference
+   * @param user the user detail
+   * @param userPreference the user preference
    * @param lookDelegate
    * @return
    */
@@ -243,8 +239,8 @@ public class AdminPersonalWebDelegate {
 
   /**
    * Hidden constructor.
-   * @param user
-   * @param userPreference
+   * @param user the user detail
+   * @param userPreference the user preference
    * @param lookDelegate
    */
   private AdminPersonalWebDelegate(final UserDetail user, final UserPreferences userPreference,
@@ -255,7 +251,7 @@ public class AdminPersonalWebDelegate {
   }
 
   /**
-   * @return
+   * @return the user identifier
    */
   private String getUserId() {
     return user.getId();

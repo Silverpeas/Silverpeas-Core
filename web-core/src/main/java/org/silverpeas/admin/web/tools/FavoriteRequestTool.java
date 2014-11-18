@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 public class FavoriteRequestTool extends AbstractTool {
 
   public FavoriteRequestTool(final String language, final LookHelper lookHelper) {
-    super(language, lookHelper, "favRequestVisible", "requests", "FavRequests", URLManager.CMP_INTERESTCENTERPEAS, "iCenterList.jsp");
+    super(language, lookHelper, "favRequestVisible", "requests", "FavRequests",
+        URLManager.CMP_INTERESTCENTERPEAS, "iCenterList.jsp");
   }
 }

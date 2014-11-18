@@ -108,18 +108,17 @@ public class ComponentResource extends AbstractAdminResource {
     try {
 
       // Initializing the result
-      Map<SilverpeasRole, UsersAndGroupsRoleEntity> result =
-          new LinkedHashMap<SilverpeasRole, UsersAndGroupsRoleEntity>();
+      Map<SilverpeasRole, UsersAndGroupsRoleEntity> result = new LinkedHashMap<>();
 
       // Aimed roles or all roles ?
-      Collection<String> aimedRoles = new ArrayList<String>(0);
+      Collection<String> aimedRoles = new ArrayList<>(0);
       if (StringUtil.isDefined(roles)) {
         aimedRoles = CollectionUtil.asList(StringUtils.split(roles, ","));
       }
 
       // Getting space profiles
       ComponentInst componentInst = getOrganisationController().getComponentInst(getComponentId());
-      List<ProfileInst> profiles = new ArrayList<ProfileInst>();
+      List<ProfileInst> profiles = new ArrayList<>();
       profiles.addAll(componentInst.getInheritedProfiles());
       profiles.addAll(componentInst.getProfiles());
 

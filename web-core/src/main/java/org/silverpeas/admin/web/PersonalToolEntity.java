@@ -45,7 +45,7 @@ public class PersonalToolEntity extends AbstractPersonnalEntity {
   /**
    * Creates a new personal tool entity from the specified tool.
    * @param tool the tool to entitify.
-   * @return.
+   * @return new personal tool entity
    */
   public static PersonalToolEntity createFrom(final AbstractTool tool) {
     return new PersonalToolEntity(tool);

@@ -46,7 +46,7 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
   /**
    * Creates a new personal component entity from the specified WAComponent.
    * @param component the tool to entitify.
-   * @return.
+   * @return new personal component entity
    */
   public static PersonalComponentEntity createFrom(final WAComponent component,
       final String componentLabel, final String language) {
@@ -56,7 +56,7 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
   /**
    * Creates a new personal component entity from the specified ComponentInst.
    * @param component the tool to entitify.
-   * @return.
+   * @return new personal component entity
    */
   public static PersonalComponentEntity createFrom(final ComponentInst component) {
     return new PersonalComponentEntity(component);

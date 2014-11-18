@@ -41,7 +41,7 @@ public class AdminWebService {
 
   /**
    * Gets ids of available root spaces of a user
-   * @param userId
+   * @param userId a user identifier
    * @return never null String array
    */
   public String[] getAllRootSpaceIds(final String userId) {
@@ -50,8 +50,8 @@ public class AdminWebService {
 
   /**
    * Gets ids of available spaces of a space and a user. It returns only spaces of the next level
-   * @param spaceId
-   * @param userId
+   * @param spaceId a space identifier
+   * @param userId a user identifier
    * @return never null String array
    */
   public String[] getAllSubSpaceIds(final String spaceId, final String userId) {
@@ -60,7 +60,7 @@ public class AdminWebService {
 
   /**
    * Gets a space from its id
-   * @param spaceId
+   * @param spaceId a space identifier
    * @return SpaceInstLight instantiated or null if not exists one with the given space id
    */
   public SpaceInstLight getSpaceById(final String spaceId) {
@@ -69,8 +69,8 @@ public class AdminWebService {
 
   /**
    * Gets ids of available components of a space and a user.
-   * @param spaceId
-   * @param userId
+   * @param spaceId a space identifier
+   * @param userId a user identifier
    * @return never null String array
    */
   public String[] getAllComponentIds(final String spaceId, final String userId) {
@@ -79,7 +79,7 @@ public class AdminWebService {
 
   /**
    * Gets a component from its id
-   * @param componentId
+   * @param componentId a component identifier
    * @return ComponentInstLight instantiated or null if not exists one with the given component id
    */
   public ComponentInstLight getComponentById(final String componentId) {

@@ -61,9 +61,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a space URI
-   * @param space
-   * @param uriInfo
-   * @return
+   * @param space a space instance light
+   * @param uriInfo an URI Info
+   * @return a space URI
    */
   public static URI buildURIOfSpace(final SpaceInstLight space, final UriInfo uriInfo) {
     return buildURIOfSpace(String.valueOf(space.getLocalId()), uriInfo);
@@ -71,9 +71,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a space URI
-   * @param spaceId
-   * @param uriInfo
-   * @return
+   * @param spaceId the space identifier
+   * @param uriInfo an URI Info
+   * @return a space URI
    */
   public static URI buildURIOfSpace(final String spaceId, final UriInfo uriInfo) {
     return buildURI(uriInfo, SPACES_BASE_URI, spaceId);
@@ -81,9 +81,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a space appearance URI
-   * @param space
-   * @param uriInfo
-   * @return
+   * @param space a space instance light
+   * @param uriInfo an URI Info
+   * @return a space appearance URI
    */
   public static URI buildURIOfSpaceAppearance(final SpaceInstLight space, final UriInfo uriInfo) {
     return buildURIOfSpaceAppearance(String.valueOf(space.getLocalId()), uriInfo);
@@ -91,9 +91,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a space appearance URI
-   * @param spaceId
-   * @param uriInfo
-   * @return
+   * @param spaceId the space identifier
+   * @param uriInfo an URI Info
+   * @return a space appearance URI
    */
   public static URI buildURIOfSpaceAppearance(final String spaceId, final UriInfo uriInfo) {
     return buildURI(uriInfo, SPACES_BASE_URI, spaceId, SPACES_APPEARANCE_URI_PART);
@@ -101,9 +101,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a space users and groups roles URI
-   * @param spaceId
+   * @param spaceId a space identifier
    * @param role
-   * @param uriInfo
+   * @param uriInfo an URI Info
    * @return
    */
   public static URI buildURIOfSpaceUsersAndGroupsRoles(final String spaceId,
@@ -114,9 +114,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a component URI
-   * @param component
-   * @param uriInfo
-   * @return
+   * @param component the component instance light
+   * @param uriInfo an URI Info
+   * @return a component URI
    */
   public static URI buildURIOfComponent(final ComponentInstLight component, final UriInfo uriInfo) {
     return buildURIOfComponent(
@@ -126,9 +126,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a component URI
-   * @param componentId
-   * @param uriInfo
-   * @return
+   * @param componentId the component identifier
+   * @param uriInfo an URI Info
+   * @return a component URI
    */
   public static URI buildURIOfComponent(final String componentId, final UriInfo uriInfo) {
     return buildURI(uriInfo, COMPONENTS_BASE_URI, componentId);
@@ -136,9 +136,9 @@ public final class AdminResourceURIs {
 
   /**
    * Builds a component users and groups roles URI
-   * @param componentId
+   * @param componentId the component identifier
    * @param role
-   * @param uriInfo
+   * @param uriInfo an URI Info
    * @return
    */
   public static URI buildURIOfComponentUsersAndGroupsRoles(final String componentId,
@@ -149,7 +149,7 @@ public final class AdminResourceURIs {
 
   /**
    * Gets the URI from a given UriInfo and URI path parts
-   * @param uriInfo
+   * @param uriInfo an URI Info
    * @param uriPathParts
    * @return
    */

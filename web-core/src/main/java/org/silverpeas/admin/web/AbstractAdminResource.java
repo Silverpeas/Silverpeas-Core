@@ -62,8 +62,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Loading data centralization of a space
-   * @param spaceId
-   * @return
+   * @param spaceId the space identifier
+   * @return the space instance light representation
    */
   protected SpaceInstLight loadSpace(final String spaceId) {
     final Collection<SpaceInstLight> space = loadSpaces(spaceId);
@@ -72,11 +72,11 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Loading data centralization of spaces
-   * @param spaceIds
+   * @param spaceIds the space identifiers
    * @return never null collection of spaces
    */
   protected Collection<SpaceInstLight> loadSpaces(final String... spaceIds) {
-    final List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
+    final List<SpaceInstLight> spaces = new ArrayList<>();
     SpaceInstLight space;
     for (final String spaceId : spaceIds) {
       space = getAdminServices().getSpaceById(spaceId);
@@ -89,7 +89,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Loading data centralization of a space
-   * @param componentId
+   * @param componentId the component instance identifier
    * @return
    */
   protected ComponentInstLight loadComponent(final String componentId) {
@@ -99,11 +99,11 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Loading data centralization of components
-   * @param componentIds
+   * @param componentIds the component instance identifiers
    * @return never null collection of components
    */
   protected Collection<ComponentInstLight> loadComponents(final String... componentIds) {
-    final List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+    final List<ComponentInstLight> components = new ArrayList<>();
     ComponentInstLight component;
     for (final String componentId : componentIds) {
       component = getAdminServices().getComponentById(componentId);
@@ -269,16 +269,14 @@ public abstract class AbstractAdminResource extends RESTWebService {
   }
 
   /**
-   * Gets the common admin services
-   * @return
+   * @return the common admin services
    */
   protected AdminWebService getAdminServices() {
     return adminServices;
   }
 
   /**
-   * Gets the commin admin personal services
-   * @return
+   * @return the commin admin personal services
    */
   protected AdminPersonalWebDelegate getAdminPersonalDelegate() {
     if (adminPersonalDelegate == null) {
@@ -291,7 +289,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Verifies the requester user is authorized to access the given space
-   * @param spaceId
+   * @param spaceId the space identifier
    */
   protected void verifyUserAuthorizedToAccessSpace(final String spaceId) {
     if (!spaceAccessController.isUserAuthorized(getUserDetail().getId(), spaceId)) {
@@ -323,8 +321,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
   }
 
   /**
-   * Gets the common look services for Web Services
-   * @return
+   * @return the common look services for Web Services
    */
   protected LookWebDelegate getLookDelegate() {
     verifyUserAuthorizedToAccessLookContext();

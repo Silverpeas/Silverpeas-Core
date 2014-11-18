@@ -37,13 +37,10 @@ public class ToolDelegate {
   private final LookHelper lookHelper;
 
   /**
-   * Gets all tools contained in Silverpeas
-   * @param language
-   * @param lookHelper
-   * @return
+   * @return all tools contained in Silverpeas
    */
   public List<AbstractTool> getAllTools() {
-    final List<AbstractTool> tools = new ArrayList<AbstractTool>();
+    final List<AbstractTool> tools = new ArrayList<>();
     tools.add(new AgendaTool(language, lookHelper));
     tools.add(new TodoTool(language, lookHelper));
     tools.add(new NotificationTool(language, lookHelper));
@@ -61,7 +58,7 @@ public class ToolDelegate {
 
   /**
    * Easy instantiation.
-   * @param language
+   * @param language the language
    * @param lookHelper
    * @return
    */
@@ -71,7 +68,7 @@ public class ToolDelegate {
 
   /**
    * Hidden constructor.
-   * @param language
+   * @param language the language
    * @param lookHelper
    */
   private ToolDelegate(final String language, final LookHelper lookHelper) {

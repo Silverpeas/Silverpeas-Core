@@ -77,7 +77,7 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
    * @param space
    * @param look
    * @param wallpaper
-   * @return
+   * @return new space appearance entity
    */
   public static SpaceAppearanceEntity createFrom(final SpaceInstLight space, final String look,
       final String wallpaper, final String css) {
