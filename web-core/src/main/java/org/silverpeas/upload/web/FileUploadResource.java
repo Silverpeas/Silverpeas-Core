@@ -33,7 +33,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.json.JSONObject;
 import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
@@ -56,13 +55,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packJSonArrayWithHtmlContainer;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packJSonObjectWithHtmlContainer;
 
 /**
  * A REST Web resource that permits to upload files. It has to be used with silverpeas-filUpload.js
@@ -151,9 +149,9 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Handles the upload of one file.
-   * @param fileId
-   * @param fileName
-   * @param inputStream
+   * @param fileId file identifier
+   * @param fileName file name
+   * @param inputStream the input stream to upload
    * @return a builder of the JSON representation of the uploaded file (more information on
    * {@link FileUploadResource#uploadFiles()})
    * @throws IOException
@@ -190,8 +188,8 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Saving the file.
-   * @param uploadedInputStream
-   * @param uploadedFileLocation
+   * @param uploadedInputStream the uploaded file input stream
+   * @param uploadedFileLocation the uploaded file location
    * @throws IOException
    */
   private void saveToFile(InputStream uploadedInputStream, File uploadedFileLocation)
@@ -233,16 +231,14 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
-   * Get file name.
-   * @return
+   * @return the file name.
    */
   private File getDestinationFileName(String fileId, String fileName) {
     return new File(getBaseFileName(fileId) + "-" + fileName);
   }
 
   /**
-   * Get file name base.
-   * @return
+   * @return the base file name
    */
   private File getBaseFileName(String fileId) {
     return new File(FileRepositoryManager.getTemporaryPath(), fileId);

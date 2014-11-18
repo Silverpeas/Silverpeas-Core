@@ -52,7 +52,7 @@ public class SubscriptionContext {
 
   /**
    * Initializing all context data excepted ones of the user.
-   * @param resource
+   * @param resource a subscription resource
    */
   public void initialize(SubscriptionResource resource) {
     internalContext = new InternalContext();
@@ -61,7 +61,7 @@ public class SubscriptionContext {
 
   /**
    * Initializing all context data excepted ones of the user.
-   * @param resource
+   * @param resource a subscription resource
    * @param resourcePath
    */
   public void initialize(SubscriptionResource resource,
@@ -74,12 +74,11 @@ public class SubscriptionContext {
 
   /**
    * Initializing all context data excepted ones of the user.
-   * @param resource
+   * @param resource a subscription resource
    * @param nodePath
    */
   public void initializeFromNode(SubscriptionResource resource, Collection<NodeDetail> nodePath) {
-    Collection<SubscriptionResourcePath> resourcePath =
-        new ArrayList<SubscriptionResourcePath>(nodePath.size());
+    Collection<SubscriptionResourcePath> resourcePath = new ArrayList<>(nodePath.size());
     for (NodeDetail node : nodePath) {
       resourcePath.add(new SubscriptionResourcePath(node.getName(userPreferences.getLanguage()),
           node.getLink()));
@@ -88,32 +87,28 @@ public class SubscriptionContext {
   }
 
   /**
-   * Gets the current user.
-   * @return
+   * @return the current user.
    */
   public UserDetail getUser() {
     return user;
   }
 
   /**
-   * Gets the resource aimed by the subscription.
-   * @return
+   * @return the resource aimed by the subscription.
    */
   public SubscriptionResource getResource() {
     return internalContext.resource;
   }
 
   /**
-   * Gets the path aimed by the subscription. (Path for browse bar)
-   * @return
+   * @return the path aimed by the subscription. (Path for browse bar)
    */
   public Collection<SubscriptionResourcePath> getPath() {
     return internalContext.path;
   }
 
   /**
-   * Gets the destination URL.
-   * @return
+   * @return the destination URL.
    */
   public String getDestinationUrl() {
     return internalContext.destinationUrl;
@@ -125,6 +120,6 @@ public class SubscriptionContext {
   private class InternalContext {
     public String destinationUrl = "/RSubscription/jsp/Main";
     public SubscriptionResource resource = null;
-    public Collection<SubscriptionResourcePath> path = new ArrayList<SubscriptionResourcePath>();
+    public Collection<SubscriptionResourcePath> path = new ArrayList<>();
   }
 }
