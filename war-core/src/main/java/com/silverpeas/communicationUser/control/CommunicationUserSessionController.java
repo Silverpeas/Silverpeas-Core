@@ -58,7 +58,6 @@ import org.silverpeas.util.fileFolder.FileFolderManager;
  */
 public class CommunicationUserSessionController extends AbstractComponentSessionController {
 
-  Selection sel = null;
   private String m_PathDiscussions = null;
   private Collection<File> m_listCurrentDiscussion = new ArrayList<File>();
 
@@ -75,7 +74,6 @@ public class CommunicationUserSessionController extends AbstractComponentSession
         "com.silverpeas.communicationUser.settings.communicationUserIcons",
         "com.silverpeas.communicationUser.settings.communicationUserSettings");
     setComponentRootName(URLManager.CMP_COMMUNICATIONUSER);
-    sel = getSelection();
   }
 
   /**
