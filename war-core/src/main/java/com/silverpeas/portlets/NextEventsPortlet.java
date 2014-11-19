@@ -24,46 +24,30 @@
 
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ValidatorException;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
+import org.silverpeas.util.StringUtil;
+
+import javax.portlet.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NextEventsPortlet extends GenericPortlet implements FormNames {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
-
     PortletPreferences pref = request.getPreferences();
     int nbEvents = Integer.parseInt(pref.getValue("nbEvents", "5"));
 
     List<JournalHeader> events = new ArrayList<JournalHeader>();
     try {
-      events = (List<JournalHeader>) AgendaAccess.getNextDaySchedulables(m_MainSessionCtrl
-          .getUserId());
+      events = (List<JournalHeader>) AgendaAccess.getNextDaySchedulables(
+          UserDetail.getCurrentRequester().getId());
 
       if (events.size() > nbEvents) {
         events = events.subList(0, nbEvents);

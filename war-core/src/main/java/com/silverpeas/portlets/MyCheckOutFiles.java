@@ -20,17 +20,16 @@
  */
 package com.silverpeas.portlets;
 
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
@@ -41,15 +40,11 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
   @Override
   public void doView(RenderRequest request, RenderResponse response) throws PortletException,
       IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController sessionController = (MainSessionController) session.
-        getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
-
     Iterator<SimpleDocument> attachments = null;
     try {
+      UserDetail currentUser = UserDetail.getCurrentRequester();
       attachments = AttachmentServiceProvider.getAttachmentService().listDocumentsLockedByUser(
-          sessionController.getUserId(), sessionController.getFavoriteLanguage()).iterator();
+          currentUser.getId(), currentUser.getUserPreferences().getLanguage()).iterator();
     } catch (AttachmentException e) {
       SilverTrace.error("portlet", "MyCheckOutFiles", "portlet.ERROR", e);
     }

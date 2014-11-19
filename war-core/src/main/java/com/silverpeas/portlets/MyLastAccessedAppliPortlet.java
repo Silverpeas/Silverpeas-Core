@@ -20,35 +20,28 @@
  */
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
+import com.stratelia.silverpeas.silverStatisticsPeas.control.SilverStatisticsPeasDAOAccesVolume;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silverStatisticsPeas.control.SilverStatisticsPeasDAOAccesVolume;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class MyLastAccessedAppliPortlet extends GenericPortlet implements FormNames {
   
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
-
     PortletPreferences pref = request.getPreferences();
     int nbApplis = 5;
     if (StringUtil.isInteger(pref.getValue("nbApplis", "5"))) {
@@ -57,7 +50,8 @@ public class MyLastAccessedAppliPortlet extends GenericPortlet implements FormNa
     
     Collection<ComponentInstLight> listApplis = new ArrayList<ComponentInstLight>();
     try {
-      listApplis = SilverStatisticsPeasDAOAccesVolume.getLastAccessedComponentsUser(mainSessionCtrl.getUserId(), nbApplis);
+      listApplis = SilverStatisticsPeasDAOAccesVolume.getLastAccessedComponentsUser(
+          UserDetail.getCurrentRequester().getId(), nbApplis);
     } catch (SQLException e) {
       SilverTrace.error("portlet", "MyLastAccessedAppliPortlet", "portlet.ERROR", e);
     }

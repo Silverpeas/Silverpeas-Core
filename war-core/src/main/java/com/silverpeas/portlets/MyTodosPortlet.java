@@ -24,37 +24,29 @@
 
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.todo.control.ToDoAccess;
+import com.stratelia.webactiv.todo.control.TodoException;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.todo.control.ToDoAccess;
-import com.stratelia.webactiv.todo.control.TodoException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyTodosPortlet extends GenericPortlet implements FormNames {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
-
     List todos = new ArrayList();
     try {
-      todos = (List) ToDoAccess.getNotCompletedToDos(m_MainSessionCtrl
-          .getUserId());
+      todos = (List) ToDoAccess.getNotCompletedToDos(UserDetail.getCurrentRequester().getId());
     } catch (TodoException e) {
       SilverTrace.error("portlet", "MyTodosPortlet", "portlet.ERROR", e);
     }

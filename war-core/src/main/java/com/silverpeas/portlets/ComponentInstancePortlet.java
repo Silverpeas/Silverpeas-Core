@@ -20,41 +20,24 @@
  */
 package com.silverpeas.portlets;
 
-import java.io.IOException;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ValidatorException;
-
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import javax.portlet.*;
+import java.io.IOException;
 
 public class ComponentInstancePortlet extends GenericPortlet implements FormNames {
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.
-        getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
-
     PortletPreferences pref = request.getPreferences();
     String instanceId = pref.getValue("instanceId", "");
 
-    if (OrganizationControllerProvider.getOrganisationController().isComponentAvailable(
-        instanceId, m_MainSessionCtrl.getUserId())) {
+    if (OrganizationControllerProvider.getOrganisationController().isComponentAvailable(instanceId,
+        UserDetail.getCurrentRequester().getId())) {
       request.setAttribute("URL", URLManager.getURL(null, null, instanceId) + "portlet");
     }
     include(request, response, "portlet.jsp");

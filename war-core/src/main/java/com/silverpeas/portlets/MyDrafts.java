@@ -20,33 +20,26 @@
  */
 package com.silverpeas.portlets;
 
-import java.io.IOException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import org.silverpeas.util.EJBUtilitaire;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import java.io.IOException;
 
 public class MyDrafts extends GenericPortlet implements FormNames {
   
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
-
-    request.setAttribute("Publications", getPublicationBm().getDraftsByUser(mainSessionCtrl.getUserId()));
-
+    request.setAttribute("Publications",
+        getPublicationBm().getDraftsByUser(UserDetail.getCurrentRequester().getId()));
     include(request, response, "portlet.jsp");
   }
 

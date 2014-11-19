@@ -24,19 +24,10 @@
 
 package com.silverpeas.portlets;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import javax.portlet.*;
 import java.io.IOException;
 
 public class SpaceResponsiblesPortlet extends GenericPortlet implements FormNames {
@@ -45,14 +36,10 @@ public class SpaceResponsiblesPortlet extends GenericPortlet implements FormName
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
-
     String spaceId = (String) session
         .getAttribute("Silverpeas_Portlet_SpaceId", PortletSession.APPLICATION_SCOPE);
 
-    request.setAttribute("currentUserId", m_MainSessionCtrl.getUserId());
+    request.setAttribute("currentUserId", UserDetail.getCurrentRequester().getId());
     request.setAttribute("spaceId", spaceId);
     
     PortletPreferences pref = request.getPreferences();

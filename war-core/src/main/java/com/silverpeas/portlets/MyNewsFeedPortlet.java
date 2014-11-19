@@ -20,7 +20,8 @@
  */
 package com.silverpeas.portlets;
 
-import java.io.IOException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -29,24 +30,16 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import java.io.IOException;
 
 public class MyNewsFeedPortlet extends GenericPortlet implements FormNames {
   
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
-
-    request.setAttribute("userId", mainSessionCtrl.getUserId());
+    request.setAttribute("userId", UserDetail.getCurrentRequester().getId());
     
     PortletPreferences pref = request.getPreferences();
     if ("checked".equalsIgnoreCase(pref.getValue("notDisplayMyActivity",""))) {

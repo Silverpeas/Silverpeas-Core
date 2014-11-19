@@ -22,15 +22,14 @@ package com.silverpeas.portlets;
 
 import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
@@ -42,17 +41,13 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
-
     List<LinkDetail> links = new ArrayList<>();
-    if (m_MainSessionCtrl != null) {
+    UserDetail currentUser = UserDetail.getCurrentRequester();
+    if (currentUser != null) {
       try {
         MyLinksBm myLinksBm = getMyLinksBm();
         if (myLinksBm != null) {
-          links = (List<LinkDetail>) myLinksBm.getAllLinks(m_MainSessionCtrl.getUserId());
+          links = (List<LinkDetail>) myLinksBm.getAllLinks(currentUser.getId());
         }
       } catch (Exception e) {
         SilverTrace.error("portlet", "MyBookmarksPortlet", "portlet.ERROR", e);

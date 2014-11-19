@@ -20,7 +20,7 @@
  */
 package com.silverpeas.portlets;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -35,7 +35,6 @@ import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
@@ -47,11 +46,6 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
-
     Collection<PublicationDetail> listPubli = new ArrayList<PublicationDetail>();
     PortletPreferences pref = request.getPreferences();
     int nbPublis = 5;
@@ -59,7 +53,7 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
       nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
     }
     Collection<HistoryObjectDetail> listObject =
-        getStatisticBm().getLastHistoryOfObjectsForUser(mainSessionCtrl.getUserId(), 1,
+        getStatisticBm().getLastHistoryOfObjectsForUser(UserDetail.getCurrentRequester().getId(), 1,
             "Publication", nbPublis);
     for (HistoryObjectDetail object : listObject) {
       PublicationPK pubPk = new PublicationPK(object.getForeignPK().getId(),

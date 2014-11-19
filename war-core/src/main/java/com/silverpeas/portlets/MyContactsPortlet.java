@@ -26,18 +26,15 @@ package com.silverpeas.portlets;
 
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.StringUtil;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,15 +46,11 @@ public class MyContactsPortlet extends GenericPortlet implements FormNames {
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
-
     RelationShipService relationShipService = RelationShipService.getInstance();
     List<String> listContactIds = null;
     try {
-      listContactIds = relationShipService.getMyContactsIds(Integer.parseInt(m_MainSessionCtrl.getUserId()));
+      listContactIds = relationShipService.getMyContactsIds(
+          Integer.parseInt(UserDetail.getCurrentRequester().getId()));
     } catch (SQLException e) {
       SilverTrace.error("portlet", "MyContactsPortlet", "portlet.ERROR", e);
     }

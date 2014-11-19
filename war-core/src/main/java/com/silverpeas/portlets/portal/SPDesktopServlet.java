@@ -20,16 +20,11 @@
  */
 package com.silverpeas.portlets.portal;
 
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.PortletType;
@@ -42,6 +37,11 @@ import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -55,16 +55,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -127,15 +118,15 @@ public class SPDesktopServlet extends HttpServlet {
       response.sendRedirect(spaceHomePage);
     } else {
       spaceId = getSpaceId(request);
-      MainSessionController mainSessionController = getMainSessionController(request);
-      String userId = mainSessionController.getUserId();
+      UserDetail currentUser = UserDetail.getCurrentRequester();
+      String userId = currentUser.getId();
       String spContext = userId;
       if (isDefined(spaceId)) {
         spContext = spaceId;
       }
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
-      DesktopMessages.init(mainSessionController.getFavoriteLanguage());
+      DesktopMessages.init(currentUser.getUserPreferences().getLanguage());
       SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "DesktopMessages initialized !");
       DriverUtil.init(request);
@@ -191,8 +182,8 @@ public class SPDesktopServlet extends HttpServlet {
           setPortletWindowData(request, portletWindowContents);
           
           //set all existing portlets in session
-          List<String> portletsName = portletRegistryContext.getAvailablePortlets(); 
-          setPortletNames(request, mainSessionController.getFavoriteLanguage(), portletsName);
+          List<String> portletsName = portletRegistryContext.getAvailablePortlets();
+          setPortletNames(request, currentUser.getUserPreferences().getLanguage(), portletsName);
           
           InvokerUtil.setResponseProperties(request, response,
               portletContent.getResponseProperties());
@@ -502,7 +493,7 @@ public class SPDesktopServlet extends HttpServlet {
     if (spContext.startsWith("space")) {
       portletWindowData.setSpaceId(spContext);
     }
-    if (isSpaceFrontOffice(request) || isAnonymousUser(request)) {
+    if (isSpaceFrontOffice(request) || isAnonymousUser()) {
       portletWindowData.setEdit(false);
       portletWindowData.setHelp(false);
       portletWindowData.setRemove(false);
@@ -520,7 +511,7 @@ public class SPDesktopServlet extends HttpServlet {
     if (!isDefined(spaceId) || isSpaceBackOffice(request)) {
       request.setAttribute("SpaceId", spaceId);
 
-      if (isAnonymousUser(request)) {
+      if (isAnonymousUser()) {
         request.setAttribute("DisableMove", Boolean.TRUE);
       }
 
@@ -531,20 +522,16 @@ public class SPDesktopServlet extends HttpServlet {
     }
   }
 
-  private boolean isAnonymousUser(final HttpServletRequest request) {
-    HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    return UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId());
+  private boolean isAnonymousUser() {
+    return UserDetail.getCurrentRequester().isAnonymous();
   }
 
   private void setUserIdAndSpaceIdInRequest(String spaceId, String userId,
       final HttpServletRequest request) {
     request.setAttribute("SpaceId", spaceId);
     request.setAttribute("UserId", userId);
-    SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest", "userId = "
-        + getMainSessionController(request).getUserId());
+    SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest",
+        "userId = " + UserDetail.getCurrentRequester().getId());
   }
 
   private String prefixSpaceId(String spaceId) {
@@ -644,9 +631,9 @@ public class SPDesktopServlet extends HttpServlet {
       gef.setComponentIdForCurrentRequest(null);
 
       // Maintenance Mode
+      UserDetail currentUser = UserDetail.getCurrentRequester();
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
-          (m_MainSessionCtrl.getCurrentUserDetail().isAccessUser() ||
-              m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest())) {
+          (currentUser.isAccessUser() || currentUser.isAccessGuest())) {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
       
