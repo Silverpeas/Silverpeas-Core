@@ -36,8 +36,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpMethod;
-
+import org.silverpeas.util.HttpMethod;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPrivilegeValidation;
 import com.stratelia.silverpeas.peasCore.URLManager;
