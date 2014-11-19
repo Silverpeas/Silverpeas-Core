@@ -31,12 +31,12 @@ import com.silverpeas.interestCenter.model.InterestCenter;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 
 public class InterestCenterSessionController extends AbstractComponentSessionController {
 
-  private InterestCenterService icEjb = null;
+  private InterestCenterService interestCS =
+      ServiceProvider.getService(InterestCenterService.class);
 
   /**
    * Constructor Creates new InterestCenter Session Controller
@@ -49,17 +49,14 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Method initEJB initializes EJB
+   * checkServiceInjection checks if interestCenterService has been injected by CDI service
+   * provider
    */
-  private void initEJB() {
-    if (icEjb == null) {
-      try {
-        icEjb = EJBUtilitaire.getEJBObjectRef(JNDINames.INTEREST_CENTER_EJBHOME,
-            InterestCenterService.class);
-      } catch (Exception e) {
-        throw new InterestCenterRuntimeException("InterestCenterSessionController.initEJB()", "",
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+  private void checkServiceInjection() {
+    if (interestCS == null) {
+      throw new InterestCenterRuntimeException(
+          "InterestCenterSessionController.checkServiceInjection()", "",
+          "root.EX_CANT_GET_REMOTE_OBJECT");
     }
   }
 
@@ -67,52 +64,52 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
    * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
   public List<InterestCenter> getICByUserId() throws RemoteException {
-    initEJB();
-    return icEjb.getICByUserID(Integer.parseInt(getUserId()));
+    checkServiceInjection();
+    return interestCS.getICByUserID(Integer.parseInt(getUserId()));
   }
 
   /**
    * Method getICByPK returns InterestCenter object by pk
    */
   public InterestCenter getICByPK(int pk) throws RemoteException {
-    initEJB();
-    return icEjb.getICByID(pk);
+    checkServiceInjection();
+    return interestCS.getICByID(pk);
   }
 
   /**
    * Method createIC creates new InterestCenter
    */
   public void createIC(InterestCenter icToCreate) throws RemoteException {
-    initEJB();
-    icEjb.createIC(icToCreate);
+    checkServiceInjection();
+    interestCS.createIC(icToCreate);
   }
 
   /**
    * Method updateIC updates existing InterestCenter
    */
   public void updateIC(InterestCenter icToUpdate) throws RemoteException {
-    initEJB();
-    icEjb.updateIC(icToUpdate);
+    checkServiceInjection();
+    interestCS.updateIC(icToUpdate);
   }
 
   /**
    * Method removeICByPKs removes InterestCenter objects corresponding to PKs from given ArrayList
    */
   public void removeICByPKs(String[] iDs) throws RemoteException {
-    initEJB();
-    List<Integer> pkToRemove = new ArrayList<Integer>();
+    checkServiceInjection();
+    List<Integer> pkToRemove = new ArrayList<>();
     for (String id : iDs) {
       pkToRemove.add(Integer.valueOf(id));
     }
-    icEjb.removeICByPK(pkToRemove, getUserId());
+    interestCS.removeICByPK(pkToRemove, getUserId());
   }
 
   /**
    * Method removeICByPK removes InterestCenter object corresponding to given PK
    */
   public void removeICByPK(int pk) throws RemoteException {
-    initEJB();
-    icEjb.removeICByPK(pk);
+    checkServiceInjection();
+    interestCS.removeICByPK(pk);
   }
 
   public boolean isICExists(String nameIC) throws RemoteException {
@@ -122,15 +119,13 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
         return true;
       }
     }
-
     return false;
-
   }
 
   @Override
   public void close() {
-    if (icEjb != null) {
-      icEjb = null;
+    if (interestCS != null) {
+      interestCS = null;
     }
   }
 }

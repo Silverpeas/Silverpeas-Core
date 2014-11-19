@@ -80,10 +80,10 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
       exportReport = null;
       exportThread.startTheThread();
       SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
-          "root.MSG_GEN_PARAM_VALUE", "------------THREAD EXPORT LANCE-----------");
+          "root.MSG_GEN_PARAM_VALUE", "------------EXPORT THREAD STARTED-----------");
     } else {
       SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
-          "root.MSG_GEN_PARAM_VALUE", "------------!!!! EXPORT : DEUXIEME APPEL !!!!!-----------");
+          "root.MSG_GEN_PARAM_VALUE", "------------!!!! EXPORT : ANOTHER CALL !!!!!-----------");
     }
   }
 

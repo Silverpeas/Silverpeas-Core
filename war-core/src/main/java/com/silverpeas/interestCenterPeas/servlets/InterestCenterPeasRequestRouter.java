@@ -38,11 +38,10 @@ import org.silverpeas.servlet.HttpRequest;
 import java.util.List;
 
 /**
- * Class declaration
- * @author
+ * MVC router to manage user interest center
  */
-public class InterestCenterPeasRequestRouter extends
-    ComponentRequestRouter<InterestCenterSessionController> {
+public class InterestCenterPeasRequestRouter
+    extends ComponentRequestRouter<InterestCenterSessionController> {
 
   private static final long serialVersionUID = -6581146192028464533L;
 
@@ -50,8 +49,7 @@ public class InterestCenterPeasRequestRouter extends
    * Method declaration
    * @param mainSessionCtrl
    * @param componentContext
-   * @return
-   * @see
+   * @return an InterestCenterSessionController
    */
   public InterestCenterSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -70,7 +68,6 @@ public class InterestCenterPeasRequestRouter extends
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param icSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -83,9 +80,9 @@ public class InterestCenterPeasRequestRouter extends
 
     try {
       if (function.startsWith("newICenter")) {
-        String newICName = (String) request.getParameter("icName");
+        String newICName = request.getParameter("icName");
         destination = "newICenter.jsp";
-        String action = (String) request.getParameter("action");
+        String action = request.getParameter("action");
         request.setAttribute("icName", newICName);
         if ("check".equals(action)) {
           if (icSC.isICExists(newICName)) {
@@ -96,11 +93,11 @@ public class InterestCenterPeasRequestRouter extends
           destination = "newICenter.jsp";
         }
       } else if (function.startsWith("usedICenter.jsp")) {
-        String newICName = (String) request.getParameter("icName");
+        String newICName = request.getParameter("icName");
         request.setAttribute("icName", newICName);
         destination = "usedICenter.jsp";
       } else if (function.startsWith("iCenterList")) {
-        String mode = (String) request.getParameter("mode");
+        String mode = request.getParameter("mode");
         if ("delete".equals(mode)) {
           Object o = request.getParameterValues("icCheck");
           if (o != null) {
@@ -113,8 +110,7 @@ public class InterestCenterPeasRequestRouter extends
         destination = "iCenterList.jsp";
       }
     } catch (Exception e) {
-      SilverTrace.error("interestCenterPeas",
-          "InterestCenterPeasRequestRouter.getDestination",
+      SilverTrace.error("interestCenterPeas", "InterestCenterPeasRequestRouter.getDestination",
           "pdcPeas.EX_GET_DESTINATION_ERROR", "", e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";

@@ -60,8 +60,6 @@ import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
- *
- * @author
  */
 public class ImportDragAndDrop extends HttpServlet {
 
@@ -75,8 +73,8 @@ public class ImportDragAndDrop extends HttpServlet {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("importExportPeas", "ImportDragAndDrop.init",
-          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace
+          .fatal("importExportPeas", "ImportDragAndDrop.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
@@ -109,29 +107,29 @@ public class ImportDragAndDrop extends HttpServlet {
         topicId = session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");
-      userLanguage = StringUtil.isNotDefined(userId) ? I18NHelper.defaultLanguage
-          : UserDetail.getById(userId).getUserPreferences().getLanguage();
+      userLanguage = StringUtil.isNotDefined(userId) ? I18NHelper.defaultLanguage :
+          UserDetail.getById(userId).getUserPreferences().getLanguage();
       boolean ignoreFolders = StringUtil.getBooleanValue(request.getParameter("IgnoreFolders"));
       boolean draftUsed = StringUtil.getBooleanValue(request.getParameter("Draft"));
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " topicId = " + topicId
-          + " userId = " + userId + " ignoreFolders = " + ignoreFolders
-          + ", draftUsed = " + draftUsed);
+          "componentId = " + componentId + " topicId = " + topicId + " userId = " + userId +
+              " ignoreFolders = " + ignoreFolders + ", draftUsed = " + draftUsed);
 
-      String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
-          + File.separator + topicId + System.currentTimeMillis() + File.separator;
+      String savePath =
+          FileRepositoryManager.getTemporaryPath() + "tmpupload" + File.separator + topicId +
+              System.currentTimeMillis() + File.separator;
 
       List<FileItem> items = request.getFileItems();
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
+          String parentPath =
+              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
           String fileName = FileUploadUtil.getFileName(item);
-          if (StringUtil.isDefined(parentPath)) {
-            if (parentPath.endsWith(":\\")) { // special case for file on root of disk
-              parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
-            }
+          // special case for file on root of disk
+          if (StringUtil.isDefined(parentPath) && parentPath.endsWith(":\\")) {
+            parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
           }
           parentPath = FileUtil.convertPathToServerOS(parentPath);
           SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
@@ -145,11 +143,9 @@ public class ImportDragAndDrop extends HttpServlet {
             SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "fileName on Unix = " + fileName);
           }
-          if (!ignoreFolders) {
-            if (parentPath != null && parentPath.length() > 0) {
-              result.append("newFolder=true&");
-              fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
-            }
+          if (!ignoreFolders && parentPath != null && parentPath.length() > 0) {
+            result.append("newFolder=true&");
+            fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
           }
           if (!"".equals(savePath)) {
             File f = new File(savePath + fileName);
@@ -160,18 +156,19 @@ public class ImportDragAndDrop extends HttpServlet {
             item.write(f);
           }
         } else {
-          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-              + item.getFieldName() + " - " + item.getString());
+          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
+              "item = " + item.getFieldName() + " - " + item.getString());
         }
       }
       MassiveReport massiveReport = new MassiveReport();
-      UserDetail userDetail = OrganizationControllerProvider
-          .getOrganisationController().getUserDetail(userId);
+      UserDetail userDetail =
+          OrganizationControllerProvider.getOrganisationController().getUserDetail(userId);
 
       try {
         MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
-        ImportSettings settings = new ImportSettings(savePath, userDetail, componentId, topicId,
-            draftUsed, true, ImportSettings.FROM_DRAGNDROP);
+        ImportSettings settings =
+            new ImportSettings(savePath, userDetail, componentId, topicId, draftUsed, true,
+                ImportSettings.FROM_DRAGNDROP);
         ImportReport importReport = massiveImporter.importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
@@ -218,7 +215,6 @@ public class ImportDragAndDrop extends HttpServlet {
    * specified topic of the specified component instance can be modified during the
    * multi-publications import process? If no default classification is defined for the specified
    * topic (and for any of its parent topics), then false is returned.
-   *
    * @param topicId the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
    * @return true if the default classification can be modified during the automatical

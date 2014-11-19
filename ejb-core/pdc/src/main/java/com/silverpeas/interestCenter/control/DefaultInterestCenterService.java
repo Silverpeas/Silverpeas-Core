@@ -52,10 +52,7 @@ public class DefaultInterestCenterService implements InterestCenterService {
   public List<InterestCenter> getICByUserID(int userID) {
     try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.getICByUserID(con, userID);
-    } catch (SQLException e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
-          "Pdc.CANNOT_GET_INTEREST_CENTERS", String.valueOf(userID), e);
-    } catch (DAOException e) {
+    } catch (SQLException | DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByUserID()",
           "Pdc.CANNOT_GET_INTEREST_CENTERS", String.valueOf(userID), e);
     }
@@ -65,10 +62,7 @@ public class DefaultInterestCenterService implements InterestCenterService {
   public InterestCenter getICByID(int icPK) {
     try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.getICByPK(con, icPK);
-    } catch (SQLException e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
-          "InterestCenter.CANNOT_LOAD_LIST_OF_IC", String.valueOf(icPK), e);
-    } catch (DAOException e) {
+    } catch (SQLException | DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.getICByID()",
           "InterestCenter.CANNOT_LOAD_LIST_OF_IC", String.valueOf(icPK), e);
     }
@@ -78,10 +72,7 @@ public class DefaultInterestCenterService implements InterestCenterService {
   public int createIC(InterestCenter ic) {
     try(Connection con = DBUtil.openConnection()) {
       return InterestCenterDAO.createIC(con, ic);
-    } catch (SQLException e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
-          "Pdc.CANNOT_CREATE_INTEREST_CENTER", ic.toString(), e);
-    } catch (DAOException e) {
+    } catch (SQLException | DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
           "Pdc.CANNOT_CREATE_INTEREST_CENTER", ic.toString(), e);
     }
@@ -91,10 +82,7 @@ public class DefaultInterestCenterService implements InterestCenterService {
   public void updateIC(InterestCenter ic) {
     try(Connection con = DBUtil.openConnection()) {
       InterestCenterDAO.updateIC(con, ic);
-    } catch (SQLException e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
-          "Pdc.CANNOT_UPDATE_INTEREST_CENTER", ic.toString(), e);
-    } catch (DAOException e) {
+    } catch (SQLException | DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
           "Pdc.CANNOT_UPDATE_INTEREST_CENTER", ic.toString(), e);
     }
@@ -117,10 +105,7 @@ public class DefaultInterestCenterService implements InterestCenterService {
       //remove
       InterestCenterDAO.removeICByPK(con, pks);
 
-    } catch (SQLException e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
-          "Pdc.CANNOT_DELETE_INTEREST_CENTERS", pks.toString(), e);
-    } catch (DAOException e) {
+    } catch (SQLException | DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(ArrayList pks)",
           "Pdc.CANNOT_DELETE_INTEREST_CENTERS", pks.toString(), e);
     }
@@ -130,10 +115,7 @@ public class DefaultInterestCenterService implements InterestCenterService {
   public void removeICByPK(int pk) {
     try(Connection con = DBUtil.openConnection()) {
       InterestCenterDAO.removeICByPK(con, pk);
-    } catch (SQLException e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
-          "Pdc.CANNOT_DELETE_INTEREST_CENTER", String.valueOf(pk), e);
-    } catch (DAOException e) {
+    } catch (SQLException | DAOException e) {
       throw new InterestCenterRuntimeException("InterestCenterBmEJB.removeICByPK(int pk)",
           "Pdc.CANNOT_DELETE_INTEREST_CENTER", String.valueOf(pk), e);
     }

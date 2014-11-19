@@ -21,11 +21,9 @@
 
 package com.silverpeas.interestCenter.control;
 
-import java.util.List;
-
-import javax.ejb.Local;
-
 import com.silverpeas.interestCenter.model.InterestCenter;
+
+import java.util.List;
 
 /**
  * Transverse business service on the interest centers of users.
@@ -33,27 +31,26 @@ import com.silverpeas.interestCenter.model.InterestCenter;
 public interface InterestCenterService {
 
   /**
-   * @param userID
+   * @param userID the user identifier
    * @return a list of <code>InterestCenter</code>s by user id provided
    */
   public List<InterestCenter> getICByUserID(int userID);
 
   /**
-   * @param icPK <code>InterestCenter</code> id
+   * @param icPK <code>InterestCenter</code> identifier
    * @return InterestCenter by its id
    */
   public InterestCenter getICByID(int icPK);
 
   /**
-   * @param ic
+   * @param ic interest center to create
    * @return id of <code>InterestCenter</code> created
    */
   public int createIC(InterestCenter ic);
 
   /**
    * perform updates of provided InterestCenter
-   *
-   * @param ic
+   * @param ic interest center to update
    */
   public void updateIC(InterestCenter ic);
 

@@ -101,6 +101,7 @@ public class ImportExportRequestRouter extends
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
       } else if ("SelectExportMode".equals(function)) {
+        @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         NodePK rootPK = (NodePK) request.getAttribute("RootPK");
@@ -130,9 +131,9 @@ public class ImportExportRequestRouter extends
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         }
       } else if ("ExportPDF".equals(function)) {
+        @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
-        String rootId = (String) request.getAttribute("RootId");
 
         if (itemPKs != null && !itemPKs.isEmpty()) {
           ExportPDFReport report = importExportSC.processExportPDF(itemPKs);
