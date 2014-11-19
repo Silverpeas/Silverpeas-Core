@@ -44,7 +44,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@org.springframework.stereotype.Repository
 public @interface Repository {
 
   public String value() default "";
