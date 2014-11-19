@@ -24,7 +24,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
-import org.springframework.web.context.ContextLoaderListener;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
