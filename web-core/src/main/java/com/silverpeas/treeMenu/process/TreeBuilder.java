@@ -32,8 +32,6 @@ import com.stratelia.webactiv.node.model.NodePK;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import java.rmi.RemoteException;
@@ -87,7 +85,7 @@ public class TreeBuilder {
   private static MenuItem buildOtherLevel(TreeFilter filter, MenuItem father, String userId,
       String language) {
 
-    ArrayList<MenuItem> children = new ArrayList<MenuItem>();
+    ArrayList<MenuItem> children = new ArrayList<>();
     father.setChildren(children);
     if (father.isLeaf()) {
       return father;
@@ -191,7 +189,7 @@ public class TreeBuilder {
    */
   private static MenuItem buildFirstLevel(TreeFilter filter, String userId, String language) {
     MenuItem item = new MenuItem("root");
-    ArrayList<MenuItem> children = new ArrayList<MenuItem>();
+    ArrayList<MenuItem> children = new ArrayList<>();
     item.setChildren(children);
     // the space
     OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
@@ -228,7 +226,7 @@ public class TreeBuilder {
 
   private static NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
+      return NodeService.getInstance();
     } catch (Exception e) {
       throw new MenuRuntimeException("TreeBuilder.getNodeService()", SilverpeasRuntimeException.ERROR,
           "treeMenu.EX_FAILED_BUILDING_NODEBM_HOME", e);

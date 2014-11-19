@@ -22,9 +22,7 @@ package com.silverpeas.tagcloud.control;
 
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.ejb.TagCloudRuntimeException;
-
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class TagCloudController {
@@ -43,7 +41,7 @@ public class TagCloudController {
     synchronized (TagCloudController.class) {
       if (tagCloudBm == null) {
         try {
-          tagCloudBm = EJBUtilitaire.getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBm.class);
+          tagCloudBm = ServiceProvider.getService(TagCloudBm.class);
         } catch (Exception e) {
           throw new TagCloudRuntimeException("TagCloudController.initHome()",
               SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

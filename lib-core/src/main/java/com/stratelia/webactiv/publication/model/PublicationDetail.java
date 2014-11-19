@@ -59,9 +59,8 @@ import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.Rateable;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractI18NBean;
@@ -81,8 +80,8 @@ import java.util.List;
 /**
  * This object contains the description of a publication
  */
-public class PublicationDetail extends AbstractI18NBean<PublicationI18N> implements SilverContentInterface,
-    SilverpeasContent, Rateable, Serializable, Cloneable {
+public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
+    implements SilverContentInterface, SilverpeasContent, Rateable, Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
@@ -138,8 +137,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public PublicationDetail() {
   }
 
-  public PublicationDetail(String name, String description,
-      Period visibilityPeriod, String creatorId, String componentId) {
+  public PublicationDetail(String name, String description, Period visibilityPeriod,
+      String creatorId, String componentId) {
     this.pk = new PublicationPK("unknown", componentId);
     setName(name);
     setDescription(description);
@@ -147,9 +146,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.creatorId = creatorId;
   }
 
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -176,9 +175,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    * @param keywords
    * @param content
    */
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content) {
+  public PublicationDetail(String id, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, String importance, String version,
+      String keywords, String content) {
     this.pk = new PublicationPK(id);
     setName(name);
     setDescription(description);
@@ -192,10 +191,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.content = content;
   }
 
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content,
-      String status) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content, String status) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -210,10 +208,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.status = status;
   }
 
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content,
-      String status, Date updateDate) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content, String status, Date updateDate) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -230,7 +227,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   /**
-   * @deprecated @param pk
    * @param name
    * @param description
    * @param creationDate
@@ -244,12 +240,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    * @param status
    * @param updateDate
    * @param updaterId
+   * @deprecated @param pk
    */
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content,
-      String status, Date updateDate,
-      String updaterId) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content, String status, Date updateDate, String updaterId) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -266,11 +261,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.updaterId = updaterId;
   }
 
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content,
-      String status, Date updateDate,
-      String updaterId, String author) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content, String status, Date updateDate, String updaterId,
+      String author) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -289,7 +283,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   /**
-   * @deprecated @param id
    * @param name
    * @param description
    * @param creationDate
@@ -301,11 +294,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    * @param keywords
    * @param content
    * @param status
+   * @deprecated @param id
    */
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String status) {
+  public PublicationDetail(String id, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, String importance, String version,
+      String keywords, String content, String status) {
     this.pk = new PublicationPK(id);
     setName(name);
     setDescription(description);
@@ -320,10 +313,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.status = status;
   }
 
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String status, String updaterId, String author) {
+  public PublicationDetail(String id, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, String importance, String version,
+      String keywords, String content, String status, String updaterId, String author) {
     this.pk = new PublicationPK(id);
     setName(name);
     setDescription(description);
@@ -340,10 +332,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.author = author;
   }
 
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String status, Date updateDate) {
+  public PublicationDetail(String id, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, String importance, String version,
+      String keywords, String content, String status, Date updateDate) {
     this.pk = new PublicationPK(id);
     setName(name);
     setDescription(description);
@@ -359,11 +350,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.updateDate = updateDate;
   }
 
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String status, Date updateDate,
-      String updaterId) {
+  public PublicationDetail(String id, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, String importance, String version,
+      String keywords, String content, String status, Date updateDate, String updaterId) {
     this.pk = new PublicationPK(id);
     setName(name);
     setDescription(description);
@@ -380,11 +369,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     this.updaterId = updaterId;
   }
 
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String status, Date updateDate,
-      String updaterId, Date validateDate, String validatorId) {
+  public PublicationDetail(String id, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, String importance, String version,
+      String keywords, String content, String status, Date updateDate, String updaterId,
+      Date validateDate, String validatorId) {
     this.pk = new PublicationPK(id);
     setName(name);
     setDescription(description);
@@ -405,7 +393,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   /**
-   *
    * @param pk
    * @param name
    * @param description
@@ -422,14 +409,12 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    * @param updaterId
    * @param validateDate
    * @param validatorId
-   *
    * @deprecated
    */
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content,
-      String status, Date updateDate,
-      String updaterId, Date validateDate, String validatorId) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content, String status, Date updateDate, String updaterId,
+      Date validateDate, String validatorId) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -449,11 +434,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
 
   }
 
-  public PublicationDetail(PublicationPK pk, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      int importance, String version, String keywords, String content,
-      String status, Date updateDate,
-      String updaterId, Date validateDate, String validatorId, String author) {
+  public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
+      Date beginDate, Date endDate, String creatorId, int importance, String version,
+      String keywords, String content, String status, Date updateDate, String updaterId,
+      Date validateDate, String validatorId, String author) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -805,11 +789,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     }
     if (xmlFields == null) {
       try {
-        xmlFields = getFormTemplateBm().getXMLFieldsForExport(
-            getPK().getInstanceId() + ":" + getInfoId(), getPK().getId(), language);
+        xmlFields = getFormTemplateBm()
+            .getXMLFieldsForExport(getPK().getInstanceId() + ":" + getInfoId(), getPK().getId(),
+                language);
       } catch (Exception e) {
-        throw new PublicationRuntimeException(
-            "PublicationDetail.getDataRecord()",
+        throw new PublicationRuntimeException("PublicationDetail.getDataRecord()",
             SilverpeasRuntimeException.ERROR,
             "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
       }
@@ -827,8 +811,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     DataRecord data = null;
     PublicationTemplate pub = null;
     try {
-      pub = PublicationTemplateManager.getInstance().getPublicationTemplate(
-          getPK().getInstanceId() + ":" + getInfoId());
+      pub = PublicationTemplateManager.getInstance()
+          .getPublicationTemplate(getPK().getInstanceId() + ":" + getInfoId());
       data = pub.getRecordSet().getRecord(pk.getId());
     } catch (Exception e) {
       SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FORM_RECORD",
@@ -845,10 +829,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
     for (String fieldName : fieldNames) {
       try {
         Field field = data.getField(fieldName);
-        GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) pub.getRecordTemplate()
-            .getFieldTemplate(fieldName);
-        FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate
-            .getTypeName(), "simpletext");
+        GenericFieldTemplate fieldTemplate =
+            (GenericFieldTemplate) pub.getRecordTemplate().getFieldTemplate(fieldName);
+        FieldDisplayer fieldDisplayer =
+            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
@@ -863,9 +847,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   public String getFieldValue(String fieldNameAndLanguage) {
-    SilverTrace.info("publication", "PublicationDetail.getModelContent()",
-        "root.MSG_GEN_ENTER_METHOD", "fieldNameAndLanguage = "
-        + fieldNameAndLanguage);
+    SilverTrace
+        .info("publication", "PublicationDetail.getModelContent()", "root.MSG_GEN_ENTER_METHOD",
+            "fieldNameAndLanguage = " + fieldNameAndLanguage);
 
     String[] params = fieldNameAndLanguage.split(",");
 
@@ -895,7 +879,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
       fieldValue = "";
     } else {
       if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
-        String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.length());
+        String attachmentId =
+            fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.length());
         if (StringUtil.isDefined(attachmentId)) {
           if (attachmentId.startsWith("/")) {
             // case of an image provided by a gallery
@@ -923,7 +908,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
 
   private FormTemplateBm getFormTemplateBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBm.class);
+      return ServiceProvider.getService(FormTemplateBm.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationDetail.getFormTemplateBm()",
           SilverpeasRuntimeException.ERROR,
@@ -932,26 +917,24 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   public PublicationBm getPublicationBm() {
-    if (publicationBm == null) {
-      try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBm.class);
-      } catch (Exception e) {
-        throw new PublicationRuntimeException("PublicationDetail.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR,
-            "publication.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
-      }
+    try {
+      return ServiceProvider.getService(PublicationBm.class);
+    } catch (Exception e) {
+      throw new PublicationRuntimeException("PublicationDetail.getPublicationBm()",
+          SilverpeasRuntimeException.ERROR,
+          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
     }
-    return publicationBm;
   }
 
   public Collection<SimpleDocument> getAttachments() {
     if (getPK() == null) {
-      SilverTrace.info("publication", "PublicationDetail.getAttachments()",
-          "root.MSG_GEN_ENTER_METHOD", "getPK() is null !");
+      SilverTrace
+          .info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
+              "getPK() is null !");
     } else {
-      SilverTrace.info("publication", "PublicationDetail.getAttachments()",
-          "root.MSG_GEN_ENTER_METHOD", "getPK() is not null !");
+      SilverTrace
+          .info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
+              "getPK() is not null !");
     }
     AttachmentPK foreignKey = new AttachmentPK(getPK().getId(), getPK().getSpace(), getPK().
         getComponentName());
@@ -969,14 +952,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   public String getWysiwyg() {
     String wysiwygContent;
     try {
-      wysiwygContent = WysiwygController.load(getPK().getComponentName(), getPK().getId(),
-          getLanguage());
+      wysiwygContent =
+          WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";
     }
     return wysiwygContent;
   }
-  private PublicationBm publicationBm = null;
 
   public void setImportance(int importance) {
     this.importance = importance;
@@ -1007,8 +989,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   public String getDefaultUrl(String componentName) {
-    return "/R" + componentName + "/" + getPK().getInstanceId()
-        + "/searchResult?Type=Publication&Id=" + getPK().getId();
+    return "/R" + componentName + "/" + getPK().getInstanceId() +
+        "/searchResult?Type=Publication&Id=" + getPK().getId();
   }
 
   public boolean isStatusMustBeChecked() {
@@ -1036,8 +1018,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   public boolean haveGotClone() {
-    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) && cloneId.length()
-        > 0);
+    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) &&
+        cloneId.length() > 0);
   }
 
   public boolean isClone() {
@@ -1195,23 +1177,26 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   /**
    * Is the specified user can access this publication?
    * <p/>
-   * A user can access a publication if he has enough rights to access both the application instance
-   * in which is managed this publication and one of the nodes to which this publication belongs to.
-   *
+   * A user can access a publication if he has enough rights to access both the application
+   * instance
+   * in which is managed this publication and one of the nodes to which this publication belongs
+   * to.
    * @param user a user in Silverpeas.
    * @return true if the user can access this publication, false otherwise.
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {});
+        .getAccessController(new AnnotationLiteral<ComponentAccessControl>() {
+        });
     boolean canBeAccessed = accessController.
         isUserAuthorized(user.getId(), getComponentInstanceId());
     if (canBeAccessed) {
-      AccessController<NodePK> nodeAccessController = AccessControllerProvider
-          .getAccessController(new AnnotationLiteral<NodeAccessControl>() {});
-      Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(getId(),
-          getInstanceId()));
+      AccessController<NodePK> nodeAccessController =
+          AccessControllerProvider.getAccessController(new AnnotationLiteral<NodeAccessControl>() {
+          });
+      Collection<NodePK> nodes =
+          getPublicationBm().getAllFatherPK(new PublicationPK(getId(), getInstanceId()));
       for (NodePK aNode : nodes) {
         canBeAccessed = nodeAccessController.isUserAuthorized(user.getId(), aNode);
         if (canBeAccessed) {
@@ -1224,7 +1209,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
 
   /**
    * The type of this resource
-   *
    * @return the same value returned by getContributionType()
    */
   public static String getResourceType() {

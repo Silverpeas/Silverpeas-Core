@@ -20,20 +20,7 @@
  */
 package com.silverpeas.jobSearchPeas.control;
 
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
 import com.silverpeas.jobSearchPeas.SearchResult;
-
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -47,19 +34,26 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.search.SearchEngineProvider;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class declaration
@@ -267,10 +261,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           listSearchResult.add(searchResult);
         }
       }
-    } catch (org.silverpeas.search.searchEngine.model.ParseException e) {
-      throw new PdcException("JobSearchPeasSessionController.searchEngineResultSpace",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
-    } catch (ParseException e) {
+    } catch (org.silverpeas.search.searchEngine.model.ParseException | ParseException e) {
       throw new PdcException("JobSearchPeasSessionController.searchEngineResultSpace",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
     }
@@ -393,11 +384,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl("openComponent('" + componentId + "')");
         listSearchResult.add(searchResult);
       }
-    } catch (org.silverpeas.search.searchEngine.model.ParseException e) {
-      throw new PdcException(
-          "JobSearchPeasSessionController.searchEngineResultComponent",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
-    } catch (ParseException e) {
+    } catch (org.silverpeas.search.searchEngine.model.ParseException | ParseException e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
@@ -581,11 +568,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (ParseException e) {
-      throw new PdcException(
-          "JobSearchPeasSessionController.searchEngineResultComponent",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
-    } catch (org.silverpeas.search.searchEngine.model.ParseException e) {
+    } catch (ParseException | org.silverpeas.search.searchEngine.model.ParseException e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
@@ -727,10 +710,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (ParseException e) {
-      throw new PdcException("JobSearchPeasSessionController.searchEngineResultUser",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
-    } catch (org.silverpeas.search.searchEngine.model.ParseException e) {
+    } catch (ParseException | org.silverpeas.search.searchEngine.model.ParseException e) {
       throw new PdcException("JobSearchPeasSessionController.searchEngineResultUser",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
     }

@@ -24,12 +24,9 @@
 
 package com.silverpeas.pdcSubscription.util;
 
-import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.control.PdcSubscriptionService;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.classifyEngine.Value;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.inject.Inject;

@@ -24,8 +24,6 @@ import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
@@ -240,7 +238,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
           if (!isDefined(nodeId)) {
             nodeId = "0";
           }
-          NodeDetail node = getNodeBm().getDetail(new NodePK(nodeId, componentId));
+          NodeDetail node = getNodeService().getDetail(new NodePK(nodeId, componentId));
           MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
           String inLanguage = controller.getFavoriteLanguage();
           nodeName = node.getName(inLanguage);
@@ -319,9 +317,9 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     return getJspContext().getOut();
   }
 
-  protected NodeService getNodeBm() {
+  protected NodeService getNodeService() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
+      return NodeService.getInstance();
     } catch (Exception ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);

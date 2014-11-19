@@ -31,8 +31,7 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
 
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.control.PublicationBm;
@@ -49,7 +48,6 @@ public class SocialPublications implements SocialPublicationsInterface {
 
   /**
    * get my SocialInformationPublication
-   *
    * @param userId
    * @param begin
    * @param end
@@ -57,23 +55,22 @@ public class SocialPublications implements SocialPublicationsInterface {
    * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin,
-      Date end) throws SilverpeasException {
-    return getEJB().getAllPublicationsWithStatusbyUserid(userId, begin, end);
+  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+      throws SilverpeasException {
+    return getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
   }
 
-  private PublicationBm getEJB() {
+  private PublicationBm getPublicationService() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+      return ServiceProvider.getService(PublicationBm.class);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("SocialPublications.getEJB()",
+      throw new PublicationRuntimeException("SocialPublications.getPublicationService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   /**
    * get the SocialInformationPublication of my contacts
-   *
    * @param myId
    * @param myContactsIds
    * @param begin
@@ -86,7 +83,7 @@ public class SocialPublications implements SocialPublicationsInterface {
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     // getting all components allowed to me
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> options = new ArrayList<String>();
+    List<String> options = new ArrayList<>();
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmax")));
@@ -94,6 +91,7 @@ public class SocialPublications implements SocialPublicationsInterface {
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "bookmark")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "webSites")));
-    return getEJB().getSocialInformationsListOfMyContacts(myContactsIds, options, begin, end);
+    return getPublicationService()
+        .getSocialInformationsListOfMyContacts(myContactsIds, options, begin, end);
   }
 }

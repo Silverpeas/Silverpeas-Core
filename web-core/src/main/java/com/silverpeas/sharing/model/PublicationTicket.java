@@ -23,20 +23,18 @@
  */
 package com.silverpeas.sharing.model;
 
-import java.util.Date;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareablePublication;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.util.Date;
 
 /**
  *
@@ -73,7 +71,7 @@ public class PublicationTicket extends Ticket {
 
   @Override
   public ShareableResource<PublicationDetail> getResource() {
-    PublicationBm publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+    PublicationBm publicationBm = ServiceProvider.getService(PublicationBm.class);
     PublicationDetail publication = publicationBm.getDetail(new PublicationPK(String.valueOf(getSharedObjectId()),
         getComponentId()));
     if (publication != null) {

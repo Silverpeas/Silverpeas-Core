@@ -20,9 +20,20 @@
  */
 package org.silverpeas.publication.web;
 
-import static org.silverpeas.util.JNDINames.NODEBM_EJBHOME;
-import static org.silverpeas.util.JNDINames.PUBLICATIONBM_EJBHOME;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.ServiceProvider;
 
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,22 +41,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.web.RESTWebService;
-import org.silverpeas.util.EJBUtilitaire;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
  * A REST Web resource providing access to publications.
@@ -77,7 +72,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(
         nodePK, null, true);
 
-    List<PublicationEntity> entities = new ArrayList<PublicationEntity>();
+    List<PublicationEntity> entities = new ArrayList<>();
     for (PublicationDetail publication : publications) {
       PublicationEntity entity = getPublicationEntity(publication, withAttachments);
       if (entity != null) {
@@ -126,7 +121,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
   
   protected NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeService.class);
+      return NodeService.getInstance();
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
@@ -134,7 +129,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
 
   protected PublicationBm getPublicationBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME, PublicationBm.class);
+      return ServiceProvider.getService(PublicationBm.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }

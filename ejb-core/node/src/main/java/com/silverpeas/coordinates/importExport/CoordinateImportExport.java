@@ -20,27 +20,24 @@
  */
 package com.silverpeas.coordinates.importExport;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.coordinates.control.CoordinatesService;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.coordinates.model.CoordinateRuntimeException;
+import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.inject.Inject;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.coordinates.control.CoordinatesService;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.coordinates.model.CoordinateRuntimeException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
-
-import javax.inject.Inject;
 
 /**
  * Classe gerant la manipulation des axes de coordinates pour le module d'importExport.
@@ -51,6 +48,9 @@ public class CoordinateImportExport {
 
   @Inject
   private NodeService nodeService;
+
+  @Inject
+  private CoordinatesService coordinatesService;
 
   protected CoordinateImportExport() {
 
@@ -98,7 +98,7 @@ public class CoordinateImportExport {
         }
         i++;
       }
-      coordinateId = getCoordinatesBm().addCoordinate(coordinatePK, allnodes);
+      coordinateId = getCoordinatesService().addCoordinate(coordinatePK, allnodes);
     } catch (Exception e) {
       throw new CoordinateRuntimeException("CoordinateImportExport.addPositions()",
           SilverpeasRuntimeException.ERROR, "coordinates.ADDING_COORDINATES_COMBINATION_FAILED", e);
@@ -365,24 +365,20 @@ public class CoordinateImportExport {
   }
 
   /**
-   * @return l'EJB CoordinatesBm
+   * @return CoordinatesService layer
    * @throws CoordinateRuntimeException
    */
-  private CoordinatesService getCoordinatesBm() {
-    CoordinatesService coordinatesService = null;
+  private CoordinatesService getCoordinatesService() {
     try {
-      coordinatesService = EJBUtilitaire.getEJBObjectRef(JNDINames.COORDINATESBM_EJBHOME,
-          CoordinatesService.class);
+      return coordinatesService;
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getCoordinatesBm()",
+      throw new CoordinateRuntimeException("CoordinateImportExport.getCoordinatesService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return coordinatesService;
   }
 
   /**
    * @return l'EJB NodeBm
-   * @throws CoordinateRuntimeException
    */
   private NodeService getNodeService() {
     return nodeService;
