@@ -27,19 +27,18 @@ package com.stratelia.webactiv.organization;
 import org.silverpeas.util.ServiceProvider;
 
 /**
- * DAOProvider is the data main access point. Use this class to retrieve UserFavoriteSpaceDAO, ...
+ * Provider of a <code>UserFavoriteSpaceService</code> instances.
  */
-public class DAOProvider {
+public class UserFavoriteSpaceServiceProvider {
 
-  /** Creates a new instance of DAOProvider */
-  private DAOProvider() {
+  private UserFavoriteSpaceServiceProvider() {
   }
 
   /**
-   * @return UserFavoriteSpaceDAO singleton
+   * @return a <code>UserFavoriteSpaceService</code> instance
    */
-  public static synchronized UserFavoriteSpaceDAO getUserFavoriteSpaceDAO() {
-    return ServiceProvider.getService(UserFavoriteSpaceDAO.class);
+  public static synchronized UserFavoriteSpaceService getUserFavoriteSpaceService() {
+    return ServiceProvider.getService(UserFavoriteSpaceService.class);
   }
 
 }

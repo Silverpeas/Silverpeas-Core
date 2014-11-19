@@ -25,10 +25,13 @@
 package com.stratelia.webactiv.organization;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
@@ -38,7 +41,7 @@ import java.util.List;
 
 @Singleton
 @Default
-public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
+public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
 
   public List<UserFavoriteSpaceVO> getListUserFavoriteSpace(String userId) {
     List<UserFavoriteSpaceVO> listUserFavoriteSpaces = new ArrayList<>();
@@ -144,6 +147,45 @@ public class UserFavoriteSpaceDAOImpl implements UserFavoriteSpaceDAO {
     return result;
   }
 
-  public UserFavoriteSpaceDAOImpl() {
+  /**
+   * @param listUFS : the list of user favorite space
+   * @param space: a space instance
+   * @return true if list of user favorites space contains spaceId identifier, false else if
+   */
+  public boolean isUserFavoriteSpace(List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space) {
+    boolean result = false;
+    if (listUFS != null && !listUFS.isEmpty()) {
+      for (UserFavoriteSpaceVO userFavoriteSpaceVO : listUFS) {
+        if (space.getLocalId() == userFavoriteSpaceVO.getSpaceId()) {
+          return true;
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @param space : space instance
+   * @param listUFS : the list of user favorite space
+   * @return true if the current space contains user favorites sub space, false else if
+   */
+  public boolean containsFavoriteSubSpace(SpaceInstLight space,
+      List<UserFavoriteSpaceVO> listUFS, String userId) {
+    boolean result = false;
+    OrganizationController organisationController =
+        ServiceProvider.getService(OrganizationController.class);
+    String[] userSubSpaceIds = organisationController.getAllowedSubSpaceIds(userId, space.getId());
+    for (String curSpaceId : userSubSpaceIds) {
+      // Recursive loop on each subspace
+      SpaceInstLight subSpace = organisationController.getSpaceInstLightById(curSpaceId);
+      if (isUserFavoriteSpace(listUFS, subSpace) ||
+          containsFavoriteSubSpace(subSpace, listUFS, userId)) {
+        return true;
+      }
+    }
+    return result;
+  }
+
+  public UserFavoriteSpaceServiceImpl() {
   }
 }

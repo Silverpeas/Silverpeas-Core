@@ -279,7 +279,7 @@ public class AdminPersonalWebDelegate {
 
   private PersonalSpaceController getPersonalSpaceController() {
     if (psc == null) {
-      psc = new PersonalSpaceController();
+      psc = PersonalSpaceController.getInstance();
     }
     return psc;
   }

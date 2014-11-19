@@ -198,6 +198,11 @@ public class JSONCodec {
       objectNode.put(fieldName, v);
       return this;
     }
+
+    public JSONObject put(final String fieldName, Function<JSONArray, JSONArray> arrayBuilder) {
+      arrayBuilder.apply(new JSONArray(objectNode.putArray(fieldName)));
+      return this;
+    }
   }
 
   public static class JSONArray {

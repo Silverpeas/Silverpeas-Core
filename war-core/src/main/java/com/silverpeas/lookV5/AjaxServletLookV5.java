@@ -31,10 +31,8 @@ import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.sharing.services.SharingServiceProvider;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -46,13 +44,13 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
-import com.stratelia.webactiv.organization.DAOProvider;
-import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
+import com.stratelia.webactiv.organization.UserFavoriteSpaceService;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -72,6 +70,10 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   @Inject
   private OrganizationController organisationController;
+  @Inject
+  private PersonalSpaceController personalSpaceController;
+  @Inject
+  private UserFavoriteSpaceService userFavoriteSpaceService;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -107,8 +109,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     // User favorite space DAO
     List<UserFavoriteSpaceVO> listUserFS = new ArrayList<UserFavoriteSpaceVO>();
     if (helper.isMenuPersonalisationEnabled()) {
-      UserFavoriteSpaceDAO ufsDAO = DAOProvider.getUserFavoriteSpaceDAO();
-      listUserFS = ufsDAO.getListUserFavoriteSpace(userId);
+      listUserFS = userFavoriteSpaceService.getListUserFavoriteSpace(userId);
     }
 
     // Set current space and component identifier (helper and gef)
@@ -257,7 +258,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 */
   private boolean containsFavoriteSubSpace(SpaceInstLight space, List<UserFavoriteSpaceVO> listUFS,
       String userId) {
-    return UserFavoriteSpaceManager.containsFavoriteSubSpace(space, listUFS, userId);
+    return userFavoriteSpaceService.containsFavoriteSubSpace(space, listUFS, userId);
   }
 
   /**
@@ -266,7 +267,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 * @return true if list of user favorites space contains spaceId identifier, false else if
 */
   private boolean isUserFavoriteSpace(List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space) {
-    return UserFavoriteSpaceManager.isUserFavoriteSpace(listUFS, space);
+    return userFavoriteSpaceService.isUserFavoriteSpace(listUFS, space);
   }
 
   /**
@@ -808,8 +809,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       }
 
       if (settings.getBoolean("PersonalSpaceAddingsEnabled", true)) {
-        PersonalSpaceController psc = new PersonalSpaceController();
-        SpaceInst personalSpace = psc.getPersonalSpace(userId);
+        SpaceInst personalSpace = personalSpaceController.getPersonalSpace(userId);
         if (personalSpace != null) {
           for (ComponentInst component : personalSpace.getAllComponentsInst()) {
             String label =
@@ -834,7 +834,8 @@ public class AjaxServletLookV5 extends HttpServlet {
                     + url + "\"/>");
           }
         }
-        int nbComponentAvailables = psc.getVisibleComponents(organisationController).size();
+        int nbComponentAvailables =
+            personalSpaceController.getVisibleComponents(organisationController).size();
         if (nbComponentAvailables > 0) {
           if (personalSpace == null ||
               personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {

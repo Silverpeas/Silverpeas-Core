@@ -409,7 +409,7 @@ public class SpaceTable extends Table<SpaceRow> {
       organization.instance.removeComponentInstance(instance.id);
     }
     // Remove user favorite space
-    UserFavoriteSpaceDAO ufsDAO = DAOProvider.getUserFavoriteSpaceDAO();
+    UserFavoriteSpaceService ufsDAO = UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
     if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(-1, id))) {
       throw new AdminPersistenceException("SpaceTable.removeSpace()", SilverpeasException.ERROR,
           "admin.EX_ERR_DELETE_SPACE");

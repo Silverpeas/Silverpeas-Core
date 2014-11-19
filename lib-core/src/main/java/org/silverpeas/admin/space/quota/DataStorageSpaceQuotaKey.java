@@ -40,7 +40,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   public static DataStorageSpaceQuotaKey from(final UserDetail user) {
     return new DataStorageSpaceQuotaKey(
-        new PersonalSpaceController().getPersonalSpace(user.getId()), user);
+        PersonalSpaceController.getInstance().getPersonalSpace(user.getId()), user);
   }
 
   public static DataStorageSpaceQuotaKey from(final SpaceInst space) {

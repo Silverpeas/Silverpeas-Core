@@ -24,12 +24,14 @@
 
 package com.stratelia.webactiv.organization;
 
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+
 import java.util.List;
 
 /**
  * UserFavoriteSpace DAO interface
  */
-public interface UserFavoriteSpaceDAO {
+public interface UserFavoriteSpaceService {
 
   /**
    * Retrieve the list of user favorite space
@@ -41,7 +43,7 @@ public interface UserFavoriteSpaceDAO {
   /**
    * Add given User Favorite Space Value Object parameter in Database <br>
    * @param ufsVO a UserFavoriteSpaceVO
-   * @return true if action was successful, false else if
+   * @return true if action was successful, false otherwise
    */
   public boolean addUserFavoriteSpace(UserFavoriteSpaceVO ufsVO);
 
@@ -53,8 +55,25 @@ public interface UserFavoriteSpaceDAO {
    * <li>remove all ufsVO.userId if ufsVO.spaceId is null</li>
    * </ul>
    * @param ufsVO a UserFavoriteSpaceVO
-   * @return true if action was successful, false else if
+   * @return true if action was successful, false otherwise
    */
   public boolean removeUserFavoriteSpace(UserFavoriteSpaceVO ufsVO);
+
+  /**
+   * Is the specified space instance is one of the user's favorite spaces?
+   * @param listUFS : the list of user favorite space
+   * @param space: a space instance
+   * @return true if list of user favorites space contains spaceId identifier, false otherwise.
+   */
+  public boolean isUserFavoriteSpace(List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space);
+
+  /**
+   * Is the specified space contains the specified user's favorite spaces as subspaces?
+   * @param space : space instance
+   * @param listUFS : the list of user favorite space
+   * @return true if the current space contains user favorites sub space, false otherwise
+   */
+  public boolean containsFavoriteSubSpace(SpaceInstLight space, List<UserFavoriteSpaceVO> listUFS,
+      String userId);
 
 }

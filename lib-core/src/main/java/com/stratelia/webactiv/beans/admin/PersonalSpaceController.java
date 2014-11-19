@@ -23,6 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
 import java.text.MessageFormat;
@@ -40,6 +41,14 @@ public class PersonalSpaceController {
 
   private static final String MESSAGES_LOCATION =
       "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle";
+
+  public static PersonalSpaceController getInstance() {
+    return ServiceProvider.getService(PersonalSpaceController.class);
+  }
+
+  protected PersonalSpaceController() {
+
+  }
 
   public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();

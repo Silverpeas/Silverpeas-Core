@@ -47,7 +47,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(Arquillian.class)
-public class UserFavoriteSpaceDAOTest {
+public class UserFavoriteSpaceServiceTest {
 
   @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
@@ -163,7 +163,7 @@ public class UserFavoriteSpaceDAOTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(UserFavoriteSpaceDAOTest.class)
+    return WarBuilder4LibCore.onWarFor(UserFavoriteSpaceServiceTest.class)
         .addJdbcPersistenceFeatures()
         .addSilverpeasExceptionBases()
         .testFocusedOn((warBuilder) -> {
@@ -176,14 +176,14 @@ public class UserFavoriteSpaceDAOTest {
 
   @Test
   public void testGetListUserFavoriteSpace() {
-    UserFavoriteSpaceDAOImpl ufsDAO = new UserFavoriteSpaceDAOImpl();
+    UserFavoriteSpaceServiceImpl ufsDAO = new UserFavoriteSpaceServiceImpl();
     List<UserFavoriteSpaceVO> listUFS = ufsDAO.getListUserFavoriteSpace("0");
     assertThat(listUFS.size(), is(1));
   }
 
   @Test
   public void testAddUserFavoriteSpace() {
-    UserFavoriteSpaceDAOImpl ufsDAO = new UserFavoriteSpaceDAOImpl();
+    UserFavoriteSpaceServiceImpl ufsDAO = new UserFavoriteSpaceServiceImpl();
     UserFavoriteSpaceVO ufsVO = new UserFavoriteSpaceVO(0, 2);
     boolean result = ufsDAO.addUserFavoriteSpace(ufsVO);
     assertThat(result, is(true));
@@ -207,7 +207,7 @@ public class UserFavoriteSpaceDAOTest {
 
   @Test
   public void testRemoveUserFavoriteSpace() {
-    UserFavoriteSpaceDAOImpl ufsDAO = new UserFavoriteSpaceDAOImpl();
+    UserFavoriteSpaceServiceImpl ufsDAO = new UserFavoriteSpaceServiceImpl();
     UserFavoriteSpaceVO ufsVO = new UserFavoriteSpaceVO(0, 2);
     boolean result = ufsDAO.removeUserFavoriteSpace(ufsVO);
     assertThat(result, is(true));
