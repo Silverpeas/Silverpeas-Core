@@ -21,7 +21,6 @@
 
 package org.silverpeas.notification;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.util.StateTransition;
 
 import java.io.Serializable;

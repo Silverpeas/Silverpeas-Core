@@ -49,7 +49,7 @@ public class AttachmentEvent extends AbstractResourceEvent<AttachmentRef> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, java.io.Serializable[])
    */
   public AttachmentEvent(final Type type, final SimpleDocument... document) {
     super(type, toAttachmentRefs(document));

@@ -21,8 +21,6 @@
 
 package org.silverpeas.notification;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.io.Serializable;
 
 /**

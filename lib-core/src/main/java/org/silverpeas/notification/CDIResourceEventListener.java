@@ -53,7 +53,6 @@ public abstract class CDIResourceEventListener<T extends ResourceEvent>
   protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
   /**
-   * /**
    * Listens for events related to a resource managed in Silverpeas.
    * <p>
    *   The event is decoded from the specified message and according to the type of the event,
