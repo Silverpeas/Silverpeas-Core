@@ -126,9 +126,8 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void debug(final String module, final String classe, final String message,
       final String extraInfos, final Throwable ex) {
-    debugMessages.add(StringUtil.join(
-        new String[]{module, classe, message, extraInfos, ((ex != null) ? ex.getMessage() : null)},
-        '@'));
+    debugMessages
+        .add(join(module, classe, message, extraInfos, ((ex != null) ? ex.getMessage() : null)));
     logAsInfoForTest(debugMessages);
   }
 

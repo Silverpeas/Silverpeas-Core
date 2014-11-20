@@ -39,8 +39,9 @@ public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotF
 
   @Override
   public Response toResponse(EntityNotFoundException exception) {
-    Logger.getLogger(EntityNotFoundExceptionMapper.class.getSimpleName()).log(Level.INFO,
-            exception.getMessage(), exception);
-    return Response.status(Response.Status.NOT_FOUND).entity("The asked resource isn't found").build();
+    Logger.getLogger(EntityNotFoundExceptionMapper.class.getSimpleName())
+        .log(Level.INFO, exception.getMessage(), exception);
+    return Response.status(Response.Status.NOT_FOUND).entity("The asked resource isn't found")
+        .build();
   }
 }

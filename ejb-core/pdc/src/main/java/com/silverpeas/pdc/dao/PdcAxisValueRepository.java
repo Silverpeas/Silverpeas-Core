@@ -29,11 +29,13 @@ import com.silverpeas.pdc.model.PdcAxisValuePk;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * DAO that handles the persistence of PdcAxisValue beans.
  */
+@Singleton
 public class PdcAxisValueRepository extends JpaBasicEntityManager<PdcAxisValue, PdcAxisValuePk> {
 
   /**

@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
  * Date: 08/01/13
  */
 public class AtLeastXSpecialCharPasswordRuleTest
-    extends org.silverpeas.password.rule.AbstractPasswordRuleTest<AtLeastXSpecialCharPasswordRule> {
+    extends AbstractPasswordRuleTest<AtLeastXSpecialCharPasswordRule> {
 
   @Test
   public void testCommons() {

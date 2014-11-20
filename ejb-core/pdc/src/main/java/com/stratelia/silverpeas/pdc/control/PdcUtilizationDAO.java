@@ -31,6 +31,7 @@ import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.AxisFilterNode;
 import org.silverpeas.util.DBUtil;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,6 +45,7 @@ import java.util.StringTokenizer;
  * Class declaration
  * @author
  */
+@Singleton
 public class PdcUtilizationDAO {
 
   private static String PdcUtilizationTable = "SB_Pdc_Utilization";

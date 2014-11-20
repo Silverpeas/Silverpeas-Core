@@ -40,11 +40,6 @@ public class PortletSchema extends Schema {
     init();
   }
 
-  @Override
-  protected String getJNDIName() {
-    return JNDINames.ADMIN_DATASOURCE;
-  }
-
   private void init() {
     portletColumn = new PortletColumnTable(this);
     portletRow = new PortletRowTable(this);

@@ -46,8 +46,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class TagCloudBmEJB implements TagCloudBm {
 
-  private static final long serialVersionUID = 1117565429121769510L;
-
   private Connection openConnection() {
     try {
       return DBUtil.openConnection();

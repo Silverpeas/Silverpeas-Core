@@ -25,6 +25,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.accesscontrol.NodeAccessControl;
 import org.silverpeas.accesscontrol.NodeAccessController;
 
 import javax.inject.Inject;
@@ -45,7 +46,7 @@ import java.util.List;
 @Authorized
 public class PublicationResource extends AbstractPublicationResource {
 
-  @Inject
+  @Inject @NodeAccessControl
   private NodeAccessController nodeAccessController;
 
   @GET

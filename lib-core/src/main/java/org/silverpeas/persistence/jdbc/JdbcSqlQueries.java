@@ -26,6 +26,8 @@ package org.silverpeas.persistence.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
 
@@ -39,6 +41,16 @@ import static org.silverpeas.persistence.jdbc.JdbcSqlExecutorProvider.getJdbcSql
  * @author Yohann Chastagnier
  */
 public class JdbcSqlQueries extends ArrayList<JdbcSqlQuery> {
+
+  /**
+   * Loads a {@link JdbcSqlQuery} collection from collection of SQL queries as string.
+   * @param sqlQueries list of SQL query as string.
+   * @return an instance of {@link JdbcSqlQuery} collection instance.
+   */
+  public static JdbcSqlQueries from(Collection<String> sqlQueries) {
+    return sqlQueries.stream().map(JdbcSqlQuery::create)
+        .collect(Collectors.toCollection(JdbcSqlQueries::new));
+  }
 
   /**
    * Executes all the queries contained into the list.

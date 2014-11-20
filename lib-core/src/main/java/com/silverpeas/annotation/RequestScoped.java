@@ -23,7 +23,11 @@
  */
 package com.silverpeas.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * This annotation is to tag an object as being request scoped, that is to say its lifecycle belongs

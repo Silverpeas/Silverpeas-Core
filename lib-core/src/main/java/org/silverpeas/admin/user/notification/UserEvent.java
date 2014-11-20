@@ -23,7 +23,6 @@ package org.silverpeas.admin.user.notification;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.notification.ResourceEvent;
 
 /**
  * An event about the creation, an update or a deletion of a user in Silverpeas.

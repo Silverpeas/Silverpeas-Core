@@ -164,9 +164,9 @@
         factory-method="getInstance"
         init-method="initSilverStatisticsManager" /> -->
 
-  <bean id="userPriviledgeValidationFactory"
-        class="com.silverpeas.web.UserPriviledgeValidationFactory"
-        factory-method="getFactory"/>
+  <!--bean YCH id="userPriviledgeValidationFactory"
+        class="com.silverpeas.web.UserPrivilegeValidationFactory"
+        factory-method="getFactory"/-->
 
   <!-- the factory of space services.
   It wraps and provides an access to different service instances relative to space handling -->

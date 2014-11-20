@@ -40,7 +40,7 @@ public class PdcServiceProvider {
    * @return a PdcBm object.
    */
   public static PdcManager getPdcManager() {
-    return ServiceProvider.getService(PdcManager.class);
+    return PdcManager.get();
   }
 
   /**

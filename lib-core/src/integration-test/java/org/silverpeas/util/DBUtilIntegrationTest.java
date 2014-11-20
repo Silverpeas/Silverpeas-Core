@@ -163,7 +163,8 @@ public class DBUtilIntegrationTest {
           int nextId = DBUtil.getNextId("User", "id");
           Logger.getAnonymousLogger()
               .info("Next id is " + nextId + " at " + System.currentTimeMillis());
-        } catch (SQLException e) {
+          Thread.sleep(10);
+        } catch (InterruptedException | SQLException e) {
           throw new RuntimeException(e);
         }
       });
@@ -174,7 +175,7 @@ public class DBUtilIntegrationTest {
         thread.start();
       }
       for (Thread thread : threads) {
-        thread.join();
+        thread.join(2000);
       }
       int expectedNextId = nextIdBeforeTesting + nbThreads;
       Logger.getAnonymousLogger()

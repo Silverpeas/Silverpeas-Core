@@ -47,6 +47,7 @@ import org.silverpeas.util.Charsets;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.HttpMethod;
@@ -63,7 +64,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * to the incoming HTTP request as well to the current user session if any. In order to delegate
  * externally the validation triggering,
  */
-@Named
+@Singleton
 public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   @Inject

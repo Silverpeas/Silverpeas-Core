@@ -36,10 +36,13 @@ import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 
+import javax.inject.Singleton;
+
 /**
  * Class declaration
  * @author
  */
+@Singleton
 public class TreeI18NDAO {
 
   private static String treeI18NTable = "SB_Tree_TreeI18N";

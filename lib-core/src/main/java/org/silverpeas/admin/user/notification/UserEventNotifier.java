@@ -24,10 +24,6 @@ package org.silverpeas.admin.user.notification;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 /** A notifier of an event concerning the life-cycle of a user account in Silverpeas.
  * @author mmoquillon

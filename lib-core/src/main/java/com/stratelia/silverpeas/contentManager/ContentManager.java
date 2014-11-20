@@ -29,11 +29,11 @@ import com.stratelia.silverpeas.containerManager.URLIcone;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,6 +53,7 @@ import java.util.TreeSet;
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
  * (documentation, ....)
  */
+@Singleton
 @Named("contentManager")
 public class ContentManager implements Serializable {
 
@@ -111,7 +112,6 @@ public class ContentManager implements Serializable {
   private static HashMap<String, String> assoSilverContentIdInternalComponentId =
       new HashMap<>(1000);
   // Datebase properties
-  private static String m_dbName = JNDINames.CONTENTMANAGER_DATASOURCE;
   private static String m_sInstanceTable = "SB_ContentManager_Instance";
   private static final long serialVersionUID = 7069917496138130066L;
   private String m_sSilverContentTable = "SB_ContentManager_Content";

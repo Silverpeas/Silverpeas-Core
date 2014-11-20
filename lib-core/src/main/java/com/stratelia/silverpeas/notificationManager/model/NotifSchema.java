@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.notificationManager.model;
 
 import java.sql.Connection;
 
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.Schema;
 import org.silverpeas.util.exception.UtilException;
 
@@ -39,11 +38,6 @@ public class NotifSchema extends Schema {
   public NotifSchema() throws UtilException {
     super();
     init();
-  }
-
-  @Override
-  protected String getJNDIName() {
-    return JNDINames.ADMIN_DATASOURCE;
   }
 
   private void init() {

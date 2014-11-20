@@ -44,8 +44,6 @@ public abstract class Schema {
   private boolean managed = false;
   private Connection connection = null;
 
-  abstract protected String getJNDIName();
-
   public Schema(Connection co) throws UtilException {
     connection = co;
     isLocalConnection = false;

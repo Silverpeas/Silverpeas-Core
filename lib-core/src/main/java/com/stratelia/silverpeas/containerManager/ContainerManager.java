@@ -28,7 +28,6 @@ package com.stratelia.silverpeas.containerManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -54,7 +53,6 @@ public class ContainerManager implements java.io.Serializable {
   private static Hashtable<String, String> assoComponentIdInstanceId = null;
 
   // Datebase properties
-  private static String m_dbName = JNDINames.CONTAINERMANAGER_DATASOURCE;
   private static String m_sInstanceTable = "SB_ContainerManager_Instance";
   String m_sLinksTable = "SB_ContainerManager_Links";
 

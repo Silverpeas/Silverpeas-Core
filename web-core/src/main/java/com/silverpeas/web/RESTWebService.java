@@ -26,6 +26,9 @@ package com.silverpeas.web;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.web.aspect.ComponentInstMustExistIfSpecified;
+import com.silverpeas.web.aspect.WebEntityMustBeValid;
+import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
@@ -54,6 +57,8 @@ import static com.silverpeas.web.UserPrivilegeValidation.HTTP_SESSIONKEY;
  * The class of the Silverpeas REST web services. It provides all of the common features required by
  * the web services in Silverpeas like the user priviledge checking.
  */
+@ComponentInstMustExistIfSpecified
+@WebEntityMustBeValid
 public abstract class RESTWebService implements WebResource {
   public static final String REST_WEB_SERVICES_URI_BASE =
       SilverpeasSettings.getRestWebServicesUriBase();
@@ -80,26 +85,6 @@ public abstract class RESTWebService implements WebResource {
 
   private ResourceLocator bundle = null;
 
-  /**
-   * Gets the identifier of the component instance to which the requested resource belongs to.
-   *
-   * @return the identifier of the Silverpeas component instance.
-   */
-  abstract public String getComponentId();
-
-  /**
-   * Validates the authentication of the user requesting this web service. If no session was opened
-   * for the user, then open a new one. The validation is actually delegated to the validation
-   * service by passing it the required information.
-   *
-   * This method should be invoked for web service requiring an authenticated user. Otherwise, the
-   * annotation Authenticated can be also used instead at class level.
-   *
-   * @see UserPrivilegeValidator
-   * @param validation the validation instance to use.
-   * @throws WebApplicationException if the authentication isn't valid (no authentication and
-   * authentication failure).
-   */
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) throws
       WebApplicationException {
@@ -123,20 +108,6 @@ public abstract class RESTWebService implements WebResource {
     }
   }
 
-  /**
-   * Validates the authorization of the user to request this web service. For doing, the user must
-   * have the rights to access the component instance that manages this web resource. The validation
-   * is actually delegated to the validation service by passing it the required information.
-   *
-   * This method should be invoked for web service requiring an authorized access. For doing, the
-   * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
-   * also used instead at class level for both authentication and authorization.
-   *
-   * @see UserPrivilegeValidator
-   * @param validation the validation instance to use.
-   * @throws WebApplicationException if the rights of the user are not enough to access this web
-   * resource.
-   */
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
       WebApplicationException {

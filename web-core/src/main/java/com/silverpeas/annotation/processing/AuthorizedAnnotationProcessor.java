@@ -24,6 +24,7 @@
 package com.silverpeas.annotation.processing;
 
 import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
 import com.silverpeas.web.WebResource;
@@ -40,7 +41,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
  * A processor working on the classes that are annotated with the @Authorized annotation.
  */
 @Interceptor
-@Authenticated
+@Authorized
 @Priority(APPLICATION)
 public class AuthorizedAnnotationProcessor {
 

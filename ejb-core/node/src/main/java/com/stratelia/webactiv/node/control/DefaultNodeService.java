@@ -41,6 +41,7 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -57,6 +58,7 @@ import java.util.Map;
  *
  * @author Nicolas Eysseric
  */
+@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultNodeService implements NodeService {
 

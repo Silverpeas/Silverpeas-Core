@@ -21,10 +21,6 @@
 
 package org.silverpeas.test;
 
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-
-import java.io.File;
-
 /**
  * A basic war builder that does nothing more that is defined in the abstract class WarBuilder.
  * @author mmoquillon

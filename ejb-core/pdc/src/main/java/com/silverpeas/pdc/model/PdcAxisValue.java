@@ -364,6 +364,6 @@ public class PdcAxisValue extends AbstractJpaCustomEntity<PdcAxisValue, PdcAxisV
   }
 
   private static PdcManager getPdcManager() {
-    return PdcManager.getInstance();
+    return PdcManager.get();
   }
 }

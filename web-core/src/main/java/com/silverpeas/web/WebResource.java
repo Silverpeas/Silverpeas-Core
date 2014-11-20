@@ -55,9 +55,42 @@ import javax.ws.rs.WebApplicationException;
  */
 public interface WebResource {
 
+  /**
+   * Validates the authentication of the user requesting this web service. If no session was opened
+   * for the user, then open a new one. The validation is actually delegated to the validation
+   * service by passing it the required information.
+   *
+   * This method should be invoked for web service requiring an authenticated user. Otherwise, the
+   * annotation Authenticated can be also used instead at class level.
+   *
+   * @see UserPrivilegeValidator
+   * @param validation the validation instance to use.
+   * @throws WebApplicationException if the authentication isn't valid (no authentication and
+   * authentication failure).
+   */
   void validateUserAuthentication(final UserPrivilegeValidation validation) throws
       WebApplicationException;
 
+  /**
+   * Validates the authorization of the user to request this web service. For doing, the user must
+   * have the rights to access the component instance that manages this web resource. The validation
+   * is actually delegated to the validation service by passing it the required information.
+   *
+   * This method should be invoked for web service requiring an authorized access. For doing, the
+   * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
+   * also used instead at class level for both authentication and authorization.
+   *
+   * @see UserPrivilegeValidator
+   * @param validation the validation instance to use.
+   * @throws WebApplicationException if the rights of the user are not enough to access this web
+   * resource.
+   */
   void validateUserAuthorization(final UserPrivilegeValidation validation) throws
       WebApplicationException;
+
+  /**
+   * Gets the identifier of the component instance to which the requested resource belongs to.
+   * @return the identifier of the Silverpeas component instance.
+   */
+  String getComponentId();
 }

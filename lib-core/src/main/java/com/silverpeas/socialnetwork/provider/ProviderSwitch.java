@@ -40,10 +40,6 @@ import java.util.List;
 public class ProviderSwitch implements ProviderSwitchInterface {
 
   @Inject
-  private SocialEventsInterface socialEventsInterface;
-  @Inject
-  private SocialGalleryInterface socialGalleryInterface;
-  @Inject
   private SocialPublicationsInterface socialPublicationsInterface;
   @Inject
   private SocialStatusInterface socialStatusInterface;
@@ -56,7 +52,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    */
   @Override
   public SocialEventsInterface getSocialEventsInterface() {
-    return socialEventsInterface;
+    return SocialEventsInterface.get();
   }
 
   /**
@@ -65,7 +61,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    */
   @Override
   public SocialGalleryInterface getSocialGalleryInterface() {
-    return socialGalleryInterface;
+    return SocialGalleryInterface.get();
   }
 
   /**

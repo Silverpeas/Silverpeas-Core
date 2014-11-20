@@ -27,21 +27,26 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.thesaurus.ThesaurusException;
-import static org.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.api.json.JSONJAXBContext;
-import com.sun.jersey.api.json.JSONMarshaller;
-import com.sun.jersey.api.json.JSONUnmarshaller;
-import com.sun.jersey.json.impl.JSONMarshallerImpl;
-import com.sun.jersey.json.impl.JSONUnmarshallerImpl;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-import java.util.*;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.exception.DecodingException;
+
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * The PdC classification entity represents the web entity of the classification of a Silverpeas's
@@ -116,18 +121,10 @@ public class PdcClassificationEntity implements Exposable {
    * classification entity.
    * @param classification the JSON representation of a classification on the PdC.
    * @return a PdcClassificationEntity instance.
-   * @throws JAXBException if an error occurs during the conversion.
+   * @throws DecodingException if an error occurs during the conversion.
    */
-  public static PdcClassificationEntity fromJSON(String classification) throws JAXBException {
-    JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-        PdcPositionEntity.class, PdcPositionValueEntity.class);
-    JSONUnmarshaller unmarshaller = new JSONUnmarshallerImpl(context, JSONConfiguration.DEFAULT);
-    try {
-      return unmarshaller.unmarshalFromJSON(new StringReader(classification),
-          PdcClassificationEntity.class);
-    } catch (Error ex) {
-      throw new JAXBException(ex.getMessage(), ex);
-    }
+  public static PdcClassificationEntity fromJSON(String classification) {
+    return JSONCodec.decode(classification, PdcClassificationEntity.class);
   }
 
   /**
@@ -138,16 +135,7 @@ public class PdcClassificationEntity implements Exposable {
    * @return a JSON representation of this classification entity (as string).
    */
   public String toJSON() throws JAXBException {
-    JSONJAXBContext context = new JSONJAXBContext(PdcClassificationEntity.class,
-        PdcPositionEntity.class, PdcPositionValueEntity.class);
-    JSONMarshaller marshaller = new JSONMarshallerImpl(context, JSONConfiguration.DEFAULT);
-    try {
-      StringWriter writer = new StringWriter();
-      marshaller.marshallToJSON(this, writer);
-      return writer.toString();
-    } catch (Error ex) {
-      throw new JAXBException(ex.getMessage(), ex);
-    }
+    return JSONCodec.encode(this);
   }
 
   /**

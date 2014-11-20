@@ -28,6 +28,7 @@ import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -57,7 +58,7 @@ import java.io.IOException;
 public class RestOnlineFileServer extends AbstractFileSender {
   private static final long serialVersionUID = 4039504051749955604L;
 
-  @Inject
+  @Inject @ComponentAccessControl
   private ComponentAccessController componentAccessController;
   @Inject
   private SilverpeasWebUtil silverpeasWebUtil;

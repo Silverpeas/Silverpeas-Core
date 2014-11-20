@@ -24,6 +24,7 @@ package com.silverpeas.web;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
@@ -32,6 +33,11 @@ import javax.ws.rs.WebApplicationException;
  * @author mmoquillon
  */
 public interface UserPrivilegeValidation {
+
+  public static UserPrivilegeValidation get() {
+    return ServiceProvider.getService(UserPrivilegeValidation.class);
+  }
+
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. By the user
    * session key could be passed a user token to perform a HTTP request without opening a session.

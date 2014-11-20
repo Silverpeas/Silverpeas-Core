@@ -37,6 +37,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.StringUtil;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -49,13 +50,13 @@ import java.util.Set;
 @SimpleDocumentAccessControl
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument> {
 
-  @Inject
+  @EJB
   private PublicationBm publicationService;
 
-  @Inject
+  @Inject @ComponentAccessControl
   private ComponentAccessController componentAccessController;
 
-  @Inject
+  @Inject @NodeAccessControl
   private NodeAccessController nodeAccessController;
 
   @Inject

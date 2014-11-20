@@ -29,9 +29,14 @@ import java.util.List;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public interface SocialEventsInterface {
+
+  public static SocialEventsInterface get() {
+    return ServiceProvider.getService(SocialEventsInterface.class);
+  }
 
   /**
    * get list of socialInformation according to number of Item and the first Index

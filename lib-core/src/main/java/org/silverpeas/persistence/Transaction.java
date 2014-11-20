@@ -89,7 +89,7 @@ public class Transaction {
     try {
       return process.execute();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new TransactionRuntimeException(e);
     }
   }
 

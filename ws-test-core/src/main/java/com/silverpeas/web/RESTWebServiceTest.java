@@ -23,70 +23,33 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.personalization.UserMenuDisplay;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import com.sun.jersey.test.framework.JerseyTest;
-import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.apache.commons.lang3.NotImplementedException;
-import org.junit.Before;
-import org.silverpeas.accesscontrol.SpaceAccessController;
-import org.silverpeas.core.admin.OrganizationController;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.request.RequestContextListener;
+import org.junit.Rule;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
+import org.silverpeas.web.environment.SilverpeasEnvironmentTestRule;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The base class for testing REST web services in Silverpeas. This base class wraps all of the
- * mechanismes required to prepare the environment for testing web services with Jersey and Spring
+ * mechanismes required to prepare the environment for testing web services with RESTEasy and CDI
  * in the context of Silverpeas.
- *
- * @param <T> the test resources wrapper in use in the test cases.
  */
-public abstract class RESTWebServiceTest<T extends TestResources> extends JerseyTest {
+public abstract class RESTWebServiceTest {
 
-  protected static final String CONTEXT_NAME = "silverpeas";
-  private T testResources;
-  private final Client webClient;
+  protected static final String CONTEXT_NAME = "test";
 
-  /**
-   * Constructs a new test case on the REST web service testing. It bootstraps the runtime context
-   * into which the REST web service to test will run.
-   *
-   * @param webServicePackage the Java package in which is defined the web service to test.
-   * @param springContext the Spring context configuration file that accompanies the web service to
-   * test.
-   */
-  public RESTWebServiceTest(String webServicePackage, String springContext) {
-    super(new WebAppDescriptor.Builder(webServicePackage).contextPath(CONTEXT_NAME).
-        contextParam("contextConfigLocation", "classpath:/" + springContext).
-        initParam(JSONConfiguration.FEATURE_POJO_MAPPING, "true").
-        initParam("com.sun.jersey.config.property.packages",
-            "org.codehaus.jackson.jaxrs;com.silverpeas.web.mappers").
-        requestListenerClass(RequestContextListener.class).
-        servletClass(SpringServlet.class).
-        contextListenerClass(ContextLoaderListener.class).
-        build());
-
-    ClientConfig config = new DefaultClientConfig();
-    config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
-    webClient = Client.create(config);
-  }
+  @Rule
+  public SilverpeasEnvironmentTestRule silverpeasEnvironmentTestRule =
+      new SilverpeasEnvironmentTestRule();
 
   /**
    * Gets the component instances to take into account in tests. Theses component instances will be
@@ -108,25 +71,20 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     return new String[]{};
   }
 
-  @Override
-  public WebResource resource() {
-    return webClient.resource(getBaseURI() + CONTEXT_NAME + "/");
+  /**
+   * Gets an initialized web target resource instance for tests.
+   * @return the {@link WebTarget} instance.
+   */
+  public WebTarget resource() {
+    return ClientBuilder.newClient().target(getBaseURI() + CONTEXT_NAME + "/services/");
   }
 
-  @SuppressWarnings("unchecked")
-  @Before
-  public void prepareMockedResources() {
-    testResources = (T) TestResources.getTestResources();
-    PersonalizationService mock = testResources.getPersonalizationServiceMock();
-    UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
-        true, true, UserMenuDisplay.DISABLE);
-    when(mock.getUserSettings(anyString())).thenReturn(preferences);
-    for (String componentId : getExistingComponentInstances()) {
-      addComponentInstance(componentId);
-    }
-    for (String toolId : getExistingTools()) {
-      addTool(toolId);
-    }
+  protected URI getBaseURI() {
+    return URI.create("http://localhost:8080/");
+  }
+
+  public SilverpeasEnvironmentTest getSilverpeasEnvironmentTest() {
+    return SilverpeasEnvironmentTest.getSilverpeasEnvironmentTest();
   }
 
   /**
@@ -137,22 +95,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
    * @return the key of the opened session.
    */
   public String authenticate(final UserDetail theUser) {
-    getTestResources().registerUser(theUser);
-    for (String componentId : getExistingComponentInstances()) {
-      setComponentAccessibilityToUser(componentId, theUser.getId());
-    }
-    final SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
-    return session.getSessionId();
-  }
-
-  /**
-   * Gets a user to use in the test case. The user is managed by the test resources. So, to override
-   * it, please override the TestResources class.
-   *
-   * @return the detail about the user in use in the current test case.
-   */
-  public UserDetailWithProfiles aUser() {
-    return getTestResources().aUser();
+    return getSilverpeasEnvironmentTest().getTokenOf(theUser);
   }
 
   /**
@@ -173,58 +116,19 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
         "Migration : the implementation of denieSpaceAuthorizationToUsers is not yet performed...");
   }
 
-  /**
-   * Gets the resources in use in the current test case.
-   *
-   * @return a TestResources instance.
-   */
-  public T getTestResources() {
-    return testResources;
-  }
-
-  /**
-   * Adds the specified component instance among the existing ones and that will be used in tests.
-   *
-   * @param componentId the unique identifier of the component instance to use in tests.
-   */
-  public void addComponentInstance(String componentId) {
-    OrganizationController mock = getOrganizationControllerMock();
-    when(mock.isComponentExist(componentId)).thenReturn(true);
-  }
-
-  public void addTool(String toolId) {
-    OrganizationController mock = getOrganizationControllerMock();
-    when(mock.isToolAvailable(toolId)).thenReturn(true);
-  }
-
-  public void setComponentAccessibilityToUser(String componentId, String userId) {
-    OrganizationController mock = getOrganizationControllerMock();
-    when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
-  }
-
-  protected OrganizationController getOrganizationControllerMock() {
-    return getTestResources().getOrganizationControllerMock();
-  }
-
-  protected AccessController getAccessControllerMock() {
-    return getTestResources().getAccessControllerMock();
-  }
-
-  protected SpaceAccessController getMockedSpaceAccessController() {
-    return getTestResources().getSpaceAccessControllerMock();
-  }
-
-  protected PersonalizationService getPersonalizationServiceMock() {
-    return getTestResources().getPersonalizationServiceMock();
-  }
-
-  protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
-    MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
-    String[] queryParameters = query.split("&");
+  protected WebTarget applyQueryParameters(String parameterQueryPart, WebTarget resource) {
+    MultivaluedMap<String, String> parameters = new MultivaluedHashMap<>();
+    String[] queryParameters = parameterQueryPart.split("&");
     for (String aQueryParameter : queryParameters) {
-      String[] parameterParts = aQueryParameter.split("=");
-      parameters.add(parameterParts[0], parameterParts.length > 1 ? parameterParts[1] : "");
+      if (StringUtil.isDefined(aQueryParameter)) {
+        String[] parameterParts = aQueryParameter.split("=");
+        parameters.add(parameterParts[0], parameterParts.length > 1 ? parameterParts[1] : "");
+      }
     }
-    return parameters;
+    WebTarget newResource = resource;
+    for (Map.Entry<String, List<String>> parameter : parameters.entrySet()) {
+      newResource = newResource.queryParam(parameter.getKey(), parameter.getValue().toArray());
+    }
+    return newResource;
   }
 }

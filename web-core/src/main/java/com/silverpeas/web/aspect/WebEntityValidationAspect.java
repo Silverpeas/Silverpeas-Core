@@ -24,46 +24,54 @@
 package com.silverpeas.web.aspect;
 
 import com.silverpeas.web.Exposable;
-import java.util.Set;
+import org.silverpeas.util.annotation.AnnotationUtil;
+
+import javax.annotation.Priority;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
+import java.lang.annotation.Annotation;
+import java.util.Map;
+import java.util.Set;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * An aspect to insert component existence checking in the web services so that it is performed
  * implicitly for each web resources managed by a given component instance. If a web resource
  * doesn't belong to any component instance, then nothing is done.
  */
-@Component @Aspect
+@Interceptor
+@WebEntityMustBeValid
+@Priority(APPLICATION)
 public class WebEntityValidationAspect {
 
-  @Pointcut("@within(javax.ws.rs.Path) && this(com.silverpeas.web.RESTWebService)")
-  public void webServices() {
-  }
-  
-  @Pointcut("@annotation(javax.ws.rs.POST) && execution(* *(..))")
-  public void methodAnnotatedWithPOST() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.PUT) && execution(* *(..))")
-  public void methodAnnotatedWithPUT() {
-  }
-
-  @Before("webServices() && (methodAnnotatedWithPOST() || methodAnnotatedWithPUT()) "
-  + "&& (args(entity,..) || args(..,entity))")
-  public <T extends Exposable> void validateWebEntity(T entity) throws Throwable {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
-    Set<ConstraintViolation<T>> violations = validator.validate(entity);
-    if (!violations.isEmpty()) {
-      throw new WebApplicationException(Response.Status.BAD_REQUEST);
+  @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
+  @AroundInvoke
+  public <A extends Annotation, T extends Exposable> Object processAuthorization(
+      InvocationContext context) throws Exception {
+    Map<Class<A>, A> methodAnnotations = AnnotationUtil.extractMethodAnnotations(context);
+    if (methodAnnotations.containsKey(POST.class) || methodAnnotations.containsKey(PUT.class)) {
+      for (Object parameterValue : context.getParameters()) {
+        if (parameterValue instanceof Exposable) {
+          T webEntity = (T) parameterValue;
+          ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+          Validator validator = factory.getValidator();
+          Set<ConstraintViolation<T>> violations = validator.validate(webEntity);
+          if (!violations.isEmpty()) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+          }
+        }
+      }
     }
+    return context.proceed();
   }
 }

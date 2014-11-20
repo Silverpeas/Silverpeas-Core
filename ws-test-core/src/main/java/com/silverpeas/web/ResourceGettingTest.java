@@ -23,15 +23,15 @@
  */
 package com.silverpeas.web;
 
-import org.silverpeas.util.StringUtil;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import java.util.UUID;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
+import org.silverpeas.util.StringUtil;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -41,11 +41,8 @@ import static org.junit.Assert.fail;
  * Unit tests on the getting of a resource in Silverpeas through a REST web service. This class is
  * an abstract one and it implements some tests that are redondant over all web resources in
  * Silverpeas (about authorization failure, authentication failure, ...)
- *
- * @param <T>
  */
-public abstract class ResourceGettingTest<T extends TestResources> extends RESTWebServiceTest<T>
-    implements WebResourceTesting {
+public abstract class ResourceGettingTest extends RESTWebServiceTest implements WebResourceTesting {
 
   public static String withAsSessionKey(String sessionKey) {
     return sessionKey;
@@ -53,13 +50,6 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
 
   public static MediaType asMediaType(MediaType mediaType) {
     return mediaType;
-  }
-
-  /**
-   * @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
-   */
-  public ResourceGettingTest(String webServicePackage, String springContext) {
-    super(webServicePackage, springContext);
   }
 
   /**
@@ -97,7 +87,7 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
       getAt(aResourceURI(), withAsSessionKey(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
           getWebEntityClass());
       fail("A non authenticated user shouldn't access the resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
       assertThat(receivedStatus, is(unauthorized));
@@ -110,7 +100,7 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
       getAt(aResourceURI(), withAsSessionKey(UUID.randomUUID().toString()),
           asMediaType(MediaType.APPLICATION_JSON_TYPE), getWebEntityClass());
       fail("A non authenticated user shouldn't access the resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
       assertThat(receivedStatus, is(unauthorized));
@@ -123,7 +113,7 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
     try {
       getAt(aResourceURI(), getWebEntityClass());
       fail("An unauthorized user shouldn't access the resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int forbidden = Status.FORBIDDEN.getStatusCode();
       assertThat(receivedStatus, is(forbidden));
@@ -135,7 +125,7 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
     try {
       getAt(anUnexistingResourceURI(), getWebEntityClass());
       fail("A user shouldn't get an unexisting resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int notFound = Status.NOT_FOUND.getStatusCode();
       assertThat(receivedStatus, is(notFound));
@@ -144,15 +134,16 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
 
   private <C> C getAt(String uri, String sessionKey, MediaType mediaType, Class<C> c) {
     String thePath = uri;
-    WebResource resource = resource();
+    String queryParams = "";
+    WebTarget resource = resource();
     if (thePath.contains("?")) {
       String[] pathParts = thePath.split("\\?");
-      String query = pathParts[1];
       thePath = pathParts[0];
-      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
-      resource = resource.queryParams(parameters);
+      queryParams = pathParts[1];
     }
-    Builder requestBuilder = resource.path(thePath).accept(mediaType);
+
+    Invocation.Builder requestBuilder =
+        applyQueryParameters(queryParams, resource.path(thePath)).request(mediaType);
     if (StringUtil.isDefined(sessionKey)) {
       requestBuilder = requestBuilder.header(HTTP_SESSIONKEY, sessionKey);
     }

@@ -50,7 +50,7 @@ public interface PdcManager {
    */
   public static final String SECONDARY_AXIS = "S";
 
-  public static PdcManager getInstance() {
+  public static PdcManager get() {
     return ServiceProvider.getService(PdcManager.class);
   }
 

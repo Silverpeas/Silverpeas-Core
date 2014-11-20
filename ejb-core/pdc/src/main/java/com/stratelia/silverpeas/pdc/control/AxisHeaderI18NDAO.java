@@ -29,6 +29,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
+
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +42,7 @@ import java.util.List;
  * Class declaration
  * @author
  */
+@Singleton
 public class AxisHeaderI18NDAO {
 
   private static String PdcAxisI18NTable = "SB_Pdc_AxisI18N";

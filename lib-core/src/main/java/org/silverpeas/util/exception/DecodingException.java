@@ -22,7 +22,7 @@
 package org.silverpeas.util.exception;
 
 /**
- * A runtime exception that is thrown when an error occurres while decoding a serialized
+ * A runtime exception that is thrown when an error occurs while decoding a serialized
  * representation of a bean.
  * @author mmoquillon
  */

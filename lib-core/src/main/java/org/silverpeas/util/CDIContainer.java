@@ -14,32 +14,35 @@ import java.util.stream.Collectors;
  */
 public class CDIContainer implements BeanContainer {
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> T getBeanByName(final String name) throws IllegalStateException {
     BeanManager beanManager = CDI.current().getBeanManager();
-    Bean<T> bean = (Bean<T>) beanManager.getBeans(name).stream()
-        .findFirst()
-        .orElseThrow(() -> new IllegalStateException("Cannot find an instance of name " + name));
+    Bean<T> bean = beanManager.resolve((Set) beanManager.getBeans(name));
+    if (bean == null) {
+      throw new IllegalStateException("Cannot find an instance of name " + name);
+    }
     CreationalContext<T> ctx = beanManager.createCreationalContext(bean);
     Type type = bean.getTypes().stream().findFirst().get();
-    T ref = (T) beanManager.getReference(bean, type, ctx);
 
-    return ref;
+    return (T) beanManager.getReference(bean, type, ctx);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> T getBeanByType(final Class<T> type, Annotation... qualifiers)
       throws IllegalStateException {
     BeanManager beanManager = CDI.current().getBeanManager();
-    Bean<T> bean = (Bean<T>) beanManager.getBeans(type, qualifiers).stream().findFirst()
-        .orElseThrow(
-            () -> new IllegalStateException("Cannot find an instance of type " + type.getName()));
+    Bean<T> bean = beanManager.resolve((Set) beanManager.getBeans(type, qualifiers));
+    if (bean == null) {
+      throw new IllegalStateException("Cannot find an instance of type " + type.getName());
+    }
     CreationalContext<T> ctx = beanManager.createCreationalContext(bean);
-    T ref = (T) beanManager.getReference(bean, type, ctx);
 
-    return ref;
+    return (T) beanManager.getReference(bean, type, ctx);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> Set<T> getAllBeansByType(final Class<T> type, Annotation... qualifiers) {
     BeanManager beanManager = CDI.current().getBeanManager();

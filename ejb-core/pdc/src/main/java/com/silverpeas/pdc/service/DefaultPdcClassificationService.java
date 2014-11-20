@@ -60,8 +60,6 @@ public class DefaultPdcClassificationService implements PdcClassificationService
   @Inject
   private PdcAxisValueRepository valueRepository;
   @Inject
-  private PdcManager pdcManager;
-  @Inject
   private NodeService nodeService;
 
   /**
@@ -243,17 +241,18 @@ public class DefaultPdcClassificationService implements PdcClassificationService
     List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
     try {
       int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
-      List<ClassifyPosition> existingPositions = pdcManager.getPositions(silverObjectId, content.
-          getComponentInstanceId());
+      List<ClassifyPosition> existingPositions =
+          getPdcManager().getPositions(silverObjectId, content.
+                  getComponentInstanceId());
       for (ClassifyPosition aClassifyPosition : classifyPositions) {
-        int positionId = pdcManager.addPosition(silverObjectId, aClassifyPosition, content.
+        int positionId = getPdcManager().addPosition(silverObjectId, aClassifyPosition, content.
             getComponentInstanceId(), alertSubscribers);
         aClassifyPosition.setPositionId(positionId);
       }
       if (!existingPositions.isEmpty()) {
         for (ClassifyPosition anExistingPosition : existingPositions) {
           if (!isFound(anExistingPosition, classifyPositions)) {
-            pdcManager.deletePosition(anExistingPosition.getPositionId(),
+            getPdcManager().deletePosition(anExistingPosition.getPositionId(),
                 content.getComponentInstanceId());
           }
         }
@@ -320,6 +319,10 @@ public class DefaultPdcClassificationService implements PdcClassificationService
 
   protected NodeService getNodeService() {
     return nodeService;
+  }
+
+  protected PdcManager getPdcManager() {
+    return PdcManager.get();
   }
 
   private boolean isFound(ClassifyPosition aPosition,

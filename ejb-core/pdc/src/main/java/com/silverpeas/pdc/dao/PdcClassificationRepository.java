@@ -30,11 +30,13 @@ import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * DAO that handles the persistence of PdcClassification beans.
  */
+@Singleton
 public class PdcClassificationRepository
     extends JpaBasicEntityManager<PdcClassification, UniqueLongIdentifier> {
 

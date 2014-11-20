@@ -24,7 +24,6 @@
 package com.silverpeas.annotation.processing;
 
 import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
 import com.silverpeas.web.WebResource;
 

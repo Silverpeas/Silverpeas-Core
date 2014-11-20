@@ -1509,7 +1509,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
     // Retrieve the list of PDC publications using EJB call
     List<GlobalSilverContent> silverContentsMetier = null;
-    PdcManager pdcManager = PdcManager.getInstance();
+    PdcManager pdcManager = PdcManager.get();
     if (pdcManager != null) {
       if (!componentIds.isEmpty()) {
         try {
@@ -1533,7 +1533,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       List<String> componentIds) {
     // Retrieve the list of PDC publications using EJB call
     List<GlobalSilverContent> silverContentsMetier = null;
-    PdcManager pdcManager = PdcManager.getInstance();
+    PdcManager pdcManager = PdcManager.get();
     if (pdcManager != null) {
       if (componentIds.size() > 0) {
         try {

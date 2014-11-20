@@ -49,7 +49,7 @@ import java.util.Set;
 @NodeAccessControl
 public class NodeAccessController extends AbstractAccessController<NodePK> {
 
-  @Inject
+  @Inject @ComponentAccessControl
   private ComponentAccessController componentAccessController;
 
   @Inject

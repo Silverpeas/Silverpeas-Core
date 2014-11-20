@@ -26,6 +26,7 @@ package com.silverpeas.socialnetwork.provider;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 import java.util.List;
 
@@ -33,6 +34,11 @@ import java.util.List;
  * @author Bensalrm Nabil
  */
 public interface SocialGalleryInterface {
+
+  public static SocialGalleryInterface get() {
+    return ServiceProvider.getService(SocialGalleryInterface.class);
+  }
+
   /**
    * get list of socialInformation according to number of Item and the first Index
    * @param userId

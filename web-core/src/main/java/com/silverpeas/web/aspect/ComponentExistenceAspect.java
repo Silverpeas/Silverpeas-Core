@@ -23,63 +23,50 @@
  */
 package com.silverpeas.web.aspect;
 
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.RESTWebService;
+
+import com.silverpeas.web.WebResource;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 
+import javax.annotation.Priority;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
+import javax.interceptor.InvocationContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+
 import org.silverpeas.core.admin.OrganizationController;
-import org.springframework.stereotype.Component;
 
 /**
  * An aspect to insert component existence checking in the web services so that it is performed
  * implicitly for each web resources managed by a given component instance. If a web resource
  * doesn't belong to any component instance, then nothing is done.
  */
-@Component
-@Aspect
+@Interceptor
+@ComponentInstMustExistIfSpecified
+@Priority(APPLICATION)
 public class ComponentExistenceAspect {
 
-  @Pointcut("@within(javax.ws.rs.Path) && this(com.silverpeas.web.RESTWebService)")
-  public void webServices() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.GET) && execution(* *(..))")
-  public void methodAnnotatedWithGET() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.POST) && execution(* *(..))")
-  public void methodAnnotatedWithPOST() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.DELETE) && execution(* *(..))")
-  public void methodAnnotatedWithDELETE() {
-  }
-
-  @Pointcut("@annotation(javax.ws.rs.PUT) && execution(* *(..))")
-  public void methodAnnotatedWithPUT() {
-  }
-
-  @Before("webServices() && (methodAnnotatedWithGET() || "
-      + "methodAnnotatedWithPOST() || methodAnnotatedWithDELETE() || methodAnnotatedWithPUT()) "
-      + "&& this(service)")
-  public void checkComponentInstanceExistence(RESTWebService service) throws Throwable {
-    String instanceId = null;
-    try {
-      instanceId = service.getComponentId();
-    } catch (Exception ex) {
-    }
-    if (isDefined(instanceId)) {
-      OrganizationController controller =
-          OrganizationControllerProvider.getOrganisationController();
-      if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
-          !controller.isAdminTool(instanceId)) {
-        throw new WebApplicationException(Response.Status.NOT_FOUND);
+  @AroundInvoke
+  public Object processAuthorization(InvocationContext context) throws Exception {
+    Object target = context.getTarget();
+    if (target instanceof WebResource) {
+      WebResource resource = (WebResource) target;
+      String instanceId = null;
+      try {
+        instanceId = resource.getComponentId();
+      } catch (Exception ignore) {
+      }
+      if (isDefined(instanceId)) {
+        OrganizationController controller =
+            OrganizationControllerProvider.getOrganisationController();
+        if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
+            !controller.isAdminTool(instanceId)) {
+          throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
       }
     }
+    return context.proceed();
   }
 }

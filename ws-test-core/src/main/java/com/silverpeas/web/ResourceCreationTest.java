@@ -23,43 +23,39 @@
 */
 package com.silverpeas.web;
 
-import static org.silverpeas.util.StringUtil.isDefined;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import java.util.UUID;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.Status;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.silverpeas.util.StringUtil.isDefined;
+
 /**
-* Unit tests on the creation of a new resource in Silverpeas through a REST web service.
-* This class is an abstract one and it implements some tests that are redondant over all
-* web resources in Silverpeas (about authorization failure, authentication failure, ...)
-*/
-public abstract class ResourceCreationTest<T extends TestResources> extends RESTWebServiceTest<T>
-        implements WebResourceTesting {
+ * Unit tests on the creation of a new resource in Silverpeas through a REST web service.
+ * This class is an abstract one and it implements some tests that are redondant over all
+ * web resources in Silverpeas (about authorization failure, authentication failure, ...)
+ */
+public abstract class ResourceCreationTest extends RESTWebServiceTest
+    implements WebResourceTesting {
 
   private static String withAsSessionKey(String sessionKey) {
     return sessionKey;
   }
 
   /**
-* A convenient method to improve the readability of the method calls.
-* @param uri a resource URI.
-* @return the specified resource URI.
-*/
+   * A convenient method to improve the readability of the method calls.
+   * @param uri a resource URI.
+   * @return the specified resource URI.
+   */
   public static String at(String uri) {
     return uri;
-  }
-
-  /**
-* @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
-*/
-  public ResourceCreationTest(String webServicePackage, String springContext) {
-    super(webServicePackage, springContext);
   }
 
   /**
@@ -69,13 +65,13 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
    * @param atURI the URI at which the entity has to be posted.
    * @return the response of the post.
    */
-  public <C> ClientResponse post(final C entity, String atURI) {
+  public <C> Response post(final C entity, String atURI) {
     return post(entity, atURI, withAsSessionKey(getSessionKey()));
   }
 
   @Test
   public void creationOfANewResourceByANonAuthenticatedUser() {
-    ClientResponse response = post(aResource(), at(aResourceURI()), withAsSessionKey(null));
+    Response response = post(aResource(), at(aResourceURI()), withAsSessionKey(null));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -83,8 +79,8 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
 
   @Test
   public void creationOfANewResourceWithADeprecatedSession() {
-    ClientResponse response = post(aResource(), at(aResourceURI()),
-            withAsSessionKey(UUID.randomUUID().toString()));
+    Response response =
+        post(aResource(), at(aResourceURI()), withAsSessionKey(UUID.randomUUID().toString()));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -93,39 +89,37 @@ public abstract class ResourceCreationTest<T extends TestResources> extends REST
   @Test
   public void creationOfANewResourceByANonAuthorizedUser() {
     denieAuthorizationToUsers();
-    ClientResponse response = post(aResource(), at(aResourceURI()));
+    Response response = post(aResource(), at(aResourceURI()));
     int receivedStatus = response.getStatus();
     int forbidden = Status.FORBIDDEN.getStatusCode();
     assertThat(receivedStatus, is(forbidden));
   }
-  
+
   @Test
   public void postAnInvalidResourceState() {
-    ClientResponse response = post("{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}",
-            at(aResourceURI()));
-    int recievedStatus = response.getStatus();
+    Response response =
+        post("{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}", at(aResourceURI()));
+    int receivedStatus = response.getStatus();
     int badRequest = Status.BAD_REQUEST.getStatusCode();
-    assertThat(recievedStatus, is(badRequest));
+    assertThat(receivedStatus, is(badRequest));
   }
 
-  private <C> ClientResponse post(final C entity, String atURI, String withSessionKey) {
+  private <C> Response post(final C entity, String atURI, String withSessionKey) {
     String thePath = atURI;
-    WebResource resource = resource();
+    String queryParams = "";
+    WebTarget resource = resource();
     if (thePath.contains("?")) {
       String[] pathParts = thePath.split("\\?");
-      String query = pathParts[1];
       thePath = pathParts[0];
-      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
-      resource = resource.queryParams(parameters);
+      queryParams = pathParts[1];
     }
-    WebResource.Builder resourcePoster = resource.path(thePath).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON);
+    Invocation.Builder resourcePoster = applyQueryParameters(queryParams, resource.path(thePath))
+        .request(MediaType.APPLICATION_JSON);
     if (isDefined(withSessionKey)) {
       resourcePoster = resourcePoster.header(HTTP_SESSIONKEY, withSessionKey);
     }
-    return resourcePoster.post(ClientResponse.class, entity);
+    return resourcePoster.post(Entity.entity(entity, MediaType.APPLICATION_JSON));
   }
-  
-  
+
+
 }

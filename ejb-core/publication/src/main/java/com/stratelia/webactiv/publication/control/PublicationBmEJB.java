@@ -74,6 +74,7 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -95,7 +96,7 @@ public class PublicationBmEJB implements PublicationBm {
   private CoordinatesService coordinatesService;
   @Inject
   private RatingService ratingService;
-  @Inject
+  @EJB
   private TagCloudBm tagCloudBm;
   @Inject
   private ComponentHelper componentHelper;

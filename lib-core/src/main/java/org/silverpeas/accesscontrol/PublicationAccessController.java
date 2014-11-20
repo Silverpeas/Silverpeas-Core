@@ -50,7 +50,7 @@ import java.util.Set;
 @PublicationAccessControl
 public class PublicationAccessController extends AbstractAccessController<PublicationPK> {
 
-  @Inject
+  @Inject @NodeAccessControl
   private NodeAccessController accessController;
   
   @Inject

@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class permits to setup an integration test
@@ -116,7 +118,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   }
 
   @Override
-  public WarBuilder<T> addAsResource(String resourceName, String target) throws IllegalArgumentException {
+  public WarBuilder<T> addAsResource(String resourceName, String target)
+      throws IllegalArgumentException {
     war.addAsResource(resourceName, target);
     return this;
   }
@@ -138,24 +141,29 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   /**
    * Builds the final WAR archive. The following stuffs are automatically added :
    * <ul>
-   *   <li>The <b>beans.xml</b> in order to activate CDI,</li>
-   *   <li>The <b>META-INF/services/org.silverpeas.util.BeanContainer</b> to load the CDI-based bean
-   *   container,</li>
-   *   <li>The <b>test-ds.xml</b> resource in order to define a data source for tests.</li>
+   * <li>The <b>beans.xml</b> in order to activate CDI,</li>
+   * <li>The <b>META-INF/services/org.silverpeas.util.BeanContainer</b> to load the CDI-based bean
+   * container,</li>
+   * <li>The <b>test-ds.xml</b> resource in order to define a data source for tests.</li>
    * </ul>
    * @return the built WAR archive.
    */
   @Override
   public final WebArchive build() {
-    File[] libs =
-        Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
-            .asFile();
-    war.addAsLibraries(libs);
-    war.addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-        "META-INF/services/org.silverpeas.util.BeanContainer");
-    war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
-    return war;
+    try {
+      File[] libs =
+          Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
+              .asFile();
+      war.addAsLibraries(libs);
+      war.addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+          "META-INF/services/org.silverpeas.util.BeanContainer");
+      war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+      war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
+      return war;
+    } catch (Exception e) {
+      Logger.getAnonymousLogger().log(Level.SEVERE, "WAR BUILD PROBLEM...", e);
+      throw new RuntimeException(e);
+    }
   }
 
   /**

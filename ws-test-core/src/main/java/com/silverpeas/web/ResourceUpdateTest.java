@@ -23,38 +23,34 @@
 */
 package com.silverpeas.web;
 
-import static org.silverpeas.util.StringUtil.isDefined;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import java.util.UUID;
+import org.junit.Test;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
- * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is an
- * abstract one and it implements some tests that are redondant over all web resources in Silverpeas
+ * Unit tests on the update of a resource in Silverpeas through a REST web service. This class is
+ * an
+ * abstract one and it implements some tests that are redondant over all web resources in
+ * Silverpeas
  * (about authorization failure, authentication failure, ...)
  */
-public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWebServiceTest<T>
-        implements WebResourceTesting {
-
-  /**
-* @see RESTWebServiceTest#RESTWebServiceTest(java.lang.String, java.lang.String)
-*/
-  public ResourceUpdateTest(String webServicePackage, String springContext) {
-    super(webServicePackage, springContext);
-  }
+public abstract class ResourceUpdateTest extends RESTWebServiceTest implements WebResourceTesting {
 
   public abstract <I> I anInvalidResource();
 
   /**
    * A convenient method to improve the readability of the method calls.
-   *
    * @param uri a resource URI.
    * @return the specified resource URI.
    */
@@ -68,7 +64,6 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
 
   /**
    * Puts at the specified URI the specified new state of the resource.
-   *
    * @param <C> the type of the resource's state.
    * @param uri the URI at which the resource is.
    * @param newResourceState the new state of the resource.
@@ -83,7 +78,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     try {
       put(aResource(), at(aResourceURI()), withAsSessionKey(null));
       fail("A non authenticated user shouldn't update the resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
       assertThat(receivedStatus, is(unauthorized));
@@ -95,7 +90,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     try {
       put(aResource(), at(aResourceURI()), withAsSessionKey(UUID.randomUUID().toString()));
       fail("A user shouldn't update the resource through an expired session");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
       assertThat(receivedStatus, is(unauthorized));
@@ -108,7 +103,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     try {
       putAt(aResourceURI(), aResource());
       fail("An unauthorized user shouldn't update a resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int forbidden = Status.FORBIDDEN.getStatusCode();
       assertThat(receivedStatus, is(forbidden));
@@ -120,7 +115,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     try {
       putAt(aResourceURI(), anInvalidResource());
       fail("A user shouldn't update a resource with an invalid another one");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int badRequest = Status.BAD_REQUEST.getStatusCode();
       assertThat(receivedStatus, is(badRequest));
@@ -132,7 +127,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
     try {
       putAt(anUnexistingResourceURI(), aResource());
       fail("A user shouldn't update an unexisting resource");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
       int notFound = Status.NOT_FOUND.getStatusCode();
       assertThat(receivedStatus, is(notFound));
@@ -143,7 +138,7 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   public void updateWithAnInvalidResourceState() {
     try {
       putAt(aResourceURI(), "{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}");
-    } catch (UniformInterfaceException ex) {
+    } catch (WebApplicationException ex) {
       int recievedStatus = ex.getResponse().getStatus();
       int badRequest = Status.BAD_REQUEST.getStatusCode();
       assertThat(recievedStatus, is(badRequest));
@@ -153,21 +148,19 @@ public abstract class ResourceUpdateTest<T extends TestResources> extends RESTWe
   @SuppressWarnings("unchecked")
   private <E> E put(final E entity, String atURI, String withSessionKey) {
     String thePath = atURI;
-    WebResource resource = resource();
+    String queryParams = "";
+    WebTarget resource = resource();
     if (thePath.contains("?")) {
       String[] pathParts = thePath.split("\\?");
-      String query = pathParts[1];
       thePath = pathParts[0];
-      MultivaluedMap<String, String> parameters = buildQueryParametersFrom(query);
-      resource = resource.queryParams(parameters);
+      queryParams = pathParts[1];
     }
-    Class<E> c = (Class<E>) entity.getClass();
-    WebResource.Builder resourcePutter = resource.path(thePath).
-            accept(MediaType.APPLICATION_JSON).
-            type(MediaType.APPLICATION_JSON);
+    Invocation.Builder resourcePutter = applyQueryParameters(queryParams, resource.path(thePath))
+        .request(MediaType.APPLICATION_JSON);
     if (isDefined(withSessionKey)) {
       resourcePutter = resourcePutter.header(HTTP_SESSIONKEY, withSessionKey);
     }
-    return resourcePutter.put(c, entity);
+    Class<E> c = (Class<E>) entity.getClass();
+    return resourcePutter.put(Entity.entity(entity, MediaType.APPLICATION_JSON), c);
   }
 }

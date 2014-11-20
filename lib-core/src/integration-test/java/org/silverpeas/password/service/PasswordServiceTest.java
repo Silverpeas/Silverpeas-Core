@@ -28,25 +28,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.password.constant.PasswordRuleType;
-import org.silverpeas.password.rule.AbstractPasswordRule;
-import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.password.rule.*;
 import org.silverpeas.test.WarBuilder4LibCore;
-import org.silverpeas.util.ConfigurationClassLoader;
-import org.silverpeas.util.ConfigurationControl;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.ResourceBundleWrapper;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.RelativeFileAccessException;
-import org.silverpeas.util.template.SilverpeasStringTemplate;
-import org.silverpeas.util.template.SilverpeasStringTemplateUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,12 +51,13 @@ import static org.hamcrest.Matchers.is;
 @RunWith(Arquillian.class)
 public class PasswordServiceTest {
 
-  private PasswordServiceTestContext context = new PasswordServiceTestContext();
+  private PasswordServiceTestContext context;
 
   private PasswordService passwordService;
 
   @Before
   public void prepareService() {
+    context = new PasswordServiceTestContext();
     passwordService = PasswordServiceProvider.getPasswordService();
   }
 
@@ -86,21 +74,18 @@ public class PasswordServiceTest {
         .addCommonBasicUtilities()
         .addStringTemplateFeatures()
         .testFocusedOn((warBuilder) -> {
-          warBuilder.addPackages(true, "org.silverpeas.password");
-          warBuilder.addClasses(ResourceLocator.class, ResourceBundleWrapper.class,
-              ConfigurationClassLoader.class, FileUtil.class, MimeTypes.class,
-              RelativeFileAccessException.class, ConfigurationControl.class,
-              GeneralPropertiesManager.class, SilverpeasTemplateFactory.class,
-              SilverpeasTemplate.class, SilverpeasStringTemplateUtil.class,
-              SilverpeasStringTemplate.class);
+          warBuilder.addPackages(true, "org.silverpeas.password.constant");
+          warBuilder.addPackages(true, "org.silverpeas.password.service");
+          warBuilder.addClasses(AbstractPasswordRule.class, AtLeastXDigitPasswordRule.class,
+              AtLeastXLowercasePasswordRule.class, AtLeastXSpecialCharPasswordRule.class,
+              AtLeastXUppercasePasswordRule.class, BlankForbiddenPasswordRule.class,
+              MaxLengthPasswordRule.class, MinLengthPasswordRule.class, PasswordRule.class,
+              SequentialForbiddenPasswordRule.class);
           warBuilder.addAsResource("org/silverpeas/password/settings/password.properties");
           warBuilder
               .addAsResource("org/silverpeas/password/settings/passwordNotDefined.properties");
           warBuilder.addAsResource(
               "org/silverpeas/password/settings/passwordCombinationDefined.properties");
-          warBuilder.addAsResource("templates/core/password/extraRules_en.st");
-          warBuilder.addAsResource("templates/core/password/extraRules_de.st");
-          warBuilder.addAsResource("templates/core/password/extraRules_fr.st");
         }).build();
   }
 
@@ -248,10 +233,7 @@ public class PasswordServiceTest {
     }
   }
 
-  //TODO make this test works after spring migration end : change test using maven properties
-  // (real file system instead of arquillian vfs)
   @Test
-  @Ignore
   public void testGetExtraRuleMessage() {
     assertThat(passwordService.getExtraRuleMessage("fr"),
         is("règles supplémentaires non vérifiables ..."));

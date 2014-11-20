@@ -41,11 +41,6 @@ public class OrganizationSchema extends Schema {
     init();
   }
 
-  @Override
-  protected String getJNDIName() {
-    return JNDINames.ADMIN_DATASOURCE;
-  }
-
   public final void init() {
     domain = new DomainTable(this);
     keyStore = new KeyStoreTable(this);
