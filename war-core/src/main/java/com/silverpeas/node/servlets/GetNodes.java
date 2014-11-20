@@ -194,7 +194,7 @@ public class GetNodes extends HttpServlet {
       String state) {
     return JSONCodec.encodeObject(
         jsonNode -> jsonNode.put("data", node.getName(session.getFavoriteLanguage()))
-            .put("attr", getJsonAttr(node, session)).put("state", "closed"));
+            .put("attr", getJsonAttr(node, session)).put("state", state));
   }
 
   private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJsonAttr(NodeDetail node,
