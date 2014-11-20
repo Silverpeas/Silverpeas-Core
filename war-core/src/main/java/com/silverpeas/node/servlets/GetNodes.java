@@ -24,20 +24,17 @@
 
 package com.silverpeas.node.servlets;
 
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.web.servlet.RestRequest;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -52,6 +49,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -63,19 +61,19 @@ public class GetNodes extends HttpServlet {
   private OrganizationController organizationController;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-      IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
     doPost(req, resp);
   }
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException,  IOException {
+      throws ServletException, IOException {
     response.setContentType("application/json");
     Writer writer = response.getWriter();
     HttpSession session = request.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
-        MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController mainSessionCtrl =
+        (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl == null) {
       writer.write("This service required to be logged in !");
       return;
@@ -90,24 +88,22 @@ public class GetNodes extends HttpServlet {
       List<String> componentIds = Arrays.asList(ids);
 
       // retain only available instances for current user
-      List<String> availableComponentIds = new ArrayList<String>();
+      List<String> availableComponentIds = new ArrayList<>();
       for (String componentId : componentIds) {
-        if (organizationController.isComponentAvailable(componentId,
-            mainSessionCtrl.getUserId())) {
+        if (organizationController.isComponentAvailable(componentId, mainSessionCtrl.getUserId())) {
           availableComponentIds.add(componentId);
         }
       }
 
       if (availableComponentIds.size() == 1) {
         // only one instance is available, root must be expanded by default
-          NodeDetail node = getRoot(availableComponentIds.get(0), mainSessionCtrl);
-          JSONObject root = getNodeAsJSTreeObject(node, mainSessionCtrl, "open");
-          writer.write(root.toString());
+        NodeDetail node = getRoot(availableComponentIds.get(0), mainSessionCtrl);
+        writer.write(getNodeAsJSTreeObject(node, mainSessionCtrl, "open"));
       } else {
         // at least two instances are available, only root of instances have to be displayed
-        List<NodeDetail> nodes = new ArrayList<NodeDetail>();
+        List<NodeDetail> nodes = new ArrayList<>();
         for (String componentId : availableComponentIds) {
-            nodes.add(getRoot(componentId, mainSessionCtrl));
+          nodes.add(getRoot(componentId, mainSessionCtrl));
         }
         writer.write(getListAsJSONArray(nodes, mainSessionCtrl));
       }
@@ -126,15 +122,14 @@ public class GetNodes extends HttpServlet {
 
   private void getChildren(NodePK pk, MainSessionController session, Writer writer)
       throws IOException {
-      NodeDetail node = getNodeBm().getDetail(pk);
-      List<NodeDetail> availableChildren = getAvailableChildren(node.getChildrenDetails(), session);
-      writer.write(getListAsJSONArray(availableChildren, session));
+    NodeDetail node = getNodeBm().getDetail(pk);
+    List<NodeDetail> availableChildren = getAvailableChildren(node.getChildrenDetails(), session);
+    writer.write(getListAsJSONArray(availableChildren, session));
   }
 
   private NodeDetail getRoot(String componentId, MainSessionController session) {
     NodeDetail node = getNodeBm().getHeader(new NodePK("0", componentId));
-    ComponentInstLight component =
-        organizationController.getComponentInstLight(componentId);
+    ComponentInstLight component = organizationController.getComponentInstLight(componentId);
     if (component != null) {
       node.setName(component.getLabel(session.getFavoriteLanguage()));
     }
@@ -143,7 +138,7 @@ public class GetNodes extends HttpServlet {
 
   private List<NodeDetail> getAvailableChildren(Collection<NodeDetail> children,
       MainSessionController session) {
-    List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
+    List<NodeDetail> availableChildren = new ArrayList<>();
     for (NodeDetail child : children) {
       String childId = child.getNodePK().getId();
       if (child.getNodePK().isTrash() || "2".equals(childId)) {
@@ -152,9 +147,9 @@ public class GetNodes extends HttpServlet {
         availableChildren.add(child);
       } else {
         int rightsDependsOn = child.getRightsDependsOn();
-        boolean nodeAvailable =
-            organizationController.isObjectAvailable(rightsDependsOn, ObjectType.NODE,
-            child.getNodePK().getInstanceId(), session.getUserId());
+        boolean nodeAvailable = organizationController
+            .isObjectAvailable(rightsDependsOn, ObjectType.NODE, child.getNodePK().getInstanceId(),
+                session.getUserId());
         if (nodeAvailable) {
           availableChildren.add(child);
         } else { // check if at least one descendant is available
@@ -167,9 +162,10 @@ public class GetNodes extends HttpServlet {
               // same rights of father (which is not available) so it is not available too
             } else {
               // different rights of father check if it is available
-              if (organizationController.isObjectAvailable(
-                  descendant.getRightsDependsOn(), ObjectType.NODE, child.getNodePK().
-                  getInstanceId(), session.getUserId())) {
+              if (organizationController
+                  .isObjectAvailable(descendant.getRightsDependsOn(), ObjectType.NODE,
+                      child.getNodePK().
+                          getInstanceId(), session.getUserId())) {
                 childAllowed = true;
                 if (!availableChildren.contains(child)) {
                   availableChildren.add(child);
@@ -184,41 +180,43 @@ public class GetNodes extends HttpServlet {
   }
 
   private String getListAsJSONArray(Collection<NodeDetail> nodes, MainSessionController session) {
-    JSONArray jsonArray = new JSONArray();
-    for (NodeDetail node : nodes) {
-      JSONObject jsonObject = getNodeAsJSTreeObject(node, session, "closed");
-      jsonArray.put(jsonObject);
-    }
-
-    return jsonArray.toString();
+    return JSONCodec.encodeArray(jsonNodeDetails -> {
+      for (NodeDetail node : nodes) {
+        jsonNodeDetails.addJSONObject(
+            root -> root.put("data", node.getName(session.getFavoriteLanguage()))
+                .put("attr", getJsonAttr(node, session)).put("state", "closed"));
+      }
+      return jsonNodeDetails;
+    });
   }
 
-  private JSONObject getNodeAsJSTreeObject(NodeDetail node, MainSessionController session,
+  private String getNodeAsJSTreeObject(NodeDetail node, MainSessionController session,
       String state) {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", node.getName(session.getFavoriteLanguage()));
-    jsonObject.put("attr", getAttr(node, session));
-    jsonObject.put("state", state);
-
-    return jsonObject;
+    return JSONCodec.encodeObject(
+        jsonNode -> jsonNode.put("data", node.getName(session.getFavoriteLanguage()))
+            .put("attr", getJsonAttr(node, session)).put("state", "closed"));
   }
 
-  private JSONObject getAttr(NodeDetail node, MainSessionController session) {
-    JSONObject o = new JSONObject();
-    o.put("id", node.getNodePK().getId());
-    o.put("instanceId", node.getNodePK().getInstanceId());
-    String role = getRole(session, node);
-    if (node.getNodePK().isRoot()) {
-      role += "-root";
-    }
-    o.put("rel", role);
-    o.put("path", node.getFullPath());
-    return o;
+  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJsonAttr(NodeDetail node,
+      MainSessionController session) {
+    return nodeAttr -> {
+      nodeAttr.addJSONObject(o -> {
+        o.put("id", node.getNodePK().getId()).put("instanceId", node.getNodePK().getInstanceId());
+        String role = getRole(session, node);
+        if (node.getNodePK().isRoot()) {
+          role += "-root";
+        }
+        o.put("rel", role);
+        o.put("path", node.getFullPath());
+        return o;
+      });
+      return nodeAttr;
+    };
   }
 
   private boolean isRightsEnabled(MainSessionController session, String componentId) {
-    return StringUtil.getBooleanValue(session.getComponentParameterValue(componentId,
-        "rightsOnTopics"));
+    return StringUtil
+        .getBooleanValue(session.getComponentParameterValue(componentId, "rightsOnTopics"));
   }
 
   private String getRole(MainSessionController session, NodeDetail node) {
@@ -226,18 +224,19 @@ public class GetNodes extends HttpServlet {
       return SilverpeasRole.user.toString();
     }
     if (!isRightsEnabled(session, node.getNodePK().getInstanceId())) {
-      return getProfile(organizationController.getUserProfiles(session.getUserId(),
-          node.getNodePK().getInstanceId()));
+      return getProfile(organizationController
+          .getUserProfiles(session.getUserId(), node.getNodePK().getInstanceId()));
     }
 
     // check if we have to take care of topic's rights
-    if (node != null && node.haveRights()) {
+    if (node.haveRights()) {
       int rightsDependsOn = node.getRightsDependsOn();
-      return getProfile(organizationController.getUserProfiles(session.getUserId(),
-          node.getNodePK().getInstanceId(), rightsDependsOn, ObjectType.NODE));
+      return getProfile(organizationController
+          .getUserProfiles(session.getUserId(), node.getNodePK().getInstanceId(), rightsDependsOn,
+              ObjectType.NODE));
     } else {
-      return getProfile(organizationController.getUserProfiles(session.getUserId(),
-          node.getNodePK().getInstanceId()));
+      return getProfile(organizationController
+          .getUserProfiles(session.getUserId(), node.getNodePK().getInstanceId()));
     }
   }
 
@@ -265,7 +264,7 @@ public class GetNodes extends HttpServlet {
   }
 
   private NodeService getNodeBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
+    return NodeService.getInstance();
   }
 
   private boolean isPublicationAllowedOnRoot(NodePK pk, MainSessionController session) {

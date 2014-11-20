@@ -142,7 +142,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return JSONArray of list of spaces
    */
   private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONSpaces(
-      ArrayList<String> listSpaces) {
+      List<String> listSpaces) {
     return (jsonSpaces -> {
       for (String curSpaceId : listSpaces) {
         jsonSpaces.addJSONObject(jsonObject -> jsonObject.put("spaceid", curSpaceId));
@@ -182,8 +182,7 @@ public class AjaxActionServlet extends HttpServlet {
   private List<String> addSubSpace(String spaceId, String userId, ArrayList<String> addedSpaceIds) {
     SpaceInstLight space = organisationController.getSpaceInstLightById(spaceId);
     if (userFavoriteSpaceService.addUserFavoriteSpace(
-        new UserFavoriteSpaceVO(Integer.parseInt(userId),
-        space.getLocalId()))) {
+        new UserFavoriteSpaceVO(Integer.parseInt(userId), space.getLocalId()))) {
       addedSpaceIds.add(spaceId);
     }
     // Retrieve user sub space identifier
@@ -201,8 +200,8 @@ public class AjaxActionServlet extends HttpServlet {
    * @return JSON action result
    */
   private String removeSpace(HttpServletRequest req) {
-    SilverTrace.debug("lookSilverpeasV5", "AjaxActionServlet.removeSpace",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .debug("lookSilverpeasV5", "AjaxActionServlet.removeSpace", "root.MSG_GEN_ENTER_METHOD");
     // Get current session
     HttpSession session = req.getSession(true);
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
@@ -218,8 +217,7 @@ public class AjaxActionServlet extends HttpServlet {
       SpaceInstLight spaceInst = organisationController.getSpaceInstLightById(spaceId);
       // Retrieve all the subspace identifier and status in order to display the right status
       if (userFavoriteSpaceService.removeUserFavoriteSpace(
-          new UserFavoriteSpaceVO(Integer.parseInt(userId),
-          spaceInst.getLocalId()))) {
+          new UserFavoriteSpaceVO(Integer.parseInt(userId), spaceInst.getLocalId()))) {
         // Remove has been done successfully
         json = JSONCodec.encodeObject(jsonRslt -> {
           jsonRslt.put("success", true).put("spaceid", spaceId);
@@ -331,7 +329,7 @@ public class AjaxActionServlet extends HttpServlet {
     final String mainFrame = specificSettings.getString("FrameJSP", DEFAULT_JSP_FRAM);
 
     // Declare JSon result object
-    return JSONCodec.encodeObject(
-        jsonRslt -> jsonRslt.put("frame", mainFrame).put("success", true));
+    return JSONCodec
+        .encodeObject(jsonRslt -> jsonRslt.put("frame", mainFrame).put("success", true));
   }
 }
