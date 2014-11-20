@@ -51,8 +51,8 @@ public class POPUPSessionController extends AbstractComponentSessionController {
   public POPUPSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context,
-        "com.silverpeas.notificationserver.channel.popup.multilang.popup",
-        "com.silverpeas.notificationserver.channel.popup.settings.popupIcons");
+        "org.silverpeas.notificationserver.channel.popup.multilang.popup",
+        "org.silverpeas.notificationserver.channel.popup.settings.popupIcons");
     setComponentRootName(URLManager.CMP_POPUP);
   }
 

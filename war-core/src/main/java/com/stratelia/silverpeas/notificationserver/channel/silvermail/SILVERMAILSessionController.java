@@ -63,8 +63,8 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     super(
         mainSessionCtrl,
         context,
-        "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
-        "com.stratelia.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
+        "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
+        "org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
     setComponentRootName(URLManager.CMP_SILVERMAIL);
   }
 
@@ -109,7 +109,6 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   /**
    * Method declaration
    *
-   * @param userId
    * @return
    * @throws NotificationManagerException
    * @see
@@ -136,7 +135,6 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   /**
    * Method declaration
    *
-   * @param userId
    * @return
    * @throws NotificationManagerException
    * @see

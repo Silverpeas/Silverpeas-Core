@@ -57,7 +57,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * Package from which to attempt to load RequestHandler objects
    */
   private static final String REQUEST_HANDLER_PACKAGE =
-      "com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers";
+      "org.silverpeas.notificationserver.channel.silvermail.requesthandlers";
 
   /**
    * Name of the session bean that will be used for this application. This must be matched by the
