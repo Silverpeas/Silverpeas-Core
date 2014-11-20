@@ -25,14 +25,11 @@
 package org.silverpeas.test;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.admin.components.Message;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.calendar.DateTime;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
@@ -43,6 +40,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.silverpeas.EntityReference;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -50,11 +48,11 @@ import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
+import org.silverpeas.profile.UserReference;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
@@ -71,11 +69,8 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.memory.MemoryData;
-import org.silverpeas.util.memory.MemoryUnit;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.time.TimeData;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -111,6 +106,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     warBuilder.addBundleBaseFeatures();
     warBuilder
         .addClasses(SystemWrapper.class, TestSystemWrapper.class);
+    warBuilder.addClasses(EntityReference.class);
     warBuilder.addAsResource("maven.properties");
     return warBuilder;
   }
@@ -157,6 +153,12 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(MapUtil.class)) {
       addClasses(MapUtil.class);
     }
+    if (!contains(ArrayUtil.class)) {
+      addClasses(ArrayUtil.class);
+    }
+    if (!contains(Charsets.class)) {
+      addClasses(Charsets.class);
+    }
     if (!contains(CollectionUtil.class)) {
       addClasses(CollectionUtil.class, ExtractionList.class, ExtractionComplexList.class);
     }
@@ -193,6 +195,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(Domain.class)) {
       addClasses(Domain.class);
+    }
+    if (!contains(UserReference.class)) {
+      addClasses(UserReference.class);
     }
     return this;
   }

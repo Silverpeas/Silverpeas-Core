@@ -23,9 +23,12 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
+import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
-import com.stratelia.silverpeas.domains.DriverSettings;
-import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -53,20 +56,13 @@ import org.opends.server.types.LDIFImportConfig;
 import org.opends.server.types.LDIFImportResult;
 import org.opends.server.util.EmbeddedUtils;
 import org.opends.server.util.StaticUtils;
-import org.silverpeas.EntityReference;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.profile.UserReference;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.Charsets;
 import org.silverpeas.util.LdapConfiguration;
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NBean;
-import org.silverpeas.util.i18n.Translation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,22 +83,12 @@ public class LDAPDriverTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(LDAPDriverTest.class)
-        .addLDAPFeatures()
-        .addJpaPersistenceFeatures()
-        .addSilverpeasExceptionBases().testFocusedOn((warBuilder) -> {
+    return WarBuilder4LibCore.onWarFor(LDAPDriverTest.class).addLDAPFeatures()
+        .addAdministrationFeatures().addSilverpeasExceptionBases().testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "com.stratelia.silverpeas.domains.ldapdriver");
-          warBuilder.addPackages(true, "org.silverpeas.initialization");
-          warBuilder.addPackages(true, "com.stratelia.silverpeas.silvertrace");
-          warBuilder.addPackages(true, "com.stratelia.silverpeas.silverpeasinitialize");
           warBuilder
-              .addClasses(DriverSettings.class, AbstractDomainDriver.class, DomainDriver.class,
-                  AdminException.class, AuthenticationBadCredentialException.class,
-                  AuthenticationException.class, LdapConfiguration.class, DomainProperty.class,
-                  Charsets.class, SynchroReport.class, Group.class, UserFull.class, ArrayUtil.class,
-                  AbstractI18NBean.class, ComponentI18N.class, EntityReference.class,
-                  TokenException.class, FieldTemplate.class, ComponentInst.class,
-                  UserReference.class, I18NBean.class, Translation.class,
+              .addClasses(AuthenticationBadCredentialException.class, AuthenticationException.class,
+                  LdapConfiguration.class, TokenException.class, FieldTemplate.class, Field.class,
                   TokenRuntimeException.class);
           warBuilder.addAsResource("org/silverpeas/domains/domainLDAP.properties");
         }).build();
