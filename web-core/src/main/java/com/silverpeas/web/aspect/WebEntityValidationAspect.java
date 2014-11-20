@@ -23,7 +23,7 @@
  */
 package com.silverpeas.web.aspect;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import org.silverpeas.util.annotation.AnnotationUtil;
 
 import javax.annotation.Priority;
@@ -56,12 +56,12 @@ public class WebEntityValidationAspect {
 
   @SuppressWarnings({"SuspiciousMethodCalls", "unchecked"})
   @AroundInvoke
-  public <A extends Annotation, T extends Exposable> Object processAuthorization(
+  public <A extends Annotation, T extends WebEntity> Object processAuthorization(
       InvocationContext context) throws Exception {
     Map<Class<A>, A> methodAnnotations = AnnotationUtil.extractMethodAnnotations(context);
     if (methodAnnotations.containsKey(POST.class) || methodAnnotations.containsKey(PUT.class)) {
       for (Object parameterValue : context.getParameters()) {
-        if (parameterValue instanceof Exposable) {
+        if (parameterValue instanceof WebEntity) {
           T webEntity = (T) parameterValue;
           ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
           Validator validator = factory.getValidator();

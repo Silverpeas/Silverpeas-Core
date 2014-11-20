@@ -28,8 +28,8 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.web.WebEntity;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -51,7 +51,7 @@ import java.util.List;
 /**
  * Web entity representing a publication that can be serialized into a given media type (JSON, XML).
  */
-public class PublicationEntity implements Exposable {
+public class PublicationEntity implements WebEntity {
 
   private static final long serialVersionUID = 7746081841765736096L;
 

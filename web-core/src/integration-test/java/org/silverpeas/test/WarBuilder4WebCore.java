@@ -104,6 +104,7 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
   public WarBuilder4WebCore addRESTWebServiceEnvironment() {
     addPackages(true, "com.silverpeas.web");
     addPackages(true, "com.silverpeas.annotation");
+    addPackages(true, "org.silverpeas.web.token");
     return this;
   }
 

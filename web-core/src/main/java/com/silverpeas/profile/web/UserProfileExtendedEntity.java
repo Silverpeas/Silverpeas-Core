@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The complete profile of a user that is exposable in the WEB. It is a web entity representing the
+ * The complete profile of a user that is web entity in the WEB. It is a web entity representing the
  * profile of a user that can be serialized into a given media type (JSON, XML). It is a decorator
  * that decorates a UserFull object with additional properties concerning its exposition in the WEB.
  */

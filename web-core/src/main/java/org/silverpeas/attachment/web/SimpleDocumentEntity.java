@@ -28,10 +28,9 @@ import java.net.URISyntaxException;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.silverpeas.web.WebEntity;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.web.Exposable;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 
@@ -39,7 +38,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
  *
  * @author ehugonnet
  */
-public class SimpleDocumentEntity implements Exposable {
+public class SimpleDocumentEntity implements WebEntity {
 
   private static final long serialVersionUID = 6578990825699318566L;
   @XmlElement(required = true)

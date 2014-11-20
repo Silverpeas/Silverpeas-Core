@@ -27,7 +27,7 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.exception.DecodingException;
@@ -60,7 +60,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PdcClassificationEntity implements Exposable {
+public class PdcClassificationEntity implements WebEntity {
 
   private static final long serialVersionUID = -2217575091640675000L;
   @XmlElement(defaultValue = "")

@@ -28,16 +28,15 @@ import java.io.Serializable;
 import java.net.URI;
 
 /**
- * This interface is for qualifying the entities or functions that can be exposable as REST
- * resources through a REST web service. All objects that can be exposable to the web must satisfy
- * the contract defined by this interface.
+ * This interface defines a WEB representation of a Silverpeas business entity which is carried
+ * by HTTP protocol.
+ * In other words, it represents the state of a Silverpeas WEB resource at a given time.
  */
-public interface Exposable extends Serializable {
+public interface WebEntity extends Serializable {
 
   /**
-   * Gets the URI at which this resource is published and can be accessed.
-   * @return the web resource URI.
+   * Gets the URI at which this web entity is published and can be accessed.
+   * @return the web entity URI.
    */
   URI getURI();
-
 }

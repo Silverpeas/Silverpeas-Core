@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
 /**
  * The preview entity is a preview instance that is exposed in the web as
@@ -40,7 +40,7 @@ import com.silverpeas.web.Exposable;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractPreviewEntity<T extends AbstractPreviewEntity<T>> implements
-    Exposable {
+    WebEntity {
   private static final long serialVersionUID = 4118811534281560380L;
 
   @XmlElement(defaultValue = "")
@@ -58,7 +58,7 @@ public abstract class AbstractPreviewEntity<T extends AbstractPreviewEntity<T>> 
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.Exposable#getURI()
+   * @see com.silverpeas.web.WebEntity#getURI()
    */
   @Override
   public URI getURI() {

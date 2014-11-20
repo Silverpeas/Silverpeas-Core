@@ -32,10 +32,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.silverpeas.web.WebEntity;
 import org.json.JSONObject;
 
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.web.Exposable;
 
 /**
  * The mylink entity is a mylink object that is exposed in the web as an entity (web entity). As
@@ -43,7 +43,7 @@ import com.silverpeas.web.Exposable;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MyLinkEntity implements Exposable {
+public class MyLinkEntity implements WebEntity {
 
   private static final long serialVersionUID = -4596241423551371699L;
 

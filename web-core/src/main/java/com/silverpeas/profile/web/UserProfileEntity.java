@@ -25,7 +25,7 @@ package com.silverpeas.profile.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.owasp.encoder.Encode;
@@ -49,13 +49,13 @@ import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
 import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
- * The profile of a user that is exposable in the WEB. It is a web entity representing the profile
+ * The profile of a user that is web entity in the WEB. It is a web entity representing the profile
  * of a user that can be serialized into a given media type (JSON, XML). It is a decorator that
  * decorates a UserDetail object with additional properties concerning its exposition in the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserProfileEntity extends UserDetail implements Exposable {
+public class UserProfileEntity extends UserDetail implements WebEntity {
 
   private static final long serialVersionUID = -5011846708353591604L;
 

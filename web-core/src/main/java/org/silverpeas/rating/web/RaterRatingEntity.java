@@ -23,7 +23,7 @@
  */
 package org.silverpeas.rating.web;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -45,7 +45,7 @@ import static org.silverpeas.rating.web.RatingResourceURIs.RATER_RATING_BASE_URI
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RaterRatingEntity implements Exposable {
+public class RaterRatingEntity implements WebEntity {
 
   private static final long serialVersionUID = 1528651545753548217L;
 

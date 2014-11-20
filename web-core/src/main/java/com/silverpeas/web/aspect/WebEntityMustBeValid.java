@@ -24,8 +24,6 @@
 
 package com.silverpeas.web.aspect;
 
-import com.silverpeas.web.Exposable;
-
 import javax.interceptor.InterceptorBinding;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -38,7 +36,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Validity of {@link Exposable} method parameters is verified for methods annotated with {@link
+ * Validity of {@link com.silverpeas.web.WebEntity} method parameters is verified for methods annotated with {@link
  * POST} or {@link PUT} of classes annotated with this annotation.
  * @author Yohann Chastagnier
  */

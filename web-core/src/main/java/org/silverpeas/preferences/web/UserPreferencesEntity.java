@@ -1,6 +1,6 @@
 package org.silverpeas.preferences.web;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -13,7 +13,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserPreferencesEntity implements Exposable {
+public class UserPreferencesEntity implements WebEntity {
 
   @XmlElement
   private URI uri;

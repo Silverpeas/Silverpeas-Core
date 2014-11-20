@@ -37,12 +37,12 @@ import javax.xml.bind.annotation.XmlElement;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.TicketFactory;
+import com.silverpeas.web.WebEntity;
 import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DateUtil;
 
-public class TicketEntity implements Exposable {
+public class TicketEntity implements WebEntity {
 
   private static final long serialVersionUID = -3181971971218136594L;
 

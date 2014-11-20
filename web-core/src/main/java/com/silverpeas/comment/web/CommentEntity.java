@@ -28,7 +28,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.profile.web.UserProfileEntity;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.owasp.encoder.Encode;
@@ -54,7 +54,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CommentEntity implements Exposable {
+public class CommentEntity implements WebEntity {
 
   private static final long serialVersionUID = 8023645204584179638L;
   @XmlElement(defaultValue = "")

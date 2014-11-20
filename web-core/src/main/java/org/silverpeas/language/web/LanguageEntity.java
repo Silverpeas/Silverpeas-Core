@@ -31,11 +31,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class LanguageEntity implements Exposable {
+public class LanguageEntity implements WebEntity {
 
   private static final long serialVersionUID = -8998226262538165901L;
 

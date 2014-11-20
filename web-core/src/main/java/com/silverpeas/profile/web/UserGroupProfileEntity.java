@@ -25,7 +25,7 @@ package com.silverpeas.profile.web;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.*;
 import static org.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
 import java.util.List;
@@ -37,14 +37,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The profile of the user group exposable in the WEB. It is a web entity representing a group of
+ * The profile of the user group web entity in the WEB. It is a web entity representing a group of
  * users that can be serialized into a given media type (JSON, XML). It is a
  * decorator that decorates a Group object with additional properties concerning its exposition in
  * the WEB.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserGroupProfileEntity extends Group implements Exposable {
+public class UserGroupProfileEntity extends Group implements WebEntity {
 
   private static final long serialVersionUID = 6383835034479351000L;
 

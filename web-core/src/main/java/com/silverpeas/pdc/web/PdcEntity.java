@@ -21,7 +21,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.net.URI;
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * managed by a component instance.
  */
 @XmlRootElement
-public class PdcEntity implements Exposable {
+public class PdcEntity implements WebEntity {
 
   private static final long serialVersionUID = 6798294501268706300L;
   /**

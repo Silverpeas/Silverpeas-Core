@@ -4,9 +4,9 @@ import java.net.URI;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
-public class ZipEntity implements Exposable {
+public class ZipEntity implements WebEntity {
 
   private static final long serialVersionUID = -1614659571095493071L;
   

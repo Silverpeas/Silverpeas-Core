@@ -24,7 +24,7 @@
 package org.silverpeas.calendar.web;
 
 import com.silverpeas.calendar.Datable;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -42,7 +42,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> implements Exposable {
+public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> implements WebEntity {
   private static final long serialVersionUID = -7592985250664860865L;
 
   @XmlElement(required = true, defaultValue = "")
@@ -153,7 +153,7 @@ public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> impl
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.Exposable#getURI()
+   * @see com.silverpeas.web.WebEntity#getURI()
    */
   @Override
   public URI getURI() {

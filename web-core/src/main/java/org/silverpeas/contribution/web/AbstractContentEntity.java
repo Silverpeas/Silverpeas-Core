@@ -23,7 +23,7 @@
  */
 package org.silverpeas.contribution.web;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -36,7 +36,7 @@ import java.net.URI;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractContentEntity implements Exposable {
+public abstract class AbstractContentEntity implements WebEntity {
   private static final long serialVersionUID = 1086439665218159977L;
 
   @XmlElement(defaultValue = "")

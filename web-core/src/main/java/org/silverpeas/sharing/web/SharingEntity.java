@@ -28,10 +28,10 @@ import java.net.URI;
 import javax.xml.bind.annotation.XmlElement;
 
 import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-public class SharingEntity implements Exposable {
+public class SharingEntity implements WebEntity {
 
   private static final long serialVersionUID = 1L;
   

@@ -25,7 +25,8 @@ package com.silverpeas.socialnetwork.invitation.web;
 
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
 import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
+
 import java.net.URI;
 import java.util.Date;
 import javax.validation.constraints.NotNull;
@@ -40,7 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class InvitationEntity extends Invitation implements Exposable {
+public class InvitationEntity extends Invitation implements WebEntity {
   private static final long serialVersionUID = -3801150192463666441L;
   
   public static InvitationEntity fromInvitation(final Invitation invitation) {

@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 
 /**
  * Web entity abstraction which provides the URI of the entity
@@ -38,7 +38,7 @@ import com.silverpeas.web.Exposable;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractLookEntity<T extends AbstractLookEntity<T>> implements Exposable {
+public abstract class AbstractLookEntity<T extends AbstractLookEntity<T>> implements WebEntity {
   private static final long serialVersionUID = -363452062458579228L;
 
   @XmlElement(defaultValue = "")
@@ -57,7 +57,7 @@ public abstract class AbstractLookEntity<T extends AbstractLookEntity<T>> implem
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.Exposable#getURI()
+   * @see com.silverpeas.web.WebEntity#getURI()
    */
   @Override
   public URI getURI() {

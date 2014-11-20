@@ -24,7 +24,7 @@
 
 package com.silverpeas.attachment.web;
 
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 import org.apache.commons.lang3.CharEncoding;
@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * @author ehugonnet
  */
 @XmlRootElement
-public class AttachmentEntity implements Exposable {
+public class AttachmentEntity implements WebEntity {
 
   private static final long serialVersionUID = 6578990825699318566L;
   @XmlElement(required = true)

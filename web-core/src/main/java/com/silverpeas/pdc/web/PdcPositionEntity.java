@@ -28,7 +28,7 @@ import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.thesaurus.ThesaurusException;
 import static org.silverpeas.util.StringUtil.isDefined;
-import com.silverpeas.web.Exposable;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import java.net.URI;
@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PdcPositionEntity implements Exposable {
+public class PdcPositionEntity implements WebEntity {
 
   private static final long serialVersionUID = 6314816355055147378L;
   @XmlElement(required = true) @NotNull @Size(min=1)

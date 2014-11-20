@@ -97,7 +97,7 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.web.Exposable#getURI()
+   * @see com.silverpeas.web.WebEntity#getURI()
    */
   @Override
   public URI getURI() {
