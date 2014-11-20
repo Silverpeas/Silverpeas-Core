@@ -56,12 +56,14 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.util.ResourceLocator;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.owasp.encoder.Encode;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
@@ -79,32 +81,30 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-        "org.silverpeas.social.multilang.socialNetworkBundle",
+    super(mainSessionCtrl, componentContext, "org.silverpeas.social.multilang.socialNetworkBundle",
         "org.silverpeas.social.settings.socialNetworkIcons",
         "org.silverpeas.social.settings.socialNetworkSettings");
   }
 
   /**
    * get all RelationShips ids for this user.
-   *
-   * @param: userId
-   * @return:List<String>
+   * @param userId the user identifier
+   * @return :List<String>
    */
   public List<String> getContactsIdsForUser(String userId) {
     try {
       return relationShipService.getMyContactsIds(Integer.parseInt(userId));
     } catch (SQLException ex) {
-      SilverTrace.error("MyProfilSessionController",
-          "MyProfilSessionController.getContactsIdsForUser", "", ex);
+      SilverTrace
+          .error("MyProfilSessionController", "MyProfilSessionController.getContactsIdsForUser", "",
+              ex);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   /**
    * get this user with full information
-   *
-   * @param userId
+   * @param userId the user identifier
    * @return UserFull
    */
   public UserFull getUserFul(String userId) {
@@ -126,19 +126,20 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return domainActions;
   }
 
-  public void modifyUser(String idUser, String userLastName, String userFirstName,
-      String userEMail, String userAccessLevel, String oldPassword, String newPassword,
-      String userLoginQuestion, String userLoginAnswer, Map<String, String> properties)
+  public void modifyUser(String idUser, String userLastName, String userFirstName, String userEMail,
+      String userAccessLevel, String oldPassword, String newPassword, String userLoginQuestion,
+      String userLoginAnswer, Map<String, String> properties)
       throws AuthenticationException, AdminException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
-        + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
-        + userAccessLevel);
+        "root.MSG_GEN_ENTER_METHOD",
+        "UserId=" + idUser + " userLastName=" + userLastName + " userFirstName=" + userFirstName +
+            " userEMail=" + userEMail + " userAccessLevel=" + userAccessLevel);
 
     UserDetail user = UserDetail.getById(idUser);
 
-    AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(user.getLogin())
-        .withAsPassword(oldPassword).withAsDomainId(user.getDomainId());
+    AuthenticationCredential credential =
+        AuthenticationCredential.newWithAsLogin(user.getLogin()).withAsPassword(oldPassword)
+            .withAsDomainId(user.getDomainId());
     if (isUserDomainRW()) {
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
@@ -192,67 +193,67 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list sent
-   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsSent() {
-    List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
-    List<Invitation> invitations = invitationService.getAllMyInvitationsSent(Integer.parseInt(
-        getUserId()));
+    List<InvitationUser> invitationUsers = new ArrayList<>();
+    List<Invitation> invitations =
+        invitationService.getAllMyInvitationsSent(Integer.parseInt(getUserId()));
     for (Invitation varI : invitations) {
-      invitationUsers.add(new InvitationUser(varI,
-          getUserDetail(Integer.toString(varI.getReceiverId()))));
+      invitationUsers
+          .add(new InvitationUser(varI, getUserDetail(Integer.toString(varI.getReceiverId()))));
     }
     return invitationUsers;
   }
 
   /**
    * return my invitation list Received
-   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsReceived() {
-    List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
-    List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(Integer.parseInt(
-        getUserId()));
+    List<InvitationUser> invitationUsers = new ArrayList<>();
+    List<Invitation> invitations =
+        invitationService.getAllMyInvitationsReceive(Integer.parseInt(getUserId()));
     for (Invitation varI : invitations) {
-      invitationUsers.add(new InvitationUser(varI, getUserDetail(
-          Integer.toString(varI.getSenderId()))));
+      invitationUsers
+          .add(new InvitationUser(varI, getUserDetail(Integer.toString(varI.getSenderId()))));
     }
     return invitationUsers;
   }
 
   public void sendInvitation(String receiverId, String message) {
     String safeMessage = Encode.forHtml(message);
-    Invitation invitation = new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(
-        receiverId), safeMessage,
-        new Date());
+    Invitation invitation =
+        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), safeMessage,
+            new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);
     }
   }
 
   /**
-   * @param message
+   * @param receiverId the receiver user identifier
+   * @param message the message
    */
   private void notifyUser(String receiverId, String message) {
     try {
       NotificationSender notificationSender = new NotificationSender(null);
 
       // Send a notification to alert people about a new relationship ask.
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      Map<String, SilverpeasTemplate> templates = new HashMap<>();
       String subject = getString("myProfile.invitations.notification.send.subject");
-      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName()
-          + ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+      SilverTrace.debug("MyProfilSessionController",
+          MyProfilSessionController.class.getName() + ".getAlertNotificationMetaData()",
+          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
-      NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-          subject, templates,
-          "sendInvitation");
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+              "sendInvitation");
 
       UserDetail senderUser = getUserDetail();
       notifMetaData.setSource(senderUser.getDisplayedName());
-      notifMetaData.setLink(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null)
-          + "MyInvitations");
+      notifMetaData
+          .setLink(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "MyInvitations");
 
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
@@ -263,10 +264,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         template.setAttribute("senderMessage", message);
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
-        ResourceLocator localizedMessage = new ResourceLocator(
-            "org.silverpeas.social.multilang.socialNetworkBundle", language);
-        notifMetaData.addLanguage(language, localizedMessage.getString(
-            "myProfile.invitations.notification.send.subject", subject), "");
+        ResourceLocator localizedMessage =
+            new ResourceLocator("org.silverpeas.social.multilang.socialNetworkBundle", language);
+        notifMetaData.addLanguage(language,
+            localizedMessage.getString("myProfile.invitations.notification.send.subject", subject),
+            "");
       }
       if (StringUtil.isDefined(message)) {
         setNotificationContent(notifMetaData, message, "fr");
@@ -316,16 +318,17 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       NotificationSender notificationSender = new NotificationSender(null);
       // Send a notification to alert people about new relationship.
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      String subject = displayedName + " " + getString(
-          "myProfile.invitations.notification.accept.subject");
+      Map<String, SilverpeasTemplate> templates = new HashMap<>();
+      String subject =
+          displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
 
-      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName()
-          + ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+      SilverTrace.debug("MyProfilSessionController",
+          MyProfilSessionController.class.getName() + ".getAlertNotificationMetaData()",
+          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
-      NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-          subject, templates,
-          "acceptInvitation");
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+              "acceptInvitation");
 
       notifMetaData.setSource(displayedName);
 
@@ -337,10 +340,10 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         template.setAttribute("userName", senderUser.getDisplayedName());
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
-        ResourceLocator localizedMessage = new ResourceLocator(
-            "org.silverpeas.social.multilang.socialNetworkBundle", language);
-        notifMetaData.addLanguage(language, localizedMessage.getString(
-            "myProfile.invitations.notification.accept.subject", subject), "");
+        ResourceLocator localizedMessage =
+            new ResourceLocator("org.silverpeas.social.multilang.socialNetworkBundle", language);
+        notifMetaData.addLanguage(language, localizedMessage
+            .getString("myProfile.invitations.notification.accept.subject", subject), "");
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(curRelation.getInviterId())));
@@ -360,17 +363,16 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public boolean updatablePropertyExists() {
     UserFull userFull = getUserFul(getUserId());
-    return ((userFull.isAtLeastOnePropertyUpdatableByUser()) || (isAdmin() && userFull
-        .isAtLeastOnePropertyUpdatableByAdmin()));
+    return ((userFull.isAtLeastOnePropertyUpdatableByUser()) ||
+        (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()));
   }
 
   /**
    * Get all social networks linked to current user account
-   *
    * @return
    */
   public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
-    Map<SocialNetworkID, ExternalAccount> networks = new HashMap<SocialNetworkID, ExternalAccount>();
+    Map<SocialNetworkID, ExternalAccount> networks = new HashMap<>();
 
     List<ExternalAccount> externalAccounts = SocialNetworkService.getInstance().
         getUserExternalAccounts(getUserId());

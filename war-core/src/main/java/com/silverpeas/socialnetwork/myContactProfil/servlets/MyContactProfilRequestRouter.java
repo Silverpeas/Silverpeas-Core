@@ -39,8 +39,8 @@ import java.util.Random;
 /**
  * @author azzedine
  */
-public class MyContactProfilRequestRouter extends
-    ComponentRequestRouter<MyContactProfilSessionController> {
+public class MyContactProfilRequestRouter
+    extends ComponentRequestRouter<MyContactProfilSessionController> {
 
   private static final long serialVersionUID = 1L;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
@@ -67,8 +67,7 @@ public class MyContactProfilRequestRouter extends
   }
 
   /**
-   *get Destination
-   *
+   * get Destination
    * @param function
    * @param sc
    * @param request
@@ -101,12 +100,12 @@ public class MyContactProfilRequestRouter extends
   /**
    * methode to choose (x) contacts for display it in the page profil x is the number of contacts
    * the methode use Random rule
-   * @param contactIds
+   * @param contactIds list of contact identifier
    * @return List<SNContactUser>
    */
   private List<UserDetail> chooseContactsToDisplay(List<String> contactIds,
       MyContactProfilSessionController sc) {
-    List<UserDetail> contacts = new ArrayList<UserDetail>();
+    List<UserDetail> contacts = new ArrayList<>();
     int numberOfContactsTodisplay =
         sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
     if (contactIds.size() <= numberOfContactsTodisplay) {

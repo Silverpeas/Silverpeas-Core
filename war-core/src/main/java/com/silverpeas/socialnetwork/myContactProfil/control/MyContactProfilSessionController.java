@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserFull;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.util.ArrayList;
 
 /**
@@ -50,16 +52,14 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
    */
   public MyContactProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl,
-        componentContext,
-        "com.silverpeas.social.multilang.socialNetworkBundle",
+    super(mainSessionCtrl, componentContext, "com.silverpeas.social.multilang.socialNetworkBundle",
         "com.silverpeas.social.settings.socialNetworkIcons",
         "com.silverpeas.social.settings.socialNetworkSettings");
   }
 
   /**
    * get this user with full information
-   * @param userId
+   * @param userId the user identifier
    * @return UserFull
    */
   public UserFull getUserFull(String userId) {
@@ -69,24 +69,23 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
 
   /**
    * this userId is in my Contacts
-   * @param: int userId
    * @return true if this user in my Contacts
+   * @param userId : int userId
    */
   public boolean isInMyContact(String userId) throws SocialNetworkException {
     try {
       int id = Integer.parseInt(userId);
       return relationShipService.isInRelationShip(Integer.parseInt(this.getUserId()), id);
     } catch (SQLException ex) {
-      throw new SocialNetworkException(
-          "ProfilSessionController.isInMyContact(String userId)",
+      throw new SocialNetworkException("ProfilSessionController.isInMyContact(String userId)",
           SilverpeasException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
   }
 
   /**
    * get all RelationShips ids for this user
-   * @return:List<String>
-   * @param: int myId
+   * @param userId : int myId
+   * @return : List<String> of contact identifiers
    */
   public List<String> getContactsIdsForUser(String userId) {
     try {
@@ -100,13 +99,13 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
 
   /**
    * get all RelationShips ids for this user
-   * @return:List<String>
-   * @param: int myId
+   * @return :List<String>
+   * @param userId : int myId
    */
   public List<String> getCommonContactsIdsForUser(String userId) {
     try {
-      return relationShipService.getAllCommonContactsIds(Integer.parseInt(userId), Integer
-          .parseInt(this.getUserId()));
+      return relationShipService
+          .getAllCommonContactsIds(Integer.parseInt(userId), Integer.parseInt(this.getUserId()));
     } catch (SQLException ex) {
       SilverTrace.error("MyContactProfilSessionController",
           "MyContactProfilSessionController.getContactsForUser", "", ex);

@@ -24,26 +24,24 @@
 
 package com.silverpeas.socialnetwork.invitation.servlets;
 
-import static com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONActions.*;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.io.IOException;
-import java.io.Writer;
+import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.util.JSONCodec;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
 
-import org.json.JSONObject;
-
-import com.silverpeas.socialnetwork.myProfil.control.MyProfilSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import static com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONActions.valueOf;
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public class InvitationJSONServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -9167060370102235500L;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
@@ -73,31 +71,30 @@ public class InvitationJSONServlet extends HttpServlet {
     InvitationJSONActions action = valueOf(req.getParameter("Action"));
 
     Writer writer = res.getWriter();
-    JSONObject jsonObject = new JSONObject();
+    String jsonResultStr = "";
     switch (action) {
       case SendInvitation: {
         String receiverId = req.getParameter("TargetUserId");
         String message = req.getParameter("Message");
         mpsc.sendInvitation(receiverId, message);
-        jsonObject.put("success", true);
+        jsonResultStr = JSONCodec.encodeObject(json -> json.put("success", true));
         break;
       }
 
       case IgnoreInvitation: {
         String id = req.getParameter("Id");
         mpsc.ignoreInvitation(id);
-        jsonObject.put("success", true);
+        jsonResultStr = JSONCodec.encodeObject(json -> json.put("success", true));
         break;
       }
 
       case AcceptInvitation: {
         String id = req.getParameter("Id");
         mpsc.acceptInvitation(id);
-        jsonObject.put("success", true);
+        jsonResultStr = JSONCodec.encodeObject(json -> json.put("success", true));
         break;
       }
-
     }
-    writer.write(jsonObject.toString());
+    writer.write(jsonResultStr);
   }
 }

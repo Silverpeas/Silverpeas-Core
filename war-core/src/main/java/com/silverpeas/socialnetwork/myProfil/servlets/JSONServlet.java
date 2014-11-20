@@ -22,15 +22,16 @@ package com.silverpeas.socialnetwork.myProfil.servlets;
 
 import com.silverpeas.socialnetwork.myProfil.control.SocialNetworkService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.owasp.encoder.Encode;
+import org.silverpeas.util.JSONCodec;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.json.JSONObject;
-import org.owasp.encoder.Encode;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class JSONServlet extends HttpServlet {
 
@@ -40,13 +41,11 @@ public class JSONServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     HttpSession session = request.getSession();
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController mainSessionCtrl = (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl == null) {
-      JSONObject jsonStatus = new JSONObject();
-      jsonStatus.put("status", "silverpeastimeout");
       PrintWriter out = response.getWriter();
-      out.println(jsonStatus);
+      out.println(JSONCodec.encodeObject(json -> json.put("status", "silverpeastimeout")));
       return;
     }
     String userId = mainSessionCtrl.getUserId();
@@ -57,15 +56,13 @@ public class JSONServlet extends HttpServlet {
       // if status is empty or set with a text, update it (an empty status means no status)
       if (status != null) {
         status = socialNetworkService.changeStatusService(status);
-
-      } // if status equal null don't do update status and do get Last status
-      else {
+      } else {
+        // if status equal null don't do update status and do get Last status
         status = Encode.forHtml(socialNetworkService.getLastStatusService());
       }
-      JSONObject jsonStatus = new JSONObject();
-      jsonStatus.put("status", status);
+      final String jsonStatus = status;
       PrintWriter out = response.getWriter();
-      out.println(jsonStatus);
+      out.println(JSONCodec.encodeObject(json -> json.put("status", jsonStatus)));
     }
   }
 }

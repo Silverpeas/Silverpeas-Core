@@ -31,10 +31,9 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
@@ -53,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,8 +65,8 @@ public class NewsFeedJSONServlet extends HttpServlet {
 
   /**
    * servlet method for returning JSON format
-   * @param request
-   * @param response
+   * @param request the http request
+   * @param response the http response
    * @throws ServletException
    * @throws IOException
    */
@@ -74,17 +74,18 @@ public class NewsFeedJSONServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController mainSessionCtrl = (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-    String view = request.getParameter("View"); // Wall || MyFeed || MyContactWall
+    // view type is Wall or MyFeed or MyContactWall
+    String view = request.getParameter("View");
     if (!StringUtil.isDefined(view)) {
       view = "Wall";
     }
 
     ResourceLocator multilang =
         new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle",
-        m_MainSessionCtrl.getFavoriteLanguage());
+            mainSessionCtrl.getFavoriteLanguage());
 
     ResourceLocator settings =
         new ResourceLocator("com.silverpeas.social.settings.socialNetworkSettings", "");
@@ -95,19 +96,19 @@ public class NewsFeedJSONServlet extends HttpServlet {
       session.setAttribute("Silverpeas_NewsFeed_LastDate", new Date());
     }
 
-    Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
+    Map<Date, List<SocialInformation>> map = new LinkedHashMap<>();
 
     try {
       // recover the type
       SocialInformationType type = SocialInformationType.valueOf(request.getParameter("type"));
 
-      String userId = m_MainSessionCtrl.getUserId();
+      String userId = mainSessionCtrl.getUserId();
       String anotherUserId = request.getParameter("userId");
       if (StringUtil.isDefined(anotherUserId) && !anotherUserId.equals(userId)) {
         view = "MyContactWall"; // forcing to display my contact wall, ensuring to not display feed
         RelationShipService rss = RelationShipService.getInstance();
-        if (!rss.isInRelationShip(Integer.parseInt(m_MainSessionCtrl.getUserId()), Integer
-            .parseInt(anotherUserId))) {
+        if (!rss.isInRelationShip(Integer.parseInt(mainSessionCtrl.getUserId()),
+            Integer.parseInt(anotherUserId))) {
           // Current user and target user are not in a relation
           return;
         }
@@ -161,7 +162,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
 
   private Map<Date, List<SocialInformation>> getInformations(String view, String userId,
       SocialInformationType type, String anotherUserId, Date begin, Date end) {
-    Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
+    Map<Date, List<SocialInformation>> map = new LinkedHashMap<>();
 
     SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
 
@@ -170,7 +171,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
     } else if ("MyContactWall".equals(view)) {
       // get all data from my contact
-      if(StringUtil.isDefined(anotherUserId)) {
+      if (StringUtil.isDefined(anotherUserId)) {
         map = socialNetworkService.getSocialInformationOfMyContact(anotherUserId, type, begin, end);
       }
     } else { // Wall
@@ -189,118 +190,109 @@ public class NewsFeedJSONServlet extends HttpServlet {
   }
 
   /**
-   * convert the SocialInormation to JSONObject
-   * @param information
+   * convert the SocialInformation to JSONObject
+   * @param information the social information to convert
    * @return JSONObject
    */
-  private JSONObject toJson(SocialInformation information, ResourceLocator multilang) {
+  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONSocialInfo(
+      SocialInformation information, ResourceLocator multilang) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
-    JSONObject valueObj = new JSONObject();
-    UserDetail contactUser1 = UserDetail.getById(information.getAuthor());
-    if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
-      UserDetail contactUser2 = UserDetail.getById(information.getTitle());
-      String avatarURL = URLManager.getApplicationURL() + contactUser2.getSmallAvatar();
-      valueObj.put("type", information.getType());
-      valueObj.put("author", userDetailToJSON(contactUser1));
-      valueObj.put("title", userDetailToJSON(contactUser2));
-      valueObj.put("hour", formatTime.format(information.getDate()));
-      valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
-      valueObj.put("label", multilang.getStringWithParam("newsFeed.relationShip.label",
-          contactUser2.getDisplayedName()));
-      return valueObj;
-    } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
-      return eventSocialToJSON(information, contactUser1, multilang);
-    }
-    valueObj.put("type", information.getType());
-    valueObj.put("author", userDetailToJSON(contactUser1));
+    return jsonSocialInfoA -> {
+      jsonSocialInfoA.addJSONObject(jsonSocialInfo -> {
+        UserDetail contactUser1 = UserDetail.getById(information.getAuthor());
+        if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
+          UserDetail contactUser2 = UserDetail.getById(information.getTitle());
+          jsonSocialInfo.put("type", information.getType());
+          jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
+          jsonSocialInfo.put("title", userDetailToJSON(contactUser2));
+          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
+          jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
+          jsonSocialInfo.put("label", multilang
+              .getStringWithParam("newsFeed.relationShip.label", contactUser2.getDisplayedName()));
+        } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
+          jsonSocialInfo.put("type", information.getType());
+          jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
+          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
+          jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
+          if (!information.isUpdated() &&
+              information.getIcon().startsWith(information.getType() + "_private")) {
+            jsonSocialInfo.put("title", multilang.getString("profil.icon.private.event"));
+            jsonSocialInfo.put("description", "");
+          } else {
+            jsonSocialInfo.put("title", information.getTitle());
+            jsonSocialInfo.put("description", information.getDescription());
+          }
+          jsonSocialInfo
+              .put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
+                  ".label"));
+          return jsonSocialInfo;
+        }
+        jsonSocialInfo.put("type", information.getType());
+        jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
 
-    valueObj.put("description", EncodeHelper.javaStringToHtmlParagraphe(information
-        .getDescription()));
+        jsonSocialInfo.put("description",
+            EncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
 
-    if (information.getType().equals(SocialInformationType.STATUS.toString())) {
-      valueObj.put("title", multilang.getString("newsFeed.status.suffix"));
-    } else {
-      valueObj.put("title", information.getTitle());
-    }
-    // if time not identified display string empty
-    if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
-      valueObj.put("hour", "");
-    } else {
-      valueObj.put("hour", formatTime.format(information.getDate()));
-    }
-    valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
-    valueObj.put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
-        ".updated." + information.isUpdated()));
-
-    return valueObj;
+        if (information.getType().equals(SocialInformationType.STATUS.toString())) {
+          jsonSocialInfo.put("title", multilang.getString("newsFeed.status.suffix"));
+        } else {
+          jsonSocialInfo.put("title", information.getTitle());
+        }
+        // if time not identified display string empty
+        if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
+          jsonSocialInfo.put("hour", "");
+        } else {
+          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
+        }
+        jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
+        jsonSocialInfo
+            .put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
+                ".updated." + information.isUpdated()));
+        return jsonSocialInfo;
+      });
+      return jsonSocialInfoA;
+    };
   }
 
   /**
-   * convert the Map of socailInformation to JSONArray
+   * convert the Map of socialInformation to JSON String representation
    * @param map
    * @return JSONArray
    */
-  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, ResourceLocator multilang) {
+  private String toJsonS(Map<Date, List<SocialInformation>> map, ResourceLocator multilang) {
     SimpleDateFormat formatDate =
         new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale(multilang.getLanguage()));
-    JSONArray result = new JSONArray();
-    for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
-      JSONArray jsonArrayDateWithValues = new JSONArray();
-      Object key = entry.getKey();
+    return JSONCodec.encodeArray(jsonElt -> {
+      for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
+        jsonElt.addJSONObject(jsonDate -> {
+          jsonDate.put("day", formatDate.format(entry.getKey()));
+          for (SocialInformation si : entry.getValue()) {
+            jsonDate.put("socialInfo", getJSONSocialInfo(si, multilang));
+          }
+          return jsonDate;
+        });
 
-      JSONArray jsonArray = new JSONArray();
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.put("day", formatDate.format(key));
-      List<SocialInformation> informations = entry.getValue();
-      for (SocialInformation si : informations) {
-        jsonArray.put(toJson(si, multilang));
       }
-      jsonArrayDateWithValues.put(jsonObject);
-      jsonArrayDateWithValues.put(jsonArray);
-      result.put(jsonArrayDateWithValues);
-    }
-    return result;
+      return jsonElt;
+    });
+
   }
 
   /**
-   * convert socailInformationEvent to JSONObject
-   * @param event
+   * convert a UserDetail to JSONObject
+   * @param user the user detail
    * @return JSONObject
    */
-  private JSONObject eventSocialToJSON(SocialInformation event, UserDetail contactUser,
-      ResourceLocator multilang) {
-    SimpleDateFormat formatTime =
-        new SimpleDateFormat("HH:mm", new Locale(multilang.getLanguage()));
-    JSONObject valueObj = new JSONObject();
-    valueObj.put("type", event.getType());
-    valueObj.put("author", userDetailToJSON(contactUser));
-    valueObj.put("hour", formatTime.format(event.getDate()));
-    valueObj.put("url", URLManager.getApplicationURL() + event.getUrl());
-    if (!event.isUpdated() && event.getIcon().startsWith(event.getType() + "_private")) {
-      valueObj.put("title", multilang.getString("profil.icon.private.event"));
-      valueObj.put("description", "");
-    } else {
-      valueObj.put("title", event.getTitle());
-      valueObj.put("description", event.getDescription());
-    }
-    valueObj.put("label", multilang.getString("newsFeed." + event.getType().toLowerCase() +
-        ".label"));
-
-    return valueObj;
+  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> userDetailToJSON(UserDetail user) {
+    return jsonAuthor -> {
+      jsonAuthor.addJSONObject(jsonUser -> {
+        jsonUser.put("id", user.getId());
+        jsonUser.put("displayedName", user.getDisplayedName());
+        jsonUser.put("profilPhoto", URLManager.getApplicationURL() + user.getSmallAvatar());
+        return jsonUser;
+      });
+      return jsonAuthor;
+    };
   }
-
-  /**
-   * convert the Map of SNContactUser to JSONArray
-   * @param user
-   * @return JSONArray
-   */
-  private JSONObject userDetailToJSON(UserDetail user) {
-    JSONObject userJSON = new JSONObject();
-    userJSON.put("id", user.getId());
-    userJSON.put("displayedName", user.getDisplayedName());
-    userJSON.put("profilPhoto", URLManager.getApplicationURL() + user.getSmallAvatar());
-    return userJSON;
-  }
-
 }

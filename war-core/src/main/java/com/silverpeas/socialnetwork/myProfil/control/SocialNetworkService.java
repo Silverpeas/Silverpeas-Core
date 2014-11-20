@@ -80,9 +80,8 @@ public class SocialNetworkService {
   private Map<Date, List<SocialInformation>> processResults(
       List<SocialInformation> socialInformationsFull) {
     String date = null;
-    LinkedHashMap<Date, List<SocialInformation>> hashtable =
-        new LinkedHashMap<Date, List<SocialInformation>>();
-    List<SocialInformation> lsi = new ArrayList<SocialInformation>();
+    LinkedHashMap<Date, List<SocialInformation>> hashtable = new LinkedHashMap<>();
+    List<SocialInformation> lsi = new ArrayList<>();
     SocialInformation lastInfoAdded = null;
 
     for (SocialInformation information : socialInformationsFull) {
@@ -96,7 +95,7 @@ public class SocialNetworkService {
         }
       } else {
         date = DateUtil.formatDate(information.getDate());
-        lsi = new ArrayList<SocialInformation>();
+        lsi = new ArrayList<>();
         lsi.add(information);
         hashtable.put(information.getDate(), lsi);
         lastInfoAdded = information;
@@ -188,7 +187,7 @@ public class SocialNetworkService {
     } catch (SQLException ex) {
       SilverTrace.error("socialNetworkService", "SocialNetworkService.getMyContactsIds", "", ex);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
   
   public List<String> getTheContactsIds(String myContactId) {
@@ -197,7 +196,7 @@ public class SocialNetworkService {
     } catch (SQLException ex) {
       SilverTrace.error("socialNetworkService", "SocialNetworkService.getTheContactsIds", "", ex);
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   private SocialInformationService socialInformationService() {

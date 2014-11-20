@@ -79,7 +79,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   /**
-   *
    * @param function
    * @param myProfilSC
    * @param request
@@ -99,8 +98,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         boolean domainRW = myProfilSC.isUserDomainRW();
 
         boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() || (snUserFull.
-            getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable())
-            || myProfilSC.updatablePropertyExists());
+            getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable()) ||
+            myProfilSC.updatablePropertyExists());
 
         if (updateIsAllowed) {
           request.setAttribute("Action", "userModify");
@@ -164,20 +163,20 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       } else if (route == Main || route == MyProfileRoutes.MyFeed) {
         request.setAttribute("View", MyProfileRoutes.MyFeed.toString());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (function.equalsIgnoreCase("MyEvents")) {
+      } else if ("MyEvents".equalsIgnoreCase(function)) {
         try {
           request.setAttribute("type", SocialInformationType.EVENT);
         } catch (Exception ex) {
           Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
         }
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("ALL")) {
+      } else if ("ALL".equalsIgnoreCase(function)) {
         request.setAttribute("type", SocialInformationType.ALL);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("MyPhotos")) {
+      } else if ("MyPhotos".equalsIgnoreCase(function)) {
         request.setAttribute("type", SocialInformationType.MEDIA);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("MyPubs")) {
+      } else if ("MyPubs".equalsIgnoreCase(function)) {
         request.setAttribute("type", SocialInformationType.PUBLICATION);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
       }
@@ -198,14 +197,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   /**
    * method to change profile Photo
-   *
    * @param request
    * @param nameAvatar
    * @return String
    * @throws UtilException
    */
-  protected String saveAvatar(HttpRequest request, String nameAvatar)
-      throws UtilException {
+  protected String saveAvatar(HttpRequest request, String nameAvatar) throws UtilException {
     List<FileItem> parameters = request.getFileItems();
     String removeImageFile = FileUploadUtil.getParameter(parameters, "removeImageFile");
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
@@ -220,15 +217,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
           equalsIgnoreCase(extension)) {
         throw new UtilException("MyProfilRequestRouter.saveAvatar()",
-            SilverpeasRuntimeException.ERROR,
-            "", "Bad extension, .gif or .jpg or .png expected.");
+            SilverpeasRuntimeException.ERROR, "", "Bad extension, .gif or .jpg or .png expected.");
       }
       try {
         img.saveImage(file.getInputStream());
       } catch (IOException e) {
         throw new UtilException("MyProfilRequestRouter.saveAvatar()",
-            SilverpeasRuntimeException.ERROR,
-            "", "Problem while saving image.");
+            SilverpeasRuntimeException.ERROR, "", "Problem while saving image.");
       }
     } else if ("yes".equals(removeImageFile)) {// Remove
       img.removeImage();
@@ -237,17 +232,17 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   /**
-   * method to choose (x) contacts for display it in the page profil x is the number of contacts the
+   * method to choose (x) contacts for display it in the page profil x is the number of contacts
+   * the
    * methode use Random rule
-   *
    * @param contactIds
    * @return List<SNContactUser>
    */
   private List<UserDetail> getContactsToDisplay(List<String> contactIds,
       MyProfilSessionController sc) {
-    int numberOfContactsTodisplay = sc.getSettings().getInteger("numberOfContactsTodisplay",
-        NUMBER_CONTACTS_TO_DISPLAY);
-    List<UserDetail> contacts = new ArrayList<UserDetail>();
+    int numberOfContactsTodisplay =
+        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
+    List<UserDetail> contacts = new ArrayList<>();
     if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String userId : contactIds) {
         contacts.add(sc.getUserDetail(userId));
@@ -267,30 +262,29 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
         "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-    ResourceLocator authenticationSettings = new ResourceLocator(
-        "org.silverpeas.authentication.settings.authenticationSettings", "");
+    ResourceLocator authenticationSettings =
+        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
       boolean updateFirstNameIsAllowed = rl.getBoolean("updateFirstName", false);
       boolean updateLastNameIsAllowed = rl.getBoolean("updateLastName", false);
       boolean updateEmailIsAllowed = rl.getBoolean("updateEmail", false);
-      String userFirstName = updateFirstNameIsAllowed ? request
-          .getParameter("userFirstName") : currentUser.getFirstName();
-      String userLastName = updateLastNameIsAllowed ? request
-          .getParameter("userLastName") : currentUser.getLastName();
-      String userEmail = updateEmailIsAllowed ? request.getParameter(
-          "userEMail") : currentUser.geteMail();
-      SilverTrace.info(getSessionControlBeanName(),
-          "PersoPeasRequestRouter.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-          + " - userLastName=" + userLastName + " userEmail="
-          + userEmail);
+      String userFirstName = updateFirstNameIsAllowed ? request.getParameter("userFirstName") :
+          currentUser.getFirstName();
+      String userLastName = updateLastNameIsAllowed ? request.getParameter("userLastName") :
+          currentUser.getLastName();
+      String userEmail =
+          updateEmailIsAllowed ? request.getParameter("userEMail") : currentUser.geteMail();
+      SilverTrace.info(getSessionControlBeanName(), "PersoPeasRequestRouter.getDestination()",
+          "root.MSG_GEN_PARAM_VALUE",
+          "userFirstName=" + userFirstName + " - userLastName=" + userLastName + " userEmail=" +
+              userEmail);
 
       String userLoginQuestion = request.getParameter("userLoginQuestion");
-      userLoginQuestion = (userLoginQuestion != null
-          ? EncodeHelper.htmlStringToJavaString(userLoginQuestion)
-          : currentUser.getLoginQuestion());
+      userLoginQuestion =
+          (userLoginQuestion != null ? EncodeHelper.htmlStringToJavaString(userLoginQuestion) :
+              currentUser.getLoginQuestion());
       String userLoginAnswer = request.getParameter("userLoginAnswer");
 
       // user has filled a new login answer
@@ -306,7 +300,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       }
 
       // process extra properties
-      Map<String, String> properties = new HashMap<String, String>();
+      Map<String, String> properties = new HashMap<>();
       Enumeration<String> parameters = request.getParameterNames();
       String parameterName;
       String property;
@@ -318,17 +312,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         }
       }
 
-      sc.modifyUser(
-          currentUser.getId(),
-          EncodeHelper.htmlStringToJavaString(userLastName),
+      sc.modifyUser(currentUser.getId(), EncodeHelper.htmlStringToJavaString(userLastName),
           EncodeHelper.htmlStringToJavaString(userFirstName),
           EncodeHelper.htmlStringToJavaString(userEmail),
           EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
           EncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
           EncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
-          userLoginQuestion,
-          userLoginAnswer,
-          properties);
+          userLoginQuestion, userLoginAnswer, properties);
       request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));
@@ -337,14 +327,15 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc) {
+  private void setUserSettingsIntoRequest(HttpServletRequest request,
+      MyProfilSessionController sc) {
     request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
     request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
     LookHelper lookHelper = getLookHelper(request);
     if (lookHelper != null) {
       request.setAttribute("MenuDisplay", lookHelper.isMenuPersonalisationEnabled());
-      List<String> userMenuDisplayOptions = new ArrayList<String>();
+      List<String> userMenuDisplayOptions = new ArrayList<>();
       for (UserMenuDisplay display : UserMenuDisplay.values()) {
         userMenuDisplayOptions.add(display.name());
       }
@@ -360,11 +351,11 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     preferences.setLook(request.getParameter("SelectedLook"));
     preferences.enableThesaurus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
     preferences.enableDragAndDrop(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));
-    preferences.enableWebdavEdition(
-        Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
+    preferences
+        .enableWebdavEdition(Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
     LookHelper lookHelper = getLookHelper(request);
-    if (lookHelper != null && lookHelper.isMenuPersonalisationEnabled() && StringUtil.isDefined(
-        request.getParameter("MenuDisplay"))) {
+    if (lookHelper != null && lookHelper.isMenuPersonalisationEnabled() &&
+        StringUtil.isDefined(request.getParameter("MenuDisplay"))) {
       preferences.setDisplay(UserMenuDisplay.valueOf(request.getParameter("MenuDisplay")));
       lookHelper.setDisplayUserMenu(preferences.getDisplay());
     }
