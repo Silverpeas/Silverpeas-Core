@@ -60,7 +60,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
    */
   @Override
   public FileSharingSessionController createComponentSessionController(

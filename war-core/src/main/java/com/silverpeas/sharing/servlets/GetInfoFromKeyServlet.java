@@ -1,26 +1,26 @@
 /**
-* Copyright (C) 2000 - 2013 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2013 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.sharing.servlets;
 
 import com.silverpeas.look.SilverpeasLook;
@@ -49,8 +49,9 @@ import static com.silverpeas.sharing.servlets.FileSharingConstants.*;
 
 public class GetInfoFromKeyServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
-  private static final ResourceLocator settings = new ResourceLocator("org.silverpeas.sharing.settings.sharing", "");
+  private static final long serialVersionUID = 1541425708777215319L;
+  private static final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.sharing.settings.sharing", "");
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
@@ -59,8 +60,8 @@ public class GetInfoFromKeyServlet extends HttpServlet {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     request.setAttribute(ATT_TICKET, ticket);
     if (ticket == null || !ticket.isValid()) {
-      getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp").forward(
-          request, response);
+      getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
+          .forward(request, response);
     } else if (ticket instanceof NodeTicket || ticket instanceof PublicationTicket) {
       String url = getURLForSharedObject(request, ticket);
       response.sendRedirect(url);
@@ -91,12 +92,12 @@ public class GetInfoFromKeyServlet extends HttpServlet {
   }
 
   /**
-* Gets the wallpaper of the space to which the component corresponding to the ticket belongs. The
-* wallpaper is fetched from the direct space of the component upto the first parent space that
-* have a specific wallpapers.
-*
-* @return the URL of the wallpaper.
-*/
+   * Gets the wallpaper of the space to which the component corresponding to the ticket belongs.
+   * The
+   * wallpaper is fetched from the direct space of the component upto the first parent space that
+   * have a specific wallpapers.
+   * @return the URL of the wallpaper.
+   */
   private String getWallpaperFor(final Ticket ticket) {
     ComponentInstLight component = OrganizationControllerProvider.getOrganisationController()
         .getComponentInstLight(ticket.getComponentId());

@@ -59,11 +59,10 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   }
 
   public void updateTicket(Ticket ticket) {
-    Ticket newTicket = ticket;
     UserDetail user = getUserDetail();
-    newTicket.setLastModifier(user);
-    newTicket.setUpdateDate(new Date());
-    getFileSharingService().updateTicket(newTicket);
+    ticket.setLastModifier(user);
+    ticket.setUpdateDate(new Date());
+    getFileSharingService().updateTicket(ticket);
   }
 
   public void deleteTicket(String key) {
