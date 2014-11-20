@@ -59,8 +59,8 @@ public class GenericPanelPeasSessionController extends AbstractComponentSessionC
     super(
         mainSessionCtrl,
         componentContext,
-        "com.stratelia.silverpeas.genericPanelPeas.multilang.genericPanelPeasBundle",
-        "com.stratelia.silverpeas.genericPanelPeas.settings.genericPanelPeasIcons");
+        "org.silverpeas.genericPanelPeas.multilang.genericPanelPeasBundle",
+        "org.silverpeas.genericPanelPeas.settings.genericPanelPeasIcons");
     setComponentRootName(URLManager.CMP_GENERICPANELPEAS);
   }
 
