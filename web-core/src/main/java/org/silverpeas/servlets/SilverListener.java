@@ -27,8 +27,11 @@ package org.silverpeas.servlets;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.cache.service.InMemoryCacheService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -83,9 +86,21 @@ public class SilverListener
       if (httpSession != null) {
         SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
             .getSessionInfo(httpSession.getId());
-        if (sessionInfo != null) {
+        if (sessionInfo.isDefined()) {
           CacheServiceProvider.getRequestCacheService()
               .put("@SessionCache@", sessionInfo.getCache());
+        } else {
+          // Anonymous management
+          MainSessionController mainSessionController =
+              (MainSessionController) httpSession.getAttribute(
+                  MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+          if (mainSessionController != null &&
+              mainSessionController.getCurrentUserDetail() != null) {
+            InMemoryCacheService cache = new InMemoryCacheService();
+            cache.put(UserDetail.CURRENT_REQUESTER_KEY,
+                mainSessionController.getCurrentUserDetail());
+            CacheServiceProvider.getRequestCacheService().put("@SessionCache@", cache);
+          }
         }
       }
     }

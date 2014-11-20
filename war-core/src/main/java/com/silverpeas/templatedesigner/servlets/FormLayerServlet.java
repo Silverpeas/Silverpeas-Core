@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -33,7 +34,7 @@ public class FormLayerServlet extends HttpServlet {
     String pathInfo = request.getPathInfo();
     
     String form = pathInfo.substring(1);
-    if (mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
+    if (UserDetail.getCurrentRequester().isAccessAdmin()) {
       String filename = request.getParameter("Layer");
       String dir = PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, form);
       File file = new File(dir, filename);
