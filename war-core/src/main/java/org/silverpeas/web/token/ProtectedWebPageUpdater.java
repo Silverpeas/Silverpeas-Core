@@ -27,6 +27,7 @@ import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreatio
 import org.silverpeas.token.Token;
 import org.silverpeas.web.token.TokenSettingTemplate.Parameter;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +49,9 @@ import static org.silverpeas.web.token.SynchronizerTokenService.SESSION_TOKEN_KE
 public class ProtectedWebPageUpdater extends HttpServlet {
 
   private static final long serialVersionUID = -607735276296383075L;
+
+  @Inject
+  private SynchronizerTokenService tokenService;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -74,9 +78,8 @@ public class ProtectedWebPageUpdater extends HttpServlet {
 
   protected String applyTemplate(TokenSettingTemplate template, HttpServletRequest request) {
     String result = "";
-    SynchronizerTokenService service = SynchronizerTokenService.getInstance();
     List<Parameter> parameters = new ArrayList<Parameter>(4);
-    Token token = service.getSessionToken(request);
+    Token token = tokenService.getSessionToken(request);
     if (token.isDefined()) {
       parameters.add(new TokenSettingTemplate.Parameter(
           TokenSettingTemplate.CREATION_MENU_CONTAINER_ID,
@@ -86,7 +89,7 @@ public class ProtectedWebPageUpdater extends HttpServlet {
       parameters.add(
           new TokenSettingTemplate.Parameter(TokenSettingTemplate.SESSION_TOKEN_VALUE_PARAMETER, token.getValue()));
     }
-    token = service.getNavigationToken(request);
+    token = tokenService.getNavigationToken(request);
     if (token.isDefined()) {
       parameters.add(new TokenSettingTemplate.Parameter(
           TokenSettingTemplate.CREATION_MENU_CONTAINER_ID,
@@ -102,7 +105,6 @@ public class ProtectedWebPageUpdater extends HttpServlet {
     return result;
   }
 
-  // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
   /**
    * Handles the HTTP <code>GET</code> method.
    *
@@ -139,6 +141,6 @@ public class ProtectedWebPageUpdater extends HttpServlet {
   @Override
   public String getServletInfo() {
     return "Javascript generator for setting the security tokens into the web pages";
-  }// </editor-fold>
+  }
 
 }

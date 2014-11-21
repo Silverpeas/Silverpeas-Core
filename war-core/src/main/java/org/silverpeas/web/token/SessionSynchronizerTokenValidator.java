@@ -32,6 +32,7 @@ import org.silverpeas.util.GeneralPropertiesManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -59,6 +60,11 @@ public class SessionSynchronizerTokenValidator implements Filter {
   private static final Logger logger = Logger.getLogger(SessionSynchronizerTokenValidator.class.
       getSimpleName());
 
+  @Inject
+  private SynchronizerTokenService tokenService;
+  @Inject
+  private SessionManagement sessionManagement;
+
   public SessionSynchronizerTokenValidator() {
   }
 
@@ -82,12 +88,11 @@ public class SessionSynchronizerTokenValidator implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
-    SynchronizerTokenService service = SynchronizerTokenService.getInstance();
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     if (SecuritySettings.isWebSecurityByTokensEnabled() && isProtectedResource(httpRequest)) {
       try {
         checkAuthenticatedRequest(httpRequest);
-        service.validate(httpRequest);
+        tokenService.validate(httpRequest);
         chain.doFilter(request, response);
       } catch (TokenValidationException ex) {
         logger.log(Level.SEVERE, "The request for path {0} isn''t valid: {1}",
@@ -126,7 +131,6 @@ public class SessionSynchronizerTokenValidator implements Filter {
       boolean isAuthenticated = false;
       HttpSession session = request.getSession(false);
       if (session != null) {
-        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
         SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
         isAuthenticated = sessionInfo.isDefined();
       }
@@ -158,8 +162,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
-    SynchronizerTokenService service = SynchronizerTokenService.getInstance();
-    return service.isAProtectedResource(request) && !isFileDragAndDrop(request)
+    return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request)
         && !(isWebServiceRequested(request) && StringUtil.isDefined(request.getHeader(
                 UserPrivilegeValidation.HTTP_SESSIONKEY)));
   }

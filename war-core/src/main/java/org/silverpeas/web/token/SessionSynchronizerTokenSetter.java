@@ -26,6 +26,8 @@ package org.silverpeas.web.token;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+
+import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -49,14 +51,17 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class SessionSynchronizerTokenSetter implements HttpSessionListener {
 
+  @Inject
+  private SessionManagement sessionManagement;
+  @Inject
+  private SynchronizerTokenService tokenService;
+
   @Override
   public void sessionCreated(HttpSessionEvent se) {
     HttpSession httpSession = se.getSession();
-    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     SessionInfo session = sessionManagement.getSessionInfo(httpSession.getId());
     if (session.isDefined()) {
-      SynchronizerTokenService tokenservice = SynchronizerTokenService.getInstance();
-      tokenservice.setUpSessionTokens(session);
+      tokenService.setUpSessionTokens(session);
     }
   }
 
