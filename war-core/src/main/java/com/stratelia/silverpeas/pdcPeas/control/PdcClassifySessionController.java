@@ -24,9 +24,6 @@
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.pdc.PdcServiceProvider;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
@@ -41,8 +38,12 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PdcClassifySessionController extends AbstractComponentSessionController {
   private int currentSilverObjectId = -1;
@@ -53,7 +54,8 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
 
   // Positions manager in PDC field mode.
-  private PdcFieldPositionsManager pdcFieldPositionsManager = new PdcFieldPositionsManager();
+  private PdcFieldPositionsManager pdcFieldPositionsManager =
+      ServiceProvider.getService(PdcFieldPositionsManager.class);
 
   // jargon utilise par l'utilisateur
   private Jargon jargon = null;

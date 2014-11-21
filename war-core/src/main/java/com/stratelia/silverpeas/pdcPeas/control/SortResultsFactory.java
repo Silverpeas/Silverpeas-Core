@@ -48,7 +48,7 @@ public class SortResultsFactory {
   public static SortResults getSortResults(String implementor) {
 
     ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.searchEngine.searchEngineSettings", "");
+        "org.silverpeas.searchEngine.searchEngineSettings", "");
     String className = settings.getString(implementor,
         "com.stratelia.silverpeas.pdcPeas.control.DefaultSortResults");
     if (StringUtil.isDefined(className)) {

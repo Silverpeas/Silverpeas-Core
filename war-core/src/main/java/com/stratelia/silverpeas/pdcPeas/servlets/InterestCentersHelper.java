@@ -40,12 +40,12 @@ public class InterestCentersHelper {
   }
 
   public static void loadICenter(PdcSearchSessionController pdcSC, String icId)
-      throws Exception, PdcException {
+      throws Exception {
     pdcSC.loadICenter(icId);
   }
 
   public static void processICenterSaving(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception, PdcException {
+      HttpServletRequest request) throws Exception {
     String mode = request.getParameter("mode");
     // if mode is SaveRequest it saves whole search request to DB
     if ("SaveRequest".equals(mode)) {

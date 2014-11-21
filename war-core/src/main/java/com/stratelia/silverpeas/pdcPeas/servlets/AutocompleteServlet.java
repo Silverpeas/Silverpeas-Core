@@ -20,16 +20,17 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
+import org.silverpeas.search.searchEngine.model.SearchCompletion;
+import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ResourceLocator;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.silverpeas.search.searchEngine.model.SearchCompletion;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
 
 import static org.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 
@@ -57,12 +58,12 @@ public class AutocompleteServlet extends HttpServlet {
     PrintWriter out = response.getWriter();
     try {
       ResourceLocator resourceSearchEngine = new ResourceLocator(
-          "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+          "org.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
       if (resourceSearchEngine.getBoolean("enableAutocompletion", false)) {
         SearchCompletion completion = new SearchCompletion();
         Set<String> suggestions = completion.getSuggestions(request.getParameter("term"));
-        ObjectMapper json = new ObjectMapper();
-        json.writeValue(out, suggestions);
+        String json = JSONCodec.encode(suggestions);
+        out.write(json);
       }
     } finally {
       out.close();

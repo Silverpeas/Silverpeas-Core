@@ -52,7 +52,7 @@ public class PdcFieldPositionsManager {
   /**
    * Constructor
    */
-  public PdcFieldPositionsManager() {
+  protected PdcFieldPositionsManager() {
     reset();
   }
 

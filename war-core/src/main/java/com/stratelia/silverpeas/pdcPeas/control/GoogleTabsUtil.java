@@ -46,7 +46,7 @@ public class GoogleTabsUtil {
   static {
     try {
       ResourceLocator settings =
-          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.google", "");
+          new ResourceLocator("org.silverpeas.pdcPeas.settings.google", "");
 
       key = settings.getString("google.key");
       drawMode = settings.getString("google.sites.drawMode");

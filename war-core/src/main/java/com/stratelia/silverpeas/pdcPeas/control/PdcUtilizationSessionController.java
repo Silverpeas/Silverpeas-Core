@@ -24,8 +24,8 @@
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -33,6 +33,8 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
@@ -44,7 +46,8 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
   private PdcManager pdcManager = null;
 
   // PDC field manager.
-  private PdcFieldTemplateManager pdcFieldTemplateManager = new PdcFieldTemplateManager();
+  private PdcFieldTemplateManager pdcFieldTemplateManager =
+      ServiceProvider.getService(PdcFieldTemplateManager.class);
 
   public PdcUtilizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle, String iconBundle) {

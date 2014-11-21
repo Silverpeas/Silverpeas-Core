@@ -127,8 +127,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<String> componentList = null;
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
-  private List<GlobalSilverResult> globalSR = new ArrayList<GlobalSilverResult>();
-  private List<GlobalSilverResult> filteredSR = new ArrayList<GlobalSilverResult>();
+  private List<GlobalSilverResult> globalSR = new ArrayList<>();
+  private List<GlobalSilverResult> filteredSR = new ArrayList<>();
   private int indexOfFirstItemToDisplay = 1;
   private int nbItemsPerPage = -1;
   private Value currentValue = null;

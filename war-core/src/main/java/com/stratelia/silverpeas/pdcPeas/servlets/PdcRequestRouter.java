@@ -55,8 +55,8 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
   public PdcSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSessionController(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+        "org.silverpeas.pdcPeas.multilang.pdcBundle",
+        "org.silverpeas.pdcPeas.settings.pdcPeasIcons");
   }
 
   /**

@@ -53,8 +53,8 @@ public class PdcUtilizationRequestRouter extends
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcUtilizationSessionController(mainSessionCtrl,
         componentContext,
-        "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
-        "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+        "org.silverpeas.pdcPeas.multilang.pdcBundle",
+        "org.silverpeas.pdcPeas.settings.pdcPeasIcons");
   }
 
   /**

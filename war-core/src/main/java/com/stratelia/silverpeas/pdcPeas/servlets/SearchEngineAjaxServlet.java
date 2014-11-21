@@ -24,19 +24,17 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
+import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.JSONCodec;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.json.JSONObject;
-
-import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Servlet used in Ajax mode to update the positions of a PDC field.
@@ -107,10 +105,6 @@ public class SearchEngineAjaxServlet extends HttpServlet {
     PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, req);
     // prepare JSON response
     String sId = req.getParameter("id");
-    JSONObject jsonResult = new JSONObject();
-    jsonResult.put("success", true);
-    jsonResult.put("id", sId);
-
-    return jsonResult.toString();
+    return JSONCodec.encodeObject(jsonResult -> jsonResult.put("success", true).put("id", sId));
   }
 }
