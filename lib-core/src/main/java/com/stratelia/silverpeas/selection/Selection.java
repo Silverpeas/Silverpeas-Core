@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.selection;
 
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import java.util.Collection;
 
 public final class Selection {
@@ -51,8 +51,8 @@ public final class Selection {
   protected boolean setSelectable;
   protected boolean elementSelectable;
   protected String hostSpaceName;
-  protected PairObject hostComponentName;
-  protected PairObject[] hostPath;
+  protected Pair<String, String> hostComponentName;
+  protected Pair<String, String>[] hostPath;
   protected SelectionExtraParams extraParams;
 
   public Selection() {
@@ -78,8 +78,8 @@ public final class Selection {
     elementSelectable = true;
 
     hostSpaceName = "";
-    hostComponentName = new PairObject("", "");
-    hostPath = new PairObject[0];
+    hostComponentName = new Pair<>("", "");
+    hostPath = new Pair[0];
 
     extraParams = null;
   }
@@ -103,27 +103,27 @@ public final class Selection {
     return hostSpaceName;
   }
 
-  public void setHostComponentName(PairObject hostComponentName) {
+  public void setHostComponentName(Pair<String, String> hostComponentName) {
     if (hostComponentName != null) {
       this.hostComponentName = hostComponentName;
     } else {
-      this.hostComponentName = new PairObject("", "");
+      this.hostComponentName = new Pair<>("", "");
     }
   }
 
-  public PairObject getHostComponentName() {
+  public Pair<String, String> getHostComponentName() {
     return hostComponentName;
   }
 
-  public void setHostPath(PairObject[] hostPath) {
+  public void setHostPath(Pair<String, String>[] hostPath) {
     if (hostPath != null) {
       this.hostPath = hostPath.clone();
     } else {
-      this.hostPath = new PairObject[0];
+      this.hostPath = new Pair[0];
     }
   }
 
-  public PairObject[] getHostPath() {
+  public Pair<String, String>[] getHostPath() {
     return hostPath;
   }
 

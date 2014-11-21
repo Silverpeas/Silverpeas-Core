@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.selectionPeas.*;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import java.util.*;
 
 /**
@@ -92,7 +92,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     } else if (Selection.TYPE_JDBC_CONNECTOR.equals(this.selectionType)) {
       selection.setMultiSelect(false);
       selection.setPopupMode(true);
-      selection.setHostComponentName(new PairObject("Sélection d'un élément", null));
+      selection.setHostComponentName(new Pair<>("Sélection d'un élément", null));
       selection.setHostPath(null);
       selection.setElementSelectable(false);
       cacheManager = new CacheManagerJdbcConnector(getLanguage(), getMultilang(), getIcon(),
@@ -179,19 +179,19 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
           selection.getExtraParams()));
       searchSetPanel.setHostSpaceName(selection.getHostSpaceName());
       if (selection.isPopupMode()) {
-        PairObject po = null;
-        PairObject[] emptyapo = null;
+        Pair<String, String> po = null;
+        Pair<String, String>[] emptyapo = null;
 
         if (selection.getHostComponentName() != null) {
-          po = new PairObject(selection.getHostComponentName().getFirst(), "");
+          po = new Pair<>(selection.getHostComponentName().getFirst(), "");
         }
         searchSetPanel.setHostComponentName(po);
-        PairObject[] apo = selection.getHostPath();
+        Pair<String, String>[] apo = selection.getHostPath();
         if (apo != null) {
-          emptyapo = new PairObject[apo.length];
+          emptyapo = new Pair[apo.length];
           for (int i = 0; i < apo.length; i++) {
             if (apo[i] != null) {
-              emptyapo[i] = new PairObject(apo[i].getFirst(), "");
+              emptyapo[i] = new Pair<>(apo[i].getFirst(), "");
             } else {
               emptyapo[i] = null;
             }
@@ -234,19 +234,19 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
           CacheType.CM_ELEMENT, selection.getExtraParams()));
       searchElementPanel.setHostSpaceName(selection.getHostSpaceName());
       if (selection.isPopupMode()) {
-        PairObject po = null;
-        PairObject[] emptyapo = null;
+        Pair<String, String> po = null;
+        Pair<String, String>[] emptyapo = null;
 
         if (selection.getHostComponentName() != null) {
-          po = new PairObject(selection.getHostComponentName().getFirst(), "");
+          po = new Pair<>(selection.getHostComponentName().getFirst(), "");
         }
         searchElementPanel.setHostComponentName(po);
-        PairObject[] apo = selection.getHostPath();
+        Pair<String, String>[] apo = selection.getHostPath();
         if (apo != null) {
-          emptyapo = new PairObject[apo.length];
+          emptyapo = new Pair[apo.length];
           for (int i = 0; i < apo.length; i++) {
             if (apo[i] != null) {
-              emptyapo[i] = new PairObject(apo[i].getFirst(), "");
+              emptyapo[i] = new Pair<>(apo[i].getFirst(), "");
             } else {
               emptyapo[i] = null;
             }
@@ -291,7 +291,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     return selection.isElementSelectable();
   }
 
-  public PairObject getHostComponentName() {
+  public Pair<String, String> getHostComponentName() {
     return selection.getHostComponentName();
   }
 
@@ -299,7 +299,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     return selection.getHostSpaceName();
   }
 
-  public PairObject[] getHostPath() {
+  public Pair<String, String>[] getHostPath() {
     return selection.getHostPath();
   }
 

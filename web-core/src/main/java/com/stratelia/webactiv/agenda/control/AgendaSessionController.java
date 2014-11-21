@@ -51,7 +51,7 @@ import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.URLUtils;
@@ -1211,11 +1211,11 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public String initSelectionPeas() {
     String m_context = URLManager.getApplicationURL();
-    PairObject hostComponentName =
-        new PairObject(getString("agenda"), m_context + "/Ragenda/jsp/Main");
-    PairObject[] hostPath = new PairObject[1];
+    Pair<String, String> hostComponentName =
+        new Pair<>(getString("agenda"), m_context + "/Ragenda/jsp/Main");
+    Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] =
-        new PairObject(getString("editionListeDiffusion"), m_context + "/Ragenda/jsp/Main");
+        new Pair<>(getString("editionListeDiffusion"), m_context + "/Ragenda/jsp/Main");
     String hostUrl = m_context + "/Ragenda/jsp/saveMembers";
     String cancelUrl = m_context + "/Ragenda/jsp/saveMembers";
 
@@ -1336,10 +1336,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public String initUserPanelOtherAgenda() {
     String m_context = URLManager.getApplicationURL();
-    PairObject hostComponentName =
-        new PairObject(getString("agenda"), m_context + "/Ragenda/jsp/Main");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("viewOtherAgenda"),
+    Pair<String, String> hostComponentName =
+        new Pair<>(getString("agenda"), m_context + "/Ragenda/jsp/Main");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("viewOtherAgenda"),
         m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main");
     String hostUrl =
         m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "ViewOtherAgenda";

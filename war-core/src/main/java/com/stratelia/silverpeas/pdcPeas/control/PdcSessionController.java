@@ -43,7 +43,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -406,7 +406,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
   public String initUserPanelForPdcManager() throws RemoteException,
       PdcException, SQLException {
     String m_context = URLManager.getApplicationURL();
-    PairObject[] hostPath = new PairObject[1];
+    Pair<String, String>[] hostPath = new Pair[1];
 
     String name = getCurrentAxis().getAxisHeader()
         .getName(getCurrentLanguage());
@@ -414,12 +414,12 @@ public class PdcSessionController extends AbstractComponentSessionController {
       name = getCurrentValue().getName(getCurrentLanguage());
     }
 
-    hostPath[0] = new PairObject(name, "/Rpdc/jsp/ViewManager");
+    hostPath[0] = new Pair<>(name, "/Rpdc/jsp/ViewManager");
 
     Selection sel = getSelection();
     sel.resetAll();
     sel.setHostSpaceName(getString("pdcPeas.pdc"));
-    sel.setHostComponentName(new PairObject(getString("pdcPeas.managers"), ""));
+    sel.setHostComponentName(new Pair<>(getString("pdcPeas.managers"), ""));
     sel.setHostPath(hostPath);
 
     String hostUrl = m_context + "/Rpdc/jsp/UpdateManager";

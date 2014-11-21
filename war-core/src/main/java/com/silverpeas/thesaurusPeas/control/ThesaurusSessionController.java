@@ -43,7 +43,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.persistence.IdPK;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
@@ -447,13 +447,14 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   public String initSelectedUserPanel() throws ThesaurusException {
     String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getSpaceLabel();
-    PairObject hostComponentName = new PairObject(
+    Pair<String, String> hostComponentName = new Pair<>(
         getString("thesaurus.componentName"), m_context
         + "/Rthesaurus/jsp/Main");
-    PairObject[] hostPath = new PairObject[2];
-    hostPath[0] = new PairObject(getString("thesaurus.thesaurus") + " > ", "/Rthesaurus/jsp/Back");
+    Pair<String, String>[] hostPath = new Pair[2];
+    hostPath[0] =
+        new Pair<>(getString("thesaurus.thesaurus") + " > ", "/Rthesaurus/jsp/Back");
     String nomVoca = EncodeHelper.javaStringToHtmlString(getCurrentVoca().getName());
-    hostPath[1] = new PairObject(getString("thesaurus.BBlistAffectations")
+    hostPath[1] = new Pair<>(getString("thesaurus.BBlistAffectations")
         + nomVoca, "/Rthesaurus/jsp/EditAssignments");
     String hostUrl = m_context + "/Rthesaurus/jsp/SaveAssignUser";
     String cancelUrl = m_context + "/Rthesaurus/jsp/Main";
@@ -503,10 +504,11 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   public String initUserPanel() throws ThesaurusException {
     String m_context = URLManager.getApplicationURL();
     String hostSpaceName = "";
-    PairObject hostComponentName = new PairObject(getString("thesaurus.componentName"), m_context
+    Pair<String, String> hostComponentName =
+        new Pair<>(getString("thesaurus.componentName"), m_context
         + "/Rthesaurus/jsp/Main");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("thesaurus.thesaurus"), "/Rthesaurus/jsp/Back");
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("thesaurus.thesaurus"), "/Rthesaurus/jsp/Back");
     String hostUrl = m_context + "/Rthesaurus/jsp/UserAssignments";
     String cancelUrl = m_context + "/Rthesaurus/jsp/Main";
 

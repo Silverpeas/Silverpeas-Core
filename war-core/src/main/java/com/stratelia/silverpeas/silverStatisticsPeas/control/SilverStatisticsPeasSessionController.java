@@ -45,7 +45,7 @@ import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.*;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
@@ -550,7 +550,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   protected Selection communInitUserPanel(String compoName, String operation) {
     String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("silverStatisticsPeas.statistics");// getSpaceLabel();
-    PairObject hostComponentName = new PairObject(getComponentLabel(),
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(),
         m_context + getComponentUrl() + compoName);
     String hostUrl = m_context + getComponentUrl() + operation;
 

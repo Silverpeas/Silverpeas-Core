@@ -57,7 +57,7 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
@@ -892,14 +892,14 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String hostSpaceName = getMultilang().getString("JSPP.manageHomePage");
     selection.setHostSpaceName(hostSpaceName);
 
-    PairObject hostComponentName;
+    Pair hostComponentName;
     String idFather = getSpaceInstById().getDomainFatherId();
     if (idFather != null && !idFather.equals("0")) {// je suis sur un ss-espace
       SpaceInst spaceFather = getSpaceInstById(idFather);
-      hostComponentName = new PairObject(spaceFather.getName() + " > " + getSpaceInstById().
+      hostComponentName = new Pair<>(spaceFather.getName() + " > " + getSpaceInstById().
           getName(), null);
     } else {
-      hostComponentName = new PairObject(getSpaceInstById().getName(), null);
+      hostComponentName = new Pair<>(getSpaceInstById().getName(), null);
     }
     selection.setHostComponentName(hostComponentName);
 
@@ -913,7 +913,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     }
     ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
-    PairObject[] hostPath = {new PairObject(nameProfile + " > " + generalMessage.getString(
+    Pair[] hostPath = {new Pair<>(nameProfile + " > " + generalMessage.getString(
       "GML.selection"), null)};
     selection.setHostPath(hostPath);
 
@@ -1414,25 +1414,25 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String hostSpaceName = getMultilang().getString("JSPP.manageHomePage");
     selection.setHostSpaceName(hostSpaceName);
 
-    PairObject hostComponentName;
+    Pair<String, String> hostComponentName;
     SpaceInst space = getSpaceInstById();
     if (space != null) {
       String idFather = space.getDomainFatherId();
       if (idFather != null && !idFather.equals("0")) {// je suis sur un ss-espace
         SpaceInst spaceFather = getSpaceInstById(idFather);
-        hostComponentName = new PairObject(spaceFather.getName() + " > " + getSpaceInstById().
+        hostComponentName = new Pair<>(spaceFather.getName() + " > " + getSpaceInstById().
             getName(), null);
       } else {
-        hostComponentName = new PairObject(getSpaceInstById().getName(), null);
+        hostComponentName = new Pair<>(getSpaceInstById().getName(), null);
       }
       selection.setHostComponentName(hostComponentName);
     }
 
     ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
     String compoName = getComponentInst(getManagedInstanceId()).getLabel();
-    PairObject[] hostPath = {new PairObject(compoName + " > " + labelProfile + " > "
-      + generalMessage.
-      getString("GML.selection"), null)};
+    Pair<String, String>[] hostPath =
+        new Pair[]{new Pair<>(compoName + " > " + labelProfile + " > " + generalMessage.
+            getString("GML.selection"), null)};
     selection.setHostPath(hostPath);
 
     String hostUrl = compoURL + "EffectiveUpdateInstanceProfile";

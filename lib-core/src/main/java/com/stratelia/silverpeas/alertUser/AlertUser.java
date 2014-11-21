@@ -26,12 +26,12 @@ package com.stratelia.silverpeas.alertUser;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 
 public class AlertUser {
   protected String m_hostSpaceName;
   protected String m_hostComponentId;
-  protected PairObject m_hostComponentLabel;
+  protected Pair<String, String> m_hostComponentLabel;
   protected NotificationMetaData m_notificationMetaData;
   protected SelectionUsersGroups extraParams;
 
@@ -42,7 +42,7 @@ public class AlertUser {
   public void resetAll() {
     m_hostSpaceName = "";
     m_hostComponentId = "";
-    m_hostComponentLabel = new PairObject("", "");
+    m_hostComponentLabel = new Pair<>("", "");
     extraParams = null;
   }
 
@@ -84,15 +84,15 @@ public class AlertUser {
    * Only the first element is represented for now because of the systematic use of a POPUP.
    * @param hostComponentLabel the component label
    */
-  public void setHostComponentName(PairObject hostComponentLabel) {
+  public void setHostComponentName(Pair<String, String> hostComponentLabel) {
     if (hostComponentLabel != null) {
       m_hostComponentLabel = hostComponentLabel;
     } else {
-      m_hostComponentLabel = new PairObject("", "");
+      m_hostComponentLabel = new Pair<>("", "");
     }
   }
 
-  public PairObject getHostComponentName() {
+  public Pair<String, String> getHostComponentName() {
     return m_hostComponentLabel;
   }
 

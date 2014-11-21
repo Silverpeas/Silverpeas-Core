@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 
 /**
  * Class declaration
@@ -178,7 +178,7 @@ public class GenericPanelPeasSessionController extends AbstractComponentSessionC
     return m_Nav.getColumnsHeader();
   }
 
-  public PairObject getHostComponentName() {
+  public Pair getHostComponentName() {
     return m_Panel.getHostComponentName();
   }
 
@@ -186,7 +186,7 @@ public class GenericPanelPeasSessionController extends AbstractComponentSessionC
     return m_Panel.getHostSpaceName();
   }
 
-  public PairObject[] getHostPath() {
+  public Pair[] getHostPath() {
     return m_Panel.getHostPath();
   }
 

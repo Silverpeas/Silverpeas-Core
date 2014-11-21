@@ -52,7 +52,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -1215,10 +1215,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       JobDomainPeasException {
     sel.resetAll();
     sel.setHostSpaceName(getMultilang().getString("JDP.jobDomain"));
-    sel.setHostComponentName(new PairObject(getTargetGroup().getName(), null));
+    sel.setHostComponentName(new Pair<>(getTargetGroup().getName(), null));
     ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
-    PairObject[] hostPath = {new PairObject(getMultilang().getString("JDP.roleManager")
-      + " > " + generalMessage.getString("GML.selection"), null)};
+    Pair<String, String>[] hostPath =
+        new Pair[]{new Pair<>(getMultilang().getString("JDP.roleManager") + " > " +
+            generalMessage.getString("GML.selection"), null)};
     sel.setHostPath(hostPath);
     sel.setGoBackURL(compoURL + "groupManagersUpdate");
     sel.setCancelURL(compoURL + "groupManagersCancel");
@@ -1884,9 +1885,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   public String initSelectionPeasForGroups(String compoURL) throws JobDomainPeasException {
     String hostSpaceName = getString("JDP.userPanelGroup");
-    PairObject hostComponentName = new PairObject(getTargetGroup().getName(),
+    Pair<String, String> hostComponentName = new Pair<>(getTargetGroup().getName(),
         compoURL + "groupContent");
-    PairObject[] hostPath = new PairObject[0];
+    Pair<String, String>[] hostPath = new Pair[0];
     String hostUrl = compoURL + "groupAddRemoveUsers";
     String cancelUrl = compoURL + "groupContent";
 
@@ -1927,9 +1928,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public String initSelectionPeasForOneGroupOrUser(String compoURL)
       throws JobDomainPeasException {
     String hostSpaceName = getString("JDP.userPanelDomain");
-    PairObject hostComponentName = new PairObject(getTargetDomain().getName(),
+    Pair<String, String> hostComponentName = new Pair<>(getTargetDomain().getName(),
         compoURL + "domainContent");
-    PairObject[] hostPath = new PairObject[0];
+    Pair<String, String>[] hostPath = new Pair[0];
     String hostUrl = compoURL + "selectUserOrGroup";
     String cancelUrl = compoURL + "domainContent";
 

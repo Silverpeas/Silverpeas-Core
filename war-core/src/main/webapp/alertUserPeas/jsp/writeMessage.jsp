@@ -33,7 +33,7 @@
 %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
-<%@ page import="org.silverpeas.util.PairObject" %>
+<%@ page import="org.silverpeas.util.Pair" %>
 
 <%@ include file="check.jsp" %>
 
@@ -52,9 +52,9 @@
         String componentURL = (String) request.getAttribute("myComponentURL");
         UserDetail[] userDetails = (UserDetail[]) request.getAttribute("UserR");
         Group[] groups = (Group[]) request.getAttribute("GroupR");
-        PairObject hostComponentNameObject = (PairObject) request.getAttribute("HostComponentName");
+        Pair<String, String> hostComponentNameObject = (Pair<String, String>) request.getAttribute("HostComponentName");
         String hostSpaceName = (String) request.getAttribute("HostSpaceName");
-        String hostComponentName = (String) hostComponentNameObject.getFirst();
+        String hostComponentName = hostComponentNameObject.getFirst();
   %>
 
   <body>

@@ -24,7 +24,7 @@
 package com.stratelia.silverpeas.genericPanel;
 
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 
 public class GenericPanel {
 
@@ -41,8 +41,8 @@ public class GenericPanel {
   protected PanelOperation[] m_panelOperations;
   protected String m_selectedOperation;
   protected String m_hostSpaceName;
-  protected PairObject m_hostComponentName;
-  protected PairObject[] m_hostPath;
+  protected Pair<String, String> m_hostComponentName;
+  protected Pair<String, String>[] m_hostPath;
 
   public GenericPanel() {
     resetAll();
@@ -61,8 +61,8 @@ public class GenericPanel {
     m_zoomToItemInPopup = false;
     m_selectedOperation = "";
     m_hostSpaceName = "";
-    m_hostComponentName = new PairObject("", "");
-    m_hostPath = new PairObject[0];
+    m_hostComponentName = new Pair<>("", "");
+    m_hostPath = new Pair[0];
   }
 
   static public String getGenericPanelURL(String panelKey) {
@@ -77,19 +77,19 @@ public class GenericPanel {
     return m_hostSpaceName;
   }
 
-  public void setHostComponentName(PairObject hostComponentName) {
+  public void setHostComponentName(Pair<String, String> hostComponentName) {
     m_hostComponentName = hostComponentName;
   }
 
-  public PairObject getHostComponentName() {
+  public Pair<String, String> getHostComponentName() {
     return m_hostComponentName;
   }
 
-  public void setHostPath(PairObject[] hostPath) {
-    m_hostPath = (hostPath != null ? hostPath.clone() : new PairObject[0]);
+  public void setHostPath(Pair<String, String>[] hostPath) {
+    m_hostPath = (hostPath != null ? hostPath.clone() : new Pair[0]);
   }
 
-  public PairObject[] getHostPath() {
+  public Pair<String, String>[] getHostPath() {
     return m_hostPath;
   }
 

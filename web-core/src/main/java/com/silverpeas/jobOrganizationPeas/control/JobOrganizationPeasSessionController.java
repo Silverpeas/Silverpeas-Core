@@ -40,7 +40,7 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.RightAssignationContext;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -354,7 +354,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
         + Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
-    PairObject hostComponentName = new PairObject(getString("JOP.pseudoPeas"),
+    Pair<String, String> hostComponentName = new Pair<>(getString("JOP.pseudoPeas"),
         cancelUrl);
     String hostUrl = m_context + getComponentUrl() + "ViewUserOrGroup";
 
@@ -393,7 +393,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   public String initSelectionRightsUserOrGroup() {
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = "";
-    PairObject hostComponentName = new PairObject(getString("JOP.pseudoPeas"),
+    Pair<String, String> hostComponentName = new Pair<>(getString("JOP.pseudoPeas"),
         cancelUrl);
     String hostUrl = "";
 

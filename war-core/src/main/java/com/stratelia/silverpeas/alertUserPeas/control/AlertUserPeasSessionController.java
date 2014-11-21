@@ -35,7 +35,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Arrays;
@@ -82,7 +82,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   // ------------------------------------------- Navigation Functions
   // ----------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  public PairObject getHostComponentName() {
+  public Pair getHostComponentName() {
     return m_AlertUser.getHostComponentName();
   }
 

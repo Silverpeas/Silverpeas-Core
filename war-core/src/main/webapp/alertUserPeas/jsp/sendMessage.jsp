@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.PairObject" %>
+<%@ page import="org.silverpeas.util.Pair" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -41,9 +41,9 @@
 
   <%
         String componentURL = (String) request.getAttribute("myComponentURL");
-        PairObject hostComponentNameObject = (PairObject) request.getAttribute("HostComponentName");
+        Pair<String, String> hostComponentNameObject = (Pair<String, String>) request.getAttribute("HostComponentName");
         String hostSpaceName = (String) request.getAttribute("HostSpaceName");
-        String hostComponentName = (String) hostComponentNameObject.getFirst();
+        String hostComponentName = hostComponentNameObject.getFirst();
   %>
 
   <body>

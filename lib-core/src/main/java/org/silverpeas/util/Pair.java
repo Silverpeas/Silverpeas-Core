@@ -21,30 +21,33 @@
 package org.silverpeas.util;
 
 /**
- * Title: userPanelPeas Description: this is an object pair of pair object Copyright: Copyright (c)
- * 2002 Company: Silverpeas
+ * This is a pair of objects.
  *
  * @author J-C Groccia
  * @version 1.0
  */
-public class PairObject implements Cloneable {
+public class Pair<T, U> implements Cloneable {
 
-  private Object first = null;
-  private Object second = null;
+  private T first = null;
+  private U second = null;
+
+  public static <T, U> Pair<T, U> of(T first, U second) {
+    return new Pair<T, U>(first, second);
+  }
 
   /**
    * constructor
    */
-  public PairObject(Object first, Object second) {
+  public Pair(T first, U second) {
     this.first = first;
     this.second = second;
   }
 
-  public Object getFirst() {
+  public T getFirst() {
     return first;
   }
 
-  public Object getSecond() {
+  public U getSecond() {
     return second;
   }
 }

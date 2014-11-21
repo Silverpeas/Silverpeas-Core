@@ -36,7 +36,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -505,10 +505,10 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public String initSelectionPeas() {
     String m_context = URLManager.getApplicationURL();
-    PairObject hostComponentName = new PairObject(getString("todo"), m_context
+    Pair<String, String> hostComponentName = new Pair<>(getString("todo"), m_context
         + "/Rtodo/jsp/Main");
-    PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(getString("editionListeDiffusion"), m_context
+    Pair<String, String>[] hostPath = new Pair[1];
+    hostPath[0] = new Pair<>(getString("editionListeDiffusion"), m_context
         + "/Rtodo/jsp/Main");
     String hostUrl = m_context + "/Rtodo/jsp/saveMembers";
     String cancelUrl = m_context + "/Rtodo/jsp/saveMembers";

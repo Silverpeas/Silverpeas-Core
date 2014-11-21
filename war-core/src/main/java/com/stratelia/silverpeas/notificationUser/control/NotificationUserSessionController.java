@@ -20,7 +20,7 @@
  */
 package com.stratelia.silverpeas.notificationUser.control;
 
-import org.silverpeas.util.PairObject;
+import org.silverpeas.util.Pair;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -122,7 +122,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
         + paramValues;
     String cancelUrl = hostUrl;
-    PairObject hostComponentName = new PairObject("", "");
+    Pair<String, String> hostComponentName = new Pair<>("", "");
 
     sel.resetAll();
     sel.setHostSpaceName(this.getString("domainName"));

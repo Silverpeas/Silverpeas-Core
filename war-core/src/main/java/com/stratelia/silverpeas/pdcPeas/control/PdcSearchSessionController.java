@@ -2241,7 +2241,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     sel.setPopupMode(false);
     sel.setSetSelectable(false);
 
-    PairObject hostComponentName = new PairObject(getComponentLabel(), null);
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
     sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);

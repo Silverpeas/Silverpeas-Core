@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.PairObject" %>
+<%@ page import="org.silverpeas.util.Pair" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -52,9 +52,9 @@
 
 	boolean          toPopup = ((Boolean)request.getAttribute("ToPopup")).booleanValue();
 
-    PairObject hostComponentName = (PairObject)request.getAttribute("HostComponentName");
+    Pair<String, String> hostComponentName = (Pair<String, String>)request.getAttribute("HostComponentName");
     String           hostSpaceName = (String)request.getAttribute("HostSpaceName");
-	PairObject[]     hostPath = (PairObject[])request.getAttribute("HostPath");
+	Pair<String, String>[]     hostPath = (Pair<String, String>[])request.getAttribute("HostPath");
 
     PanelLine[]      setPath = (PanelLine[])request.getAttribute("SetPath");
 
