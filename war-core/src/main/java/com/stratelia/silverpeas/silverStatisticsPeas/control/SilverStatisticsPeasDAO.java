@@ -24,6 +24,11 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,18 +36,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.JNDINames;
-
 /**
  * Class declaration Get cumul datas from database to access
  * @author
  */
 public class SilverStatisticsPeasDAO {
-  private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
   private static final String STATS_GET_LIST_PUBLI_ACCESS =
       "SELECT componentid, objectid, count(*) FROM sb_statistic_history WHERE datestat >= ? AND datestat <= ? GROUP BY objectid, componentid ORDER BY componentid, objectid";
 

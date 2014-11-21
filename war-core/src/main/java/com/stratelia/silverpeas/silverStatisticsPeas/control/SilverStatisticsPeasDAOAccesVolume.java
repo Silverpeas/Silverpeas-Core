@@ -24,36 +24,25 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.UtilException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * Class declaration Get cumul datas from database to access and Volume
@@ -162,14 +151,13 @@ public class SilverStatisticsPeasDAOAccesVolume {
   /**
    * Returns the access statistics.
    * @param dateStat
-   * @param currentUserId
    * @param filterIdGroup
    * @param filterIdUser
    * @return the access statistics.
    * @throws SQLException
    */
-  public static Map<String, String[]> getStatsUserVentil(String dateStat,
-      String currentUserId, String filterIdGroup, String filterIdUser)
+  public static Map<String, String[]> getStatsUserVentil(String dateStat, String filterIdGroup,
+      String filterIdUser)
       throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOAccessVolume.getStatsUserVentil",
@@ -179,7 +167,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     // key=componentId,value = new String[3] {tout, groupe, user}
 
     Map<String, String> hashTout = selectAccessForAllComponents(dateStat);
-    filterVisibleComponents(currentUserId, resultat, hashTout);
+    filterVisibleComponents(resultat, hashTout);
 
     // Query Groupe
     if (StringUtil.isDefined(filterIdGroup)) {
@@ -432,14 +420,13 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   /**
    * @param dateStat
-   * @param currentUserId
    * @param filterIdGroup
    * @param filterIdUser
    * @return
    * @throws SQLException
    */
   public static Map<String, String[]> getStatsPublicationsVentil(String dateStat,
-      String currentUserId, String filterIdGroup, String filterIdUser)
+      String filterIdGroup, String filterIdUser)
       throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOAccessVolume.getStatsPublicationsVentil",
@@ -448,7 +435,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
     Map<String, String[]> resultat = new HashMap<String, String[]>(); // key=componentId, value=new
     // String[3] {tout, groupe, user}
     Map<String, String> hashTout = selectVolumeForAllComponents(dateStat);
-    filterVisibleComponents(currentUserId, resultat, hashTout);
+    filterVisibleComponents(resultat, hashTout);
 
     // Query Group
     if (StringUtil.isDefined(filterIdGroup)) {
@@ -602,15 +589,16 @@ public class SilverStatisticsPeasDAOAccesVolume {
     }
   }
 
-  static void filterVisibleComponents(String currentUserId, Map<String, String[]> resultat,
+  static void filterVisibleComponents(Map<String, String[]> resultat,
       Map<String, String> hashTout) {
     for (String cmpId : hashTout.keySet()) {
       boolean ok = false;
       AdminController myAdminController = getAdminController();
       ComponentInst compInst = myAdminController.getComponentInst(cmpId);
       String spaceId = compInst.getDomainFatherId();
+      UserDetail currentUser = UserDetail.getCurrentRequester();
       String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
-          currentUserId);
+          currentUser.getId());
       for (String tabManageableSpaceId : tabManageableSpaceIds) {
         if (spaceId.equals(tabManageableSpaceId)) {
           ok = true;

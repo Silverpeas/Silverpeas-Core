@@ -24,14 +24,14 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import org.silverpeas.util.ResourceLocator;
-
 import org.jCharts.nonAxisChart.PieChart2D;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -44,24 +44,18 @@ import java.util.Vector;
 public class UserPieChartBuilder extends AbstractPieChartBuilder {
   private String dateStat;
   private String dateFormate;
-  private String currentUserId;
   private String filterIdGroup;
   private String filterIdUser;
   private String spaceId;
-  private OrganizationController organizationController;
   private ResourceLocator message;
 
-  public UserPieChartBuilder(String dateStat, String dateFormate,
-      String currentUserId, String filterIdGroup, String filterIdUser,
-      String spaceId, ResourceLocator message,
-      OrganizationController organizationController) {
+  public UserPieChartBuilder(String dateStat, String dateFormate, String filterIdGroup,
+      String filterIdUser, String spaceId, ResourceLocator message) {
     this.dateStat = dateStat;
     this.dateFormate = dateFormate;
-    this.currentUserId = currentUserId;
     this.filterIdGroup = filterIdGroup;
     this.filterIdUser = filterIdUser;
     this.spaceId = spaceId;
-    this.organizationController = organizationController;
     this.message = message;
   }
 
@@ -71,15 +65,17 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
    * #getChartTitle()
    */
   public String getChartTitle() {
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
     String title = message.getString("silverStatisticsPeas.AccessNumber") + " ";
 
     if (StringUtil.isDefined(this.filterIdGroup) && !StringUtil.isDefined(this.filterIdUser)) {
       title += message.getString("silverStatisticsPeas.EvolutionAccessGroup")
-          + " " + this.organizationController.getGroup(this.filterIdGroup).getName() + " ";
+          + " " + organizationController.getGroup(this.filterIdGroup).getName() + " ";
     }
     if (StringUtil.isDefined(this.filterIdUser)) {
       title += message.getString("silverStatisticsPeas.EvolutionAccessUser")
-          + " " + this.organizationController.getUserDetail(this.filterIdUser)
+          + " " + organizationController.getUserDetail(this.filterIdUser)
           .getDisplayedName() + " ";
     }
 
@@ -109,7 +105,7 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
     Hashtable<String, String[]> cmpStats = new Hashtable<String, String[]>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume.getStatsUserVentil(
-          dateStat, currentUserId, filterIdGroup, filterIdUser));
+          dateStat, filterIdGroup, filterIdUser));
     } catch (SQLException e) {
       SilverTrace.error("silverStatisticsPeas",
           "UserPieChartBuilder.getCmpStats()", "root.EX_SQL_QUERY_FAILED", e);
@@ -118,14 +114,14 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
   }
   
   @Override
-  public PieChart2D getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
+  public PieChart2D getChart(String spaceId, Vector<String[]> currentStats) {
     setScope(AbstractPieChartBuilder.FINESSE_TOUS);
     if (StringUtil.isDefined(filterIdGroup)) {
       setScope(AbstractPieChartBuilder.FINESSE_GROUPE);
     } else if (StringUtil.isDefined(filterIdUser)) {
       setScope(AbstractPieChartBuilder.FINESSE_USER);
     }
-    return super.getChart(spaceId, currentUserId, currentStats);
+    return super.getChart(spaceId, currentStats);
   }
 
 }

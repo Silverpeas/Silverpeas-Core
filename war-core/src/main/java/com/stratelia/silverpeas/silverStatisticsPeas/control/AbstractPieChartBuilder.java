@@ -24,14 +24,14 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -129,11 +129,10 @@ public abstract class AbstractPieChartBuilder {
 
   /**
    * @param spaceId the space identifier
-   * @param currentUserId current user identifier
    * @param currentStats list of current statistics
    * @return a PieChart in 2D
    */
-  public PieChart2D getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
+  public PieChart2D getChart(String spaceId, Vector<String[]> currentStats) {
     PieChart2D pieChart = null;
     try {
       // Get statistics
@@ -148,15 +147,15 @@ public abstract class AbstractPieChartBuilder {
       String[] componentIds = null;
 
       // build instance list
-      UserDetail userDetail = AdministrationServiceProvider.getAdminService().getUserDetail(currentUserId);
+      UserDetail userDetail = UserDetail.getCurrentRequester();
       if (!StringUtil.isDefined(spaceId)) {
         if (userDetail.isAccessAdmin()) {// Admin
           tabSpaceIds = AdministrationServiceProvider.getAdminService().getAllRootSpaceIds(); // de type WA123
         } else {// Manager d'espaces ou de sous-espaces
           // manager d'espace
           List<String> listSpaceIds = new ArrayList<String>();
-          String[] tabManageableSpaceIds =
-              AdministrationServiceProvider.getAdminService().getUserManageableSpaceIds(currentUserId); // de type
+          String[] tabManageableSpaceIds = AdministrationServiceProvider.getAdminService()
+              .getUserManageableSpaceIds(userDetail.getId()); // de type
           // 123
           for (String manageableSpaceId : tabManageableSpaceIds) {
             SpaceInstLight espace =

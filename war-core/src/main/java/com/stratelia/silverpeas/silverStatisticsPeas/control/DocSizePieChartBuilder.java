@@ -31,12 +31,10 @@ import java.util.Map;
 
 public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
 
-  private final String currentUserId;
   private final String spaceId;
   private final ResourceLocator message;
 
-  public DocSizePieChartBuilder(String currentUserId, String spaceId, ResourceLocator message) {
-    this.currentUserId = currentUserId;
+  public DocSizePieChartBuilder(String spaceId, ResourceLocator message) {
     this.spaceId = spaceId;
     this.message = message;
   }
@@ -70,7 +68,7 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
   @Override
   Map<String, String[]> getCmpStats() {
     try {
-      return SilverStatisticsPeasDAOVolumeServer.getStatsSizeVentil(this.currentUserId);
+      return SilverStatisticsPeasDAOVolumeServer.getStatsSizeVentil();
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas", "DocSizePieChartBuilder.getCmpStats()",
           "root.EX_SQL_QUERY_FAILED", e);

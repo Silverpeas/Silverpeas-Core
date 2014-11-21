@@ -44,8 +44,6 @@ public class AccessPublicationVO implements Serializable {
 
   /**
    * Constructor declaration
-   * @param componentId
-   * @param objectId
    * @param nbAccess
    */
   public AccessPublicationVO(ForeignPK foreignPK, int nbAccess) {

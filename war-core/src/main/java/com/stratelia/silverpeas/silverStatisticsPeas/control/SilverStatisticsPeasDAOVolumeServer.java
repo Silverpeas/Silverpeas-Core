@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 import org.silverpeas.util.UnitUtil;
 
@@ -98,13 +99,13 @@ public class SilverStatisticsPeasDAOVolumeServer {
     return myList;
   }
 
-  public static Map<String, String[]> getStatsSizeVentil(String currentUserId) throws Exception {
+  public static Map<String, String[]> getStatsSizeVentil() throws Exception {
     DirectoryVolumeService service = new DirectoryVolumeService();
-    return service.getSizeVentilation(currentUserId);
+    return service.getSizeVentilation(UserDetail.getCurrentRequester().getId());
   }
 
-  public static Map<String, String[]> getStatsVentil(String currentUserId) throws Exception {
+  public static Map<String, String[]> getStatsVentil() throws Exception {
     DirectoryVolumeService service = new DirectoryVolumeService();
-    return service.getFileNumberVentilation(currentUserId);
+    return service.getFileNumberVentilation(UserDetail.getCurrentRequester().getId());
   }
 }

@@ -835,10 +835,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public PieChart2D getUserVentilChart(String dateStat, String filterIdGroup,
       String filterIdUser, String spaceId) {
     UserPieChartBuilder userBuilder = new UserPieChartBuilder(dateStat,
-        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, this.getMultilang(), getOrganisationController());
+        formatDate(dateStat), filterIdGroup, filterIdUser,
+        spaceId, this.getMultilang());
     resetPath(spaceId);
-    return userBuilder.getChart(spaceId, getUserId(), currentStats);
+    return userBuilder.getChart(spaceId, currentStats);
   }
 
   /**
@@ -979,20 +979,19 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public PieChart2D getPubliVentilChart(String dateStat, String filterIdGroup,
       String filterIdUser, String spaceId) {
     PubliPieChartBuilder publiBuilder = new PubliPieChartBuilder(dateStat,
-        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, getOrganisationController(), this.getMultilang());
+        formatDate(dateStat), filterIdGroup, filterIdUser,
+        spaceId, this.getMultilang());
     resetPath(spaceId);
-    return publiBuilder.getChart(spaceId, getUserId(), currentStats);
+    return publiBuilder.getChart(spaceId, currentStats);
   }
 
   /**
    * @return
    */
   public PieChart2D getDocsVentilChart(String spaceId) {
-    DocPieChartBuilder userBuilder = new DocPieChartBuilder(getUserId(),
-        spaceId, this.getMultilang());
+    DocPieChartBuilder userBuilder = new DocPieChartBuilder(spaceId, this.getMultilang());
     resetPath(spaceId);
-    return userBuilder.getChart(spaceId, getUserId(), currentStats);
+    return userBuilder.getChart(spaceId, currentStats);
   }
 
   /**
@@ -1000,10 +999,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public PieChart2D getDocsSizeVentilChart(String spaceId) {
-    DocSizePieChartBuilder userBuilder = new DocSizePieChartBuilder(getUserId(), spaceId, this
-        .getMultilang());
+    DocSizePieChartBuilder userBuilder = new DocSizePieChartBuilder(spaceId, this.getMultilang());
     resetPath(spaceId);
-    return userBuilder.getChart(spaceId, getUserId(), currentStats);
+    return userBuilder.getChart(spaceId, currentStats);
   }
 
   /**
