@@ -23,11 +23,12 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.portlets.portal.DesktopMessages;
+import com.silverpeas.portlets.portal.PropertiesContext;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
+import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -37,13 +38,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.silverpeas.portlets.portal.DesktopMessages;
-import com.silverpeas.portlets.portal.PropertiesContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
-import com.sun.portal.portletcontainer.admin.deployment.WebAppDeployerException;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and
@@ -215,12 +214,6 @@ public class PortletDeployerServlet extends HttpServlet {
   }
 
   private String getLanguage(HttpServletRequest request) {
-    // Display the private user homepage
-    // retrieve userId from session
-    HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-
-    return m_MainSessionCtrl.getFavoriteLanguage();
+    return UserDetail.getCurrentRequester().getUserPreferences().getLanguage();
   }
 }

@@ -23,11 +23,16 @@
  */
 package com.sun.portal.portletcontainer.driver.admin;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
+import com.silverpeas.portlets.portal.DesktopMessages;
+import com.silverpeas.portlets.portal.PortletWindowData;
+import com.silverpeas.portlets.portal.PortletWindowDataImpl;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -37,19 +42,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import com.silverpeas.portlets.portal.DesktopMessages;
-import com.silverpeas.portlets.portal.PortletWindowData;
-import com.silverpeas.portlets.portal.PortletWindowDataImpl;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
-import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
-import static org.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and
@@ -72,8 +71,9 @@ public class AdminServlet extends HttpServlet {
 
     String elementId = getUserIdOrSpaceId(request, false);
     String spaceId = getSpaceId(request);
-    String userId = getUserId(request);
-    String language = getLanguage(request);
+    UserDetail user = getCurrentUser();
+    String userId = user.getId();
+    String language = user.getUserPreferences().getLanguage();
 
     DesktopMessages.init(language);
     response.setContentType("text/html;charset=UTF-8");
@@ -149,30 +149,14 @@ public class AdminServlet extends HttpServlet {
     }
 
     if (!isDefined(spaceId)) {
-      return getUserId(request);
+      return getCurrentUser().getId();
     }
     return spaceId;
   }
 
-  private String getUserId(HttpServletRequest request) {
-    // Display the private user homepage
-    // retrieve userId from session
-    HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    return m_MainSessionCtrl.getUserId();
+  private UserDetail getCurrentUser() {
+    return UserDetail.getCurrentRequester();
 
-  }
-
-  private String getLanguage(HttpServletRequest request) {
-    // Display the private user homepage
-    // retrieve userId from session
-    HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    return m_MainSessionCtrl.getFavoriteLanguage();
   }
 
   private String getSpaceId(HttpServletRequest request) {
@@ -248,10 +232,11 @@ public class AdminServlet extends HttpServlet {
             messageBuilder.append(ex.getMessage());
           }
           if (success) {
+            UserDetail user = getCurrentUser();
             String elementId = getUserIdOrSpaceId(request, false);
             String spaceId = getSpaceId(request);
-            String userId = getUserId(request);
-            String language = getLanguage(request);
+            String userId = user.getId();
+            String language = user.getUserPreferences().getLanguage();
             String message =
                 DesktopMessages.getLocalizedString(AdminConstants.CREATION_SUCCEEDED);
             session.setAttribute(AdminConstants.CREATION_SUCCEEDED_ATTRIBUTE, message);
