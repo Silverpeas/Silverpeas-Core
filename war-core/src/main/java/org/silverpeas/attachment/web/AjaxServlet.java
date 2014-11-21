@@ -20,14 +20,14 @@
  */
 package org.silverpeas.attachment.web;
 
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +42,8 @@ import java.util.StringTokenizer;
 public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  private AttachmentService attachmentService;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -91,8 +93,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     String idAttachment = req.getParameter("Id");
     String userId = getUserId(req);
     String fileLanguage = req.getParameter("FileLanguage");
-    boolean checkOutOK = AttachmentServiceProvider.getAttachmentService().lock(idAttachment, userId,
-        fileLanguage);
+    boolean checkOutOK = attachmentService.lock(idAttachment, userId, fileLanguage);
     if (checkOutOK) {
       return "ok";
     }
@@ -105,8 +106,8 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
       context.addOption(UnlockOption.WEBDAV);
     }
-    SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-        .searchDocumentById(new SimpleDocumentPK(req.getParameter("Id")),
+    SimpleDocument doc =
+        attachmentService.searchDocumentById(new SimpleDocumentPK(req.getParameter("Id")),
             req.getParameter("FileLanguage"));
     if (!doc.isPublic()) {
       context.addOption(UnlockOption.PRIVATE_VERSION);
@@ -115,7 +116,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
         req).getCurrentUserDetail().isAccessAdmin()) {
       context.addOption(UnlockOption.FORCE);
     }
-    if (!AttachmentServiceProvider.getAttachmentService().unlock(context)) {
+    if (!attachmentService.unlock(context)) {
       return "locked";
     }
     return "ok";
@@ -134,17 +135,15 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
         String lang = tokenizer.nextToken();
         if ("all".equals(lang)) {
           // suppresion de l'objet
-          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-              .searchDocumentById(atPK, null);
-          AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
+          SimpleDocument doc = attachmentService.searchDocumentById(atPK, null);
+          attachmentService.deleteAttachment(doc);
           return "attachmentRemoved";
         } else {
-          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-              .searchDocumentById(atPK, lang);
+          SimpleDocument doc = attachmentService.searchDocumentById(atPK, lang);
 
           boolean hasMoreTranslations = true;
           while (hasMoreTranslations) {
-            AttachmentServiceProvider.getAttachmentService().removeContent(doc, lang, indexIt);
+            attachmentService.removeContent(doc, lang, indexIt);
             hasMoreTranslations = tokenizer.hasMoreTokens();
             if (hasMoreTranslations) {
               lang = tokenizer.nextToken();
@@ -153,9 +152,8 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
           return "translationsRemoved";
         }
       } else {
-        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-            .searchDocumentById(atPK, null);
-        AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc);
+        SimpleDocument doc = attachmentService.searchDocumentById(atPK, null);
+        attachmentService.deleteAttachment(doc);
         return "attachmentRemoved";
       }
     } catch (Exception e) {
@@ -178,9 +176,9 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
         pk = new SimpleDocumentPK(id, componentId);
       }
       attachments.
-          add(AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk, null));
+          add(attachmentService.searchDocumentById(pk, null));
     }
-    AttachmentServiceProvider.getAttachmentService().reorderDocuments(attachments);
+    attachmentService.reorderDocuments(attachments);
     return "ok";
   }
 

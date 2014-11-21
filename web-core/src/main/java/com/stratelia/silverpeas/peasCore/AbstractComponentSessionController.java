@@ -311,7 +311,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   public UserDetail getUserDetail(String userId) {
-    return getOrganisationController().getUserDetail(userId);
+    return UserDetail.getById(userId);
   }
 
   /**

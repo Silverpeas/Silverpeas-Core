@@ -20,6 +20,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
@@ -31,7 +32,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
-import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -59,6 +59,10 @@ public class DragAndDrop extends HttpServlet {
 
   @Inject
   private MetadataExtractor metadataExtractor;
+  @Inject
+  private ActifyDocumentProcessor actifyDocumentProcessor;
+  @Inject
+  private AttachmentService attachmentService;
 
   /**
    * Method declaration
@@ -128,13 +132,12 @@ public class DragAndDrop extends HttpServlet {
               document.setSize(tempFile.length());
               document.setTitle(metadata.getTitle());
               document.setDescription(metadata.getSubject());
-              document = AttachmentServiceProvider.getAttachmentService()
-                  .createAttachment(document, tempFile, bIndexIt);
+              document = attachmentService.createAttachment(document, tempFile, bIndexIt);
             } finally {
               FileUtils.deleteQuietly(tempFile);
             }
             // Specific case: 3d file to convert by Actify Publisher
-            ActifyDocumentProcessor.getProcessor().process(document);
+            actifyDocumentProcessor.process(document);
           }
         }
       }

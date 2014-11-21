@@ -20,24 +20,24 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.cache.service.CacheService;
 import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.UUID;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.CharEncoding;
 
 /**
  * @author ehugonnet
@@ -61,14 +61,12 @@ public class LaunchWebdavEdition extends HttpServlet {
     response.setHeader("Content-Disposition", "inline; filename=launch.jnlp");
     PrintWriter out = response.getWriter();
     try {
-      MainSessionController mainSessionController = (MainSessionController) request.getSession().
-          getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      if (mainSessionController == null) {
+      UserDetail user = UserDetail.getCurrentRequester();
+      if (user == null) {
         String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
       }
-      UserDetail user = mainSessionController.getCurrentUserDetail();
       String token = generateAuthToken();
       CacheService cacheService = CacheServiceProvider.getApplicationCacheService();
       cacheService.put(token, user); // 12h by default of TTL

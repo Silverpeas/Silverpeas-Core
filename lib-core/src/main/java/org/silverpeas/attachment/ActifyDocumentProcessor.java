@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
@@ -34,6 +35,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 
+import javax.inject.Singleton;
+
 /**
  * A processor of documents with 3D images or CAD for the Actify tool.
  *
@@ -42,13 +45,13 @@ import org.silverpeas.attachment.model.SimpleDocument;
  *
  * @author mmoquillon
  */
+@Singleton
 public class ActifyDocumentProcessor {
 
   private static final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
   private static final Logger logger = Logger.getLogger(ActifyDocumentProcessScheduler.class.
       getSimpleName());
-  private static final ActifyDocumentProcessor instance = new ActifyDocumentProcessor();
 
   /**
    * Is the support of CAD documents processing is enabled? If it is enabled, the Actify tool must
@@ -157,7 +160,7 @@ public class ActifyDocumentProcessor {
    * @return an ActifyDocumentProcessor instance.
    */
   public static ActifyDocumentProcessor getProcessor() {
-    return instance;
+    return ServiceProvider.getService(ActifyDocumentProcessor.class);
   }
 
   /**

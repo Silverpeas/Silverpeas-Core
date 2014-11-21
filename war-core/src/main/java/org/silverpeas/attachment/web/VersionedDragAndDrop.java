@@ -20,20 +20,12 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -41,12 +33,19 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.servlet.HttpRequest;
-
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Servlet used whith the drag and drop applet to import versioned documents.
@@ -54,6 +53,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class VersionedDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = -4994428375938427492L;
+
+  @Inject
+  private AttachmentService attachmentService;
+  @Inject
+  private ActifyDocumentProcessor actifyDocumentProcessor;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -102,8 +106,8 @@ public class VersionedDragAndDrop extends HttpServlet {
             documentPK.setId(documentId);
           }
         }
-        SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
-            findExistingDocument(documentPK, fileName, new ForeignPK(foreignId, componentId), lang);
+        SimpleDocument document = attachmentService.findExistingDocument(documentPK, fileName,
+            new ForeignPK(foreignId, componentId), lang);
         boolean needCreation = document == null;
         if (needCreation) {
 
@@ -114,21 +118,21 @@ public class VersionedDragAndDrop extends HttpServlet {
         document.setPublicDocument(publicDocument);
         try {
           if (needCreation) {
-            AttachmentServiceProvider.getAttachmentService().createAttachment(document,
-                item.getInputStream(), bIndexIt, publicDocument);
+            attachmentService.createAttachment(document, item.getInputStream(), bIndexIt,
+                publicDocument);
           } else {
             document.edit("" + userId);
-            AttachmentServiceProvider.getAttachmentService().updateAttachment(document,
-                item.getInputStream(), bIndexIt, publicDocument);
+            attachmentService.updateAttachment(document, item.getInputStream(), bIndexIt,
+                publicDocument);
             UnlockContext unlockContext = new UnlockContext(document.getId(), "" + userId, lang, "");
             unlockContext.addOption(UnlockOption.UPLOAD);
             if (!publicDocument) {
               unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
             }
-            AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
+            attachmentService.unlock(unlockContext);
           }
           // Specific case: 3d file to convert by Actify Publisher
-          ActifyDocumentProcessor.getProcessor().process(document);
+          actifyDocumentProcessor.process(document);
 
         } catch (AttachmentException e) {
           SilverTrace.error("versioningPeas", "DragAndDrop.doPost", "ERREUR", e);
