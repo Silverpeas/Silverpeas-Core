@@ -29,10 +29,8 @@ import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Classification;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.JSONCodec;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -45,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,11 +71,8 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
 
   public List<CalendarEntry> read(InputStream in) throws IOException {
     try {
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.configure(Feature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, false);
-      mapper.configure(Feature.USE_ANNOTATIONS, false);
-      return mapper.readValue(in, new TypeReference<List<CalendarEntry>>() {
-      });
+      CalendarEntry[] entries = JSONCodec.decode(in, CalendarEntry[].class);
+      return Arrays.asList(entries);
     } finally {
       IOUtils.closeQuietly(in);
     }

@@ -32,6 +32,7 @@ import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.function.Function;
@@ -80,7 +81,7 @@ public class JSONCodec {
     JsonNode node = mapper.createObjectNode();
     JSONObject bean = beanBuilder.apply(new JSONObject((ObjectNode) node));
     try {
-      mapper.writeValue(writer, bean);
+      mapper.writeValue(writer, bean.getObjectNode());
     } catch (IOException ex) {
       throw new EncodingException(ex.getMessage(), ex);
     }
@@ -103,7 +104,7 @@ public class JSONCodec {
     ArrayNode node = mapper.createArrayNode();
     JSONArray array = arrayBuilder.apply(new JSONArray(node));
     try {
-      mapper.writeValue(writer, array);
+      mapper.writeValue(writer, array.getJsonArray());
     } catch (IOException ex) {
       throw new EncodingException(ex.getMessage(), ex);
     }
@@ -123,6 +124,25 @@ public class JSONCodec {
     T bean;
     try {
       bean = mapper.readValue(json, beanType);
+    } catch (IOException ex) {
+      throw new DecodingException(ex.getMessage(), ex);
+    }
+    return bean;
+  }
+
+  /**
+   * Decodes the specified JSON representation into its corresponding bean.
+   * @param jsonStream a stream to a JSON representation of a bean to decode.
+   * @param <T> the type of the bean.
+   * @return the bean decoded from JSON.
+   * @throws EncodingException if an error occurs while decoding a JSON stream into a bean.
+   */
+  public static <T> T decode(InputStream jsonStream, Class<T> beanType)
+      throws DecodingException {
+    ObjectMapper mapper = getObjectMapper();
+    T bean;
+    try {
+      bean = mapper.readValue(jsonStream, beanType);
     } catch (IOException ex) {
       throw new DecodingException(ex.getMessage(), ex);
     }

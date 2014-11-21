@@ -24,20 +24,21 @@ package org.silverpeas.util;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
@@ -46,6 +47,8 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration test on the decoding/encoding of beans from/to JSON.
+ * This test is an integration test instead of being a unit test in order to access the javax.json
+ * API of JEE to assert the encoding and decoding work fine.
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
@@ -53,11 +56,11 @@ public class JSONCodecIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addClasses(TestSerializableBean.class,
-            DecodingException.class, EncodingException.class, JSONCodec.class)
-        .addAsManifestResource("META-INF/test-MANIFEST.MF", "MANIFEST.MF")
-        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    return BasicWarBuilder.onWarFor(JSONCodecIntegrationTest.class)
+        .testFocusedOn(war -> war.addClasses(TestSerializableBean.class, TestBean.class,
+            DecodingException.class, EncodingException.class, JSONCodec.class))
+        .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF")
+        .build();
   }
 
   @Test
@@ -70,6 +73,7 @@ public class JSONCodecIntegrationTest {
     TestSerializableBean bean = new TestSerializableBean("42", "Toto Chez-les-Papoos", new Date());
 
     String json = JSONCodec.encode(bean);
+
     assertThat(json, notNullValue());
     assertThat(json.isEmpty(), is(false));
     JsonReader reader = Json.createReader(new StringReader(json));
@@ -81,7 +85,46 @@ public class JSONCodecIntegrationTest {
   }
 
   @Test
-  public void decodeJSONIntoABeanShouldWork() {
+  public void encodeAnUnannotatedBeanInJSONShouldWork() {
+    TestBean bean = new TestBean("42", "Toto Chez-les-Papoos", new Date());
+
+    String json = JSONCodec.encode(bean);
+
+    assertThat(json, notNullValue());
+    assertThat(json.isEmpty(), is(false));
+    JsonReader reader = Json.createReader(new StringReader(json));
+    JsonObject object = reader.readObject();
+    assertThat(object.getString("id"), is(bean.getId()));
+    assertThat(object.getString("name"), is(bean.getName()));
+    Date date = new Date(object.getJsonNumber("date").longValue());
+    assertThat(date, is(bean.getDate()));
+  }
+
+  @Test
+  public void encodeAListOfBeansInJSONShouldWork() {
+    TestSerializableBean bean1 = new TestSerializableBean("42", "Toto Chez-les-Papoos", new Date());
+    TestSerializableBean bean2 = new TestSerializableBean("24", "Titi Gros-Minet", new Date());
+
+    String json = JSONCodec.encode(Arrays.asList(bean1, bean2));
+
+    assertThat(json, notNullValue());
+    assertThat(json.isEmpty(), is(false));
+    JsonReader reader = Json.createReader(new StringReader(json));
+    JsonArray array = reader.readArray();
+    assertThat(array.size(), is(2));
+    assertThat(array.getJsonObject(0).getString("id"), is("42"));
+    assertThat(array.getJsonObject(0).getString("name"), is("Toto Chez-les-Papoos"));
+    Date date = new Date(array.getJsonObject(0).getJsonNumber("date").longValue());
+    assertThat(date, is(bean1.getDate()));
+
+    assertThat(array.getJsonObject(1).getString("id"), is("24"));
+    assertThat(array.getJsonObject(1).getString("name"), is("Titi Gros-Minet"));
+    date = new Date(array.getJsonObject(1).getJsonNumber("date").longValue());
+    assertThat(date, is(bean2.getDate()));
+  }
+
+  @Test
+  public void decodeJSONObjectIntoABeanShouldWork() {
     StringWriter json = new StringWriter();
     JsonWriter writer = Json.createWriter(json);
     JsonObject object = Json.createObjectBuilder()
@@ -96,5 +139,125 @@ public class JSONCodecIntegrationTest {
     assertThat(bean.getId(), is(object.getString("id")));
     assertThat(bean.getName(), is(object.getString("name")));
     assertThat(bean.getDate().getTime(), is(object.getJsonNumber("date").longValue()));
+  }
+
+  @Test
+  public void decodeJSONObjectIntoAnUnannotatedBeanShouldWork() {
+    StringWriter json = new StringWriter();
+    JsonWriter writer = Json.createWriter(json);
+    JsonObject object = Json.createObjectBuilder()
+        .add("id", "42")
+        .add("name", "Toto Chez-les-Papoos")
+        .add("date", new Date().getTime())
+        .build();
+    writer.writeObject(object);
+
+    TestBean bean = JSONCodec.decode(json.toString(), TestBean.class);
+    assertThat(bean, notNullValue());
+    assertThat(bean.getId(), is(object.getString("id")));
+    assertThat(bean.getName(), is(object.getString("name")));
+    assertThat(bean.getDate().getTime(), is(object.getJsonNumber("date").longValue()));
+  }
+
+  @Test
+  public void decodeJSONStreamIntoABeanShouldWork() {
+    InputStream jsonStream = getClass().getResourceAsStream("bean.json");
+    TestSerializableBean bean = JSONCodec.decode(jsonStream, TestSerializableBean.class);
+    assertThat(bean, notNullValue());
+    assertThat(bean.getId(), is("42"));
+    assertThat(bean.getName(), is("Toto Chez-les-Papoos"));
+    assertThat(bean.getDate().getTime(), is(1416580107074l));
+  }
+
+  @Test
+  public void decodeJSONArrayIntoAnArrayOfBeansShouldWork() {
+    StringWriter json = new StringWriter();
+    JsonWriter writer = Json.createWriter(json);
+    JsonArray array = Json.createArrayBuilder()
+        .add(Json.createObjectBuilder()
+            .add("id", "42")
+            .add("name", "Toto Chez-les-Papoos")
+            .add("date", new Date().getTime()))
+        .add(Json.createObjectBuilder()
+            .add("id", "24")
+            .add("name", "Titi Gros-Minet")
+            .add("date", new Date().getTime()))
+        .build();
+    writer.writeArray(array);
+
+    TestSerializableBean[] beans = JSONCodec.decode(json.toString(), TestSerializableBean[].class);
+    assertThat(beans, notNullValue());
+    assertThat(beans.length, is(array.size()));
+    assertThat(beans[0].getId(), is(array.getJsonObject(0).getString("id")));
+    assertThat(beans[0].getName(), is(array.getJsonObject(0).getString("name")));
+    assertThat(beans[0].getDate().getTime(),
+        is(array.getJsonObject(0).getJsonNumber("date").longValue()));
+    assertThat(beans[1].getId(), is(array.getJsonObject(1).getString("id")));
+    assertThat(beans[1].getName(), is(array.getJsonObject(1).getString("name")));
+    assertThat(beans[1].getDate().getTime(),
+        is(array.getJsonObject(1).getJsonNumber("date").longValue()));
+  }
+
+  @Test
+  public void decodeJSONStreamIntoAnArrayOfBeansShouldWork() {
+    InputStream jsonStream = getClass().getResourceAsStream("beanArray.json");
+    TestSerializableBean[] beans = JSONCodec.decode(jsonStream, TestSerializableBean[].class);
+    assertThat(beans[0], notNullValue());
+    assertThat(beans.length, is(2));
+    assertThat(beans[0].getId(), is("42"));
+    assertThat(beans[0].getName(), is("Toto Chez-les-Papoos"));
+    assertThat(beans[0].getDate().getTime(), is(1416580107074l));
+    assertThat(beans[1], notNullValue());
+    assertThat(beans[1].getId(), is("24"));
+    assertThat(beans[1].getName(), is("Titi Gros-Minet"));
+    assertThat(beans[1].getDate().getTime(), is(1416580107074l));
+  }
+
+  @Test
+  public void encodeDynamicallyAJSONObjectShouldWork() {
+    String json = JSONCodec.encodeObject(o -> o.put("name", "Toto Chez-les-Papoos").put("age", 42));
+
+    assertThat(json, notNullValue());
+    assertThat(json.isEmpty(), is(false));
+    JsonReader reader = Json.createReader(new StringReader(json));
+    JsonObject object = reader.readObject();
+    assertThat(object.getInt("age"), is(42));
+    assertThat(object.getString("name"), is("Toto Chez-les-Papoos"));
+  }
+
+  @Test
+  public void encodeDynamicallyAnEmptyJSONObjectShouldWork() {
+    String json = JSONCodec.encodeObject(o -> o);
+
+    assertThat(json, notNullValue());
+    assertThat(json.isEmpty(), is(false));
+    assertThat(json, is("{}"));
+  }
+
+  @Test
+  public void encodeDynamicallyAJSONArrayShouldWork() {
+    String json = JSONCodec.encodeArray(
+        a -> a.addJSONObject(o -> o.put("name", "Toto Chez-les-Papoos").put("age", 42))
+            .addJSONObject(o -> o.put("name", "Titi Gros-Minet").put("age", 24)));
+
+    assertThat(json, notNullValue());
+    assertThat(json.isEmpty(), is(false));
+    JsonReader reader = Json.createReader(new StringReader(json));
+    JsonArray array = reader.readArray();
+    assertThat(array.size(), is(2));
+    assertThat(array.getJsonObject(0).getInt("age"), is(42));
+    assertThat(array.getJsonObject(0).getString("name"), is("Toto Chez-les-Papoos"));
+
+    assertThat(array.getJsonObject(1).getInt("age"), is(24));
+    assertThat(array.getJsonObject(1).getString("name"), is("Titi Gros-Minet"));
+  }
+
+  @Test
+  public void encodeDynamicallyAnEmptyJSONArrayShouldWork() {
+    String json = JSONCodec.encodeArray(a -> a);
+
+    assertThat(json, notNullValue());
+    assertThat(json.isEmpty(), is(false));
+    assertThat(json, is("[]"));
   }
 }
