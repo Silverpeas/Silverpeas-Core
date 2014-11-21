@@ -25,15 +25,14 @@
 package com.stratelia.webactiv.agenda.servlets;
 
 import com.silverpeas.ical.ExportIcalManager;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.util.ServiceProvider;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +46,10 @@ import java.io.PrintWriter;
 public class SubscribeAgenda extends HttpServlet {
 
   private static final long serialVersionUID = -7864790793422182001L;
+
+  @Inject
+  private AdminController adminController;
+
   HttpSession session;
   PrintWriter out;
 
@@ -68,7 +71,6 @@ public class SubscribeAgenda extends HttpServlet {
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
 
       // Check login/pwd must be a identified user
-      AdminController adminController = ServiceProvider.getService(AdminController.class);
       UserFull user = adminController.getUserFull(userId);
       if (user != null && login.equals(user.getLogin())
           && password.equals(user.getPassword())) {
@@ -100,11 +102,6 @@ public class SubscribeAgenda extends HttpServlet {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public String getServerURL(AdminController admin, String domainId) {
-    Domain defaultDomain = admin.getDomain(domainId);
-    return defaultDomain.getSilverpeasServerURL();
-  }
-
   private String getUserId(HttpServletRequest request) {
     return request.getParameter("userId");
   }
@@ -117,19 +114,13 @@ public class SubscribeAgenda extends HttpServlet {
     return request.getParameter("password");
   }
 
-  private MainSessionController getMainSessionController(HttpServletRequest req) {
-    HttpSession session = req.getSession(true);
-    return (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  }
-
-  private boolean isUserLogin(HttpServletRequest req) {
-    return (getMainSessionController(req) != null);
+  private boolean isUserLoggedIn() {
+    return (UserDetail.getCurrentRequester() != null);
   }
 
   private void objectNotFound(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
-    boolean isLoggedIn = isUserLogin(req);
+    boolean isLoggedIn = isUserLoggedIn();
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {

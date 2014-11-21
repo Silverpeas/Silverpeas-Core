@@ -24,16 +24,13 @@
 
 package com.stratelia.webactiv.agenda.servlets;
 
-import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.peasUtil.RssServlet;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.ResourceLocator;
 
 import java.rmi.RemoteException;
@@ -59,16 +56,13 @@ public class AgendaRssServlet extends RssServlet {
    * @see com.silverpeas.peasUtil.RssServlet#isComponentAvailable(java.lang.String,
    * java.lang.String)
    */
-  public boolean isComponentAvailable(AdminController admin,
-      String userIdAgenda, String currentUserId) {
+  public boolean isComponentAvailable(String userIdAgenda, String currentUserId) {
     return true;
   }
 
   public String getChannelTitle(String userId) {
-    UserPreferences preferences =
-        SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
-    UserDetail user = OrganizationControllerProvider
-        .getOrganisationController().getUserDetail(userId);
+    UserDetail user = UserDetail.getById(userId);
+    UserPreferences preferences = user.getUserPreferences();
     ResourceLocator message = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
         preferences.getLanguage());
     return message.getStringWithParam("agenda.userAgenda", user.getLastName());
@@ -96,10 +90,10 @@ public class AgendaRssServlet extends RssServlet {
     String name = event.getName();
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
-      ResourceLocator messageFrench = new ResourceLocator(
-          "com.stratelia.webactiv.agenda.multilang.agenda", "fr");
-      ResourceLocator messageEnglish = new ResourceLocator(
-          "com.stratelia.webactiv.agenda.multilang.agenda", "en");
+      ResourceLocator messageFrench = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
+          "fr");
+      ResourceLocator messageEnglish = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
+          "en");
       name = messageFrench.getString("agenda.rssPrivateEvent") + " ("
           + messageEnglish.getString("agenda.rssPrivateEvent") + ")";
     }

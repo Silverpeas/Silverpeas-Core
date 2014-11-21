@@ -24,25 +24,6 @@
 
 package com.silverpeas.peasUtil;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
-import org.silverpeas.util.MimeTypes;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -51,12 +32,27 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
 
 public abstract class RssServlet<T> extends HttpServlet {
 
@@ -64,6 +60,8 @@ public abstract class RssServlet<T> extends HttpServlet {
 
   @Inject
   private AdminController adminController;
+  @Inject
+  private OrganizationController organizationController;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -87,9 +85,8 @@ public abstract class RssServlet<T> extends HttpServlet {
 
         // Vérification que le user a droit d'accès au composant
         UserFull user = adminController.getUserFull(userId);
-        if (user != null && login.equals(user.getLogin())
-            && password.equals(user.getPassword())
-            && isComponentAvailable(adminController, instanceId, userId)) {
+        if (user != null && login.equals(user.getLogin()) && password.equals(user.getPassword()) &&
+            isComponentAvailable(instanceId, userId)) {
 
           String serverURL = getServerURL(adminController, user.getDomainId());
           ChannelIF channel = new Channel();
@@ -145,8 +142,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public String getChannelTitle(String instanceId) {
-    ComponentInstLight instance = OrganizationControllerProvider.getOrganisationController()
-        .getComponentInstLight(instanceId);
+    ComponentInstLight instance = organizationController.getComponentInstLight(instanceId);
     if (instance != null) {
       return instance.getLabel();
     }
@@ -159,15 +155,13 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public boolean isComponentRss(String instanceId) {
-    String paramRssValue = OrganizationControllerProvider.getOrganisationController()
-        .getComponentParameterValue(instanceId, "rss");
+    String paramRssValue = organizationController.getComponentParameterValue(instanceId, "rss");
     // rechercher si le composant a bien le flux RSS autorisé
     return "yes".equalsIgnoreCase(paramRssValue);
   }
 
-  public boolean isComponentAvailable(AdminController admin, String instanceId,
-      String userId) {
-    return admin.isComponentAvailable(instanceId, userId);
+  public boolean isComponentAvailable(String instanceId, String userId) {
+    return adminController.isComponentAvailable(instanceId, userId);
   }
 
   public int getNbReturnedElements() {
