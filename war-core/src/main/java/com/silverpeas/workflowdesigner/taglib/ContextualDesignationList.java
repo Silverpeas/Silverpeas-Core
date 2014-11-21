@@ -70,7 +70,7 @@ public class ContextualDesignationList extends TagSupport {
     Icon delIcon;
     ArrayColumn column;
     ContextualDesignation designation;
-    StringBuffer sb;
+    StringBuilder sb;
     String strParametersEncoded, strEditURL, strPaneTitle, strColumnLabel;
     GraphicElementFactory gef;
     ResourcesWrapper resource;
@@ -98,7 +98,7 @@ public class ContextualDesignationList extends TagSupport {
       column.setSortable(false);
 
       Iterator<ContextualDesignation> iterDesignations = designations.iterateContextualDesignation();
-      sb = new StringBuffer();
+      sb = new StringBuilder();
 
       while (iterDesignations.hasNext()) {
         designation = iterDesignations.next();

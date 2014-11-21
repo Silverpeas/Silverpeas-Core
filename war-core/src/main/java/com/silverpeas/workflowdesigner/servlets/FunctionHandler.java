@@ -33,6 +33,7 @@ import com.silverpeas.workflowdesigner.model.WorkflowDesignerException;
 /**
  * This interface describes a handler of an atomic function of the Workflow Designer Request Router
  */
+@FunctionalInterface
 public interface FunctionHandler {
   /**
    * Handle the function do the processing and return the URL of the response

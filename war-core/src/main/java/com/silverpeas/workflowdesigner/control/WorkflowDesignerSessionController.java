@@ -126,9 +126,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public WorkflowDesignerSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.workflowdesigner.multilang.workflowDesignerBundle",
-        "com.silverpeas.workflowdesigner.settings.workflowDesignerIcons",
-        "com.silverpeas.workflowdesigner.settings.workflowDesigner");
+        "org.silverpeas.workflowdesigner.multilang.workflowDesignerBundle",
+        "org.silverpeas.workflowdesigner.settings.workflowDesignerIcons",
+        "org.silverpeas.workflowdesigner.settings.workflowDesigner");
   }
 
   /**

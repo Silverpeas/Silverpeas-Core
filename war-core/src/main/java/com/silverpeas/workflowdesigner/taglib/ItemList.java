@@ -62,7 +62,7 @@ public class ItemList extends TagSupport {
     ArrayLine row;
     ArrayColumn column;
     String strContextEncoded, strEditURL, strPaneTitle;
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     try {
       gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
