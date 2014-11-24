@@ -218,4 +218,11 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
     this.version = version;
     return (ENTITY) this;
   }
+  
+  @Override
+  public void markAsModified() {
+    if (getLastUpdateDate() != null) {
+      setLastUpdateDate(new Date(getLastUpdateDate().getTime() + 1));
+    }
+  }
 }
