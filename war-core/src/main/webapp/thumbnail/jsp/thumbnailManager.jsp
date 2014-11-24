@@ -68,12 +68,19 @@
 	if(result != null && !"ok".equals(result)){
 		error = true;
 	}
+	
+	// force dummy area on first crop
+	if (currentThumbnail.getXStart() == 0 && currentThumbnail.getYStart() == 0 &&
+	    currentThumbnail.getXLength() == 0 && currentThumbnail.getYLength() == 0) {
+	  currentThumbnail.setXLength(100);
+	  currentThumbnail.setYLength(100);
+	}
 %>
 
 <view:includePlugin name="tkn"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-migrate-1.2.1.min.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.min.js"></script>
+<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.min.css">
 
 <style>
 .jcrop-holder {
@@ -174,10 +181,10 @@ function showPreview(coords)
 		});
 
 		// save for form
-		document.thumbnailForm.XStart.value = coords.x;
-		document.thumbnailForm.YStart.value = coords.y;
-		document.thumbnailForm.XLength.value = coords.w;
-		document.thumbnailForm.YLength.value = coords.h;
+		document.thumbnailForm.XStart.value = Math.round(coords.x);
+		document.thumbnailForm.YStart.value = Math.round(coords.y);
+		document.thumbnailForm.XLength.value = Math.round(coords.w);
+		document.thumbnailForm.YLength.value = Math.round(coords.h);
 	}
 };
 
@@ -238,11 +245,11 @@ if(thumbnailWidth != null){%>
 if(!error){
 	ButtonPane buttonPane = gef.getButtonPane();
 	if(isCreateMode){
-	    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+	    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
 	}else{
-	    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:saveUpdate();", false));
+	    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:saveUpdate();", false));
 	}
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelWindow();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelWindow();", false));
     out.println(buttonPane.print());
 }
 %>
