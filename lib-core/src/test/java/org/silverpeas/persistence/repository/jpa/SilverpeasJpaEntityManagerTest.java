@@ -363,6 +363,37 @@ public class SilverpeasJpaEntityManagerTest extends RepositoryBasedTest {
     }
     assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(106));
   }
+  
+  @Test
+  public void verifyLastUpdateDateWhenSavingPerson() {
+    Person person1 = jpaEntityServiceTest.getPersonById("person_1");
+    assertThat(person1, notNullValue());
+    assertThat(person1.getLastUpdatedBy(), is("1"));
+    assertThat(person1.getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
+    assertThat(person1.getVersion(), is(0L));
+    assertThat(person1.hasBeenModified(), is(false));
+
+    // No changes
+    Person personSaveResult = jpaEntityServiceTest.save(createOperationContext("400"), person1);
+    assertThat(personSaveResult.getLastUpdatedBy(), is("1"));
+    assertThat(personSaveResult.getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.003")));
+    assertThat(personSaveResult.getVersion(), is(0L));
+    assertThat(personSaveResult.hasBeenModified(), is(false));
+
+    // Change specifically the last update date
+    person1 = jpaEntityServiceTest.getPersonById("person_1");
+    person1.markAsModified();
+    assertThat(person1.getLastUpdateDate(),
+        is((Date) Timestamp.valueOf("2013-11-21 09:57:30.004")));
+    personSaveResult = jpaEntityServiceTest.save(createOperationContext("400"), person1);
+    assertThat(personSaveResult.getLastUpdatedBy(), is("400"));
+    assertThat(personSaveResult.getLastUpdateDate(),
+        greaterThan((Date) Timestamp.valueOf("2013-11-21 09:57:30.004")));
+    assertThat(personSaveResult.getVersion(), is(1L));
+    assertThat(personSaveResult.hasBeenModified(), is(true));
+  }
 
   @Test
   public void saveAnimal() {
