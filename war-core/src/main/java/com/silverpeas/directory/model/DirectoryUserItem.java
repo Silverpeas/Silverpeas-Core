@@ -24,37 +24,7 @@
 
 package com.silverpeas.directory.model;
 
-public class UserFragmentVO {
+public interface DirectoryUserItem extends DirectoryItem {
 
-  private String userId;
-  private String fragment;
-  private DirectoryItem.ITEM_TYPE type;
-
-  public UserFragmentVO(String userId, String fragment, DirectoryItem.ITEM_TYPE type) {
-    super();
-    this.userId = userId;
-    this.fragment = fragment;
-    this.type = type;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  public String getFragment() {
-    return fragment;
-  }
-
-  public void setFragment(String fragment) {
-    this.fragment = fragment;
-  }
-  
-  public String getType() {
-    return type.toString();
-  }
-
+  String getDomainId();
 }

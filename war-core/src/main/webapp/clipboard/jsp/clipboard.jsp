@@ -25,7 +25,14 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -33,16 +40,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.silverpeas.util.clipboard.*"%>
 <%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 
@@ -51,7 +51,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <HTML>
 <HEAD>
-<TITLE>Presse-papier</TITLE>
 <view:looknfeel/>
 <script language="javascript" src="../../util/javaScript/formUtil.js"></script>
 <SCRIPT language="JavaScript">
@@ -114,7 +113,11 @@ function view(url)
 }
 </SCRIPT>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="init();" onUnload="BeforeClosing();">
+<body onLoad="init();" onUnload="BeforeClosing();">
+<fmt:message var="tmp" key="clipboard"/>
+<view:browseBar componentId="" path="${tmp}"/>
+<view:window popup="true">
+  <view:frame>
 
 <form name="pasteform" action="" method="post" target="MyMain">
   <input type="hidden" name="compR" value="<%=clipboardSC.getComponentRooterName()%>">
@@ -124,17 +127,6 @@ function view(url)
   <input type="hidden" name="TargetFrame" value="<%=clipboardSC.getTargetFrame()%>">
   <input type="hidden" name="message">
   <input type="hidden" name="temp">
-<%
-	Window 	window 	= graphicFactory.getWindow();
-	Frame 	frame 	= graphicFactory.getFrame();
-
-	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setDomainName(clipboardSC.getString("clipboard"));
-
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-%>
-<center>
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
   <tr>
     <td valign="top" align="center" width="100%"> <!-- SEPARATION NAVIGATION / CONTENU DU COMPOSANT -->
@@ -221,11 +213,8 @@ function view(url)
     </td>
   </tr>
 </table>
-</center>
 </form>
-<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+</view:frame>
+</view:window>
 </BODY>
 </HTML>

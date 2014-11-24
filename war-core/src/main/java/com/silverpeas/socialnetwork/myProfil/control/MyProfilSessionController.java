@@ -223,9 +223,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void sendInvitation(String receiverId, String message) {
-    String safeMessage = Encode.forHtml(message);
     Invitation invitation = new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(
-        receiverId), safeMessage,
+        receiverId), message,
         new Date());
     if (invitationService.invite(invitation) >= 0) {
       notifyUser(receiverId, message);

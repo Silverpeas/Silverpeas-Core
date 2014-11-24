@@ -24,37 +24,65 @@
 
 package com.silverpeas.directory.model;
 
-public class UserFragmentVO {
+import java.util.Date;
 
-  private String userId;
-  private String fragment;
-  private DirectoryItem.ITEM_TYPE type;
+import com.stratelia.webactiv.util.contact.model.CompleteContact;
+import com.stratelia.webactiv.util.contact.model.Contact;
 
-  public UserFragmentVO(String userId, String fragment, DirectoryItem.ITEM_TYPE type) {
-    super();
-    this.userId = userId;
-    this.fragment = fragment;
-    this.type = type;
+public class ContactItem extends AbstractDirectoryItem {
+  
+  private CompleteContact contact;
+  
+  public ContactItem(CompleteContact contact) {
+    this.contact = contact;
   }
 
-  public String getUserId() {
-    return userId;
+  @Override
+  public String getFirstName() {
+    return getContact().getFirstName();
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  @Override
+  public String getLastName() {
+    return getContact().getLastName();
   }
 
-  public String getFragment() {
-    return fragment;
+  @Override
+  public String getAvatar() {
+    return null;
   }
 
-  public void setFragment(String fragment) {
-    this.fragment = fragment;
+  @Override
+  public DirectoryItem.ITEM_TYPE getType() {
+    return DirectoryItem.ITEM_TYPE.Contact;
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return getContact().getCreationDate();
+  }
+
+  @Override
+  public String getOriginalId() {
+    return getContact().getPK().getId();
   }
   
-  public String getType() {
-    return type.toString();
+  @Override
+  public String getMail() {
+    return getContact().getEmail();
+  }
+  
+  public Contact getContact() {
+    return contact;
   }
 
+  @Override
+  public String getPhone() {
+    return getContact().getPhone();
+  }
+
+  @Override
+  public String getFax() {
+    return getContact().getFax();
+  }
 }

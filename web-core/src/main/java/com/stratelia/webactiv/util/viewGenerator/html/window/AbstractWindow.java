@@ -407,7 +407,7 @@ public abstract class AbstractWindow implements Window {
           CacheServiceFactory.getRequestCacheService().get("@includePopupResizeJsDone@");
       if (includePopupResizeJsDone == null) {
         StringBuilder popupResizeJs = new StringBuilder();
-        popupResizeJs.append("$(document.body).ready(");
+        popupResizeJs.append("jQuery(document.body).ready(");
         popupResizeJs.append("function(){");
         popupResizeJs.append("currentPopupResize();");
         popupResizeJs.append("});");

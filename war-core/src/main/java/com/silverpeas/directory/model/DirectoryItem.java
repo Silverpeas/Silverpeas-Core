@@ -24,37 +24,29 @@
 
 package com.silverpeas.directory.model;
 
-public class UserFragmentVO {
+import java.util.Date;
 
-  private String userId;
-  private String fragment;
-  private DirectoryItem.ITEM_TYPE type;
+public interface DirectoryItem extends Comparable<DirectoryItem> {
 
-  public UserFragmentVO(String userId, String fragment, DirectoryItem.ITEM_TYPE type) {
-    super();
-    this.userId = userId;
-    this.fragment = fragment;
-    this.type = type;
-  }
+  enum ITEM_TYPE {User, Contact}
 
-  public String getUserId() {
-    return userId;
-  }
+  String getFirstName();
 
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
+  String getLastName();
 
-  public String getFragment() {
-    return fragment;
-  }
+  String getAvatar();
 
-  public void setFragment(String fragment) {
-    this.fragment = fragment;
-  }
-  
-  public String getType() {
-    return type.toString();
-  }
+  String getMail();
 
+  String getPhone();
+
+  String getFax();
+
+  ITEM_TYPE getType();
+
+  Date getCreationDate();
+
+  String getOriginalId();
+
+  String getUniqueId();
 }

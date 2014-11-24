@@ -176,4 +176,8 @@ public class Util {
     }
     return fieldName + AbstractForm.REPEATED_FIELD_SEPARATOR + occurrence;
   }
+  
+  public static boolean isEmptyFieldsDisplayed() {
+    return StringUtil.getBooleanValue(getSetting("form.view.emptyFields.displayed"));
+  }
 }
