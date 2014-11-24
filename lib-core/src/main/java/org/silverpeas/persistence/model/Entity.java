@@ -119,4 +119,14 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFI
    * @return
    */
   boolean hasBeenModified();
+  
+  /**
+   * By default, if no functional data is changed, last update date, last updated by and version
+   * technical data are not automatically updated on entity save operation.
+   * But in some cases, it could be useful that this three above technical data are updated, even if
+   * functional data are not changed.
+   * So, calling this method ensures that last update date, last updated by and version will be
+   * updated.
+   */
+  void markAsModified();
 }
