@@ -27,7 +27,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.UuidPk;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpServletRequest;
@@ -39,22 +38,21 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "sb_filesharing_ticket")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "shared_object_type")
-@Table(name = "sb_filesharing_ticket")
-@NamedQueries({@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
-    query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
-        ".sharedObjectType = :ticketType"),
-    @NamedQuery(name = "Ticket.findAllReservationsForUser",
-        query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")})
+@AttributeOverride(name = "id",
+    column = @Column(name = "keyfile", columnDefinition = "varchar(40)", length = 40))
 public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentifier>
     implements Serializable {
+
+  private static final long serialVersionUID = -612174156104966079L;
 
   public static final String FILE_TYPE = "Attachment";
   public static final String VERSION_TYPE = "Versionned";
   public static final String NODE_TYPE = "Node";
   public static final String PUBLICATION_TYPE = "Publication";
-  private static final long serialVersionUID = -612174156104966079L;
+
   @Column(name = "shared_object_type", nullable = false, insertable = false, updatable = false)
   protected String sharedObjectType;
   @Column(name = "shared_object")
@@ -75,10 +73,6 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
   protected int nbAccessMax;
   @Column(name = "nbaccess")
   protected int nbAccess;
-  @AttributeOverride(name = "uuid",
-      column = @Column(name = "keyfile", columnDefinition = "varchar(255)", length = 255))
-  @EmbeddedId
-  protected UuidPk token;
   @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "ticket",
       cascade = CascadeType.REMOVE)
   protected List<DownloadDetail> downloads = new ArrayList<>();
@@ -93,7 +87,6 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
 
   protected Ticket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
       Date endDate, int nbAccessMax) {
-    this.token = new UuidPk();
     this.sharedObjectId = sharedObjectId;
     this.componentId = componentId;
     this.creatorId = creatorId;
@@ -180,11 +173,11 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
   }
 
   public String getToken() {
-    return token.getUuid();
+    return getId();
   }
 
   public void setToken(String uuid) {
-    this.token = new UuidPk(uuid);
+    setId(uuid);
   }
 
   public List<DownloadDetail> getDownloads() {
@@ -253,7 +246,7 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 97 * hash + (this.token != null ? this.token.hashCode() : 0);
+    hash = 97 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
     return hash;
   }
 
@@ -266,7 +259,8 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
       return false;
     }
     final Ticket other = (Ticket) obj;
-    if (this.token != other.token && (this.token == null || !this.token.equals(other.token))) {
+    if (this.getId() != other.getId() &&
+        (this.getId() == null || !this.getId().equals(other.getId()))) {
       return false;
     }
     return true;
@@ -278,7 +272,7 @@ public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentif
         sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId +
         ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" +
         updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" +
-        nbAccess + ", token=" + token + ", downloads=" + downloads + '}';
+        nbAccess + ", token=" + getId() + ", downloads=" + downloads + '}';
   }
 
   public void addDownload() {

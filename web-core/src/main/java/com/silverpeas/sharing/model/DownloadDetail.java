@@ -21,29 +21,24 @@
 package com.silverpeas.sharing.model;
 
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
-import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "sb_filesharing_history")
-public class DownloadDetail extends AbstractJpaCustomEntity<Ticket, UniqueLongIdentifier>
+public class DownloadDetail extends AbstractJpaCustomEntity<DownloadDetail, UniqueLongIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = -3552579238204831286L;
   @ManyToOne
-  @JoinColumn(name = "keyFile", columnDefinition = "varchar(255)", nullable = false)
+  @JoinColumn(name = "keyfile", columnDefinition = "varchar(40)", nullable = false)
   private Ticket ticket;
   @Column(name = "downloaddate", nullable = false)
   private Long downloadDate;

@@ -39,7 +39,6 @@ import java.util.List;
  *
  * @author ehugonnet
  */
-@Named("sharingTicketService")
 @Singleton
 @Transactional
 public class JpaSharingTicketService implements SharingTicketService {

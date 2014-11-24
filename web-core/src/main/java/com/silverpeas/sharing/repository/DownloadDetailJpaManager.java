@@ -7,5 +7,7 @@ import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 /**
  * @author: ebonnet
  */
-public class DownloadDetailJpaManager extends JpaBasicEntityManager<DownloadDetail, UniqueLongIdentifier> {
+public class DownloadDetailJpaManager
+    extends JpaBasicEntityManager<DownloadDetail, UniqueLongIdentifier>
+    implements DownloadDetailRepository {
 }

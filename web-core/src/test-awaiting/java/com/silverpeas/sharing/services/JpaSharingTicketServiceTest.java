@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Recover;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.node.control.DefaultNodeService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -39,6 +40,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
@@ -53,6 +55,8 @@ import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.test.TestSilverpeasTrace;
+import org.silverpeas.test.WarBuilder4WebCore;
+import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.*;
 import org.silverpeas.util.clipboard.ClipboardSelection;
@@ -90,18 +94,8 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(this, "create-database.sql", "sharing-dataset.xml");
+      new DbUnitLoadingRule(this, "create-database.sql", "sharing_dataset.xml");
 
-
-  @BeforeClass
-  public static void prepareDataSet() throws Exception {
-//    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-//    dataSet = new ReplacementDataSet(builder.build(JpaSharingTicketService.class.getClassLoader().
-//        getResourceAsStream("com/silverpeas/sharing/services/sharing_dataset.xml")));
-//    dataSet.addReplacementObject("[NULL]", null);
-    creator = new UserDetail();
-    creator.setId("0");
-  }
 
   @Override
   protected Operation getDbSetupOperations() {
@@ -110,61 +104,20 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
 
   @Before
   public void generalSetUp() throws Exception {
-//    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-//    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-//    DBUtil.getInstanceForTest(dataSource.getConnection());
+    creator = new UserDetail();
+    creator.setId("0");
   }
 
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
-            WAPrimaryKey.class, ForeignPK.class);
-    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
-        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-            "commons-codec:commons-codec", "commons-io:commons-io", "org.quartz-scheduler:quartz",
-            "net.sf.ehcache:ehcache-core").withTransitivity()
-        .asFile());
-    war.addPackages(true, "org.silverpeas.cache");
-
-
-    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
-        SilverpeasRuntimeException.class, UtilException.class);
-    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
-        ExtractionList.class, ExtractionComplexList.class, AssertArgument.class);
-    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        TransactionRuntimeException.class);
-    war.addClasses(ConfigurationClassLoader.class, ConfigurationControl.class, FileUtil.class,
-        MimeTypes.class, RelativeFileAccessException.class, GeneralPropertiesManager.class,
-        ResourceLocator.class, ResourceBundleWrapper.class, SystemWrapper.class);
-    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        TransactionRuntimeException.class);
-    war.addPackages(false, "org.silverpeas.persistence.jdbc");
-    war.addClasses(ResourceIdentifier.class);
-    war.addPackages(true, "org.silverpeas.admin.user.constant");
-    war.addPackages(true, "org.silverpeas.persistence.model");
-    war.addPackages(true, "org.silverpeas.persistence.repository");
-
-    //Specific classes needed by this test (not inside WarBuilder)
-    war.addPackages(true, "com.silverpeas.sharing");
-//    war.addPackages(true, "com.stratelia.webactiv.node");
-    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
-        .resolve("org.silverpeas.core.ejb-core:node").withoutTransitivity().asFile());
-    war.addClasses(NodeService.class);
-
-    war.addClasses(AttachmentException.class, PublicationBm.class, ClipboardSelection.class);
-    war.addClasses(Recover.class, AdminException.class);
-    war.addPackages(true, "org.silverpeas.util.i18n");
-
-    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
-        .addPackages(true, "org.silverpeas.initialization")
-        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "META-INF/services/org.silverpeas.util.BeanContainer")
-        .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
-    return war;
+    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).testFocusedOn(warBuilder -> {
+      warBuilder.addPackages(true, "com.silverpeas.sharing");
+      warBuilder.addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+      warBuilder.addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+          "META-INF/services/org.silverpeas.util.BeanContainer");
+      warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    }).build();
   }
 
 
