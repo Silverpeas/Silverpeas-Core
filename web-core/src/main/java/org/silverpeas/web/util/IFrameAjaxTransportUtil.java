@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.util;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.textarea;
@@ -91,7 +90,7 @@ public class IFrameAjaxTransportUtil {
   public static String packObjectToJSonDataWithHtmlContainer(List<Object> objects)
       throws IOException {
     String jsonArray = StringUtil.EMPTY;
-    if (CollectionUtils.isNotEmpty(objects)) {
+    if (objects != null && !objects.isEmpty()) {
       jsonArray = JSONCodec.encode(objects);
     }
     return packJSonDataWithHtmlContainer(jsonArray);

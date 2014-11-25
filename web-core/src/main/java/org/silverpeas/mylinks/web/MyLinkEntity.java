@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.silverpeas.web.WebEntity;
-import org.json.JSONObject;
 
 import com.silverpeas.myLinks.model.LinkDetail;
 
@@ -114,12 +113,6 @@ public class MyLinkEntity implements WebEntity {
   @Override
   public URI getURI() {
     return uri;
-  }
-
-  public String toJSon() {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("url", url);
-    return jsonObject.toString();
   }
 
   public LinkDetail toLinkDetail() {

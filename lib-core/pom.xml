@@ -58,12 +58,6 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
@@ -71,7 +65,6 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk15on</artifactId>
-      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -85,12 +78,6 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
@@ -99,12 +86,6 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
@@ -223,20 +204,6 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.drewnoakes</groupId>
-      <artifactId>metadata-extractor</artifactId>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <artifactId>xmlbeans</artifactId>
-      <groupId>org.apache.xmlbeans</groupId>
-      <type>jar</type>
-      <classifier>jdk6</classifier>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-linkedin</artifactId>
@@ -245,12 +212,6 @@
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-facebook</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-crypto</artifactId>
-    </dependency>
-    -->
 
     <dependency>
       <groupId>org.im4java</groupId>

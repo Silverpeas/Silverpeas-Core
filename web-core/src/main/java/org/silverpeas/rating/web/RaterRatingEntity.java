@@ -23,14 +23,14 @@
  */
 package org.silverpeas.rating.web;
 
-import com.silverpeas.web.WebEntity;
 import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.ecs.xhtml.script;
-import org.json.JSONObject;
 import org.silverpeas.rating.Rateable;
 import org.silverpeas.rating.RaterRating;
+import org.silverpeas.util.JSONCodec;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -195,15 +195,7 @@ public class RaterRatingEntity implements WebEntity {
   }
 
   public String getAsJSonString() {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("componentId", componentId);
-    jsonObject.put("ratingAverage", ratingAverage);
-    jsonObject.put("numberOfRaterRatings", numberOfRaterRatings);
-    jsonObject.put("contributionId", contributionId);
-    jsonObject.put("contributionType", contributionType);
-    jsonObject.put("raterRatingValue", raterRatingValue);
-    jsonObject.put("isRatingDone", isRatingDone);
-    return jsonObject.toString();
+    return JSONCodec.encode(this);
   }
 
   /**

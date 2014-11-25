@@ -36,11 +36,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </context-param>
   <context-param>
     <!-- Init Parameters -->
-    <param-name>contextConfigLocation</param-name>
-    <param-value>WEB-INF/config/spring-*.xml WEB-INF/config/jcr/spring-*.xml</param-value>
-  </context-param>
-  <context-param>
-    <!-- Init Parameters -->
     <param-name>request_response_factory.minSizeParam</param-name>
     <param-value>0</param-value>
   </context-param>
@@ -172,9 +167,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
   </listener>
   <listener>
-    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-  </listener>
-  <listener>
     <listener-class>org.silverpeas.web.token.SessionSynchronizerTokenSetter</listener-class>
   </listener>
   <listener>
@@ -189,24 +181,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <listener>
     <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
   </listener>
-  <servlet>
-    <description>
-      I'm a servlet aimed to dispatch the incoming HTTP requests to the REST web services that are
-      published through the IoC Spring container.
-    </description>
-    <servlet-name>REST Container</servlet-name>
-    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-    <init-param>
-      <description>Is the Jackson JSON stack be used?</description>
-      <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <init-param>
-      <description>Packages in which are defined both REST resources and mapper providers not managed by Spring</description>
-      <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.codehaus.jackson.jaxrs;com.silverpeas.web.mappers</param-value>
-    </init-param>
-  </servlet>
   <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>
     <servlet-class>com.silverpeas.authentication.AuthenticationServlet</servlet-class>

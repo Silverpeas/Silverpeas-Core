@@ -15,22 +15,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
       <scope>provided</scope>
@@ -64,20 +48,6 @@
       <groupId>com.sun.portal.portletcontainer</groupId>
       <artifactId>portlet-container</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
@@ -172,11 +142,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.metaparadigm</groupId>
-      <artifactId>json-rpc</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.silverpeas.spnego</groupId>
       <artifactId>silverpeas-spnego</artifactId>
     </dependency>
@@ -198,12 +163,6 @@
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ws-test-core</artifactId>
@@ -241,31 +200,6 @@
       <artifactId>jackson-module-jaxb-annotations</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <!--    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>aspectj-maven-plugin</artifactId>
-        <version>1.4</version>
-        <configuration>
-          <complianceLevel>1.6</complianceLevel>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
-          <proceedOnError>true</proceedOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>test-compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>-->
-  </build>
 
   <reporting>
     <plugins>
