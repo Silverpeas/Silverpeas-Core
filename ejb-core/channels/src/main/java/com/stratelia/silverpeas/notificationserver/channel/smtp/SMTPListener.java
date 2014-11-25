@@ -197,15 +197,32 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       } else {
         transport = session.getTransport(SIMPLE_TRANSPORT);
       }
-      if (isAuthenticated()) {
-        SilverTrace.info("smtp", "SMTPListner.sendEmail()", "root.MSG_GEN_PARAM_VALUE", "Host = "
-            + getMailServer() + " Port=" + getPort() + " User=" + getLogin());
-        transport.connect(getMailServer(), getPort(), getLogin(), getPassword());
-      } else {
-        transport.connect();
-      }
 
-      transport.sendMessage(email, toAddress);
+      // A synchronization is done here because of some SMTP servers that does not support to
+      // much opened connexions at same time
+      synchronized (SMTPListener.class) {
+        try {
+          if (isAuthenticated()) {
+            SilverTrace.info("smtp", "SMTPListner.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
+                "Host = " + getMailServer() + " Port=" + getPort() + " User=" + getLogin());
+            transport.connect(getMailServer(), getPort(), getLogin(), getPassword());
+          } else {
+            transport.connect();
+          }
+
+          transport.sendMessage(email, toAddress);
+        } finally {
+          if (transport != null) {
+            try {
+              transport.close();
+            } catch (Exception e) {
+              SilverTrace.
+                  error("smtp", "SMTPListner.sendEmail()", "root.EX_IGNORED", "ClosingTransport",
+                      e);
+            }
+          }
+        }
+      }
     } catch (MessagingException e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
     } catch (UnsupportedEncodingException e) {
@@ -213,15 +230,6 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     } catch (Exception e) {
       throw new NotificationServerException("SMTPListner.sendEmail()", SilverpeasException.ERROR,
           "smtp.EX_CANT_SEND_SMTP_MESSAGE", e);
-    } finally {
-      if (transport != null) {
-        try {
-          transport.close();
-        } catch (Exception e) {
-          SilverTrace.
-              error("smtp", "SMTPListner.sendEmail()", "root.EX_IGNORED", "ClosingTransport", e);
-        }
-      }
     }
   }
 }

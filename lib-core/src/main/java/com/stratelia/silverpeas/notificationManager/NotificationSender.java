@@ -115,6 +115,12 @@ public class NotificationSender implements java.io.Serializable {
     // Then exclude users that don't have to be notified
     usersSet.removeAll(metaData.getUserRecipientsToExclude());
 
+    // Finally exclude the sender from the container of receivers (usersSet)
+    String senderId = metaData.getSender();
+    if (StringUtil.isInteger(senderId) && Integer.parseInt(senderId) > 0) {
+      usersSet.remove(new UserRecipient(senderId));
+    }
+
     Set<String> languages = metaData.getLanguages();
     Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
     for (UserRecipient user : usersSet) {
