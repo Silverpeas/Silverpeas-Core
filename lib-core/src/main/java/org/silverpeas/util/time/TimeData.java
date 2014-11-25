@@ -224,7 +224,7 @@ public class TimeData {
   }
 
   /**
-   * @see org.apache.commons.lang.time.DurationFormatUtils#formatDuration
+   * @see org.apache.commons.lang3.time.DurationFormatUtils#formatDuration
    */
   public String getFormattedDuration(String format) {
     return DurationFormatUtils.formatDuration(getTimeAsLong(), format);
