@@ -1455,7 +1455,10 @@ public final class Admin {
       // unindex component
       deleteComponentIndex(componentId);
       
-      deleteComponentData(componentId);
+      if (definitive) {
+        // delete definitively data stored on file server
+        deleteComponentData(componentId);
+      }
 
       return componentId;
     } catch (Exception e) {
