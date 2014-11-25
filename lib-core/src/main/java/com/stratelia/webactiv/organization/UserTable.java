@@ -243,9 +243,9 @@ public class UserTable extends Table<UserRow> {
   }
 
   static final private String SELECT_ALL_ADMIN_IDS_TRUE =
-      "select id from ST_User where accessLevel='A' order by lastName";
-  static final private String SELECT_ALL_ADMIN_IDS_DOMAIN = "select id from ST_User where " +
-      "((accessLevel='A') or (accessLevel='D')) and (domainId = ?) order by lastName";
+      "select id from ST_User where accessLevel='A' and state <> 'DELETED' order by lastName";
+  static final private String SELECT_ALL_ADMIN_IDS_DOMAIN = "select id from ST_User where "
+      + "((accessLevel='A') or (accessLevel='D')) and (domainId = ?) and state <> 'DELETED' order by lastName";
 
   /**
    * Returns all the User ids.
