@@ -2032,7 +2032,35 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
-
+  <tag>
+    <description>
+      Tag to print out the full path of an application
+    </description>
+    <name>componentPath</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.ComponentPathTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The unique identifier of the application</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Is the application must be displayed at the end of path. True by default.</description>
+      <name>includeComponent</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>String to separate path items. ' > ' by default.</description>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
   <function>
     <description>Function that returns the value of a class constant.</description>
     <name>constantValue</name>

@@ -3963,15 +3963,6 @@ html > body #newsFeedProfil	.a_new {
   height:auto;
 }
 
-.newsFeed .linkMore {
-  background-image: none;
-}
-
-.newsFeed .linkMore span {
-  background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
-  padding-right: 30px;
-}
-
 .newsFeed .inprogress {
   background-color: #EAEAEA;
   border-bottom: 1px solid #CCCCCC;
@@ -4131,7 +4122,8 @@ hr.sep  {
 
 /* class actuellement utilis�e dans l'annuaire expert � g�n�raliser */
 .linkMore {
-  background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
+  background-color: #efefef;
+   background: linear-gradient(#fff, #e7e7e7) repeat scroll 0 0 #fff;
   border-bottom: 1px solid #CCCCCC;
   border-top: 1px solid #CCCCCC;
   clear: both;
@@ -4141,10 +4133,16 @@ hr.sep  {
   line-height: 30px;
   margin: 10px 0;
   padding: 0 15px;
+  text-align:center;
+}
+
+.linkMore span {
+  background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
+  padding-right: 30px;
 }
 
 .linkMore:hover, .linkMore:focus  {
-  background-color:#E9F7D7;
+   background: linear-gradient(#e7e7e7, #fff) repeat scroll 0 0 #efefef;
 }
 
 
@@ -6175,6 +6173,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 	clear:left;
 	position:relative;
 	margin-bottom:2em;
+	cursor:pointer;
 }
 .listing-actuality-portlet h3 {
 	margin:0;
@@ -6201,6 +6200,15 @@ ul.tagit li.tagit-choice a.tagit-close {
 	left:0;
 	display:inline;
 	padding:0.25em;
+}
+
+.listing-actuality-portlet .actuality-date-label,
+.listing-actuality-portlet .actuality-source,
+.listing-actuality-portlet .sp-path,
+.slider-actuality-portlet  .actuality-date-label,
+.slider-actuality-portlet  .actuality-source,
+.slider-actuality-portlet  .sp-path {
+	display:none;
 }
 
 .listing-actuality-portlet .actuality-without-illustration .actuality-info-fonctionality {
