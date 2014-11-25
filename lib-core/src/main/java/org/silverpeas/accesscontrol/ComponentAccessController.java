@@ -30,7 +30,6 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ComponentHelper;
@@ -127,8 +126,7 @@ public class ComponentAccessController extends AbstractAccessController<String> 
     if (componentInst.isPublic() || StringUtil.getBooleanValue(
         getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
       userRoles.add(SilverpeasRole.user);
-      if (!CollectionUtils
-          .containsAny(AccessControlOperation.PERSIST_ACTIONS, context.getOperations()) &&
+      if (AccessControlOperation.hasAPersistentAction(context.getOperations()) &&
           !context.getOperations().contains(AccessControlOperation.download) &&
           !context.getOperations().contains(AccessControlOperation.sharing)) {
         // In that case, it is not necessary to check deeper the user rights

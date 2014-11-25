@@ -29,7 +29,6 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -49,6 +48,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -541,10 +541,10 @@ public class AssignRightTest extends DataSetTest {
           expectedLinesIt.remove();
         }
       }
-      List<String> leavingCurrentLines =
-          (List) CollectionUtils.subtract(currentLines, expectedLines);
-      List<String> leavingExpectedLines =
-          (List) CollectionUtils.subtract(expectedLines, currentLines);
+      List<String> leavingCurrentLines = new ArrayList<>(currentLines);
+      leavingCurrentLines.removeAll(expectedLines);
+      List<String> leavingExpectedLines = new ArrayList<>(expectedLines);
+      leavingExpectedLines.removeAll(currentLines);
       boolean areContentEquals = leavingCurrentLines.isEmpty() && leavingExpectedLines.isEmpty();
       String message = "";
       if (!leavingCurrentLines.isEmpty()) {

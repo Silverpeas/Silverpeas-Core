@@ -26,6 +26,7 @@ package com.silverpeas.accesscontrol;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -50,5 +51,22 @@ public enum AccessControlOperation {
     } catch (Exception e) {
       return unknown;
     }
+  }
+
+  public static boolean hasAPersistentAction(Collection<AccessControlOperation> operations) {
+    if (PERSIST_ACTIONS.size() < operations.size()) {
+      for (AccessControlOperation op : PERSIST_ACTIONS) {
+        if (operations.contains(op)) {
+          return true;
+        }
+      }
+    } else {
+      for (AccessControlOperation op : operations) {
+        if (PERSIST_ACTIONS.contains(op)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

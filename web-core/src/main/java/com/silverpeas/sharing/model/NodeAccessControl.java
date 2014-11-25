@@ -27,7 +27,6 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
@@ -81,17 +80,20 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
   }
 
   private boolean isPublicationReadable(WAPrimaryKey pk, String instanceId,
-      Collection<NodePK> autorizedNodes) throws RemoteException, CreateException {
+      Collection<NodePK> authorizedNodes) throws RemoteException, CreateException {
     if (pk.getInstanceId().equals(instanceId)) {
       Collection<NodePK> fathers = getPublicationFathers(pk);
-      return CollectionUtils.containsAny(autorizedNodes, fathers);
+      return authorizedNodes.stream()
+          .filter(node -> fathers.contains(node))
+          .findFirst()
+          .isPresent();
     } else {
       // special case of an alias between two ECM applications
       // check if publication which contains attachment is an alias into this node
       Collection<Alias> aliases = getPublicationAliases(pk);
       for (Alias alias : aliases) {
         NodePK aliasPK = new NodePK(alias.getId(), alias.getInstanceId());
-        if (autorizedNodes.contains(aliasPK)) {
+        if (authorizedNodes.contains(aliasPK)) {
           return true;
         }
       }

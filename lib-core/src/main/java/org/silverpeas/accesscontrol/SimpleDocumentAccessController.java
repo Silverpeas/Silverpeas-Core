@@ -32,7 +32,6 @@ import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationBm;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.StringUtil;
@@ -160,8 +159,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     }
 
     // Verifying persist actions are possible
-    if (authorized && !CollectionUtils
-        .intersection(AccessControlOperation.PERSIST_ACTIONS, context.getOperations()).isEmpty()) {
+    if (authorized && AccessControlOperation.hasAPersistentAction(context.getOperations())) {
       isRoleVerificationRequired = true;
     }
 
