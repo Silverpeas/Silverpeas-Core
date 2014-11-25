@@ -65,6 +65,8 @@ public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity,
     extends EntityIdentifier>
     extends AbstractCustomEntity<ENTITY, IDENTIFIER_TYPE> {
 
+  private static final long serialVersionUID = 3955905287437500278L;
+
   @Transient
   private String tableName;
 

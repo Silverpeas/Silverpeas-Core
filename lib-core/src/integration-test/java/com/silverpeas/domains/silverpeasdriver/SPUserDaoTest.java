@@ -20,100 +20,135 @@
  */
 package com.silverpeas.domains.silverpeasdriver;
 
-import com.silverpeas.jcrutil.RandomGenerator;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
-import javax.sql.DataSource;
-import javax.validation.ConstraintViolationException;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
+import com.ninja_squad.dbsetup.operation.Operation;
+import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hamcrest.core.IsInstanceOf;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.silverpeas.DataSetTest;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.silverpeas.authentication.encryption.UnixSHA512Encryption;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
+import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/spring-domains-embbed-datasource.xml",
-  "classpath:/spring-domains.xml"})
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
-@Transactional
-@DirtiesContext
-public class SPUserDaoTest {
+@RunWith(Arquillian.class)
+@Transactional(Transactional.TxType.SUPPORTS)
+public class SPUserDaoTest extends DataSetTest {
+
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule(this, "create-database.sql", "spuser-dataset.xml");
+
+
+  @Override
+  protected Operation getDbSetupOperations() {
+    return null;
+  }
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarFor(SPUserJpaManager.class).addCommonBasicUtilities()
+        .addSilverpeasExceptionBases().addJpaPersistenceFeatures().testFocusedOn(warBuilder -> {
+          warBuilder.addPackages(true, "com.silverpeas.domains.silverpeasdriver");
+          warBuilder.addClasses(DomainDriver.class, AbstractDomainDriver.class,
+              PasswordEncryptionProvider.class, UnixSHA512Encryption.class,
+              PasswordEncryption.class);
+          warBuilder.addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+          warBuilder.addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
+              "META-INF/services/org.silverpeas.util.BeanContainer");
+          warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        }).build();
+  }
 
   @Inject
   private SPUserJpaManager dao;
-  @Inject
-  private DataSource ds;
 
   static final int PASSWORD_MAX_SIZE = 123;
 
-  @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        SPUserDaoTest.class.getClassLoader().getResourceAsStream(
-        "com/silverpeas/domains/silverpeasdriver/spuser-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-  }
 
   public SPUserDaoTest() {
   }
 
   @Test
+  @Transactional
   public void testNewValidUser() {
-    SPUser tartempion = getTartempion();
-    dao.saveAndFlush(tartempion);
+    Transaction.performInOne(() -> {
+      SPUser tartempion = getTartempion();
+      dao.saveAndFlush(tartempion);
+      return null;
+    });
   }
 
-  @Test(expected=ConstraintViolationException.class)
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
+  @Test(expected = ConstraintViolationException.class)
+  @Transactional
   public void testNewUserWithInvalidPassword() {
-    SPUser tartempion = getTartempion();
-    tartempion.setPassword(tartempion.getPassword() + "b");
-    dao.saveAndFlush(tartempion);
+    try {
+      Transaction.performInOne(() -> {
+        SPUser tartempion = getTartempion();
+        tartempion.setPassword(tartempion.getPassword() + "b");
+        dao.saveAndFlush(tartempion);
+        return null;
+      });
+    } catch (Exception e) {
+      expectedException
+          .expectCause(is(IsInstanceOf.<Throwable>instanceOf(ConstraintViolationException.class)));
+      throw new ConstraintViolationException("Transactional wrap ConstraintViolation", null);
+    }
   }
 
   /**
    * Test of findByFirstname method, of class SPUserDao.
    */
   @Test
+  @Transactional
   public void testReadByPrimaryKey() {
-    SPUser bart = dao.findOne(1000);
-    Set<SPGroup> groups = bart.getGroups();
-    assertThat(groups, is(notNullValue()));
-    assertThat(groups, hasSize(2));
-    assertThat(groups.contains((new SPGroup(5000))), is(true));
-    assertThat(groups.contains((new SPGroup(5001))), is(true));
-    assertThat(bart, is(notNullValue()));
-    assertThat(bart.getFirstname(), is("bart"));
-    assertThat(bart.getLastname(), is("simpson"));
-    assertThat(bart.getId(), is(1000));
-    assertThat(bart.getPhone(), is("047669084"));
-    assertThat(bart.getAddress(), is("18 rue des aiguinards"));
-    assertThat(bart.getTitle(), is("student"));
-    assertThat(bart.getCompany(), is("Simpson's family"));
-    assertThat(bart.getEmail(), is("bart.simpson@silverpeas.org"));
-    assertThat(bart.getPosition(), is("elder"));
-    assertThat(bart.isPasswordValid(), is(true));
-    assertThat(bart.getLogin(), is("bart.simpson"));
-    assertThat(bart.getPassword(), is("bart"));
+    Transaction.performInOne(() -> {
+      SPUser bart = dao.getById("1000");
+      Set<SPGroup> groups = bart.getGroups();
+      assertThat(groups, is(notNullValue()));
+      assertThat(groups, hasSize(2));
+      assertThat(groups.contains((new SPGroup(5000))), is(true));
+      assertThat(groups.contains((new SPGroup(5001))), is(true));
+      assertThat(bart, is(notNullValue()));
+      assertThat(bart.getFirstname(), is("bart"));
+      assertThat(bart.getLastname(), is("simpson"));
+      assertThat(bart.getId(), is("1000"));
+      assertThat(bart.getPhone(), is("047669084"));
+      assertThat(bart.getAddress(), is("18 rue des aiguinards"));
+      assertThat(bart.getTitle(), is("student"));
+      assertThat(bart.getCompany(), is("Simpson's family"));
+      assertThat(bart.getEmail(), is("bart.simpson@silverpeas.org"));
+      assertThat(bart.getPosition(), is("elder"));
+      assertThat(bart.isPasswordValid(), is(true));
+      assertThat(bart.getLogin(), is("bart.simpson"));
+      assertThat(bart.getPassword(), is("bart"));
+      return null;
+    });
   }
 
   /**
@@ -131,7 +166,7 @@ public class SPUserDaoTest {
     assertThat(result, hasSize(1));
     SPUser krusty = result.get(0);
     assertIsKrusty(krusty);
-    firstName = RandomGenerator.getRandomString();
+    firstName = RandomStringUtils.random(15);
     result = dao.findByFirstname(firstName);
     assertThat(result, hasSize(0));
   }
@@ -148,7 +183,7 @@ public class SPUserDaoTest {
     assertIsBart(bart);
     SPUser lisa = result.get(1);
     assertIsLisa(lisa);
-    lastName = RandomGenerator.getRandomString();
+    lastName = RandomStringUtils.random(15);
     result = dao.findByLastname(lastName);
     assertThat(result, hasSize(0));
   }
@@ -163,7 +198,7 @@ public class SPUserDaoTest {
     assertThat(result, hasSize(1));
     SPUser krusty = result.get(0);
     assertIsKrusty(krusty);
-    phone = RandomGenerator.getRandomString();
+    phone = RandomStringUtils.random(15);
     result = dao.findByPhone(phone);
     assertThat(result, hasSize(0));
   }
@@ -196,6 +231,7 @@ public class SPUserDaoTest {
    // TODO review the generated test code and remove the default call to fail.
    fail("The test case is a prototype.");
    }*/
+
   /**
    * Test of findByCompany method, of class SPUserDao.
    */
@@ -220,16 +256,16 @@ public class SPUserDaoTest {
     position = "benjamin";
     result = dao.findByPosition(position);
     assertThat(result, hasSize(2));
-    assertIsLisa(result.get(0));
-    assertIsKrusty(result.get(1));
-    position = RandomGenerator.getRandomString();
+    assertIsKrusty(result.get(0));
+    assertIsLisa(result.get(1));
+    position = RandomStringUtils.random(15);
     result = dao.findByPosition(position);
     assertThat(result, hasSize(0));
   }
 
   void assertIsLisa(SPUser lisa) {
     assertThat(lisa.getFirstname(), is("lisa"));
-    assertThat(lisa.getId(), is(1001));
+    assertThat(lisa.getId(), is("1001"));
     assertThat(lisa.getLastname(), is("simpson"));
     assertThat(lisa.getPhone(), is("047669084"));
     assertThat(lisa.getAddress(), is("18 rue des aiguinards"));
@@ -244,7 +280,7 @@ public class SPUserDaoTest {
 
   void assertIsBart(SPUser bart) {
     assertThat(bart.getFirstname(), is("bart"));
-    assertThat(bart.getId(), is(1000));
+    assertThat(bart.getId(), is("1000"));
     assertThat(bart.getLastname(), is("simpson"));
     assertThat(bart.getPosition(), is("elder"));
     assertThat(bart.getPhone(), is("047669084"));
@@ -259,7 +295,7 @@ public class SPUserDaoTest {
 
   private void assertIsKrusty(SPUser krusty) {
     assertThat(krusty.getFirstname(), is("krusty"));
-    assertThat(krusty.getId(), is(1010));
+    assertThat(krusty.getId(), is("1010"));
     assertThat(krusty.getPhone(), is("0146221498"));
     assertThat(krusty.getLastname(), is("theklown"));
     assertThat(krusty.getPosition(), is("benjamin"));
@@ -278,7 +314,7 @@ public class SPUserDaoTest {
   private SPUser getTartempion() {
     PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     StringBuilder passwordBuilder = new StringBuilder(encryption.encrypt("tartempion"));
-    for (; passwordBuilder.length() < 123;) {
+    for (; passwordBuilder.length() < PASSWORD_MAX_SIZE; ) {
       passwordBuilder.append("a");
     }
 
