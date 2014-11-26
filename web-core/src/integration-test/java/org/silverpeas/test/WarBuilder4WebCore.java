@@ -116,4 +116,14 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     addAsResource("org/silverpeas/util/stringtemplate.properties");
     return this;
   }
+
+  /**
+   * Sets string template features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4WebCore addPersistenceFeatures() {
+    addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
+    return this;
+  }
+
 }

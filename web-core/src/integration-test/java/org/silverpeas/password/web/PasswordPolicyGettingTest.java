@@ -54,6 +54,7 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest {
     return WarBuilder4WebCore.onWarFor(PasswordPolicyGettingTest.class)
         .addRESTWebServiceEnvironment()
         .addStringTemplateFeatures()
+        .addPersistenceFeatures()
         .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.password.web");
           warBuilder.addAsResource("org/silverpeas/password/multilang/passwordBundle.properties");
