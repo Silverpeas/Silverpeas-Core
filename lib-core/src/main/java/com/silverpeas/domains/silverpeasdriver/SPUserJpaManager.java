@@ -48,7 +48,7 @@ public class SPUserJpaManager extends JpaBasicEntityManager<SPUser, UniqueIntege
   }
 
   public List<SPUser> findByCompany(final String company) {
-    return listFromNamedQuery("SPUser.findByCompany", newNamedParameters().add("address", company));
+    return listFromNamedQuery("SPUser.findByCompany", newNamedParameters().add("company", company));
   }
 
   public List<SPUser> findByPosition(final String position) {
