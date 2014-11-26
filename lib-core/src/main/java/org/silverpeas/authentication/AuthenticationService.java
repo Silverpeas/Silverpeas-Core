@@ -88,9 +88,10 @@ public class AuthenticationService {
   private static final String ERROR_PREFIX = "Error";
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
   public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
-  public static final String ERROR_BAD_CREDENTIAL = "Error_1";
+  public static final String ERROR_INCORRECT_LOGIN_PWD = "Error_1";
   public static final String ERROR_AUTHENTICATION_FAILURE = "Error_2";
   public static final String ERROR_PASSWORD_NOT_AVAILABLE = "Error_5";
+  public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "Error_6";
 
   static {
     ResourceLocator propFile = new ResourceLocator(
@@ -176,7 +177,7 @@ public class AuthenticationService {
       domains = Arrays.asList(AdministrationServiceProvider.getAdminService().getAllDomains());
     } catch (AdminException e) {
       SilverTrace.error(module, "AuthenticationService", "Problem to retrieve all the domains", e);
-      domains = Collections.EMPTY_LIST;
+      domains = Collections.emptyList();
     }
     return domains;
   }
@@ -214,7 +215,12 @@ public class AuthenticationService {
           }
         }
         if (ex instanceof AuthenticationBadCredentialException) {
-          errorCause = ERROR_BAD_CREDENTIAL;
+          List<Domain> listDomain = getAllDomains();
+          if(listDomain != null && listDomain.size() > 1) {
+            errorCause = ERROR_INCORRECT_LOGIN_PWD_DOMAIN; 
+          } else {
+            errorCause = ERROR_INCORRECT_LOGIN_PWD;
+          }
         } else if (ex instanceof AuthenticationHostException) {
           errorCause = ERROR_AUTHENTICATION_FAILURE;
         } else if (ex instanceof AuthenticationPwdNotAvailException) {
