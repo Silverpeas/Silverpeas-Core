@@ -113,7 +113,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       user.setId(id);
       user = userManager.saveAndFlush(user);
       return String.valueOf(id);
-    } catch (SQLException ex) {
+    } catch (Exception ex) {
       Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
     }
     return "-1";
