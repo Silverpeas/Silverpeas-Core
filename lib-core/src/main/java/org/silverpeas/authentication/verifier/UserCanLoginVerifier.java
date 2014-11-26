@@ -23,8 +23,14 @@
  */
 package org.silverpeas.authentication.verifier;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 
@@ -35,6 +41,8 @@ import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedE
  * Date: 02/02/13
  */
 public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
+  public static final String ERROR_INCORRECT_LOGIN_PWD = "1";
+  public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "6";
   public static final String ERROR_USER_ACCOUNT_BLOCKED = "Error_UserAccountBlocked";
 
   /**
@@ -50,15 +58,39 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
    * @return
    */
   public String getErrorDestination() {
-    return "/Login.jsp?ErrorCode=" + ERROR_USER_ACCOUNT_BLOCKED;
+    String errorDest = "/Login.jsp?ErrorCode=";
+    
+    Domain[] tabDomains = null;
+    try {
+      tabDomains = AdminReference.getAdminService().getAllDomains();
+    } catch (AdminException e) {
+      SilverTrace.error("authentication", "UserCanLoginVerifier.getErrorDestination()",
+          "authentication.EX_VERIFY_USER_CAN_LOGIN",
+          e);
+    }
+    
+    if(getUser() == null) {
+      if(tabDomains != null && tabDomains.length > 1) {
+        errorDest += ERROR_INCORRECT_LOGIN_PWD_DOMAIN;  
+      } else {
+        errorDest += ERROR_INCORRECT_LOGIN_PWD;
+      }
+    } else if (!isUserStateValid()) {
+      errorDest += ERROR_USER_ACCOUNT_BLOCKED; 
+    }
+    return errorDest;
   }
 
   /**
    * Verify if the user can login.
    */
   public void verify() throws AuthenticationException {
-    if (!isUserStateValid()) {
-      // For now, if user is not valid (BLOCKED, EXPIRED, ...) he is considered as BLOCKED.
+    if(getUser() == null) {
+      // Authentication failed
+      throw new AuthenticationBadCredentialException("UserCanLoginVerifier.verify()",
+          SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN");
+    } else if (!isUserStateValid()) {
+      // For now, if user is not valid (BLOCKED, EXPIRED, DELETED, UNKNOWN) he is considered as BLOCKED.
       throw new AuthenticationUserAccountBlockedException("UserCanLoginVerifier.verify()",
           SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
           getUser() != null ? "Login=" + getUser().getLogin() : "");
