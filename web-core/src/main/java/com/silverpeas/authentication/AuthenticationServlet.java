@@ -69,6 +69,7 @@ public class AuthenticationServlet extends HttpServlet {
   private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
+  private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
@@ -105,7 +106,7 @@ public class AuthenticationServlet extends HttpServlet {
         .withAsDomainId(domainId);
 
     String authenticationKey = authenticate(request, authenticationParameters, domainId);
-    String url;
+    String url = "";
 
     // Verify if the user can try again to login.
     UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier
@@ -158,15 +159,21 @@ public class AuthenticationServlet extends HttpServlet {
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
-      if ("Error_1".equals(authenticationKey)) {
+      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey) || 
+          AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
         try {
           if (userCanTryAgainToLoginVerifier.isActivated()) {
             storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
                 securedAccess);
             storeDomain(servletResponse, domainId, securedAccess);
           }
-          url = userCanTryAgainToLoginVerifier.verify()
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
+            url = userCanTryAgainToLoginVerifier.verify()
               .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+            url = userCanTryAgainToLoginVerifier.verify()
+                .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN);
+          }
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
@@ -214,7 +221,11 @@ public class AuthenticationServlet extends HttpServlet {
           url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
               .getErrorDestination();
         } else {
-          url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
+            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN;
+          }
         }
       } else if (authenticationParameters.isSsoMode()) {
         // User has been successfully authenticated on AD, but he has no user account on Silverpeas
