@@ -26,9 +26,6 @@ package org.silverpeas.test;
 
 import com.silverpeas.authentication.SilverpeasSessionOpener;
 import com.silverpeas.peasUtil.AccessForbiddenException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.silverpeas.servlet.HttpRequest;
 
 /**
@@ -59,14 +56,13 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
    */
   public static <T> WarBuilder4WebCore onWarFor(Class<T> test) {
     WarBuilder4WebCore warBuilder = new WarBuilder4WebCore(test);
-    warBuilder
-        .addMavenDependencies("org.silverpeas.core:lib-core", "org.silverpeas.core:ws-test-core",
-            "javax.jcr:jcr");
+    warBuilder.addMavenDependencies("org.silverpeas.core:ws-test-core", "javax.jcr:jcr");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:silverstatistics");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:pdc");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:node");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:clipboard");
     warBuilder.addPackages(true, "com.stratelia.silverpeas.peasCore");
     warBuilder.addPackages(true, "com.silverpeas.peasUtil");
@@ -83,8 +79,6 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     warBuilder.addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
     warBuilder.addAsResource("org/silverpeas/silvertrace/settings/silverLog.properties");
     warBuilder.addAsResource("org/silverpeas/util/attachment/Attachment.properties");
-    // Resources
-    warBuilder.addAsResource("maven.properties");
     return warBuilder;
   }
 
@@ -116,14 +110,4 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     addAsResource("org/silverpeas/util/stringtemplate.properties");
     return this;
   }
-
-  /**
-   * Sets string template features.
-   * @return the instance of the war builder.
-   */
-  public WarBuilder4WebCore addPersistenceFeatures() {
-    addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
-    return this;
-  }
-
 }

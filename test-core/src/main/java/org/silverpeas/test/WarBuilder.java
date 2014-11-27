@@ -24,6 +24,8 @@
 
 package org.silverpeas.test;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -33,8 +35,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,16 +67,26 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       .asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
           "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core"));
 
+  protected Collection<String> jarLibForPersistence = new HashSet<>();
+
   private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
+
+  private MavenTargetDirectoryRule testClassMavenTargetDirectoryRule;
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
-   * @param test the class of the test for which a war archive will be build.
-   * @param <T> the type of the test.
+   * @param classOfTest the class of the test for which a war archive will be build.
+   * @param <CLASS_TEST> the type of the test.
    */
-  protected <T> WarBuilder(Class<T> test) {
-    String resourcePath = test.getPackage().getName().replaceAll("\\.", "/");
+  protected <CLASS_TEST> WarBuilder(Class<CLASS_TEST> classOfTest) {
+    try {
+      testClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(classOfTest.newInstance());
+    } catch (Exception e) {
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+      throw new IllegalStateException("Verifies that the class of test given is the right one...");
+    }
+    String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     war.addAsResource(resourcePath);
   }
 
@@ -84,6 +98,24 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   @SuppressWarnings("unchecked")
   public WarBuilder<T> addMavenDependencies(String... mavenDependencies) {
     Collections.addAll(this.mavenDependencies, mavenDependencies);
+    return this;
+  }
+
+  /**
+   * Adds maven dependencies.
+   * @param mavenDependencies the canonical maven dependencies to add.
+   * @return the instance of the configurator.
+   */
+  @SuppressWarnings("unchecked")
+  public WarBuilder<T> addMavenDependenciesWithPersistence(String... mavenDependencies) {
+    addMavenDependencies(mavenDependencies);
+    for (String mavenDependency : mavenDependencies) {
+      String jarLib = "lib/" + mavenDependency.split(":")[1] + "-" +
+          testClassMavenTargetDirectoryRule.getSilverpeasVersion() +
+          ".jar";
+      logInfo("Adding persistence reference for: " + jarLib);
+      jarLibForPersistence.add("<jar-file>" + jarLib + "</jar-file>");
+    }
     return this;
   }
 
@@ -151,6 +183,23 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   @Override
   public final WebArchive build() {
     try {
+      if (!jarLibForPersistence.isEmpty()) {
+        String persistenceXmlContent = null;
+        try (InputStream is = WarBuilder.class
+            .getResourceAsStream("/META-INF/test-core-persistence.xml")) {
+          persistenceXmlContent = IOUtils.toString(is);
+        }
+        File persistenceXml = FileUtils
+            .getFile(testClassMavenTargetDirectoryRule.getResourceTestDirFile(), "META-INF",
+                "dynamic-test-persistence.xml");
+        logInfo("Setting persistent xml descriptor: " + persistenceXml.getPath());
+        persistenceXmlContent = persistenceXmlContent
+            .replace("<!-- @JAR_FILES@ -->", String.join("\n", jarLibForPersistence));
+        FileUtils.writeStringToFile(persistenceXml, persistenceXmlContent);
+        logInfo("Filling the content:\n" + persistenceXmlContent);
+        logInfo("Adding completed META-INF/persistence.xml");
+        addAsResource("META-INF/" + persistenceXml.getName(), "META-INF/persistence.xml");
+      }
       File[] libs =
           Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
               .asFile();
@@ -159,11 +208,17 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
           "META-INF/services/org.silverpeas.util.BeanContainer");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
       war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
+      // Resources
+      war.addAsResource("maven.properties");
       return war;
     } catch (Exception e) {
       Logger.getAnonymousLogger().log(Level.SEVERE, "WAR BUILD PROBLEM...", e);
       throw new RuntimeException(e);
     }
+  }
+
+  private void logInfo(String info) {
+    Logger.getLogger(WarBuilder.class.getName()).info(info);
   }
 
   /**

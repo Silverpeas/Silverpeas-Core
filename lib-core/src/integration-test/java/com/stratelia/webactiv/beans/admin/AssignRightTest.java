@@ -167,8 +167,8 @@ public class AssignRightTest extends DataSetTest {
     administrationService.updateProfileInst(profileInst);
 
     // Verifying that the writer right on component has been removed,
-    // but not the one on the sub node as the user is in a group that has yet right on kmelia
-    // component
+    // and also the one on the sub node as the user is no more in a group that has yet right on
+    // kmelia component
     verifyCurrentDirectRights("test-assign-rights-expected-userAWithKmeliaSubNodeRight" +
         "-removedFromGoupG1_2AndDirectRightRemovedFromKmelia.txt");
   }
@@ -248,7 +248,7 @@ public class AssignRightTest extends DataSetTest {
   }
 
   @Test
-  public void testAssignFromGroup2ToGroup1AByReplaceModeButNotObjectRights() throws AdminException {
+  public void testAssignFromGroup2ToGroupAByReplaceModeButNotObjectRights() throws AdminException {
     administrationService
         .assignRightsFromGroupToGroup(REPLACE, G2_D1, G1_D0, BUT_NOT_RIGHT_OBJECTS, AUTHOR);
     verifyCurrentDirectRights(

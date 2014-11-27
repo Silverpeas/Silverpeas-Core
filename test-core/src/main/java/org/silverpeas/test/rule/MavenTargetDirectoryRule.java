@@ -29,7 +29,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +49,14 @@ public class MavenTargetDirectoryRule implements TestRule {
   private Properties mavenProperties;
 
   private Object testInstance;
+
+  /**
+   * Gets the silverpeas version.
+   * @return the silverpeas version.
+   */
+  public String getSilverpeasVersion() {
+    return getMavenProperty("silverpeas.version");
+  }
 
   /**
    * Gets the target directory of the test.
@@ -104,10 +111,15 @@ public class MavenTargetDirectoryRule implements TestRule {
     if (mavenProperties == null) {
       mavenProperties = new Properties();
       try {
+        Logger.getLogger(testInstance.getClass().getName())
+            .info("Reading maven properties from " + testInstance.getClass());
         mavenProperties
             .load(testInstance.getClass().getClassLoader().getResourceAsStream("maven.properties"));
-      } catch (IOException ex) {
-        Logger.getLogger(testInstance.getClass().getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(testInstance.getClass().getName())
+            .info("Content is:\n" + mavenProperties.toString());
+      } catch (Exception ex) {
+        Logger.getLogger(testInstance.getClass().getName())
+            .log(Level.SEVERE, "Class " + testInstance.getClass(), ex);
       }
     }
     String mavenPropertyValue = mavenProperties.getProperty(key, null);
