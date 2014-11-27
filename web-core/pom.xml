@@ -201,6 +201,25 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>integration-test</id>
+      <properties>
+        <persistence.lib>lib-core-${project.version}.jar</persistence.lib>
+        <persistence.pdc>pdc-${project.version}.jar</persistence.pdc>
+        <persistence.node>node-${project.version}.jar</persistence.node>
+      </properties>
+      <build>
+        <testResources>
+          <testResource>
+            <directory>src/test/resources</directory>
+            <filtering>true</filtering>
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+  </profiles>
+
   <reporting>
     <plugins>
       <plugin>
