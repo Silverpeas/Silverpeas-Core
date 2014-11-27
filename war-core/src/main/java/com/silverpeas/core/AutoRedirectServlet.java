@@ -66,11 +66,6 @@ public class AutoRedirectServlet extends HttpServlet {
       throws ServletException, IOException {
     prepareResponseHeader(response);
     String strGoTo = request.getParameter("goto");
-    String strDomainId = request.getParameter("domainId");
-    int domainId = 0;
-    if (StringUtil.isInteger(strDomainId)) {
-      domainId = Integer.parseInt(strDomainId);
-    }
     String componentGoTo = request.getParameter("ComponentId");
     String spaceGoTo = request.getParameter("SpaceId");
     String attachmentGoTo = request.getParameter("AttachmentId");
@@ -132,12 +127,14 @@ public class AutoRedirectServlet extends HttpServlet {
       // The user is either not connector or as the anonymous user. He comes back to the login page.
       if (mainController == null || (gef != null && UserDetail.isAnonymousUser(mainController.
           getUserId()) && (strGoTo == null && componentGoTo == null && spaceGoTo == null))) {
-        String loginUrl =
-            response.encodeRedirectURL(URLManager.getApplicationURL() + "/Login.jsp?DomainId=" +
-            domainId);
+        String strDomainId = request.getParameter("domainId");
+        String loginUrl = URLManager.getApplicationURL() + "/Login.jsp";
+        if (StringUtil.isInteger(strDomainId)) {
+          loginUrl += "?DomainId=" + strDomainId;
+        }
         out.println("<script>");
         out.print("top.location=\"");
-        out.print(loginUrl);
+        out.print(response.encodeRedirectURL(loginUrl));
         out.println("\";");
         out.println("</script>");
       } else {
