@@ -88,6 +88,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     }
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     war.addAsResource(resourcePath);
+    war.addClasses(DataSourceProvider.class);
   }
 
   /**

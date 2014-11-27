@@ -26,17 +26,17 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -46,9 +46,10 @@ import static org.junit.Assert.assertThat;
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
-public class SPUserManagerIntegrationTest extends RepositoryBasedTest {
+public class SPUserManagerIntegrationTest {
 
-  public static final Operation CLEAN_UP = Operations.deleteAllFrom("DomainSP_User", "UniqueId");
+  public static final String TABLE_CREATION_SCRIPT =
+      "/com/silverpeas/domains/silverpeasdriver/create_table.sql";
   public static final Operation SPUSER_INSERTION = Operations.insertInto("DomainSP_User")
       .columns("id", "firstName", "lastName", "login", "password", "company")
       .values(0, "Toto", "Chez-les-Papoos", "toto", "toto", "Silverpeas").build();
@@ -59,10 +60,9 @@ public class SPUserManagerIntegrationTest extends RepositoryBasedTest {
   @PersistenceContext
   private EntityManager entityManager;
 
-  @Override
-  protected Operation getDbSetupOperations() {
-    return Operations.sequenceOf(CLEAN_UP, SPUSER_INSERTION);
-  }
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT).loadInitialDataSetFrom(SPUSER_INSERTION);
 
   @Deployment
   public static Archive<?> createTestArchive() {

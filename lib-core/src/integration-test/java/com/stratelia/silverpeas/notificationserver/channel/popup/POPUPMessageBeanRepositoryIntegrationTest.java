@@ -27,11 +27,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -40,8 +41,10 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class POPUPMessageBeanRepositoryIntegrationTest extends RepositoryBasedTest {
+public class POPUPMessageBeanRepositoryIntegrationTest {
 
+  private static final String TABLE_CREATION =
+      "/com/stratelia/silverpeas/notificationserver/channel/popup/create_table.sql";
   private static final Operation MESSAGES_SETUP = Operations.insertInto("ST_PopupMessage")
       .columns("id", "userId", "body", "senderId", "senderName", "answerAllowed", "msgDate",
           "msgTime")
@@ -52,15 +55,13 @@ public class POPUPMessageBeanRepositoryIntegrationTest extends RepositoryBasedTe
       .columns("maxId", "tableName")
       .values(1, "ST_PopupMessage")
       .build();
-  private static final Operation CLEAN_UP = Operations.deleteAllFrom("UniqueId", "ST_PopupMessage");
+
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION)
+      .loadInitialDataSetFrom(MESSAGES_SETUP, UNIQUE_ID_SETUP);
 
   @Inject
   private POPUPMessageBeanRepository repository;
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return Operations.sequenceOf(CLEAN_UP, UNIQUE_ID_SETUP, MESSAGES_SETUP);
-  }
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -79,7 +80,7 @@ public class POPUPMessageBeanRepositoryIntegrationTest extends RepositoryBasedTe
 
   @Test
   public void findFirstExistingMessageByUserId() {
-    skipNextLaunch();
+    dbSetupRule.skipDbCleaning();
     POPUPMessageBean bean = repository.findFirstMessageByUserId("0");
     assertThat(bean, notNullValue());
     assertThat(bean.getUserId(), is(0L));
@@ -93,7 +94,7 @@ public class POPUPMessageBeanRepositoryIntegrationTest extends RepositoryBasedTe
 
   @Test
   public void findFirstNonExistingMessageByUserId() {
-    skipNextLaunch();
+    dbSetupRule.skipDbCleaning();
     POPUPMessageBean bean = repository.findFirstMessageByUserId("1");
     assertThat(bean, nullValue());
   }

@@ -28,14 +28,15 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.rating.ContributionRating;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRatingPK;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -46,7 +47,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class RatingRepositoryIntegrationTest extends RepositoryBasedTest {
+public class RatingRepositoryIntegrationTest {
 
   private static final Operation NOTATION_SETUP = Operations.insertInto("SB_Notation_Notation")
       .columns("id", "instanceId", "externalId", "externalType", "author", "note")
@@ -59,16 +60,14 @@ public class RatingRepositoryIntegrationTest extends RepositoryBasedTest {
       .columns("maxId", "tableName")
       .values(3, "SB_Notation_Notation")
       .build();
-  private static final Operation CLEAN_UP =
-      Operations.deleteAllFrom("UniqueId", "SB_Notation_Notation");
+
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom("/com/silverpeas/notation/model/create_table.sql")
+          .loadInitialDataSetFrom(NOTATION_SETUP, UNIQUE_ID_SETUP);
 
   @Inject
   private RatingRepository repository;
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return Operations.sequenceOf(CLEAN_UP, UNIQUE_ID_SETUP, NOTATION_SETUP);
-  }
 
   @Deployment
   public static Archive<?> createTestArchive() {

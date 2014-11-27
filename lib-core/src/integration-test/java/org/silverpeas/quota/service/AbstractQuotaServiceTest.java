@@ -30,15 +30,16 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaFullException;
 import org.silverpeas.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
@@ -51,7 +52,7 @@ import static org.hamcrest.Matchers.*;
  * @author Yohann Chastagnier
  */
 @RunWith(Arquillian.class)
-public class AbstractQuotaServiceTest extends RepositoryBasedTest {
+public class AbstractQuotaServiceTest {
 
   private final TestQuotaKey dummyKey = new TestQuotaKey("dummy");
   private final TestQuotaKey existingKey = new TestQuotaKey("38");
@@ -69,23 +70,15 @@ public class AbstractQuotaServiceTest extends RepositoryBasedTest {
   @Inject
   private TestQuotaServiceWithAdditionalTools quotaService;
 
-  public static final Operation TABLES_CREATION = Operations.sql(
-      "CREATE TABLE st_quota (id int8 PRIMARY KEY NOT NULL , quotaType varchar(50) NOT NULL , " +
-          "resourceId varchar(50) NOT NULL , minCount int8 NOT NULL , maxCount int8 NOT NULL , " +
-          "currentCount int8 NOT NULL , saveDate timestamp NOT NULL)",
-      "CREATE UNIQUE INDEX idx_uc_st_quota ON st_quota(quotaType, resourceId)",
-      "CREATE TABLE uniqueId ( maxId INT NOT NULL, tableName VARCHAR(100) NOT NULL )");
-  public static final Operation DROP_ALL =
-      Operations.sql("DROP TABLE IF EXISTS st_quota", "DROP TABLE IF EXISTS uniqueId");
+  public static final String TABLES_CREATION = "/org/silverpeas/quota/service/create_table.sql";
   public static final Operation QUOTA_SET_UP = Operations.insertInto("st_quota")
       .columns("id", "quotaType", "resourceId", "minCount", "maxCount", "currentCount", "saveDate")
       .values(4L, "TYPE_THAT_NO_EXISTS", "38", 0L, 100L, 10L, "2012-07-19 00:00:00.0")
       .values(24L, "USERS_IN_DOMAIN", "38", 10L, 500L, 23L, "2012-07-19 00:00:00.0").build();
 
-  @Override
-  protected Operation getDbSetupOperations() {
-    return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, QUOTA_SET_UP);
-  }
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom(TABLES_CREATION).loadInitialDataSetFrom(QUOTA_SET_UP);
 
   @Deployment
   public static Archive<?> createTestArchive() {

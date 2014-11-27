@@ -27,11 +27,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.jpa.RepositoryBasedTest;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -40,8 +41,10 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class ServerMessageBeanRepositoryIntegrationTest extends RepositoryBasedTest {
+public class ServerMessageBeanRepositoryIntegrationTest {
 
+  private static final String TABLE_CREATION =
+      "/com/stratelia/silverpeas/notificationserver/channel/server/create_table.sql";
   private static final Operation MESSAGES_SETUP = Operations.insertInto("ST_ServerMessage")
       .columns("id", "userId", "header", "subject", "body", "sessionId", "type")
       .values(0, 0, null, null, "Toto chez les papoos", "1234", null)
@@ -52,16 +55,13 @@ public class ServerMessageBeanRepositoryIntegrationTest extends RepositoryBasedT
       .columns("maxId", "tableName")
       .values(2, "ST_ServerMessage")
       .build();
-  private static final Operation CLEAN_UP =
-      Operations.deleteAllFrom("UniqueId", "ST_ServerMessage");
+
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION)
+      .loadInitialDataSetFrom(MESSAGES_SETUP, UNIQUE_ID_SETUP);
 
   @Inject
   private ServerMessageBeanRepository repository;
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return Operations.sequenceOf(CLEAN_UP, UNIQUE_ID_SETUP, MESSAGES_SETUP);
-  }
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -80,7 +80,7 @@ public class ServerMessageBeanRepositoryIntegrationTest extends RepositoryBasedT
 
   @Test
   public void testFindFirstExistingMessageByUserIdAndSessionId() {
-    skipNextLaunch();
+    dbSetupRule.skipDbCleaning();
     ServerMessageBean bean = repository.findFirstMessageByUserIdAndSessionId("0", "1234");
     assertThat(bean, notNullValue());
     assertThat(bean.getId(), is("0"));
@@ -90,14 +90,14 @@ public class ServerMessageBeanRepositoryIntegrationTest extends RepositoryBasedT
 
   @Test
   public void testFindFirstMessageByNonExistingUserIdAndSessionId() {
-    skipNextLaunch();
+    dbSetupRule.skipDbCleaning();
     ServerMessageBean bean = repository.findFirstMessageByUserIdAndSessionId("1", "1234");
     assertThat(bean, nullValue());
   }
 
   @Test
   public void testFindFirstMessageByUserIdAndNonExistingSessionId() {
-    skipNextLaunch();
+    dbSetupRule.skipDbCleaning();
     ServerMessageBean bean = repository.findFirstMessageByUserIdAndSessionId("0", "BCD");
     assertThat(bean, nullValue());
   }
