@@ -386,13 +386,12 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupDelete")) {
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupSynchro")) {
-          bHaveToRefreshDomain = jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
+          jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
           bHaveToRefreshDomain = jobDomainSC.importGroup(EncodeHelper.htmlStringToJavaString(
-              request.
-              getParameter("groupName")));
+              request.getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 
