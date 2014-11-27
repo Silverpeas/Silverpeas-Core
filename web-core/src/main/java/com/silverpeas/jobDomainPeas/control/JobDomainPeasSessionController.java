@@ -1223,6 +1223,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     sel.setHostPath(hostPath);
     sel.setGoBackURL(compoURL + "groupManagersUpdate");
     sel.setCancelURL(compoURL + "groupManagersCancel");
+    setDomainIdOnSelection(sel);
     GroupProfileInst profile = m_AdminCtrl.getGroupProfile(getTargetGroup().getId());
     List<String> allUsers = profile.getAllUsers();
     List<String> allGroups = profile.getAllGroups();
@@ -1900,12 +1901,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    if (StringUtil.isDefined(targetDomainId) && !"-1".equals(targetDomainId)) {
-      // Add extra params
-      SelectionUsersGroups sug = new SelectionUsersGroups();
-      sug.setDomainId(targetDomainId);
-      sel.setExtraParams(sug);
-    }
+    setDomainIdOnSelection(sel);
 
     sel.setSelectedElements(SelectionUsersGroups.getUserIds(m_GroupsPath.lastElement().
         getAllUserPage()));
@@ -1915,6 +1911,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     sel.setPopupMode(false);
     sel.setFirstPage(Selection.FIRST_PAGE_CART);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
+  }
+  
+  private void setDomainIdOnSelection(Selection selection) {
+    if (StringUtil.isDefined(targetDomainId) && !Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
+      // Add extra params
+      SelectionUsersGroups sug = new SelectionUsersGroups();
+      sug.setDomainId(targetDomainId);
+      selection.setExtraParams(sug);
+    }
   }
 
   /*
