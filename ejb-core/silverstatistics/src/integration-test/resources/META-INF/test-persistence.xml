@@ -36,8 +36,5 @@
       <property name="hibernate.format_sql" value="false"/>
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
     </properties>
-    <jar-file>lib/${persistence.lib}</jar-file>
-    <jar-file>lib/${persistence.pdc}</jar-file>
-    <jar-file>lib/${persistence.node}</jar-file>
   </persistence-unit>
 </persistence>
