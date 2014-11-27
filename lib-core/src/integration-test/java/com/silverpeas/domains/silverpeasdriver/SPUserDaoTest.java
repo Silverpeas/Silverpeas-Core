@@ -54,7 +54,6 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-@Transactional(Transactional.TxType.SUPPORTS)
 public class SPUserDaoTest extends DataSetTest {
 
   @Rule

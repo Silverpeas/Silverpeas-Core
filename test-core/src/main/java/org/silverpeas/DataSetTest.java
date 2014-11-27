@@ -67,7 +67,7 @@ public abstract class DataSetTest {
   }
 
   @Before
-  public void prepareDataSource() {
+  public final void prepareDataSource() {
     Operation dbSetupOperations = getDbSetupOperations();
     Operation preparation = Operations.sequenceOf(getTablesCreationOperation(), UNIQUE_ID_CREATION,
         dbSetupOperations != null ? dbSetupOperations : Operations.sql(""));

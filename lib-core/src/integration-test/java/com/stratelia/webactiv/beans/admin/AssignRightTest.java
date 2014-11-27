@@ -58,7 +58,6 @@ import static com.stratelia.webactiv.beans.admin.RightAssignationContext.MODE.CO
 import static com.stratelia.webactiv.beans.admin.RightAssignationContext.MODE.REPLACE;
 import static org.junit.Assert.fail;
 
-
 @RunWith(Arquillian.class)
 public class AssignRightTest extends DataSetTest {
 

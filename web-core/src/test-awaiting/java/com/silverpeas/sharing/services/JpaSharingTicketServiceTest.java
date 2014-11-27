@@ -27,47 +27,19 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Recover;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.control.DefaultNodeService;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.publication.control.PublicationBm;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionProvider;
-import org.silverpeas.persistence.TransactionRuntimeException;
-import org.silverpeas.test.TestSilverpeasTrace;
 import org.silverpeas.test.WarBuilder4WebCore;
-import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
-import org.silverpeas.util.*;
-import org.silverpeas.util.clipboard.ClipboardSelection;
-import org.silverpeas.util.exception.FromModule;
-import org.silverpeas.util.exception.RelativeFileAccessException;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.exception.WithNested;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.pool.ConnectionPool;
+import org.silverpeas.util.CollectionUtil;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -111,13 +83,11 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).testFocusedOn(warBuilder -> {
-      warBuilder.addPackages(true, "com.silverpeas.sharing");
-      warBuilder.addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml");
-      warBuilder.addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-          "META-INF/services/org.silverpeas.util.BeanContainer");
-      warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    }).build();
+    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).addPersistenceFeatures()
+        .testFocusedOn(warBuilder -> {
+              warBuilder.addPackages(true, "com.silverpeas.sharing");
+              warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            }).build();
   }
 
 
