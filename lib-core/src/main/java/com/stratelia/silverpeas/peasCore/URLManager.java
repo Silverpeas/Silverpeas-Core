@@ -28,6 +28,7 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -219,7 +220,6 @@ public class URLManager {
    *
    * @param componentName - le nom du jobPeas
    * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
-   * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
   private static String buildStandardURL(String componentName, String sComponentId) {
     return '/' + AdminReference.getAdminService().getRequestRouter(componentName) + '/'
@@ -247,6 +247,16 @@ public class URLManager {
 
   public static String getFullApplicationURL(HttpServletRequest request) {
     return getServerURL(request) + getApplicationURL();
+  }
+
+  public static void setCurrentServerUrl(HttpServletRequest request) {
+    CacheServiceFactory.getRequestCacheService()
+        .put(URLManager.class.getName() + ".currentServerURL", getServerURL(request));
+  }
+
+  public static String getCurrentServerURL() {
+    return CacheServiceFactory.getRequestCacheService()
+        .get(URLManager.class.getName() + ".currentServerURL", String.class);
   }
 
   public static String getServerURL(HttpServletRequest request) {
