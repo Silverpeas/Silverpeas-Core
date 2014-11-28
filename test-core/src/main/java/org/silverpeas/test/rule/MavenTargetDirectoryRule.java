@@ -29,6 +29,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ import static org.junit.Assert.fail;
 /**
  * This rule permits to get some technical path information about maven target directory during a
  * test. This is useful for treatments that manipulates file creation, deletion, etc.
- * <p/>
+ * <p>
  * The resource {@code maven.properties} has to be in the test resource path in order to make
  * this rule functional.
  * @author Yohann Chastagnier
@@ -48,7 +49,7 @@ public class MavenTargetDirectoryRule implements TestRule {
 
   private Properties mavenProperties;
 
-  private Object testInstance;
+  private Class testInstanceClass;
 
   /**
    * Gets the silverpeas version.
@@ -80,7 +81,16 @@ public class MavenTargetDirectoryRule implements TestRule {
    * right context.
    */
   public MavenTargetDirectoryRule(Object testInstance) {
-    this.testInstance = testInstance;
+    this(testInstance.getClass());
+  }
+
+  /**
+   * Mandatory constructor.
+   * @param testInstanceClass the instance class of the current test in order to use class loader
+   * mechanism in right context.
+   */
+  public MavenTargetDirectoryRule(Class<?> testInstanceClass) {
+    this.testInstanceClass = testInstanceClass;
   }
 
   @Override
@@ -110,16 +120,16 @@ public class MavenTargetDirectoryRule implements TestRule {
   private String getMavenProperty(String key) {
     if (mavenProperties == null) {
       mavenProperties = new Properties();
-      try {
-        Logger.getLogger(testInstance.getClass().getName())
-            .info("Reading maven properties from " + testInstance.getClass());
-        mavenProperties
-            .load(testInstance.getClass().getClassLoader().getResourceAsStream("maven.properties"));
-        Logger.getLogger(testInstance.getClass().getName())
+      try (InputStream is = testInstanceClass.getClassLoader()
+          .getResourceAsStream("maven.properties")) {
+        Logger.getLogger(testInstanceClass.getName())
+            .info("Reading maven properties from " + testInstanceClass);
+        mavenProperties.load(is);
+        Logger.getLogger(testInstanceClass.getName())
             .info("Content is:\n" + mavenProperties.toString());
       } catch (Exception ex) {
-        Logger.getLogger(testInstance.getClass().getName())
-            .log(Level.SEVERE, "Class " + testInstance.getClass(), ex);
+        Logger.getLogger(testInstanceClass.getName())
+            .log(Level.SEVERE, "Class " + testInstanceClass, ex);
       }
     }
     String mavenPropertyValue = mavenProperties.getProperty(key, null);

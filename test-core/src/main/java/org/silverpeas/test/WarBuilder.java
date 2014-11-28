@@ -80,12 +80,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * @param <CLASS_TEST> the type of the test.
    */
   protected <CLASS_TEST> WarBuilder(Class<CLASS_TEST> classOfTest) {
-    try {
-      testClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(classOfTest.newInstance());
-    } catch (Exception e) {
-      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-      throw new IllegalStateException("Verifies that the class of test given is the right one...");
-    }
+    testClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(classOfTest);
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     war.addAsResource(resourcePath);
     war.addClasses(DataSourceProvider.class);
