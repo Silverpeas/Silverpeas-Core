@@ -26,13 +26,16 @@ package org.silverpeas.servlets;
 
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -69,8 +72,14 @@ public class SilverListener
   @Override
   public void requestInitialized(final ServletRequestEvent sre) {
     // Clearing cache at this level ensures that it is cleared before that all treatments behind the
-    // request are performed
+    // request are performed.
     clearRequestCache();
+    // Managing the session cache.
+    ServletRequest request = sre.getServletRequest();
+    if (request instanceof HttpServletRequest) {
+      HttpServletRequest httpRequest = (HttpServletRequest) request;
+      URLManager.setCurrentServerUrl(httpRequest);
+    }
   }
 
   // Clear session informations
