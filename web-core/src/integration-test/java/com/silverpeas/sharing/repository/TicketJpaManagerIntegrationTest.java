@@ -81,9 +81,9 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TicketJpaManagerTest extends DataSetTest {
+public class TicketJpaManagerIntegrationTest extends DataSetTest {
 
-  public TicketJpaManagerTest() {
+  public TicketJpaManagerIntegrationTest() {
   }
 
   private TicketRepository service;

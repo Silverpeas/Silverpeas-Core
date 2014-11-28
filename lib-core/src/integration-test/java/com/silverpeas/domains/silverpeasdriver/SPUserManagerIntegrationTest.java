@@ -23,6 +23,7 @@ package com.silverpeas.domains.silverpeasdriver;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
+import org.hamcrest.core.IsInstanceOf;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -30,6 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.test.WarBuilder4LibCore;
@@ -38,7 +41,10 @@ import org.silverpeas.test.rule.DbSetupRule;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -54,31 +60,29 @@ public class SPUserManagerIntegrationTest {
       "/com/silverpeas/domains/silverpeasdriver/create_table.sql";
   public static final Operation SPUSER_INSERTION = Operations.insertInto("DomainSP_User")
       .columns("id", "firstName", "lastName", "login", "password", "company", "passwordValid",
-          "phone", "email")
-      .values(0, "Toto", "Chez-les-Papoos", "toto", "toto", "Silverpeas", "Y", null, null)
-      .values(1000, "bart", "simpson", "bart.simpson", "bart", "Simpson's family", "Y", null,
-          "bart.simpson@silverpeas.org")
+          "phone", "email", "address", "title", "position")
+      .values(0, "Toto", "Chez-les-Papoos", "toto", "toto", "Silverpeas", "Y", null, null, null,
+          null, null)
+      .values(1000, "bart", "simpson", "bart.simpson", "bart", "Simpson's family", "Y", "047669084",
+          "bart.simpson@silverpeas.org", "18 rue des aiguinards", "student", "elder")
       .values(1001, "lisa", "simpson", "lisa.simpson", "lisa", "Simpson's family", "Y", "047669084",
-          "lisa.simpson@silverpeas.org")
+          "lisa.simpson@silverpeas.org", "18 rue des aiguinards", "saxo player", "benjamin")
       .values(1010, "krusty", "theklown", "krusty.theklown", "krusty", "Krusty Show", "Y",
-          "0146221498", "krusty.theklown@silverpeas.org")
-      .build();
+          "0146221498", "krusty.theklown@silverpeas.org", "18 rue des aiguinards", "Klown",
+          "benjamin").build();
 
-  public static final Operation SPGROUP_INSERTION = Operations.insertInto("DomainSP_Group")
-      .columns("id", "superGroupId", "name", "description")
-      .values(5000, null, "Springfield", "Root group for Springfield")
-      .values(5001, 5000, "Elementary School", "Springfield Elementary School")
-      .values(5010, null, "The Fox", "Root group the Fox")
-      .build();
+  public static final Operation SPGROUP_INSERTION =
+      Operations.insertInto("DomainSP_Group").columns("id", "superGroupId", "name", "description")
+          .values(5000, null, "Springfield", "Root group for Springfield")
+          .values(5001, 5000, "Elementary School", "Springfield Elementary School")
+          .values(5010, null, "The Fox", "Root group the Fox").build();
   public static final Operation SPGROUP_SPUSER_RELATION =
-      Operations.insertInto("DomainSP_Group_User_Rel")
-          .columns("groupId", "userId")
+      Operations.insertInto("DomainSP_Group_User_Rel").columns("groupId", "userId")
           .values(5000, 1000)
           .values(5001, 1000)
           .values(5000, 1001)
           .values(5001, 1001)
-          .values(5000, 1010)
-          .build();
+          .values(5000, 1010).build();
 
   @Inject
   private SPUserManager userManager;
@@ -96,10 +100,8 @@ public class SPUserManagerIntegrationTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarFor(SPUserManagerIntegrationTest.class)
-        .addJpaPersistenceFeatures()
-        .testFocusedOn(
-            (warBuilder) -> warBuilder.addClasses(SPUserManager.class, SPUserJpaManager.class,
-                SPUser.class, SPGroup.class))
+        .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> warBuilder
+            .addClasses(SPUserManager.class, SPUserJpaManager.class, SPUser.class, SPGroup.class))
         .build();
   }
 
@@ -128,6 +130,55 @@ public class SPUserManagerIntegrationTest {
     assertThat(actual.getLogin(), is(expected.getLogin()));
     assertThat(actual.getPassword(), is(expected.getPassword()));
     assertThat(actual.getCompany(), is(""));
+  }
+
+  /**
+   * This test checks the ConstraintViolationException linked to SPUser.password column
+   */
+  @Test(expected = ConstraintViolationException.class)
+  @Transactional
+  public void testNewUserWithInvalidPassword() {
+    try {
+      Transaction.performInOne(() -> {
+        SPUser tartempion = getTartempion();
+        tartempion.setPassword(tartempion.getPassword() + "b");
+        return userManager.saveAndFlush(tartempion);
+      });
+    } catch (Exception e) {
+      expectedException
+          .expectCause(is(IsInstanceOf.<Throwable>instanceOf(ConstraintViolationException.class)));
+      throw new ConstraintViolationException("Transactional wrap ConstraintViolation", null);
+    }
+  }
+
+  /**
+   * This test checks the groups loading inside a transactional process
+   */
+  @Test
+  @Transactional
+  public void getExistingSPUserById() {
+    Transaction.performInOne(() -> {
+      SPUser bart = userManager.getById("1000");
+      Set<SPGroup> groups = bart.getGroups();
+      assertThat(groups, is(notNullValue()));
+      assertThat(groups, hasSize(2));
+      assertThat(groups.contains((new SPGroup(5000))), is(true));
+      assertThat(groups.contains((new SPGroup(5001))), is(true));
+      assertThat(bart, is(notNullValue()));
+      assertThat(bart.getFirstname(), is("bart"));
+      assertThat(bart.getLastname(), is("simpson"));
+      assertThat(bart.getId(), is("1000"));
+      assertThat(bart.getPhone(), is("047669084"));
+      assertThat(bart.getAddress(), is("18 rue des aiguinards"));
+      assertThat(bart.getTitle(), is("student"));
+      assertThat(bart.getCompany(), is("Simpson's family"));
+      assertThat(bart.getEmail(), is("bart.simpson@silverpeas.org"));
+      assertThat(bart.getPosition(), is("elder"));
+      assertThat(bart.isPasswordValid(), is(true));
+      assertThat(bart.getLogin(), is("bart.simpson"));
+      assertThat(bart.getPassword(), is("bart"));
+      return null;
+    });
   }
 
   @Test
@@ -194,7 +245,30 @@ public class SPUserManagerIntegrationTest {
     assertThat(actual.getPassword(), is("krusty"));
     assertThat(actual.isPasswordValid(), is(true));
     assertThat(actual.getEmail(), is("krusty.theklown@silverpeas.org"));
-    assertThat(actual.getPosition(), nullValue());
+    assertThat(actual.getPosition(), is("benjamin"));
   }
 
+  static final int PASSWORD_MAX_SIZE = 123;
+
+  private SPUser getTartempion() {
+    PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
+    StringBuilder passwordBuilder = new StringBuilder(encryption.encrypt("tartempion"));
+    for (; passwordBuilder.length() < PASSWORD_MAX_SIZE; ) {
+      passwordBuilder.append("a");
+    }
+    SPUser tartempion = new SPUser();
+    tartempion.setId(2000);
+    tartempion.setFirstname("toto");
+    tartempion.setLastname("tartempion");
+    tartempion.setPosition("elder");
+    tartempion.setPhone("047669084");
+    tartempion.setAddress("18 rue des aiguinards");
+    tartempion.setTitle("student");
+    tartempion.setCompany("Tartempion's family");
+    tartempion.setEmail("toto.tartempion@silverpeas.org");
+    tartempion.setPasswordValid(true);
+    tartempion.setLogin("tartempion");
+    tartempion.setPassword(passwordBuilder.toString());
+    return tartempion;
+  }
 }

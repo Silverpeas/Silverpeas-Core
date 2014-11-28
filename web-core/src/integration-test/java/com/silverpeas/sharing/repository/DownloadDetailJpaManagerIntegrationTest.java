@@ -33,7 +33,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,12 +45,12 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class DownloadDetailJpaManagerTest extends DataSetTest {
+public class DownloadDetailJpaManagerIntegrationTest extends DataSetTest {
 
-  public DownloadDetailJpaManagerTest() {
+  public DownloadDetailJpaManagerIntegrationTest() {
   }
 
   private DownloadDetailRepository service;

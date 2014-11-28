@@ -56,9 +56,9 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-public class JpaSharingTicketServiceTest extends DataSetTest {
+public class JpaSharingTicketServiceIntegrationTest extends DataSetTest {
 
-  public JpaSharingTicketServiceTest() {
+  public JpaSharingTicketServiceIntegrationTest() {
   }
 
   @Inject
