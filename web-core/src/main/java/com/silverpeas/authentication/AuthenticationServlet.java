@@ -23,7 +23,6 @@ package com.silverpeas.authentication;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -177,6 +176,24 @@ public class AuthenticationServlet extends HttpServlet {
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
+      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
+        if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
+            userCanTryAgainToLoginVerifier.getUser().getId())) {
+          // If user can try again to login verifier is activated or if the user has been found
+          // from credential, the login and the domain are stored
+          storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
+              securedAccess);
+          storeDomain(servletResponse, domainId, securedAccess);
+          url = AuthenticationUserVerifierFactory
+              .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
+              .getErrorDestination();
+        } else {
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
+            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN;
+          }
+        }
       } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)) {
         String allowPasswordChange = (String) session.getAttribute(
             Authentication.PASSWORD_CHANGE_ALLOWED);
@@ -210,23 +227,6 @@ public class AuthenticationServlet extends HttpServlet {
             .getDestinationOnFirstLogin(request);
         forward(request, servletResponse, url);
         return;
-      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
-        if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
-            userCanTryAgainToLoginVerifier.getUser().getId())) {
-          // If user can try again to login verifier is activated or if the user has been found
-          // from credential, the login and the domain are stored
-          storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-              securedAccess);
-          storeDomain(servletResponse, domainId, securedAccess);
-          url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
-              .getErrorDestination();
-        } else {
-          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
-            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
-          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
-            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN;
-          }
-        }
       } else if (authenticationParameters.isSsoMode()) {
         // User has been successfully authenticated on AD, but he has no user account on Silverpeas
         // -> login / domain id can be stored
@@ -238,9 +238,8 @@ public class AuthenticationServlet extends HttpServlet {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
       }
     }
-    servletResponse.sendRedirect(servletResponse.encodeRedirectURL(URLManager.getFullApplicationURL(
-        request)
-        + url));
+    servletResponse.sendRedirect(
+        servletResponse.encodeRedirectURL(URLManager.getFullApplicationURL(request) + url));
   }
 
   /**

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.authentication.verifier;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
@@ -68,8 +68,8 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
           "authentication.EX_VERIFY_USER_CAN_LOGIN",
           e);
     }
-    
-    if(getUser() == null) {
+
+    if (getUser() == null || StringUtil.isNotDefined(getUser().getId())) {
       if(tabDomains != null && tabDomains.length > 1) {
         errorDest += ERROR_INCORRECT_LOGIN_PWD_DOMAIN;  
       } else {
@@ -93,7 +93,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
       // For now, if user is not valid (BLOCKED, EXPIRED, DELETED, UNKNOWN) he is considered as BLOCKED.
       throw new AuthenticationUserAccountBlockedException("UserCanLoginVerifier.verify()",
           SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
-          getUser() != null ? "Login=" + getUser().getLogin() : "");
+          "Login=" + getUser().getLogin());
     }
   }
 

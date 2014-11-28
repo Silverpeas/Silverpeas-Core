@@ -586,7 +586,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if he's the anonymous user.
    */
   public boolean isAnonymous() {
-    return getId().equals(getAnonymousUserId());
+    return getId() != null && getId().equals(getAnonymousUserId());
   }
 
   /**
