@@ -28,6 +28,7 @@ import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -246,6 +247,16 @@ public class URLManager {
 
   public static String getFullApplicationURL(HttpServletRequest request) {
     return getServerURL(request) + getApplicationURL();
+  }
+
+  public static void setCurrentServerUrl(HttpServletRequest request) {
+    CacheServiceFactory.getRequestCacheService()
+        .put(URLManager.class.getName() + ".currentServerURL", getServerURL(request));
+  }
+
+  public static String getCurrentServerURL() {
+    return CacheServiceFactory.getRequestCacheService()
+        .get(URLManager.class.getName() + ".currentServerURL", String.class);
   }
 
   public static String getServerURL(HttpServletRequest request) {
