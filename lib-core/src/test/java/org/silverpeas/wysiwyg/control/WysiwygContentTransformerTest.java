@@ -100,7 +100,7 @@ public class WysiwygContentTransformerTest {
             SimpleDocument simpleDocument = new SimpleDocument();
             simpleDocument.setPK(pk);
             SimpleAttachment simpleAttachment = new SimpleAttachment();
-            simpleDocument.setFile(simpleAttachment);
+            simpleDocument.setAttachment(simpleAttachment);
             return simpleDocument;
           }
         });
