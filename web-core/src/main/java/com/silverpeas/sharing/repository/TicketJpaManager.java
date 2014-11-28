@@ -16,7 +16,7 @@ public class TicketJpaManager extends JpaBasicEntityManager<Ticket, UuidIdentifi
   public List<Ticket> findAllTicketForSharedObjectId(final Long sharedObjectId,
       final String ticketType) {
     return listFromNamedQuery("Ticket.findAllTicketForSharedObjectId",
-        newNamedParameters().add("sharedObjectId", sharedObjectId));
+        newNamedParameters().add("sharedObjectId", sharedObjectId).add("ticketType", ticketType));
   }
 
   @Override

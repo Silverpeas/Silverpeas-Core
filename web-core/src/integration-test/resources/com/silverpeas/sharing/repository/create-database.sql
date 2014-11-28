@@ -14,14 +14,14 @@ CREATE TABLE IF NOT EXISTS sb_filesharing_ticket
 	endDate BIGINT NULL,
 	nbAccessMax INTEGER NOT NULL,
 	nbAccess INTEGER NULL,
-	keyfile	VARCHAR(255) NOT NULL,
+	keyfile	VARCHAR(40) NOT NULL,
   shared_object_type VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sb_filesharing_history
 (
 	id BIGINT NOT NULL,
-	keyfile VARCHAR(255) NOT NULL,
+	keyfile VARCHAR(40) NOT NULL,
 	downloadDate BIGINT	NOT NULL,
 	downloadIp VARCHAR(50)	NOT NULL
 );

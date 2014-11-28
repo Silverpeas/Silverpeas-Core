@@ -32,6 +32,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -41,10 +42,15 @@ import java.util.Collection;
  */
 public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
 
-  private NodeService nodeService = NodeService.getInstance();
+  private NodeService nodeService;
 
   NodeAccessControl() {
     super();
+  }
+
+  @PostConstruct
+  void init() {
+    nodeService = NodeService.getInstance();
   }
 
   @Override

@@ -43,6 +43,10 @@ import java.util.List;
 @DiscriminatorColumn(name = "shared_object_type")
 @AttributeOverride(name = "id",
     column = @Column(name = "keyfile", columnDefinition = "varchar(40)", length = 40))
+@NamedQueries({@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
+    query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
+        ".sharedObjectType = :ticketType"), @NamedQuery(name = "Ticket.findAllReservationsForUser",
+    query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")})
 public abstract class Ticket extends AbstractJpaCustomEntity<Ticket, UuidIdentifier>
     implements Serializable {
 

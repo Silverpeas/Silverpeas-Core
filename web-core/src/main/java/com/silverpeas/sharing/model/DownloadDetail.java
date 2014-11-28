@@ -38,7 +38,7 @@ public class DownloadDetail extends AbstractJpaCustomEntity<DownloadDetail, Uniq
 
   private static final long serialVersionUID = -3552579238204831286L;
   @ManyToOne
-  @JoinColumn(name = "keyfile", columnDefinition = "varchar(40)", nullable = false)
+  @JoinColumn(name = "keyfile", columnDefinition = "varchar(255)", nullable = false)
   private Ticket ticket;
   @Column(name = "downloaddate", nullable = false)
   private Long downloadDate;

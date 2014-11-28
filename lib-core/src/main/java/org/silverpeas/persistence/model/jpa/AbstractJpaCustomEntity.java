@@ -37,22 +37,23 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 /**
  * This abstract class must be extended by all Basic JPA entity definitions.
  * All technical data, excepted the identifier, are handled at this level.
- * <p/>
+ * <p>
  * The {@link org.silverpeas.persistence.model.AbstractEntity#performBeforePersist()} and {@link
  * org.silverpeas.persistence.model.AbstractEntity#performBeforeUpdate()}
  * method calls are handled at this level for JPA.
- * <p/>
+ * <p>
  * Please be careful into the child entity classes about the use of @PrePersist and @PreUpdate
  * annotations. In most of cases you don't need to use them, but to override {@link
  * org.silverpeas.persistence.model.AbstractEntity#performBeforePersist} or {@link
  * org.silverpeas.persistence.model.AbstractEntity#performBeforeUpdate} methods
  * without forgetting to play the super call.
- * <p/>
+ * <p>
  * @param <ENTITY> specify the class name of the entity itself which is handled by a repository
  * manager.
  * @param <IDENTIFIER_TYPE> the identifier class name used by {@link ENTITY} for its primary key
@@ -61,8 +62,8 @@ import java.util.logging.Logger;
  */
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity, IDENTIFIER_TYPE
-    extends EntityIdentifier>
+public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity,
+    IDENTIFIER_TYPE extends EntityIdentifier>
     extends AbstractCustomEntity<ENTITY, IDENTIFIER_TYPE> {
 
   private static final long serialVersionUID = 3955905287437500278L;
@@ -96,10 +97,20 @@ public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity,
   private void initializeEntityClasses() {
     if (entityIdentifierClass == null) {
       try {
-        entityIdentifierClass = ((Class<IDENTIFIER_TYPE>) ((ParameterizedType) this.getClass().
-            getGenericSuperclass()).getActualTypeArguments()[1]);
-
-        tableName = this.getClass().getAnnotation(Table.class).name();
+        Type type = this.getClass().getGenericSuperclass();
+        // Take Entity extended subclass into account (Inheritance strategy)
+        if (type instanceof Class) {
+          ParameterizedType parameterizedType =
+              (ParameterizedType) Class.forName(((Class) type).getName()).getGenericSuperclass();
+          entityIdentifierClass =
+              ((Class<IDENTIFIER_TYPE>) parameterizedType.getActualTypeArguments()[1]);
+          tableName = Class.forName(this.getClass().getGenericSuperclass().getTypeName())
+              .getAnnotation(Table.class).name();
+        } else if (type instanceof ParameterizedType) {
+          entityIdentifierClass =
+              (Class<IDENTIFIER_TYPE>) ((ParameterizedType) type).getActualTypeArguments()[1];
+          tableName = this.getClass().getAnnotation(Table.class).name();
+        }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }

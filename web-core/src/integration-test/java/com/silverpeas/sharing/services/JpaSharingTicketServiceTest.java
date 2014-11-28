@@ -37,11 +37,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4WebCore;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.CollectionUtil;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -83,11 +85,10 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).addPersistenceFeatures()
-        .testFocusedOn(warBuilder -> {
-              warBuilder.addPackages(true, "com.silverpeas.sharing");
-              warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-            }).build();
+    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).testFocusedOn(warBuilder -> {
+      warBuilder.addPackages(true, "com.silverpeas.sharing");
+      warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    }).build();
   }
 
 
@@ -95,6 +96,7 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
    * Test of getTicketsByUser method, of class JpaSharingTicketService.
    */
   @Test
+  @Transactional
   public void testGetTicketsByUser() {
     String userId = "0";
     List<Ticket> result = service.getTicketsByUser(userId);
@@ -114,8 +116,9 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
    * Test of deleteTicketsByFile method, of class JpaSharingTicketService.
    */
   @Test
+  @Transactional
   public void testDeleteTicketsForSharedObject() {
-    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    String key = "965e985d-c711-47b3-a467-62779505965e";
     Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
         new Date(1330988399000L), -1);
     expResult.setNbAccess(1);
@@ -125,9 +128,9 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
     service.deleteTicketsForSharedObject(5L, "Attachment");
     result = service.getTicket(key);
     assertThat(result, is(nullValue()));
-    result = service.getTicket("9da7a83a-9c05-4692-8e46-a9c1234a9da7a83a-9c05-4692-8e46-a9c1234a");
+    result = service.getTicket("9da7a83a-9c05-4692-8e46-a9c1234a9da7");
     assertThat(result, is(nullValue()));
-    result = service.getTicket("2da7a83a-9c05-4692-8e46-a9c1234a9da7a83a-9c05-4692-8e46-a9c1234a");
+    result = service.getTicket("2da7a83a-9c05-4692-8e46-a9c1234a9da7");
     assertThat(result, is(notNullValue()));
   }
 
@@ -145,6 +148,7 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
    * Test of createTicket method, of class JpaSharingTicketService.
    */
   @Test
+  @Transactional
   public void testCreateTicket() {
     Ticket ticket = new SimpleFileTicket(5, "kmelia2", creator, new Date(1330972778622L),
         new Date(1330988399000L), -1);
@@ -159,6 +163,7 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
    * Test of addDownload method, of class JpaSharingTicketService.
    */
   @Test
+  @Transactional
   public void testAddDownload() {
     Ticket expResult = createExpectedTicketWithOneDownload();
     Ticket result = service.getTicket(expResult.getToken());
@@ -176,20 +181,24 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
    * Test of updateTicket method, of class JpaSharingTicketService.
    */
   @Test
+  @Transactional
   public void testUpdateTicket() {
-    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
-    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-        new Date(1330988399000L), -1);
-    expResult.setNbAccess(1);
-    Ticket result = service.getTicket(key);
-    assertThat(result, is(expResult));
-    result.setNbAccess(5);
-    result.setEndDate(null);
-    result.setUpdateDate(new Date());
-    result.setLastModifier(creator);
-    result.setNbAccessMax(10);
-    service.updateTicket(result);
-    expResult = service.getTicket(key);
+    String key = "965e985d-c711-47b3-a467-62779505965e";
+    final Ticket result = Transaction.performInOne(() -> {
+      Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+          new Date(1330988399000L), -1);
+      expResult.setNbAccess(1);
+      Ticket ticketToUpdate = service.getTicket(key);
+      assertThat(ticketToUpdate, is(expResult));
+      ticketToUpdate.setNbAccess(5);
+      ticketToUpdate.setEndDate(null);
+      ticketToUpdate.setUpdateDate(new Date());
+      ticketToUpdate.setLastModifier(creator);
+      ticketToUpdate.setNbAccessMax(10);
+      service.updateTicket(ticketToUpdate);
+      return ticketToUpdate;
+    });
+    Ticket expResult = service.getTicket(key);
     assertEquals(result, expResult);
   }
 
@@ -197,20 +206,24 @@ public class JpaSharingTicketServiceTest extends DataSetTest {
    * Test of deleteTicket method, of class JpaSharingTicketService.
    */
   @Test
+  @Transactional
   public void testDeleteTicket() {
-    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
-    Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
-        new Date(1330988399000L), -1);
-    expResult.setNbAccess(1);
-    Ticket result = service.getTicket(key);
-    assertThat(result, is(expResult));
-    service.deleteTicket(key);
-    result = service.getTicket(key);
-    assertThat(result, is(nullValue()));
+    Transaction.performInOne(() -> {
+      String key = "965e985d-c711-47b3-a467-62779505965e";
+      Ticket expResult = new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330972778622L),
+          new Date(1330988399000L), -1);
+      expResult.setNbAccess(1);
+      Ticket result = service.getTicket(key);
+      assertThat(result, is(expResult));
+      service.deleteTicket(key);
+      result = service.getTicket(key);
+      assertThat(result, is(nullValue()));
+      return null;
+    });
   }
 
   private Ticket createExpectedTicketWithOneDownload() {
-    String key = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    String key = "965e985d-c711-47b3-a467-62779505965e";
     Ticket existingTicket =
         new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330971989028L), null, -1);
     existingTicket.setNbAccess(1);
