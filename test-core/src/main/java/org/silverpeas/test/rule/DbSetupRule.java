@@ -40,7 +40,10 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,49 +70,50 @@ public class DbSetupRule implements TestRule {
 
   /**
    * Constructs a new instance of this rule by specifying the SQL scripts containing the
-   * statements to create the different tables required by the integration test.
+   * statements to create the different tables required by the integration test. The creation of
+   * the table UniqueId is taken in charge automatically by this rule, so you don't have to
+   * specify it.
    * </p>
    * In order to work fine, it is not recommended to insert an initial data set with these
    * scripts. For doing a such purpose, please invoke one of the
    * {@link #loadInitialDataSetFrom(com.ninja_squad.dbsetup.operation.Operation...)} or
    * {@link #loadInitialDataSetFrom(String...)} methods.
-   * @param sqlScripts the SQL scripts that creates the required tables in the database used for
-   * tests.
+   * @param sqlScripts the path of the SQL scripts in the classpath and from which the database
+   * will be set up.
    */
   public static final DbSetupRule createTablesFrom(String... sqlScripts) {
     return new DbSetupRule(sqlScripts);
   }
 
+  /**
+   * Loads the specified SQL scripts in order to insert into the database an initial data set
+   * before
+   * any test running.
+   * @param sqlScripts the path of the SQL scripts in the classpath and from which an initial data
+   * set will be inserted in the database.
+   * @return itself.
+   */
   public DbSetupRule loadInitialDataSetFrom(String... sqlScripts) {
     dataSetLoading = Operations.sequenceOf(dataSetLoading, loadOperationFromSqlScripts(sqlScripts));
     return this;
   }
 
+  /**
+   * Loads the specified SQL scripts in order to insert into the database an initial data set
+   * before
+   * any test running.
+   * @param insertionOperation the operation to use for inserting an initial data set.
+   * @return itself.
+   */
   public DbSetupRule loadInitialDataSetFrom(Operation... insertionOperation) {
     dataSetLoading =
         Operations.sequenceOf(dataSetLoading, Operations.sequenceOf(insertionOperation));
     return this;
   }
 
-  /**
-   * Constructs a new instance of this rule by specifying the different SQL scripts to run to
-   * setting up the database. The SQL scripts should be located in the same package of the test
-   * class.
-   * @param sqlScripts the SQL scripts to run. If an XML file is specified, then it is used to
-   * insert an initial data set, otherwise it is expected the data set are loaded by the SQL
-   * scripts.
-   */
-  public DbSetupRule(String... sqlScripts) {
+  private DbSetupRule(String... sqlScripts) {
     tableCreation = loadOperationFromSqlScripts(sqlScripts);
     tableNames.add("UniqueId");
-  }
-
-  /**
-   * Asks to not clean up the database during this test. It is useful with integration tests
-   * performing only read access to the database.
-   */
-  public void skipDbCleaning() {
-    dbSetupTracker.skipNextLaunch();
   }
 
   /**
@@ -129,44 +133,23 @@ public class DbSetupRule implements TestRule {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        prepareDataSource();
-        test.evaluate();
+        try {
+          setUpDataSource();
+          test.evaluate();
+        } finally {
+          cleanUpDataSource();
+        }
       }
     };
   }
 
-  private void prepareDataSource() {
-    Operation cleanUp = Operations.deleteAllFrom(tableNames);
+  private void setUpDataSource() {
     Operation preparation =
-        Operations.sequenceOf(UNIQUE_ID_CREATION, tableCreation, cleanUp, dataSetLoading);
+        Operations.sequenceOf(UNIQUE_ID_CREATION, tableCreation, dataSetLoading);
     DataSource dataSource = DataSourceProvider.getDataSource();
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
     dbSetupTracker.launchIfNecessary(dbSetup);
   }
-
-  /*private Operation loadOperationFromSqlScripts(String[] scripts) {
-    List<String> statements = new ArrayList<>();
-    for (int i = 0; i < scripts.length; i++) {
-      if (FilenameUtils.getExtension(scripts[i]).toLowerCase().equals("sql")) {
-        try {
-          InputStream sqlScriptInput = getClass().getResourceAsStream(scripts[i]);
-          if (sqlScriptInput != null) {
-            StringWriter sqlScriptContent = new StringWriter();
-            IOUtils.copy(sqlScriptInput, sqlScriptContent);
-            if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
-              String[] sql = sqlScriptContent.toString().split(";");
-              statements.addAll(Arrays.asList(sql));
-            }
-          }
-        } catch (IOException e) {
-          Logger.getLogger(getClass().getSimpleName())
-              .log(Level.SEVERE, "Error while loading the SQL script {0}!", scripts[i]);
-        }
-      }
-    }
-    Operation cleanUpOperation = prepareCleanUpOperation(statements);
-    return Operations.sequenceOf(cleanUpOperation, Operations.sql(statements));
-  }*/
 
   private Operation loadOperationFromSqlScripts(String[] scripts) {
     List<Operation> statements = new ArrayList<>();
@@ -201,5 +184,26 @@ public class DbSetupRule implements TestRule {
         tableNames.add(matcher.group(3));
       }
     }
+  }
+
+  private void cleanUpDataSource() throws SQLException {
+    // the deletion must occurs in the reverse order from the insertion to take into account the
+    // constrains.
+    Collections.reverse(tableNames);
+    Operation cleanUp = Operations.deleteAllFrom(tableNames);
+    try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
+      cleanUp.execute(connection, null);
+    }
+    /*try (Connection connection = DataSourceProvider.getDataSource().getConnection();
+         PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
+         ResultSet rs = statement.executeQuery()) {
+      for (; rs.next(); ) {
+        String tableName = rs.getString(1);
+        try (PreparedStatement dropStatement = connection.prepareStatement(
+            "DROP  TABLE " + tableName)) {
+          dropStatement.execute();
+        }
+      }
+    }*/
   }
 }

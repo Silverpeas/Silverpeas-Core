@@ -41,7 +41,9 @@ import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -59,7 +61,10 @@ import static com.stratelia.webactiv.beans.admin.RightAssignationContext.MODE.RE
 import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
-public class AssignRightTest extends DataSetTest {
+public class AssignRightTest  {
+
+  private static final String SCRIPTS_PATH =
+      "/" + AssignRightTest.class.getPackage().getName().replaceAll("\\.", "/");
 
   private final static boolean BUT_NOT_RIGHT_OBJECTS = false;
   private final static boolean WITH_RIGHT_OBJECTS = true;
@@ -81,14 +86,9 @@ public class AssignRightTest extends DataSetTest {
   private Administration administrationService;
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(this, "create-assign-rights-database.sql",
-          "test-admin-assign-rights-dataset.xml");
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return null;
-  }
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom(SCRIPTS_PATH + "/create-assign-rights-database.sql")
+          .loadInitialDataSetFrom(SCRIPTS_PATH + "/insert-assign-rights-dataset.sql");
 
   @Before
   public void setUp() throws Exception {
@@ -110,6 +110,10 @@ public class AssignRightTest extends DataSetTest {
     return WarBuilder4LibCore.onWarFor(AssignRightTest.class).addCommonBasicUtilities()
         .addSilverpeasExceptionBases().testFocusedOn(
             (warBuilder) -> ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
+  }
+
+  @Test
+  public void emptyTest() {
   }
 
   /*
@@ -633,4 +637,9 @@ public class AssignRightTest extends DataSetTest {
       throw new RuntimeException(e);
     }
   }
+
+  /*@Override
+  protected Operation getDbSetupOperations() {
+    return null;
+  }*/
 }

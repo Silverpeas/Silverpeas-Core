@@ -80,7 +80,6 @@ public class ServerMessageBeanRepositoryIntegrationTest {
 
   @Test
   public void testFindFirstExistingMessageByUserIdAndSessionId() {
-    dbSetupRule.skipDbCleaning();
     ServerMessageBean bean = repository.findFirstMessageByUserIdAndSessionId("0", "1234");
     assertThat(bean, notNullValue());
     assertThat(bean.getId(), is("0"));
@@ -90,14 +89,12 @@ public class ServerMessageBeanRepositoryIntegrationTest {
 
   @Test
   public void testFindFirstMessageByNonExistingUserIdAndSessionId() {
-    dbSetupRule.skipDbCleaning();
     ServerMessageBean bean = repository.findFirstMessageByUserIdAndSessionId("1", "1234");
     assertThat(bean, nullValue());
   }
 
   @Test
   public void testFindFirstMessageByUserIdAndNonExistingSessionId() {
-    dbSetupRule.skipDbCleaning();
     ServerMessageBean bean = repository.findFirstMessageByUserIdAndSessionId("0", "BCD");
     assertThat(bean, nullValue());
   }

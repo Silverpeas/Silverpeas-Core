@@ -149,8 +149,8 @@ public class DbUnitLoadingRule implements TestRule {
   }
 
   private ReplacementDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet =
-        new ReplacementDataSet(new FlatXmlDataSetBuilder().build(getResourceFile(xmlDataSet)));
+    ReplacementDataSet dataSet = new ReplacementDataSet(
+        new FlatXmlDataSetBuilder().setColumnSensing(true).build(getResourceFile(xmlDataSet)));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }

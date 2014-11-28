@@ -80,7 +80,6 @@ public class POPUPMessageBeanRepositoryIntegrationTest {
 
   @Test
   public void findFirstExistingMessageByUserId() {
-    dbSetupRule.skipDbCleaning();
     POPUPMessageBean bean = repository.findFirstMessageByUserId("0");
     assertThat(bean, notNullValue());
     assertThat(bean.getUserId(), is(0L));
@@ -94,7 +93,6 @@ public class POPUPMessageBeanRepositoryIntegrationTest {
 
   @Test
   public void findFirstNonExistingMessageByUserId() {
-    dbSetupRule.skipDbCleaning();
     POPUPMessageBean bean = repository.findFirstMessageByUserId("1");
     assertThat(bean, nullValue());
   }
