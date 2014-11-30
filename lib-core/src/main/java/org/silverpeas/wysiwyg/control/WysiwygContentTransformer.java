@@ -36,8 +36,8 @@ import javax.mail.internet.MimeBodyPart;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -212,7 +212,7 @@ public class WysiwygContentTransformer {
    */
   private static Set<String> extractUniqueData(final String fromWysiwygContent,
       List<Pattern> withPatterns) {
-    Set<String> data = new HashSet<String>();
+    Set<String> data = new LinkedHashSet<String>();
     for (Pattern pattern : withPatterns) {
       data.addAll(extractUniqueData(fromWysiwygContent, pattern));
     }
@@ -227,7 +227,7 @@ public class WysiwygContentTransformer {
    */
   private static Set<String> extractUniqueData(final String fromWysiwygContent,
       Pattern withPattern) {
-    Set<String> data = new HashSet<String>();
+    Set<String> data = new LinkedHashSet<String>();
     Matcher matcher = withPattern.matcher(fromWysiwygContent);
     while (matcher.find()) {
       data.add(matcher.group(1));
