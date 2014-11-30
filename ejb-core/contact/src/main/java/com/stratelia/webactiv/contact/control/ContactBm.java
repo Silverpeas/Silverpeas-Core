@@ -153,8 +153,8 @@ public interface ContactBm {
    */
   public List<CompleteContact> getVisibleContacts(String instanceId);
   
-  public void index(ContactPK pk);
+  public void index(ContactPK contactPK);
   
-  public void deleteIndex(ContactPK pk);
+  public void deleteIndex(ContactPK contactPK);
 
 }

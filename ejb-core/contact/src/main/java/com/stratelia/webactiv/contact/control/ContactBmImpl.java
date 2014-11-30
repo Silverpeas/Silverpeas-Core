@@ -465,8 +465,8 @@ public class ContactBmImpl implements ContactBm {
     }
   }
   
-  public void index(ContactPK pk) {
-    CompleteContact contact = getCompleteContact(pk);
+  public void index(ContactPK contactPK) {
+    CompleteContact contact = getCompleteContact(contactPK);
     createIndex(contact);
   }
 
@@ -499,6 +499,7 @@ public class ContactBmImpl implements ContactBm {
 
   /**
    * Called on : - deleteContact()
+   * @param contactPK
    */
   public void deleteIndex(ContactPK contactPK) {
     IndexEntryPK indexEntry = new IndexEntryPK(contactPK.getComponentName(), "Contact", contactPK.getId());
