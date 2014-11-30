@@ -23,20 +23,18 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -74,35 +72,29 @@ public class WysiwygContentTransformerTest {
   private static final String LINK_ATTACHMENT_ID = "72f56ba9-b089-40c4-b16c-255e93658259";
   private static final String LINK_ATTACHMENT_ID_BIS = "72f56ba9-b089-40c4-b16c-255e93658259-bis";
 
-  private AttachmentService oldAttachmentService;
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Before
   public void setup() throws Exception {
-    // Injecting by reflection the mock instance
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    oldAttachmentService =
-        (AttachmentService) FieldUtils.readDeclaredField(attachmentServiceFactory, "service", true);
     AttachmentService mockAttachmentService = mock(AttachmentService.class);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", mockAttachmentService, true);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
+        .thenReturn(mockAttachmentService);
 
     /*
     Mocking methods of attachment service instance
      */
 
-    // searchDocumentById returns always a simple document which the PK is the one specified from
-    // method parameters.
+    // searchDocumentById returns always a simple document which the PK is the one specified
+    // from method parameters.
     when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
-        .then(new Answer<SimpleDocument>() {
-          @Override
-          public SimpleDocument answer(final InvocationOnMock invocation) throws Throwable {
-            SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
-            SimpleDocument simpleDocument = new SimpleDocument();
-            simpleDocument.setPK(pk);
-            SimpleAttachment simpleAttachment = new SimpleAttachment();
-            simpleDocument.setFile(simpleAttachment);
-            return simpleDocument;
-          }
+        .then(invocation -> {
+          SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
+          SimpleDocument simpleDocument = new SimpleDocument();
+          simpleDocument.setPK(pk);
+          SimpleAttachment simpleAttachment = new SimpleAttachment();
+          simpleDocument.setAttachment(simpleAttachment);
+          return simpleDocument;
         });
 
     /*
@@ -113,14 +105,6 @@ public class WysiwygContentTransformerTest {
     when(mockHttpServletRequest.getServerName()).thenReturn("www.unit-test-silverpeas.org");
     when(mockHttpServletRequest.getServerPort()).thenReturn(80);
     URLManager.setCurrentServerUrl(mockHttpServletRequest);
-  }
-
-  @After
-  public void destroy() throws Exception {
-    // Replacing by reflection the mock instances by the previous extracted one.
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", oldAttachmentService, true);
   }
 
   @Test

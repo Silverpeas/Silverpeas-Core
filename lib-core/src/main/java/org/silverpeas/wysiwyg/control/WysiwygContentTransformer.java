@@ -24,7 +24,7 @@
 package org.silverpeas.wysiwyg.control;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -189,7 +189,7 @@ public class WysiwygContentTransformer {
       String attachmentId =
           extractUniqueData(attachmentLink, ATTACHMENT_ID_FROM_LINK_PATTERNS).iterator().next();
       SimpleDocumentPK sdPK = new SimpleDocumentPK(attachmentId);
-      attachmentsByLinks.put(attachmentLink, AttachmentServiceFactory.getAttachmentService().
+      attachmentsByLinks.put(attachmentLink, AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(sdPK, null));
     }
     return attachmentsByLinks;

@@ -23,12 +23,12 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.cache.service.CacheServiceFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -250,12 +250,12 @@ public class URLManager {
   }
 
   public static void setCurrentServerUrl(HttpServletRequest request) {
-    CacheServiceFactory.getRequestCacheService()
+    CacheServiceProvider.getRequestCacheService()
         .put(URLManager.class.getName() + ".currentServerURL", getServerURL(request));
   }
 
   public static String getCurrentServerURL() {
-    return CacheServiceFactory.getRequestCacheService()
+    return CacheServiceProvider.getRequestCacheService()
         .get(URLManager.class.getName() + ".currentServerURL", String.class);
   }
 
