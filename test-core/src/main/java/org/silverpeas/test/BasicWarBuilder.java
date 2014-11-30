@@ -44,8 +44,7 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
    */
   public static <T> BasicWarBuilder onWarFor(Class<T> test) {
     BasicWarBuilder warBuilder = new BasicWarBuilder(test);
+    warBuilder.addMavenDependencies("javax.jcr:jcr");
     return warBuilder;
   }
-
-
 }

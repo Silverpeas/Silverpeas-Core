@@ -319,7 +319,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
 
   protected NodeService getNodeService() {
     try {
-      return NodeService.getInstance();
+      return NodeService.get();
     } catch (Exception ex) {
       throw new PdcRuntimeException(getClass().getSimpleName() + ".getNodeService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);

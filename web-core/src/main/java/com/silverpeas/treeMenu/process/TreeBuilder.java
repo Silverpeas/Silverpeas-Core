@@ -226,7 +226,7 @@ public class TreeBuilder {
 
   private static NodeService getNodeBm() {
     try {
-      return NodeService.getInstance();
+      return NodeService.get();
     } catch (Exception e) {
       throw new MenuRuntimeException("TreeBuilder.getNodeService()", SilverpeasRuntimeException.ERROR,
           "treeMenu.EX_FAILED_BUILDING_NODEBM_HOME", e);

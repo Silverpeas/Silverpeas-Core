@@ -24,18 +24,25 @@
 
 package org.silverpeas.test.lang;
 
+import org.silverpeas.util.lang.DefaultSystemWrapper;
 import org.silverpeas.util.lang.SystemWrapper;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * Default implementation that is nothing more than a delegate of {@link System} class.
  * @author Yohann Chastagnier
  */
 @Singleton
-public class TestSystemWrapper implements SystemWrapper {
+@Alternative
+@Priority(APPLICATION + 10)
+public class TestSystemWrapper extends DefaultSystemWrapper {
 
   private Map<String, String> env = null;
 

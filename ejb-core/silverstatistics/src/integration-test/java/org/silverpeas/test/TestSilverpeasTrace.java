@@ -27,11 +27,15 @@ package org.silverpeas.test;
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.silverpeas.util.StringUtil;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * Empty implementation for integration tests.
@@ -40,6 +44,8 @@ import java.util.logging.Logger;
  * @author Yohann Chastagnier
  */
 @Singleton
+@Alternative
+@Priority(APPLICATION + 10)
 public class TestSilverpeasTrace implements SilverpeasTrace {
 
   private static List<String> debugMessages = new ArrayList<>();

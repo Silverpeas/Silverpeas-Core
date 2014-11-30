@@ -50,7 +50,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
 
   @PostConstruct
   void init() {
-    nodeService = NodeService.getInstance();
+    nodeService = NodeService.get();
   }
 
   @Override

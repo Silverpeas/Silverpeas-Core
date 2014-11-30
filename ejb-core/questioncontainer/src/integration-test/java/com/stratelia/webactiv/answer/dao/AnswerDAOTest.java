@@ -24,22 +24,13 @@
 
 package com.stratelia.webactiv.answer.dao;
 
-import com.ninja_squad.dbsetup.DbSetup;
-import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
-import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -48,34 +39,19 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionProvider;
-import org.silverpeas.persistence.TransactionRuntimeException;
-import org.silverpeas.test.TestSilverpeasTrace;
-import org.silverpeas.test.WarBuilder;
-import org.silverpeas.util.*;
-import org.silverpeas.util.exception.FromModule;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.exception.WithNested;
-import org.silverpeas.util.pool.ConnectionPool;
+import org.silverpeas.DataSetTest;
+import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 
 /**
  * @author ebonnet
  */
 @RunWith(Arquillian.class)
-public class AnswerDAOTest {
-
-  @Resource(lookup = "java:/datasources/silverpeas")
-  private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
+public class AnswerDAOTest extends DataSetTest {
 
   public static final Operation TABLES_CREATION =
       Operations.sql("CREATE TABLE IF NOT EXISTS SB_Question_Answer" +
@@ -108,42 +84,22 @@ public class AnswerDAOTest {
       .values(1022, 179, "Pomme de terre", 0, 0, "", 0, 0, null, null)
       .values(1023, 179, "Patate", 3, 1, "", 1, 0, null, null).build();
 
-  @Before
-  public void prepareDataSource() {
-    Operation preparation = Operations.sequenceOf(DROP_ALL, TABLES_CREATION, INSERT_DATA);
-    DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
-    dbSetupTracker.launchIfNecessary(dbSetup);
+  @Override
+  protected Operation getDbSetupOperations() {
+    return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, INSERT_DATA);
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
-            WAPrimaryKey.class, ForeignPK.class); //TestSilverpeasTrace.class,
-    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
-        SilverpeasRuntimeException.class, UtilException.class);
-    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
-        ExtractionList.class, ExtractionComplexList.class, AssertArgument.class);
-    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        TransactionRuntimeException.class);
-    war.addPackages(false, "org.silverpeas.persistence.jdbc");
-    war.addPackages(true, "com.stratelia.webactiv.answer").addAsLibraries(
-        Maven.resolver().loadPomFromFile("pom.xml")
-            .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-                "commons-codec:commons-codec", "commons-io:commons-io",
-                "org.silverpeas.core:test-core").withTransitivity().asFile());
-    war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
-    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
-        .addPackages(true, "org.silverpeas.initialization")
-        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "META-INF/services/org.silverpeas.util.BeanContainer")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    return war;
-  }
-
-
-  private Connection getConnection() throws SQLException {
-    return this.dataSource.getConnection();
+    return BasicWarBuilder.onWarFor(AnswerDAOTest.class)
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .addMavenDependencies("javax.jcr:jcr")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
+        .testFocusedOn(war -> war.addPackages(true, "com.stratelia.webactiv.answer"))
+        .build();
   }
 
 

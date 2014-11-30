@@ -71,7 +71,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
 
-  private MavenTargetDirectoryRule testClassMavenTargetDirectoryRule;
+  private final Class<?> classOfTest;
+  private MavenTargetDirectoryRule testCoreClassMavenTargetDirectoryRule;
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
@@ -80,10 +81,39 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * @param <CLASS_TEST> the type of the test.
    */
   protected <CLASS_TEST> WarBuilder(Class<CLASS_TEST> classOfTest) {
-    testClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(classOfTest);
+    this.classOfTest = classOfTest;
+    testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     war.addAsResource(resourcePath);
     war.addClasses(DataSourceProvider.class);
+  }
+
+  /**
+   * Creates a maven dependencies (when not declared in pom.xml of current project).
+   * @param mavenDependencies the canonical maven dependencies to add.
+   * @return the instance of the configurator.
+   */
+  @SuppressWarnings("unchecked")
+  public WarBuilder<T> createMavenDependencies(String... mavenDependencies) {
+    for (String mavenDependency : mavenDependencies) {
+      addMavenDependencies(
+          mavenDependency + ":" + testCoreClassMavenTargetDirectoryRule.getSilverpeasVersion());
+    }
+    return this;
+  }
+
+  /**
+   * Creates a maven dependencies (when not declared in pom.xml of current project).
+   * @param mavenDependencies the canonical maven dependencies to add.
+   * @return the instance of the configurator.
+   */
+  @SuppressWarnings("unchecked")
+  public WarBuilder<T> createMavenDependenciesWithPersistence(String... mavenDependencies) {
+    for (String mavenDependency : mavenDependencies) {
+      addMavenDependenciesWithPersistence(
+          mavenDependency + ":" + testCoreClassMavenTargetDirectoryRule.getSilverpeasVersion());
+    }
+    return this;
   }
 
   /**
@@ -107,7 +137,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     addMavenDependencies(mavenDependencies);
     for (String mavenDependency : mavenDependencies) {
       String jarLib = "lib/" + mavenDependency.split(":")[1] + "-" +
-          testClassMavenTargetDirectoryRule.getSilverpeasVersion() +
+          testCoreClassMavenTargetDirectoryRule.getSilverpeasVersion() +
           ".jar";
       logInfo("Adding persistence reference for: " + jarLib);
       jarLibForPersistence.add("<jar-file>" + jarLib + "</jar-file>");
@@ -186,13 +216,14 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
           persistenceXmlContent = IOUtils.toString(is);
         }
         File persistenceXml = FileUtils
-            .getFile(testClassMavenTargetDirectoryRule.getResourceTestDirFile(), "META-INF",
-                "dynamic-test-persistence.xml");
+            .getFile(classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(),
+                "META-INF", "dynamic-test-persistence.xml");
         logInfo("Setting persistent xml descriptor: " + persistenceXml.getPath());
         persistenceXmlContent = persistenceXmlContent
             .replace("<!-- @JAR_FILES@ -->", String.join("\n", jarLibForPersistence));
         FileUtils.writeStringToFile(persistenceXml, persistenceXmlContent);
-        logInfo("Filling the content:\n" + persistenceXmlContent);
+        logInfo(
+            "Filling '" + persistenceXml.getPath() + "'\nwith content:\n" + persistenceXmlContent);
         logInfo("Adding completed META-INF/persistence.xml");
         addAsResource("META-INF/" + persistenceXml.getName(), "META-INF/persistence.xml");
       }

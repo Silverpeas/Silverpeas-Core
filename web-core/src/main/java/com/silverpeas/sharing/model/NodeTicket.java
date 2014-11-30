@@ -71,7 +71,7 @@ public class NodeTicket extends Ticket {
 
   @Override
   public ShareableResource<NodeDetail> getResource() {
-    NodeService nodeService = NodeService.getInstance();
+    NodeService nodeService = NodeService.get();
     NodeDetail node = nodeService.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
         getComponentId()));
     if (node != null) {

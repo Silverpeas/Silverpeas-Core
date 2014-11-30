@@ -264,7 +264,7 @@ public class GetNodes extends HttpServlet {
   }
 
   private NodeService getNodeBm() {
-    return NodeService.getInstance();
+    return NodeService.get();
   }
 
   private boolean isPublicationAllowedOnRoot(NodePK pk, MainSessionController session) {

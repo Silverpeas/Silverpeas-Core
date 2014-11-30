@@ -37,7 +37,7 @@ import org.silverpeas.util.ServiceProvider;
  */
 public interface NodeService {
 
-  static NodeService getInstance() {
+  static NodeService get() {
     return ServiceProvider.getService(NodeService.class);
   }
 

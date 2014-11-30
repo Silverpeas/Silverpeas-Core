@@ -121,7 +121,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
   
   protected NodeService getNodeBm() {
     try {
-      return NodeService.getInstance();
+      return NodeService.get();
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
