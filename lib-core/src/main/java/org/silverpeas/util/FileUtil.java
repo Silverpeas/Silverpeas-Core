@@ -37,6 +37,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import javax.activation.MimetypesFileTypeMap;
 import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.io.FileUtils;
@@ -248,7 +249,12 @@ public class FileUtil implements MimeTypes {
       }
     } catch (MissingResourceException mex) {
       //Let's try with the real name
-      bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+      try {
+        bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+      } catch (MissingResourceException finalmex) {
+        Logger.getLogger(FileUtil.class.getName()).severe(mex.getMessage());
+        throw mex;
+      }
     }
     return bundle;
   }

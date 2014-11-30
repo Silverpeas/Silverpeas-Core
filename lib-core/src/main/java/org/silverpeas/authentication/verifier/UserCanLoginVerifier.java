@@ -25,14 +25,13 @@ package org.silverpeas.authentication.verifier;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.exception.SilverpeasException;
-
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.util.exception.SilverpeasException;
 
 
 /**
@@ -62,7 +61,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
     
     Domain[] tabDomains = null;
     try {
-      tabDomains = AdminReference.getAdminService().getAllDomains();
+      tabDomains = Administration.get().getAllDomains();
     } catch (AdminException e) {
       SilverTrace.error("authentication", "UserCanLoginVerifier.getErrorDestination()",
           "authentication.EX_VERIFY_USER_CAN_LOGIN",

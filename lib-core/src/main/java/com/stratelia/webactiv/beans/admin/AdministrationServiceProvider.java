@@ -48,7 +48,7 @@ public class AdministrationServiceProvider {
    * @return the instance administration service.
    */
   public static Administration getAdminService() {
-    return ServiceProvider.getService(Administration.class);
+    return Administration.get();
   }
 
   /**

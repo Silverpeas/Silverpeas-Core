@@ -24,11 +24,13 @@
 package org.silverpeas.authentication.verifier;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.test.rule.CommonAPI4Test;
 
 import java.util.Date;
 
@@ -43,6 +45,9 @@ public class UserMustChangePasswordVerifierTest {
 
   private static final int MAX_CONNECTIONS_FORCING = 8;
   private static final int MAX_CONNECTIONS_PROPOSING = 5;
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void verifierNotActivated() throws AuthenticationException {

@@ -30,6 +30,7 @@ import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ListSlice;
+import org.silverpeas.util.ServiceProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,10 @@ import java.util.Map;
 public interface Administration {
   String ADMIN_COMPONENT_ID = "ADMIN";
   String basketSuffix = " (Restauré)";
+
+  public static Administration get() {
+    return ServiceProvider.getService(Administration.class);
+  }
 
   void reloadCache();
 

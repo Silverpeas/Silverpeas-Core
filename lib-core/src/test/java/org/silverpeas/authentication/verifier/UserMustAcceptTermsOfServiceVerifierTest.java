@@ -24,6 +24,8 @@
 package org.silverpeas.authentication.verifier;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.junit.Rule;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.DateUtil;
 import org.junit.Test;
 import org.silverpeas.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
@@ -35,6 +37,9 @@ import java.util.Date;
  * Date: 10/09/13
  */
 public class UserMustAcceptTermsOfServiceVerifierTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testUserHasAlreadyAccepted() throws AuthenticationUserMustAcceptTermsOfService {
