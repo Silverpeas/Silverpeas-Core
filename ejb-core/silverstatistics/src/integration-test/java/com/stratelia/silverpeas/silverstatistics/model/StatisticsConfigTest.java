@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.TransactionRuntimeException;
+import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.TestSilverpeasTrace;
 import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.util.*;
@@ -47,6 +48,7 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
+import org.silverpeas.util.lang.DefaultSystemWrapper;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.pool.ConnectionPool;
 
@@ -66,46 +68,22 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class StatisticsConfigTest {
 
-  @Before
-  public void prepareDataSource() {
-  }
-
   @Deployment
   public static Archive<?> createTestArchive() {
-    WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
-            WAPrimaryKey.class, ForeignPK.class);
-    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
-        SilverpeasRuntimeException.class, UtilException.class);
-    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
-        ExtractionList.class, ExtractionComplexList.class, AssertArgument.class);
-    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        TransactionRuntimeException.class);
-    war.addClasses(ConfigurationClassLoader.class, ConfigurationControl.class, FileUtil.class,
-        MimeTypes.class, RelativeFileAccessException.class, GeneralPropertiesManager.class,
-        ResourceLocator.class, ResourceBundleWrapper.class, SystemWrapper.class,
-        TestSystemWrapper.class);
-    war.addPackages(true, "com.stratelia.silverpeas.silverstatistics").addAsLibraries(
-        Maven.resolver().loadPomFromFile("pom.xml")
-            .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-                "commons-codec:commons-codec", "commons-io:commons-io",
-                "org.silverpeas.core:test-core", "org.quartz-scheduler:quartz").withTransitivity()
-            .asFile());
-    war.addPackages(true, "com.silverpeas.scheduler");
-
-    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
-        .addPackages(true, "org.silverpeas.initialization")
-        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "META-INF/services/org.silverpeas.util.BeanContainer")
-        .addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    return war;
+    return BasicWarBuilder.onWarFor(StatisticsConfigTest.class)
+        .addClasses(TestSystemWrapper.class)
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
+        .testFocusedOn(war -> {
+          war.addPackages(true, "com.stratelia.silverpeas.silverstatistics");
+          war.addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties");
+        }).build();
   }
 
   private StatisticsConfig instance;
-
-  public StatisticsConfigTest() {
-  }
 
   @Before
   public void initialiseConfig() throws Exception {

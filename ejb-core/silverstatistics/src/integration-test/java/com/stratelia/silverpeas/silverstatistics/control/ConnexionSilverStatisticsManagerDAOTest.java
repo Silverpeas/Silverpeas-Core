@@ -21,47 +21,24 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.ninja_squad.dbsetup.DbSetup;
-import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
-import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
 import com.stratelia.silverpeas.silverstatistics.model.DataStatsCumul;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionProvider;
-import org.silverpeas.persistence.TransactionRuntimeException;
+import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
-import org.silverpeas.test.TestSilverpeasTrace;
+import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.lang.TestSystemWrapper;
-import org.silverpeas.util.*;
-import org.silverpeas.util.exception.FromModule;
-import org.silverpeas.util.exception.RelativeFileAccessException;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.exception.WithNested;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.pool.ConnectionPool;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,14 +49,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-public class ConnexionSilverStatisticsManagerDAOTest {
-
-  public ConnexionSilverStatisticsManagerDAOTest() {
-  }
-
-  @Resource(lookup = "java:/datasources/silverpeas")
-  private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
+public class ConnexionSilverStatisticsManagerDAOTest extends DataSetTest {
 
   public static final Operation TABLES_CREATION =
       Operations.sequenceOf(Operations.sql("CREATE TABLE IF NOT EXISTS SB_Stat_Connection" +
@@ -101,47 +71,23 @@ public class ConnexionSilverStatisticsManagerDAOTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
-            WAPrimaryKey.class, ForeignPK.class);
-    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
-        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-            "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core",
-            "org.quartz-scheduler:quartz").withTransitivity().asFile());
-    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
-        SilverpeasRuntimeException.class, UtilException.class);
-    war.addClasses(ArrayUtil.class, StringUtil.class, MapUtil.class, CollectionUtil.class,
-        ExtractionList.class, ExtractionComplexList.class, AssertArgument.class);
-    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        TransactionRuntimeException.class);
-    war.addClasses(ConfigurationClassLoader.class, ConfigurationControl.class, FileUtil.class,
-        MimeTypes.class, RelativeFileAccessException.class, GeneralPropertiesManager.class,
-        ResourceLocator.class, ResourceBundleWrapper.class, SystemWrapper.class,
-        TestSystemWrapper.class);
-    war.addClasses(DBUtil.class, ConnectionPool.class, Transaction.class, TransactionProvider.class,
-        TransactionRuntimeException.class);
-    war.addPackages(false, "org.silverpeas.persistence.jdbc");
-
-    war.addPackages(true, "com.stratelia.silverpeas.silverstatistics");
-    war.addPackages(true, "com.silverpeas.scheduler");
-
-    war.addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
-        .addPackages(true, "org.silverpeas.initialization")
-        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "META-INF/services/org.silverpeas.util.BeanContainer")
-        .addAsResource("META-INF/test-persistence.xml", "META-INF/persistence.xml")
-        .addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties")
-        .addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    war.addAsWebInfResource("test-ds.xml", "test-ds.xml");
-    return war;
+    return BasicWarBuilder.onWarFor(ConnexionSilverStatisticsManagerDAOTest.class)
+        .addClasses(TestSystemWrapper.class)
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
+        .testFocusedOn(war -> {
+          war.addPackages(true, "com.stratelia.silverpeas.silverstatistics");
+          war.addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties");
+          war.addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
+        }).build();
   }
 
-  @Before
-  public void prepareDataSource() {
-    Operation preparation = Operations.sequenceOf(DROP_ALL, TABLES_CREATION); //, INSERT_DATA
-    DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
-    dbSetupTracker.launchIfNecessary(dbSetup);
+  @Override
+  protected Operation getDbSetupOperations() {
+    return Operations.sequenceOf(DROP_ALL, TABLES_CREATION);
   }
 
   private StatisticsConfig config;
@@ -151,10 +97,6 @@ public class ConnexionSilverStatisticsManagerDAOTest {
   public void initialiseConfig() throws Exception {
     config = new StatisticsConfig();
     config.init();
-  }
-
-  private Connection getConnection() throws SQLException {
-    return this.dataSource.getConnection();
   }
 
   @Test

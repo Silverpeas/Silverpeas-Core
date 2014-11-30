@@ -22,11 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.questioncontainers.dao;
+package com.stratelia.webactiv.questionContainer.dao;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import com.stratelia.webactiv.questionContainer.dao.QuestionContainerDAO;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -37,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
 import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.TestSilverpeasTrace;
 
 import java.sql.Connection;
 
@@ -95,6 +95,7 @@ public class QuestionContainerDAOTest extends DataSetTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarFor(QuestionContainerDAOTest.class)
+        .addClasses(TestSilverpeasTrace.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
