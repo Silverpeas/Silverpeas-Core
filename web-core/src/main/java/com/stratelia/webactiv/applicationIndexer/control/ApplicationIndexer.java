@@ -132,12 +132,13 @@ public class ApplicationIndexer extends AbstractIndexer {
   ComponentIndexation getIndexer(ComponentInst compoInst) {
     ComponentIndexation componentIndexer;
     try {
-      componentIndexer = ServiceProvider.getService(compoInst.getName());
+      String qualifier = compoInst.getName() + ComponentIndexation.class.getSimpleName();
+      componentIndexer = ServiceProvider.getService(qualifier);
     } catch (IllegalStateException ex) {
       SilverTrace.warn(silvertraceModule, "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
           "component = " + firstLetterToUpperCase(compoInst.getName()));
-      componentIndexer = new ComponentIndexerAdapter();
+      componentIndexer = ServiceProvider.getService(ComponentIndexerAdapter.class);
     }
     return componentIndexer;
   }

@@ -27,9 +27,12 @@ package com.stratelia.webactiv.applicationIndexer.control;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
+import javax.inject.Singleton;
+
 /**
  * @author ehugonnet
  */
+@Singleton
 public class ComponentIndexerAdapter implements ComponentIndexation {
 
   public ComponentIndexerAdapter() {
