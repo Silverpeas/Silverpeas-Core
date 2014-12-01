@@ -112,10 +112,6 @@ public class AssignRightTest  {
             (warBuilder) -> ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
   }
 
-  @Test
-  public void emptyTest() {
-  }
-
   /*
   FUNCTIONAL CASES - VERY HEADACHE CASE:
   A user is in a sub group of a group and the group has right on component that handles node
@@ -637,9 +633,4 @@ public class AssignRightTest  {
       throw new RuntimeException(e);
     }
   }
-
-  /*@Override
-  protected Operation getDbSetupOperations() {
-    return null;
-  }*/
 }

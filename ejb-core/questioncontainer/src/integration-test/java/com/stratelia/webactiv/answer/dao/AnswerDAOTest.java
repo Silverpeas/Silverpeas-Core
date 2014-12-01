@@ -31,17 +31,12 @@ import com.stratelia.webactiv.answer.model.AnswerPK;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
 import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.TestSilverpeasTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 
@@ -93,7 +88,6 @@ public class AnswerDAOTest extends DataSetTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarFor(AnswerDAOTest.class)
-        .addClasses(TestSilverpeasTrace.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
@@ -101,23 +95,6 @@ public class AnswerDAOTest extends DataSetTest {
         .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
         .testFocusedOn(war -> war.addPackages(true, "com.stratelia.webactiv.answer"))
         .build();
-  }
-
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**

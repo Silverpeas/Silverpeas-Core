@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
 import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.TestSilverpeasTrace;
 
 import java.sql.Connection;
 
@@ -95,7 +94,6 @@ public class QuestionContainerDAOTest extends DataSetTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarFor(QuestionContainerDAOTest.class)
-        .addClasses(TestSilverpeasTrace.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")

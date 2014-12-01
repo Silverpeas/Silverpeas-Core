@@ -23,23 +23,18 @@
  */
 package org.silverpeas.process.io.file;
 
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.util.lang.DefaultSystemWrapper;
-import org.silverpeas.util.lang.SystemWrapper;
 
 import java.io.File;
 
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
 import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
@@ -64,8 +59,6 @@ public abstract class AbstractHandledFileTest {
 
   @Before
   public void beforeTest() throws Exception {
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
-        .thenReturn(mock(SilverpeasTrace.class));
     BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
     currentSession = createSessionTest();
     sessionRootPath = new File(getString("tempPath"));

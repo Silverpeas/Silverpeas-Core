@@ -2,13 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.silverpeas.core</groupId>
-    <artifactId>ejb-core</artifactId>
+    <groupId>org.silverpeas</groupId>
+    <artifactId>core</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.silverpeas.core.ejb-core</groupId>
-  <artifactId>silverstatistics</artifactId>
+  <groupId>org.silverpeas.core</groupId>
+  <artifactId>api-core</artifactId>
   <packaging>jar</packaging>
-  <name>Silver Statistics - ${project.version}</name>
+  <name>Api Core - ${project.version}</name>
+  <description>A module providing all the common API of Silverpeas.</description>
+
+  <dependencies>
+  </dependencies>
 </project>

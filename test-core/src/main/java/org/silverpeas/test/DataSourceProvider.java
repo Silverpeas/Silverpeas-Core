@@ -21,38 +21,29 @@
 
 package org.silverpeas.test;
 
+import org.silverpeas.util.ServiceProvider;
+
 import javax.annotation.Resource;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.util.Set;
 
 /**
  * A convenient provider of the data source used in the integration tests.
  * @author mmoquillon
  */
+@Singleton
 public class DataSourceProvider {
 
   @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
 
   private static DataSourceProvider getInstance() {
-    BeanManager beanManager = CDI.current().getBeanManager();
-    Bean<DataSourceProvider> bean =
-        beanManager.resolve((Set) beanManager.getBeans(DataSourceProvider.class));
-    if (bean == null) {
-      throw new IllegalStateException(
-          "Cannot find an instance of type " + DataSourceProvider.class.getName());
-    }
-    CreationalContext<DataSourceProvider> ctx = beanManager.createCreationalContext(bean);
-    return (DataSourceProvider) beanManager.getReference(bean, DataSourceProvider.class, ctx);
+    return ServiceProvider.getService(DataSourceProvider.class);
   }
 
   @Produces
-  public static final DataSource getDataSource() {
+  public static DataSource getDataSource() {
     return getInstance().dataSource;
   }
 }

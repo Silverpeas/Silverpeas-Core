@@ -36,6 +36,8 @@ import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.test.util.lang.TestSystemWrapper;
+import org.silverpeas.test.util.log.TestSilverpeasTrace;
 
 import java.io.File;
 import java.io.InputStream;
@@ -85,7 +87,6 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     war.addAsResource(resourcePath);
-    war.addClasses(DataSourceProvider.class);
   }
 
   /**

@@ -10,7 +10,8 @@
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception. You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * the FLOSS exception, and it is also available
+ * here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
@@ -22,10 +23,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.test;
+package org.silverpeas.test.util.log;
 
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
-import org.silverpeas.util.StringUtil;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -102,7 +102,7 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   private static String join(String... parts) {
     StringBuilder sB = new StringBuilder();
     for (String part : parts) {
-      if (StringUtil.isDefined(part)) {
+      if (part != null && !part.trim().equals("")) {
         if (sB.length() > 0) {
           sB.append("@");
         }
@@ -132,9 +132,8 @@ public class TestSilverpeasTrace implements SilverpeasTrace {
   @Override
   public void debug(final String module, final String classe, final String message,
       final String extraInfos, final Throwable ex) {
-    debugMessages.add(StringUtil.join(
-        new String[]{module, classe, message, extraInfos, ((ex != null) ? ex.getMessage() : null)},
-        '@'));
+    debugMessages
+        .add(join(module, classe, message, extraInfos, ((ex != null) ? ex.getMessage() : null)));
     logAsInfoForTest(debugMessages);
   }
 

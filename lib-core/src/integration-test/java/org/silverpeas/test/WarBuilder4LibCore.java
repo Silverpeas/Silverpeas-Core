@@ -35,11 +35,9 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.silverpeas.EntityReference;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
@@ -57,7 +55,6 @@ import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.service.QuotaService;
-import org.silverpeas.test.lang.TestSystemWrapper;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -68,8 +65,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.util.lang.DefaultSystemWrapper;
-import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
@@ -102,11 +97,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public static <T> WarBuilder4LibCore onWarFor(Class<T> test) {
     WarBuilder4LibCore warBuilder = new WarBuilder4LibCore(test);
+    warBuilder.addClasses(SilverTrace.class);
     warBuilder.addServiceProviderFeatures();
-    warBuilder.addStubbedSilverTraceFeatures();
     warBuilder.addBundleBaseFeatures();
-    warBuilder
-        .addClasses(SystemWrapper.class, DefaultSystemWrapper.class, TestSystemWrapper.class);
     warBuilder.addClasses(EntityReference.class);
     warBuilder.addAsResource("maven.properties");
     return warBuilder;
@@ -485,20 +478,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   private WarBuilder4LibCore addServiceProviderFeatures() {
-    addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class)
-        .addPackages(true, "org.silverpeas.initialization")
-        .addAsResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "META-INF/services/org.silverpeas.util.BeanContainer")
-        .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    return this;
-  }
-
-  /**
-   * Sets empty Silver trace implementation features.
-   * @return the instance of the war builder.
-   */
-  private WarBuilder4LibCore addStubbedSilverTraceFeatures() {
-    addClasses(SilverpeasTrace.class, TestSilverpeasTrace.class, SilverTrace.class);
+    addClasses(CDIContainer.class).addPackages(true, "org.silverpeas.initialization");
     return this;
   }
 

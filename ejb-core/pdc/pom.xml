@@ -49,12 +49,6 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
       <scope>provided</scope>

@@ -27,14 +27,12 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
@@ -48,7 +46,6 @@ import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
 
 /**
  * @author ehugonnet
@@ -64,9 +61,6 @@ public class PublicationTemplateImplTest {
 
   @Before
   public void setUpClass() throws Exception {
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
-        .thenReturn(mock(SilverpeasTrace.class));
-
     final File targetDir = getFile(
         PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
             .getFile());

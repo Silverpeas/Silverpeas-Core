@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.lang.TestSystemWrapper;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -72,7 +71,6 @@ public class ConnexionSilverStatisticsManagerDAOTest extends DataSetTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarFor(ConnexionSilverStatisticsManagerDAOTest.class)
-        .addClasses(TestSystemWrapper.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")

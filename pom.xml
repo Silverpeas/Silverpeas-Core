@@ -223,6 +223,7 @@
   </profiles>
 
   <modules>
+    <module>api-core</module>
     <module>test-core</module>
     <module>lib-core</module>
     <module>it-test-core</module>

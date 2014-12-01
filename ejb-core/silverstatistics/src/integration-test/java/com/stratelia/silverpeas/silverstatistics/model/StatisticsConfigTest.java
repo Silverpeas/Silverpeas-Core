@@ -22,8 +22,6 @@
 package com.stratelia.silverpeas.silverstatistics.model;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,22 +33,8 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.persistence.Transaction;
-import org.silverpeas.persistence.TransactionProvider;
-import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.test.BasicWarBuilder;
-import org.silverpeas.test.TestSilverpeasTrace;
-import org.silverpeas.test.lang.TestSystemWrapper;
-import org.silverpeas.util.*;
-import org.silverpeas.util.exception.FromModule;
-import org.silverpeas.util.exception.RelativeFileAccessException;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.exception.WithNested;
-import org.silverpeas.util.lang.DefaultSystemWrapper;
-import org.silverpeas.util.lang.SystemWrapper;
-import org.silverpeas.util.pool.ConnectionPool;
+import org.silverpeas.util.FileUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +55,6 @@ public class StatisticsConfigTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarFor(StatisticsConfigTest.class)
-        .addClasses(TestSystemWrapper.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")

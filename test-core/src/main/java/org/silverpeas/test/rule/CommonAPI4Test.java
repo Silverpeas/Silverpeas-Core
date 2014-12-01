@@ -29,10 +29,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.silverpeas.test.TestBeanContainer;
-import org.silverpeas.test.lang.TestSystemWrapper;
+import org.silverpeas.test.util.lang.TestSystemWrapper;
+import org.silverpeas.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.util.lang.SystemWrapper;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 /**
@@ -43,12 +44,12 @@ public class CommonAPI4Test implements TestRule {
   @Override
   public Statement apply(final Statement base, final Description description) {
 
-    systemWrapper();
-    silverTrace();
-
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
+        reset(TestBeanContainer.getMockedBeanContainer());
+        systemWrapper();
+        silverTrace();
         base.evaluate();
       }
     };
@@ -56,7 +57,7 @@ public class CommonAPI4Test implements TestRule {
 
   public void silverTrace() {
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
-        .thenReturn(mock(SilverpeasTrace.class));
+        .thenReturn(new TestSilverpeasTrace());
   }
 
   public void systemWrapper() {

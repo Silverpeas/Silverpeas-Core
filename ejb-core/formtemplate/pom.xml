@@ -36,12 +36,6 @@
       <groupId>ecs</groupId>
       <artifactId>ecs</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

@@ -63,7 +63,9 @@ public class PasswordServiceTest {
 
   @After
   public void afterTest() {
-    context.settings("org.silverpeas.password.settings.password");
+    if (context!=null) {
+      context.settings("org.silverpeas.password.settings.password");
+    }
   }
 
 

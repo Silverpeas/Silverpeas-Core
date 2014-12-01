@@ -11,14 +11,6 @@
   <artifactId>comment</artifactId>
   <packaging>jar</packaging>
   <name>Lib Comment - ${project.version}</name>
-  <dependencies>
-    <dependency>
-      <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <testResources>

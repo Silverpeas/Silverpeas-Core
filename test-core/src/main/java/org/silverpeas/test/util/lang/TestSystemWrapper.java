@@ -22,9 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.test.lang;
+package org.silverpeas.test.util.lang;
 
-import org.silverpeas.util.lang.DefaultSystemWrapper;
 import org.silverpeas.util.lang.SystemWrapper;
 
 import javax.annotation.Priority;
@@ -32,6 +31,7 @@ import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
@@ -42,7 +42,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 @Singleton
 @Alternative
 @Priority(APPLICATION + 10)
-public class TestSystemWrapper extends DefaultSystemWrapper {
+public class TestSystemWrapper implements SystemWrapper {
 
   private Map<String, String> env = null;
 
@@ -59,5 +59,30 @@ public class TestSystemWrapper extends DefaultSystemWrapper {
       env.put("SILVERPEAS_HOME", "");
     }
     return env;
+  }
+
+  @Override
+  public Properties getProperties() {
+    return System.getProperties();
+  }
+
+  @Override
+  public void setProperties(final Properties props) {
+    System.setProperties(props);
+  }
+
+  @Override
+  public String setProperty(final String key, final String value) {
+    return System.setProperty(key, value);
+  }
+
+  @Override
+  public String getProperty(final String key) {
+    return System.getProperty(key);
+  }
+
+  @Override
+  public String getProperty(final String key, final String def) {
+    return System.getProperty(key, def);
   }
 }

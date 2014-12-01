@@ -18,6 +18,14 @@
       <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${project.parent.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

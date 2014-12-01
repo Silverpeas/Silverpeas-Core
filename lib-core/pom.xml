@@ -15,6 +15,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>api-core</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
     </dependency>

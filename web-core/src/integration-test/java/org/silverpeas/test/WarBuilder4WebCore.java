@@ -69,7 +69,6 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     warBuilder.addClasses(AccessForbiddenException.class, SilverpeasSessionOpener.class);
     warBuilder.addPackages(true, "org.silverpeas.servlet");
     warBuilder.addPackages(true, "org.silverpeas.subscription");
-    warBuilder.addStubbedSilverTraceFeatures();
     // Bundles & Settings
     warBuilder.addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
     warBuilder.addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");
@@ -80,15 +79,6 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     warBuilder.addAsResource("org/silverpeas/silvertrace/settings/silverLog.properties");
     warBuilder.addAsResource("org/silverpeas/util/attachment/Attachment.properties");
     return warBuilder;
-  }
-
-  /**
-   * Sets empty Silver trace implementation features.
-   * @return the instance of the war builder.
-   */
-  private WarBuilder4WebCore addStubbedSilverTraceFeatures() {
-    addClasses(TestSilverpeasTrace.class);
-    return this;
   }
 
   /**

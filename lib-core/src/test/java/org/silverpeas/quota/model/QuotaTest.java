@@ -2,11 +2,13 @@ package org.silverpeas.quota.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.math.BigDecimal;
@@ -19,12 +21,8 @@ import static org.mockito.Mockito.when;
 
 public class QuotaTest {
 
-  @Before
-  public void setup() {
-    reset(TestBeanContainer.getMockedBeanContainer());
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
-        .thenReturn(mock(SilverpeasTrace.class));
-  }
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testValidate() {

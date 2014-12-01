@@ -81,7 +81,7 @@ public class DbSetupRule implements TestRule {
    * @param sqlScripts the path of the SQL scripts in the classpath and from which the database
    * will be set up.
    */
-  public static final DbSetupRule createTablesFrom(String... sqlScripts) {
+  public static DbSetupRule createTablesFrom(String... sqlScripts) {
     return new DbSetupRule(sqlScripts);
   }
 
