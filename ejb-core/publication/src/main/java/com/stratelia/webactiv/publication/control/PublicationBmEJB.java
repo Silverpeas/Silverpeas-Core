@@ -88,7 +88,7 @@ import java.util.*;
  */
 @Stateless(name = "Publication", description = "Stateless session bean to manage publications.")
 @Transactional(value = Transactional.TxType.SUPPORTS)
-public class PublicationBmEJB implements PublicationBm {
+public class PublicationBmEJB implements PublicationService {
 
   @Inject
   private NodeService nodeService;

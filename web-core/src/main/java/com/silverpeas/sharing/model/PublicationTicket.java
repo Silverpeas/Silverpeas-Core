@@ -27,7 +27,7 @@ import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareablePublication;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.util.ServiceProvider;
@@ -71,8 +71,8 @@ public class PublicationTicket extends Ticket {
 
   @Override
   public ShareableResource<PublicationDetail> getResource() {
-    PublicationBm publicationBm = ServiceProvider.getService(PublicationBm.class);
-    PublicationDetail publication = publicationBm.getDetail(new PublicationPK(String.valueOf(getSharedObjectId()),
+    PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
+    PublicationDetail publication = publicationService.getDetail(new PublicationPK(String.valueOf(getSharedObjectId()),
         getComponentId()));
     if (publication != null) {
       return new ShareablePublication(getToken(), publication);

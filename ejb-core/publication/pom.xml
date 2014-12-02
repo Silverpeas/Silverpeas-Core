@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>publication</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB Publication - ${project.version}</name>
 
   <dependencies>

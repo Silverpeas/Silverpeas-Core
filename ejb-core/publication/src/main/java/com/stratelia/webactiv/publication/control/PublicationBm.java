@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -18,31 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.formTemplate.ejb;
 
-import java.util.List;
+package com.stratelia.webactiv.publication.control;
 
-import javax.ejb.Local;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.importExport.XMLField;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
+import javax.ejb.Remote;
 
 /**
- * Interface declaration
- *
- * @author neysseri
+ * Implementation of the service as a Remote EJB.
+ * @author mmoquillon
  */
-public interface FormTemplateBm {
-
-  public DataRecord getRecord(String externalId, String id);
-
-  public PublicationTemplate getPublicationTemplate(String externalId);
-
-  public List<XMLField> getXMLFieldsForExport(String externalId, String id);
-
-  public List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) ;
-
-  public String getWysiwygContent(String componentId, String objectId, String fieldName,
-      String language);
+@Remote
+public interface PublicationBm extends PublicationService {
 }

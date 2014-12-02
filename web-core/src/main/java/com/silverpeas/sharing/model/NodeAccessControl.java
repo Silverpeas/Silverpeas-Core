@@ -24,7 +24,7 @@ import com.silverpeas.sharing.security.AbstractShareableAccessControl;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -107,8 +107,8 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
     return false;
   }
 
-  private PublicationBm getPublicationBm() {
-    return ServiceProvider.getService(PublicationBm.class);
+  private PublicationService getPublicationBm() {
+    return ServiceProvider.getService(PublicationService.class);
   }
 
   private NodeService getNodeService() {

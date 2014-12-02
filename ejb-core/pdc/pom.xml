@@ -9,7 +9,7 @@
 
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>pdc</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>PdC service - ${project.version}</name>
   <description>
     Provides business beans and services to define a classification plan, to parameterize it for

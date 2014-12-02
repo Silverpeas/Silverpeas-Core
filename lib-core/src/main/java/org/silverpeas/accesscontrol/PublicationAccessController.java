@@ -30,7 +30,7 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -57,7 +57,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private OrganizationController controller;
 
   @Inject
-  private PublicationBm publicationService;
+  private PublicationService publicationService;
 
   @Inject
   private ComponentHelper componentHelper;
@@ -115,7 +115,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
     return authorized;
   }
 
-  protected PublicationBm getPublicationBm() {
+  protected PublicationService getPublicationBm() {
     return publicationService;
   }
 

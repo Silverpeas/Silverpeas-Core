@@ -50,7 +50,7 @@ import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.CompletePublication;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -90,7 +90,7 @@ import java.util.List;
 public abstract class GEDImportExport extends ComponentImportExport {
 
   // Variables
-  private PublicationBm publicationBm = null;
+  private PublicationService publicationService = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeService nodeService = NodeService.get();
   private AttachmentImportExport attachmentIE;
@@ -110,16 +110,16 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return Publication service layer
    * @throws ImportExportException if IoC didn't get the service layer implementation
    */
-  protected PublicationBm getPublicationBm() throws ImportExportException {
-    if (publicationBm == null) {
+  protected PublicationService getPublicationService() throws ImportExportException {
+    if (publicationService == null) {
       try {
-        publicationBm = ServiceProvider.getService(PublicationBm.class);
+        publicationService = ServiceProvider.getService(PublicationService.class);
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return publicationBm;
+    return publicationService;
   }
 
   protected FormTemplateBm getFormTemplateBm() throws ImportExportException {
@@ -193,7 +193,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
             if (itListNode_Type.hasNext()) {
               NodePositionType node_Type = itListNode_Type.next();
-              pubDet_temp = getPublicationBm()
+              pubDet_temp = getPublicationService()
                   .getDetailByNameAndNodeId(pubDetailToCreate.getPK(), pubDetailToCreate.getName(),
                       node_Type.getId());
             }
@@ -203,7 +203,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         }
       } else {
         try {
-          pubDet_temp = getPublicationBm().getDetail(pubDetailToCreate.getPK());
+          pubDet_temp = getPublicationService().getDetail(pubDetailToCreate.getPK());
         } catch (Exception ex) {
           unitReport.setError(UnitReport.ERROR_NOT_EXISTS_PUBLICATION_FOR_ID);
           return null;
@@ -211,7 +211,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
       if (isKmax()) {
         try {
-          pubDet_temp = getPublicationBm()
+          pubDet_temp = getPublicationService()
               .getDetailByName(pubDetailToCreate.getPK(), pubDetailToCreate.getName());
           if (pubDet_temp != null) {
             pubAlreadyExist = true;
@@ -273,7 +273,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
               if (pubAlreadyExist) {
                 // check if existing publication is already in this topic
                 try {
-                  getPublicationBm().getDetailByNameAndNodeId(pubDet_temp.getPK(), pubDet_temp.
+                  getPublicationService().getDetailByNameAndNodeId(pubDet_temp.getPK(), pubDet_temp.
                       getName(), node_Type.getId());
                 } catch (Exception ex) {
                   // this publication is not in this topic. Adding it...
@@ -332,7 +332,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private void createXMLModelContent(XMLModelContentType xmlModel, String pubId, String userId)
       throws Exception {
     PublicationPK pubPK = new PublicationPK(pubId, getCurrentComponentId());
-    PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
+    PublicationDetail pubDetail = getPublicationService().getDetail(pubPK);
 
     // Is it the creation of the content or an update ?
     String infoId = pubDetail.getInfoId();
@@ -345,7 +345,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       // We have to register xmlForm to publication
       pubDetail.setInfoId(xmlFormShortName);
       pubDetail.setIndexOperation(IndexManager.NONE);
-      getPublicationBm().setDetail(pubDetail);
+      getPublicationService().setDetail(pubDetail);
       publicationTemplateManager
           .addDynamicPublicationTemplate(getCurrentComponentId() + ':' + xmlFormShortName,
               xmlFormShortName + ".xml");
@@ -892,13 +892,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   public List<NodePK> getAllTopicsOfPublication(PublicationPK pubPK) throws ImportExportException {
-    Collection<NodePK> listNodePk = getPublicationBm().getAllFatherPK(pubPK);
+    Collection<NodePK> listNodePk = getPublicationService().getAllFatherPK(pubPK);
     return new ArrayList<>(listNodePk);
   }
 
   public List<NodePK> getAliases(PublicationPK pubPK) throws ImportExportException {
     List<NodePK> pks = new ArrayList<>();
-    Collection<Alias> aliases = getPublicationBm().getAlias(pubPK);
+    Collection<Alias> aliases = getPublicationService().getAlias(pubPK);
     for (Alias alias : aliases) {
       if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
         pks.add(new NodePK(alias.getId(), alias.getInstanceId()));
@@ -938,7 +938,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId)
       throws ImportExportException {
     try {
-      return getPublicationBm().getCoordinates(pubId, componentId);
+      return getPublicationService().getCoordinates(pubId, componentId);
     } catch (Exception e) {
       throw new ImportExportException("GEDImportExport.getPublicationCoordinates(String)",
           "importExport.EX_GET_SILVERPEASOBJECTID", "pubId = " + pubId, e);

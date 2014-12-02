@@ -42,7 +42,7 @@ import com.stratelia.webactiv.publication.model.ValidationStep;
  *
  * @author
  */
-public interface PublicationBm {
+public interface PublicationService {
 
   /**
    * get details on the publication specified by the primary key given in pubPK parameter

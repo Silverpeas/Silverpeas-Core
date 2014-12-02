@@ -27,7 +27,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,10 +73,10 @@ public class DocumentAccessControllerTest {
     Collection<NodePK> fathers = CollectionUtil.asList(nodePk1, nodePk2);
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    PublicationBm publicationBm = mock(PublicationBm.class);
-    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
-        .thenReturn(publicationBm);
-    when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
+    PublicationService publicationService = mock(PublicationService.class);
+    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+        .thenReturn(publicationService);
+    when(publicationService.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
     NodeAccessController accessController = mock(NodeAccessController.class);
@@ -108,10 +108,10 @@ public class DocumentAccessControllerTest {
     Collection<NodePK> fathers = CollectionUtil.asList(nodePk1, nodePk2);
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    PublicationBm publicationBm = mock(PublicationBm.class);
-    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
-        .thenReturn(publicationBm);
-    when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
+    PublicationService publicationService = mock(PublicationService.class);
+    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+        .thenReturn(publicationService);
+    when(publicationService.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
     NodeAccessController accessController = mock(NodeAccessController.class);

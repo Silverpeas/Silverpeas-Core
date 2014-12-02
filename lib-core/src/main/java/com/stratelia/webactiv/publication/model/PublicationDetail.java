@@ -44,7 +44,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.accesscontrol.NodeAccessControl;
@@ -916,9 +916,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
   }
 
-  public PublicationBm getPublicationBm() {
+  public PublicationService getPublicationBm() {
     try {
-      return ServiceProvider.getService(PublicationBm.class);
+      return ServiceProvider.getService(PublicationService.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationDetail.getPublicationBm()",
           SilverpeasRuntimeException.ERROR,

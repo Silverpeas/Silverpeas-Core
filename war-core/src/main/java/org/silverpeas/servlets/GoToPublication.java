@@ -32,7 +32,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 
@@ -61,9 +61,9 @@ public class GoToPublication extends GoTo {
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
   }
 
-  private PublicationBm getPublicationBm() {
+  private PublicationService getPublicationBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class);
     } catch (Exception e) {
       displayError(null);
     }

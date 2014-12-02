@@ -9,6 +9,6 @@
 	
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>admin</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB Admin - ${project.version}</name>
 </project>

@@ -21,7 +21,7 @@
 package com.silverpeas.portlets;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import org.silverpeas.util.EJBUtilitaire;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.StringUtil;
@@ -62,8 +62,8 @@ public class MyDrafts extends GenericPortlet implements FormNames {
     }
   }
   
-  private PublicationBm getPublicationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  private PublicationService getPublicationBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class);
   }
 
 }

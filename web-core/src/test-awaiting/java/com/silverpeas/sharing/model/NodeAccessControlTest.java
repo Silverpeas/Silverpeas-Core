@@ -35,7 +35,7 @@ import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.Alias;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class NodeAccessControlTest {
   public void testIsReadableDocument() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
+    PublicationService publicationService = PowerMockito.mock(PublicationService.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays
         .asList(new NodePK("100", "kmelia10"), new NodePK("110", "kmelia11"),
             new NodePK("120", "kmelia12")));
@@ -79,13 +79,13 @@ public class NodeAccessControlTest {
     for (NodePK nodePK : fatherPks) {
       aliasPks.add(new Alias(nodePK.getId(), nodePK.getInstanceId()));
     }
-    PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10")))
+    PowerMockito.when(publicationService.getAllFatherPK(new PublicationPK("100", "kmelia10")))
         .thenReturn(fatherPks);
-    PowerMockito.when(publicationBm.getAlias(new PublicationPK("100", "kmelia10")))
+    PowerMockito.when(publicationService.getAlias(new PublicationPK("100", "kmelia10")))
         .thenReturn(aliasPks);
     PowerMockito
-        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
-        .thenReturn(publicationBm);
+        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+        .thenReturn(publicationService);
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -118,15 +118,15 @@ public class NodeAccessControlTest {
   public void testIsUnReadableDocument() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
+    PublicationService publicationService = PowerMockito.mock(PublicationService.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays
         .asList(new NodePK("100", "kmelia10"), new NodePK("110", "kmelia11"),
             new NodePK("120", "kmelia12")));
-    PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10")))
+    PowerMockito.when(publicationService.getAllFatherPK(new PublicationPK("100", "kmelia10")))
         .thenReturn(fatherPks);
     PowerMockito
-        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
-        .thenReturn(publicationBm);
+        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+        .thenReturn(publicationService);
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -160,7 +160,7 @@ public class NodeAccessControlTest {
   public void testIsReadableAttachment() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
+    PublicationService publicationService = PowerMockito.mock(PublicationService.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays
         .asList(new NodePK("100", "kmelia10"), new NodePK("110", "kmelia11"),
             new NodePK("120", "kmelia12")));
@@ -168,13 +168,13 @@ public class NodeAccessControlTest {
     for (NodePK nodePK : fatherPks) {
       aliasPks.add(new Alias(nodePK.getId(), nodePK.getInstanceId()));
     }
-    PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10")))
+    PowerMockito.when(publicationService.getAllFatherPK(new PublicationPK("100", "kmelia10")))
         .thenReturn(fatherPks);
-    PowerMockito.when(publicationBm.getAlias(new PublicationPK("100", "kmelia10")))
+    PowerMockito.when(publicationService.getAlias(new PublicationPK("100", "kmelia10")))
         .thenReturn(aliasPks);
     PowerMockito
-        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
-        .thenReturn(publicationBm);
+        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+        .thenReturn(publicationService);
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -207,15 +207,15 @@ public class NodeAccessControlTest {
   public void testIsUnReadableAttachment() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
+    PublicationService publicationService = PowerMockito.mock(PublicationService.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays
         .asList(new NodePK("100", "kmelia10"), new NodePK("110", "kmelia11"),
             new NodePK("120", "kmelia12")));
-    PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10")))
+    PowerMockito.when(publicationService.getAllFatherPK(new PublicationPK("100", "kmelia10")))
         .thenReturn(fatherPks);
     PowerMockito
-        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class))
-        .thenReturn(publicationBm);
+        .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+        .thenReturn(publicationService);
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);

@@ -34,7 +34,7 @@ import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -80,7 +80,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private String componentId = null;
   private SimpleDateFormat formatter = null;
   private PublicationHelper kmeliaTransversal = null;
-  private PublicationBm publicationBm = null;
+  private PublicationService publicationService = null;
   // Attribute used to manage user favorite space look
   private UserMenuDisplay displayUserMenu = UserMenuDisplay.DISABLE;
   private boolean enableUFSContainsState = false;
@@ -206,7 +206,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   
   private final void init(ResourceLocator resources) {
     this.organizationController = OrganizationControllerProvider.getOrganisationController();
-    this.publicationBm = ServiceProvider.getService(PublicationBm.class);
+    this.publicationService = ServiceProvider.getService(PublicationService.class);
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
         "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
@@ -608,7 +608,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   @Override
   public List<PublicationDetail> getValidPublications(NodePK nodePK) {
-    List<PublicationDetail> publis = (List<PublicationDetail>) getPublicationBm().
+    List<PublicationDetail> publis = (List<PublicationDetail>) getPublicationService().
         getDetailsByFatherPK(nodePK, null, true);
     List<PublicationDetail> filteredPublis = new ArrayList<PublicationDetail>();
     PublicationDetail publi;
@@ -621,8 +621,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return filteredPublis;
   }
 
-  public PublicationBm getPublicationBm() {
-    return publicationBm;
+  public PublicationService getPublicationService() {
+    return publicationService;
   }
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
@@ -835,7 +835,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
     List<PublicationDetail> news = new ArrayList<PublicationDetail>();
     for (String appId : appIds) {
-        Collection<PublicationDetail> someNews = getPublicationBm().getOrphanPublications(new PublicationPK("", appId));
+        Collection<PublicationDetail> someNews = getPublicationService().getOrphanPublications(new PublicationPK("", appId));
         news.addAll(someNews);
     }
     

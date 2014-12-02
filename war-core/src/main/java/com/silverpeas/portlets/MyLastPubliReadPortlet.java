@@ -21,7 +21,7 @@
 package com.silverpeas.portlets;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
@@ -90,8 +90,8 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
     return ServiceProvider.getService(StatisticService.class);
   }
   
-  private PublicationBm getPublicationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
+  private PublicationService getPublicationBm() {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class);
   }
   
   @Override

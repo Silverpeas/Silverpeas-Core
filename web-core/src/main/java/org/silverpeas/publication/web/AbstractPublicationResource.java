@@ -23,7 +23,7 @@ package org.silverpeas.publication.web;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -127,9 +127,9 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     }
   }
 
-  protected PublicationBm getPublicationBm() {
+  protected PublicationService getPublicationBm() {
     try {
-      return ServiceProvider.getService(PublicationBm.class);
+      return ServiceProvider.getService(PublicationService.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }

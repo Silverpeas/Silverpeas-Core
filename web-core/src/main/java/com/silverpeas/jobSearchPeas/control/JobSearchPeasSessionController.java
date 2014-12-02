@@ -37,7 +37,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.search.SearchEngineProvider;
@@ -63,7 +63,7 @@ import java.util.List;
 public class JobSearchPeasSessionController extends AbstractComponentSessionController {
 
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
-  private PublicationBm publicationBm = ServiceProvider.getService(PublicationBm.class);
+  private PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
   private NodeService nodeService = NodeService.get();
   private String searchField = null;
   private String category = null;
@@ -93,8 +93,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   /**
    * @return
    */
-  private PublicationBm getPublicationBm() {
-    return publicationBm;
+  private PublicationService getPublicationService() {
+    return publicationService;
   }
 
   /**
@@ -423,7 +423,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     try {
       Integer.parseInt(searchField);
       PublicationPK pubPK = new PublicationPK(searchField);
-      publication = getPublicationBm().getDetail(pubPK);
+      publication = getPublicationService().getDetail(pubPK);
     } catch (NumberFormatException e) {
       publication = null;
     }
@@ -451,7 +451,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       }
 
       //Theme / Sous-theme
-      Collection<NodePK> fatherPKs = getPublicationBm().getAllFatherPK(pubPK);
+      Collection<NodePK> fatherPKs = getPublicationService().getAllFatherPK(pubPK);
       if (null != fatherPKs) {
         for (NodePK pk : fatherPKs) {
           StringBuilder emplacement = new StringBuilder(emplacementEspaceComposant);

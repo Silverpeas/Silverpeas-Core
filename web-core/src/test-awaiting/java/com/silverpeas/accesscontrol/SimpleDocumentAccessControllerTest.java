@@ -29,7 +29,7 @@ import com.silverpeas.admin.components.WAComponent;
 import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class SimpleDocumentAccessControllerTest {
   private static final String userId = "bart";
 
   private OrganizationController controller;
-  private PublicationBm publicationBm;
+  private PublicationService publicationService;
 
   private ComponentAccessController componentAccessController;
   private NodeAccessController nodeAccessController;
@@ -100,7 +100,7 @@ public class SimpleDocumentAccessControllerTest {
     controller = mock(OrganizationController.class);
     componentAccessController = mock(ComponentAccessController.class);
     nodeAccessController = mock(NodeAccessController.class);
-    publicationBm = mock(PublicationBm.class);
+    publicationService = mock(PublicationService.class);
     testInstance = new SimpleDocumentAccessControllerForTest();
     testContext = new TestContext();
   }
@@ -1267,7 +1267,7 @@ public class SimpleDocumentAccessControllerTest {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      reset(controller, componentAccessController, nodeAccessController, publicationBm);
+      reset(controller, componentAccessController, nodeAccessController, publicationService);
       isGED = false;
       isCoWriting = false;
       isDocumentAttachedToDirectory = false;
@@ -1365,7 +1365,7 @@ public class SimpleDocumentAccessControllerTest {
           return CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]);
         }
       });
-      when(publicationBm.getDetail(any(PublicationPK.class))).then(new Answer<PublicationDetail>() {
+      when(publicationService.getDetail(any(PublicationPK.class))).then(new Answer<PublicationDetail>() {
         @Override
         public PublicationDetail answer(final InvocationOnMock invocation) throws Throwable {
           PublicationDetail publi = new PublicationDetail();
@@ -1375,7 +1375,7 @@ public class SimpleDocumentAccessControllerTest {
           return publi;
         }
       });
-      when(publicationBm.getAllFatherPK(any(PublicationPK.class)))
+      when(publicationService.getAllFatherPK(any(PublicationPK.class)))
           .then(new Answer<Collection<NodePK>>() {
             @Override
             public Collection<NodePK> answer(final InvocationOnMock invocation) throws Throwable {
@@ -1448,17 +1448,17 @@ public class SimpleDocumentAccessControllerTest {
           .getUserRoles(any(AccessControlContext.class), anyString(), any(NodePK.class));
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerIsUserAuthorized))
           .isUserAuthorized(any(EnumSet.class));
-      verify(publicationBm, times(nbCallOfPublicationBmGetDetail))
+      verify(publicationService, times(nbCallOfPublicationBmGetDetail))
           .getDetail(any(PublicationPK.class));
-      verify(publicationBm, times(nbCallOfPublicationBmGetAllFatherPK))
+      verify(publicationService, times(nbCallOfPublicationBmGetAllFatherPK))
           .getAllFatherPK(any(PublicationPK.class));
     }
   }
 
   private class SimpleDocumentAccessControllerForTest extends SimpleDocumentAccessController {
     @Override
-    protected PublicationBm getPublicationBm() throws Exception {
-      return publicationBm;
+    protected PublicationService getPublicationBm() throws Exception {
+      return publicationService;
     }
 
     @Override

@@ -9,7 +9,7 @@
 	
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>formtemplate</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB FormTemplate - ${project.version}</name>
 
   

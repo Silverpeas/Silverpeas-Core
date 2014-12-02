@@ -10,7 +10,7 @@
 	
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>authentication</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB Authentication - ${project.version}</name>
   
 </project>

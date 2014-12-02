@@ -22,7 +22,7 @@ package com.silverpeas.importExport.control;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.antlr.stringtemplate.StringTemplate;
@@ -157,8 +157,8 @@ public class PublicationImportExport {
   /**
    * @return PublicationBm service layer
    */
-  private static PublicationBm getPublicationBm() {
-    return ServiceProvider.getService(PublicationBm.class);
+  private static PublicationService getPublicationBm() {
+    return ServiceProvider.getService(PublicationService.class);
   }
 
   /**

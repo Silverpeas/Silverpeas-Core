@@ -9,7 +9,7 @@
 	
   <groupId>org.silverpeas.core.ejb-core</groupId>
   <artifactId>tagcloud</artifactId>
-  <packaging>ejb</packaging>
+  <packaging>jar</packaging>
   <name>EJB Tagcloud - ${project.version}</name>
   
 </project>

@@ -38,12 +38,12 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
 import javax.ejb.Stateless;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Stateless(name = "FormTemplate", description =
-    "Stateless EJB to manage access to record and content of forms")
+@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class FormTemplateBmEJB implements FormTemplateBm {
 

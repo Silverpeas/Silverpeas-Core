@@ -29,7 +29,7 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationBm;
+import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -50,7 +50,7 @@ import java.util.Set;
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument> {
 
   @EJB
-  private PublicationBm publicationService;
+  private PublicationService publicationService;
 
   @Inject @ComponentAccessControl
   private ComponentAccessController componentAccessController;
@@ -191,7 +191,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     return StringUtil.isDefined(foreignId) && foreignId.startsWith("Node_");
   }
 
-  protected PublicationBm getPublicationBm() {
+  protected PublicationService getPublicationBm() {
     return publicationService;
   }
 
