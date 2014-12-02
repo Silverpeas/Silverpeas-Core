@@ -23,6 +23,8 @@
  */
 package org.silverpeas.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -33,8 +35,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class ResourceLocator implements Serializable {
 
@@ -114,7 +114,7 @@ public class ResourceLocator implements Serializable {
   }
 
   private ResourceBundle getResourceBundle(String sPropertyFile, Locale locale) {
-    return new ResourceBundleWrapper(sPropertyFile, propertyLocale);
+    return FileUtil.loadBundle(sPropertyFile, locale);
   }
 
   /**
@@ -307,7 +307,7 @@ public class ResourceLocator implements Serializable {
       String key = keys.nextElement();
       props.setProperty(key, bundle.getString(key));
     }
-    return props;
+    return new PropertiesWrapper(props);
   }
 
   public String getLanguage() {

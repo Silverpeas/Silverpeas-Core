@@ -36,7 +36,8 @@ public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
   @Inject
   private Repository repository;
 
-  @Inject WebDavCredentialsProvider credentialsProvider;
+  @Inject
+  private WebDavCredentialsProvider credentialsProvider;
 
   @Override
   public Repository getRepository() {

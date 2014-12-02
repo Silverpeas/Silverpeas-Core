@@ -20,9 +20,21 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.util.exception.RelativeFileAccessException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.exec.util.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.tika.Tika;
+import org.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.mail.Mail;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -38,18 +50,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import javax.activation.MimetypesFileTypeMap;
-import org.apache.commons.exec.util.StringUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.tika.Tika;
-import org.silverpeas.util.mail.Mail;
 
 public class FileUtil implements MimeTypes {
 
@@ -256,7 +256,13 @@ public class FileUtil implements MimeTypes {
         throw mex;
       }
     }
-    return bundle;
+    ResourceBundle parent = null;
+    if (bundleName.toLowerCase().contains("multilang") &&
+        !GeneralPropertiesManager.GENERAL_PROPERTIES_FILE.equalsIgnoreCase(bundleName)) {
+      parent =
+          GeneralPropertiesManager.getGeneralMultilang(locale.getLanguage()).getResourceBundle();
+    }
+    return new ResourceBundleWrapper(bundle, parent);
   }
 
   /**

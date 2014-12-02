@@ -145,7 +145,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
     InputStream is = null;
     if (configProperties == null) {
       try {
-        ResourceLocator rl = new ResourceLocator("com.silverpeas.portlets.portletsSettings", "");
+        ResourceLocator rl = new ResourceLocator("org.silverpeas.portlets.portletsSettings", "");
         configProperties = rl.getProperties();
       } catch (Exception e) {
         logger.log(Level.SEVERE, "PSPL_CSPPAM0016", e);

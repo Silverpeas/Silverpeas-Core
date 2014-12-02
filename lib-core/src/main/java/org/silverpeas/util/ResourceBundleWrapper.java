@@ -21,25 +21,23 @@
 package org.silverpeas.util;
 
 import java.util.Enumeration;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ResourceBundleWrapper extends ResourceBundle {
 
   private ResourceBundle bundle;
-  private ResourceBundle parentBundle;
+  private ResourceBundle parentBundle = null;
 
-  public ResourceBundleWrapper(String file, Locale locale, boolean hasParent) {
-    this.bundle = FileUtil.loadBundle(file, locale);
-    if (hasParent) {
-      this.parentBundle = GeneralPropertiesManager.getGeneralMultilang(locale.getLanguage()).
-          getResourceBundle();
-    }
+  public ResourceBundleWrapper(ResourceBundle bundle) {
+    this.bundle = bundle;
   }
 
-  public ResourceBundleWrapper(String file, Locale locale) {
-    this(file, locale, !GeneralPropertiesManager.GENERAL_PROPERTIES_FILE.equalsIgnoreCase(file));
+  public ResourceBundleWrapper(ResourceBundle bundle, ResourceBundle parentBundle) {
+    this.bundle = bundle;
+    this.parentBundle = parentBundle;
   }
 
   @Override
@@ -60,6 +58,6 @@ public class ResourceBundleWrapper extends ResourceBundle {
       } catch (MissingResourceException mrex) {
       }
     }
-    return result;
+    return VariableResolver.resolve(result);
   }
 }

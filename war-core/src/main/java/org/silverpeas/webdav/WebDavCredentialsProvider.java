@@ -24,10 +24,8 @@ package org.silverpeas.webdav;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
-import org.silverpeas.cache.service.EhCacheService;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.cache.service.CacheServiceProvider;
 
-import javax.inject.Inject;
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.servlet.ServletException;
@@ -42,15 +40,13 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
   private static final String USERID_TEMPLATE = "{0}@domain{1}";
   private static final String USERID_TOKEN_ATTRIBUTE = "UserID";
 
-  @Inject
-  private EhCacheService cacheService;
-
   @Override
   public Credentials getCredentials(final HttpServletRequest request)
       throws LoginException, ServletException {
     Credentials credentials;
     String authToken = request.getParameter("_");
-    UserDetail user = cacheService.get(authToken, UserDetail.class);
+    UserDetail user =
+        CacheServiceProvider.getApplicationCacheService().get(authToken, UserDetail.class);
     if (user != null) {
       String userID = MessageFormat.format(USERID_TEMPLATE, user.getLogin(), user.getDomainId());
       credentials = new TokenCredentials(authToken);

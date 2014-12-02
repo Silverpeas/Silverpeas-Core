@@ -58,7 +58,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class PreviewResource extends RESTWebService {
 
   @Inject
-  @Named("simpleDocumentService")
   private AttachmentService attachmentService;
   @Inject
   private PreviewService previewService;

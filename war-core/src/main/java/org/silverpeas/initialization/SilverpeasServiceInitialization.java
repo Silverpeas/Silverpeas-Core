@@ -46,9 +46,13 @@ public class SilverpeasServiceInitialization implements ServletContextListener {
     Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
     initializations.stream().forEach( initialization -> {
       try {
+        Logger.getLogger(getClass().getSimpleName())
+            .log(Level.INFO, " -> {0} initialization...", initialization.getClass().getSimpleName());
         initialization.init();
+        Logger.getLogger(getClass().getSimpleName())
+            .log(Level.INFO, "    {0} initialization done.", initialization.getClass().getSimpleName());
       } catch (Exception e) {
-        logger.log(Level.SEVERE, "Initialization Failure in {0}",
+        logger.log(Level.SEVERE, "    {0} initialization failure!",
             initialization.getClass().getName());
         throw new RuntimeException(e.getMessage(), e);
       }
