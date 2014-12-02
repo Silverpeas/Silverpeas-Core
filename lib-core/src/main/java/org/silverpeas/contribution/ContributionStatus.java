@@ -23,8 +23,8 @@
  */
 package org.silverpeas.contribution;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Defines the different possible status in which a contribution must be.

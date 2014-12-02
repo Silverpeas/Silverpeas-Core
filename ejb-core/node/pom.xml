@@ -24,13 +24,10 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--
     <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <scope>test</scope>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
     </dependency>
-    -->
   </dependencies>
 
   <build>

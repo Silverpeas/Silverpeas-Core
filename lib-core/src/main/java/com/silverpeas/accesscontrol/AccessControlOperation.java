@@ -23,8 +23,8 @@
  */
 package com.silverpeas.accesscontrol;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Collection;
 import java.util.EnumSet;

@@ -23,15 +23,15 @@
  */
 package org.silverpeas.notification.jsondiff;
 
+import org.silverpeas.util.JSONCodec;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
 /**
  * A list of operations.
@@ -41,7 +41,6 @@ import org.codehaus.jackson.type.TypeReference;
 public class JsonPatch implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private static final ObjectMapper mapper = new ObjectMapper();
 
   private Map<String, Operation> operations;
 
@@ -73,12 +72,11 @@ public class JsonPatch implements Serializable {
   }
 
   public String toJson() throws IOException {
-    return mapper.writeValueAsString(this.getOperations());
+    Operation[] ops = this.getOperations().toArray(new Operation[this.getOperations().size()]);
+    return JSONCodec.encode(ops);
   }
 
   public void fromJson(String json) throws IOException {
-    this.setOperations(mapper.<List<Operation>>readValue(json,
-        new TypeReference<List<Operation>>() {
-        }));
+    this.setOperations(Arrays.asList(JSONCodec.decode(json, Operation[].class)));
   }
 }

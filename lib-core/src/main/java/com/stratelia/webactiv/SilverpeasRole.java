@@ -22,8 +22,8 @@ package com.stratelia.webactiv;
 
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Arrays;
 import java.util.Collection;
