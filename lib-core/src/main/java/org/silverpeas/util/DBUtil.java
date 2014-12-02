@@ -196,7 +196,8 @@ public class DBUtil {
       PreparedStatement selectStmt = null;
       ResultSet rs = null;
       try {
-        // l'update c'est bien passe, on recupere la valeur
+        // update of max identifier has been done successfully, so the value of this new
+        // identifier is retrieved
         selectStmt = connection.prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?");
         selectStmt.setString(1, table);
         rs = selectStmt.executeQuery();

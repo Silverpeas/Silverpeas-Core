@@ -30,7 +30,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
@@ -75,13 +74,6 @@ public class NotificationResourceData
   private String componentInstanceId;
 
   /**
-   * Simple constructor
-   */
-  public NotificationResourceData() {
-    // NTD
-  }
-
-  /**
    * Copying all data from the given resource excepted the id
    * @param notificationResourceData
    */
@@ -95,8 +87,9 @@ public class NotificationResourceData
     setComponentInstanceId(notificationResourceData.getComponentInstanceId());
   }
 
-  @PrePersist
-  public void beforePersist() {
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
     forcesNullValues();
   }
 
@@ -120,7 +113,7 @@ public class NotificationResourceData
   }
 
   public void setId(final Long id) {
-    setId(Long.toString(id));
+    setId(id != null ? Long.toString(id) : null);
   }
 
   public String getResourceId() {

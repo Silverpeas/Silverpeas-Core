@@ -34,11 +34,14 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
+
+import static org.silverpeas.util.annotation.AnnotationUtil.searchClassThatDeclaresAnnotation;
 
 /**
  * This abstract class must be extended by all Basic JPA entity definitions.
@@ -94,23 +97,17 @@ public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity,
    * Gets the identifier class of the entity.
    * @return
    */
+  @SuppressWarnings("unchecked")
   private void initializeEntityClasses() {
     if (entityIdentifierClass == null) {
       try {
-        Type type = this.getClass().getGenericSuperclass();
-        // Take Entity extended subclass into account (Inheritance strategy)
-        if (type instanceof Class) {
-          ParameterizedType parameterizedType =
-              (ParameterizedType) Class.forName(((Class) type).getName()).getGenericSuperclass();
-          entityIdentifierClass =
-              ((Class<IDENTIFIER_TYPE>) parameterizedType.getActualTypeArguments()[1]);
-          tableName = Class.forName(this.getClass().getGenericSuperclass().getTypeName())
-              .getAnnotation(Table.class).name();
-        } else if (type instanceof ParameterizedType) {
-          entityIdentifierClass =
-              (Class<IDENTIFIER_TYPE>) ((ParameterizedType) type).getActualTypeArguments()[1];
-          tableName = this.getClass().getAnnotation(Table.class).name();
-        }
+        Class<?> classThatDeclaresTable =
+            searchClassThatDeclaresAnnotation(Table.class, this.getClass());
+        entityIdentifierClass =
+            ((Class<IDENTIFIER_TYPE>) ((ParameterizedType) classThatDeclaresTable.
+                getGenericSuperclass()).getActualTypeArguments()[1]);
+
+        tableName = classThatDeclaresTable.getAnnotation(Table.class).name();
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -163,5 +160,11 @@ public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity,
       }
       this.id = (IDENTIFIER_TYPE) newIdentifierInstance().generateNewId(tableName, "id");
     }
+    performBeforePersist();
+  }
+
+  @PreUpdate
+  private void beforeUpdate() {
+    performBeforeUpdate();
   }
 }

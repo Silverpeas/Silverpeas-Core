@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,23 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.persistence;
-
-import javax.persistence.TemporalType;
+package org.silverpeas.persistence.repository.basicjpa.model;
 
 /**
- * @author Yohann Chastagnier
+ * User: Yohann Chastagnier
+ * Date: 20/11/13
  */
-public abstract class TemporalTypedParameter<D> extends TypedParameter<D> {
-
-  private final TemporalType temporalType;
-
-  public TemporalTypedParameter(final String name, final D value, final TemporalType temporalType) {
-    super(name, value);
-    this.temporalType = temporalType;
-  }
-
-  public TemporalType getTemporalType() {
-    return temporalType;
-  }
+public enum AnimalTypeCustomEntity {
+  dog, cat, bird, frog
 }

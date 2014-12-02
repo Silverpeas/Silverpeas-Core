@@ -29,6 +29,9 @@ import org.silverpeas.persistence.model.ExternalEntityIdentifier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This identifier implementation handles external one with string type.
@@ -39,6 +42,14 @@ public class ExternalStringIdentifier implements ExternalEntityIdentifier {
 
   @Column(name = "id")
   private String id;
+
+  public static ExternalStringIdentifier from(String value) {
+    return new ExternalStringIdentifier().fromString(value);
+  }
+
+  public static List<ExternalStringIdentifier> fromStrings(Collection<String> values) {
+    return values.stream().map(ExternalStringIdentifier::from).collect(Collectors.toList());
+  }
 
   public String getId() {
     return id;

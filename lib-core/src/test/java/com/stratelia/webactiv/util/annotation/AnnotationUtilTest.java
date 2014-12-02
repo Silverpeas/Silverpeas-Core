@@ -32,6 +32,7 @@ import org.silverpeas.util.annotation.SourcePK;
 import org.silverpeas.util.annotation.TargetPK;
 
 import javax.inject.Inject;
+import javax.persistence.Table;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,31 @@ import static org.hamcrest.Matchers.*;
  * Date: 22/10/13
  */
 public class AnnotationUtilTest {
+
+  @Test
+  public void getClassThatDeclaresTableAnnotationFromAbstractEntity() {
+    Class<?> identifiedClass =
+        AnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, AbstractEntity.class);
+    assertThat(identifiedClass, notNullValue());
+    assertThat(identifiedClass.getName(), is(AbstractEntity.class.getName()));
+    assertThat(identifiedClass.getAnnotation(Table.class).name(), is("st_abstract_entity"));
+  }
+
+  @Test
+  public void getClassThatDeclaresTableAnnotationFromConcreteEntity() {
+    Class<?> identifiedClass =
+        AnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, ConcreteEntity.class);
+    assertThat(identifiedClass, notNullValue());
+    assertThat(identifiedClass.getName(), is(AbstractEntity.class.getName()));
+    assertThat(identifiedClass.getAnnotation(Table.class).name(), is("st_abstract_entity"));
+  }
+
+  @Test
+  public void getClassThatDeclaresTableAnnotationFromAbstractWikispeed() {
+    Class identifiedClass =
+        AnnotationUtil.searchClassThatDeclaresAnnotation(Table.class, AbstractWikispeed.class);
+    assertThat(identifiedClass, nullValue());
+  }
 
   @Test
   public void getEngineParameterizedTypeFromAbstractHierarchy() {

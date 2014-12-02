@@ -23,7 +23,6 @@ package org.silverpeas.util;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.silverpeas.util.Charsets;
 
 /**
  * Util class to encode special string or characters

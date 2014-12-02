@@ -2,6 +2,11 @@ package org.silverpeas.persistence.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.persistence.repository.OperationContext;
+import org.silverpeas.util.AssertArgument;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * @author ebonnet
@@ -64,5 +69,17 @@ public abstract class AbstractCustomEntity<ENTITY extends IdentifiableEntity, ID
       entity = null;
     }
     return (ENTITY) entity;
+  }
+
+  /**
+   * This method contains all (technical) informations that must be performed on a entity create.
+   */
+  protected void performBeforePersist() {
+  }
+
+  /**
+   * This method contains all (technical) informations that must be performed on a entity update.
+   */
+  protected void performBeforeUpdate() {
   }
 }

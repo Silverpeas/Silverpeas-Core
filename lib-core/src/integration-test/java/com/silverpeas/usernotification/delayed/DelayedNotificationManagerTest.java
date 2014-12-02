@@ -10,30 +10,28 @@ import com.silverpeas.usernotification.delayed.model.DelayedNotificationUserSett
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
-import java.util.*;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-delayed-notification.xml",
-  "/spring-delayed-notification-datasource.xml"})
-@TransactionConfiguration(transactionManager = "jpaTransactionManager")
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+@RunWith(Arquillian.class)
 public class DelayedNotificationManagerTest {
 
   private static final int TEST_CASE_1 = 1;
@@ -49,28 +47,25 @@ public class DelayedNotificationManagerTest {
   private static final String RESOURCE_DATA_NAME_100 = "Test resource name no desc";
   private static final String RESOURCE_DATA_LOCATION_100 = "Test > Resource > Location no desc";
   private static final String RESOURCE_DATA_URL_100 = "Test resource URL no desc";
-  private static ReplacementDataSet dataSet;
 
-  public DelayedNotificationManagerTest() {
-  }
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("insert-script.sql");
 
-  @BeforeClass
-  public static void prepareDataSet() throws Exception {
-    final FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet = new ReplacementDataSet(builder.build(DelayedNotificationManagerTest.class.
-        getResourceAsStream("delayed-notification-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-  }
   @Inject
   private DelayedNotification manager;
-  @Inject
-  @Named("jpaDataSource")
-  private DataSource dataSource;
 
-  @Before
-  public void generalSetUp() throws Exception {
-    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarFor(DelayedNotificationManagerTest.class)
+        .addCommonBasicUtilities()
+        .addSilverpeasExceptionBases()
+        .addAdministrationFeatures()
+        .addNotificationFeatures()
+        .testFocusedOn((warBuilder) -> {
+          warBuilder.addPackages(true, "com.silverpeas.usernotification");
+          warBuilder.addAsResource("com/silverpeas/usernotification/delayed");
+        }).build();
   }
 
   /*
@@ -492,17 +487,12 @@ public class DelayedNotificationManagerTest {
         manager.saveDelayedNotification(newDelayedNotificationData);
         manager.saveDelayedNotification(newDelayedNotificationData);
         if ((count % 4) == 0) {
-          final Long idTest = newDelayedNotificationData.getId();
+          final String idTest = newDelayedNotificationData.getId();
           if (count == 0) {
-            newDelayedNotificationData.setId(null);
+            newDelayedNotificationData.setId((Long)null);
           }
-          newDelayedNotificationData.getResource().setId(null);
+          newDelayedNotificationData.getResource().setId((Long)null);
           manager.saveDelayedNotification(newDelayedNotificationData);
-          if (count == 0) {
-            assertThat(idTest, not(sameInstance(newDelayedNotificationData.getId())));
-          } else {
-            assertThat(idTest, sameInstance(newDelayedNotificationData.getId()));
-          }
           assertThat(idTest, is(newDelayedNotificationData.getId()));
         }
         count++;
@@ -518,12 +508,12 @@ public class DelayedNotificationManagerTest {
         assertThat(mapEntry.getValue().size(), is(actions.length));
         for (int j = 0; j < actions.length; j++) {
           delayedNotificationData = mapEntry.getValue().get(j);
-          assertThat(delayedNotificationData.getId(), is(1000l + count2));
+          assertThat(delayedNotificationData.getId(), is(String.valueOf(1001l + count2)));
           assertThat(delayedNotificationData.getUserId(), is(userIdTest));
           assertThat(delayedNotificationData.getFromUserId(), is(2 * userIdTest));
           assertThat(delayedNotificationData.getChannel(), is(channels[i]));
           assertThat(delayedNotificationData.getAction(), is(actions[j]));
-          assertThat(delayedNotificationData.getResource().getId(), is(10l));
+          assertThat(delayedNotificationData.getResource().getId(), is("10"));
           assertThat(delayedNotificationData.getCreationDate(), notNullValue());
           assertThat(delayedNotificationData.getCreationDate(),
               greaterThanOrEqualTo(dateBeforeSave));
@@ -602,7 +592,7 @@ public class DelayedNotificationManagerTest {
     delayedNotificationUserSetting =
         manager.getDelayedNotificationUserSettingByUserIdAndChannel(20, NotifChannel.SMTP);
     assertThat(delayedNotificationUserSetting, notNullValue());
-    assertThat(delayedNotificationUserSetting.getId(), is(50));
+    assertThat(delayedNotificationUserSetting.getId(), is("50"));
     assertThat(delayedNotificationUserSetting.getFrequency(),
         is(DelayedNotificationFrequency.WEEKLY));
   }
@@ -641,7 +631,7 @@ public class DelayedNotificationManagerTest {
         assertThat(myDelayedNotificationUserSettings.size(), is(1));
         delayedNotificationUserSetting =
             myDelayedNotificationUserSettings.iterator().next();
-        assertThat(delayedNotificationUserSetting.getId(), is(100 + count));
+        assertThat(delayedNotificationUserSetting.getId(), is(String.valueOf(101 + count)));
         assertThat(delayedNotificationUserSetting.getUserId(), is(userIdTest));
         assertThat(delayedNotificationUserSetting.getChannel(), is(channel));
         assertThat(delayedNotificationUserSetting.getFrequency(),
@@ -655,7 +645,7 @@ public class DelayedNotificationManagerTest {
   public void testUpdateDelayedNotificationUserSetting() throws Exception {
     final DelayedNotificationUserSetting delayedNotificationUserSettingTest =
         manager.getDelayedNotificationUserSetting(30);
-    assertThat(delayedNotificationUserSettingTest.getId(), is(30));
+    assertThat(delayedNotificationUserSettingTest.getId(), is("30"));
     assertThat(delayedNotificationUserSettingTest.getUserId(), is(10));
     assertThat(delayedNotificationUserSettingTest.getChannel(), is(NotifChannel.SMTP));
     assertThat(delayedNotificationUserSettingTest.getFrequency(),
@@ -669,8 +659,8 @@ public class DelayedNotificationManagerTest {
     assertThat("DelayedNotificationUserSetting not found in db",
         myDelayedNotificationUserSettingReloaded, notNullValue());
     assertThat("Same", myDelayedNotificationUserSettingReloaded,
-        not(is(delayedNotificationUserSettingTest)));
-    assertThat(myDelayedNotificationUserSettingReloaded.getId(), is(30));
+        not(sameInstance(delayedNotificationUserSettingTest)));
+    assertThat(myDelayedNotificationUserSettingReloaded.getId(), is("30"));
     assertThat(myDelayedNotificationUserSettingReloaded.getUserId(), is(10));
     assertThat(myDelayedNotificationUserSettingReloaded.getChannel(), is(NotifChannel.SMTP));
     assertThat(myDelayedNotificationUserSettingReloaded.getFrequency(),

@@ -23,21 +23,20 @@
  */
 package com.silverpeas.usernotification.delayed.model;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.*;
-
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
-import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
+import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
+import org.silverpeas.util.i18n.I18NHelper;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * @author Yohann Chastagnier
@@ -99,13 +98,6 @@ public class DelayedNotificationData
   private NotificationParameters notificationParameters;
 
   /**
-   * Simple constructor
-   */
-  public DelayedNotificationData() {
-    // NTD
-  }
-
-  /**
    * Checks the data integrity
    * @return
    */
@@ -115,8 +107,9 @@ public class DelayedNotificationData
         getResource().isValid();
   }
 
-  @PrePersist
-  public void beforePersist() {
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
     creationDate = new Date();
     if (!isNotBlank(language)) {
       language = I18NHelper.defaultLanguage;
@@ -124,7 +117,7 @@ public class DelayedNotificationData
   }
 
   public void setId(Long id) {
-    setId(String.valueOf(id));
+    setId(id != null ? String.valueOf(id) : null);
   }
 
   public Integer getUserId() {

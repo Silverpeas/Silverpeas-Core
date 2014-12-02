@@ -26,6 +26,7 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
@@ -41,9 +42,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,8 +65,10 @@ public class DbSetupRule implements TestRule {
   private static final Pattern TABLE_NAME_PATTERN =
       Pattern.compile("(?i)(create table( if not exists)? )(\\w+)(\\W?.+)*");
 
+  private String[] sqlTableScripts = null;
+  private String[] sqlInsertScripts = null;
   private DbSetupTracker dbSetupTracker = new DbSetupTracker();
-  private Operation tableCreation = Operations.sql("");
+  private Operation tableCreation = null;
   private Operation dataSetLoading = Operations.sql("");
   private List<String> tableNames = new ArrayList<>();
 
@@ -94,7 +98,7 @@ public class DbSetupRule implements TestRule {
    * @return itself.
    */
   public DbSetupRule loadInitialDataSetFrom(String... sqlScripts) {
-    dataSetLoading = Operations.sequenceOf(dataSetLoading, loadOperationFromSqlScripts(sqlScripts));
+    sqlInsertScripts = sqlScripts;
     return this;
   }
 
@@ -112,7 +116,7 @@ public class DbSetupRule implements TestRule {
   }
 
   private DbSetupRule(String... sqlScripts) {
-    tableCreation = loadOperationFromSqlScripts(sqlScripts);
+    sqlTableScripts = sqlScripts;
     tableNames.add("UniqueId");
   }
 
@@ -129,7 +133,15 @@ public class DbSetupRule implements TestRule {
   }
 
   @Override
-  public Statement apply(final Statement test, final Description description) {
+  public Statement apply(final Statement test, Description description) {
+    if (tableCreation == null) {
+      // Initialization on the first test
+      tableCreation = loadOperationFromSqlScripts(description.getTestClass(), sqlTableScripts);
+      if (sqlInsertScripts != null && sqlInsertScripts.length > 0) {
+        dataSetLoading = Operations.sequenceOf(dataSetLoading,
+            loadOperationFromSqlScripts(description.getTestClass(), sqlInsertScripts));
+      }
+    }
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
@@ -149,18 +161,19 @@ public class DbSetupRule implements TestRule {
     DataSource dataSource = DataSourceProvider.getDataSource();
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
     dbSetupTracker.launchIfNecessary(dbSetup);
+    Logger.getLogger(this.getClass().getName()).info("Database structure loaded successfully.");
   }
 
-  private Operation loadOperationFromSqlScripts(String[] scripts) {
+  @SuppressWarnings("ConstantConditions")
+  private Operation loadOperationFromSqlScripts(Class classOfTest, String[] scripts) {
     List<Operation> statements = new ArrayList<>();
     if (scripts != null) {
-      for (int i = 0; i < scripts.length; i++) {
-        if (FilenameUtils.getExtension(scripts[i]).toLowerCase().equals("sql")) {
-          try {
-            InputStream sqlScriptInput = getClass().getResourceAsStream(scripts[i]);
+      for (final String script : scripts) {
+        if (FilenameUtils.getExtension(script).toLowerCase().equals("sql")) {
+          try (InputStream sqlScriptInput = classOfTest.getResourceAsStream(script)) {
             if (sqlScriptInput != null) {
               StringWriter sqlScriptContent = new StringWriter();
-              IOUtils.copy(sqlScriptInput, sqlScriptContent);
+              IOUtils.copy(sqlScriptInput, sqlScriptContent, Charsets.UTF_8);
               if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
                 String[] sql = sqlScriptContent.toString().split(";");
                 prepareCleanUpOperation(sql);
@@ -169,7 +182,7 @@ public class DbSetupRule implements TestRule {
             }
           } catch (IOException e) {
             Logger.getLogger(getClass().getSimpleName())
-                .log(Level.SEVERE, "Error while loading the SQL script {0}!", scripts[i]);
+                .log(Level.SEVERE, "Error while loading the SQL script {0}!", script);
           }
         }
       }
@@ -189,21 +202,22 @@ public class DbSetupRule implements TestRule {
   private void cleanUpDataSource() throws SQLException {
     // the deletion must occurs in the reverse order from the insertion to take into account the
     // constrains.
-    Collections.reverse(tableNames);
+    /*Collections.reverse(tableNames);
     Operation cleanUp = Operations.deleteAllFrom(tableNames);
     try (Connection connection = DataSourceProvider.getDataSource().getConnection()) {
       cleanUp.execute(connection, null);
-    }
-    /*try (Connection connection = DataSourceProvider.getDataSource().getConnection();
+    }*/
+    try (Connection connection = DataSourceProvider.getDataSource().getConnection();
          PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
          ResultSet rs = statement.executeQuery()) {
       for (; rs.next(); ) {
         String tableName = rs.getString(1);
-        try (PreparedStatement dropStatement = connection.prepareStatement(
-            "DROP  TABLE " + tableName)) {
+        try (PreparedStatement dropStatement = connection
+            .prepareStatement("DROP  TABLE " + tableName)) {
           dropStatement.execute();
         }
       }
-    }*/
+      Logger.getLogger(this.getClass().getName()).info("Database structure dropped successfully.");
+    }
   }
 }

@@ -31,6 +31,9 @@ import org.silverpeas.util.DBUtil;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author ebonnet
@@ -42,12 +45,20 @@ public class UniqueIntegerIdentifier implements EntityIdentifier {
   @Column(name = "id", nullable = false)
   private Integer id;
 
-  public static final UniqueIntegerIdentifier from(String value) {
+  public static UniqueIntegerIdentifier from(String value) {
     return new UniqueIntegerIdentifier().fromString(value);
   }
 
-  public static final UniqueIntegerIdentifier from(int value) {
+  public static List<UniqueIntegerIdentifier> fromStrings(Collection<String> values) {
+    return values.stream().map(UniqueIntegerIdentifier::from).collect(Collectors.toList());
+  }
+
+  public static UniqueIntegerIdentifier from(int value) {
     return new UniqueIntegerIdentifier().setId(value);
+  }
+
+  public static List<UniqueIntegerIdentifier> fromIntegers(Collection<Integer> values) {
+    return values.stream().map(UniqueIntegerIdentifier::from).collect(Collectors.toList());
   }
 
   public Integer getId() {

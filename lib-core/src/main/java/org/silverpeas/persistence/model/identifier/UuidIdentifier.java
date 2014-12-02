@@ -23,13 +23,16 @@
  */
 package org.silverpeas.persistence.model.identifier;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.persistence.model.EntityIdentifier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author Yohann Chastagnier
@@ -41,8 +44,12 @@ public class UuidIdentifier implements EntityIdentifier {
   @Column(name = "id", columnDefinition = "varchar(40)", length = 40)
   private String id;
 
-  public static final UuidIdentifier from(String value) {
+  public static UuidIdentifier from(String value) {
     return new UuidIdentifier().fromString(value);
+  }
+
+  public static List<UuidIdentifier> fromStrings(Collection<String> values) {
+    return values.stream().map(UuidIdentifier::from).collect(Collectors.toList());
   }
 
   public String getId() {

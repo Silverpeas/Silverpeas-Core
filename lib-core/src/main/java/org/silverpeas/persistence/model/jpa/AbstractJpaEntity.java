@@ -34,6 +34,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import static org.silverpeas.util.annotation.AnnotationUtil.searchClassThatDeclaresAnnotation;
+
 /**
  * This abstract class must be extended by all Silverpeas JPA entity definitions.
  * All technical data, excepted the identifier, are handled at this level.
@@ -104,10 +106,13 @@ public abstract class AbstractJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER
   private void initializeEntityClasses() {
     if (entityIdentifierClass == null) {
       try {
-        entityIdentifierClass = ((Class<IDENTIFIER_TYPE>) ((ParameterizedType) this.getClass().
+        Class<?> classThatDeclaresTable =
+            searchClassThatDeclaresAnnotation(Table.class, this.getClass());
+        entityIdentifierClass =
+            ((Class<IDENTIFIER_TYPE>) ((ParameterizedType) classThatDeclaresTable.
             getGenericSuperclass()).getActualTypeArguments()[1]);
 
-        tableName = this.getClass().getAnnotation(Table.class).name();
+        tableName = classThatDeclaresTable.getAnnotation(Table.class).name();
       } catch (Exception e) {
         throw new RuntimeException(e);
       }

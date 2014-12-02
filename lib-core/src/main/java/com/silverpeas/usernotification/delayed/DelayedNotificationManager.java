@@ -59,15 +59,23 @@ import java.util.TreeSet;
 public class DelayedNotificationManager implements DelayedNotification {
   private static final Object SYNCHRONIZED = new Object();
 
-  /** Settings location */
-  private final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+  /**
+   * Settings location
+   */
+  private final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.notificationManager.settings.notificationManagerSettings",
+          "");
 
-  /** Contains the possible frequencies for users */
+  /**
+   * Contains the possible frequencies for users
+   */
   private static Set<DelayedNotificationFrequency> POSSIBLE_FREQUENCIES;
 
-  /** For now, only the SMTP channel can be delayed (mail) */
+  /**
+   * For now, only the SMTP channel can be delayed (mail)
+   */
   private static final Set<NotifChannel> WIRED_CHANNELS = new HashSet<>();
+
   static {
     WIRED_CHANNELS.add(NotifChannel.SMTP);
   }
@@ -82,27 +90,24 @@ public class DelayedNotificationManager implements DelayedNotification {
   private DelayedNotificationUserSettingJpaManager dnUserSettingManager;
 
   @Override
-  @Transactional
-  public Map<NotifChannel, List<DelayedNotificationData>> findDelayedNotificationByUserIdGroupByChannel(
-      final int userId,
-      final Set<NotifChannel> aimedChannels) {
+  public Map<NotifChannel, List<DelayedNotificationData>>
+  findDelayedNotificationByUserIdGroupByChannel(
+      final int userId, final Set<NotifChannel> aimedChannels) {
     final Map<NotifChannel, List<DelayedNotificationData>> result = new LinkedHashMap<>();
-    for (final DelayedNotificationData data : dnRepository.findByUserId(userId, NotifChannel.toIds(aimedChannels))) {
+    for (final DelayedNotificationData data : dnRepository
+        .findByUserId(userId, NotifChannel.toIds(aimedChannels))) {
       MapUtil.putAddList(result, data.getChannel(), data);
     }
     return result;
   }
 
   @Override
-  @Transactional
   public List<Integer> findAllUsersToBeNotified(final Set<NotifChannel> aimedChannels) {
     return dnRepository.findAllUsersToBeNotified(NotifChannel.toIds(aimedChannels));
   }
 
   @Override
-  @Transactional
-  public List<Integer> findUsersToBeNotified(final Date date,
-      final Set<NotifChannel> aimedChannels,
+  public List<Integer> findUsersToBeNotified(final Date date, final Set<NotifChannel> aimedChannels,
       final DelayedNotificationFrequency defaultDelayedNotificationFrequency) {
 
     final Date dateOfDay = DateUtil.getBeginOfDay(date);
@@ -133,8 +138,8 @@ public class DelayedNotificationManager implements DelayedNotification {
     if (delayedNotificationData.getResource().getId() == null) {
       final NotificationResourceData existingResource =
           getExistingResource(delayedNotificationData.getResource().getResourceId(),
-              delayedNotificationData.getResource().getResourceType(), delayedNotificationData
-                  .getResource().getComponentInstanceId());
+              delayedNotificationData.getResource().getResourceType(),
+              delayedNotificationData.getResource().getComponentInstanceId());
       if (existingResource != null) {
         existingResource.fillFrom(delayedNotificationData.getResource());
         nrRepository.saveAndFlush(existingResource);
@@ -177,7 +182,6 @@ public class DelayedNotificationManager implements DelayedNotification {
    */
 
   @Override
-  @Transactional
   public NotificationResourceData getExistingResource(final String resourceId,
       final String resourceType, final String componentInstanceId) {
     return nrRepository.getExistingResource(resourceId, resourceType, componentInstanceId);
@@ -188,20 +192,17 @@ public class DelayedNotificationManager implements DelayedNotification {
    */
 
   @Override
-  @Transactional
   public DelayedNotificationUserSetting getDelayedNotificationUserSetting(final int id) {
     return dnUserSettingManager.getById(Integer.toString(id));
   }
 
   @Override
-  @Transactional
   public List<DelayedNotificationUserSetting> findDelayedNotificationUserSettingByUserId(
       final int userId) {
     return dnUserSettingManager.findByUserId(userId);
   }
 
   @Override
-  @Transactional
   public DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(
       final int userId, final NotifChannel channel) {
     final List<DelayedNotificationUserSetting> userSettings =
@@ -263,7 +264,8 @@ public class DelayedNotificationManager implements DelayedNotification {
 
           // The parameter value
           final String frequencyChoiceList =
-              settings.getString("DELAYED_NOTIFICATION_FREQUENCY_CHOICE_LIST", "").replaceAll(" ", "");
+              settings.getString("DELAYED_NOTIFICATION_FREQUENCY_CHOICE_LIST", "")
+                  .replaceAll(" ", "");
 
           // The posible frequencies
           if (StringUtils.isNotBlank(frequencyChoiceList)) {
@@ -288,8 +290,8 @@ public class DelayedNotificationManager implements DelayedNotification {
   @Override
   @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
-    DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency.decode(settings.getString(
-        "DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
+    DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency
+        .decode(settings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
     if (defaultFrequency == null) {
       defaultFrequency = DelayedNotificationFrequency.NONE;
     }
@@ -297,7 +299,6 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
-  @Transactional
   public DelayedNotificationFrequency getUserFrequency(final Integer userId,
       final NotifChannel channel) {
     DelayedNotificationFrequency result = DelayedNotificationFrequency.NONE;
@@ -307,10 +308,11 @@ public class DelayedNotificationManager implements DelayedNotification {
 
       // Search in the database the user's setting
       final DelayedNotificationUserSetting dnus =
-          (userId != null) ? getDelayedNotificationUserSettingByUserIdAndChannel(userId, channel)
-              : null;
+          (userId != null) ? getDelayedNotificationUserSettingByUserIdAndChannel(userId, channel) :
+              null;
 
-      // If no user setting data or that the frequency is not possible, the default frequency is retrieved
+      // If no user setting data or that the frequency is not possible, the default frequency is
+      // retrieved
       if (dnus == null || !getPossibleFrequencies().contains(dnus.getFrequency())) {
         result = getDefaultDelayedNotificationFrequency();
       } else {

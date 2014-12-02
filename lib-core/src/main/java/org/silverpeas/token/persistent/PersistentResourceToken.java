@@ -153,8 +153,18 @@ public class PersistentResourceToken
     return service.get(token);
   }
 
-  @PrePersist
-  @PreUpdate
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
+    performSaveDate();
+  }
+
+  @Override
+  protected void performBeforeUpdate() {
+    super.performBeforeUpdate();
+    performSaveDate();
+  }
+
   private void performSaveDate() {
     setSaveCount(getSaveCount() + 1);
     setSaveDate(new Date());

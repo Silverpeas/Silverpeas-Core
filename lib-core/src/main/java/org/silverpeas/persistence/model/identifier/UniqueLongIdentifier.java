@@ -23,14 +23,17 @@
  */
 package org.silverpeas.persistence.model.identifier;
 
-import org.silverpeas.util.DBUtil;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.persistence.model.EntityIdentifier;
+import org.silverpeas.util.DBUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Yohann Chastagnier
@@ -42,12 +45,20 @@ public class UniqueLongIdentifier implements EntityIdentifier {
   @Column(name = "id", nullable = false)
   private Long id;
 
-  public static final UniqueLongIdentifier from(String value) {
+  public static UniqueLongIdentifier from(String value) {
     return new UniqueLongIdentifier().fromString(value);
   }
 
-  public static final UniqueLongIdentifier from(long value) {
+  public static List<UniqueLongIdentifier> fromStrings(Collection<String> values) {
+    return values.stream().map(UniqueLongIdentifier::from).collect(Collectors.toList());
+  }
+
+  public static UniqueLongIdentifier from(long value) {
     return new UniqueLongIdentifier().setId(value);
+  }
+
+  public static List<UniqueLongIdentifier> fromLongs(Collection<Long> values) {
+    return values.stream().map(UniqueLongIdentifier::from).collect(Collectors.toList());
   }
 
   public Long getId() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,27 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.persistence;
+package com.stratelia.webactiv.util.annotation;
 
+import org.silverpeas.persistence.model.identifier.UuidIdentifier;
+import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
-/**
- * @author Yohann Chastagnier
- */
-public abstract class TypedParameter<T> {
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import java.io.Serializable;
 
-  private final String name;
-  private final T value;
-
-  public TypedParameter(final String name, final T value) {
-    this.name = name;
-    this.value = value;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public T getValue() {
-    return value;
-  }
-}
+@Table(name = "st_abstract_entity")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "shared_object_type")
+public abstract class AbstractEntity extends AbstractJpaCustomEntity<AbstractEntity, UuidIdentifier>
+    implements Serializable {}

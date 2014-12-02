@@ -75,8 +75,18 @@ public class Quota extends AbstractJpaCustomEntity<Quota, UniqueLongIdentifier>
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date saveDate;
 
-  @PrePersist
-  @PreUpdate
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
+    performSaveDate();
+  }
+
+  @Override
+  protected void performBeforeUpdate() {
+    super.performBeforeUpdate();
+    performSaveDate();
+  }
+
   private void performSaveDate() {
     setSaveDate(new Date());
   }

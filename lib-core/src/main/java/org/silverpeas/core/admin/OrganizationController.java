@@ -5,8 +5,13 @@ import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;
 import org.silverpeas.util.ListSlice;
+import org.silverpeas.util.ServiceProvider;
 
 public interface OrganizationController extends java.io.Serializable {
+
+  public static OrganizationController get() {
+    return ServiceProvider.getService(OrganizationController.class);
+  }
 
   /**
    * Return all the spaces Id available in silverpeas

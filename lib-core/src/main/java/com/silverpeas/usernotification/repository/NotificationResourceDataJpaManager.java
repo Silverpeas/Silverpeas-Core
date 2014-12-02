@@ -3,17 +3,11 @@ package com.silverpeas.usernotification.repository;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
-import org.silverpeas.util.persistence.TypedParameter;
-import org.silverpeas.util.persistence.TypedParameterUtil;
+import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
-import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author: ebonnet
- */
 @Singleton
 public class NotificationResourceDataJpaManager
     extends JpaBasicEntityManager<NotificationResourceData, UniqueLongIdentifier>
@@ -21,42 +15,28 @@ public class NotificationResourceDataJpaManager
 
   @Override
   public long deleteResources() {
-    return deleteFromNamedQuery("NotificationResourceData.deleteResources", newNamedParameters());
+    return deleteFromNamedQuery("NotificationResourceData.deleteResources", noParameter());
   }
 
-  /**
-   * Get existing resource
-   * @param resourceId the resource identifier
-   * @param resourceType the resource type
-   * @param componentInstanceId the component instance identifier
-   * @return
-   */
   @Override
   public NotificationResourceData getExistingResource(final String resourceId,
       final String resourceType, final String componentInstanceId) {
 
     // Parameters
-    final List<TypedParameter<?>> parameters = new ArrayList<>();
+    NamedParameters parameters = newNamedParameters();
 
     // Query
     final StringBuilder query = new StringBuilder("from NotificationResourceData where");
     query.append(" resourceId = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceId", resourceId));
+    query.append(parameters.add("resourceId", resourceId).getLastParameterName());
     query.append(" and resourceType = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceType", resourceType));
+    query.append(parameters.add("resourceType", resourceType).getLastParameterName());
     query.append(" and componentInstanceId = :");
-    query.append(TypedParameterUtil
-        .addNamedParameter(parameters, "componentInstanceId", componentInstanceId));
-
-    // Typed query
-    final TypedQuery<NotificationResourceData> tq =
-        getEntityManager().createQuery(query.toString(), NotificationResourceData.class);
-
-    // Parameters
-    TypedParameterUtil.computeNamedParameters(tq, parameters);
+    query.append(parameters.add("componentInstanceId", componentInstanceId).getLastParameterName());
 
     // Result
-    final List<NotificationResourceData> resources = tq.getResultList();
+    final List<NotificationResourceData> resources =
+        listFromJpqlString(query.toString(), parameters, NotificationResourceData.class);
     if (resources.size() == 1) {
       return resources.get(0);
     }

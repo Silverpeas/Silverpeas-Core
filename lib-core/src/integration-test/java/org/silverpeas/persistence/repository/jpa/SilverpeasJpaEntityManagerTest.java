@@ -118,8 +118,7 @@ public class SilverpeasJpaEntityManagerTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarFor(SilverpeasJpaEntityManagerTest.class)
         .addJpaPersistenceFeatures()
-        .addAsResource("org/silverpeas/persistence/create_table.sql",
-            "org/silverpeas/persistence/create_table.sql")
+        .addAsResource("org/silverpeas/persistence/create_table.sql")
         .testFocusedOn((warBuilder) -> warBuilder.addPackages(true,
             "org.silverpeas.persistence.repository.jpa"))
         .build();

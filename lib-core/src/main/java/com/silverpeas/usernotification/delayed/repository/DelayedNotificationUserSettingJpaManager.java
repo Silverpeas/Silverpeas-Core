@@ -7,9 +7,6 @@ import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
 import javax.inject.Singleton;
 import java.util.List;
 
-/**
- * @author: ebonnet
- */
 @Singleton
 public class DelayedNotificationUserSettingJpaManager
     extends JpaBasicEntityManager<DelayedNotificationUserSetting, UniqueIntegerIdentifier>
@@ -22,7 +19,8 @@ public class DelayedNotificationUserSettingJpaManager
   }
 
   @Override
-  public List<DelayedNotificationUserSetting> findByUserIdAndChannel(final int userId, final int channel) {
+  public List<DelayedNotificationUserSetting> findByUserIdAndChannel(final int userId,
+      final int channel) {
     return listFromNamedQuery("DelayedNotificationUserSetting.findByUserIdAndChannel",
         newNamedParameters().add("userId", userId).add("channel", channel));
   }

@@ -113,6 +113,40 @@ public class AnnotationUtil {
   }
 
   /**
+   * This method is awesome.
+   * It permits to retrieve the class from a class hierarchy the one that declares the given
+   * annotation.
+   * @param searchedAnnotationClass the class of the searched annotation.
+   * @param fromClass the class from which the annotation is searched.
+   * @return the class that declares the given annotation, null otherwise.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> Class<T> searchClassThatDeclaresAnnotation(
+      Class<? extends Annotation> searchedAnnotationClass, Class<?> fromClass) {
+    return searchClassThatDeclaresAnnotation(searchedAnnotationClass, (Type) fromClass);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> Class<T> searchClassThatDeclaresAnnotation(
+      Class<? extends Annotation> searchedAnnotationClass, Type fromClassType) {
+    if (fromClassType != null) {
+      if (fromClassType instanceof Class) {
+        if (((Class) fromClassType).getAnnotation(searchedAnnotationClass) != null) {
+          return (Class) fromClassType;
+        }
+        return searchClassThatDeclaresAnnotation(searchedAnnotationClass,
+            ((Class) fromClassType).getGenericSuperclass());
+      } else if (fromClassType instanceof ParameterizedType) {
+        return searchClassThatDeclaresAnnotation(searchedAnnotationClass,
+            ((ParameterizedType) fromClassType).getRawType());
+      } else {
+        throw new NotImplementedException("");
+      }
+    }
+    return null;
+  }
+
+  /**
    * Provides a centralized way to extract annotation of a method.
    * @param invocationContext the context of invocation.
    * @return the map with keys of Annotation class and values of object list.

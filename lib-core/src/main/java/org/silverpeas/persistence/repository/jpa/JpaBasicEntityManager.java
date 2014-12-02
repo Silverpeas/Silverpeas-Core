@@ -237,7 +237,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity, ENTITY_IDE
 
   @Override
   public ENTITY saveAndFlush(final ENTITY entity) {
-    ENTITY curEntity = save(Collections.singletonList(entity)).get(0);
+    ENTITY curEntity = save(entity);
     flush();
     return curEntity;
   }
@@ -277,6 +277,16 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity, ENTITY_IDE
     }
   }
 
+  @Override
+  public long deleteById(final String... ids) {
+    return deleteByIdentifier(convertToEntityIdentifiers(ids));
+  }
+
+  @Override
+  public long deleteById(final Collection<String> ids) {
+    return deleteByIdentifier(convertToEntityIdentifiers(ids));
+  }
+
   private long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     long nbDeletes = 0;
     Query deleteQuery = getEntityManager()
@@ -290,10 +300,19 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity, ENTITY_IDE
 
   /**
    * Gets a new query parameter container.
-   * @return
+   * @return instance of {@link NamedParameter}
    */
   public NamedParameters newNamedParameters() {
     return new NamedParameters();
+  }
+
+  /**
+   * Gets an instance that represents the fact that it does not exist parameter for the query to
+   * execute.
+   * @return instance of {@link NoNamedParameter}
+   */
+  public NoNamedParameter noParameter() {
+    return new NoNamedParameter();
   }
 
   /**
@@ -527,7 +546,7 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity, ENTITY_IDE
    * A centralized access to the entity manager (just in case ...)
    * @return
    */
-  protected EntityManager getEntityManager() {
+  private EntityManager getEntityManager() {
     return em;
   }
 

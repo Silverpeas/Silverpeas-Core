@@ -33,6 +33,7 @@ import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
+import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -46,6 +47,7 @@ import org.silverpeas.contribution.model.Contribution;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.TransactionRuntimeException;
@@ -128,7 +130,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link StringUtil}</li>
    * <li>{@link CollectionUtil}</li>
    * <li>{@link MapUtil}</li>
+   * <li>{@link DateUtil}</li>
    * <li>{@link AssertArgument}</li>
+   * <li>{@link EncodeHelper}</li>
    * <li>{@link ActionType} and classes in {@link org.silverpeas.util.annotation}</li>
    * <li>{@link #addSilverpeasContentFeatures()}</li>
    * <li>{@link AbstractComplexComparator}</li>
@@ -149,6 +153,13 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(ArrayUtil.class)) {
       addClasses(ArrayUtil.class);
+    }
+    if (!contains(EncodeHelper.class)) {
+      addClasses(EncodeHelper.class);
+    }
+    if (!contains(DateUtil.class)) {
+      addClasses(DateUtil.class);
+      addPackages(true, "com.silverpeas.calendar");
     }
     if (!contains(Charsets.class)) {
       addClasses(Charsets.class);
@@ -407,6 +418,27 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
+   * Sets notification features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addSilverpeasUrlFeatures()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addNotificationFeatures() {
+    if (!contains(NotifChannel.class)) {
+      addPackages(true, "com.stratelia.silverpeas.notificationManager");
+      addPackages(true, "com.stratelia.silverpeas.notificationserver");
+      addAsResource("org/silverpeas/notificationManager");
+      addClasses(JNDINames.class, AbstractTable.class);
+      addAsResource("org/silverpeas/util/jndi.properties");
+      // Centralized features
+      addSilverpeasUrlFeatures();
+    }
+    return this;
+  }
+
+  /**
    * Sets administration features.
    * Calls automatically:
    * <ul>
@@ -464,7 +496,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addOrganisationFeatures() {
     if (!contains(OrganizationController.class)) {
-      addClasses(OrganizationController.class);
+      addClasses(OrganizationController.class, OrganizationControllerProvider.class);
       addPackages(true, "com.stratelia.webactiv.organization");
       addPackages(true, "com.stratelia.webactiv.persistence");
       addClasses(Schema.class, SchemaPool.class);
