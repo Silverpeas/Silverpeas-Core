@@ -21,9 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.util;
 
-package com.stratelia.silverpeas.notificationManager;
+public class Link {
 
-public enum NotificationTemplateKey {
-  notification_receiver_users, notification_receiver_groups, notification_serverurl, notification_link, notification_linkLabel;
+  private String linkUrl;
+  private String linkLabel;
+
+  public Link(String linkUrl, String linkLabel) {
+    this.linkUrl = linkUrl;
+    this.linkLabel = linkLabel;
+  }
+
+  public String getLinkUrl() {
+    return linkUrl;
+  }
+
+  public void setLinkUrl(String linkUrl) {
+    this.linkUrl = linkUrl;
+  }
+
+  public String getLinkLabel() {
+    return linkLabel;
+  }
+
+  public void setLinkLabel(String linkLabel) {
+    this.linkLabel = linkLabel;
+  }
 }

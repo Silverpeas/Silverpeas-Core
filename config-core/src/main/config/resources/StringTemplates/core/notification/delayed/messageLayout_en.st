@@ -1,9 +1,8 @@
-<html>
-	<body style="background-color:#E3E6DB;">
-		<div style="font-family:Arial;font-size:12px; background-color:#E3E6DB; padding:10px;">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<body>
 			$messageHeader_en()$
 			$messageBody_en()$
 			$messageFooter_en()$
-		</div>
 	</body>
 </html>

@@ -90,7 +90,6 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
             "");
     template.setAttribute("senderUser", OrganizationControllerProvider.getOrganisationController().
         getUserDetail(userId));
-    template.setAttribute("attachmentUrl", fileSharingParam.getAttachmentUrl());
     if (StringUtil.isDefined(fileSharingParam.getAdditionalMessage())) {
       template.setAttribute("additionalMessage", fileSharingParam.getAdditionalMessage());
     }
@@ -190,7 +189,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
       UserNotificationHelper
           .buildAndSend(new FileSharingUserNotification(resource, fileSharingParam));
     } catch (final Exception e) {
-      SilverTrace.warn("webPages", "FileSharingUserNotification.notify()",
+      SilverTrace.warn("sharingTicket", "FileSharingUserNotification.notify()",
           "fileSharing.EX_ALERT_USERS_ERROR", "tocken = " + resource.getToken(), e);
     }
   }
@@ -198,5 +197,21 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   @Override
   protected boolean isSendImmediatly() {
     return super.isSendImmediatly();
+  }
+
+  @Override
+  protected String getResourceURL(final Ticket resource) {
+    return fileSharingParam.getAttachmentUrl();
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    if (NODE_SHARING_TEMPLATE_FILE_NAME.equals(getFileName())) {
+      return "sharing.notification.notifFolderLinkLabel";
+    } else if (PUBLI_SHARING_TEMPLATE_FILE_NAME.equals(getFileName())) {
+      return "sharing.notification.notifPublicationLinkLabel";
+    }
+    //else FILE_TYPE or VERSION_TYPE
+    return "sharing.notification.notifFileLinkLabel";
   }
 }

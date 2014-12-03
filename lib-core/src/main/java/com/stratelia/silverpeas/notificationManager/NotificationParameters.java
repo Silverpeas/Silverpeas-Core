@@ -91,6 +91,7 @@ public class NotificationParameters {
   public String senderName = "";
   public String sMessage = "";
   public String sURL = "";
+  public String sLinkLabel = "";
   public String sSource = "";
   public String sSessionId = "";
   public String sOriginalExtraMessage = null;
@@ -204,6 +205,10 @@ public class NotificationParameters {
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "AnswerAllowed : "
           + bAnswerAllowed);
+      SilverTrace.info("notificationManager",
+          "NotificationParameters.traceObject",
+          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "SendImmediately : "
+          + bSendImmediately);
       SilverTrace.info("notificationManager",
           "NotificationParameters.traceObject",
           "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Source : "

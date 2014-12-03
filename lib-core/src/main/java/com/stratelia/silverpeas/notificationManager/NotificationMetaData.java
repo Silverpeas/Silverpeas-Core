@@ -24,13 +24,8 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +33,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.Link;
+
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class NotificationMetaData implements java.io.Serializable {
 
@@ -64,10 +75,17 @@ public class NotificationMetaData implements java.io.Serializable {
 
   private Map<String, String> titles = new HashMap<String, String>();
   private Map<String, String> contents = new HashMap<String, String>();
+  private Map<String, String> linkLabels = new HashMap<String, String>();
 
   private Map<String, SilverpeasTemplate> templates;
+  private Map<String, SilverpeasTemplate> templatesMessageFooter;
 
   private String originalExtraMessage = null;
+  private boolean displayReceiversInFooter = false;
+  
+  private ResourceLocator settings = new ResourceLocator(
+      "org.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+
 
   /**
    * Default Constructor
@@ -115,6 +133,7 @@ public class NotificationMetaData implements java.io.Serializable {
     isAnswerAllowed = false;
     fileName = null;
     this.templates = new HashMap<String, SilverpeasTemplate>();
+    this.templatesMessageFooter = new HashMap<String, SilverpeasTemplate>();
     action = null;
     notificationResourceData.clear();
   }
@@ -130,10 +149,6 @@ public class NotificationMetaData implements java.io.Serializable {
 
   public Map<String, SilverpeasTemplate> getTemplates() {
     return Collections.unmodifiableMap(templates);
-  }
-
-  public Boolean isTemplateUsed() {
-    return !templates.isEmpty();
   }
 
   /**
@@ -230,18 +245,54 @@ public class NotificationMetaData implements java.io.Serializable {
     SilverTrace.info("notificationManager",
         "NotificationMetaData.getContent()", "root.MSG_GEN_ENTER_METHOD",
         "language = " + language);
-    String result = "";
+    StringBuilder result = new StringBuilder();
     if (templates != null && !templates.isEmpty()) {
       SilverpeasTemplate template = templates.get(language);
       if (template != null) {
-        result = template.applyFileTemplate(fileName + '_' + language);
+        result.append(template.applyFileTemplate(fileName + '_' + language));
       }
     } else {
-      result = contents.get(language);
+      String content = contents.get(language);
+      if(content != null) {
+        result.append(content);
+      }
+
+      if(getOriginalExtraMessage() != null) {
+        ResourceLocator alertUserPeasMessage = new ResourceLocator("org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
+            language);
+        result.append("\n\n").append(alertUserPeasMessage.getString("AuthorMessage"))
+            .append(" : \n")
+            .append("<div style=\"background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; " +
+                    "width:390px;\">")
+            .append(getOriginalExtraMessage())
+            .append("</div>");
+      }
+    }
+    
+    //add messageFooter containing receivers
+    SilverpeasTemplate templateMessageFooter = getTemplateMessageFooter(language);
+    if (templateMessageFooter != null && this.displayReceiversInFooter) {
+      try {
+        String receiver_users = addReceiverUsers();
+        if (StringUtil.isDefined(receiver_users)) {
+          templateMessageFooter.setAttribute(notification_receiver_users.toString(), receiver_users);
+        }
+        String receiver_groups = addReceiverGroups();
+        if (StringUtil.isDefined(receiver_groups)) {
+          templateMessageFooter.setAttribute(notification_receiver_groups.toString(), receiver_groups);
+        }
+      } catch (NotificationManagerException e) {
+        SilverTrace.warn("notificationManager",
+            "NotificationMetaData.getContent()",
+            "root.EX_ADD_USERS_FAILED", e);
+      }
+      
+      String messageFooter = templateMessageFooter.applyFileTemplate("messageFooter" + '_' + language);
+      result.append("\n\n"+messageFooter);
     }
     SilverTrace.info("notificationManager", "NotificationMetaData.getContent()",
         "root.MSG_GEN_EXIT_METHOD", "result = " + result);
-    return EncodeHelper.convertWhiteSpacesForHTMLDisplay(result);
+    return EncodeHelper.convertWhiteSpacesForHTMLDisplay(result.toString());
   }
 
   /**
@@ -306,6 +357,36 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public String getLink() {
     return link;
+  }
+  
+  /**
+   * Set link
+   * @param link the link to be set
+   */
+  public void setLink(Link link) {
+    setLink(link, I18NHelper.defaultLanguage);
+  }
+  
+  /**
+   * Set link
+   * @param link the link to be set
+   * @param language the language of the linkLabel
+   */
+  public void setLink(Link link, String language) {
+    this.link = link.getLinkUrl();
+    linkLabels.put(language, link.getLinkLabel());
+  }
+
+  /**
+   * Get message linkLabel
+   * @return the message linkLabel
+   */
+  public String getLinkLabel() {
+    return getLinkLabel(I18NHelper.defaultLanguage);
+  }
+
+  public String getLinkLabel(String language) {
+    return linkLabels.get(language);
   }
 
   /**
@@ -489,16 +570,10 @@ public class NotificationMetaData implements java.io.Serializable {
     this.componentId = componentId;
   }
 
-  public void addExtraMessage(String message, String label, String language) {
+  public void addExtraMessage(String message, String language) {
     setOriginalExtraMessage(message);
     if (templates != null && !templates.isEmpty()) {
       templates.get(language).setAttribute("senderMessage", message);
-    } else {
-      StringBuffer content = new StringBuffer(getContent(language));
-      if (content != null) {
-        content.append("\n\n").append(label).append(" : \n\"").append(message).append("\"");
-        setContent(content.toString(), language);
-      }
     }
   }
 
@@ -557,5 +632,106 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public boolean isManual() {
     return StringUtil.isInteger(getSender());
+  }
+  
+  private SilverpeasTemplate createTemplateMessageFooter(String language) {
+    SilverpeasTemplate templateFooter = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+    this.templatesMessageFooter.put(language, templateFooter);  
+    return templateFooter;
+  }
+  
+  public SilverpeasTemplate getTemplateMessageFooter(String language) {
+    if(this.templatesMessageFooter == null || this.templatesMessageFooter.isEmpty()) {
+      this.templatesMessageFooter = new HashMap<String, SilverpeasTemplate>();
+      return createTemplateMessageFooter(language);
+    }
+    
+    SilverpeasTemplate templateMessageFooter = this.templatesMessageFooter.get(language);
+    if(templateMessageFooter == null) {
+      return createTemplateMessageFooter(language);
+    }
+   
+    return templateMessageFooter;
+  }
+  
+  public Set<UserRecipient> getUserSet()
+      throws NotificationManagerException {
+    HashSet<UserRecipient> usersSet = new HashSet<UserRecipient>();
+    usersSet.addAll(getUserRecipients());
+    for (GroupRecipient group : getGroupRecipients()) {
+      if (!displayGroup(group.getGroupId())) {
+        usersSet.addAll(new NotificationManager(null).getUsersFromGroup(group.getGroupId()));
+      }
+    }
+
+    // Then exclude users that don't have to be notified
+    usersSet.removeAll(getUserRecipientsToExclude());
+
+    return usersSet;
+  }
+  
+  private boolean displayGroup(String groupId) {
+    String threshold = settings.getString("notif.receiver.displayUser.threshold");
+    OrganisationController orgaController = OrganisationControllerFactory.
+        getOrganisationController();
+    Group group = orgaController.getGroup(groupId);
+    int nbUsers = group.getNbUsers();
+    boolean res1 = settings.getBoolean("notif.receiver.displayGroup", false);
+    boolean res2 = StringUtil.isDefined(threshold);
+    boolean res3 = StringUtil.isInteger(threshold);
+    boolean res4 = nbUsers > Integer.parseInt(threshold);
+    boolean result = res1 || (res2 && res3 && res4);
+    return result;
+  }
+  
+  public void displayReceiversInFooter() {
+    this.displayReceiversInFooter = true;
+  }
+  
+  public String addReceiverUsers() throws NotificationManagerException {
+    StringBuilder users = new StringBuilder();
+    if (settings.getBoolean("addReceiversInBody", false) && this.displayReceiversInFooter) {
+      Set<UserRecipient> usersSet = getUserSet();
+      OrganisationController orgaController = OrganisationControllerFactory.
+        getOrganisationController();
+      boolean first = true;
+      for (UserRecipient anUsersSet : usersSet) {
+        if (!first) {
+          users.append(", ");
+        }
+        users.append(orgaController.getUserDetail(anUsersSet.getUserId()).getDisplayedName());
+        first = false;
+      }
+    }
+    return users.toString();
+  }
+  
+  public Set<GroupRecipient> getGroupSet() {
+    HashSet<GroupRecipient> groupsSet = new HashSet<GroupRecipient>();
+    for (GroupRecipient group : getGroupRecipients()) {
+      if (displayGroup(group.getGroupId())) {
+        // add groups names
+        groupsSet.add(group);
+      }
+    }
+    return groupsSet;
+  }
+
+  public String addReceiverGroups() {
+    StringBuilder groups = new StringBuilder();
+    if (settings.getBoolean("addReceiversInBody", false) && this.displayReceiversInFooter) {
+      Set<GroupRecipient> groupsSet = getGroupSet();
+      OrganisationController orgaController =
+        OrganisationControllerFactory.getOrganisationController();
+      boolean first = true;
+      for (GroupRecipient aGroupsSet : groupsSet) {
+        if (!first) {
+          groups.append(", ");
+        }
+        groups.append(orgaController.getGroup(aGroupsSet.getGroupId()).getName());
+        first = false;
+      }
+    }
+    return groups.toString();
   }
 }

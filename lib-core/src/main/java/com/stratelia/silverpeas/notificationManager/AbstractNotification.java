@@ -92,4 +92,11 @@ public class AbstractNotification {
   public void setNotificationResources(final ResourceLocator resourceLocator) {
     notifResources = resourceLocator;
   }
+
+  public String getUserAutoRedirectSilverpeasServerURL(final String userId) {
+    final UserDetail ud = UserDetail.getById(userId);
+    final Domain dom = ud.getDomain();
+    String url = dom.getSilverpeasServerURL() + getApplicationURL();
+    return url;
+  }
 }

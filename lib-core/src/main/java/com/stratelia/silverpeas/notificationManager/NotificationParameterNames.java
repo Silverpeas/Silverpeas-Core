@@ -26,11 +26,15 @@ package com.stratelia.silverpeas.notificationManager;
 
 public interface NotificationParameterNames {
   String SOURCE = "SOURCE";
+  String SERVERURL = "SERVERURL";
   String URL = "URL";
+  String LINKLABEL = "LINKLABEL";
   String FROM = "FROM";
   String SUBJECT = "SUBJECT";
   String SESSIONID = "SESSIONID";
   String DATE = "DATE";
   String LANGUAGE = "LANGUAGE";
   String COMMUNICATION = "COMMUNICATION";
+  String ATTACHMENTID = "ATTACHMENTID";
+  String HIDESMTPHEADERFOOTER = "HIDESMTPHEADERFOOTER";
 }

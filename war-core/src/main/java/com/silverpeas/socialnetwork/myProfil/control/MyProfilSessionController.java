@@ -67,6 +67,7 @@ import java.util.Map;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.util.Link;
 
 /**
  * @author Bensalem Nabil
@@ -250,8 +251,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       UserDetail senderUser = getUserDetail();
       notifMetaData.setSource(senderUser.getDisplayedName());
-      notifMetaData
-          .setLink(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "MyInvitations");
 
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
@@ -267,6 +266,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         notifMetaData.addLanguage(language,
             localizedMessage.getString("myProfile.invitations.notification.send.subject", subject),
             "");
+
+        String url = URLManager.getURL(URLManager.CMP_MYPROFILE, null, null)
+            + "MyInvitations";
+        Link link = new Link(url, localizedMessage.getString("myProfile.invitations.notification.notifLinkLabel"));
+        notifMetaData.setLink(link, language);
       }
       if (StringUtil.isDefined(message)) {
         setNotificationContent(notifMetaData, message, "fr");
@@ -283,7 +287,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   private void setNotificationContent(NotificationMetaData notif, String message, String language) {
-    notif.addExtraMessage(message, "Message", language);
+    notif.addExtraMessage(message, language);
   }
 
   /**

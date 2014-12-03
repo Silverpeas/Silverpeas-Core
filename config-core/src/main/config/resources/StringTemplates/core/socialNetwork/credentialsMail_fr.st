@@ -1,4 +1,3 @@
-<div style="font-family:Arial;font-size:11px">
 Bonjour $fullName$,
 
 Merci de vous &ecirc;tre enregistr&eacute; sur Silverpeas.
@@ -13,4 +12,3 @@ $endif$
 
 
 Pour vous connecter, cliquez <a href="$url$">ici</a>
-</div>

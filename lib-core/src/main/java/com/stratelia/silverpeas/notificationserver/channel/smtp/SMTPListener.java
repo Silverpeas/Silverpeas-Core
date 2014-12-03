@@ -24,6 +24,9 @@ import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
@@ -52,6 +55,13 @@ import static org.silverpeas.util.MailUtil.*;
 
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SECURE_TRANSPORT;
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SIMPLE_TRANSPORT;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+    .notification_serverurl;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+.notification_link;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+.notification_linkLabel;
+
 
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -74,11 +84,11 @@ public class SMTPListener extends AbstractListener implements MessageListener {
   @Override
   public void onMessage(javax.jms.Message msg) {
     try {
-      SilverTrace.info("smtp", "SMTPListner.onMessage()", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("smtp", "SMTPListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
           "JMS Message = " + msg);
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace.error("smtp", "SMTPListner.onMessage()", "smtp.EX_CANT_PROCESS_MSG",
+      SilverTrace.error("smtp", "SMTPListener.onMessage()", "smtp.EX_CANT_PROCESS_MSG",
           "JMS Message = " + msg + ", Payload = " + (payLoad == null ? "" : payLoad), e);
     }
   }
@@ -87,12 +97,15 @@ public class SMTPListener extends AbstractListener implements MessageListener {
   public void send(NotificationData notification) throws NotificationServerException {
     // process the target param string, containing the FROM and the SUBJECT email fields.
     Map<String, Object> keyValue = notification.getTargetParam();
-    String tmpFromString = (String) keyValue.get("FROM");
-    String tmpSubjectString = EncodeHelper.htmlStringToJavaString((String) keyValue.get("SUBJECT"));
-    String tmpUrlString = (String) keyValue.get("URL");
-    String tmpLanguageString = (String) keyValue.get("LANGUAGE");
-    String tmpAttachmentIdString = (String) keyValue.get("ATTACHMENTID");
-    String tmpSourceString = (String) keyValue.get("SOURCE");
+    String tmpFromString = (String) keyValue.get(NotificationParameterNames.FROM);
+    String tmpSubjectString = EncodeHelper.htmlStringToJavaString((String) keyValue.get(NotificationParameterNames.SUBJECT));
+    String serverUrl = (String) keyValue.get(NotificationParameterNames.SERVERURL);
+    String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL);
+    String linkLabel = (String) keyValue.get(NotificationParameterNames.LINKLABEL);
+    String tmpLanguageString = (String) keyValue.get(NotificationParameterNames.LANGUAGE);
+    String tmpAttachmentIdString = (String) keyValue.get(NotificationParameterNames.ATTACHMENTID);
+    String tmpSourceString = (String) keyValue.get(NotificationParameterNames.SOURCE);
+    Boolean hideSmtpHeaderFooter = (Boolean) keyValue.get(NotificationParameterNames.HIDESMTPHEADERFOOTER);
 
     if (StringUtil.isDefined(tmpSourceString)) {
       tmpSubjectString = tmpSourceString + " : " + tmpSubjectString;
@@ -105,23 +118,56 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     ResourceLocator messages = new ResourceLocator(
         "org.silverpeas.notificationserver.channel.smtp.multilang.smtpBundle", tmpLanguageString);
     if (tmpFromString == null) {
-      throw new NotificationServerException("SMTPListner.send()", SilverpeasException.ERROR,
+      throw new NotificationServerException("SMTPListener.send()", SilverpeasException.ERROR,
           "smtp.EX_MISSING_FROM");
     } else {
-      String body = notification.getMessage();
-      // Transform text to html format
-      body = EncodeHelper.convertWhiteSpacesForHTMLDisplay(body + "\n\n");
-      if (tmpUrlString != null) {
-        body += "<a href=\"" + tmpUrlString + "\" target=_blank>" + messages.getString("clickHere")
-            + "</a> " + messages.getString("ToAccessDocument");
+      StringBuilder body = new StringBuilder();
+      SilverpeasTemplate templateHeaderFooter =
+          SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+
+      templateHeaderFooter.setAttribute(notification_serverurl.toString(), serverUrl);
+
+      if (hideSmtpHeaderFooter == null) {
+        // Header Message
+        String SMTPmessageHeader =
+            templateHeaderFooter.applyFileTemplate("SMTPmessageHeader" + '_' + tmpLanguageString);
+        body.append(SMTPmessageHeader);
       }
+
+      // Body Message
+      String messageBody = notification.getMessage();
+        // Transform text to html format
+      messageBody = EncodeHelper.convertWhiteSpacesForHTMLDisplay(messageBody + "\n\n");
+      body.append(messageBody);
+
+      if(tmpUrlString != null) {
+        
+        templateHeaderFooter.setAttribute(notification_link.toString(), tmpUrlString);
+        
+        if(StringUtil.isDefined(linkLabel)) {
+          templateHeaderFooter.setAttribute(notification_linkLabel.toString(), linkLabel);
+        } else {//link name by default
+          templateHeaderFooter.setAttribute(notification_linkLabel.toString(), messages.getString("GoToContribution"));
+        }
+        
+      }
+
+
+      if (hideSmtpHeaderFooter == null) {
+        // Footer Message
+        String SMTPmessageFooter =
+            templateHeaderFooter.applyFileTemplate("SMTPmessageFooter" + '_' + tmpLanguageString);
+        body.append(SMTPmessageFooter);
+      }
+
+      
       if (tmpAttachmentIdString == null) {
         sendEmail(tmpFromString, notification.getSenderName(), notification.getTargetReceipt(),
-            tmpSubjectString, body, true);
+            tmpSubjectString, body.toString(), true);
       } else {
         // For the moment, send the email without attachment
         sendEmail(tmpFromString, notification.getSenderName(), notification.getTargetReceipt(),
-            tmpSubjectString, body, false);
+            tmpSubjectString, body.toString(), false);
       }
     }
   }
@@ -162,7 +208,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
           }
         }
       } catch (AddressException e) {
-        SilverTrace.warn("smtp", "SMTPListner.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.warn("smtp", "SMTPListener.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
             "From = " + pFrom + ", To = " + pTo);
       }
       MimeMessage email = new MimeMessage(session);
@@ -201,7 +247,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       synchronized (SMTPListener.class) {
         try {
           if (isAuthenticated()) {
-            SilverTrace.info("smtp", "SMTPListner.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
+            SilverTrace.info("smtp", "SMTPListener.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
                 "Host = " + getMailServer() + " Port=" + getPort() + " User=" + getLogin());
             transport.connect(getMailServer(), getPort(), getLogin(), getPassword());
           } else {
@@ -215,7 +261,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
               transport.close();
             } catch (Exception e) {
               SilverTrace.
-                  error("smtp", "SMTPListner.sendEmail()", "root.EX_IGNORED", "ClosingTransport",
+                  error("smtp", "SMTPListener.sendEmail()", "root.EX_IGNORED", "ClosingTransport",
                       e);
             }
           }
@@ -224,7 +270,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     } catch (MessagingException | UnsupportedEncodingException e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
     } catch (Exception e) {
-      throw new NotificationServerException("SMTPListner.sendEmail()", SilverpeasException.ERROR,
+      throw new NotificationServerException("SMTPListener.sendEmail()", SilverpeasException.ERROR,
           "smtp.EX_CANT_SEND_SMTP_MESSAGE", e);
     }
   }
