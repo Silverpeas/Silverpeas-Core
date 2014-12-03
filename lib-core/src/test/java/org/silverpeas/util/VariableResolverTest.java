@@ -23,22 +23,35 @@ package org.silverpeas.util;
 
 import org.junit.*;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.lang.SystemWrapper;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class VariableResolverTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   @Before
-  public void setUpSystemProperties() {
-    System.setProperty("Foo", "Toto");
+  public void setUpVariables() {
+    SystemWrapper.get().setProperty("Foo", "Toto");
+    SystemWrapper.get().getenv().put("Foo", "Titi");
   }
 
   @Test
-  public void testResolveAStringValueWithVariables() throws Exception {
+  public void testResolveAStringValueWithPropertyVariables() throws Exception {
     String value = "${prop.Foo} is at home";
     String actual = VariableResolver.resolve(value);
     assertThat(actual, is("Toto is at home"));
+  }
+
+  @Test
+  public void testResolveAStringValueWithEnvVariables() throws Exception {
+    String value = "${env.Foo} is at home";
+    String actual = VariableResolver.resolve(value);
+    assertThat(actual, is("Titi is at home"));
   }
 
   @Test
@@ -49,17 +62,31 @@ public class VariableResolverTest {
   }
 
   @Test
-  public void testResolveAStringValueWithAVariableAtTheMiddle() throws Exception {
+  public void testResolveAStringValueWithAPropertyVariableAtTheMiddle() throws Exception {
     String value = "Once upon a time, ${prop.Foo} left his home to go at work";
     String actual = VariableResolver.resolve(value);
     assertThat(actual, is("Once upon a time, Toto left his home to go at work"));
   }
 
   @Test
-  public void testResolveAnObjectBeingAStringWithVariables() throws Exception {
+  public void testResolveAStringValueWithAnEnvVariableAtTheMiddle() throws Exception {
+    String value = "Once upon a time, ${env.Foo} left his home to go at work";
+    String actual = VariableResolver.resolve(value);
+    assertThat(actual, is("Once upon a time, Titi left his home to go at work"));
+  }
+
+  @Test
+  public void testResolveAnObjectBeingAStringWithPropertyVariables() throws Exception {
     Object value = "${prop.Foo} is at home";
     Object actual = VariableResolver.resolve(value);
     assertThat(actual, is("Toto is at home"));
+  }
+
+  @Test
+  public void testResolveAnObjectBeingAStringWithEnvVariables() throws Exception {
+    Object value = "${env.Foo} is at home";
+    Object actual = VariableResolver.resolve(value);
+    assertThat(actual, is("Titi is at home"));
   }
 
   @Test

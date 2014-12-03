@@ -21,6 +21,8 @@
 
 package org.silverpeas.util;
 
+import org.silverpeas.util.lang.SystemWrapper;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,10 +67,10 @@ public class VariableResolver {
         String resolution;
         switch (statement[0]) {
           case "env":
-            resolution = System.getenv(statement[1]);
+            resolution = SystemWrapper.get().getenv(statement[1]);
             break;
           default:
-            resolution = System.getProperty(statement[1]);
+            resolution = SystemWrapper.get().getProperty(statement[1]);
         }
         matching = VAR_REPLACEMENT.matcher(value);
         resolvedValue = matching.replaceAll(resolution);

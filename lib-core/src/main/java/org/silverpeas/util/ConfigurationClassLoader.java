@@ -46,7 +46,8 @@ import static java.io.File.separatorChar;
  */
 public class ConfigurationClassLoader extends ClassLoader {
 
-  private String baseDir = System.getenv("SILVERPEAS_HOME") + "/properties";
+  private String baseDir =
+      SystemWrapper.get().getenv("SILVERPEAS_HOME") + File.separatorChar + "properties";
 
   @Override
   public synchronized void clearAssertionStatus() {
