@@ -165,7 +165,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   }
 
   private void setNotificationContent(String message, String language) {
-    getNotificationMetaData().addExtraMessage(message, getString("AuthorMessage"), language);
+    getNotificationMetaData().addExtraMessage(message, language);
   }
 
   public void sendNotification() {

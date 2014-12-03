@@ -1,9 +1,14 @@
-<div id="footer">
-	$if(delay)$
-		You will receive $delay$ a new notification synthesis.<br/>
-		You can change whenever you want the receive frequency of this notification synthesis from the settings of <b>"My notifications"</b> from your <b>personnal space</b>.
-	$else$
-		You have chosen to stop receiving notification synthesis.<br/>
-		If you wish, you can again receive this synthesis from the settings of <b>"My notifications"</b> accessible from your <b>personal space</b>.
-	$endif$
+</div>
+<div style="background-color:#353535;color:#FFF;padding:10px;font-family:Century Gothic,Arial;font-size:12px;">
+Benachrichtigung von <a style="color:#FFF;" href="$notification_serverurl$">Ihrer Plattform Silverpeas geschickt</a> -
+<img height="22px" style="vertical-align:middle" src="http://www.silverpeas.com/images/favicon.png" alt="" />
+$if(delay)$
+<p>Sie erhalten $delay$ ein neues Benachrichtigungs Synthese erhalten.<br/>
+Sie können ändern, wann immer Sie die Empfangsfrequenz dieser Mitteilung Synthese aus den Einstellungen <b>"Meine Benachrichtigungen"</b> von Ihrem <b>persönlichen Bereich</b> wollen.
+</p>
+$else$
+<p>Sie haben sich für den Empfang von Meldung Synthese.<br/>
+Wenn Sie möchten, können Sie wieder erhalten diese Synthese aus den Einstellungen der <b>"Meine Benachrichtigungen"</b> zugänglich von Ihrem <b>persönlichen Bereich</b>.
+</p>
+$endif$
 </div>

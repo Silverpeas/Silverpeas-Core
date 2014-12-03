@@ -613,6 +613,10 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     notificationData.getTargetParam().put(NotificationParameterNames.LANGUAGE,
         synthese.getLanguage());
 
+    // Hide Header and Footer in SMTP message
+    notificationData.getTargetParam().put(NotificationParameterNames.HIDESMTPHEADERFOOTER,
+        true);
+
     // Set the message
     notificationData.setMessage(synthese.getMessage());
 

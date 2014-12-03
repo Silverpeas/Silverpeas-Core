@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.Link;
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.notification.model.NotificationResourceData;
@@ -107,8 +108,19 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     final NotificationResourceData nRDBase = initializeNotificationResourceData();
     NotificationResourceData notificationResourceData;
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
+      //set link url and link label
+      String linkUrl = getResourceURL(resource);
+      String linkLabel = "";
+      if(getContributionAccessLinkLabelBundleKey() != null) {
+        linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey(), "");
+      }
+      Link link = new Link(linkUrl, linkLabel);
+      getNotificationMetaData().setLink(link, curLanguage);
+
       template = createTemplate();
+      template.setAttribute("silverpeasURL", linkUrl);
       templates.put(curLanguage, template);
+      
       performTemplateData(curLanguage, resource, template);
       notificationResourceData = nRDBase.clone();
       performNotificationResource(curLanguage, resource, notificationResourceData);
@@ -181,4 +193,12 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * @return
    */
   protected abstract String getTemplatePath();
+  
+  /**
+   * Gets the string bundle key for contribution access link
+   * @return
+   */
+  protected String getContributionAccessLinkLabelBundleKey() {
+      return null;
+  }
 }

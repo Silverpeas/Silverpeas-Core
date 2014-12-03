@@ -94,7 +94,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getUserRecipients().size(), is(1));
   }
 
@@ -144,7 +143,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(true));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getNotificationResourceData(), nullValue());
     assertThat(notifTest.getUserRecipients().size(), is(1));
   }
@@ -188,7 +186,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getNotificationResourceData(), nullValue());
     assertThat(notifTest.getUserRecipients().size(), is(1));
   }
@@ -216,7 +213,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     assertThat(notifTest.getNotificationResourceData(), nullValue());
     assertThat(notifTest.getUserRecipients().size(), is(1));
   }
@@ -267,7 +263,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
     assertThat(nrdTest, notNullValue());
     assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
@@ -321,7 +316,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
     assertThat(nrdTest, notNullValue());
     assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
@@ -357,7 +351,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(0));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(false));
     final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
     assertThat(nrdTest, notNullValue());
     assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
@@ -405,7 +398,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(3));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(true));
     final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
     assertThat(nrdTest, notNullValue());
     assertThat(nrdTest.getComponentInstanceId(), is("aComponentInstanceId"));
@@ -456,7 +448,6 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getTemplates().size(), is(3));
     assertThat(notifTest.isSendImmediately(), is(false));
     assertThat(notifTest.isAnswerAllowed(), is(false));
-    assertThat(notifTest.isTemplateUsed(), is(true));
     final NotificationResourceData nrdTest = notifTest.getNotificationResourceData();
     assertThat(nrdTest, notNullValue());
     assertThat(nrdTest.getComponentInstanceId(), is("<componentInstanceId>"));
