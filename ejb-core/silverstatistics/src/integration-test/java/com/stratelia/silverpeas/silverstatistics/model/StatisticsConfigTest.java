@@ -54,7 +54,7 @@ public class StatisticsConfigTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarFor(StatisticsConfigTest.class)
+    return BasicWarBuilder.onWarForTestClass(StatisticsConfigTest.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
