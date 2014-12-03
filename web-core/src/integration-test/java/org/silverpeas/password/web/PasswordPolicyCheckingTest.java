@@ -52,7 +52,7 @@ public class PasswordPolicyCheckingTest extends ResourceCreationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarFor(PasswordPolicyGettingTest.class)
+    return WarBuilder4WebCore.onWarForTestClass(PasswordPolicyGettingTest.class)
         .addRESTWebServiceEnvironment()
         .addStringTemplateFeatures()
         .testFocusedOn(warBuilder -> {

@@ -55,7 +55,7 @@ public class DelayedNotificationDelegateTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(DelayedNotificationDelegateTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(DelayedNotificationDelegateTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()

@@ -23,27 +23,18 @@
  */
 package org.silverpeas.util;
 
-import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
-import com.carrotsearch.junitbenchmarks.BenchmarkRule;
-import com.carrotsearch.junitbenchmarks.annotation.BenchmarkMethodChart;
-import com.ninja_squad.dbsetup.DbSetup;
-import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
-import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,16 +44,14 @@ import java.util.logging.Logger;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  * Integration tests on some DBUtil capabilities.
  * @author mmoquillon
  */
-@BenchmarkMethodChart
 @RunWith(Arquillian.class)
 public class DBUtilIntegrationTest {
-  @Rule
-  public TestRule benchmarkRun = new BenchmarkRule();
 
   public static final Operation TABLES_CREATION = Operations.sql(
       "create table if not exists User (id int not null primary key, firstName varchar(20) not null, lastName varchar(20) not null)",
@@ -79,33 +68,16 @@ public class DBUtilIntegrationTest {
       .values(1, "user") // don't forget the table name is set in lower case by DBUtil
       .build();
 
-  @Resource(lookup = "java:/datasources/silverpeas")
-  private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
-
-  @Before
-  public void prepareDataSource() {
-    Operation preparation = Operations.sequenceOf(
-        TABLES_CREATION,
-        CLEAN_UP,
-        USER_SET_UP,
-        UNIQUE_ID_SET_UP);
-    DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
-    dbSetupTracker.launchIfNecessary(dbSetup);
-  }
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("")
+      .loadInitialDataSetFrom(TABLES_CREATION, CLEAN_UP, USER_SET_UP, UNIQUE_ID_SET_UP);
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(DBUtilIntegrationTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(DBUtilIntegrationTest.class)
         .addBenchmarkTestFeatures()
         .addJdbcPersistenceFeatures()
         .build();
-  }
-
-  @Test
-  public void emptyTest() {
-    // just to test the deployment into wildfly works fine.
-    dbSetupTracker.skipNextLaunch();
   }
 
   @Test
@@ -147,7 +119,6 @@ public class DBUtilIntegrationTest {
     }
   }
 
-  @BenchmarkOptions(benchmarkRounds = 20, warmupRounds = 1000)
   @Test
   public void nextUniqueIdUpdateForAnExistingTableShouldWorkAndConcurrency()
       throws SQLException, InterruptedException {
@@ -217,7 +188,7 @@ public class DBUtilIntegrationTest {
   private int actualMaxIdInUniqueIdFor(String tableName) throws SQLException {
     final String query = "select maxId from UniqueId where tableName = ?";
     int maxId;
-    try(Connection connection = dataSource.getConnection();
+    try(Connection connection = getSafeConnection();
         PreparedStatement statement = connection.prepareStatement(query)) {
       statement.setString(1, tableName.toLowerCase());
       try(ResultSet resultSet = statement.executeQuery()) {

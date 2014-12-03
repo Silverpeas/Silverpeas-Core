@@ -97,7 +97,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * </ul>
    * @return the instance of the war archive builder.
    */
-  public static <T> WarBuilder4LibCore onWarFor(Class<T> test) {
+  public static <T> WarBuilder4LibCore onWarForTestClass(Class<T> test) {
     WarBuilder4LibCore warBuilder = new WarBuilder4LibCore(test);
     warBuilder.addClasses(SilverTrace.class);
     warBuilder.addServiceProviderFeatures();

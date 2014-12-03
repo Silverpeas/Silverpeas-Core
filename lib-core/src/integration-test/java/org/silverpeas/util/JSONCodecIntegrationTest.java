@@ -56,7 +56,7 @@ public class JSONCodecIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarFor(JSONCodecIntegrationTest.class)
+    return BasicWarBuilder.onWarForTestClass(JSONCodecIntegrationTest.class)
         .testFocusedOn(war -> war.addClasses(TestSerializableBean.class, TestBean.class,
             DecodingException.class, EncodingException.class, JSONCodec.class))
         .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF")

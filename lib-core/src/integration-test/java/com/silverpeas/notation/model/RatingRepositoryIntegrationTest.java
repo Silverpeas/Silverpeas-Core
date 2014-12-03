@@ -71,7 +71,7 @@ public class RatingRepositoryIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(RatingRepositoryIntegrationTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(RatingRepositoryIntegrationTest.class)
         .addJpaPersistenceFeatures()
         .testFocusedOn(
             war -> war.addClasses(ContributionRating.class, Rating.class, RatingRepository.class,

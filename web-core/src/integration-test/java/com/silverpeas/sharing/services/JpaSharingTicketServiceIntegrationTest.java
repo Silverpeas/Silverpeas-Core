@@ -23,7 +23,6 @@
  */
 package com.silverpeas.sharing.services;
 
-import com.ninja_squad.dbsetup.operation.Operation;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
@@ -36,7 +35,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4WebCore;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
@@ -56,10 +54,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-public class JpaSharingTicketServiceIntegrationTest extends DataSetTest {
-
-  public JpaSharingTicketServiceIntegrationTest() {
-  }
+public class JpaSharingTicketServiceIntegrationTest {
 
   @Inject
   private SharingTicketService service;
@@ -68,13 +63,7 @@ public class JpaSharingTicketServiceIntegrationTest extends DataSetTest {
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(this, "create-database.sql", "sharing_dataset.xml");
-
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return null;
-  }
+      new DbUnitLoadingRule("create-database.sql", "sharing_dataset.xml");
 
   @Before
   public void generalSetUp() throws Exception {
@@ -82,13 +71,13 @@ public class JpaSharingTicketServiceIntegrationTest extends DataSetTest {
     creator.setId("0");
   }
 
-
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).testFocusedOn(warBuilder -> {
-      warBuilder.addPackages(true, "com.silverpeas.sharing");
-      warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    }).build();
+    return WarBuilder4WebCore.onWarForTestClass(JpaSharingTicketServiceIntegrationTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addPackages(true, "com.silverpeas.sharing");
+          warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        }).build();
   }
 
 

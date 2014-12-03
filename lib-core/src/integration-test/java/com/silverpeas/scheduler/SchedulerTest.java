@@ -27,7 +27,6 @@ package com.silverpeas.scheduler;
 import com.silverpeas.scheduler.trigger.CronJobTrigger;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.trigger.TimeUnit;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -82,7 +81,7 @@ public class SchedulerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(SchedulerTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(SchedulerTest.class)
         .addSchedulerFeatures()
         .addMavenDependencies("com.jayway.awaitility:awaitility", "org.antlr:stringtemplate")
         .testFocusedOn((warBuilder) -> {

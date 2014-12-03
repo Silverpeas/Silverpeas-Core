@@ -77,7 +77,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(JdbcSqlQueryTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(JdbcSqlQueryTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addJdbcPersistenceFeatures()
@@ -370,7 +370,7 @@ public class JdbcSqlQueryTest extends DataSetTest {
    * @return the content of a_table.
    */
   private List<String> getTableLines() {
-    try (Connection connection = getDataSource().getConnection()) {
+    try (Connection connection = getConnection()) {
       try (PreparedStatement statement = connection
           .prepareStatement("SELECT * FROM a_table ORDER BY id")) {
         try (ResultSet resultSet = statement.executeQuery()) {

@@ -62,7 +62,7 @@ public class SimulationActionInterceptorTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(SimulationActionInterceptorTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(SimulationActionInterceptorTest.class)
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
         .addCommonUserBeans()

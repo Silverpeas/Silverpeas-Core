@@ -102,7 +102,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(SQLInternalDomainRepositoryTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(SQLInternalDomainRepositoryTest.class)
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
         .addJpaPersistenceFeatures()

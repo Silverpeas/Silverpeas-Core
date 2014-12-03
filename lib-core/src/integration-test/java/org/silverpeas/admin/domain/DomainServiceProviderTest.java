@@ -61,7 +61,7 @@ public class DomainServiceProviderTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(DomainServiceProviderTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(DomainServiceProviderTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()

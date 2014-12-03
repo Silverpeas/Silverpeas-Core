@@ -49,7 +49,7 @@ public class FFmpegThumbnailExtractorTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(FFmpegThumbnailExtractorTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(FFmpegThumbnailExtractorTest.class)
         .addSilverpeasExceptionBases()
         .addCommonBasicUtilities()
         .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",

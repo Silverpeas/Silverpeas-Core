@@ -24,144 +24,59 @@
 
 package org.silverpeas.test.rule;
 
-import com.ninja_squad.dbsetup.DbSetup;
-import io.undertow.util.FileUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-import org.silverpeas.DataSetTest;
 
-import java.io.File;
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 /**
  * This rule permits to load data into database via DbUnit framework.
- * Indeed, even if that the best is using {@link DbSetup}, the integration tests manipulate
- * sometimes a lot of database data and it could be easier to load them from DbUnit framework.
- * <p>
- * The rule {@link MavenTargetDirectoryRule} is used here in order to obtain the physical paths of
- * different given resource file for setup. So don't forget to verify its requirements.
- * <p>
- * With this rule, there is no need to remember itself to put database loading resource files in
- * deployment descriptor.
+ * It benefits of the useful rule {@link org.silverpeas.test.rule.DbSetupRule}.
  * @author Yohann Chastagnier
  */
-public class DbUnitLoadingRule implements TestRule {
+public class DbUnitLoadingRule extends DbSetupRule {
 
-  private DataSetTest testInstance;
-  private String tableCreationSqlScript;
   private String xmlDataSet;
-
-  public final MavenTargetDirectoryRule mavenTargetDirectoryRule;
 
   /**
    * Mandatory constructor.
-   * @param testInstance the instance of the current test in order to use class loader mechanism in
-   * right context. The instance mus be an implementation of {@link DataSetTest} in order to obtain
-   * as a centralized way database connections.
    * @param tableCreationSqlScript the name of the file, without path, which contains the scripts
    * of table creation. If the file is not in the same package of the integration test class, then
    * the complete path of the resource (from the maven target test resources) must be given ({@code
    * org/silverpeas/general.properties} for example).
    * @param xmlDataSet the name of the file which contains the data to load into the database (the
    * name of file without path or the complete path, same behaviour than tableCreationSqlScript
-   * parameter).
    */
-  public DbUnitLoadingRule(DataSetTest testInstance, String tableCreationSqlScript,
-      String xmlDataSet) {
-    this.testInstance = testInstance;
-    mavenTargetDirectoryRule = new MavenTargetDirectoryRule(testInstance);
-    this.tableCreationSqlScript = tableCreationSqlScript;
+  public DbUnitLoadingRule(String tableCreationSqlScript, String xmlDataSet) {
+    super(tableCreationSqlScript);
     this.xmlDataSet = xmlDataSet;
   }
 
   @Override
-  public Statement apply(final Statement base, final Description description) {
+  protected void performBefore(Description description) throws Exception {
+    super.performBefore(description);
 
-    return new Statement() {
-      @Override
-      public void evaluate() throws Throwable {
-
-        // Database load
-        try (Connection con = testInstance.getConnection()) {
-          createTables();
-          DatabaseOperation.CLEAN_INSERT.execute(new DatabaseConnection(con), getDataSet());
-        } catch (Exception e) {
-          Logger.getAnonymousLogger().severe("DATABASE LOADING IN ERROR");
-          throw new RuntimeException(e);
-        }
-
-        try {
-          base.evaluate();
-        } finally {
-
-          // Database unload
-          try (Connection con = testInstance.getConnection()) {
-            DatabaseOperation.DELETE_ALL.execute(new DatabaseConnection(con), getDataSet());
-          } catch (Exception e) {
-            Logger.getAnonymousLogger().severe("DATABASE UNLOADING IN ERROR");
-            //noinspection ThrowFromFinallyBlock
-            throw new RuntimeException(e);
-          }
-        }
-      }
-    };
-  }
-
-  private synchronized void createTables() throws SQLException {
-    boolean tablesCreated;
-    try (Connection con = testInstance.getConnection()) {
-      try (PreparedStatement statement = con.prepareStatement(
-          "select count(*) from INFORMATION_SCHEMA.TABLES where lower(TABLE_NAME) = lower" +
-              "('DbUnitLoadingRule_TablesCreated')")) {
-        try (ResultSet rs = statement.executeQuery()) {
-          rs.next();
-          tablesCreated = rs.getLong(1) > 0;
-        }
-      }
-    }
-    if (!tablesCreated) {
-      try {
-        StringTokenizer sqlScriptContent = new StringTokenizer(
-            "create table DbUnitLoadingRule_TablesCreated ();" +
-                FileUtils.readFile(getResourceFile(tableCreationSqlScript)), ";");
-        try (Connection con = testInstance.getConnection()) {
-          while (sqlScriptContent.hasMoreTokens()) {
-            try (PreparedStatement prepStmt = con.prepareStatement(sqlScriptContent.nextToken())) {
-              prepStmt.executeUpdate();
-            }
-          }
-        }
-      } catch (SQLException e) {
-        Logger.getLogger(getClass().getSimpleName())
-            .severe(tableCreationSqlScript + "file contains no valid table creation scripts.");
-      }
+    // Database load
+    try (Connection con = openSafeConnection()) {
+      DatabaseOperation.CLEAN_INSERT.execute(new DatabaseConnection(con), getDataSet(description));
+    } catch (Exception e) {
+      Logger.getAnonymousLogger().severe("DATABASE LOADING IN ERROR");
+      throw new RuntimeException(e);
     }
   }
 
-  private ReplacementDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(
-        new FlatXmlDataSetBuilder().setColumnSensing(true).build(getResourceFile(xmlDataSet)));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
-
-  private File getResourceFile(String fileName) {
-    File fileNameFile = new File(fileName);
-    if (fileNameFile.getParent() != null) {
-      return new File(mavenTargetDirectoryRule.getResourceTestDirFile().getAbsolutePath(),
-          fileName);
+  private ReplacementDataSet getDataSet(Description description) throws Exception {
+    try (InputStream dataSetInputStream = description.getTestClass()
+        .getResourceAsStream(xmlDataSet)) {
+      ReplacementDataSet dataSet = new ReplacementDataSet(
+          new FlatXmlDataSetBuilder().setColumnSensing(true).build(dataSetInputStream));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
     }
-    return new File(mavenTargetDirectoryRule.getResourceTestDirFile().getAbsolutePath(),
-        testInstance.getClass().getPackage().getName().replaceAll("\\.", "/") + "/" + fileName);
   }
 }

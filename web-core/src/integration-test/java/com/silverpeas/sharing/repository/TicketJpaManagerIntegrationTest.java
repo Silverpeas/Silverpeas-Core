@@ -48,29 +48,24 @@
 
 package com.silverpeas.sharing.repository;
 
-import com.ninja_squad.dbsetup.operation.Operation;
 import com.silverpeas.sharing.model.NodeTicket;
 import com.silverpeas.sharing.model.PublicationTicket;
 import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
-import com.silverpeas.sharing.services.JpaSharingTicketService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4WebCore;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
 
-import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
@@ -81,22 +76,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class TicketJpaManagerIntegrationTest extends DataSetTest {
-
-  public TicketJpaManagerIntegrationTest() {
-  }
+public class TicketJpaManagerIntegrationTest {
 
   private TicketRepository service;
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(this, "create-database.sql", "sharing_dataset.xml");
-
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return null;
-  }
+      new DbUnitLoadingRule("create-database.sql", "sharing_dataset.xml");
 
   @Before
   public void generalSetUp() throws Exception {
@@ -105,14 +91,10 @@ public class TicketJpaManagerIntegrationTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).testFocusedOn(warBuilder -> {
-      warBuilder.addPackages(true, "com.silverpeas.sharing");
-      warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    }).build();
-  }
-
-  @Before
-  public void setUp() throws Exception {
+    return WarBuilder4WebCore.onWarForTestClass(TicketJpaManagerIntegrationTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addPackages(true, "com.silverpeas.sharing");
+        }).build();
   }
 
   @Test
@@ -165,7 +147,6 @@ public class TicketJpaManagerIntegrationTest extends DataSetTest {
   }
 
   @Test
-  @Transactional
   public void createSimpleFileTicket() {
     Transaction.performInOne(() -> {
       UserDetail creator = new UserDetail();

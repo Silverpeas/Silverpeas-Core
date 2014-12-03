@@ -40,11 +40,8 @@ public abstract class DAOBasedTest extends DataSetTest {
    * @throws Exception
    */
   protected void performDAOTest(DAOTest daoTest) throws Exception {
-    Connection connexion = getConnection();
-    try {
+    try(Connection connexion = getConnection()) {
       daoTest.test(connexion);
-    } finally {
-      connexion.close();
     }
   }
 

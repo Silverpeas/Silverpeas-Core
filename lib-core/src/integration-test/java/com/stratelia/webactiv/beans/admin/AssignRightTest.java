@@ -28,7 +28,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.ninja_squad.dbsetup.operation.Operation;
 import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -38,12 +37,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.DbSetupRule;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
-import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -107,7 +103,7 @@ public class AssignRightTest  {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(AssignRightTest.class).addCommonBasicUtilities()
+    return WarBuilder4LibCore.onWarForTestClass(AssignRightTest.class).addCommonBasicUtilities()
         .addSilverpeasExceptionBases().testFocusedOn(
             (warBuilder) -> ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
   }

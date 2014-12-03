@@ -16,14 +16,15 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.ListSlice;
-import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -36,10 +37,6 @@ import static org.mockito.Matchers.isNotNull;
 
 @RunWith(Arquillian.class)
 public class SocialNetworkServiceTest {
-
-  @Resource(lookup = "java:/datasources/silverpeas")
-  private DataSource dataSource;
-  private DbSetupTracker dbSetupTracker = new DbSetupTracker();
 
   @Inject
   OrganizationControllerMock organisationController;
@@ -58,16 +55,13 @@ public class SocialNetworkServiceTest {
       .columns("profileId", "networkId", "silverpeasUserId").values("1233", "LINKEDIN", "10")
       .values("1234", "LINKEDIN", "11").values("1235", "LINKEDIN", "12").build();
 
-  @Before
-  public void prepareDataSource() {
-    Operation preparation = Operations.sequenceOf(TABLES_CREATION, CLEAN_UP, INSERT_DATA);
-    DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
-    dbSetupTracker.launchIfNecessary(dbSetup);
-  }
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("")
+      .loadInitialDataSetFrom(TABLES_CREATION, CLEAN_UP, INSERT_DATA);
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(SocialNetworkServiceTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(SocialNetworkServiceTest.class)
         .addJpaPersistenceFeatures()
         .addMavenDependencies("org.springframework.social:spring-social-linkedin",
             "org.springframework.social:spring-social-facebook").testFocusedOn((warBuilder) -> {

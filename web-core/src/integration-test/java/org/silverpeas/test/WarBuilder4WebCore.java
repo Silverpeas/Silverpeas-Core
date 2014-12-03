@@ -54,7 +54,7 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
    * </ul>
    * @return the instance of the war archive builder.
    */
-  public static <T> WarBuilder4WebCore onWarFor(Class<T> test) {
+  public static <T> WarBuilder4WebCore onWarForTestClass(Class<T> test) {
     WarBuilder4WebCore warBuilder = new WarBuilder4WebCore(test);
     warBuilder.addMavenDependencies("org.silverpeas.core:ws-test-core", "javax.jcr:jcr");
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");

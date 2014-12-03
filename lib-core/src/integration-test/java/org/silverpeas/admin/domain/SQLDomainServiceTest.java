@@ -128,7 +128,7 @@ public class SQLDomainServiceTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(SQLDomainServiceTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(SQLDomainServiceTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()

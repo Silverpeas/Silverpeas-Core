@@ -93,7 +93,7 @@ public class QuestionContainerDAOTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarFor(QuestionContainerDAOTest.class)
+    return BasicWarBuilder.onWarForTestClass(QuestionContainerDAOTest.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")

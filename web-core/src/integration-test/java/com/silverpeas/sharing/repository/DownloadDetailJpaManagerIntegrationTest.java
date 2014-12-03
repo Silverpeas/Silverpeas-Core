@@ -24,9 +24,7 @@
 
 package com.silverpeas.sharing.repository;
 
-import com.ninja_squad.dbsetup.operation.Operation;
 import com.silverpeas.sharing.model.DownloadDetail;
-import com.silverpeas.sharing.services.JpaSharingTicketService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -36,7 +34,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.DataSetTest;
 import org.silverpeas.test.WarBuilder4WebCore;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.ServiceProvider;
@@ -48,21 +45,13 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class DownloadDetailJpaManagerIntegrationTest extends DataSetTest {
-
-  public DownloadDetailJpaManagerIntegrationTest() {
-  }
+public class DownloadDetailJpaManagerIntegrationTest {
 
   private DownloadDetailRepository service;
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(this, "create-database.sql", "sharing_dataset.xml");
-
-  @Override
-  protected Operation getDbSetupOperations() {
-    return null;
-  }
+      new DbUnitLoadingRule("create-database.sql", "sharing_dataset.xml");
 
   @Before
   public void generalSetUp() throws Exception {
@@ -71,20 +60,11 @@ public class DownloadDetailJpaManagerIntegrationTest extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4WebCore.onWarFor(JpaSharingTicketService.class).testFocusedOn(warBuilder -> {
-      warBuilder.addPackages(true, "com.silverpeas.sharing");
-      warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    }).build();
-  }
-
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-
+    return WarBuilder4WebCore.onWarForTestClass(DownloadDetailJpaManagerIntegrationTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addPackages(true, "com.silverpeas.sharing");
+          warBuilder.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        }).build();
   }
 
   @Test

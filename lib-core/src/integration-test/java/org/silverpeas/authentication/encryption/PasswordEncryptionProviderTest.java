@@ -25,7 +25,7 @@ public class PasswordEncryptionProviderTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(PasswordEncryptionProviderTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(PasswordEncryptionProviderTest.class)
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.authentication.encryption");
         }).build();

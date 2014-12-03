@@ -102,7 +102,7 @@ public class TransactionTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(TransactionTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(TransactionTest.class)
         .addJpaPersistenceFeatures()
         .testFocusedOn((warBuilder) -> warBuilder
             .addPackages(true, "org.silverpeas.persistence.repository.jpa"))

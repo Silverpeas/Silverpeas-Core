@@ -65,7 +65,7 @@ public class ServerMessageBeanRepositoryIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(ServerMessageBeanRepositoryIntegrationTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(ServerMessageBeanRepositoryIntegrationTest.class)
         .addJpaPersistenceFeatures()
         .addClasses(ServerMessageBeanFinder.class)
         .testFocusedOn(

@@ -82,7 +82,7 @@ public class AbstractQuotaServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(AbstractQuotaServiceTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(AbstractQuotaServiceTest.class)
         .addSilverpeasExceptionBases()
         .addJpaPersistenceFeatures()
         .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.quota"))

@@ -57,7 +57,7 @@ public class DelayedNotificationManagerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(DelayedNotificationManagerTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(DelayedNotificationManagerTest.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()

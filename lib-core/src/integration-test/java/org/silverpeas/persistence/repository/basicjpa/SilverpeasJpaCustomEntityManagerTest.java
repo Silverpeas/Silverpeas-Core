@@ -89,7 +89,7 @@ public class SilverpeasJpaCustomEntityManagerTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(SilverpeasJpaCustomEntityManagerTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(SilverpeasJpaCustomEntityManagerTest.class)
         .addJpaPersistenceFeatures().testFocusedOn((warBuilder) -> {
           warBuilder.addClasses(JpaCustomEntityServiceTest.class);
           warBuilder.addPackages(true, "org.silverpeas.persistence.repository");

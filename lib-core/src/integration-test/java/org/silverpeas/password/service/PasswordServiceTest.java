@@ -71,7 +71,7 @@ public class PasswordServiceTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(PasswordServiceTest.class)
+    return WarBuilder4LibCore.onWarForTestClass(PasswordServiceTest.class)
         .addSilverpeasExceptionBases()
         .addCommonBasicUtilities()
         .addStringTemplateFeatures()

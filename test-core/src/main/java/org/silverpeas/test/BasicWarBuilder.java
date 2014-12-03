@@ -42,7 +42,7 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
    * @param <T> the type of the test.
    * @return a basic builder of the war archive.
    */
-  public static <T> BasicWarBuilder onWarFor(Class<T> test) {
+  public static <T> BasicWarBuilder onWarForTestClass(Class<T> test) {
     BasicWarBuilder warBuilder = new BasicWarBuilder(test);
     warBuilder.addMavenDependencies("javax.jcr:jcr");
     return warBuilder;

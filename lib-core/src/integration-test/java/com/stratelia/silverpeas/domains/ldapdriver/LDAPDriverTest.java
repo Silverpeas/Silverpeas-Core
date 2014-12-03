@@ -83,7 +83,7 @@ public class LDAPDriverTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarFor(LDAPDriverTest.class).addLDAPFeatures()
+    return WarBuilder4LibCore.onWarForTestClass(LDAPDriverTest.class).addLDAPFeatures()
         .addAdministrationFeatures().addSilverpeasExceptionBases().testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "com.stratelia.silverpeas.domains.ldapdriver");
           warBuilder
