@@ -1,13 +1,9 @@
 package com.silverpeas.social.service;
 
-import com.ninja_squad.dbsetup.DbSetup;
-import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
-import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.social.mock.OrganizationControllerMock;
-
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
@@ -15,7 +11,6 @@ import com.stratelia.webactiv.beans.admin.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,14 +21,11 @@ import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.ListSlice;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.sql.DataSource;
 import javax.transaction.Transactional;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.isNotNull;
 
 @RunWith(Arquillian.class)
 public class SocialNetworkServiceTest {
@@ -66,14 +58,18 @@ public class SocialNetworkServiceTest {
         .addMavenDependencies("org.springframework.social:spring-social-linkedin",
             "org.springframework.social:spring-social-facebook").testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.util.exception");
-          warBuilder.addPackages(true, "com.silverpeas.socialnetwork");
-          //warBuilder.addPackages(true, "org.silverpeas.core.admin");
           warBuilder.addClasses(OrganizationController.class, Group.class, ComponentInst.class,
               SpaceInst.class, UserFull.class, ComponentInstLight.class, SpaceInstLight.class,
               UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, ProfileInst.class,
               ObjectType.class, ComponentSearchCriteria.class, SearchCriteria.class, Domain.class,
               CompoSpace.class, ListSlice.class, WAComponent.class,
               OrganizationControllerMock.class, OrganizationControllerProvider.class);
+          warBuilder.testFocusedOn(
+              war -> war.addPackages(true, "com.silverpeas.socialnetwork.service")
+                  .addPackages(true, "com.silverpeas.socialnetwork.qualifiers")
+                  .addPackages(true, "com.silverpeas.socialnetwork.connectors")
+                  .addPackages(true, "com.silverpeas.socialnetwork.dao")
+                  .addPackages(true, "com.silverpeas.socialnetwork.model"));
           warBuilder.addPackages(true, "org.silverpeas.util.i18n");
           warBuilder
               .addAsResource("org/silverpeas/social/settings/socialNetworkSettings.properties");
