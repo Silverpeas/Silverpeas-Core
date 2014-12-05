@@ -128,11 +128,17 @@ public class VolatileResourceCacheService {
     Thread thread = new Thread(new Runnable() {
       @Override
       public void run() {
-        current.deleteAllAttachments();
+        try {
+          current.deleteAllAttachments();
+        } catch (Throwable throwable) {
+          // This treatment must not disturb the server in any case, so nothing is thrown here.
+          SilverTrace.warn("cache", VolatileResourceCacheService.class.getName(),
+              "The clear of volatile cache did not end successfully...");
+        }
       }
     });
     try {
-      thread.run();
+      thread.start();
     } catch (Throwable throwable) {
       // This treatment must not disturb the server in any case, so nothing is thrown here.
       SilverTrace.warn("cache", VolatileResourceCacheService.class.getName(),
