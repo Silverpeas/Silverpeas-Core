@@ -53,6 +53,10 @@ public class ResourceLocator implements Serializable {
   public ResourceLocator() {
   }
 
+  public ResourceLocator(String propertyFile) {
+    this(propertyFile, null, null);
+  }
+
   /**
    * Create a resource locator with the given property file (Ex: com.stratelia.webactiv.util.util)
    * Use the function getString to get the parameters from this instance
