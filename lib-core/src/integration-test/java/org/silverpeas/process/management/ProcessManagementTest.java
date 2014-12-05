@@ -55,17 +55,14 @@ import static org.silverpeas.util.GeneralPropertiesManager.getString;
  */
 @RunWith(Arquillian.class)
 public class ProcessManagementTest {
-
-  private FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-  private String componentInstanceId = "componentInstanceId";
-  private File sessionRootPath = new File(getString("tempPath"));
-  private File testResultFile =
-      getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testResult");
-  private File testSuccessfulFile =
-      getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSuccessful");
-  private File testSecondFile =
-      getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSecondResult");
   private static String testSecondResultContent = "File check in has not been done.";
+
+  private FileBasePath BASE_PATH_TEST;
+  private String componentInstanceId;
+  private File sessionRootPath;
+  private File testResultFile;
+  private File testSuccessfulFile;
+  private File testSecondFile;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -79,6 +76,15 @@ public class ProcessManagementTest {
 
   @Before
   public void beforeTest() throws Exception {
+    BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
+    componentInstanceId = "componentInstanceId";
+    sessionRootPath = new File(getString("tempPath"));
+    testResultFile = getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testResult");
+    testSuccessfulFile =
+        getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSuccessful");
+    testSecondFile =
+        getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSecondResult");
+
     FileUtils.writeStringToFile(testSecondFile, "File check in has not been done.");
   }
 
@@ -92,16 +98,16 @@ public class ProcessManagementTest {
   public void testFilesProcessingException() throws Exception {
     final AbstractFileProcessTest test2 = new AbstractFileProcessTest("A_A") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
       }
     };
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
 
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         // Session attach
@@ -112,8 +118,8 @@ public class ProcessManagementTest {
     };
     final AbstractFileProcessTest test3 = new AbstractFileProcessTest("B") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
       }
     };
@@ -139,8 +145,8 @@ public class ProcessManagementTest {
   public void testFilesProcessingException_2() throws Exception {
     final AbstractFileProcessTest test2 = new AbstractFileProcessTest("A_A") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         executeTest(new AbstractFileProcessTest("A_A_A") {
@@ -157,8 +163,8 @@ public class ProcessManagementTest {
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
 
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         // Session attach
@@ -189,8 +195,8 @@ public class ProcessManagementTest {
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
 
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         executeTest(new AbstractFileProcessTest("A_A") {
@@ -210,8 +216,8 @@ public class ProcessManagementTest {
     };
     final AbstractFileProcessTest test2 = new AbstractFileProcessTest("B") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         executeTest(new AbstractFileProcessTest("B_A") {
@@ -240,9 +246,9 @@ public class ProcessManagementTest {
     }
     assertThat(testResultFile.exists(), is(true));
     assertThat(testSuccessfulFile.exists(), is(false));
-    assertThat(
-        readFileToString(testResultFile),
-        is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure(A)"));
+    assertThat(readFileToString(testResultFile),
+        is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure" +
+            "(A)"));
     assertThat(test.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
     assertThat(test.getException(), instanceOf(FileNotFoundException.class));
     assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
@@ -255,8 +261,8 @@ public class ProcessManagementTest {
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
 
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         executeTest(new AbstractFileProcessTest("A_A") {
@@ -276,8 +282,8 @@ public class ProcessManagementTest {
     };
     final AbstractFileProcessTest test2 = new AbstractFileProcessTest("B") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         executeTest(new AbstractFileProcessTest("B_A") {
@@ -307,9 +313,9 @@ public class ProcessManagementTest {
       }
       assertThat(testResultFile.exists(), is(true));
       assertThat(testSuccessfulFile.exists(), is(false));
-      assertThat(
-          readFileToString(testResultFile),
-          is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure(A)"));
+      assertThat(readFileToString(testResultFile),
+          is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure" +
+              "(A)"));
       assertThat(test.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
       assertThat(test.getException(), instanceOf(IOException.class));
       assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
@@ -350,8 +356,7 @@ public class ProcessManagementTest {
 
   @Test
   public void testSuccessfulMultiProcessingException() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
-    };
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {};
     final AbstractFileProcessTest test2 = new AbstractFileProcessTest("B") {
 
       @Override
@@ -383,8 +388,8 @@ public class ProcessManagementTest {
   public void testSuccessfulProcessing() throws Exception {
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         // Session attach
@@ -433,8 +438,8 @@ public class ProcessManagementTest {
   public void testSuccessfulProcessing_2() throws Exception {
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-          final FileHandler fileHandler) throws Exception {
+      public void processFiles(final ProcessExecutionContextTest context,
+          final ProcessSession session, final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         // Session attach
@@ -476,15 +481,12 @@ public class ProcessManagementTest {
 
   @Test
   public void testSuccessfulMultiProcessing() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
-    };
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {};
 
     assertThat(testResultFile.exists(), is(false));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
     try {
-      executeTest(test, new AbstractFileProcessTest("B") {
-      }, new AbstractFileProcessTest("C") {
-      });
+      executeTest(test, new AbstractFileProcessTest("B") {}, new AbstractFileProcessTest("C") {});
     } catch (final Exception e) {
       // Nothing to do
     }
@@ -535,8 +537,8 @@ public class ProcessManagementTest {
    * Mock
    * @author Yohann Chastagnier
    */
-  private abstract class AbstractFileProcessTest extends
-      AbstractFileProcess<ProcessExecutionContextTest> {
+  private abstract class AbstractFileProcessTest
+      extends AbstractFileProcess<ProcessExecutionContextTest> {
     private final String id;
     private ProcessErrorType errorType = null;
     private Exception exception = null;
@@ -553,12 +555,13 @@ public class ProcessManagementTest {
      * org.silverpeas.process.io.file.FileHandler)
      */
     @Override
-    public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
-        final FileHandler fileHandler) throws Exception {
-      fileHandler.getHandledFile(BASE_PATH_TEST, testResultFile).writeStringToFile(
-          " processFiles" + "(" + id + ")", true);
-      fileHandler.getHandledFile(BASE_PATH_TEST, testSecondFile).writeStringToFile(
-          LINE_SEPARATOR + "File check in has been done." + "(" + id + ")", true);
+    public void processFiles(final ProcessExecutionContextTest context,
+        final ProcessSession session, final FileHandler fileHandler) throws Exception {
+      fileHandler.getHandledFile(BASE_PATH_TEST, testResultFile)
+          .writeStringToFile(" processFiles" + "(" + id + ")", true);
+      fileHandler.getHandledFile(BASE_PATH_TEST, testSecondFile)
+          .writeStringToFile(LINE_SEPARATOR + "File check in has been done." + "(" + id + ")",
+              true);
     }
 
     /*
