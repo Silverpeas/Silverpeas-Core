@@ -835,8 +835,14 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
     List<PublicationDetail> news = new ArrayList<PublicationDetail>();
     for (String appId : appIds) {
-        Collection<PublicationDetail> someNews = getPublicationService().getOrphanPublications(new PublicationPK("", appId));
-        news.addAll(someNews);
+      Collection<PublicationDetail> someNews =
+          getPublicationService().getOrphanPublications(new PublicationPK("", appId));
+      for (PublicationDetail aNews : someNews) {
+        if (aNews.isValid() || aNews.getCreatorId().equals(getUserId()) ||
+            aNews.getUpdaterId().equals(getUserId())) {
+          news.add(aNews);
+        }
+      }
     }
     
     Collections.sort(filterVisibleNews(news), PublicationUpdateDateComparator.comparator);
