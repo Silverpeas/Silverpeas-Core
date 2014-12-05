@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager
 import com.stratelia.silverpeas.silvertrace.SilverLog;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -232,6 +233,9 @@ public class SessionManager implements SessionManagement {
 
       // Delete in wait server messages corresponding to the session to invalidate
       removeInQueueMessages(si.getUserDetail().getId(), si.getSessionId());
+
+      // Clears all volatile resources
+      VolatileResourceCacheService.clearFrom(si);
 
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());
