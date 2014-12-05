@@ -42,6 +42,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.annotation.Action;
+import com.stratelia.webactiv.util.annotation.SourcePK;
 import com.stratelia.webactiv.util.annotation.TargetObject;
 import com.stratelia.webactiv.util.annotation.TargetPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -77,6 +78,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -315,6 +317,15 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void deleteAttachment(SimpleDocument document) {
     deleteAttachment(document, true);
+  }
+
+  @Override
+  public void deleteAllAttachments(final String resourceId, final String componentInstanceId) {
+    List<SimpleDocument> documentsToDelete =
+        listAllDocumentsByForeignKey(new ForeignPK(resourceId, componentInstanceId), null);
+    for (SimpleDocument documentToDelete : documentsToDelete) {
+      deleteAttachment(documentToDelete);
+    }
   }
 
   /**
@@ -611,6 +622,18 @@ public class SimpleDocumentService implements AttachmentService {
     }
   }
 
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.COPY)
+  @Override
+  public List<SimpleDocumentPK> copyAllDocuments(@SourcePK WAPrimaryKey resourceSourcePk,
+      @TargetPK WAPrimaryKey targetDestinationPk) {
+    List<SimpleDocumentPK> copiedDocumentKeys = new ArrayList<SimpleDocumentPK>();
+    List<SimpleDocument> documentsToCopy = listAllDocumentsByForeignKey(resourceSourcePk, null);
+    for (SimpleDocument documentToCopy : documentsToCopy) {
+      copiedDocumentKeys.add(copyDocument(documentToCopy, new ForeignPK(targetDestinationPk)));
+    }
+    return copiedDocumentKeys;
+  }
   /**
    * Reorder the attachments according to the order in the list.
    *
@@ -1015,6 +1038,19 @@ public class SimpleDocumentService implements AttachmentService {
     } finally {
       BasicDaoFactory.logout(session);
     }
+  }
+
+  @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
+  @Action(ActionType.MOVE)
+  @Override
+  public List<SimpleDocumentPK> moveAllDocuments(@SourcePK WAPrimaryKey resourceSourcePk,
+      @TargetPK WAPrimaryKey targetDestinationPk) {
+    List<SimpleDocumentPK> movedDocumentKeys = new ArrayList<SimpleDocumentPK>();
+    List<SimpleDocument> documentsToMove = listAllDocumentsByForeignKey(resourceSourcePk, null);
+    for (SimpleDocument documentToMove : documentsToMove) {
+      movedDocumentKeys.add(moveDocument(documentToMove, new ForeignPK(targetDestinationPk)));
+    }
+    return movedDocumentKeys;
   }
 
   @Override

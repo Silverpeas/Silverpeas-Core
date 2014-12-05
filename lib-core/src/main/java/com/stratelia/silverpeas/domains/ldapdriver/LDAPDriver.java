@@ -54,11 +54,12 @@ import java.util.logging.Logger;
  */
 public class LDAPDriver extends AbstractDomainDriver {
 
-  LDAPSettings driverSettings = new LDAPSettings();
   LDAPSynchroCache synchroCache = new LDAPSynchroCache();
-  LDAPUser userTranslator = null;
-  AbstractLDAPGroup groupTranslator = null;
   boolean synchroInProcess = false;
+
+  protected LDAPSettings driverSettings = new LDAPSettings();
+  protected LDAPUser userTranslator = null;
+  protected AbstractLDAPGroup groupTranslator = null;
 
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the

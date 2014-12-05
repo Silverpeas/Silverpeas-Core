@@ -100,6 +100,22 @@ public class CacheServiceFactory {
   }
 
   /**
+   * Gets the volatile resource cache linked to the current user session in order to indicate a
+   * resource that is in memory for now.
+   * @return the volatile resource cache linked to the current session.
+   */
+  public static VolatileResourceCacheService getSessionVolatileResourceCacheService() {
+    VolatileResourceCacheService volatileResourceCacheService = getSessionCacheService()
+        .get(VolatileResourceCacheService.class.getName(), VolatileResourceCacheService.class);
+    if (volatileResourceCacheService == null) {
+      volatileResourceCacheService = new VolatileResourceCacheService();
+      getSessionCacheService()
+          .put(VolatileResourceCacheService.class.getName(), volatileResourceCacheService);
+    }
+    return volatileResourceCacheService;
+  }
+
+  /**
    * Gets the cache of the application.
    * @return an applicative cache service
    */

@@ -124,8 +124,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     // (the administrators should be visible by anyone in order to be contacted)
     if (isDefined(domainId)) {
       tables.add("st_user");
-      getFixedQuery().append("(st_user.domainId = ").append(Integer.valueOf(domainId)).
-              append(" or st_user.accessLevel = 'A')");
+      getFixedQuery().append("st_user.domainId = ").append(Integer.valueOf(domainId));
     }
     return this;
   }
