@@ -51,6 +51,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.servlets.LogoutServlet;
 
 import javax.annotation.PostConstruct;
@@ -248,6 +249,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
       // Delete in wait server messages corresponding to the session to invalidate
       removeInQueueMessages(si.getUserDetail().getId(), si.getSessionId());
+
+      // Clears all volatile resources
+      VolatileResourceCacheService.clearFrom(si);
 
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());
