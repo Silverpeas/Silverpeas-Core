@@ -146,6 +146,11 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
+  public void deleteAllAttachments(final String resourceId, final String componentInstanceId) {
+    realService.deleteAllAttachments(resourceId, componentInstanceId);
+  }
+
+  @Override
   public void removeContent(SimpleDocument document, String lang, boolean invokeCallback) {
     realService.removeContent(document, lang, invokeCallback);
   }
@@ -262,6 +267,12 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
+  public List<SimpleDocumentPK> copyAllDocuments(final WAPrimaryKey resourceSourcePk,
+      final WAPrimaryKey targetDestinationPk) {
+    return realService.copyAllDocuments(resourceSourcePk, targetDestinationPk);
+  }
+
+  @Override
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
     return realService.listDocumentsLockedByUser(usedId, language);
   }
@@ -269,6 +280,12 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   @Override
   public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
     return realService.moveDocument(document, destination);
+  }
+
+  @Override
+  public List<SimpleDocumentPK> moveAllDocuments(final WAPrimaryKey resourceSourcePk,
+      final WAPrimaryKey targetDestinationPk) {
+    return realService.moveAllDocuments(resourceSourcePk, targetDestinationPk);
   }
 
   @Override
