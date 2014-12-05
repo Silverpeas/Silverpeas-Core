@@ -24,6 +24,7 @@
 package org.silverpeas.attachment;
 
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -47,9 +48,9 @@ public interface AttachmentService {
 
   public static final String VERSION_MODE = "versionControl";
 
-  String NO_UPDATE_MODE = "0";
-  String UPDATE_DIRECT_MODE = "1";
-  String UPDATE_SHORTCUT_MODE = "2";
+  public static AttachmentService get() {
+    return ServiceProvider.getService(AttachmentService.class);
+  }
 
   /**
    * Deletes all the documents related to the component instance identified by the specified

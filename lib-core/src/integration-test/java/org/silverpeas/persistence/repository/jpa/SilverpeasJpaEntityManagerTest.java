@@ -463,7 +463,7 @@ public class SilverpeasJpaEntityManagerTest {
     personSaveResult = jpaEntityServiceTest.save(createOperationContext("400"), person1);
     assertThat(personSaveResult.getLastUpdatedBy(), is("400"));
     assertThat(personSaveResult.getLastUpdateDate(),
-        greaterThan((Date) Timestamp.valueOf("2013-11-21 09:57:30.004")));
+        greaterThan(Timestamp.valueOf("2013-11-21 09:57:30.004")));
     assertThat(personSaveResult.getVersion(), is(1L));
     assertThat(personSaveResult.hasBeenModified(), is(true));
   }

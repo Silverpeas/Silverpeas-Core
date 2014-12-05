@@ -23,18 +23,12 @@
  */
 package org.silverpeas.attachment;
 
-import org.silverpeas.util.ServiceProvider;
-
 /**
  * @author ehugonnet
  */
 public class AttachmentServiceProvider {
 
-  private AttachmentServiceProvider() {
-  }
-
   public static AttachmentService getAttachmentService() {
-    return ServiceProvider.getService(AttachmentService.class);
+    return AttachmentService.get();
   }
-
 }

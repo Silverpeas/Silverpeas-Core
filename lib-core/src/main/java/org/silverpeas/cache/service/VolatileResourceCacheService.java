@@ -25,9 +25,9 @@ package org.silverpeas.cache.service;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.util.ForeignPK;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +40,7 @@ import java.util.UUID;
  */
 public class VolatileResourceCacheService {
 
-  private Map<ForeignPK, Object> componentResources = new HashMap<ForeignPK, Object>();
+  private Map<ForeignPK, Object> componentResources = new HashMap<>();
 
   /**
    * Creates a new volatile identifier of integer type.
@@ -151,7 +151,7 @@ public class VolatileResourceCacheService {
    */
   private void deleteAllAttachments() {
     for (Map.Entry<ForeignPK, Object> componentResource : componentResources.entrySet()) {
-      AttachmentServiceFactory.getAttachmentService()
+      AttachmentServiceProvider.getAttachmentService()
           .deleteAllAttachments(componentResource.getKey().getId(),
               componentResource.getKey().getInstanceId());
     }

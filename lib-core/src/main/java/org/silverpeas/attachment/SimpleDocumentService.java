@@ -58,12 +58,14 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.annotation.Action;
 import org.silverpeas.util.annotation.SourceObject;
+import org.silverpeas.util.annotation.SourcePK;
 import org.silverpeas.util.annotation.TargetPK;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.BufferedInputStream;
@@ -87,6 +89,7 @@ import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
  *
  * @author ehugonnet
  */
+@Singleton
 public class SimpleDocumentService implements AttachmentService {
 
   private static final int STEP = 5;

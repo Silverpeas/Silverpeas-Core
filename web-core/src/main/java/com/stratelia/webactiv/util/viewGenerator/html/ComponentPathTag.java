@@ -23,20 +23,18 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.io.IOException;
-import java.util.Iterator;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.span;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.span;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * This tag prints out the full path of an application.
@@ -75,7 +73,7 @@ public class ComponentPathTag extends SimpleTagSupport {
 
   @Override
   public void doTag() throws JspException, IOException {
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     
     span path = new span();
     path.setClass("sp-path");
