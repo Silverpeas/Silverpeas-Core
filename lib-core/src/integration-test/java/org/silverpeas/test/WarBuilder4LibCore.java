@@ -30,6 +30,7 @@ import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
@@ -119,6 +120,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains("org.silverpeas.cache")) {
       addMavenDependencies("net.sf.ehcache:ehcache-core");
       addPackages(true, "org.silverpeas.cache");
+      addClasses(SessionInfo.class);
     }
     return this;
   }
