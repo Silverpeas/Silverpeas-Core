@@ -112,8 +112,7 @@ public interface AttachmentService {
       DocumentType type);
 
   /**
-   * Copy the attachment.
-   *
+   * Copies the attachment.
    * @param original
    * @param targetPk
    * @return
@@ -121,13 +120,36 @@ public interface AttachmentService {
   SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk);
 
   /**
-   * Move the attachment.
-   *
+   * Copies all the attachment linked to a resource to another one.
+   * @param resourceSourcePk the identifier of the resource and its location (component instance)
+   * which linked attachments must be copied.
+   * @param targetDestinationPk the identifier of the resource and its location (component
+   * instance)
+   * that will get the copied attachments.
+   * @return le list of copied attachments, empty if nothing is copied.
+   */
+  List<SimpleDocumentPK> copyAllDocuments(WAPrimaryKey resourceSourcePk,
+      WAPrimaryKey targetDestinationPk);
+
+  /**
+   * Moves the attachment.
    * @param document to be moved.
    * @param destination the foreign id to be moved to.
    * @return the new document id.
    */
   SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination);
+
+  /*
+   * Moves all the attachment linked to a resource to another one.
+   * @param resourceSourcePk the identifier of the resource and its location (component instance)
+   * which linked attachments must be moved.
+   * @param targetDestinationPk the identifier of the resource and its location (component instance)
+   * that will get the moved attachments.
+   * @return le list of moved attachments, empty if nothing is moved.
+   */
+  List<SimpleDocumentPK> moveAllDocuments(WAPrimaryKey resourceSourcePk,
+      WAPrimaryKey targetDestinationPk);
+
 
   /**
    * Create file attached to an object who is identified by the foreignId.
@@ -216,6 +238,14 @@ public interface AttachmentService {
    * @param endOfVisibilityPeriod
    */
   void createIndex(SimpleDocument document, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod);
+
+  /**
+   * Deletes all the document attached to a component resource.
+   * @param resourceId the identifier of the resource.
+   * @param componentInstanceId the identifier of the component instance into which the resource is
+   * referenced.
+   */
+  void deleteAllAttachments(String resourceId, String componentInstanceId);
 
   /**
    * Delete a given attachment.

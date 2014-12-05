@@ -100,8 +100,20 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
+  public List<SimpleDocumentPK> copyAllDocuments(final WAPrimaryKey resourceSourcePk,
+      final WAPrimaryKey targetDestinationPk) {
+    return mock.copyAllDocuments(resourceSourcePk, targetDestinationPk);
+  }
+
+  @Override
   public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
     return mock.moveDocument(document, destination);
+  }
+
+  @Override
+  public List<SimpleDocumentPK> moveAllDocuments(final WAPrimaryKey resourceSourcePk,
+      final WAPrimaryKey targetDestinationPk) {
+    return mock.moveAllDocuments(resourceSourcePk, targetDestinationPk);
   }
 
   @Override
@@ -158,6 +170,11 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   @Override
   public void deleteAttachment(SimpleDocument document) {
     mock.deleteAttachment(document);
+  }
+
+  @Override
+  public void deleteAllAttachments(final String resourceId, final String componentInstanceId) {
+    mock.deleteAllAttachments(resourceId, componentInstanceId);
   }
 
   @Override

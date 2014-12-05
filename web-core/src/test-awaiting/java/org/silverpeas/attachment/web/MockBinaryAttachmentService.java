@@ -156,6 +156,11 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
+  public void deleteAllAttachments(final String resourceId, final String componentInstanceId) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
   public void deleteAttachment(SimpleDocument document, boolean invokeCallback) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
@@ -254,7 +259,19 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
+  public List<SimpleDocumentPK> copyAllDocuments(final WAPrimaryKey resourceSourcePk,
+      final WAPrimaryKey targetDestinationPk) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<SimpleDocumentPK> moveAllDocuments(final WAPrimaryKey resourceSourcePk,
+      final WAPrimaryKey targetDestinationPk) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
