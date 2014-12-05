@@ -52,7 +52,7 @@ public class DefaultSystemWrapper implements SystemWrapper {
 
   @Override
   public void setProperties(final Properties props) {
-    System.setProperties(props);
+    System.getProperties().putAll(props);
   }
 
   @Override

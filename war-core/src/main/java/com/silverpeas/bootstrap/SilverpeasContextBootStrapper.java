@@ -23,6 +23,7 @@ package com.silverpeas.bootstrap;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
 
 import javax.servlet.ServletContextEvent;
@@ -57,7 +58,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         if (!StringUtil.isDefined(systemProperties.getProperty("http.proxyHost"))) {
           systemProperties.remove("http.proxyHost");
         }
-        System.setProperties(systemProperties);
+        SystemWrapper.get().setProperties(systemProperties);
         if (isTrustoreConfigured()) {
           registerSSLSocketFactory();
         }
@@ -70,7 +71,8 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
   }
 
   boolean isTrustoreConfigured() {
-    return StringUtil.isDefined(System.getProperty(SilverpeasSSLSocketFactory.TRUSTSTORE_KEY));
+    return StringUtil.isDefined(
+        SystemWrapper.get().getProperty(SilverpeasSSLSocketFactory.TRUSTSTORE_KEY));
   }
 
   /**
@@ -79,19 +81,19 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
    * @throws GeneralSecurityException
    */
   void registerSSLSocketFactory() throws GeneralSecurityException {
-    System.setProperty("mail.imap.ssl.enable", "true");
-    System.setProperty("mail.imap.ssl.socketFactory.class",
+    SystemWrapper.get().setProperty("mail.imap.ssl.enable", "true");
+    SystemWrapper.get().setProperty("mail.imap.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
-    System.setProperty("mail.smtp.ssl.socketFactory.class",
+    SystemWrapper.get().setProperty("mail.smtp.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
-    System.setProperty("mail.smtps.ssl.socketFactory.class",
+    SystemWrapper.get().setProperty("mail.smtps.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
-    System.setProperty("mail.pop3.ssl.socketFactory.class",
+    SystemWrapper.get().setProperty("mail.pop3.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
-    System.setProperty("mail.pop3s.ssl.socketFactory.class",
+    SystemWrapper.get().setProperty("mail.pop3s.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
-    System.setProperty("mail.imaps.ssl.socketFactory.class",
+    SystemWrapper.get().setProperty("mail.imaps.ssl.socketFactory.class",
         "org.silverpeas.util.security.SilverpeasSSLSocketFactory");
-    System.setProperty("mail.imap.ssl.socketFactory.fallback", "false");
+    SystemWrapper.get().setProperty("mail.imap.ssl.socketFactory.fallback", "false");
   }
 }

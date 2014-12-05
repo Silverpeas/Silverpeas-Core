@@ -57,6 +57,7 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.OrganizationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
 
 <%
   MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
@@ -73,7 +74,7 @@
   top.location = "../../Login.jsp";
 </script>
 <%  } else {
-    organizationCtrl =OrganizationControllerProvider.getOrganisationController();
+    organizationCtrl = OrganizationControllerProvider.getOrganisationController();
     gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     language = m_MainSessionCtrl.getFavoriteLanguage();

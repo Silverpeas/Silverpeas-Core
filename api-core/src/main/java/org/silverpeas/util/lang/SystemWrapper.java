@@ -32,6 +32,8 @@ import java.util.Properties;
 /**
  * This wrapper interface permits to bootstrap different System mechanism according to the context
  * of execution.
+ * This interface ensures nothing of wrong is done with the System properties and as such it can
+ * use a security manager.
  * @author Yohann Chastagnier
  */
 public interface SystemWrapper {
@@ -65,14 +67,17 @@ public interface SystemWrapper {
   Properties getProperties();
 
   /**
-   * Sets the system properties.
-   * @param props the system properties to set
-   * @see System#setProperties(java.util.Properties)
+   * Sets the specified properties in the system properties. Opposite to the method
+   * {@link java.lang.System#setProperties(java.util.Properties)} that replace the system properties
+   * with the specified ones, this method adds the specified ones among the existing system
+   * properties.
+   * @param props the system properties to add.
+   * @see java.util.Properties#putAll(java.util.Map)
    */
   void setProperties(Properties props);
 
   /**
-   * Sets a system property.
+   * Sets a new system property.
    * @param key the key of the property.
    * @param value the value of the property.
    * @return the previous value of the system property,

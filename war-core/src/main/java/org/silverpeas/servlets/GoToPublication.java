@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.peasUtil.GoTo;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -63,7 +64,7 @@ public class GoToPublication extends GoTo {
 
   private PublicationService getPublicationBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class);
+      return ServiceProvider.getService(PublicationService.class);
     } catch (Exception e) {
       displayError(null);
     }

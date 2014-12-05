@@ -37,10 +37,14 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class SocialPublications implements SocialPublicationsInterface {
+
+  @Inject
+  private PublicationService publicationService;
 
   protected SocialPublications() {
 
@@ -61,12 +65,7 @@ public class SocialPublications implements SocialPublicationsInterface {
   }
 
   private PublicationService getPublicationService() {
-    try {
-      return ServiceProvider.getService(PublicationService.class);
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("SocialPublications.getPublicationService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return publicationService;
   }
 
   /**

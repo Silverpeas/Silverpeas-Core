@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -44,9 +45,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.EntityReference;
@@ -54,10 +56,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.xml.sax.SAXParseException;
 
 /**
  * This object implements and extends the ConfigurationStore interface for XML files. As a
@@ -152,10 +153,9 @@ public class XMLConfigurationStore implements ConfigurationStore {
     load(configFileName, null, rootString);
   }
 
-  private void doLoad(String rootString) throws Exception, SAXParseException,
-      IOException {
+  private void doLoad(String rootString) throws IOException {
     if (xmlConfigDOMDoc == null) {
-      throw new Exception(
+      throw new IOException(
           "E6000-0025:Cannot create XML document from the configuration file '"
           + configFileName + "'");
     }
@@ -163,7 +163,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
     xmlConfigDOMDoc.normalize();
     rootNode = findNode(xmlConfigDOMDoc, rootString);
     if (rootNode == null) {
-      throw new Exception("E6000-0023:Invalid configuration file '"
+      throw new IOException("E6000-0023:Invalid configuration file '"
           + configFileName + "': " + "Cannot find node '" + rootString + "j'");
     }
   }
@@ -175,20 +175,15 @@ public class XMLConfigurationStore implements ConfigurationStore {
       // if config file was found by the resource locator, it is an input
       // stream,
       // otherwise it is a file
-      // javax.xml.parsers.DocumentBuilderFactory dbf =
-      // DocumentBuilderFactory.newInstance();
-      // javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
-      DOMParser parser = new DOMParser();
+      DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
 
       if (configFileInputStream == null) {
-        // FileInputStream is = new FileInputStream(new File(configFileName));
         SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
             "Parsing from file", configFileName);
-
-        // m_XMLConfig = db.parse(is);
         try {
           String cname = "file:///" + configFileName.replace('\\', '/');
-          parser.parse(cname);
+          xmlConfigDOMDoc = documentBuilder.parse(cname);
         } catch (SAXException se) {
           SilverTrace.error("util", "ResourceLocator.load",
               "root.EX_XML_PARSING_FAILED", se);
@@ -199,12 +194,10 @@ public class XMLConfigurationStore implements ConfigurationStore {
           throw ioe;
         }
       } else {
-        org.xml.sax.InputSource ins = new org.xml.sax.InputSource(
-            configFileInputStream);
-        parser.parse(ins);
+        InputSource ins = new InputSource(configFileInputStream);
+        xmlConfigDOMDoc = documentBuilder.parse(ins);
       }
 
-      xmlConfigDOMDoc = parser.getDocument();
       doLoad(rootString);
     } catch (IOException e) {
       throw new Exception("E6000-0020:Cannot open configuration file '"

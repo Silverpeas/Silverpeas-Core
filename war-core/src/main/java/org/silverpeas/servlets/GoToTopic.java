@@ -36,6 +36,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * Class declaration
@@ -61,7 +62,7 @@ public class GoToTopic extends GoTo {
 
   public NodeService getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
+      return ServiceProvider.getService(NodeService.class);
     } catch (Exception e) {
       displayError(null);
     }

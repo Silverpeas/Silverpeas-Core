@@ -95,7 +95,7 @@ public class AuthenticationService {
 
   static {
     ResourceLocator propFile = new ResourceLocator(
-        "com.stratelia.silverpeas.authentication.domains", "");
+        "org.silverpeas.authentication.domains", "");
 
     // Lecture du fichier de proprietes
     m_JDBCUrl = propFile.getString("SQLDomainJDBCUrl");

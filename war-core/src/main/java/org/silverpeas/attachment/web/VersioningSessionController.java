@@ -252,7 +252,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    */
   public NodeService getNodeBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
+    return ServiceProvider.getService(NodeService.class);
   }
 
   /**

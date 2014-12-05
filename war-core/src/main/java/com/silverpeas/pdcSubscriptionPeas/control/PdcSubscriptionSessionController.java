@@ -20,7 +20,6 @@
  */
 package com.silverpeas.pdcSubscriptionPeas.control;
 
-import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.control.PdcSubscriptionService;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.Subscription;
@@ -30,8 +29,6 @@ import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
@@ -41,20 +38,20 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.subscription.SubscriptionComparator;
+import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
+import org.silverpeas.subscription.bean.NodeSubscriptionBean;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.silverpeas.subscription.SubscriptionComparator;
-import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
-import org.silverpeas.subscription.bean.NodeSubscriptionBean;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
@@ -86,12 +83,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public NodeService getNodeBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class);
-    } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return ServiceProvider.getService(NodeService.class);
   }
 
   public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {

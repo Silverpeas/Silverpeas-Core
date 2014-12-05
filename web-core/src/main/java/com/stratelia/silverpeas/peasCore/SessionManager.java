@@ -71,7 +71,7 @@ import java.util.UUID;
  * @author Nicolas Eysseric
  */
 @Singleton
-public class SessionManager implements SchedulerEventListener, SessionManagement {
+public class SessionManager implements SessionManagement {
 
   private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
   // Local constants
@@ -203,7 +203,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     } catch (ParseException ex) {
       throw new SchedulerException(ex.getMessage(), ex);
     }
-    scheduler.scheduleJob(manageSession(), trigger, this);
+    scheduler.scheduleJob(manageSession(), trigger);
   }
 
   @Override
@@ -341,7 +341,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * @param currentDate the date when the method is called by the scheduler
    * @see Scheduler for parameters, addSession, setLastAccess
    */
-  public synchronized void doSessionManagement(Date currentDate) {
+  private synchronized void doSessionManagement(Date currentDate) {
     try {
       long currentTime = currentDate.getTime();
       List<SessionInfo> expiredSessions = new ArrayList<SessionInfo>(userDataSessions.size());
@@ -469,24 +469,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
         doSessionManagement(date);
       }
     };
-  }
-
-  @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
-  }
-
-  @Override
-  public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
-  }
-
-  @Override
-  public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 
   /**

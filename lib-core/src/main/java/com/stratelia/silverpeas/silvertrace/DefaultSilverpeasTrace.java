@@ -57,7 +57,7 @@ import java.util.ResourceBundle;
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.*;
 
 /**
- * SilverTrace is the trace tool used in silverpeas to trace debug, running infos and errors. This
+ * SilverpeasTrace is the trace tool used in silverpeas to trace debug, running infos and errors. This
  * is a 'fully' static class. All functions could be called directly and is thread-safe. The trace
  * functions are : debug, info, warn, error, fatal.
  * 
@@ -79,7 +79,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   private void initialize() {
     resetAll();
     initFinished = true;
-    info("silvertrace", "SilverTrace.static", "silvertrace.MSG_END_OF_INIT");
+    info("silverTrace", "SilverpeasTrace.static", "silvertrace.MSG_END_OF_INIT");
   }
 
   /**
@@ -1260,7 +1260,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
    * @param appenderNumber
    * @param appenderType
    */
-  protected static void addAppenderFromProperties(Properties fileProperties,
+  protected void addAppenderFromProperties(Properties fileProperties,
       int appenderNumber, int appenderType) {
     String fileName;
     String consoleName;
@@ -1292,14 +1292,14 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
       case APPENDER_CONSOLE:
         consoleName = fileProperties.getProperty("appender" + Integer.toString(appenderNumber)
             + ".consoleName");
-        SilverTrace.addAppenderConsole(module, layout.name(), consoleName);
+        addAppenderConsole(module, layout.name(), consoleName);
         break;
       case APPENDER_FILE:
         fileName = translateFileName(fileProperties.getProperty("appender"
             + Integer.toString(appenderNumber) + ".fileName"));
         append = MsgTrace.getBooleanProperty(fileProperties, "appender"
             + Integer.toString(appenderNumber) + ".append", true);
-        SilverTrace.addAppenderFile(module, layout.name(), fileName, append);
+        addAppenderFile(module, layout.name(), fileName, append);
         break;
       case APPENDER_ROLLING_FILE:
         fileName = translateFileName(fileProperties.getProperty("appender"
@@ -1319,7 +1319,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
         } else {
           rollingMode = rollingModeName;
         }
-        SilverTrace.addAppenderRollingFile(module, layout.name(), fileName, rollingMode);
+        addAppenderRollingFile(module, layout.name(), fileName, rollingMode);
         break;
       case APPENDER_MAIL:
         mailHost = fileProperties.getProperty("appender"
@@ -1330,7 +1330,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
             + Integer.toString(appenderNumber) + ".mailTo");
         mailSubject = fileProperties.getProperty("appender"
             + Integer.toString(appenderNumber) + ".mailSubject");
-        SilverTrace.addAppenderMail(module, layout.name(), mailHost, mailFrom, mailTo, mailSubject);
+        addAppenderMail(module, layout.name(), mailHost, mailFrom, mailTo, mailSubject);
         break;
     }
   }
@@ -1406,7 +1406,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   protected static void emergencyTrace(String module, String classe,
       String msgToTrace, String extraInfos, Throwable ex) {
     StringBuilder sb = new StringBuilder(
-        "SilverTrace can't display normaly the message : ");
+        DefaultSilverpeasTrace.class.getSimpleName() + " can't display normaly the message : ");
 
     if (module != null) {
       sb.append(" Module : ").append(module);

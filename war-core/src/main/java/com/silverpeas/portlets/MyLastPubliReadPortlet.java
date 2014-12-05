@@ -91,7 +91,7 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
   }
   
   private PublicationService getPublicationBm() {
-    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class);
+    return ServiceProvider.getService(PublicationService.class);
   }
   
   @Override

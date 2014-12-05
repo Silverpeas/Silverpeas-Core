@@ -23,7 +23,6 @@ package org.silverpeas.util.viewGenerator.html.browseBars;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.apache.xerces.xni.XNIException;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -238,9 +237,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
   public String getBreadCrumb() {
     try {
       return getTextBreadCrumb(printBreadCrumb());
-    } catch (XNIException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
