@@ -130,6 +130,7 @@ public class JdbcSqlQueryTest {
                   info(result, "DELETION PROCESS - Waiting for verification");
                   monitorOfVerification.notifyAll();
                 }
+                Thread.sleep(10);
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
@@ -139,6 +140,7 @@ public class JdbcSqlQueryTest {
                   info(result, "DELETION PROCESS - Waiting for verification (lines deleted)");
                   monitorOfVerification.notifyAll();
                 }
+                Thread.sleep(10);
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
@@ -173,6 +175,7 @@ public class JdbcSqlQueryTest {
               "VERIFICATION PROCESS - BEFORE DELETION - " + getTableLines().size() + " line(s)");
           monitorOfDeletion.notifyAll();
         }
+        Thread.sleep(10);
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
@@ -182,6 +185,7 @@ public class JdbcSqlQueryTest {
               "VERIFICATION PROCESS - AFTER DELETION - " + getTableLines().size() + " line(s)");
           monitorOfDeletion.notifyAll();
         }
+        Thread.sleep(10);
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
