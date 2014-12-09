@@ -28,6 +28,7 @@ import java.util.List;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
@@ -163,5 +164,7 @@ public interface LookHelper {
   public DefaultSpaceHomePage getSpaceHomePage(String spaceId);
   
   public TickerSettings getTickerSettings();
+
+  UserDetail getUserDetail();
 
 }
