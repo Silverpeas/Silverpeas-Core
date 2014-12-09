@@ -330,7 +330,7 @@ public class DbSetupRule implements TestRule {
           "The test must use directly DbSetupRule or extends DataSetTest in order to use " +
               "getSafeConnection method.";
       Logger.getLogger(DbSetupRule.class.getName()).severe(message);
-      throw new IllegalStateException(message);
+      //throw new IllegalStateException(message);
     }
     return theCurrentRuleInstance;
   }

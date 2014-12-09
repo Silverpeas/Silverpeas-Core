@@ -32,11 +32,12 @@ import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.DataSetTest;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
@@ -53,11 +54,10 @@ import static org.hamcrest.Matchers.*;
 import static org.silverpeas.persistence.jdbc.JdbcSqlQuery.*;
 
 @RunWith(Arquillian.class)
-public class JdbcSqlQueryTest extends DataSetTest {
+public class JdbcSqlQueryTest {
 
   public static final Operation TABLES_CREATION = Operations
       .sql("CREATE TABLE a_table (id int8 PRIMARY KEY NOT NULL , value varchar(50) NOT NULL)");
-  public static final Operation DROP_ALL = Operations.sql("DROP TABLE IF EXISTS a_table");
   public static final Operation TABLE_SET_UP;
 
   private final static long NB_ROW_AT_BEGINNING = 100L;
@@ -70,10 +70,9 @@ public class JdbcSqlQueryTest extends DataSetTest {
     TABLE_SET_UP = insertBulider.build();
   }
 
-  @Override
-  protected Operation getDbSetupOperations() {
-    return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, TABLE_SET_UP);
-  }
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table.sql")
+      .loadInitialDataSetFrom(TABLES_CREATION, TABLE_SET_UP);
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -370,17 +369,15 @@ public class JdbcSqlQueryTest extends DataSetTest {
    * @return the content of a_table.
    */
   private List<String> getTableLines() {
-    try (Connection connection = getConnection()) {
-      try (PreparedStatement statement = connection
-          .prepareStatement("SELECT * FROM a_table ORDER BY id")) {
-        try (ResultSet resultSet = statement.executeQuery()) {
+    try (Connection connection = dbSetupRule.getSafeConnection();
+         PreparedStatement statement = connection.prepareStatement(
+             "SELECT * FROM a_table ORDER BY id");
+         ResultSet resultSet = statement.executeQuery()) {
           List<String> result = new ArrayList<>();
           while (resultSet.next()) {
             result.add(resultSet.getLong(1) + "@" + resultSet.getString(2));
           }
           return result;
-        }
-      }
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

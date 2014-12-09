@@ -48,6 +48,8 @@ public class VolatileResourceCacheService {
    */
   public int newVolatileIntegerIdentifier() {
     String volatileId = newVolatileIntegerIdentifierAsString();
+    // don't forget that when a string number starts with 0, the leading 0 is removed when
+    // converting to an integer
     return Integer.parseInt(volatileId);
   }
 
@@ -61,7 +63,7 @@ public class VolatileResourceCacheService {
     } catch (InterruptedException ignored) {
     }
     String currentTime = String.valueOf(System.currentTimeMillis());
-    return "-" + currentTime.substring(currentTime.length() - 9, currentTime.length());
+    return "-" + currentTime.substring(currentTime.length() - 9);
   }
 
   /**
