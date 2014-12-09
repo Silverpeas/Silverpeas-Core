@@ -128,8 +128,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     firstPageType = 0;
     firstPageExtraParam = "";
     orderNum = 0;
-    components = new ArrayList<ComponentInst>();
-    spaceProfiles = new ArrayList<SpaceProfileInst>();
+    components = new ArrayList<>();
+    spaceProfiles = new ArrayList<>();
     subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     level = 0;
     displaySpaceFirst = true;
@@ -151,7 +151,11 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public int getLocalId() {
-    return Integer.parseInt(this.id);
+    if (StringUtil.isDefined(this.id)) {
+      return Integer.parseInt(this.id);
+    } else {
+      return -1;
+    }
   }
 
   /**
