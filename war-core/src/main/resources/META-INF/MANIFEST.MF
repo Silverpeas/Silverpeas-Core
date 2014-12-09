@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Created-By: Silverpeas
-Dependencies: javax.jcr, org.jboss.as.naming, org.apache.xerces, org.bouncycastle, com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider, com.h2database.h2, org.apache.commons.codec, ${jackrabbit}
+Dependencies: javax.jcr, org.jboss.as.naming, org.apache.xerces, org.bouncycastle, com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider, com.h2database.h2, org.apache.commons.codec, ${jackrabbit}, org.antlr
