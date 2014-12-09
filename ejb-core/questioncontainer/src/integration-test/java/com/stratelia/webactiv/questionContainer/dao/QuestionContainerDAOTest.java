@@ -95,13 +95,16 @@ public class QuestionContainerDAOTest extends DataSetTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(QuestionContainerDAOTest.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .addMavenDependencies("org.apache.tika:tika-core")
+        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
         .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
         .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
         .testFocusedOn(war -> {
-          war.addPackages(true, "com.stratelia.webactiv.questionContainer");
-          war.addPackages(true, "com.stratelia.webactiv.question");
+          war.addPackages(true, "com.stratelia.webactiv.questionContainer")
+              .addPackages(true, "com.stratelia.webactiv.question")
+              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
         })
         .build();
   }

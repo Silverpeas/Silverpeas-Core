@@ -89,11 +89,14 @@ public class AnswerDAOTest extends DataSetTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(AnswerDAOTest.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .addMavenDependencies("org.apache.tika:tika-core")
+        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
         .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
         .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
-        .testFocusedOn(war -> war.addPackages(true, "com.stratelia.webactiv.answer"))
+        .testFocusedOn(war -> war.addPackages(true, "com.stratelia.webactiv.answer")
+            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF"))
         .build();
   }
 
