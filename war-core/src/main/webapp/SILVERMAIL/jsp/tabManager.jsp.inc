@@ -8,7 +8,7 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.tabs.TabbedPane"%>
 
 <%!
 void displayBeginFrame(JspWriter out) throws IOException {

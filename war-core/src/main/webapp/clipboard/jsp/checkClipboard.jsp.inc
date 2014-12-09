@@ -1,7 +1,7 @@
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
+<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
