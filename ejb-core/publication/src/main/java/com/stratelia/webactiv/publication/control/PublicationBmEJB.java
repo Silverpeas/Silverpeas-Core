@@ -75,7 +75,7 @@ import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -86,7 +86,7 @@ import java.util.*;
 /**
  * Implementation of the PublicationBm interface
  */
-@Stateless(name = "Publication", description = "Stateless session bean to manage publications.")
+@Singleton
 @Transactional(value = Transactional.TxType.SUPPORTS)
 public class PublicationBmEJB implements PublicationService {
 
