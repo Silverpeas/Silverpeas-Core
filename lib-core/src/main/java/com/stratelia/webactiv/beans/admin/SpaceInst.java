@@ -151,11 +151,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public int getLocalId() {
-    if (StringUtil.isDefined(this.id)) {
-      return Integer.parseInt(this.id);
-    } else {
-      return -1;
-    }
+    return StringUtil.isDefined(id) ? Integer.parseInt(id) : -1;
   }
 
   /**
