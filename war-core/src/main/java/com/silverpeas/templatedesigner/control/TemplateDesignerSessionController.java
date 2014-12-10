@@ -42,6 +42,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.util.crypto.CryptoException;
@@ -69,13 +71,12 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   /**
    * Standard Session Controller Constructeur
-   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
    */
-  public TemplateDesignerSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+  public TemplateDesignerSessionController(MainSessionController mainSessionCtrl,
+      ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.templatedesigner.multilang.templateDesignerBundle",
         "org.silverpeas.templatedesigner.settings.templateDesignerIcons");
@@ -96,10 +97,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       return getPublicationTemplateManager().getPublicationTemplates(false);
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException(
-          "TemplateDesignerSessionController.getTemplates",
-          SilverpeasException.ERROR,
-          "templateManager.GETTING_TEMPLATES_FAILED", e);
+      throw new TemplateDesignerException("TemplateDesignerSessionController.getTemplates",
+          SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATES_FAILED", e);
     }
   }
 
@@ -107,11 +106,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     return setTemplate(template.getFileName());
   }
 
-  public PublicationTemplate setTemplate(String fileName)
-      throws TemplateDesignerException {
+  public PublicationTemplate setTemplate(String fileName) throws TemplateDesignerException {
     try {
-      template = (PublicationTemplateImpl) getPublicationTemplateManager().loadPublicationTemplate(
-          fileName);
+      template = (PublicationTemplateImpl) getPublicationTemplateManager()
+          .loadPublicationTemplate(fileName);
 
       // load data.xml
       template.getRecordTemplate();
@@ -128,10 +126,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       return template;
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException(
-          "TemplateDesignerSessionController.getTemplate",
-          SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATE_FAILED",
-          e);
+      throw new TemplateDesignerException("TemplateDesignerSessionController.getTemplate",
+          SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATE_FAILED", e);
     }
   }
 
@@ -140,15 +136,14 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     this.template = (PublicationTemplateImpl) template;
     String fileName = string2fileName(template.getName());
 
-    String templateDirPath = PublicationTemplateManager.makePath(
-        PublicationTemplateManager.templateDir, fileName);
+    String templateDirPath =
+        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
     File templateDir = new File(templateDirPath);
     if (!templateDir.exists()) {
       try {
         FileFolderManager.createFolder(templateDir);
       } catch (UtilException e) {
-        throw new TemplateDesignerException(
-            getClass().getSimpleName() + ".createTemplate",
+        throw new TemplateDesignerException(getClass().getSimpleName() + ".createTemplate",
             SilverpeasException.ERROR, "root.EX_NO_MESSAGE", e);
       }
     }
@@ -226,13 +221,15 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
     if (this.template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
       this.template.setViewFileName(subdir + File.separator + "view.html");
-    } else if (updatedTemplate.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+    } else if (updatedTemplate.getViewLayerAction() ==
+        PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
       this.template.setViewFileName(subdir + File.separator + "view.xml");
     }
 
     if (this.template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
       this.template.setUpdateFileName(subdir + File.separator + "update.html");
-    } else if (updatedTemplate.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
+    } else if (updatedTemplate.getUpdateLayerAction() ==
+        PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
       this.template.setUpdateFileName(subdir + File.separator + "update.xml");
     }
 
@@ -259,10 +256,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     addField(field, -1);
   }
 
-  public void addField(FieldTemplate field, int index)
-      throws TemplateDesignerException {
-    if (index == -1
-        || index == getRecordTemplate(SCOPE_DATA).getFieldList().size()) {
+  public void addField(FieldTemplate field, int index) throws TemplateDesignerException {
+    if (index == -1 || index == getRecordTemplate(SCOPE_DATA).getFieldList().size()) {
       getRecordTemplate(SCOPE_DATA).getFieldList().add(field);
     } else {
       getRecordTemplate(SCOPE_DATA).getFieldList().add(index, field);
@@ -280,9 +275,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     updateInProgress = true;
     saveTemplateFields(true);
   }
-  
+
   public void sortFields(String[] fieldNames) throws TemplateDesignerException {
-    List<FieldTemplate> sortedFieldTemplates = new ArrayList<FieldTemplate>();
+    List<FieldTemplate> sortedFieldTemplates = new ArrayList<>();
     List<FieldTemplate> fieldTemplates = getRecordTemplate(SCOPE_DATA).getFieldList();
     for (String fieldName : fieldNames) {
       FieldTemplate field = getField(fieldName, fieldTemplates);
@@ -292,7 +287,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
     getRecordTemplate(SCOPE_DATA).getFieldList().clear();
     getRecordTemplate(SCOPE_DATA).getFieldList().addAll(sortedFieldTemplates);
-    
+
     updateInProgress = true;
     saveTemplateFields(true);
   }
@@ -313,8 +308,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     return null;
   }
 
-  public FieldTemplate getField(String fieldName)
-      throws TemplateDesignerException {
+  public FieldTemplate getField(String fieldName) throws TemplateDesignerException {
     Iterator<FieldTemplate> fields = getFields();
     while (fields != null && fields.hasNext()) {
       FieldTemplate field = fields.next();
@@ -324,7 +318,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
     return null;
   }
-  
+
   private FieldTemplate getField(String fieldName, List<FieldTemplate> fields) {
     for (FieldTemplate field : fields) {
       if (field.getFieldName().equalsIgnoreCase(fieldName)) {
@@ -370,8 +364,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
     } catch (PublicationTemplateException e) {
       // Do nothing
-      SilverTrace.error("templateDesigner",
-          "TemplateDesignerSessionController.getRecordTemplate()",
+      SilverTrace.error("templateDesigner", "TemplateDesignerSessionController.getRecordTemplate()",
           "root.EX_NO_MESSAGE", e);
     }
     return recordTemplate;
@@ -413,8 +406,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
 
       // Using same content as view to search result extra information
-      getRecordTemplate(SCOPE_SEARCHRESULT).getFieldList().addAll(
-          getRecordTemplate(SCOPE_VIEW).getFieldList());
+      getRecordTemplate(SCOPE_SEARCHRESULT).getFieldList()
+          .addAll(getRecordTemplate(SCOPE_VIEW).getFieldList());
 
       // Save others xml files (data.xml, view.xml, update.xml
       template.saveRecordTemplates();
@@ -426,8 +419,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       updateInProgress = false;
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException(
-          "TemplateDesignerSessionController.saveTemplate",
+      throw new TemplateDesignerException("TemplateDesignerSessionController.saveTemplate",
           SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
           "template = " + template.getName(), e);
     }
@@ -444,19 +436,18 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         throw e;
       }
 
-      String dir =
-          PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir,
-          getSubdir(template.getFileName()));
+      String dir = PublicationTemplateManager
+          .makePath(PublicationTemplateManager.templateDir, getSubdir(template.getFileName()));
 
-      if (template.isViewLayerDefined() && template.getViewLayerAction()
-          == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+      if (template.isViewLayerDefined() &&
+          template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
         saveLayer(template.getViewLayerFileName(), dir);
       } else if (template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
         removeLayer(new File(dir, "view.html"));
       }
 
-      if (template.isUpdateLayerDefined() && template.getUpdateLayerAction()
-          == PublicationTemplateImpl.LAYER_ACTION_ADD) {
+      if (template.isUpdateLayerDefined() &&
+          template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
         saveLayer(template.getUpdateLayerFileName(), dir);
       } else if (template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
         removeLayer(new File(dir, "update.html"));
@@ -465,8 +456,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       // reset caches partially
       getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException(
-          "TemplateDesignerSessionController.saveTemplate",
+      throw new TemplateDesignerException("TemplateDesignerSessionController.saveTemplate",
           SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
           "template = " + template.getName(), e);
     }
@@ -480,10 +470,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
       FileUtils.moveFileToDirectory(new File(filePath), new File(dir), false);
     } catch (IOException ioe) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.saveLayer()",
-          "form.EX_ERR_CANT_SAVE_LAYER",
-          "Publication Template FileName : " + filePath, ioe);
+      throw new PublicationTemplateException("PublicationTemplateImpl.saveLayer()",
+          "form.EX_ERR_CANT_SAVE_LAYER", "Publication Template FileName : " + filePath, ioe);
     }
   }
 
@@ -491,8 +479,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     try {
       FileUtils.forceDelete(file);
     } catch (IOException ioe) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.removeLayer()",
+      throw new PublicationTemplateException("PublicationTemplateImpl.removeLayer()",
           "form.EX_ERR_CANT_REMOVE_LAYER",
           "Publication Template FileName : " + file.getAbsolutePath(), ioe);
     }
@@ -508,7 +495,6 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   /**
    * Gets a PublicationTemplateManager instance.
-   *
    * @return a PublicationTemplateManager instance.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
@@ -517,32 +503,37 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   /**
    * Is the specified field should be a read only one in view?
-   *
    * @param fieldName the name of the field.
    * @return true if the field should be read only when it is only printed as such and no in a form
    * for change.
    */
   private boolean isAReadOnlyField(final String fieldName) {
-    return Arrays.asList("wysiwyg", "url", "image", "file", "video", "map", "email").contains(fieldName);
+    return Arrays.asList("wysiwyg", "url", "image", "file", "video", "map", "email")
+        .contains(fieldName);
   }
 
   public List<LocalizedComponent> getComponentsUsingForms() {
     Map<String, WAComponent> components = adminController.getAllComponents();
-    String[] names = {"kmelia", "kmax", "classifieds", "gallery", "formsOnline",
-      "resourcesManager", "webPages", "yellowpages"};
-    List<LocalizedComponent> result = new ArrayList<LocalizedComponent>();
+    String[] names =
+        {"kmelia", "kmax", "classifieds", "gallery", "formsOnline", "resourcesManager", "webPages",
+            "yellowpages"};
+    List<LocalizedComponent> result = new ArrayList<>();
     for (String name : names) {
       WAComponent component = components.get(name);
-      result.add(new LocalizedComponent(component, getLanguage()));
-    }
-    Collections.sort(result, new Comparator<LocalizedComponent>() {
-      @Override
-      public int compare(LocalizedComponent o1, LocalizedComponent o2) {
-        String valcomp1 = o1.getSuite() + o1.getLabel();
-        String valcomp2 = o2.getSuite() + o2.getLabel();
-        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
+      if (component != null) {
+        result.add(new LocalizedComponent(component, getLanguage()));
       }
-    });
+    }
+    if (!result.isEmpty()) {
+      Collections.sort(result, new Comparator<LocalizedComponent>() {
+        @Override
+        public int compare(LocalizedComponent o1, LocalizedComponent o2) {
+          String valcomp1 = o1.getSuite() + o1.getLabel();
+          String valcomp2 = o2.getSuite() + o2.getLabel();
+          return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
+        }
+      });
+    }
     return result;
   }
 
