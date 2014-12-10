@@ -109,10 +109,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   public String createUser(UserDetail ud) {
     try {
       SPUser user = convertToSPUser(ud, new SPUser());
-      int id = DBUtil.getNextId("domainsp_user", "id");
-      user.setId(id);
       user = userManager.saveAndFlush(user);
-      return String.valueOf(id);
+      return user.getId();
     } catch (Exception ex) {
       Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
     }

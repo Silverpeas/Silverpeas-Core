@@ -46,14 +46,12 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 @Singleton
-@Named("silverpeasUserService")
 public class UserServiceLegacy implements UserService {
 
   ResourceLocator multilang = null;
