@@ -66,11 +66,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         if (depth==0) result.append("<tr><td class=\"txtnote\">&nbsp;</td></tr>\n");
 
         result.append("<tr>\n");
-        result.append("<td class=\"txttitrecol\">&#149; <A HREF=\"javaScript:index('Index','', '"+spaceInst.getShortId()+"');\">").append(spaceInst.getName()).append("</a></td></tr>\n");
+        result.append("<td class=\"txttitrecol\">&#149; <A HREF=\"javaScript:index('Index','', '"+spaceInst.getLocalId()+"');\">").append(spaceInst.getName()).append("</a></td></tr>\n");
 
         result.append("<tr><td class=\"txtnote\">\n");
 
-        String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(spaceInst.getShortId());
+        String[] asAvailCompoForCurUser = m_OrganizationController.getAllComponentIds(Integer.toString(spaceInst.getLocalId()));
         for(int nI = 0; nI <asAvailCompoForCurUser.length; nI++) {
           	ComponentInstLight compoInst = m_OrganizationController.getComponentInstLight(asAvailCompoForCurUser[nI]);
             compoName = compoInst.getName();
