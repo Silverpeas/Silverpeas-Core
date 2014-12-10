@@ -21,9 +21,12 @@
 
 package com.stratelia.webactiv.publication.control;
 
+import javax.ejb.Local;
+
 /**
  * Implementation of the service as a Remote EJB.
  * @author mmoquillon
  */
+@Local
 public interface PublicationBm extends PublicationService {
 }

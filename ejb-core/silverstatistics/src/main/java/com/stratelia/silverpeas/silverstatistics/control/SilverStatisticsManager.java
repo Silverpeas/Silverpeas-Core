@@ -50,7 +50,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;

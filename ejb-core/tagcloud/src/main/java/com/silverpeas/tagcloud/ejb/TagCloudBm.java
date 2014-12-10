@@ -23,10 +23,10 @@ package com.silverpeas.tagcloud.ejb;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 import java.util.Collection;
 
-@Remote
+@Local
 public interface TagCloudBm {
 
   public void createTagCloud(TagCloud tagCloud);

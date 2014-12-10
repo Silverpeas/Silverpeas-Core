@@ -20,13 +20,12 @@
  */
 package com.silverpeas.thesaurus.ejb;
 
-import java.util.List;
-
 import com.silverpeas.thesaurus.model.Synonym;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
+import java.util.List;
 
-@Remote
+@Local
 public interface ThesaurusBm {
 
   /**

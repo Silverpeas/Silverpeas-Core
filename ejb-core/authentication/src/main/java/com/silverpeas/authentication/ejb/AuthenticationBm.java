@@ -24,10 +24,10 @@
 
 package com.silverpeas.authentication.ejb;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 
 
-@Remote
+@Local
 public interface AuthenticationBm {
 
   public String authenticate(String login, String password, String domainId);

@@ -74,8 +74,9 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.EJB;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -86,9 +87,9 @@ import java.util.*;
 /**
  * Implementation of the PublicationBm interface
  */
-@Singleton
-@Transactional(value = Transactional.TxType.SUPPORTS)
-public class PublicationBmEJB implements PublicationService {
+@Stateless(name = "PublicationService", description = "EJB to manage publications")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class PublicationBmEJB implements PublicationBm {
 
   @Inject
   private NodeService nodeService;
@@ -96,7 +97,7 @@ public class PublicationBmEJB implements PublicationService {
   private CoordinatesService coordinatesService;
   @Inject
   private RatingService ratingService;
-  @EJB
+  @Inject
   private TagCloudBm tagCloudBm;
   @Inject
   private ComponentHelper componentHelper;
@@ -1886,7 +1887,7 @@ public class PublicationBmEJB implements PublicationService {
 
   static {
     ResourceLocator publicationSettings = new ResourceLocator(
-        "org.silverpeas.publication.publicationSettings", "");
+        "org.silverpeas.util.publication.publicationSettings", "");
     useTagCloud = publicationSettings.getBoolean("useTagCloud", false);
     indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
     thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");

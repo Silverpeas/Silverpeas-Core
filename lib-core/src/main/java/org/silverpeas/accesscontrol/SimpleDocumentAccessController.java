@@ -49,7 +49,7 @@ import java.util.Set;
 @SimpleDocumentAccessControl
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument> {
 
-  @EJB
+  @Inject
   private PublicationService publicationService;
 
   @Inject @ComponentAccessControl

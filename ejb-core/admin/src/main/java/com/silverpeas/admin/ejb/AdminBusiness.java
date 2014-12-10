@@ -20,19 +20,18 @@
  */
 package com.silverpeas.admin.ejb;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Remote;
-
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
-@Remote
+import javax.ejb.Local;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+@Local
 public interface AdminBusiness {
 
   public ArrayList<String> getAllRootSpaceIds();

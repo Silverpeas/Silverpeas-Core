@@ -21,9 +21,8 @@
 
 package org.silverpeas.notification.synchronous;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.CDIResourceEventNotifier;
+import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 
