@@ -30,6 +30,7 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -348,7 +349,7 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public Collection<SubscriptionSubscriber> getSubscribers(Connection con,
+  public SubscriptionSubscriberList getSubscribers(Connection con,
       SubscriptionResource resource, SubscriptionMethod method) throws SQLException {
     return getSubscribers(con, Collections.singletonList(resource), method);
   }
@@ -361,7 +362,7 @@ public class SubscriptionDao {
    * @return
    * @throws SQLException
    */
-  public Collection<SubscriptionSubscriber> getSubscribers(Connection con,
+  public SubscriptionSubscriberList getSubscribers(Connection con,
       Collection<? extends SubscriptionResource> resources, SubscriptionMethod method)
       throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
@@ -369,7 +370,7 @@ public class SubscriptionDao {
     for (SubscriptionResource resource : resources) {
       findSubscribers(con, resource, result, method);
     }
-    return result;
+    return new SubscriptionSubscriberList(result);
   }
 
   /**

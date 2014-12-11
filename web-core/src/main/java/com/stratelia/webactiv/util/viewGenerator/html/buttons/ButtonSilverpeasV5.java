@@ -41,8 +41,8 @@ public class ButtonSilverpeasV5 extends AbstractButton {
    * @see
    */
   @Override
-  public String print() {
-    String theAction = this.action;
+  public String renderButtonHtml() {
+    String theAction = getAction();
     String iconsPath = getIconsPath();
 
     if (disabled) {
@@ -55,7 +55,7 @@ public class ButtonSilverpeasV5 extends AbstractButton {
         theAction = "href=\"#\" ng-click=\"" + theAction + "\"";
       }
     } else {
-      theAction = "href=\"" + action + "\"";
+      theAction = "href=\"" + theAction + "\"";
     }
 
     StringBuilder str = new StringBuilder();

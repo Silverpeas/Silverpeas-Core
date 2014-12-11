@@ -66,7 +66,7 @@ public enum SubscriptionResourceType {
   public static SubscriptionResourceType from(String name) {
     if (name != null) {
       for (SubscriptionResourceType subscriptionResourceType : SubscriptionResourceType.values()) {
-        if (name.equals(subscriptionResourceType.name())) {
+        if (name.equalsIgnoreCase(subscriptionResourceType.name())) {
           return subscriptionResourceType;
         }
       }

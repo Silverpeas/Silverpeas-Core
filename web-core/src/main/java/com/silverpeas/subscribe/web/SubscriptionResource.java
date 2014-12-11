@@ -29,12 +29,14 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -43,8 +45,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,7 +85,7 @@ public class SubscriptionResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of component/node subscriptions in relation with the user.
+   * Gets the JSON representation of component/node subscriptions of a resource.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -95,14 +99,12 @@ public class SubscriptionResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriptionEntity> getSubscriptions(@PathParam("id") String resourceId) {
     try {
-      final SubscriptionSubscriber userSubscriber =
-          UserSubscriptionSubscriber.from(getUserDetail().getId());
       final Collection<Subscription> subscriptions;
       if (StringUtil.isDefined(resourceId)) {
-        subscriptions = SubscriptionServiceFactory.getFactory().getSubscribeService()
+        subscriptions = SubscriptionServiceProvider.getSubscribeService()
             .getByResource(NodeSubscriptionResource.from(new NodePK(resourceId, componentId)));
       } else {
-        subscriptions = SubscriptionServiceFactory.getFactory().
+        subscriptions = SubscriptionServiceProvider.
             getSubscribeService().getByResource(ComponentSubscriptionResource.from(componentId));
       }
       return asWebEntities(subscriptions);
@@ -122,7 +124,7 @@ public class SubscriptionResource extends RESTWebService {
    *         component subscriptions.
    */
   @GET
-  @Path("/" + SUBSCRIPTION_SUBSCRIBER_URI_PART)
+  @Path(SUBSCRIPTION_SUBSCRIBER_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriberEntity> getComponentSubscribers() {
     return getSubscribers(null);
@@ -139,7 +141,7 @@ public class SubscriptionResource extends RESTWebService {
    *         component subscriptions.
    */
   @GET
-  @Path("/" + SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{id}")
+  @Path(SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriberEntity> getSubscribers(@PathParam("id") String resourceId) {
     try {
@@ -149,11 +151,81 @@ public class SubscriptionResource extends RESTWebService {
       } else {
         subscriptionResource = ComponentSubscriptionResource.from(componentId);
       }
-      return asSubscriberWebEntities(SubscriptionServiceFactory.getFactory().
+      return asSubscriberWebEntities(SubscriptionServiceProvider.
           getSubscribeService().getSubscribers(subscriptionResource));
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Gets the JSON representation of resource subscription subscribers with inheritance.
+   * For example, it returns subscribers af a node and those of its parents too.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param subscriptionType the type of subscription.
+   * @param existenceIndicatorOnly indicates if the return must only be true (if it exists at
+   * least one subscriber) or false (no subscribers).
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * component subscriptions.
+   */
+  @GET
+  @Path(SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{subscriptionType}/inheritance")
+  public Response getComponentSubscribersWithInheritance(
+      @PathParam("subscriptionType") String subscriptionType,
+      @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
+    return getSubscribersWithInheritance(subscriptionType, null, existenceIndicatorOnly);
+  }
+
+  /**
+   * Gets the JSON representation of resource subscription subscribers with inheritance.
+   * For example, it returns subscribers af a node and those of its parents too.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param subscriptionType the type of subscription.
+   * @param resourceId identifier of the aimed resource (NODE for now). When a new type of resource
+   * will be managed, the resource type will have to be passed into URI
+   * @param existenceIndicatorOnly indicates if the return must only be true (if it exists at
+   * least one subscriber) or false (no subscribers).
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   *         component subscriptions.
+   */
+  @GET
+  @Path(SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{subscriptionType}/inheritance/{id}")
+  public Response getSubscribersWithInheritance(
+      @PathParam("subscriptionType") String subscriptionType, @PathParam("id") String resourceId,
+      @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
+    try {
+      SubscriptionResourceType parsedSubscriptionResourceType =
+          SubscriptionResourceType.from(subscriptionType);
+      if (parsedSubscriptionResourceType == SubscriptionResourceType.UNKNOWN) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+      if (parsedSubscriptionResourceType != SubscriptionResourceType.COMPONENT &&
+          StringUtil.isNotDefined(resourceId)) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+      SubscriptionSubscriberList subscribers = ResourceSubscriptionProvider
+          .getSubscribersOfComponentAndTypedResource(getComponentId(),
+              parsedSubscriptionResourceType, resourceId);
+      if (existenceIndicatorOnly) {
+        return Response
+            .ok(String.valueOf(!subscribers.getAllUserIds().isEmpty()), MediaType.APPLICATION_JSON)
+            .build();
+      } else {
+        return Response.ok(asSubscriberWebEntities(subscribers), MediaType.APPLICATION_JSON)
+            .build();
+      }
+    } catch (SubscribeRuntimeException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (Exception ex) {
+      if (ex instanceof WebApplicationException) {
+        throw (WebApplicationException) ex;
+      }
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }

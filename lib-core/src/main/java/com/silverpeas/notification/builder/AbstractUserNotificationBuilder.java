@@ -23,31 +23,27 @@
  */
 package com.silverpeas.notification.builder;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
-import com.stratelia.silverpeas.notificationManager.GroupRecipient;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.ExternalRecipient;
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractUserNotificationBuilder implements UserNotificationBuider {
+public abstract class AbstractUserNotificationBuilder implements UserNotificationBuilder {
 
   private String title = null;
   private String content = null;
@@ -140,6 +136,12 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   @Override
   public final UserNotification build() {
     try {
+      if (this instanceof UserSubscriptionNotificationBehavior &&
+          !UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest() &&
+          NotifAction.UPDATE == getAction()) {
+        // In that case, the user requested to not send subscription notification
+        stop();
+      }
       initialize();
       performUsersToBeNotified();
       performBuild();

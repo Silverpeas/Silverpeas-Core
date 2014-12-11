@@ -29,7 +29,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
@@ -93,7 +93,7 @@ public class UnsubscribeResource extends RESTWebService {
     try {
       Subscription subscription =
           new ComponentSubscription(subscriber, componentId, getUserDetail().getId());
-      SubscriptionServiceFactory.getFactory().getSubscribeService().unsubscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
       NotifierUtil.addSuccess(MessageFormat
           .format(getBundle().getResourceBundle().getString("GML.unsubscribe.success"),
@@ -140,7 +140,7 @@ public class UnsubscribeResource extends RESTWebService {
     try {
       Subscription subscription = new NodeSubscription(subscriber, new NodePK(topicId, componentId),
           getUserDetail().getId());
-      SubscriptionServiceFactory.getFactory().getSubscribeService().unsubscribe(subscription);
+      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       return Response.ok(Collections.singletonList("OK")).build();
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);

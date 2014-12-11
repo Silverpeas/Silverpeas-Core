@@ -25,6 +25,7 @@
 package com.silverpeas.subscribe;
 
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 
 import java.util.Collection;
 
@@ -160,7 +161,7 @@ public interface SubscriptionService {
    * @param resource
    * @return list of subscription subscribers
    */
-  public Collection<SubscriptionSubscriber> getSubscribers(SubscriptionResource resource);
+  public SubscriptionSubscriberList getSubscribers(SubscriptionResource resource);
 
   /**
    * Gets all subscribers (USER and/or GROUP) that are subscribed to a resource.
@@ -170,29 +171,7 @@ public interface SubscriptionService {
    * @param method
    * @return list of subscription subscribers
    */
-  public Collection<SubscriptionSubscriber> getSubscribers(SubscriptionResource resource,
-      SubscriptionMethod method);
-
-  /**
-   * Gets all users that are subscribed to a resource.
-   * If user and/or group subscribers are required, please use {@link
-   * SubscriptionService#getSubscribers(SubscriptionResource)}.
-   * @param resource the aimed resource
-   * @return identifiers of users that have subscribed themselves, of users that are subscribed
-   *         through a subscribed group and of users that have been subscribed by an other user
-   */
-  public Collection<String> getUserSubscribers(SubscriptionResource resource);
-
-  /**
-   * Gets all users that are subscribed to a resource.
-   * If user and/or group subscribers are required, please use {@link
-   * SubscriptionService#getSubscribers(SubscriptionResource)}.
-   * @param resource the aimed resource
-   * @param method
-   * @return identifiers of users that have subscribed themselves, of users that are subscribed
-   *         through a subscribed group and of users that have been subscribed by an other user
-   */
-  public Collection<String> getUserSubscribers(SubscriptionResource resource,
+  public SubscriptionSubscriberList getSubscribers(SubscriptionResource resource,
       SubscriptionMethod method);
 
   /**
@@ -202,7 +181,7 @@ public interface SubscriptionService {
    * @param resources
    * @return list of subscription subscribers
    */
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       Collection<? extends SubscriptionResource> resources);
 
   /**
@@ -213,7 +192,7 @@ public interface SubscriptionService {
    * @param method
    * @return list of subscription subscribers
    */
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       Collection<? extends SubscriptionResource> resources, SubscriptionMethod method);
 
   /**

@@ -158,5 +158,10 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Ticker to display short text item one by one
    */
-  ticker
+  ticker,
+  /**
+   * Silverpeas plugin to handle subscription services. This plugin loads dynamically and is not
+   * loaded several times if the plugin already exists in the current html page.
+   */
+  subscription
 }

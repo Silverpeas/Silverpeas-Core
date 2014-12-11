@@ -48,24 +48,28 @@ public interface Button extends SimpleGraphicElement {
    * @param disabled
    * @see
    */
-  public void init(String label, String action, boolean disabled);
+  void init(String label, String action, boolean disabled);
+
+  /**
+   * This method permits to apply some process before calling the action.
+   * The actionPreProcessing string must be a javascript routine in which the parameter {action}
+   * will be replaced by the specified action on {@link #init(String, String, boolean)} method.
+   * @param actionPreProcessing the javascript routine.
+   */
+  void setActionPreProcessing(String actionPreProcessing);
 
   /**
    * Method declaration
    * @return
    * @see
    */
-  public String print();
-
-  /*
-   * @deprecated
-   */
+  String print();
 
   /**
    * Method declaration
    * @param s
    * @see
    */
-  public void setRootImagePath(String s);
-
+  @Deprecated
+  void setRootImagePath(String s);
 }

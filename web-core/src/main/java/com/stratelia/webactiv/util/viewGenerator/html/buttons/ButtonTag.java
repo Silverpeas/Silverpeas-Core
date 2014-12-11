@@ -38,12 +38,14 @@ public class ButtonTag extends TagSupport {
   private String label = "";
   private String action = "#";
   private boolean disabled = false;
+  private String actionPreProcessing = "";
 
   @Override
   public int doEndTag() throws JspException {
     GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     Button button = gef.getFormButton(label, action, disabled);
+    button.setActionPreProcessing(actionPreProcessing);
     ButtonPaneTag buttonPane = (ButtonPaneTag) findAncestorWithClass(this, ButtonPaneTag.class);
     if (buttonPane != null) {
       buttonPane.addButton(button);
@@ -59,6 +61,7 @@ public class ButtonTag extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
+    actionPreProcessing = "";
     return EVAL_BODY_INCLUDE;
   }
 
@@ -102,5 +105,9 @@ public class ButtonTag extends TagSupport {
    */
   public void setDisabled(boolean disabled) {
     this.disabled = disabled;
+  }
+
+  public void setActionPreProcessing(final String actionPreProcessing) {
+    this.actionPreProcessing = actionPreProcessing;
   }
 }

@@ -775,6 +775,40 @@
     </attribute>
   </tag>
   <tag>
+    <description>This TAG must be called into body of Button TAG. It permits to handle a user
+      confirmation of subscription notification sending.
+    </description>
+    <name>confirmComponentSubscriptionNotificationSending</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>This TAG must be called into body of Button TAG. It permits to handle a user
+      confirmation of subscription notification sending.
+    </description>
+    <name>confirmResourceSubscriptionNotificationSending</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.buttons.ConfirmResourceSubscriptionSendingTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The type of the resource subscription handled</description>
+      <name>subscriptionResourceType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.silverpeas.subscribe.constant.SubscriptionResourceType</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the resource on which the subscription is registered</description>
+      <name>subscriptionResourceId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Simple tag to display a navigation item list.</description>
     <name>navigationList</name>
     <tag-class>

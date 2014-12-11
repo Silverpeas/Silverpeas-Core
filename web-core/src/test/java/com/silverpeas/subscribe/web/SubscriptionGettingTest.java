@@ -23,36 +23,46 @@ package com.silverpeas.subscribe.web;
 
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebServiceTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.silverpeas.admin.user.constant.UserState;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
-import com.silverpeas.util.CollectionUtil;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +70,12 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
 
   public SubscriptionGettingTest() {
     super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
+  }
+
+  @Before
+  public void specificSetup() {
+    when(getOrganizationControllerMock().getAllUsersOfGroup(anyString()))
+        .thenReturn(new UserDetail[0]);
   }
 
   @Override
@@ -70,7 +86,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
   @Before
   public void setup() {
     assertThat(getTestResources().getMockableSubscriptionService(),
-        is(SubscriptionServiceFactory.getFactory().getSubscribeService()));
+        is(SubscriptionServiceProvider.getSubscribeService()));
   }
 
   @Test
@@ -115,7 +131,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
 
   @Test
   @SuppressWarnings("unchecked")
-  public void getComponentSubscribersByAnAuthenticatedUser() throws Exception {
+  public void getNodeSubscribersByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
     UserDetailWithProfiles user = new UserDetailWithProfiles();
     user.setFirstName("Bart");
@@ -125,7 +141,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     user.setState(UserState.VALID);
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
-    List<SubscriptionSubscriber> subscribers = new ArrayList<SubscriptionSubscriber>();
+    SubscriptionSubscriberList subscribers = new SubscriptionSubscriberList();
     subscribers.add(UserSubscriptionSubscriber.from("5"));
     subscribers.add(UserSubscriptionSubscriber.from("6"));
     subscribers.add(GroupSubscriptionSubscriber.from("7"));
@@ -145,4 +161,260 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
       assertThat(entity, SubscriberEntityMatcher.matches(it.next()));
     }
   }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void getComponentSubscribersWithInheritanceByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    SubscriptionSubscriberList subscribers = new SubscriptionSubscriberList();
+    subscribers.add(UserSubscriptionSubscriber.from("5"));
+    subscribers.add(UserSubscriptionSubscriber.from("6"));
+    subscribers.add(GroupSubscriptionSubscriber.from("7"));
+    subscribers.add(UserSubscriptionSubscriber.from("20"));
+    when(mockedSubscriptionService.getSubscribers(ComponentSubscriptionResource.from(COMPONENT_ID)))
+        .thenReturn(subscribers);
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+
+    // Detailed result
+    SubscriberEntity[] entities =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/component/inheritance")
+            .queryParam("existenceIndicatorOnly", "false").header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(4));
+    SubscriptionSubscriberMapBySubscriberType indexedExpected = subscribers.indexBySubscriberType();
+    for (SubscriberEntity entity : entities) {
+      if (entity.isGroup()) {
+        assertThat(indexedExpected.get(SubscriberType.GROUP).getAllIds(), hasItem(entity.getId()));
+      } else {
+        assertThat(indexedExpected.get(SubscriberType.USER).getAllIds(), hasItem(entity.getId()));
+      }
+    }
+
+    // Existence result
+    boolean existenceResult =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/component/inheritance")
+            .queryParam("existenceIndicatorOnly", "true").header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(Boolean.class);
+    assertThat(existenceResult, is(true));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void
+  getComponentSubscribersWithInheritanceAndUninterpretedResourceIdByAnAuthenticatedUser()
+      throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    SubscriptionSubscriberList subscribers = new SubscriptionSubscriberList();
+    subscribers.add(UserSubscriptionSubscriber.from("5"));
+    subscribers.add(UserSubscriptionSubscriber.from("6"));
+    subscribers.add(GroupSubscriptionSubscriber.from("7"));
+    subscribers.add(UserSubscriptionSubscriber.from("20"));
+    when(mockedSubscriptionService.getSubscribers(ComponentSubscriptionResource.from(COMPONENT_ID)))
+        .thenReturn(subscribers);
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+
+    // Detailed result
+    SubscriberEntity[] entities = resource.path(
+        SUBSCRIPTION_RESOURCE_PATH + "/subscribers/component/inheritance/uninterpretedResourceId")
+        .header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(4));
+    SubscriptionSubscriberMapBySubscriberType indexedExpected = subscribers.indexBySubscriberType();
+    for (SubscriberEntity entity : entities) {
+      if (entity.isGroup()) {
+        assertThat(indexedExpected.get(SubscriberType.GROUP).getAllIds(), hasItem(entity.getId()));
+      } else {
+        assertThat(indexedExpected.get(SubscriberType.USER).getAllIds(), hasItem(entity.getId()));
+      }
+    }
+
+    // Existence result
+    boolean existenceResult = resource.path(
+        SUBSCRIPTION_RESOURCE_PATH + "/subscribers/component/inheritance/uninterpretedResourceId")
+        .queryParam("existenceIndicatorOnly", "true").header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(Boolean.class);
+    assertThat(existenceResult, is(true));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void getNodeSubscribersWithInheritanceAndWrongNodeIdByAnAuthenticatedUser()
+      throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    final SubscriptionSubscriberList subscribers = new SubscriptionSubscriberList();
+    when(mockedSubscriptionService.getSubscribers(Matchers.any(NodeSubscriptionResource.class)))
+        .thenAnswer(new Answer<SubscriptionSubscriberList>() {
+          @Override
+          public SubscriptionSubscriberList answer(final InvocationOnMock invocation)
+              throws Throwable {
+            if (invocation.getArguments()[0] instanceof NodeSubscriptionResource) {
+              NodeSubscriptionResource nodeSubscriptionResource =
+                  (NodeSubscriptionResource) invocation.getArguments()[0];
+              if (nodeSubscriptionResource.getId().equals("26") &&
+                  nodeSubscriptionResource.getInstanceId().equals(COMPONENT_ID)) {
+                subscribers.add(UserSubscriptionSubscriber.from("5"));
+                subscribers.add(UserSubscriptionSubscriber.from("6"));
+                subscribers.add(GroupSubscriptionSubscriber.from("7"));
+                subscribers.add(UserSubscriptionSubscriber.from("20"));
+              }
+            }
+            return subscribers;
+          }
+        });
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+
+    // Detailed result
+    SubscriberEntity[] entities =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/NODE/inheritance/wrongId")
+            .header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(0));
+
+    // Existence result
+    boolean existenceResult =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/NODE/inheritance/wrongId")
+            .queryParam("existenceIndicatorOnly", "true").header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(Boolean.class);
+    assertThat(existenceResult, is(false));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void getNodeSubscribersWithInheritanceByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    final SubscriptionSubscriberList subscribers = new SubscriptionSubscriberList();
+    when(mockedSubscriptionService.getSubscribers(Matchers.any(NodeSubscriptionResource.class)))
+        .thenAnswer(new Answer<SubscriptionSubscriberList>() {
+          @Override
+          public SubscriptionSubscriberList answer(final InvocationOnMock invocation)
+              throws Throwable {
+            if (invocation.getArguments()[0] instanceof NodeSubscriptionResource) {
+              NodeSubscriptionResource nodeSubscriptionResource =
+                  (NodeSubscriptionResource) invocation.getArguments()[0];
+              if (nodeSubscriptionResource.getId().equals("26") &&
+                  nodeSubscriptionResource.getInstanceId().equals(COMPONENT_ID)) {
+                subscribers.add(UserSubscriptionSubscriber.from("5"));
+                subscribers.add(UserSubscriptionSubscriber.from("6"));
+                subscribers.add(GroupSubscriptionSubscriber.from("7"));
+                subscribers.add(UserSubscriptionSubscriber.from("20"));
+              }
+            }
+            return subscribers;
+          }
+        });
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+
+    // Detailed result
+    SubscriberEntity[] entities =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/NODE/inheritance/26")
+            .queryParam("existenceIndicatorOnly", "toto").header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(4));
+    SubscriptionSubscriberMapBySubscriberType indexedExpected = subscribers.indexBySubscriberType();
+    for (SubscriberEntity entity : entities) {
+      if (entity.isGroup()) {
+        assertThat(indexedExpected.get(SubscriberType.GROUP).getAllIds(), hasItem(entity.getId()));
+      } else {
+        assertThat(indexedExpected.get(SubscriberType.USER).getAllIds(), hasItem(entity.getId()));
+      }
+    }
+
+    // Existence result
+    boolean existenceResult =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/NODE/inheritance/26")
+            .queryParam("existenceIndicatorOnly", "true").header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).get(Boolean.class);
+    assertThat(existenceResult, is(true));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void getUnknownResourceSubscribersWithInheritanceByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
+    String sessionKey = authenticate(user);
+
+    // Detailed result
+    try {
+      resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/wrong_type/inheritance/26")
+          .queryParam("existenceIndicatorOnly", "toto").header(HTTP_SESSIONKEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+      fail("a NOT FOUND web error should be returned");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int notFound = Status.NOT_FOUND.getStatusCode();
+      assertThat(receivedStatus, is(notFound));
+    }
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void getNodeSubscribersWithInheritanceByAnAuthenticatedUserButMissingNodeId() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
+    String sessionKey = authenticate(user);
+
+    // Detailed result
+    try {
+      resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/node/inheritance")
+          .queryParam("existenceIndicatorOnly", "toto").header(HTTP_SESSIONKEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+      fail("a NOT FOUND web error should be returned");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int notFound = Status.NOT_FOUND.getStatusCode();
+      assertThat(receivedStatus, is(notFound));
+    }
+  }
+
 }

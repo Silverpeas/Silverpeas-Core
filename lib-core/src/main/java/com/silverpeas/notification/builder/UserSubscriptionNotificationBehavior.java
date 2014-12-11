@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,12 +24,18 @@
 package com.silverpeas.notification.builder;
 
 /**
+ * Implementation of {@link UserNotificationBuilder} must implement this interface if it deals with
+ * subscription notifications.<br/>
+ * By this way, the implementation takes advantage on centralized treatments around the
+ * subscription notification.
  * @author Yohann Chastagnier
  */
-public interface UserNotificationBuider {
+public interface UserSubscriptionNotificationBehavior {
 
   /**
-   * Builds the notification data container
+   * HTTP parameter that permits to indicate to the server that the subscription notification
+   * sending must be skipped.
    */
-  UserNotification build();
+  public static final String SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM =
+      "SKIP_SUBSCRIPTION_NOTIFICATION_SENDING";
 }
