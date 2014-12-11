@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
@@ -56,35 +56,37 @@ public class SilverStatisticsPeasDAOConnexion {
   public static final int INDICE_COUNTCONNEXION = 1;
   public static final int INDICE_DURATION = 2;
   public static final int INDICE_ID = 3;
-  private static final String SELECT_GLOBAL_NB_USER = "SELECT datestat, COUNT(DISTINCT userid) "
-      + "AS nbUser FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? "
-      + "GROUP BY dateStat ORDER BY dateStat";
-  private static final String SELECT_GLOBAL_STATISTICS = "SELECT datestat, SUM(countConnection) "
-      + "AS connectionCount FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? "
-      + "GROUP BY dateStat ORDER BY dateStat";
+  private static final String SELECT_GLOBAL_NB_USER = "SELECT datestat, COUNT(DISTINCT userid) " +
+      "AS nbUser FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? " +
+      "GROUP BY dateStat ORDER BY dateStat";
+  private static final String SELECT_GLOBAL_STATISTICS = "SELECT datestat, SUM(countConnection) " +
+      "AS connectionCount FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? " +
+      "GROUP BY dateStat ORDER BY dateStat";
   private static final String SELECT_USER_NB_CONNECTION =
-      "SELECT datestat, SUM(countConnection) AS "
-          + "connectionCount FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? AND userId = ? "
-          + "GROUP BY dateStat ORDER BY dateStat";
-  private static final String SELECT_STATISTICS_FOR_USER = "SELECT B.lastName, "
-      + "SUM(A.countConnection) AS connectionCount, SUM(A.duration) AS connectionTime, B.id "
-      + "FROM sb_stat_connectioncumul A, ST_User B WHERE A.dateStat BETWEEN ? AND ? "
-      + "AND A.userId = B.id AND A.userID = ? GROUP BY B.lastName, B.id";
-  private static final String SELECT_STATISTICS_FOR_ALL_USERS = "SELECT B.lastName, "
-      + "SUM(A.countConnection) AS connectionCount, SUM(A.duration) AS connectionTime, B.id "
-      + "FROM SB_Stat_ConnectionCumul A, ST_User B WHERE A.dateStat BETWEEN ? AND ? "
-      + "AND A.userId = B.id GROUP BY B.lastName, B.id";
+      "SELECT datestat, SUM(countConnection) AS " +
+          "connectionCount FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? AND userId" +
+          " = ? " +
+          "GROUP BY dateStat ORDER BY dateStat";
+  private static final String SELECT_STATISTICS_FOR_USER = "SELECT B.lastName, " +
+      "SUM(A.countConnection) AS connectionCount, SUM(A.duration) AS connectionTime, B.id " +
+      "FROM sb_stat_connectioncumul A, ST_User B WHERE A.dateStat BETWEEN ? AND ? " +
+      "AND A.userId = B.id AND A.userID = ? GROUP BY B.lastName, B.id";
+  private static final String SELECT_STATISTICS_FOR_ALL_USERS = "SELECT B.lastName, " +
+      "SUM(A.countConnection) AS connectionCount, SUM(A.duration) AS connectionTime, B.id " +
+      "FROM SB_Stat_ConnectionCumul A, ST_User B WHERE A.dateStat BETWEEN ? AND ? " +
+      "AND A.userId = B.id GROUP BY B.lastName, B.id";
   private static final String SELECT_GLOBAL_COUNTS =
-      "SELECT SUM(countConnection) AS connectionCount, "
-      + "SUM(duration) AS connectionTime FROM sb_stat_connectioncumul "
-      + "WHERE dateStat BETWEEN ? AND ?";
+      "SELECT SUM(countConnection) AS connectionCount, " +
+          "SUM(duration) AS connectionTime FROM sb_stat_connectioncumul " +
+          "WHERE dateStat BETWEEN ? AND ?";
   private static final String SELECT_COUNTS_FOR_USER =
-      "SELECT SUM(countConnection) AS connectionCount, "
-      + "SUM(duration) AS connectionTime FROM  sb_stat_connectioncumul WHERE dateStat "
-      + "BETWEEN ? AND ? AND userId = ? GROUP BY userId";
-  private static final String SELECT_NB_USER_BY_USAGE = "SELECT dateStat, COUNT(userId) AS nbUser "
-      + "FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? AND countConnection >= ?  "
-      + "AND countConnection< ? GROUP BY dateStat ORDER BY dateStat";
+      "SELECT SUM(countConnection) AS connectionCount, " +
+          "SUM(duration) AS connectionTime FROM  sb_stat_connectioncumul WHERE dateStat " +
+          "BETWEEN ? AND ? AND userId = ? GROUP BY userId";
+  private static final String SELECT_NB_USER_BY_USAGE =
+      "SELECT dateStat, COUNT(userId) AS nbUser " +
+          "FROM sb_stat_connectioncumul WHERE dateStat BETWEEN ? AND ? AND countConnection >= ?  " +
+          "AND countConnection< ? GROUP BY dateStat ORDER BY dateStat";
 
   /**
    * donne les stats global pour l'enemble de tous les users cad 2 infos, la collection contient
@@ -93,16 +95,16 @@ public class SilverStatisticsPeasDAOConnexion {
    * @param endDate
    * @return
    * @throws SQLException
-   * @see
    */
   public static Collection<String[]> getStatsConnexionAllAll(String startDate, String endDate)
-      throws SQLException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllAll", "root.MSG_GEN_ENTER_METHOD");
+      throws SQLException {
+    SilverTrace
+        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllAll",
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
-    List<String[]> result = new ArrayList<String[]>();
+    List<String[]> result = new ArrayList<>();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_GLOBAL_COUNTS);
@@ -110,8 +112,8 @@ public class SilverStatisticsPeasDAOConnexion {
       stmt.setString(2, endDate);
       rs = stmt.executeQuery();
       while (rs.next()) {
-        result.add(buildConnectionStatistics("*", rs.getLong("connectionCount"), rs.getLong(
-            "connectionTime"), ""));
+        result.add(buildConnectionStatistics("*", rs.getLong("connectionCount"),
+            rs.getLong("connectionTime"), ""));
       }
       return result;
     } finally {
@@ -122,7 +124,7 @@ public class SilverStatisticsPeasDAOConnexion {
 
   static LinkedHashMap<String, Long> prepareStatisticsArray(String dateBegin, String dateEnd)
       throws ParseException {
-    LinkedHashMap<String, Long> result = new LinkedHashMap<String, Long>(48);
+    LinkedHashMap<String, Long> result = new LinkedHashMap<>(48);
     Calendar endDate = Calendar.getInstance();
     endDate.setTime(DateUtil.parseISO8601Date(dateEnd));
     endDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -145,13 +147,13 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   static Collection[] convertStatisticsArray(LinkedHashMap<String, Long> statistics) {
-    List<String> dates = new ArrayList<String>(statistics.size());
-    List<String> counts = new ArrayList<String>(statistics.size());
+    List<String> dates = new ArrayList<>(statistics.size());
+    List<String> counts = new ArrayList<>(statistics.size());
     for (Map.Entry<String, Long> data : statistics.entrySet()) {
       dates.add(data.getKey());
       counts.add(String.valueOf(data.getValue()));
     }
-    return new Collection[] { dates, counts };
+    return new Collection[]{dates, counts};
   }
 
   static void addStatisticsToArray(Map<String, Long> statistics, String date, long value) {
@@ -166,8 +168,8 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws SQLException
    * @throws ParseException
    */
-  public static Collection[] getStatsUser(String startDate, String endDate) throws SQLException,
-      ParseException, UtilException {
+  public static Collection[] getStatsUser(String startDate, String endDate)
+      throws SQLException, ParseException, UtilException {
     SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUser",
         "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
@@ -199,8 +201,7 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws ParseException
    */
   public static Collection[] getStatsConnexion(String startDate, String endDate)
-      throws SQLException,
-      ParseException, UtilException {
+      throws SQLException, ParseException {
     SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexion",
         "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
@@ -224,22 +225,23 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   /**
-   * donne les stats pour un user seulement cad 2 infos, la collection contient donc un seul element
+   * donne les stats pour un user seulement cad 2 infos, la collection contient donc un seul
+   * element
    * @param dateBegin
    * @param dateEnd
    * @param idUser
    * @return
    * @throws SQLException
-   * @see
    */
   public static Collection<String[]> getStatsConnexionAllUser(String dateBegin, String dateEnd,
-      int idUser) throws SQLException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser", "root.MSG_GEN_ENTER_METHOD");
+      int idUser) throws SQLException {
+    SilverTrace
+        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser",
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
-    List<String[]> result = new ArrayList<String[]>();
+    List<String[]> result = new ArrayList<>();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_STATISTICS_FOR_USER);
@@ -248,9 +250,9 @@ public class SilverStatisticsPeasDAOConnexion {
       stmt.setInt(3, idUser);
       rs = stmt.executeQuery();
       while (rs.next()) {
-        result.add(buildConnectionStatistics(rs.getString("lastName"), rs
-            .getLong("connectionCount"),
-            rs.getLong("connectionTime"), rs.getString("id")));
+        result.add(
+            buildConnectionStatistics(rs.getString("lastName"), rs.getLong("connectionCount"),
+                rs.getLong("connectionTime"), rs.getString("id")));
       }
       return result;
     } finally {
@@ -260,15 +262,19 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   /**
-   * donne les stats pour un groupe
-   * @return
+   * Get user connection statistics
+   * @param startDate the start date
+   * @param endDate the end date
+   * @param idUser the user identifier
+   * @return an array of date and number of connections of a user between startDate and endDate
    * @throws SQLException
    * @throws ParseException
    */
   public static Collection[] getStatsUserConnexion(String startDate, String endDate, String idUser)
-      throws SQLException, ParseException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsUserConnexion", "root.MSG_GEN_ENTER_METHOD");
+      throws SQLException, ParseException {
+    SilverTrace
+        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUserConnexion",
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -293,9 +299,9 @@ public class SilverStatisticsPeasDAOConnexion {
   /**
    * Returns the group stats : group name, number of connexions, mean connexion time and group id
    * for all the specified group.
-   * @param startDate
-   * @param endDate
-   * @param groupId
+   * @param startDate the start date
+   * @param endDate the end date
+   * @param groupId the group identifier
    * @return the group stats : group name, number of connexions, mean connexion time and group id
    * for all the groups.
    * @throws SQLException
@@ -303,16 +309,17 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection[] getStatsGroupConnexion(String startDate, String endDate,
       String groupId) throws SQLException, ParseException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion",
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
     LinkedHashMap<String, Long> result = prepareStatisticsArray(startDate, endDate);
     try {
       myCon = DBUtil.openConnection();
-      UserDetail[] users = OrganizationControllerProvider
-          .getOrganisationController().getAllUsersOfGroup(groupId);
+      UserDetail[] users =
+          OrganizationControllerProvider.getOrganisationController().getAllUsersOfGroup(groupId);
       stmt = myCon.prepareStatement(SELECT_USER_NB_CONNECTION);
       for (UserDetail userDetail : users) {
         stmt.setString(1, startDate);
@@ -342,9 +349,9 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection<String[]> getStatsConnexionGroupAll(String dateBegin, String dateEnd)
       throws SQLException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
+            "root.MSG_GEN_ENTER_METHOD");
     List<String[]> result = new ArrayList<String[]>();
     Group[] groups = OrganizationControllerProvider.getOrganisationController().getAllGroups();
     for (Group group : groups) {
@@ -364,10 +371,11 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws SQLException
    * @throws UtilException
    */
-  public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin,
-      String dateEnd, int groupId) throws SQLException, UtilException {
-    return getStatsConnexionGroupUser(dateBegin, dateEnd, OrganizationControllerProvider
-        .getOrganisationController().getGroup(String.valueOf(groupId)));
+  public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin, String dateEnd,
+      int groupId) throws SQLException, UtilException {
+    return getStatsConnexionGroupUser(dateBegin, dateEnd,
+        OrganizationControllerProvider.getOrganisationController()
+            .getGroup(String.valueOf(groupId)));
   }
 
   static Collection<String[]> getStatsConnexionGroupUser(String dateBegin, String dateEnd,
@@ -378,7 +386,7 @@ public class SilverStatisticsPeasDAOConnexion {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
-    List<String[]> result = new ArrayList<String[]>();
+    List<String[]> result = new ArrayList<>();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_COUNTS_FOR_USER);
@@ -414,15 +422,15 @@ public class SilverStatisticsPeasDAOConnexion {
    * for all Silverpeas users.
    * @throws SQLException
    */
-  public static Collection<String[]> getStatsConnexionUserAll(String dateBegin,
-      String dateEnd) throws SQLException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll",
-        "root.MSG_GEN_ENTER_METHOD");
+  public static Collection<String[]> getStatsConnexionUserAll(String dateBegin, String dateEnd)
+      throws SQLException, UtilException {
+    SilverTrace
+        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll",
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
-    List<String[]> result = new ArrayList<String[]>();
+    List<String[]> result = new ArrayList<>();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_STATISTICS_FOR_ALL_USERS);
@@ -430,9 +438,9 @@ public class SilverStatisticsPeasDAOConnexion {
       stmt.setString(2, dateEnd);
       rs = stmt.executeQuery();
       while (rs.next()) {
-        result.add(buildConnectionStatistics(rs.getString("lastName"), rs
-            .getLong("connectionCount"),
-            rs.getLong("connectionTime"), rs.getString("id")));
+        result.add(
+            buildConnectionStatistics(rs.getString("lastName"), rs.getLong("connectionCount"),
+                rs.getLong("connectionTime"), rs.getString("id")));
       }
       return result;
     } finally {
@@ -442,7 +450,8 @@ public class SilverStatisticsPeasDAOConnexion {
   }
 
   /**
-   * Returns the user stats : User last name, number of connexions, mean connexion time and user id.
+   * Returns the user stats : User last name, number of connexions, mean connexion time and user
+   * id.
    * @param dateBegin
    * @param dateEnd
    * @param userId
@@ -450,8 +459,8 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws SQLException
    * @see
    */
-  public static Collection<String[]> getStatsConnexionUserUser(String dateBegin,
-      String dateEnd, int userId) throws SQLException, UtilException {
+  public static Collection<String[]> getStatsConnexionUserUser(String dateBegin, String dateEnd,
+      int userId) throws SQLException, UtilException {
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserGroup",
         "selectQuery=" + SELECT_STATISTICS_FOR_USER);
@@ -459,7 +468,7 @@ public class SilverStatisticsPeasDAOConnexion {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
-    List<String[]> result = new ArrayList<String[]>();
+    List<String[]> result = new ArrayList<>();
     try {
       myCon = DBUtil.openConnection();
       stmt = myCon.prepareStatement(SELECT_STATISTICS_FOR_USER);
@@ -468,9 +477,9 @@ public class SilverStatisticsPeasDAOConnexion {
       stmt.setInt(3, userId);
       rs = stmt.executeQuery();
       while (rs.next()) {
-        result.add(buildConnectionStatistics(rs.getString("lastName"), rs
-            .getLong("connectionCount"),
-            rs.getLong("connectionTime"), rs.getString("id")));
+        result.add(
+            buildConnectionStatistics(rs.getString("lastName"), rs.getLong("connectionCount"),
+                rs.getLong("connectionTime"), rs.getString("id")));
       }
       return result;
     } finally {
@@ -480,7 +489,12 @@ public class SilverStatisticsPeasDAOConnexion {
 
   }
 
-  public static Collection<String> getYears() throws SQLException, UtilException {
+  /**
+   * @return if no statistic exist return current year, else return a collection of years which are
+   * loaded inside SB_Stat_ConnectionCumul table
+   * @throws SQLException
+   */
+  public static Collection<String> getYears() throws SQLException {
     String selectQuery = "SELECT DISTINCT dateStat FROM SB_Stat_ConnectionCumul ORDER BY dateStat";
     SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getYearsFromQuery",
         "selectQuery=" + selectQuery);
@@ -491,12 +505,15 @@ public class SilverStatisticsPeasDAOConnexion {
       myCon = DBUtil.openConnection();
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
-      LinkedHashSet<String> years = new LinkedHashSet<String>();
+      LinkedHashSet<String> years = new LinkedHashSet<>();
       while (rs.next()) {
         String currentYear = extractYearFromDate(rs.getString("dateStat"));
         if (!years.contains(currentYear)) {
           years.add(currentYear);
         }
+      }
+      if (years.isEmpty()) {
+        years.add(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
       }
       return years;
     } finally {
@@ -505,7 +522,7 @@ public class SilverStatisticsPeasDAOConnexion {
     }
   }
 
-  private static final String extractYearFromDate(String date) {
+  private static String extractYearFromDate(String date) {
     return date.substring(0, 4);
   }
 

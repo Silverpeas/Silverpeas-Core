@@ -53,10 +53,8 @@ public class DateUtil {
 
   private static final long millisPerHour = 60l * 60l * 1000l;
   private static final long millisPerMinute = 60l * 1000l;
-  private static Map<String, FastDateFormat> outputFormatters =
-      new HashMap<String, FastDateFormat>(5);
-  private static Map<String, SimpleDateFormat> inputParsers =
-      new HashMap<String, SimpleDateFormat>(5);
+  private static Map<String, FastDateFormat> outputFormatters = new HashMap<>(5);
+  private static Map<String, SimpleDateFormat> inputParsers = new HashMap<>(5);
   /**
    * Format and parse dates.
    */

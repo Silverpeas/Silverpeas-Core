@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,26 +20,45 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.WarBuilder4WarCore;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
- *
  * @author ehugonnet
  */
-public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasourceTest {
+@RunWith(Arquillian.class)
+public class SilverStatisticsPeasDAOConnexionTest {
 
   private static final String dateBegin = "2010-12-01";
   private static final String dateEnd = "2011-07-01";
 
-  @Override
-  public String getDatasetFileName() {
-    return "test-stats-connections-dataset.xml";
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule("create-database.sql", "test-stats-connections-dataset.xml");
+
+  @Before
+  public void generalSetUp() throws Exception {
+  }
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4WarCore.onWarForTestClass(SilverStatisticsPeasDAOConnexionTest.class)
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addPackages(true, "com.stratelia.silverpeas.silverStatisticsPeas");
+        }).build();
   }
 
   public SilverStatisticsPeasDAOConnexionTest() {
@@ -51,8 +70,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
    */
   @Test
   public void testGetStatsConnexionAllAll() throws Exception {
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion
-        .getStatsConnexionAllAll(dateBegin, dateEnd);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionAllAll(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     String[] aggregate = result.iterator().next();
@@ -73,13 +92,12 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
     Collection<String> dates = (Collection<String>) result[0];
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
-    assertThat(dates, contains(new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01",
-      "2011-04-01",
-      "2011-05-01", "2011-06-01", "2011-07-01"}));
+    assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+        "2011-05-01", "2011-06-01", "2011-07-01"));
     Collection<String> counts = (Collection<String>) result[1];
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains(new String[]{"0", "5", "5", "5", "5", "5", "5", "0"}));
+    assertThat(counts, contains("0", "5", "5", "5", "5", "5", "5", "0"));
   }
 
   /**
@@ -90,17 +108,15 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
     Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsConnexion(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
     assertThat(result.length, is(2));
-    @SuppressWarnings("unchecked")
-    Collection<String> dates = (Collection<String>) result[0];
+    @SuppressWarnings("unchecked") Collection<String> dates = (Collection<String>) result[0];
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
-    assertThat(dates, contains(new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01",
-      "2011-04-01",
-      "2011-05-01", "2011-06-01", "2011-07-01"}));
+    assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+        "2011-05-01", "2011-06-01", "2011-07-01"));
     Collection<String> counts = (Collection<String>) result[1];
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains(new String[]{"0", "223", "129", "289", "394", "115", "115", "0"}));
+    assertThat(counts, contains("0", "223", "129", "289", "394", "115", "115", "0"));
   }
 
   /**
@@ -109,9 +125,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   @Test
   public void testGetStatsConnexionAllUser() throws Exception {
     int idUser = 2;
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser(
-        dateBegin, dateEnd,
-        idUser);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser(dateBegin, dateEnd, idUser);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     String[] aggregate = result.iterator().next();
@@ -126,20 +141,19 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   @Test
   public void testGetStatsUserConnexion() throws Exception {
     String idUser = "2";
-    Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsUserConnexion(dateBegin, dateEnd,
-        idUser);
+    Collection[] result =
+        SilverStatisticsPeasDAOConnexion.getStatsUserConnexion(dateBegin, dateEnd, idUser);
     assertThat(result, is(notNullValue()));
     assertThat(result.length, is(2));
     Collection<String> dates = (Collection<String>) result[0];
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
-    assertThat(dates, contains(new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01",
-      "2011-04-01",
-      "2011-05-01", "2011-06-01", "2011-07-01"}));
+    assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+        "2011-05-01", "2011-06-01", "2011-07-01"));
     Collection<String> counts = (Collection<String>) result[1];
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains(new String[]{"0", "5", "8", "64", "2", "51", "17", "0"}));
+    assertThat(counts, contains("0", "5", "8", "64", "2", "51", "17", "0"));
   }
 
   /**
@@ -148,9 +162,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   @Test
   public void testGetStatsConnexionAllGroup() throws Exception {
     int idGroup = 2;
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(
-        dateBegin,
-        dateEnd, idGroup);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd, idGroup);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     String[] aggregate = result.iterator().next();
@@ -165,20 +178,19 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   @Test
   public void testGetStatsGroupConnexion() throws Exception {
     String idGroup = "2";
-    Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin,
-        dateEnd, idGroup);
+    Collection[] result =
+        SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin, dateEnd, idGroup);
     assertThat(result, is(notNullValue()));
     assertThat(result.length, is(2));
     Collection<String> dates = (Collection<String>) result[0];
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
-    assertThat(dates, contains(
-        new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
-      "2011-05-01", "2011-06-01", "2011-07-01"}));
+    assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+        "2011-05-01", "2011-06-01", "2011-07-01"));
     Collection<String> counts = (Collection<String>) result[1];
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains(new String[]{"0", "110", "67", "149", "58", "64", "97", "0"}));
+    assertThat(counts, contains("0", "110", "67", "149", "58", "64", "97", "0"));
 
     idGroup = "1";
     result = SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin, dateEnd, idGroup);
@@ -187,13 +199,12 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
     dates = (Collection<String>) result[0];
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
-    assertThat(dates, contains(
-        new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
-      "2011-05-01", "2011-06-01", "2011-07-01"}));
+    assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+        "2011-05-01", "2011-06-01", "2011-07-01"));
     counts = (Collection<String>) result[1];
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains(new String[]{"0", "223", "129", "289", "394", "115", "115", "0"}));
+    assertThat(counts, contains("0", "223", "129", "289", "394", "115", "115", "0"));
   }
 
   /**
@@ -201,9 +212,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
    */
   @Test
   public void testGetStatsConnexionGroupAll() throws Exception {
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll(
-        dateBegin,
-        dateEnd);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(3));
     for (String[] aggregate : result) {
@@ -230,9 +240,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   @Test
   public void testGetStatsConnexionGroupUser() throws Exception {
     int groupId = 3;
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(
-        dateBegin,
-        dateEnd, groupId);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd, groupId);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     Iterator<String[]> iter = result.iterator();
@@ -242,7 +251,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
     assertThat(aggregate, arrayContaining("Parents", "720", "5005423", String.valueOf(groupId)));
 
     groupId = 1;
-    result = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd, groupId);
+    result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd, groupId);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     aggregate = result.iterator().next();
@@ -256,8 +266,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
    */
   @Test
   public void testGetStatsConnexionUserAll() throws Exception {
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll(
-        dateBegin, dateEnd);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll(dateBegin, dateEnd);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(5));
     for (String[] aggregate : result) {
@@ -290,8 +300,8 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   @Test
   public void testGetStatsConnexionUserUser() throws Exception {
     int idUser = 2;
-    Collection<String[]> result = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser(
-        dateBegin, dateEnd, idUser);
+    Collection<String[]> result =
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser(dateBegin, dateEnd, idUser);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     for (String[] aggregate : result) {
@@ -319,19 +329,19 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractSpringDatasour
   public void testGetStatsUserFq() throws Exception {
     int min = 50;
     int max = 100;
-    Collection[] result = SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd, min,
-        max);
+    Collection[] result =
+        SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd, min, max);
     assertThat(result, is(notNullValue()));
     assertThat(result.length, is(2));
     Collection<String> dates = (Collection<String>) result[0];
     assertThat(dates, is(notNullValue()));
     assertThat(dates, hasSize(8));
-    assertThat(dates, contains(
-        new String[]{"2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
-      "2011-05-01", "2011-06-01", "2011-07-01"}));
+    assertThat(dates, contains("2010-12-01", "2011-01-01", "2011-02-01", "2011-03-01", "2011-04-01",
+        "2011-05-01", "2011-06-01", "2011-07-01"));
     Collection<String> counts = (Collection<String>) result[1];
     assertThat(counts, is(notNullValue()));
     assertThat(counts, hasSize(8));
-    assertThat(counts, contains(new String[]{"0", "2", "1", "1", "1", "1", "1", "0"}));
+    assertThat(counts, contains("0", "2", "1", "1", "1", "1", "1", "0"));
   }
+
 }
