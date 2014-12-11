@@ -23,14 +23,7 @@
  */
 package com.silverpeas.subscribe.service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.subscribe.AbstractCommonSubscriptionTest;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -44,82 +37,26 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
-
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * Same database environment as DAO tests. User: Yohann Chastagnier Date: 24/02/13
  */
-public class SubscriptionServiceTest {
-
-  private static final String USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5
-      = "userFromGroupOnly_GroupId_5";
-  private static final String INSTANCE_ID = "kmelia60";
-
-  // Spring context
-  private ClassPathXmlApplicationContext context;
+public class SubscriptionServiceTest extends AbstractCommonSubscriptionTest {
   private SubscriptionService subscriptionService;
   private DefaultOrganizationController organizationController;
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-  }
-
-  @AfterClass
-  public static void tearDownClass() {
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
-  }
-
   @Before
-  public void setUp() throws Exception {
-    context = new ClassPathXmlApplicationContext("spring-subscription.xml");
-
-    // Beans
-    final DataSource dataSource = (DataSource) context.getBean("dataSource");
-    subscriptionService = (SubscriptionService) context.getBean("subscriptionService");
-    organizationController = (OrganizationControllerMock) context.getBean("organizationController");
-
-    // Database
-    InitialContext ic = new InitialContext();
-    ic.bind(JNDINames.SUBSCRIBE_DATASOURCE, dataSource);
-    DatabaseOperation.INSERT
-        .execute(new DatabaseConnection(dataSource.getConnection()), getDataSet());
-    DBUtil.getInstanceForTest(dataSource.getConnection());
-  }
-
-  protected IDataSet getDataSet() throws DataSetException {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        this.getClass().getClassLoader()
-        .getResourceAsStream("com/silverpeas/subscribe/service/node-actors-test-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    DBUtil.clearTestInstance();
-    InitialContext ic = new InitialContext();
-    ic.unbind(JNDINames.SUBSCRIBE_DATASOURCE);
-    context.close();
+  public void setup() throws Exception {
+    subscriptionService = getBeanFromContext(SubscriptionService.class);
   }
 
   /**
@@ -321,12 +258,14 @@ public class SubscriptionServiceTest {
     assertThat(result, hasSize(10));
 
     // User that is in a group
-    result = subscriptionService.getByUserSubscriber(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5);
+    result = subscriptionService.getByUserSubscriber(USERID_OF_GROUP_WITH_ONE_USER);
     assertThat(result, hasSize(2));
     assertThat(result, hasItem(
-        new NodeSubscription(GroupSubscriptionSubscriber.from("5"), new NodePK("0", INSTANCE_ID))));
-    assertThat(result,
-        hasItem(new ComponentSubscription(GroupSubscriptionSubscriber.from("5"), INSTANCE_ID)));
+        new NodeSubscription(GroupSubscriptionSubscriber.from(GROUPID_WITH_ONE_USER),
+            new NodePK("0", INSTANCE_ID))));
+    assertThat(result, hasItem(
+        new ComponentSubscription(GroupSubscriptionSubscriber.from(GROUPID_WITH_ONE_USER),
+            INSTANCE_ID)));
   }
 
   /**
@@ -383,7 +322,7 @@ public class SubscriptionServiceTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("2")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from(GROUPID_WITH_ONE_USER)));
 
     result = subscriptionService
         .getSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
@@ -409,7 +348,7 @@ public class SubscriptionServiceTest {
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("5")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from(GROUPID_WITH_ONE_USER)));
   }
 
   /**
@@ -419,18 +358,19 @@ public class SubscriptionServiceTest {
   public void testGetUserSubscribersForNodeResource() {
     initializeUsersAndGroups();
     Collection<String> result = subscriptionService
-        .getUserSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)));
+        .getSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)))
+        .getAllUserIds();
     assertThat(result, hasSize(6));
     assertThat(result, hasItem("1"));
     assertThat(result, hasItem("2"));
     assertThat(result, hasItem("3"));
     assertThat(result, hasItem("4"));
     assertThat(result, hasItem("5"));
-    assertThat(result, hasItem(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5));
+    assertThat(result, hasItem(USERID_OF_GROUP_WITH_ONE_USER));
 
     result = subscriptionService
-        .getUserSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
-        SubscriptionMethod.SELF_CREATION);
+        .getSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
+            SubscriptionMethod.SELF_CREATION).getAllUserIds();
     assertThat(result, hasSize(5));
     assertThat(result, hasItem("1"));
     assertThat(result, hasItem("2"));
@@ -445,13 +385,14 @@ public class SubscriptionServiceTest {
   @Test
   public void testGetUserSubscribersForComponentResource() {
     initializeUsersAndGroups();
-    Collection<String> result = subscriptionService.getUserSubscribers(ComponentSubscriptionResource
-        .from(INSTANCE_ID));
+    Collection<String> result =
+        subscriptionService.getSubscribers(ComponentSubscriptionResource.from(INSTANCE_ID))
+            .getAllUserIds();
     assertThat(result, hasSize(4));
     assertThat(result, hasItem("1"));
     assertThat(result, hasItem("3"));
     assertThat(result, hasItem("5"));
-    assertThat(result, hasItem(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5));
+    assertThat(result, hasItem(USERID_OF_GROUP_WITH_ONE_USER));
   }
 
   /**
@@ -473,7 +414,7 @@ public class SubscriptionServiceTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("2")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from(GROUPID_WITH_ONE_USER)));
 
     result = subscriptionService.getSubscribers(resources, SubscriptionMethod.SELF_CREATION);
     assertThat(result, hasSize(5));
@@ -498,7 +439,7 @@ public class SubscriptionServiceTest {
 
     // User is subscribed through a group
     assertThat(subscriptionService.isSubscriberSubscribedToResource(
-        UserSubscriptionSubscriber.from(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5),
+        UserSubscriptionSubscriber.from(USERID_OF_GROUP_WITH_ONE_USER),
         NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(false));
 
     // User is not subscribed
@@ -517,17 +458,17 @@ public class SubscriptionServiceTest {
     // User is subscribed
     assertThat(subscriptionService
         .isSubscriberSubscribedToResource(UserSubscriptionSubscriber.from("1"),
-        ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
+            ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
 
     // User is subscribed through a group
     assertThat(subscriptionService.isSubscriberSubscribedToResource(
-        UserSubscriptionSubscriber.from(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5),
+        UserSubscriptionSubscriber.from(USERID_OF_GROUP_WITH_ONE_USER),
         ComponentSubscriptionResource.from(INSTANCE_ID)), is(false));
 
     // User is not subscribed
     assertThat(subscriptionService
         .isSubscriberSubscribedToResource(UserSubscriptionSubscriber.from("2563"),
-        ComponentSubscriptionResource.from(INSTANCE_ID)), is(false));
+            ComponentSubscriptionResource.from(INSTANCE_ID)), is(false));
   }
 
   /**
@@ -542,8 +483,7 @@ public class SubscriptionServiceTest {
         NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(true));
 
     // User is subscribed through a group
-    assertThat(subscriptionService
-        .isUserSubscribedToResource(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5,
+    assertThat(subscriptionService.isUserSubscribedToResource(USERID_OF_GROUP_WITH_ONE_USER,
         NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(true));
 
     // User is not subscribed
@@ -564,45 +504,12 @@ public class SubscriptionServiceTest {
         is(true));
 
     // User is subscribed through a group
-    assertThat(subscriptionService
-        .isUserSubscribedToResource(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5,
+    assertThat(subscriptionService.isUserSubscribedToResource(USERID_OF_GROUP_WITH_ONE_USER,
         ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
 
     // User is not subscribed
     assertThat(subscriptionService
-        .isUserSubscribedToResource("2563", ComponentSubscriptionResource.from(INSTANCE_ID)),
+            .isUserSubscribedToResource("2563", ComponentSubscriptionResource.from(INSTANCE_ID)),
         is(false));
-  }
-
-  private void initializeUsersAndGroups() {
-    when(organizationController.getAllUsersOfGroup(anyString()))
-        .thenAnswer(new Answer<UserDetail[]>() {
-
-          @Override
-          public UserDetail[] answer(final InvocationOnMock invocation) throws Throwable {
-            String groupId = (String) invocation.getArguments()[0];
-            UserDetail user = new UserDetail();
-            if ("5".equals(groupId)) {
-              user.setId(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5);
-              return new UserDetail[]{user};
-            } else {
-              return new UserDetail[]{};
-            }
-          }
-        });
-
-    when(organizationController.getAllGroupIdsOfUser(anyString()))
-        .thenAnswer(new Answer<String[]>() {
-
-          @Override
-          public String[] answer(final InvocationOnMock invocation) throws Throwable {
-            String userId = (String) invocation.getArguments()[0];
-            if (USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5.equals(userId)) {
-              return new String[]{"5"};
-            } else {
-              return new String[]{};
-            }
-          }
-        });
   }
 }

@@ -503,7 +503,7 @@ public class SubscriptionDaoTest extends DAOBasedTest {
    */
   @Test
   public void testRemoveComponentSubscriptionForGroup() throws Exception {
-    String groupId = "5";
+    String groupId = "55";
     Subscription subscription = new ComponentSubscription(GroupSubscriptionSubscriber.from(groupId),
         INSTANCE_ID, "userA");
     assertRemoveSubscription(subscription, 1);
@@ -713,7 +713,7 @@ public class SubscriptionDaoTest extends DAOBasedTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("2")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("55")));
   }
 
   /**
@@ -731,7 +731,7 @@ public class SubscriptionDaoTest extends DAOBasedTest {
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("5")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("55")));
   }
 
   /**
@@ -774,7 +774,7 @@ public class SubscriptionDaoTest extends DAOBasedTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("2")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("55")));
 
     result = subscriptionDao.getSubscribers(getConnection(), resources, SubscriptionMethod.UNKNOWN);
     assertThat(result, hasSize(10));
@@ -787,7 +787,7 @@ public class SubscriptionDaoTest extends DAOBasedTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("2")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
-    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("55")));
 
     result = subscriptionDao
         .getSubscribers(getConnection(), resources, SubscriptionMethod.SELF_CREATION);

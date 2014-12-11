@@ -107,6 +107,12 @@ public class NotificationSender implements java.io.Serializable {
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
         "root.MSG_GEN_ENTER_METHOD");
 
+    // If sender exists, it is excluded
+    String senderId = metaData.getSender();
+    if (StringUtil.isInteger(senderId) && Integer.parseInt(senderId) > 0) {
+      metaData.addUserRecipientToExclude(new UserRecipient(senderId));
+    }
+
     // First get direct users
     usersSet.addAll(userRecipients);
 
@@ -117,12 +123,6 @@ public class NotificationSender implements java.io.Serializable {
 
     // Then exclude users that don't have to be notified
     usersSet.removeAll(metaData.getUserRecipientsToExclude());
-
-    // Finally exclude the sender from the container of receivers (usersSet)
-    String senderId = metaData.getSender();
-    if (StringUtil.isInteger(senderId) && Integer.parseInt(senderId) > 0) {
-      usersSet.remove(new UserRecipient(senderId));
-    }
 
     Set<String> languages = metaData.getLanguages();
     Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
@@ -337,9 +337,17 @@ public class NotificationSender implements java.io.Serializable {
     return listReceivers.toString();
   }
 
+  /**
+   * Saving the notification into history if users have been notified.
+   * @param metaData
+   * @param usersSet
+   * @throws NotificationManagerException
+   */
   private void saveNotification(NotificationMetaData metaData, Set<UserRecipient> usersSet)
       throws NotificationManagerException {
-    getNotificationInterface().saveNotifUser(metaData, usersSet);
+    if (!usersSet.isEmpty()) {
+      getNotificationInterface().saveNotifUser(metaData, usersSet);
+    }
   }
 
   private SentNotificationInterface getNotificationInterface()

@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.silverpeas.subscribe.util.SubscriptionManagementContext;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectTo;
@@ -320,7 +321,22 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
    * @return
    */
   public Navigation redirectToHtmlEditor(String objectId, String returnPath, boolean indexIt) {
+    return redirectToHtmlEditor(null, objectId, returnPath, indexIt);
+  }
+
+  /**
+   * Handled the navigation to the html editor.
+   * @param subscriptionManagementContext
+   * @param objectId
+   * @param returnPath
+   * @param indexIt
+   * @return
+   */
+  public Navigation redirectToHtmlEditor(
+      SubscriptionManagementContext subscriptionManagementContext, String objectId,
+      String returnPath, boolean indexIt) {
     try {
+      getRequest().setAttribute("subscriptionManagementContext", subscriptionManagementContext);
       getRequest().setAttribute("SpaceId", getSpaceId());
       getRequest()
           .setAttribute("SpaceName", URLEncoder.encode(getSpaceLabel(), CharEncoding.UTF_8));

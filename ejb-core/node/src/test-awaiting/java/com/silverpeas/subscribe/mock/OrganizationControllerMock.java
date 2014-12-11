@@ -23,10 +23,14 @@
  */
 package com.silverpeas.subscribe.mock;
 
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.inject.Named;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
@@ -35,11 +39,17 @@ import static org.mockito.Mockito.mock;
  */
 @Named("organizationController")
 public class OrganizationControllerMock extends DefaultOrganizationController {
+  private static final long serialVersionUID = -8307476470533272352L;
 
   private final DefaultOrganizationController mock = mock(DefaultOrganizationController.class);
 
   private OrganizationController getMock() {
     return mock;
+  }
+
+  @Override
+  public ComponentInstLight getComponentInstLight(final String sComponentId) {
+    return getMock().getComponentInstLight(sComponentId);
   }
 
   @Override

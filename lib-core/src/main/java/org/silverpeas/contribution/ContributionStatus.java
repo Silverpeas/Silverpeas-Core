@@ -45,7 +45,7 @@ public enum ContributionStatus {
   @JsonCreator
   public static ContributionStatus from(String name) {
     try {
-      return valueOf(name);
+      return valueOf(name.toUpperCase());
     } catch (Exception e) {
       return UNKNOWN;
     }

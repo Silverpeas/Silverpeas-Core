@@ -44,7 +44,7 @@ public class UserNotificationManager {
    * notification
    * @param notificationBuider
    */
-  public void buildAndSend(final UserNotificationBuider notificationBuider) {
+  public void buildAndSend(final UserNotificationBuilder notificationBuider) {
     notificationBuider.build().send();
   }
 
@@ -56,7 +56,7 @@ public class UserNotificationManager {
    * @param notificationBuider
    */
   public void buildAndSend(final NotifMediaType mediaType,
-      final UserNotificationBuider notificationBuider) {
+      final UserNotificationBuilder notificationBuider) {
     notificationBuider.build().send(mediaType);
   }
 
@@ -65,7 +65,7 @@ public class UserNotificationManager {
    * @param notificationBuider
    * @return
    */
-  public NotificationMetaData build(final UserNotificationBuider notificationBuider) {
+  public NotificationMetaData build(final UserNotificationBuilder notificationBuider) {
     return notificationBuider.build().getNotificationMetaData();
   }
 }

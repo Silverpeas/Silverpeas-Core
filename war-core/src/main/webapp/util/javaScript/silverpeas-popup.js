@@ -407,6 +407,7 @@
     var settings = {
       title: '',
       callback: null,
+      alternativeCallback: null,
       callbackOnClose: null
     };
     if (options) {
@@ -492,6 +493,9 @@
           buttons.push({
             text: options.buttonTextNo,
             click: function() {
+              if (options.alternativeCallback) {
+                options.alternativeCallback.call($_this);
+              }
               $_this.dialog("close");
             }
           });
@@ -592,5 +596,47 @@ function displaySingleFreePopupFrom(url, options) {
  * Closes the single free popup.
  */
 function closeSingleFreePopup() {
+  $('#popupHelperContainer').popup('close');
+}
+
+/**
+ * Load html from URL and display it in a popup.
+ * If this method is called several times from a same Page,
+ * the previous load is trashed and replaced by the new one.
+ * @param url
+ * @param options
+ * @return promise with the html data loaded.
+ */
+function displaySingleConfirmationPopupFrom(url, options) {
+  var deferred = new jQuery.Deferred();
+  $.popup.showWaiting();
+  $.ajax({
+    url: url,
+    type: 'GET',
+    dataType: 'html',
+    cache : false
+  }).success(function(data, status, jqXHR) {
+    var $popup = $('#popupHelperContainer');
+    if ($popup.length == 0) {
+      $popup = $('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
+      $popup.appendTo(document.body);
+    }
+    $popup.empty();
+    $popup.append(data);
+    $popup.popup('confirmation', options);
+    deferred.resolve(data);
+  }).error(function(jqXHR, textStatus, errorThrown) {
+    notyError(errorThrown);
+    deferred.reject();
+  }).always(function(data, status, jqXHR) {
+    $.popup.hideWaiting();
+  });
+  return deferred.promise();
+}
+
+/**
+ * Closes the single confirmation popup.
+ */
+function closeSingleConfirmationPopup() {
   $('#popupHelperContainer').popup('close');
 }

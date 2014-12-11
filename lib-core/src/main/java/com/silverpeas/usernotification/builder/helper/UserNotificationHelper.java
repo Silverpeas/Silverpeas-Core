@@ -44,7 +44,7 @@ public class UserNotificationHelper {
    * Builds a notification data container from a given builder. After that, sends the builded notification
    * @param notificationBuider
    */
-  public static void buildAndSend(final UserNotificationBuider notificationBuider) {
+  public static void buildAndSend(final UserNotificationBuilder notificationBuider) {
     getInstance().getManager().buildAndSend(notificationBuider);
   }
 
@@ -55,7 +55,7 @@ public class UserNotificationHelper {
    * @param notificationBuider
    */
   public static void buildAndSend(final NotifMediaType mediaType,
-      final UserNotificationBuider notificationBuider) {
+      final UserNotificationBuilder notificationBuider) {
     getInstance().getManager().buildAndSend(mediaType, notificationBuider);
   }
 
@@ -64,7 +64,7 @@ public class UserNotificationHelper {
    * @param notificationBuider
    * @return
    */
-  public static NotificationMetaData build(final UserNotificationBuider notificationBuider) {
+  public static NotificationMetaData build(final UserNotificationBuilder notificationBuider) {
     return getInstance().getManager().build(notificationBuider);
   }
 

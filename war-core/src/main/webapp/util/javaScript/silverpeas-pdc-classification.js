@@ -200,7 +200,7 @@
   var methods = {
     /**
      * Renders an area within which the different axis of the PdC configured for the specified
-     * Silverpeas component are presented in order to create a prefefined classification on the PdC
+     * Silverpeas component are presented in order to create a predefined classification on the PdC
      * for the contents that are published in a given topic of the specified Silverpeas component.
      * The predefined classification is dynamically created and modified by requesting a REST-based
      * web service.

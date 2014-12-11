@@ -33,6 +33,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.subscription.SubscriptionSettings;
 import org.silverpeas.util.security.SecuritySettings;
 
 import java.text.MessageFormat;
@@ -87,6 +88,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
   private static final String SILVERPEAS_PDC_WIDGET = "silverpeas-pdc-widgets.js";
   private static final String SILVERPEAS_PDC = "silverpeas-pdc.js";
+  private static final String SILVERPEAS_SUBSCRIPTION = "silverpeas-subscription.js";
   private static final String flexPaperPath = javascriptPath + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String jqueryNotifierPath = jqueryPath + "noty/";
@@ -136,6 +138,41 @@ public class JavascriptPluginInclusion {
    */
   private static script script(String src) {
     return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
+  }
+
+  /**
+   * Centralization of dynamic script instantiation.
+   * Even if several calls are done for a same HTML page, the script is loaded one time only.
+   * @param src
+   * @param jqPluginName the name of the jquery plugin (this declared into javascript source) in
+   * order to check dynamically if it exists already or not.
+   * @param jsCallbackContentOnSuccessfulLoad javascript routine as string (without function
+   * declaration that wraps it) that is performed after an effective successful load of the script.
+   * @param jsCallback javascript routine as string (without function declaration that wraps it)
+   * that is always performed after that the plugin existence is verified.
+   * @return
+   */
+  @SuppressWarnings("StringBufferReplaceableByString")
+  private static String generateDynamicPluginLoading(String src, String jqPluginName,
+      String jsCallbackContentOnSuccessfulLoad, String jsCallback) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("jQuery(document).ready(function() {");
+    sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined') {");
+    sb.append("    jQuery.getScript('").append(appendVersion(src)).append("', function() {");
+    if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
+      sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
+    }
+    if (StringUtil.isDefined(jsCallback)) {
+      sb.append("    ").append(jsCallback);
+    }
+    sb.append("    })");
+    sb.append("  } else {");
+    if (StringUtil.isDefined(jsCallback)) {
+      sb.append("    ").append(jsCallback);
+    }
+    sb.append("  }");
+    sb.append("});");
+    return sb.toString();
   }
 
   /**
@@ -314,6 +351,12 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static String getDynamicPopupJavascriptLoadContent(final String jsCallback) {
+    return generateDynamicPluginLoading(javascriptPath + SILVERPEAS_POPUP, "popup",
+        "window.popupViewGeneratorIconPath='" + GraphicElementFactory.getIconsPath() + "';",
+        jsCallback);
+  }
+
   public static ElementContainer includePreview(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PREVIEW));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_VIEW));
@@ -412,6 +455,34 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeLang(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
     return xhtml;
+  }
+
+  /**
+   * Includes a dynamic loading of Silverpeas subscription JQuery Plugin.
+   * @param xhtml the container into which the plugin loading code will be added.
+   * @param jsCallback javascript routine as string (without function declaration that wraps it)
+   * that is always performed after that the plugin existence is verified.
+   * @return the completed parent container.
+   */
+  public static ElementContainer includeDynamicallySubscription(final ElementContainer xhtml,
+      final String jsCallback) {
+    xhtml.addElement(scriptContent(getDynamicSubscriptionJavascriptLoadContent(jsCallback)));
+    return xhtml;
+  }
+
+  /**
+   * Includes a dynamic loading of Silverpeas subscription JQuery Plugin.
+   * This plugin depends on the 'popup' one and handles its loading.
+   * @param jsCallback javascript routine as string (without function declaration that wraps it)
+   * that is always performed after that the plugin existence is verified.
+   * @return the container that contains the script loading.
+   */
+  public static String getDynamicSubscriptionJavascriptLoadContent(final String jsCallback) {
+    String subscriptionLoad =
+        generateDynamicPluginLoading(javascriptPath + SILVERPEAS_SUBSCRIPTION, "subscription",
+            "jQuery.subscription.parameters.confirmNotificationSendingOnUpdateEnabled = " +
+                SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() + ";", jsCallback);
+    return getDynamicPopupJavascriptLoadContent(subscriptionLoad);
   }
 
   private static String appendVersion(String url) {

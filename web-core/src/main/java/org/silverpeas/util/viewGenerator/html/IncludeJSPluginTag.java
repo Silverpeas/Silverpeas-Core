@@ -136,6 +136,10 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           break;
         case ticker:
           JavascriptPluginInclusion.includeTicker(xhtml);
+          break;
+        case subscription:
+          includeDynamicallySubscription(xhtml, null);
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore

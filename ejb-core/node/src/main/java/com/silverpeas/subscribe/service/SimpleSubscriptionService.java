@@ -29,6 +29,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
@@ -269,12 +270,12 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource) {
+  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource) {
     return getSubscribers(resource, SubscriptionMethod.UNKNOWN);
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource,
+  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource,
       final SubscriptionMethod method) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
@@ -291,46 +292,13 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<String> getUserSubscribers(SubscriptionResource resource) {
-    return getUserSubscribers(resource, SubscriptionMethod.UNKNOWN);
-  }
-
-  @Override
-  public Collection<String> getUserSubscribers(final SubscriptionResource resource,
-      final SubscriptionMethod method) {
-    SilverTrace
-        .info("subscribe", "SubscriptionService.getUserSubscribers", "root.MSG_GEN_ENTER_METHOD");
-    Set<String> userIds = new HashSet<String>();
-    Set<String> groupIds = new HashSet<String>();
-    for (SubscriptionSubscriber subscriber : getSubscribers(resource, method)) {
-      switch (subscriber.getType()) {
-        case USER:
-          userIds.add(subscriber.getId());
-          break;
-        case GROUP:
-          groupIds.add(subscriber.getId());
-          break;
-      }
-    }
-
-    // Retrieving users from groups if any
-    for (String groupId : groupIds) {
-      for (UserDetail user : organisationController.getAllUsersOfGroup(groupId)) {
-        userIds.add(user.getId());
-      }
-    }
-
-    return userIds;
-  }
-
-  @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources) {
     return getSubscribers(resources, SubscriptionMethod.UNKNOWN);
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources, final SubscriptionMethod method) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
@@ -358,6 +326,6 @@ public class SimpleSubscriptionService implements SubscriptionService {
   public boolean isUserSubscribedToResource(String userId, SubscriptionResource resource) {
     SilverTrace.info("subscribe", "SubscriptionService.isSubscriberSubscribedToResource",
         "root.MSG_GEN_ENTER_METHOD");
-    return getUserSubscribers(resource).contains(userId);
+    return getSubscribers(resource).getAllUserIds().contains(userId);
   }
 }

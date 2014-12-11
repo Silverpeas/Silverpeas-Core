@@ -36,6 +36,7 @@
   <ctx:component-scan base-package="com.silverpeas.subscribe">
     <ctx:exclude-filter type="regex" expression="com.silverpeas.subscribe.service.*" />
   </ctx:component-scan>
+  <bean id="anyBeanId" class="com.silverpeas.subscribe.web.StubbedDefaultResourceSubscriptionService"/>
   <import resource="spring-webservice.xml"/>
   <bean id="subscriptionServiceFactory" class="com.silverpeas.subscribe.SubscriptionServiceProvider"
         factory-method="getFactory"/>

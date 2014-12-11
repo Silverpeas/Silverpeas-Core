@@ -64,7 +64,7 @@ public class UnsubscribePostTest extends RESTWebServiceTest<SubscriptionTestReso
   @Before
   public void setup() {
     assertThat(getTestResources().getMockableSubscriptionService(),
-            is(SubscriptionServiceProvider.getFactory().getSubscribeService()));
+            is(SubscriptionServiceProvider.getSubscribeService()));
   }
 
   @Test

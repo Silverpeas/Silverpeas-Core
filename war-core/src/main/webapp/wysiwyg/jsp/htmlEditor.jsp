@@ -24,8 +24,8 @@
 
 --%>
 
-<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@page import="org.silverpeas.util.i18n.I18NHelper"%>
+<%@page import="com.silverpeas.subscribe.util.SubscriptionManagementContext"%>
+<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -34,21 +34,20 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
+
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar "%>
 
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="org.silverpeas.wysiwyg.*"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="javax.servlet.http.*"%>
+<%@ page import="com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -82,6 +81,7 @@ SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "actionWysiwyg="+actionWys
 if (actionWysiwyg == null) {
   actionWysiwyg = "Load";
 }
+  UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
 
 if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) || "SaveHtml".equals(actionWysiwyg)) {
   codeWysiwyg = request.getParameter("editor1");
@@ -335,7 +335,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 					</select>
 				<% } %>
 	</div>
-			
+
 	<div class="container-wysiwyg wysiwyg-area">
 		<textarea id="editor1" name="editor1" cols="10" rows="10"><c:out value="<%=wysiwygTextValue%>" escapeXml="true"/></textarea>
 	</div>
@@ -343,14 +343,28 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 		<input name="actionWysiwyg" type="hidden" value="SaveHtml"/>
 		<input name="origin" type="hidden" value="<%=componentId%>"/>
 		<input name="Exit" type="hidden" value="0"/>
-<%
-		ButtonPane buttonPane = gef.getButtonPane();
-		Button button = gef.getFormButton(message.getString("SaveAndExit"), "javascript:onclick=saveAndExit();", false);
-		Button buttonExit = gef.getFormButton(message.getString("Cancel"), "javascript:location.href='"+returnUrl+"';", false);
-		buttonPane.addButton(button);
-		buttonPane.addButton(buttonExit);
-    	out.println("<br/>"+buttonPane.print());
-%>
+    <c:set var="saveLabel"><%=message.getString("SaveAndExit")%></c:set>
+    <c:set var="cancelLabel"><%=message.getString("Cancel")%></c:set>
+    <c:set var="cancelAction"><%="javascript:location.href='" + returnUrl + "';"%></c:set>
+    <view:buttonPane>
+      <view:button label="${saveLabel}" action="javascript:onclick=saveAndExit();">
+        <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
+        <c:if test="${not empty subscriptionManagementContext}">
+          <c:set var="wysiwygTextValue" value="<%=wysiwygTextValue%>"/>
+          <jsp:useBean id="subscriptionManagementContext" type="com.silverpeas.subscribe.util.SubscriptionManagementContext"/>
+          <c:if test="${not empty wysiwygTextValue
+                      and subscriptionManagementContext.entityStatusBeforePersistAction.validated
+                      and subscriptionManagementContext.entityStatusAfterPersistAction.validated
+                      and subscriptionManagementContext.entityPersistenceAction.update}">
+            <view:confirmResourceSubscriptionNotificationSending
+                subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
+                subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
+
+          </c:if>
+        </c:if>
+      </view:button>
+      <view:button label="${cancelLabel}" action="${cancelAction}"/>
+    </view:buttonPane>
 	</form>
 <%
 }

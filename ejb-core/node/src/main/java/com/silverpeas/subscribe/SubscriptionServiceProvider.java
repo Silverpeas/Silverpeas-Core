@@ -33,9 +33,6 @@ import javax.inject.Inject;
  */
 public class SubscriptionServiceProvider {
 
-  private SubscriptionServiceProvider() {
-  }
-
   public static SubscriptionService getSubscribeService() {
     return ServiceProvider.getService(SubscriptionService.class);
   }

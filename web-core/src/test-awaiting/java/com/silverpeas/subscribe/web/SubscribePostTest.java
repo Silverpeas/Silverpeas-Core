@@ -60,7 +60,7 @@ public class SubscribePostTest extends RESTWebServiceTest<SubscriptionTestResour
   @Before
   public void setup() {
     assertThat(getTestResources().getMockableSubscriptionService(),
-            is(SubscriptionServiceProvider.getFactory().getSubscribeService()));
+            is(SubscriptionServiceProvider.getSubscribeService()));
   }
 
   @Test

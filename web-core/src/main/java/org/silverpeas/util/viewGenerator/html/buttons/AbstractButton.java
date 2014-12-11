@@ -33,7 +33,13 @@
 
 package org.silverpeas.util.viewGenerator.html.buttons;
 
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.apache.ecs.xhtml.script;
+
+import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author neysseri
@@ -41,9 +47,13 @@ import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
  */
 public abstract class AbstractButton implements Button {
 
+  private static final Pattern ACTION_JS_DETECTION =
+      Pattern.compile("(?i)^(\\s*([a-z]+)\\s*:\\s*([a-z]+)\\s*=\\s*)");
+
   public String label;
-  public String action;
+  private String action;
   public boolean disabled;
+  private String actionPreProcessing;
 
   // private String iconsPath = null;
 
@@ -60,6 +70,7 @@ public abstract class AbstractButton implements Button {
    * @param disabled
    * @see
    */
+  @Override
   public void init(String label, String action, boolean disabled) {
     this.label = label;
     this.action = action;
@@ -86,6 +97,7 @@ public abstract class AbstractButton implements Button {
    * @param s
    * @see
    */
+  @Override
   public void setRootImagePath(String s) {
   }
 
@@ -94,5 +106,68 @@ public abstract class AbstractButton implements Button {
    * @return
    * @see
    */
-  public abstract String print();
+  @Override
+  public final String print() {
+    StringBuilder sb = new StringBuilder();
+
+    // Handling action pre processing
+    if (StringUtil.isDefined(actionPreProcessing)) {
+      String theAction = action;
+      String javascriptSpecif = "";
+      Matcher javascriptMatcher = ACTION_JS_DETECTION.matcher(action);
+      if (javascriptMatcher.find()) {
+        theAction = theAction.substring(javascriptMatcher.group(1).length());
+        javascriptSpecif = javascriptMatcher.group(2) + ":" + javascriptMatcher.group(3) + "=";
+      } else {
+        theAction = "jQuery('<form>', {'method':'GET', 'action':'" + theAction + "'}).submit();";
+        theAction = unEscapeForMessageFormatting(theAction);
+        javascriptSpecif = "javascript:onClick=";
+      }
+
+      String tempActionPreProcessing = escapeForMessageFormatting(actionPreProcessing);
+      tempActionPreProcessing = MessageFormat
+          .format(tempActionPreProcessing.replace("'", "''").replace("@#<#@action@#>#@", "{0}"),
+              theAction);
+      tempActionPreProcessing = unEscapeForMessageFormatting(tempActionPreProcessing);
+
+      // Writing the function that handles the action call.
+      script actionPreProcessFunction = new script().setType("text/javascript");
+      actionPreProcessFunction.addElement("function handleButtonAction() {\n");
+      actionPreProcessFunction.addElement(tempActionPreProcessing);
+      actionPreProcessFunction.addElement("\n}");
+      sb.append(actionPreProcessFunction.toString()).append("\n");
+
+      // Changing action
+      action = javascriptSpecif + "handleButtonAction();";
+    }
+
+    // Add button HTML
+    sb.append(renderButtonHtml());
+    return sb.toString();
+  }
+
+  abstract protected String renderButtonHtml();
+
+  @Override
+  public void setActionPreProcessing(final String actionPreProcessing) {
+    this.actionPreProcessing = actionPreProcessing;
+  }
+
+  /**
+   * Gets the action with pre processing if any.
+   * @return the action as string.
+   */
+  protected String getAction() {
+    return action;
+  }
+
+  private String escapeForMessageFormatting(String jsContent) {
+    String escapedJsContent = actionPreProcessing.replaceAll("[{]", "@#<#@");
+    return escapedJsContent.replaceAll("[}]", "@#>#@");
+  }
+
+  private String unEscapeForMessageFormatting(String escapedJsContent) {
+    String jsContent = escapedJsContent.replaceAll("@#<#@", "{");
+    return jsContent.replaceAll("@#>#@", "}");
+  }
 }

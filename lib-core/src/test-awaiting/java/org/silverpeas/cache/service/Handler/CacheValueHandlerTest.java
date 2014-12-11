@@ -45,26 +45,26 @@ public class CacheValueHandlerTest {
   @Before
   @After
   public void setupAndTearDown() {
-    CacheServiceProvider.getThreadCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
   }
 
   @Test
   public void testCacheIsEmpty() {
-    assertThat(CacheServiceProvider.getThreadCacheService()
+    assertThat(CacheServiceProvider.getRequestCacheService()
         .get(PREFIX_CACHE_TEST_KEY + "cacheKey", Boolean.class), nullValue());
     CacheValueHandlerTestExtends test = new CacheValueHandlerTestExtends();
     assertThat(test.defaultValue(), is(true));
     assertThat(test.getCacheKeySuffix(), is("cacheKey"));
     assertThat(test.get(), is(true));
-    assertThat(CacheServiceProvider.getThreadCacheService()
+    assertThat(CacheServiceProvider.getRequestCacheService()
         .get(PREFIX_CACHE_TEST_KEY + "cacheKey", Boolean.class), is(true));
   }
 
   @Test
   public void testCacheIsNotEmpty() {
-    CacheServiceProvider.getThreadCacheService()
+    CacheServiceProvider.getRequestCacheService()
         .put(PREFIX_CACHE_TEST_KEY + "cacheKey", Boolean.FALSE);
-    assertThat(CacheServiceProvider.getThreadCacheService()
+    assertThat(CacheServiceProvider.getRequestCacheService()
         .get(PREFIX_CACHE_TEST_KEY + "cacheKey", Boolean.class), is(false));
     CacheValueHandlerTestExtends test = new CacheValueHandlerTestExtends();
     assertThat(test.defaultValue(), is(true));
@@ -79,7 +79,7 @@ public class CacheValueHandlerTest {
 
     @Override
     protected SimpleCacheService getCacheService() {
-      return CacheServiceProvider.getThreadCacheService();
+      return CacheServiceProvider.getRequestCacheService();
     }
 
     @Override

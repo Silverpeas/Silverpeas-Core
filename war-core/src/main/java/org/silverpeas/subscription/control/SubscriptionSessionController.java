@@ -32,7 +32,7 @@ import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -46,7 +46,6 @@ import org.silverpeas.subscription.SubscriptionContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * User: Yohann Chastagnier
@@ -93,13 +92,13 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     sel.setPopupMode(false);
 
     // Subscribers
-    Map<SubscriberType, Collection<String>> subscriberIdsByTypes = SubscriptionUtil
-        .indexSubscriberIdsByType(getSubscriptionService()
-            .getSubscribers(getContext().getResource(), SubscriptionMethod.FORCED));
+    SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes = getSubscriptionService()
+        .getSubscribers(getContext().getResource(), SubscriptionMethod.FORCED)
+        .indexBySubscriberType();
     // Users
-    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER));
+    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER).getAllIds());
     // Groups
-    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP));
+    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds());
 
     if (sel.getSelectedElements().length == 0 && sel.getSelectedSets().length == 0) {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
