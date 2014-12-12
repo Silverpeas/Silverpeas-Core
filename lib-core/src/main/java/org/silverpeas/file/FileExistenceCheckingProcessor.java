@@ -1,20 +1,20 @@
 package org.silverpeas.file;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
+import org.silverpeas.initialization.Initialization;
 
 /**
  * A processor to check the existence of a {@link org.silverpeas.file.SilverpeasFile}. It the
  * file doesn't exist, then {@¢ode NO_FILE} is returned.
  * @author mmoquillon
  */
-public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor {
+public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor, Initialization {
 
   /**
-   * Registers itself among the SilverpeasFileFactory instance.
+   * Register itself at silverpeas startup
+   * @throws Exception
    */
-  @PostConstruct
-  public void registerItself() {
+  @Override
+  public void init() throws Exception {
     SilverpeasFileProvider.addProcessor(this);
   }
 

@@ -23,12 +23,6 @@
  */
 package org.silverpeas.image.imagemagick;
 
-import java.io.File;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Named;
-
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.silverpeas.image.AbstractImageTool;
@@ -36,6 +30,10 @@ import org.silverpeas.image.ImageToolDirective;
 import org.silverpeas.image.option.AbstractImageToolOption;
 import org.silverpeas.image.option.BackgroundOption;
 import org.silverpeas.image.option.DimensionOption;
+
+import java.io.File;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier

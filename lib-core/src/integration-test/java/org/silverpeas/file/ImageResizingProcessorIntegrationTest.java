@@ -1,11 +1,17 @@
 package org.silverpeas.file;
 
-import org.silverpeas.util.FileUtil;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ServiceProvider;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,8 +24,16 @@ import static org.junit.Assert.assertThat;
 import static org.silverpeas.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext.GETTING;
 
-public class ImageResizingProcessorTest {
+@RunWith(Arquillian.class)
+public class ImageResizingProcessorIntegrationTest {
 
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
+
+  public ImageResizingProcessorIntegrationTest() {
+  }
+
+  private static final String IMAGE_PATH = "org/silverpeas/file";
   private static final String IMAGE_NAME = "image-test.jpg";
   private static final int IMAGE_WIDTH = 550;
   private static final int IMAGE_HEIGHT = 413;
@@ -31,25 +45,36 @@ public class ImageResizingProcessorTest {
   private static final String NO_SIZE = String.valueOf(IMAGE_SIDE_SIZE);
   private static final String INVALID_SIZE = "trx128";
 
-  private ConfigurableApplicationContext ctx;
   private File originalImage;
-  ImageResizingProcessor processor;
+
+  private ImageResizingProcessor processor;
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarForTestClass(ImageResizingProcessorIntegrationTest.class)
+        .addCommonBasicUtilities().addSilverpeasExceptionBases().addFileRepositoryFeatures()
+        .testFocusedOn(warBuilder -> {
+          warBuilder.addMavenDependencies("org.im4java:im4java", "org.apache.tika:tika-core",
+              "org.apache.tika:tika-parsers");
+          warBuilder.addPackages(true, "org.silverpeas.image");
+          warBuilder.addClasses(ImageResizingProcessor.class, SilverpeasFileProcessor.class,
+              SilverpeasFile.class, SilverpeasFileProvider.class, ImageCache.class);
+          warBuilder.addAsResource(IMAGE_PATH + File.separator + IMAGE_NAME);
+        }).build();
+  }
+
 
   @Before
   public void setUp() throws Exception {
     // get the original path
-    originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
+    originalImage = new File(mavenTargetDirectoryRule.getResourceTestDirFile(),
+        File.separator + IMAGE_PATH + File.separator + IMAGE_NAME);
     assertThat(originalImage.exists(), is(true));
-
-    // bootstrap the Spring context
-    ctx = new ClassPathXmlApplicationContext("classpath:/spring-image.xml");
-    ctx.start();
-    processor = ctx.getBean(ImageResizingProcessor.class);
+    processor = ServiceProvider.getService(ImageResizingProcessor.class);
   }
 
   @After
   public void tearDown() throws Exception {
-    ctx.close();
     File cache = new File(IMAGE_CACHE_PATH);
     if (cache.exists()) {
       FileUtil.forceDeletion(new File(IMAGE_CACHE_PATH));

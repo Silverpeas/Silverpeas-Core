@@ -31,7 +31,7 @@ import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext;
  */
 public class SilverpeasFileProvider {
 
-  private static List<SilverpeasFileProcessor> processors = new ArrayList<SilverpeasFileProcessor>();
+  private static List<SilverpeasFileProcessor> processors = new ArrayList<>();
 
   private SilverpeasFileProvider() {
   }

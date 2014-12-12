@@ -1,14 +1,13 @@
 package org.silverpeas.file;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.initialization.Initialization;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,15 +19,19 @@ import java.util.logging.Logger;
  *
  * @author mmoquillon
  */
-public class ImageResizingProcessor implements SilverpeasFileProcessor {
+public class ImageResizingProcessor implements SilverpeasFileProcessor, Initialization {
 
   protected static final String IMAGE_CACHE_PATH = FileRepositoryManager.getAbsolutePath("cache");
 
   @Inject
   private ImageTool imageTool;
 
-  @PostConstruct
-  public void registerItself() {
+  /**
+   * Register itself at silverpeas startup
+   * @throws Exception
+   */
+  @Override
+  public void init() throws Exception {
     SilverpeasFileProvider.addProcessor(this);
   }
 

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.image.imagemagick;
 
-import org.silverpeas.util.StringUtil;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
+import org.silverpeas.util.StringUtil;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier

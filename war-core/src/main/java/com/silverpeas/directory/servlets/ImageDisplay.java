@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 
 public class ImageDisplay extends HttpServlet {
@@ -47,6 +48,9 @@ public class ImageDisplay extends HttpServlet {
       in = profile.getImage();
       out = res.getOutputStream();
       IOUtils.copy(in, out);
+    } catch (IOException e) {
+      SilverTrace.error("image", ImageDisplay.class.getSimpleName(), "Cannot get image", e);
+      throw e;
     } finally {
       if (in != null) {
         IOUtils.closeQuietly(in);
