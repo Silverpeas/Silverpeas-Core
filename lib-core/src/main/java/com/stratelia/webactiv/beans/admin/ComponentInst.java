@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.beans.admin;
 
@@ -64,7 +67,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     name = "";
     domainFatherId = "";
     order = 0;
-    profiles = new ArrayList<ProfileInst>();
+    profiles = new ArrayList<>();
     isPublic = false;
     isHidden = false;
   }
@@ -93,13 +96,13 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
         ci.addProfileInst((ProfileInst) profile.clone());
       }
     }
-    ci.parameters = new ArrayList<Parameter>(this.parameters.size());
+    ci.parameters = new ArrayList<>(this.parameters.size());
     for (Parameter param : this.parameters) {
       ci.parameters.add(param.clone());
     }
 
     for (String lang : getTranslations().keySet()) {
-      ComponentI18N translation = (ComponentI18N) getTranslation(lang);
+      ComponentI18N translation = getTranslation(lang);
       ci.addTranslation(translation);
     }
     return ci;
@@ -245,7 +248,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public List<ProfileInst> getInheritedProfiles() {
-    List<ProfileInst> inheritedProfiles = new ArrayList<ProfileInst>();
+    List<ProfileInst> inheritedProfiles = new ArrayList<>();
     for (ProfileInst profile : profiles) {
       if (profile.isInherited()) {
         inheritedProfiles.add(profile);
@@ -256,7 +259,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public List<ProfileInst> getProfiles() {
-    List<ProfileInst> specificProfiles = new ArrayList<ProfileInst>();
+    List<ProfileInst> specificProfiles = new ArrayList<>();
     for (ProfileInst profile : profiles) {
       if (!profile.isInherited()) {
         specificProfiles.add(profile);
@@ -322,8 +325,8 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   /**
    * Gets a component instance parameter from a centralized parameter name.
-   * @param parameterName
-   * @return
+   * @param parameterName the parameter name
+   * @return a component instance parameter from a centralized parameter name.
    */
   public String getParameterValue(ComponentInstanceParameterName parameterName) {
     return getParameterValue(parameterName.name());
@@ -390,7 +393,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public void removeInheritedProfiles() {
-    ArrayList<ProfileInst> newProfiles = new ArrayList<ProfileInst>();
+    ArrayList<ProfileInst> newProfiles = new ArrayList<>();
     for (ProfileInst profile : profiles) {
       if (!profile.isInherited()) {
         newProfiles.add(profile);

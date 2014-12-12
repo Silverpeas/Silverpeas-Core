@@ -24,13 +24,9 @@
 
 package org.silverpeas.test;
 
-import com.silverpeas.authentication.SilverpeasSessionOpener;
-import com.silverpeas.peasUtil.AccessForbiddenException;
-
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
  * definition of common archive part definitions.
- * @author Yohann Chastagnier
  */
 public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
 
