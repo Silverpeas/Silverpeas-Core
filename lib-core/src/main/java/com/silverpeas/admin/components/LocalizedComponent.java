@@ -22,11 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.localized;
+package com.silverpeas.admin.components;
 
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.Profile;
-import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.ui.DisplayI18NHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,14 +63,6 @@ public class LocalizedComponent {
     return realComponent.getName();
   }
 
-  public List<LocalizedParameter> getParameters() {
-    List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>();
-    for (Parameter parameter : realComponent.getParameters()) {
-      localizedParameters.add(new LocalizedParameter(parameter, lang));
-    }
-    return localizedParameters;
-  }
-
   public List<LocalizedProfile> getProfiles() {
     List<LocalizedProfile> localizedProfiles = new ArrayList<LocalizedProfile>();
     for (Profile profile : realComponent.getProfiles()) {
@@ -84,14 +73,6 @@ public class LocalizedComponent {
 
   public String getRouter() {
     return realComponent.getRouter();
-  }
-
-  public List<LocalizedParameter> getSortedParameters() {
-    List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>();
-    for (Parameter parameter : realComponent.getSortedParameters()) {
-      localizedParameters.add(new LocalizedParameter(parameter, lang));
-    }
-    return localizedParameters;
   }
 
   public String getSuite() {

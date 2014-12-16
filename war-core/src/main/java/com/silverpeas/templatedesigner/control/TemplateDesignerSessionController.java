@@ -21,7 +21,7 @@
 package com.silverpeas.templatedesigner.control;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.localized.LocalizedComponent;
+import com.silverpeas.admin.components.LocalizedComponent;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;

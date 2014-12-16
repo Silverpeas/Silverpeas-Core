@@ -236,7 +236,6 @@ Definition des class de style Silverpeas
 
 .principalContent{
   margin-right:320px;
-  margin-top:10px;
 }
 .rightContent{
   width:310px;
@@ -5056,7 +5055,7 @@ li.application  .applicationName {
 .descriptionType {
   border-left: 6px solid #E4E4E4;
   color: #666666;
-  font-weight: bold;
+  font-weight: 100;
   padding: 8px;
 }
 
@@ -6876,4 +6875,58 @@ iframe.embed {
 }
 .popup-read-notification .content-notification {
   margin:1em 0;
+}
+
+
+/***  Admin - ComponentInfo***/
+
+.general-info img.icons-application{
+	float:left;
+	margin:0 1em 0 0;
+}
+.general-info img.applicationInfo {
+	height:12px;
+	vertical-align:baseline;
+}
+.general-info div{
+	padding:0.5em 0;
+}
+.principalContent .inlineMessage {
+	margin-left:0;
+	margin-right:0;
+}
+.principalContent  .title-principal {
+	padding:0;
+	margin:0 0 1em 0;
+}
+a.navigation-button {
+    background-color: #f4f4f4;
+    background-image: url("../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    color: #4c4c4c;
+    font-size: 100%;
+    padding: 7px 10px;
+}
+
+#backToApplication a.navigation-button,
+#goToApplication a.navigation-button {
+	display:block;
+	text-align:center;
+	margin-bottom:0.5em;
+}
+
+#infoInstance .inlineMessage {
+	text-align:left;
+}
+
+#backToApplication a.navigation-button span,
+#goToApplication a.navigation-button span {
+    background: url("../icons/back.png") no-repeat scroll 0 1px transparent;
+    font-weight: bold;
+    line-height: 16px;
+    padding: 2px 0 2px 24px;
+}
+#goToApplication a.navigation-button span {
+    background: url("../icons/go-to.png") no-repeat scroll 0 1px transparent;
 }

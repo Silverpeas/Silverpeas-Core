@@ -22,21 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.localized;
+package com.silverpeas.admin.components;
 
 import java.util.Comparator;
 
 /**
  * @author ehugonnet
  */
-public class LocalizedParameterSorter implements Comparator<LocalizedParameter> {
+public class GroupOfParametersSorter implements Comparator<GroupOfParameters> {
 
   @Override
-  public int compare(LocalizedParameter param1, LocalizedParameter param2) {
-    int result = param1.getOrder() - param2.getOrder();
-    if (result == 0) {
-      result = param1.getName().compareTo(param2.getName());
-    }
-    return result;
+  public int compare(GroupOfParameters group1, GroupOfParameters group2) {
+    return group1.getOrder() - group2.getOrder();
   }
 }
