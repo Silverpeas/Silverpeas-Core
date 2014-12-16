@@ -301,6 +301,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("ListComponents", jobStartPageSC.getAllLocalizedComponents());
       destination = "/jobStartPagePeas/jsp/componentsList.jsp";
     } else if (function.equals("CreateInstance")) {
+      jobStartPageSC.setManagedInstanceId(null);
       destination = prepareCreateInstance(jobStartPageSC, request);
     } else if ("EffectiveCreateInstance".equals(function)) {
       // Create the component
