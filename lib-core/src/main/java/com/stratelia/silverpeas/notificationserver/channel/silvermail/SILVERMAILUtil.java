@@ -30,8 +30,6 @@ import org.silverpeas.util.ResourceLocator;
 
 /**
  * Class declaration
- * @author
- * @version %I%, %G%
  */
 public class SILVERMAILUtil {
 

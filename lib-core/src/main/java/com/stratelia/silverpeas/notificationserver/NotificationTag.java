@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.notificationserver;
@@ -29,5 +29,6 @@ package com.stratelia.silverpeas.notificationserver;
  */
 public enum NotificationTag {
 
-  NOTIFY, PARAM, RECEIPT, ANSWERALLOWED, ID, SENDER, PASSWORD, USER, LOGIN, COMMENT, MESSAGE, TOLOG, NAME, STATUS, TOSENDER, REPORT, CHANNEL, TARGET, SPEED, PRIORITY;
+  NOTIFY, PARAM, RECEIPT, ANSWERALLOWED, ID, SENDER, PASSWORD, USER, LOGIN, COMMENT, MESSAGE, TOLOG,
+  NAME, STATUS, TOSENDER, REPORT, CHANNEL, TARGET, SPEED, PRIORITY
 }

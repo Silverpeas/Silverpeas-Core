@@ -31,19 +31,19 @@ import org.silverpeas.util.ServiceProvider;
 
 /**
  * @author neysseri
- * @version
  */
 public class SilverMessageFactory {
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * --------------------------------------------------------------------------
    * constructor
    */
   public SilverMessageFactory() {
   }
 
   /**
-   * -------------------------------------------------------------------------- pop read
+   * --------------------------------------------------------------------------
+   * pop read
    */
   public static SilverMessage read(String userId, String sessionId) {
     SilverMessage silverMessage = null;

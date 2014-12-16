@@ -35,16 +35,14 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 @MessageDriven(activationConfig = {
-  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
-  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SERVER'"),
-  @ActivationConfigProperty(propertyName = "destination", propertyValue =
-      "java:/queue/notificationsQueue")},
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+    @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SERVER'"),
+    @ActivationConfigProperty(propertyName = "destination", propertyValue =
+        "java:/queue/notificationsQueue")},
     description = "Message driven bean to silverpeas notification")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SERVERListener extends AbstractListener implements MessageListener {
-
-  private static final long serialVersionUID = 4337750320339018904L;
 
   public SERVERListener() {
   }
@@ -61,7 +59,6 @@ public class SERVERListener extends AbstractListener implements MessageListener 
   }
 
   /**
-   *
    * @param notification
    * @throws NotificationServerException
    */
@@ -69,6 +66,7 @@ public class SERVERListener extends AbstractListener implements MessageListener 
   public void send(NotificationData notification) throws NotificationServerException {
     Map<String, Object> params = notification.getTargetParam();
     String sessionId = (String) params.get("SESSIONID");
-    SilverMessageFactory.push(notification.getTargetReceipt(), notification.getMessage(), sessionId);
+    SilverMessageFactory
+        .push(notification.getTargetReceipt(), notification.getMessage(), sessionId);
   }
 }

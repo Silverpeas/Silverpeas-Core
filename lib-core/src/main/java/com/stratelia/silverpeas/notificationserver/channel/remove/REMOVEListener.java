@@ -44,7 +44,6 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
     description = "Message driven bean to remove notifications")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class REMOVEListener extends AbstractListener implements MessageListener {
-  private static final long serialVersionUID = 6228192030238517258L;
 
   public REMOVEListener() {
   }

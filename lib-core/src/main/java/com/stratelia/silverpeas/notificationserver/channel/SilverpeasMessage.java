@@ -28,14 +28,14 @@ package com.stratelia.silverpeas.notificationserver.channel;
  * @author ehugonnet
  */
 public class SilverpeasMessage {
-  private long m_Id;
+  private long mId;
 
   public void setId(long value) {
-    m_Id = value;
+    mId = value;
   }
 
   public long getId() {
-    return m_Id;
+    return mId;
   }
 
   private long userId = -1;
@@ -48,43 +48,43 @@ public class SilverpeasMessage {
     userId = value;
   }
 
-  private String m_UserLogin;
+  private String mUserLogin;
 
   public void setUserLogin(String value) {
-    m_UserLogin = value;
+    mUserLogin = value;
   }
 
   public String getUserLogin() {
-    return m_UserLogin;
+    return mUserLogin;
   }
 
-  private String m_SenderName;
+  private String mSenderName;
 
   public void setSenderName(String value) {
-    m_SenderName = value;
+    mSenderName = value;
   }
 
   public String getSenderName() {
-    return m_SenderName;
+    return mSenderName;
   }
 
-  private String m_Subject;
+  private String mSubject;
 
   public void setSubject(String value) {
-    m_Subject = value;
+    mSubject = value;
   }
 
   public String getSubject() {
-    return m_Subject;
+    return mSubject;
   }
 
-  private String m_Body;
+  private String mBody;
 
   public void setBody(String value) {
-    m_Body = value;
+    mBody = value;
   }
 
   public String getBody() {
-    return m_Body;
+    return mBody;
   }
 }

@@ -31,11 +31,10 @@ public class NotificationServerException extends SilverpeasException {
   private static final long serialVersionUID = 139645218705518410L;
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * --------------------------------------------------------------------------
    * constructor
    */
-  public NotificationServerException(String callingClass, int errorLevel,
-      String message) {
+  public NotificationServerException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
@@ -47,8 +46,8 @@ public class NotificationServerException extends SilverpeasException {
    * @param extraParams
    * @see
    */
-  public NotificationServerException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public NotificationServerException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -60,8 +59,8 @@ public class NotificationServerException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public NotificationServerException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public NotificationServerException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -74,8 +73,8 @@ public class NotificationServerException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public NotificationServerException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public NotificationServerException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

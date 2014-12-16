@@ -26,6 +26,7 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.util.Date;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -35,23 +36,20 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 
 @MessageDriven(activationConfig = {
-  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
-  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='POPUP'"),
-  @ActivationConfigProperty(propertyName = "destination", propertyValue =
-      "java:/queue/notificationsQueue")}, description =
-    "Message driven bean for Pop UP notifications")
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+    @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='POPUP'"),
+    @ActivationConfigProperty(propertyName = "destination", propertyValue =
+        "java:/queue/notificationsQueue")}, description = "Message driven bean for Pop UP " +
+    "notifications")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class POPUPListener extends AbstractListener implements MessageListener {
-
-  private static final long serialVersionUID = 6562344573142185894L;
 
   public POPUPListener() {
   }
 
   /**
    * listener of NotificationServer JMS message
-   *
    * @param msg
    */
   @Override
@@ -66,7 +64,6 @@ public class POPUPListener extends AbstractListener implements MessageListener {
   }
 
   /**
-   *
    * @param message
    * @throws NotificationServerException
    */
@@ -78,15 +75,16 @@ public class POPUPListener extends AbstractListener implements MessageListener {
         content.append("Source : ").append(message.getTargetParam().get("SOURCE")).append("\n");
       }
       if (message.getTargetParam().get("DATE") != null) {
-        content.append("Date : ").append(DateUtil.dateToString(((Date) message.getTargetParam().get(
-            "DATE")), "")).append("\n");
+        content.append("Date : ")
+            .append(DateUtil.dateToString(((Date) message.getTargetParam().get("DATE")), ""))
+            .append("\n");
       }
       content.append(message.getMessage());
       SilverMessageFactory.push(message.getTargetReceipt(), message);
 
     } catch (Exception e) {
-      throw new NotificationServerException("POPUPListener.send()",
-          SilverpeasException.ERROR, "popup.EX_CANT_ADD_MESSAGE", e);
+      throw new NotificationServerException("POPUPListener.send()", SilverpeasException.ERROR,
+          "popup.EX_CANT_ADD_MESSAGE", e);
     }
   }
 }

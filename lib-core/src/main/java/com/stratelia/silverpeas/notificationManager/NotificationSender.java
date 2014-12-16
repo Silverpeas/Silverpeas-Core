@@ -99,7 +99,7 @@ public class NotificationSender implements java.io.Serializable {
         getOrganisationController();
 
     // String[] allUsers;
-    Set<UserRecipient> usersSet = new HashSet<UserRecipient>();
+    Set<UserRecipient> usersSet = new HashSet<>();
     Collection<UserRecipient> userRecipients = metaData.getUserRecipients();
     Collection<GroupRecipient> groupRecipients = metaData.getGroupRecipients();
 

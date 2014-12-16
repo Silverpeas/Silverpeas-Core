@@ -25,6 +25,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
+
 import java.util.Date;
 import java.util.Map;
 import javax.ejb.ActivationConfigProperty;
@@ -35,34 +36,33 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 
 @MessageDriven(activationConfig = {
-  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
-  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SILVERMAIL'"),
-  @ActivationConfigProperty(propertyName = "destination", propertyValue =
-      "java:/queue/notificationsQueue")},
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+    @ActivationConfigProperty(propertyName = "messageSelector", propertyValue =
+        "CHANNEL='SILVERMAIL'"),
+    @ActivationConfigProperty(propertyName = "destination", propertyValue =
+        "java:/queue/notificationsQueue")},
     description = "Message driven bean to silverpeas notification box")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SILVERMAILListener extends AbstractListener implements MessageListener {
-
-  private static final long serialVersionUID = -6357231434570565933L;
 
   public SILVERMAILListener() {
   }
 
   /**
    * listener of NotificationServer JMS message
-   *
    * @param msg
    */
   @Override
   public void onMessage(Message msg) {
     try {
-      SilverTrace.info("silvermail", "SILVERMAILListener.onMessage()",
-          "root.MSG_GEN_PARAM_VALUE", "JMS Message = " + msg.toString());
+      SilverTrace.info("silvermail", "SILVERMAILListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
+          "JMS Message = " + msg.toString());
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace.error("silvermail", "SILVERMAILListener.onMessage()",
-          "silvermail.EX_CANT_PROCESS_MSG", "JMS Message = " + msg.toString(), e);
+      SilverTrace
+          .error("silvermail", "SILVERMAILListener.onMessage()", "silvermail.EX_CANT_PROCESS_MSG",
+              "JMS Message = " + msg.toString(), e);
     }
   }
 
@@ -85,8 +85,8 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
       sm.setBody(p_Message.getMessage());
       SILVERMAILPersistence.addMessage(sm);
     } catch (Exception e) {
-      throw new NotificationServerException("SILVERMAILListener.send()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_ADD_MESSAGE", e);
+      throw new NotificationServerException("SILVERMAILListener.send()", SilverpeasException.ERROR,
+          "silvermail.EX_CANT_ADD_MESSAGE", e);
     }
   }
 }

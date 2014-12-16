@@ -756,10 +756,9 @@ public class NotificationManager extends AbstractNotification
 
   /**
    * Method declaration
-   * @param params
-   * @param notifRecips
+   * @param params Notification parameters
+   * @param userIds an array of user identifiers
    * @throws NotificationManagerException
-   * @see
    */
   public void notifyUsers(NotificationParameters params, String[] userIds)
       throws NotificationManagerException {

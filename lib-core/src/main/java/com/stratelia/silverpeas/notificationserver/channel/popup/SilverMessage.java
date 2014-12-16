@@ -26,43 +26,40 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 /**
  * @author dblot
- * @version
  */
 public class SilverMessage {
 
-  private String m_What = null;
-  private String m_Content = null;
-  private String m_ID = null;
-  private String m_SenderId = null;
-  private String m_SenderName = null;
-  private boolean m_AnswerAllowed = false;
-
-  // private String m_Date = null;
-  // private String m_Time = null;
+  private String mWhat = null;
+  private String mContent = null;
+  private String mID = null;
+  private String mSenderId = null;
+  private String mSenderName = null;
+  private boolean mAnswerAllowed = false;
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * -------------------------------------------------------------------------- 
    * constructor
    */
   public SilverMessage(String what, String content) {
-    this.m_What = what;
-    this.m_Content = content;
+    this.mWhat = what;
+    this.mContent = content;
   }
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * --------------------------------------------------------------------------
    * constructor
    */
   public SilverMessage(String what) {
-    this.m_What = what;
-    this.m_Content = "";
+    this.mWhat = what;
+    this.mContent = "";
   }
 
   /**
-   * -------------------------------------------------------------------------- getWhat return what
+   * getWhat 
+   * @return what
    */
   public String getWhat() {
-    return m_What;
+    return mWhat;
   };
 
   /**
@@ -70,7 +67,7 @@ public class SilverMessage {
    * content
    */
   public String getContent() {
-    return m_Content;
+    return mContent;
   };
 
   /**
@@ -78,7 +75,7 @@ public class SilverMessage {
    * content
    */
   public void setContent(String content) {
-    m_Content = content;
+    mContent = content;
   };
 
   /**
@@ -86,7 +83,7 @@ public class SilverMessage {
    * ID
    */
   public void setID(String ID) {
-    m_ID = ID;
+    mID = ID;
   };
 
   /**
@@ -94,31 +91,31 @@ public class SilverMessage {
    * ID
    */
   public String getID() {
-    return m_ID;
+    return mID;
   }
 
   public String getSenderId() {
-    return m_SenderId;
+    return mSenderId;
   }
 
   public void setSenderId(String senderId) {
-    m_SenderId = senderId;
+    mSenderId = senderId;
   }
 
   public String getSenderName() {
-    return m_SenderName;
+    return mSenderName;
   }
 
   public void setSenderName(String senderName) {
-    m_SenderName = senderName;
+    mSenderName = senderName;
   }
 
   public boolean isAnswerAllowed() {
-    return m_AnswerAllowed;
+    return mAnswerAllowed;
   }
 
   public void setAnswerAllowed(boolean answerAllowed) {
-    m_AnswerAllowed = answerAllowed;
+    mAnswerAllowed = answerAllowed;
   }
 
   public void setDate(String date) {

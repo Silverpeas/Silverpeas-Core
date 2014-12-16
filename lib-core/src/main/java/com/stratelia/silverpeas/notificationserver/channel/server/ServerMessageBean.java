@@ -24,7 +24,6 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import org.silverpeas.persistence.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.persistence.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaCustomEntity;
 
@@ -37,12 +36,12 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ST_ServerMessage")
-@NamedQueries({
-    @NamedQuery(name = "findByUserIdAndSessionId",
-        query = "select m from ServerMessageBean m where m.id in (select min(s.id) from " +
-            "ServerMessageBean s where s.userId=:userId and s.sessionId=:sessionId)"),
+@NamedQueries({@NamedQuery(name = "findByUserIdAndSessionId",
+    query = "select m from ServerMessageBean m where m.id in (select min(s.id) from " +
+        "ServerMessageBean s where s.userId=:userId and s.sessionId=:sessionId)"),
     @NamedQuery(name = "deleteByUserIdAndSessionId",
-        query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = :sessionId")})
+        query = "delete from ServerMessageBean m where m.userId = :userId and m.sessionId = " +
+            ":sessionId")})
 public class ServerMessageBean
     extends AbstractJpaCustomEntity<ServerMessageBean, UniqueLongIdentifier> {
 
@@ -123,7 +122,7 @@ public class ServerMessageBean
   @Override
   public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + (getId() != null ? getId().hashCode():0);
+    result = 31 * result + (getId() != null ? getId().hashCode() : 0);
     result = 31 * result + (int) (userId ^ (userId >>> 32));
     result = 31 * result + (body != null ? body.hashCode() : 0);
     result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);

@@ -41,8 +41,6 @@ import java.util.List;
 
 /**
  * Class declaration
- * @author
- * @version %I%, %G%
  */
 public class SILVERMAILPersistence {
 

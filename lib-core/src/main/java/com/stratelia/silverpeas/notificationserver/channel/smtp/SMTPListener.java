@@ -63,8 +63,6 @@ import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConst
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SMTPListener extends AbstractListener implements MessageListener {
 
-  private static final long serialVersionUID = -241712070051475710L;
-
   public SMTPListener() {
   }
 
@@ -223,9 +221,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
           }
         }
       }
-    } catch (MessagingException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
-    } catch (UnsupportedEncodingException e) {
+    } catch (MessagingException | UnsupportedEncodingException e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
     } catch (Exception e) {
       throw new NotificationServerException("SMTPListner.sendEmail()", SilverpeasException.ERROR,

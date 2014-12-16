@@ -32,44 +32,44 @@ public class SILVERMAILMessage extends SilverpeasMessage {
     super();
   }
 
-  private String m_Url;
+  private String mUrl;
 
   public void setUrl(String url) {
-    m_Url = url;
+    mUrl = url;
   }
 
   public String getUrl() {
-    return m_Url;
+    return mUrl;
   }
 
-  private String m_Source;
+  private String mSource;
 
   public void setSource(String source) {
-    m_Source = source;
+    mSource = source;
   }
 
   public String getSource() {
-    return m_Source;
+    return mSource;
   }
 
-  private Date m_Date;
+  private Date mDate;
 
   public void setDate(Date date) {
-    m_Date = date;
+    mDate = date;
   }
 
   public Date getDate() {
-    return m_Date;
+    return mDate;
   }
 
-  private int m_readen = 0;
+  private int mReaden = 0;
 
   public void setReaden(int readen) {
-    m_readen = readen;
+    mReaden = readen;
   }
 
   public int getReaden() {
-    return m_readen;
+    return mReaden;
   }
 
 }

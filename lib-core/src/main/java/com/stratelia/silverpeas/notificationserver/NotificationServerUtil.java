@@ -119,15 +119,7 @@ public class NotificationServerUtil {
       SAXParser parser = parserFactory.newSAXParser();
       DefaultHandler handler = new NotifyContentHandler(data, parser.getXMLReader());
       parser.parse(xml, handler);
-    } catch (SAXException e) {
-      throw new NotificationServerException("NotificationDataXML()",
-          SilverpeasException.ERROR,
-          "notificationServer.EX_ERROR_IN_XML_PARSING", e);
-    } catch (IOException e) {
-      throw new NotificationServerException("NotificationDataXML()",
-          SilverpeasException.ERROR,
-          "notificationServer.EX_ERROR_IN_XML_PARSING", e);
-    } catch (ParserConfigurationException e) {
+    } catch (SAXException | IOException | ParserConfigurationException e) {
       throw new NotificationServerException("NotificationDataXML()",
           SilverpeasException.ERROR,
           "notificationServer.EX_ERROR_IN_XML_PARSING", e);
@@ -140,7 +132,7 @@ public class NotificationServerUtil {
    * @return
    */
   static public Map<String, Object> unpackKeyValues(String keyvaluestring) {
-    Map<String, Object> result = new HashMap<String, Object>();
+    Map<String, Object> result = new HashMap<>();
     char c;
     StringBuffer key = new StringBuffer();
     StringBuffer value = new StringBuffer();
@@ -198,11 +190,8 @@ public class NotificationServerUtil {
   }
 
   /**
-   * Method declaration
-   *
    * @param theValue
    * @return
-   * @see
    */
   static protected String doubleSeparators(String theValue) {
     if (theValue == null) {

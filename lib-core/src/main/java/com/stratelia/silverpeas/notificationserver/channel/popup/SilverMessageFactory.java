@@ -35,7 +35,6 @@ import java.util.Date;
 
 /**
  * @author dblot
- * @version
  */
 public class SilverMessageFactory {
 
@@ -44,14 +43,14 @@ public class SilverMessageFactory {
   }
 
   /**
-   * -------------------------------------------------------------------------- constructor
+   * --------------------------------------------------------------------------
    * constructor
    */
   public SilverMessageFactory() {
   }
 
   /**
-   * -------------------------------------------------------------------------- pop read
+   * pop read
    */
   public static SilverMessage read(String userId) {
     SilverMessage silverMessage = null;
@@ -72,9 +71,9 @@ public class SilverMessageFactory {
 
           msg = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace.debug("popup", "SilverMessageFactory.read()",
-              "PB converting body id to LongText", "Message Body = "
-              + pmb.getBody());
+          SilverTrace
+              .debug("popup", "SilverMessageFactory.read()", "PB converting body id to LongText",
+                  "Message Body = " + pmb.getBody());
           msg = pmb.getBody();
         }
         if (msg != null) {
@@ -93,8 +92,8 @@ public class SilverMessageFactory {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("popup", "SilverMessageFactory.read()",
-          "popup.EX_CANT_READ_MSG", "UserId=" + userId, e);
+      SilverTrace.error("popup", "SilverMessageFactory.read()", "popup.EX_CANT_READ_MSG",
+          "UserId=" + userId, e);
     }
 
     return silverMessage;
@@ -113,7 +112,6 @@ public class SilverMessageFactory {
           try {
             int longTextId;
             // CBO : UPDATE
-            // longTextId = Integer.parseInt(toDel.getBody());
             if (toDel.getBody().startsWith("COMMUNICATION")) {
               longTextId = Integer.parseInt(toDel.getBody().substring(13));
             } else {
@@ -163,8 +161,6 @@ public class SilverMessageFactory {
         pmb.setUserId(Long.parseLong(userId));
 
         // CBO : UPDATE
-        // pmb.setBody(
-        // Integer.toString(LongText.addLongText(p_Message.getMessage())) );
         if ("COMMUNICATION".equals(notifMsg.getComment())) {
           pmb.setBody(notifMsg.getComment() +
               Integer.toString(LongText.addLongText(notifMsg.getMessage())));

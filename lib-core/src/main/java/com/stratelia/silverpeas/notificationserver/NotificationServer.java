@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -19,68 +19,66 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.notificationserver;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.JNDINames;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.jms.JMSContext;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
 import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.silverpeas.util.JNDINames;
-import org.silverpeas.util.exception.SilverpeasException;
 import java.util.HashMap;
 import java.util.Map;
 
+@JMSDestinationDefinitions(
+    value = {@JMSDestinationDefinition(
+        name = "java:/queue/notificationsQueue",
+        interfaceName = "javax.jms.Queue",
+        destinationName = "queue/notificationsQueue")})
 public class NotificationServer {
-  private String m_JmsFactory = JNDINames.JMS_FACTORY;
-  private String m_JmsQueue = JNDINames.JMS_QUEUE;
-  private String m_JmsHeaderChannel = JNDINames.JMS_HEADER_CHANNEL;
-  private Map<String, String> m_JmsHeaders;
+
+  private JMSContext context;
+
+  private String mJmsFactory = JNDINames.JMS_FACTORY;
+  private String mJmsQueue = JNDINames.JMS_QUEUE;
+  private String mJmsHeaderChannel = JNDINames.JMS_HEADER_CHANNEL;
+  private Map<String, String> mJmsHeaders;
 
   /**
    * Constructor declaration
-   * @see
    */
   public NotificationServer() {
-    m_JmsHeaders = new HashMap<String, String>();
+    mJmsHeaders = new HashMap<>();
+    context = ServiceProvider.getService(JMSContext.class);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // getNotificationPendingCount
-
   /**
-   * Description of the method. Method name should begin with a lower case.
-   * @author Name (Name of the method's creator) facultatif
-   * @see ClassName (Link to a related class name) facultatif
-   * @see ClassName#member (Link to a related class member) facultatif
-   * @see functionName (Link to a related function)facultatif
-   * @version Text (Information version) facultatif
-   * @param pValue Description (parameter name should be prefixed by "p").
-   * @return Description
-   * @exception MyException * Description
+   * @param pData a notification data
+   * @return
+   * @throws NotificationServerException
    */
-  public long addNotification(NotificationData pData)
-      throws NotificationServerException {
+  public long addNotification(NotificationData pData) throws NotificationServerException {
     long notificationid = 0; // a gerer plus tard (necessite une database)
-    m_JmsHeaders.clear();
-    m_JmsHeaders.put(m_JmsHeaderChannel, pData.getTargetChannel());
+    mJmsHeaders.clear();
+    mJmsHeaders.put(mJmsHeaderChannel, pData.getTargetChannel());
     pData.setNotificationId(notificationid);
     String notificationAsXML = NotificationServerUtil.convertNotificationDataToXML(pData);
     try {
-      jmsSendToQueue(notificationAsXML, m_JmsFactory, m_JmsQueue, m_JmsHeaders);
+      jmsSendToQueue(notificationAsXML, mJmsFactory, mJmsQueue, mJmsHeaders);
     } catch (Exception e) {
-      throw new NotificationServerException(
-          "NotificationServer.addNotification()", SilverpeasException.ERROR,
-          "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE", notificationAsXML, e);
+      throw new NotificationServerException("NotificationServer.addNotification()",
+          SilverpeasException.ERROR, "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE",
+          notificationAsXML, e);
     }
     return notificationid;
   }
@@ -88,52 +86,23 @@ public class NotificationServer {
   /**
    * Send the NotificationMessage in a JMS Queue
    */
-  private static void jmsSendToQueue(String notificationMessage, String jmsFactory, String jmsQueue,
-      Map<String, String> p_JmsHeaders) throws JMSException, NamingException {
-    QueueConnection qcon = null;
-    QueueSession qsession = null;
-    QueueSender qsender = null;
+  private void jmsSendToQueue(String notificationMessage, String jmsFactory, String jmsQueue,
+      Map<String, String> pJmsHeaders) throws JMSException, NamingException {
+    // Initialization
+    InitialContext ic = new InitialContext();
+    Queue queue = (Queue) ic.lookup(jmsQueue);
+    TextMessage textMsg = context.createTextMessage();
+    textMsg.setText(notificationMessage);
+    // Add property
+    for (Map.Entry<String, String> entry : pJmsHeaders.entrySet()) {
+      textMsg.setStringProperty(entry.getKey(), entry.getValue());
+    }
     try {
-
-      // Initialization
-      InitialContext ic = new InitialContext();
-      QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(jmsFactory);
-      qcon = qconFactory.createQueueConnection();
-      qsession = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-      Queue queue = (Queue) ic.lookup(jmsQueue);
-      qsender = qsession.createSender(queue);
-      TextMessage textMsg = qsession.createTextMessage();
-      qcon.start();
-
-      // Add notificationMessage as message
-      textMsg.setText(notificationMessage);
-
-      // Add property
-      for (Map.Entry<String, String> entry : p_JmsHeaders.entrySet()) {
-        textMsg.setStringProperty(entry.getKey(), entry.getValue());
-      }
-
-      // Send
-      qsender.send(textMsg);
-
-    } finally {
-
-      // Closing
-      try {
-        if (qsender != null) {
-          qsender.close();
-        }
-      } finally {
-        try {
-          if (qsession != null) {
-            qsession.close();
-          }
-        } finally {
-          if (qcon != null) {
-            qcon.close();
-          }
-        }
-      }
+      context.createProducer().send(queue, textMsg);
+    } catch (Exception exc) {
+      SilverTrace.error("notification", "NotificationServer.jmsSendToQueue",
+          "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE", exc);
+      throw exc;
     }
   }
 }
