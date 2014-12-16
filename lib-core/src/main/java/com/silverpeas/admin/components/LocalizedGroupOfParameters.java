@@ -21,33 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.admin.components;
 
-package com.silverpeas.admin.localized;
-
-import com.silverpeas.admin.components.Option;
-import com.silverpeas.ui.DisplayI18NHelper;
+import java.util.List;
 
 /**
- * @author ehugonnet
+ * @author Nicolas Eysseric
  */
-public class LocalizedOption {
+public class LocalizedGroupOfParameters {
 
-  private final Option realOption;
-  private final String lang;
+  private String lang;
+  private GroupOfParameters group;
 
-  LocalizedOption(Option option, String lang) {
-    this.realOption = option;
+  public LocalizedGroupOfParameters(GroupOfParameters group, String lang) {
+    this.group = group;
     this.lang = lang;
   }
 
-  public String getName() {
-    if (realOption.getName().containsKey(lang)) {
-      return realOption.getName().get(lang);
-    }
-    return realOption.getName().get(DisplayI18NHelper.getDefaultLanguage());
+  public String getLabel() {
+    return group.getLabel(lang);
   }
 
-  public String getValue() {
-    return realOption.getValue();
+  public String getDescription() {
+    return group.getDescription(lang);
   }
+
+  public LocalizedParameterList getParameters() {
+    return group.getParameterList().localize(lang);
+  }
+
 }

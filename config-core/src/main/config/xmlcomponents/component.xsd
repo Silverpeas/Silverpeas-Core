@@ -125,7 +125,22 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       <xs:element name="name" type="multilang"/>
       <xs:element name="value" type="xs:string"/>
     </xs:sequence>
-  </xs:complexType>  
+  </xs:complexType>
+  <xs:complexType name="GroupOfParametersType">
+    <xs:sequence>
+      <xs:element name="label" type="multilang" />
+      <xs:element name="description" type="multilang"/>
+      <xs:element name="help" type="multilang"/>
+      <xs:element name="order" type="xs:int" />            
+      <xs:element name="parameters" minOccurs="1" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>  
+    </xs:sequence>   
+  </xs:complexType>
   <xs:complexType name="WAComponentType">
     <xs:sequence>
       <xs:element type="xs:string" name="name"/>
@@ -141,6 +156,13 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
         <xs:complexType>
           <xs:sequence>
             <xs:element type="ProfileType" name="profile" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="groupsOfParameters" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="GroupOfParametersType" name="groupOfParameters" maxOccurs="unbounded" minOccurs="1"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>

@@ -22,40 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.localized;
+package com.silverpeas.admin.components;
 
-import com.silverpeas.admin.components.Profile;
+import com.silverpeas.admin.components.Option;
 import com.silverpeas.ui.DisplayI18NHelper;
 
 /**
  * @author ehugonnet
  */
-public class LocalizedProfile {
+public class LocalizedOption {
 
-  private final Profile realProfile;
+  private final Option realOption;
   private final String lang;
 
-  LocalizedProfile(Profile realProfile, String lang) {
-    this.realProfile = realProfile;
+  LocalizedOption(Option option, String lang) {
+    this.realOption = option;
     this.lang = lang;
   }
 
   public String getName() {
-    return realProfile.getName();
-  }
-
-  public String getHelp() {
-    if (realProfile.getHelp().containsKey(lang)) {
-      return realProfile.getHelp().get(lang);
+    if (realOption.getName().containsKey(lang)) {
+      return realOption.getName().get(lang);
     }
-    return realProfile.getHelp().get(DisplayI18NHelper.getDefaultLanguage());
+    return realOption.getName().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
-  public String getLabel() {
-    if (realProfile.getLabel().containsKey(lang)) {
-      return realProfile.getLabel().get(lang);
-    }
-    return realProfile.getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+  public String getValue() {
+    return realOption.getValue();
   }
-
 }

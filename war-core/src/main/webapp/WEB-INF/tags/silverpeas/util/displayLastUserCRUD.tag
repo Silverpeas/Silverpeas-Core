@@ -80,7 +80,10 @@
 <%@ attribute name="permalinkHelp" required="false" type="java.lang.String"
               description="The permalink help." %>
 <%@ attribute name="permalinkIconUrl" required="false" type="java.lang.String"
-              description="The permalink url." %>
+              description="The permalink url" %>
+<c:if test="${permalinkIconUrl == null}">
+  <c:set var="permalinkIconUrl" value="../../util/icons/link.gif"/>
+</c:if>
 
 <%@ attribute name="displayHour" required="false" type="java.lang.Boolean"
               description="Display the hour of the dates" %>
