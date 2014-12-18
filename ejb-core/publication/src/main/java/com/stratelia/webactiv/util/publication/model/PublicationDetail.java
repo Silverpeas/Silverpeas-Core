@@ -54,14 +54,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -70,6 +62,17 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This object contains the description of a publication
@@ -1035,7 +1038,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   public boolean isClone() {
-    return CLONE.equalsIgnoreCase(getStatus());
+    return CLONE.equalsIgnoreCase(getStatus()) ||
+        (isDefined(getCloneId()) && !"-1".equals(getCloneId()) && !isDefined(getCloneStatus()));
   }
 
   public boolean isValid() {
