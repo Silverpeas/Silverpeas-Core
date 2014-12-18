@@ -76,6 +76,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
 /**
  * This object contains the description of a publication
  */
@@ -1039,7 +1041,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
   }
 
   public boolean isClone() {
-    return CLONE.equalsIgnoreCase(getStatus());
+    return CLONE.equalsIgnoreCase(getStatus()) ||
+        (isDefined(getCloneId()) && !"-1".equals(getCloneId()) && !isDefined(getCloneStatus()));
   }
 
   public boolean isValid() {
