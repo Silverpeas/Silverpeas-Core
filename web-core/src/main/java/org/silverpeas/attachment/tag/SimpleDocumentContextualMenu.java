@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.util.StringUtil.newline;
 import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
 
@@ -223,7 +224,9 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     }
     builder.append(configureFileSharing(attachmentId,
         !attachment.isSharingAllowedForRolesFrom(UserDetail.getById(userId))));
-    builder.append(configureSwitchState(attachmentId, attachment.isReadOnly()));
+    builder.append(configureSwitchState(attachmentId, (!attachment.isVersioned() &&
+        isComponentPublicationAlwaysVisible(attachment.getInstanceId())) ||
+        attachment.isReadOnly()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
     builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
@@ -243,6 +246,18 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("});");
     builder.append("</script>");
     return builder.toString();
+  }
+
+  /**
+   * Indicates if the publication are always visible for the component instance represented by the
+   * given identifier.
+   * @param componentInstanceId the component instance identifier that must be verified.
+   * @return true if publication are always visible.
+   */
+  public boolean isComponentPublicationAlwaysVisible(String componentInstanceId) {
+    return StringUtil.getBooleanValue(
+        getAdminService().getComponentParameterValue(componentInstanceId,
+            "publicationAlwaysVisible"));
   }
 
   StringBuilder prepareMenuItem(StringBuilder buffer, String javascript, String label) {

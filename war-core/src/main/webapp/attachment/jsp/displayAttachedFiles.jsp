@@ -44,8 +44,10 @@
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
+<view:componentParam var="publicationAlwaysVisiblePramValue" componentId="${param.ComponentId}" parameter="publicationAlwaysVisible" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
-<c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
+<c:set var="isPublicationAlwaysVisible" value="${silfn:booleanValue(publicationAlwaysVisiblePramValue)}" />
+<c:set var="isVersionActive" value="${not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>

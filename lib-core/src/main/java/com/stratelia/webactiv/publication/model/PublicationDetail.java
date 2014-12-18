@@ -64,7 +64,6 @@ import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.AbstractI18NBean;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -78,6 +77,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This object contains the description of a publication
@@ -883,7 +884,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
         String attachmentId =
             fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.length());
-        if (StringUtil.isDefined(attachmentId)) {
+        if (isDefined(attachmentId)) {
           if (attachmentId.startsWith("/")) {
             // case of an image provided by a gallery
             fieldValue = attachmentId;
@@ -1025,7 +1026,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean isClone() {
-    return CLONE.equalsIgnoreCase(getStatus());
+    return CLONE.equalsIgnoreCase(getStatus()) ||
+        (isDefined(getCloneId()) && !"-1".equals(getCloneId()) && !isDefined(getCloneStatus()));
   }
 
   public boolean isValid() {
