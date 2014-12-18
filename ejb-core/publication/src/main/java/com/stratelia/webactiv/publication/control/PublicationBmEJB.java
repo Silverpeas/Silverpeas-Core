@@ -78,6 +78,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -85,10 +86,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Implementation of the PublicationBm interface
+ * Implementation of the PublicationBm interface, this service manage publications
  */
-@Stateless(name = "PublicationService", description = "EJB to manage publications")
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+@Singleton
+@Transactional(Transactional.TxType.SUPPORTS)
 public class PublicationBmEJB implements PublicationBm {
 
   @Inject
@@ -126,15 +127,16 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void setTranslations(Connection con, PublicationDetail publi) {
     try {
-      PublicationI18N translation = new PublicationI18N(publi.getLanguage(),
-          publi.getName(), publi.getDescription(), publi.getKeywords());
+      PublicationI18N translation =
+          new PublicationI18N(publi.getLanguage(), publi.getName(), publi.getDescription(),
+              publi.getKeywords());
       publi.addTranslation(translation);
       List translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
       publi.setTranslations(translations);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.setTranslations()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_TRANSLATIONS_FAILED", "pubId = "
-          + publi.getPK().getId(), e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_TRANSLATIONS_FAILED",
+          "pubId = " + publi.getPK().getId(), e);
     }
   }
 
@@ -152,8 +154,9 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       int indexOperation = detail.getIndexOperation();
-      SilverTrace.info("publication", "PublicationBmEJB.createPublication()",
-          "root.MSG_GEN_PARAM_VALUE", "indexOperation = " + indexOperation);
+      SilverTrace
+          .info("publication", "PublicationBmEJB.createPublication()", "root.MSG_GEN_PARAM_VALUE",
+              "indexOperation = " + indexOperation);
       int id;
 
       try {
@@ -186,8 +189,8 @@ public class PublicationBmEJB implements PublicationBm {
       return detail.getPK();
     } catch (Exception re) {
       throw new PublicationRuntimeException("PublicationBmEJB.createPublication()",
-          SilverpeasRuntimeException.ERROR, "publication.CREATING_PUBLICATION_FAILED", "detail = "
-          + detail.toString(), re);
+          SilverpeasRuntimeException.ERROR, "publication.CREATING_PUBLICATION_FAILED",
+          "detail = " + detail.toString(), re);
     } finally {
       DBUtil.close(con);
     }
@@ -222,8 +225,8 @@ public class PublicationBmEJB implements PublicationBm {
       }
     } catch (SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.movePublication()",
-          SilverpeasRuntimeException.ERROR, "publication.MOVING_PUBLICATION_FAILED", "pubId = "
-          + pk.getId(), re);
+          SilverpeasRuntimeException.ERROR, "publication.MOVING_PUBLICATION_FAILED",
+          "pubId = " + pk.getId(), re);
     } finally {
       DBUtil.close(con);
     }
@@ -244,8 +247,8 @@ public class PublicationBmEJB implements PublicationBm {
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.changePublicationsOrder()",
-          SilverpeasRuntimeException.ERROR, "publication.SORTING_PUBLICATIONS_FAILED", "pubIds = "
-          + ids, e);
+          SilverpeasRuntimeException.ERROR, "publication.SORTING_PUBLICATIONS_FAILED",
+          "pubIds = " + ids, e);
     } finally {
       DBUtil.close(con);
     }
@@ -255,8 +258,8 @@ public class PublicationBmEJB implements PublicationBm {
   @Override
   public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction) {
     // get all publications in given node
-    List<PublicationDetail> publications = (List<PublicationDetail>) getDetailsByFatherPK(nodePK,
-        "P.pubUpdateDate desc");
+    List<PublicationDetail> publications =
+        (List<PublicationDetail>) getDetailsByFatherPK(nodePK, "P.pubUpdateDate desc");
     // find given publication
     int index = getIndexOfPublication(pubPK.getId(), publications);
     // remove publication in list
@@ -279,8 +282,8 @@ public class PublicationBmEJB implements PublicationBm {
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.changePublicationOrder()",
-          SilverpeasRuntimeException.ERROR, "publication.MOVING_PUBLICATION_FAILED", "pubId = "
-          + pubPK.getId(), e);
+          SilverpeasRuntimeException.ERROR, "publication.MOVING_PUBLICATION_FAILED",
+          "pubId = " + pubPK.getId(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -327,8 +330,8 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationDAO.deleteRow(con, pk);
     } catch (java.sql.SQLException e) {
       throw new PublicationRuntimeException("PublicationEJB.ejbRemove()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_DELETE_ENTITY",
-          "PubId = " + pk.getId(), e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_DELETE_ENTITY", "PubId = " + pk.getId(),
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -354,9 +357,8 @@ public class PublicationBmEJB implements PublicationBm {
         SilverTrace.info("publication", "PublicationBmEJB.setDetail()", "root.MSG_GEN_PARAM_VALUE",
             "infoId = " + infoId);
         if (StringUtil.isDefined(infoId) && !StringUtil.isInteger(infoId)) {
-          String xmlFormShortName = infoId;
           PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
-              .getPublicationTemplate(detail.getPK().getInstanceId() + ':' + xmlFormShortName);
+              .getPublicationTemplate(detail.getPK().getInstanceId() + ':' + infoId);
           RecordSet set = pubTemplate.getRecordSet();
           DataRecord data = set.getRecord(detail.getPK().getId(), detail.getLanguage());
           set.delete(data);
@@ -463,8 +465,8 @@ public class PublicationBmEJB implements PublicationBm {
           // Remove of a translation is required
           if (oldLang.equalsIgnoreCase(pubDetail.getLanguage())) {
             // Default language = translation
-            List<PublicationI18N> translations = PublicationI18NDAO.getTranslations(con, publi
-                .getPK());
+            List<PublicationI18N> translations =
+                PublicationI18NDAO.getTranslations(con, publi.getPK());
             if (translations != null && !translations.isEmpty()) {
               PublicationI18N translation = translations.get(0);
               publi.setLanguage(translation.getLanguage());
@@ -515,8 +517,8 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationDAO.storeRow(con, publi);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationEJB.ejbStore()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "PubId = "
-          + pubDetail.getPK().getId(), e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_STORE_ENTITY_ATTRIBUTES",
+          "PubId = " + pubDetail.getPK().getId(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -543,8 +545,8 @@ public class PublicationBmEJB implements PublicationBm {
       return ValidationStepsDAO.getStepByUser(con, pubPK, userId);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getValidationStepByUser()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_VALIDATION_STEP_FAILED",
-          pubPK.toString(), e);
+          SilverpeasRuntimeException.ERROR,
+          "publication.GETTING_PUBLICATION_VALIDATION_STEP_FAILED", pubPK.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -580,8 +582,8 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void addFather(PublicationPK pubPK, NodePK fatherPK) {
-    SilverTrace.info("publication", "PublicationEJB.addFather()",
-        "root.MSG_GEN_ENTER_METHOD", "fatherId = " + fatherPK.getId());
+    SilverTrace.info("publication", "PublicationEJB.addFather()", "root.MSG_GEN_ENTER_METHOD",
+        "fatherId = " + fatherPK.getId());
     Connection con = getConnection();
     try {
       PublicationFatherDAO.addFather(con, pubPK, fatherPK);
@@ -603,9 +605,8 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationFatherDAO.removeFather(con, pubPK, fatherPK);
     } catch (SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.removeFather()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.REMOVING_FATHER_TO_PUBLICATION_FAILED", "pubId = "
-          + pubPK.getId() + " and fatherId = " + fatherPK.getId(), re);
+          SilverpeasRuntimeException.ERROR, "publication.REMOVING_FATHER_TO_PUBLICATION_FAILED",
+          "pubId = " + pubPK.getId() + " and fatherId = " + fatherPK.getId(), re);
     } finally {
       DBUtil.close(con);
     }
@@ -619,7 +620,8 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationFatherDAO.removeFatherToPublications(con, pubPK, fatherPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.removeFather()",
-          SilverpeasRuntimeException.ERROR, "publication.REMOVING_FATHER_TO_ALL_PUBLICATIONS_FAILED",
+          SilverpeasRuntimeException.ERROR,
+          "publication.REMOVING_FATHER_TO_ALL_PUBLICATIONS_FAILED",
           "fatherId = " + fatherPK.getId(), e);
     } finally {
       DBUtil.close(con);
@@ -643,7 +645,8 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void removeAllFather(PublicationPK pubPK) {
-    SilverTrace.info("publication", "PublicationEJB.removeAllFather()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("publication", "PublicationEJB.removeAllFather()", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       PublicationFatherDAO.removeAllFather(con, pubPK);
@@ -678,8 +681,8 @@ public class PublicationBmEJB implements PublicationBm {
   public Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> pubDetails = PublicationDAO.getNotOrphanPublications(con,
-          pubPK);
+      Collection<PublicationDetail> pubDetails =
+          PublicationDAO.getNotOrphanPublications(con, pubPK);
       if (I18NHelper.isI18N) {
         setTranslations(con, pubDetails);
       }
@@ -698,7 +701,8 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       PublicationDAO.deleteOrphanPublicationsByCreatorId(con, pubPK, creatorId);
     } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.deleteOrphanPublicationsByCreatorId()",
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.deleteOrphanPublicationsByCreatorId()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
           "creatorId = " + creatorId, e);
     } finally {
@@ -711,8 +715,8 @@ public class PublicationBmEJB implements PublicationBm {
       String publisherId, String nodeId) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> pubDetails = PublicationDAO
-          .getUnavailablePublicationsByPublisherId(con, pubPK, publisherId, nodeId);
+      Collection<PublicationDetail> pubDetails =
+          PublicationDAO.getUnavailablePublicationsByPublisherId(con, pubPK, publisherId, nodeId);
       if (I18NHelper.isI18N) {
         setTranslations(con, pubDetails);
       }
@@ -758,8 +762,8 @@ public class PublicationBmEJB implements PublicationBm {
   @Override
   public List<Alias> setAlias(PublicationPK pubPK, List<Alias> alias) {
     List<Alias> oldAliases = (List<Alias>) getAlias(pubPK);
-    List<Alias> newAliases = new ArrayList<Alias>(alias.size());
-    List<Alias> remAliases = new ArrayList<Alias>(oldAliases.size());
+    List<Alias> newAliases = new ArrayList<>(alias.size());
+    List<Alias> remAliases = new ArrayList<>(oldAliases.size());
     // Compute the remove list
     for (Alias a : oldAliases) {
       if (!alias.contains(a)) {
@@ -837,16 +841,16 @@ public class PublicationBmEJB implements PublicationBm {
       boolean filterOnVisibilityPeriod) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> publis = PublicationDAO.selectByFatherPK(con, fatherPK,
-          sorting, filterOnVisibilityPeriod);
+      Collection<PublicationDetail> publis =
+          PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod);
       if (I18NHelper.isI18N) {
         setTranslations(con, publis);
       }
       return publis;
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherPK = "
-          + fatherPK, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "fatherPK = " + fatherPK, e);
     } finally {
       DBUtil.close(con);
     }
@@ -857,16 +861,16 @@ public class PublicationBmEJB implements PublicationBm {
       boolean filterOnVisibilityPeriod, String userId) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> publis = PublicationDAO.selectByFatherPK(con, fatherPK,
-          sorting, filterOnVisibilityPeriod, userId);
+      Collection<PublicationDetail> publis =
+          PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, userId);
       if (I18NHelper.isI18N) {
         setTranslations(con, publis);
       }
       return publis;
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherPK = "
-          + fatherPK, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "fatherPK = " + fatherPK, e);
     } finally {
       DBUtil.close(con);
     }
@@ -881,16 +885,16 @@ public class PublicationBmEJB implements PublicationBm {
   public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> detailList = PublicationDAO.selectNotInFatherPK(con, fatherPK,
-          sorting);
+      Collection<PublicationDetail> detailList =
+          PublicationDAO.selectNotInFatherPK(con, fatherPK, sorting);
       if (I18NHelper.isI18N) {
         setTranslations(con, detailList);
       }
       return detailList;
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsNotInFatherPK()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherPK = "
-          + fatherPK, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "fatherPK = " + fatherPK, e);
     } finally {
       DBUtil.close(con);
     }
@@ -901,9 +905,9 @@ public class PublicationBmEJB implements PublicationBm {
       String status, int nbPubs) {
     Connection con = getConnection();
     try {
-      List<PublicationDetail> result = new ArrayList<PublicationDetail>(nbPubs);
-      Collection<PublicationDetail> detailList = PublicationDAO.selectByBeginDateDescAndStatus(con,
-          pk, status);
+      List<PublicationDetail> result = new ArrayList<>(nbPubs);
+      Collection<PublicationDetail> detailList =
+          PublicationDAO.selectByBeginDateDescAndStatus(con, pk, status);
       Iterator<PublicationDetail> it = detailList.iterator();
       int i = 0;
       while (it.hasNext() && i < nbPubs) {
@@ -916,8 +920,8 @@ public class PublicationBmEJB implements PublicationBm {
       return result;
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByBeginDateDescAndStatus()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "status = "
-          + status, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "status = " + status, e);
     } finally {
       DBUtil.close(con);
     }
@@ -938,8 +942,8 @@ public class PublicationBmEJB implements PublicationBm {
     } catch (SQLException e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherId = "
-          + fatherId, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "fatherId = " + fatherId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -949,7 +953,7 @@ public class PublicationBmEJB implements PublicationBm {
   public Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs) {
     Connection con = getConnection();
     try {
-      List<PublicationDetail> result = new ArrayList<PublicationDetail>(nbPubs);
+      List<PublicationDetail> result = new ArrayList<>(nbPubs);
       Collection<PublicationDetail> detailList = PublicationDAO.selectByBeginDateDesc(con, pk);
       Iterator<PublicationDetail> it = detailList.iterator();
       int i = 0;
@@ -972,10 +976,8 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Removes links between publications and the specified publication
-   *
-   * @param pubPK
+   * @param pubPK a publication identifier
    * @param links list of links to remove
-   * @
    */
   @Override
   public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
@@ -990,8 +992,8 @@ public class PublicationBmEJB implements PublicationBm {
       PublicationDAO.storeRow(con, detail);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.deleteInfoLinks()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED", "pubId = "
-          + pubPK.getId(), e);
+          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
+          "pubId = " + pubPK.getId(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -1012,8 +1014,8 @@ public class PublicationBmEJB implements PublicationBm {
       return cp;
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getCompletePublication()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_FAILED", "pubId = "
-          + pubPK.getId(), e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_FAILED",
+          "pubId = " + pubPK.getId(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -1030,8 +1032,8 @@ public class PublicationBmEJB implements PublicationBm {
       return resultList;
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.searchByKeywords()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "query = "
-          + query, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "query = " + query, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1042,8 +1044,8 @@ public class PublicationBmEJB implements PublicationBm {
   public Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> publications = PublicationDAO.selectByPublicationPKs(con,
-          publicationPKs);
+      Collection<PublicationDetail> publications =
+          PublicationDAO.selectByPublicationPKs(con, publicationPKs);
       if (I18NHelper.isI18N) {
         setTranslations(con, publications);
       }
@@ -1062,17 +1064,16 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
 
     try {
-      Collection<PublicationDetail> publications = PublicationDAO.selectByStatus(con, pubPK,
-          status);
+      Collection<PublicationDetail> publications =
+          PublicationDAO.selectByStatus(con, pubPK, status);
       if (I18NHelper.isI18N) {
         setTranslations(con, publications);
       }
       return publications;
     } catch (Exception e) {
-      throw new PublicationRuntimeException(
-          "PublicationBmEJB.getPublicationsByStatus()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_PUBLICATIONS_FAILED", "status = " + status, e);
+      throw new PublicationRuntimeException("PublicationBmEJB.getPublicationsByStatus()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "status = " + status, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1086,8 +1087,8 @@ public class PublicationBmEJB implements PublicationBm {
       return PublicationDAO.selectPKsByStatus(con, componentIds, status);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getPublicationPKsByStatus()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "status = "
-          + status + ", componentIds = " + componentIds, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "status = " + status + ", componentIds = " + componentIds, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1098,16 +1099,16 @@ public class PublicationBmEJB implements PublicationBm {
       List<String> componentIds) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> publications = PublicationDAO.selectByStatus(con, componentIds,
-          status);
+      Collection<PublicationDetail> publications =
+          PublicationDAO.selectByStatus(con, componentIds, status);
       if (I18NHelper.isI18N) {
         setTranslations(con, publications);
       }
       return publications;
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getPublicationsByStatus()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "status = "
-          + status + ", componentIds = " + componentIds, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "status = " + status + ", componentIds = " + componentIds, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1194,12 +1195,11 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
-      PublicationPK pubPK, String sorting, List<String> status,
-      boolean filterOnVisibilityPeriod) {
+      PublicationPK pubPK, String sorting, List<String> status, boolean filterOnVisibilityPeriod) {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> detailList = PublicationDAO.selectByFatherIds(con, fatherIds,
-          pubPK, sorting, status, filterOnVisibilityPeriod);
+      Collection<PublicationDetail> detailList = PublicationDAO
+          .selectByFatherIds(con, fatherIds, pubPK, sorting, status, filterOnVisibilityPeriod);
       if (I18NHelper.isI18N) {
         setTranslations(con, detailList);
       }
@@ -1248,7 +1248,6 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Method declaration
-   *
    * @return a connection
    */
   private Connection getConnection() {
@@ -1273,15 +1272,17 @@ public class PublicationBmEJB implements PublicationBm {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithWysiwygContent", "", e);
+      SilverTrace
+          .error("publication", "PublicationBmEJB.updateIndexEntryWithWysiwygContent", "", e);
     }
   }
 
   private void updateIndexEntryWithXMLFormContent(FullIndexEntry indexEntry,
       PublicationDetail pubDetail) {
     SilverTrace.info("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent()",
-        "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
-        + ", pubDetail.getInfoId() = " + pubDetail.getInfoId());
+        "root.MSG_GEN_ENTER_METHOD",
+        "indexEntry = " + indexEntry.toString() + ", pubDetail.getInfoId() = " +
+            pubDetail.getInfoId());
     if (!StringUtil.isInteger(pubDetail.getInfoId())) {
       try {
         PublicationTemplate pub = PublicationTemplateManager.getInstance().getPublicationTemplate(
@@ -1289,8 +1290,8 @@ public class PublicationBmEJB implements PublicationBm {
         RecordSet set = pub.getRecordSet();
         set.indexRecord(pubDetail.getPK().getId(), pubDetail.getInfoId(), indexEntry);
       } catch (FormException | PublicationTemplateException e) {
-        SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "",
-            e);
+        SilverTrace
+            .error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "", e);
       }
     }
   }
@@ -1299,19 +1300,20 @@ public class PublicationBmEJB implements PublicationBm {
   public void createIndex(PublicationDetail pubDetail) {
     SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
         "pubDetail.getIndexOperation() = " + pubDetail.getIndexOperation());
-    if (pubDetail.getIndexOperation() == IndexManager.ADD
-        || pubDetail.getIndexOperation() == IndexManager.READD) {
-      SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + pubDetail.toString());
+    if (pubDetail.getIndexOperation() == IndexManager.ADD ||
+        pubDetail.getIndexOperation() == IndexManager.READD) {
+      SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_PARAM_VALUE",
+          "pubDetail = " + pubDetail.toString());
       try {
         FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
         if (indexEntry != null) {
           IndexEngineProxy.addIndexEntry(indexEntry);
         }
       } catch (Exception e) {
-        SilverTrace.error("publication", "PublicationBmEJB.createIndex()",
-            "root.MSG_GEN_ENTER_METHOD", "pubDetail = " + pubDetail.toString()
-            + ", indexEngineBm.addIndexEntry() failed !", e);
+        SilverTrace
+            .error("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+                "pubDetail = " + pubDetail.toString() + ", indexEngineBm.addIndexEntry() failed !",
+                e);
       }
     }
   }
@@ -1338,12 +1340,11 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
-    SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "processContent = "
-        + processContent + ", indexOperation = " + indexOperation);
+    SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+        "processContent = " + processContent + ", indexOperation = " + indexOperation);
     if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.READD) {
-      SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
-          "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
+      SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+          "pubPK = " + pubPK.toString());
       try {
         PublicationDetail pubDetail = getDetail(pubPK);
         if (pubDetail != null) {
@@ -1355,9 +1356,9 @@ public class PublicationBmEJB implements PublicationBm {
           indexAliases(pubPK, indexEntry);
         }
       } catch (Exception e) {
-        SilverTrace.error("publication", "PublicationBmEJB.createIndex()",
-            "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-            + ", indexEngineBm.addIndexEntry() failed !", e);
+        SilverTrace
+            .error("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+                "pubPK = " + pubPK.toString() + ", indexEngineBm.addIndexEntry() failed !", e);
       }
     }
   }
@@ -1371,9 +1372,8 @@ public class PublicationBmEJB implements PublicationBm {
 
     if (pubDetail != null) {
       // Index the Publication Header
-      indexEntry =
-          new FullIndexEntry(getIndexEntryPK(pubDetail.getPK().getComponentName(), pubDetail
-              .getPK().getId()));
+      indexEntry = new FullIndexEntry(
+          getIndexEntryPK(pubDetail.getPK().getComponentName(), pubDetail.getPK().getId()));
       indexEntry.setIndexId(true);
 
       Iterator<String> languages = pubDetail.getLanguages();
@@ -1383,8 +1383,7 @@ public class PublicationBmEJB implements PublicationBm {
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
-        indexEntry.setKeywords(translation.getKeywords() + " "
-            + pubDetail.getAuthor(), language);
+        indexEntry.setKeywords(translation.getKeywords() + " " + pubDetail.getAuthor(), language);
       }
 
       indexEntry.setLang("fr");
@@ -1401,7 +1400,8 @@ public class PublicationBmEJB implements PublicationBm {
       // index creator's full name
       if (indexAuthorName) {
         try {
-          UserDetail ud = AdministrationServiceProvider.getAdminService().getUserDetail(pubDetail.getCreatorId());
+          UserDetail ud = AdministrationServiceProvider.getAdminService()
+              .getUserDetail(pubDetail.getCreatorId());
           if (ud != null) {
             indexEntry.addTextContent(ud.getDisplayedName());
           }
@@ -1413,7 +1413,7 @@ public class PublicationBmEJB implements PublicationBm {
 
       // set path(s) to publication into the index
       Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
-      List<String> paths = new ArrayList<String>();
+      List<String> paths = new ArrayList<>();
       for (NodePK father : fathers) {
         paths.add(nodeService.getDetail(father).getFullPath());
       }
@@ -1441,8 +1441,8 @@ public class PublicationBmEJB implements PublicationBm {
    */
   @Override
   public void deleteIndex(PublicationPK pubPK) {
-    SilverTrace.info("publication", "PublicationBmEJB.deleteIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK);
+    SilverTrace.info("publication", "PublicationBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
+        "pubPK = " + pubPK);
     IndexEntryPK indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
     unindexAlias(pubPK);
@@ -1464,7 +1464,7 @@ public class PublicationBmEJB implements PublicationBm {
   private void unindexAlias(PublicationPK pk) {
     // get all apps where alias are
     Collection<Alias> aliases = getAlias(pk);
-    Set<String> componentIds = new HashSet<String>();
+    Set<String> componentIds = new HashSet<>();
     for (Alias alias : aliases) {
       if (!alias.getInstanceId().equals(pk.getInstanceId())) {
         //it's a true alias
@@ -1484,7 +1484,7 @@ public class PublicationBmEJB implements PublicationBm {
     }
 
     Collection<Alias> aliases = getAlias(pubPK);
-    Map<IndexEntryPK, List<String>> pathsByIndex = new HashMap<IndexEntryPK, List<String>>();
+    Map<IndexEntryPK, List<String>> pathsByIndex = new HashMap<>();
     for (Alias alias : aliases) {
       if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
         //it's a true alias
@@ -1508,8 +1508,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Method declaration
-   *
-   * @param pubPK
+   * @param pubPK a publication identifier
    * @param sorting
    * @return collection of publication details
    */
@@ -1533,8 +1532,9 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName) {
-    SilverTrace.info("publication", "PublicationBmEJB.getDetailByName()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK + ", pubName = " + pubName);
+    SilverTrace
+        .info("publication", "PublicationBmEJB.getDetailByName()", "root.MSG_GEN_ENTER_METHOD",
+            "pubPK = " + pubPK + ", pubName = " + pubName);
     Connection con = getConnection();
     try {
       PublicationDetail publicationDetail =
@@ -1542,17 +1542,14 @@ public class PublicationBmEJB implements PublicationBm {
       if (publicationDetail != null) {
         return publicationDetail;
       } else {
-        SilverTrace.debug("publication", "PublicationEJB.ejbFindByName()",
-            "root.EX_CANT_FIND_ENTITY", "name = " + pubName);
+        SilverTrace
+            .debug("publication", "PublicationEJB.ejbFindByName()", "root.EX_CANT_FIND_ENTITY",
+                "name = " + pubName);
         throw new PublicationRuntimeException("PublicationBmEJB.getDetailByName()",
             SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
             "pubPK = " + pubPK + ", pubName = " + pubName);
       }
-    } catch (PublicationRuntimeException re) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getDetailByName()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
-          "pubPK = " + pubPK + ", pubName = " + pubName, re);
-    } catch (SQLException re) {
+    } catch (PublicationRuntimeException | SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailByName()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
           "pubPK = " + pubPK + ", pubName = " + pubName, re);
@@ -1562,11 +1559,11 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   @Override
-  public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK,
-      String pubName, int nodeId) {
+  public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK, String pubName,
+      int nodeId) {
     SilverTrace.info("publication", "PublicationBmEJB.getDetailByNameAndNodeId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK + ", pubName = " + pubName + ", nodeId="
-        + nodeId);
+        "root.MSG_GEN_ENTER_METHOD",
+        "pubPK = " + pubPK + ", pubName = " + pubName + ", nodeId=" + nodeId);
     Connection con = getConnection();
     try {
       PublicationDetail publicationDetail =
@@ -1595,8 +1592,8 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
 
-      Collection<PublicationDetail> detailList = PublicationDAO.selectBetweenDate(con, beginDate,
-          endDate, instanceId);
+      Collection<PublicationDetail> detailList =
+          PublicationDAO.selectBetweenDate(con, beginDate, endDate, instanceId);
       List<PublicationDetail> result = new ArrayList<PublicationDetail>(detailList);
       if (I18NHelper.isI18N) {
         setTranslations(con, result);
@@ -1611,9 +1608,10 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private PublicationDetail loadTranslations(PublicationDetail detail) {
-    PublicationI18N translation = new PublicationI18N(detail.getLanguage(), detail.getName(), detail
-        .getDescription(), detail.getKeywords());
-    List<PublicationI18N> translations = new ArrayList<PublicationI18N>();
+    PublicationI18N translation =
+        new PublicationI18N(detail.getLanguage(), detail.getName(), detail.getDescription(),
+            detail.getKeywords());
+    List<PublicationI18N> translations = new ArrayList<>();
     translations.add(translation);
     if (I18NHelper.isI18N) {
       Connection con = getConnection();
@@ -1632,17 +1630,16 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Create the tagclouds corresponding to the publication detail.
-   *
    * @param pubDetail The detail of the publication.
    * @
    */
   private void createTagCloud(PublicationDetail pubDetail) {
     String keywords = pubDetail.getKeywords();
     if (keywords != null) {
-      TagCloud tagCloud = new TagCloud(pubDetail.getInstanceId(), pubDetail.getId(),
-          TagCloud.TYPE_PUBLICATION);
+      TagCloud tagCloud =
+          new TagCloud(pubDetail.getInstanceId(), pubDetail.getId(), TagCloud.TYPE_PUBLICATION);
       StringTokenizer st = new StringTokenizer(keywords, " ");
-      ArrayList<String> tagList = new ArrayList<String>();
+      List<String> tagList = new ArrayList<>();
       while (st.hasMoreElements()) {
         String tag = (String) st.nextElement();
         String tagKey = TagCloudUtil.getTag(tag);
@@ -1658,7 +1655,6 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Delete the tagclouds corresponding to the publication key.
-   *
    * @param pubPK The primary key of the publication.
    * @
    */
@@ -1669,7 +1665,6 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Update the tagclouds corresponding to the publication detail.
-   *
    * @param pubDetail The detail of the publication.
    * @
    */
@@ -1680,54 +1675,52 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void moveRating(PublicationPK pubPK, String componentInstanceId) {
     if (isRatingEnabled(pubPK)) {
-      ratingService
-          .moveRating(new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE),
-              componentInstanceId);
+      ratingService.moveRating(
+          new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE),
+          componentInstanceId);
     }
   }
 
   private void deleteRating(PublicationPK pubPK) {
     if (isRatingEnabled(pubPK)) {
-      ratingService
-          .deleteRating(new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE));
+      ratingService.deleteRating(
+          new ContributionRatingPK(pubPK.getId(), pubPK.getInstanceId(), PublicationDetail.TYPE));
     }
   }
 
   private boolean isRatingEnabled(WAPrimaryKey pk) {
-    WAComponent componentDefinition =
-        componentHelper.extractComponent(pk.getInstanceId());
+    WAComponent componentDefinition = componentHelper.extractComponent(pk.getInstanceId());
     return componentDefinition.hasParameterDefined("publicationRating");
   }
 
   /**
    * Recupere les coordonnees de la publication (collection de nodePK)
-   *
-   * @param pubId
-   * @param componentId
+   * @param pubId a publication identifier
+   * @param componentId a component identifier
    * @return
    */
   @Override
   public Collection<Coordinate> getCoordinates(String pubId, String componentId) {
-    SilverTrace.info("kmax", "KmeliaBmEjb.getPublicationCoordinates()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("kmax", "KmeliaBmEjb.getPublicationCoordinates()", "root.MSG_GEN_ENTER_METHOD");
     PublicationPK pubPK = new PublicationPK(pubId, componentId);
     Collection<NodePK> fatherPKs = getAllFatherPK(pubPK);
     Iterator<NodePK> it = fatherPKs.iterator();
-    ArrayList<String> coordinateIds = new ArrayList<String>();
+    List<String> coordinateIds = new ArrayList<>();
     CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK);
     while (it.hasNext()) {
       String coordinateId = it.next().getId();
       coordinateIds.add(coordinateId);
     }
-    Collection<Coordinate> coordinates = coordinatesService.getCoordinatesByCoordinateIds(
-        coordinateIds, coordinatePK);
+    Collection<Coordinate> coordinates =
+        coordinatesService.getCoordinatesByCoordinateIds(coordinateIds, coordinatePK);
     // Enrichit les coordonnees avec le nom du noeud
     Iterator<Coordinate> itCoordinates = coordinates.iterator();
-    Iterator<CoordinatePoint> pointsIt = null;
+    Iterator<CoordinatePoint> pointsIt;
     while (itCoordinates.hasNext()) {
       Coordinate coordinate = itCoordinates.next();
       Collection<CoordinatePoint> points = coordinate.getCoordinatePoints();
-      Collection<CoordinatePoint> surePoints = new ArrayList<CoordinatePoint>();
+      Collection<CoordinatePoint> surePoints = new ArrayList<>();
       pointsIt = points.iterator();
       while (pointsIt.hasNext()) {
         CoordinatePoint point = pointsIt.next();
@@ -1738,20 +1731,19 @@ public class PublicationBmEJB implements PublicationBm {
           point.setPath(node.getPath());
           surePoints.add(point);
         } catch (Exception e) {
-          SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationCoordinates",
-              "root.MSG_GEN_PARAM_VALUE", "node unfindable !");
+          SilverTrace
+              .info("kmelia", "KmeliaBmEJB.getPublicationCoordinates", "root.MSG_GEN_PARAM_VALUE",
+                  "node unfindable !");
         }
       }
       coordinate.setCoordinatePoints(surePoints);
     }
-    SilverTrace.info("kmax", "KmeliaBmEJB.getPublicationCoordinates()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("kmax", "KmeliaBmEJB.getPublicationCoordinates()", "root.MSG_GEN_EXIT_METHOD");
     return coordinates;
   }
 
   /**
    * Updates the publication links
-   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    * @
@@ -1770,8 +1762,8 @@ public class PublicationBmEJB implements PublicationBm {
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.addLinks()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED", "pubId = "
-          + pubPK.getId(), e);
+          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
+          "pubId = " + pubPK.getId(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -1779,8 +1771,6 @@ public class PublicationBmEJB implements PublicationBm {
 
   /**
    * Constructor declaration
-   *
-   * @see
    */
   public PublicationBmEJB() {
   }
@@ -1788,12 +1778,10 @@ public class PublicationBmEJB implements PublicationBm {
   /**
    * get my list of SocialInformationPublication according to options and number of Item and the
    * first Index
-   *
-   * @param userId
-   * @param begin
-   * @param end
+   * @param userId a user identifier
+   * @param begin date
+   * @param end date
    * @return List <SocialInformation>
-   * @
    */
   @Override
   public List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId, Date begin,
@@ -1811,25 +1799,25 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   /**
-   * Get list of SocialInformationPublication of my contacts according to options and number of Item
+   * Get list of SocialInformationPublication of my contacts according to options and number of
+   * Item
    * and the first Index.
-   *
    * @param myContactsIds
    * @param options
    * @param begin
    * @param end
    * @return
-   * @
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
       List<String> options, Date begin, Date end) {
     Connection con = getConnection();
     try {
-      return PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds, options,
-          begin, end);
+      return PublicationDAO
+          .getSocialInformationsListOfMyContacts(con, myContactsIds, options, begin, end);
     } catch (SQLException e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getSocialInformationsListOfMyContacts",
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getSocialInformationsListOfMyContacts",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
           " myContactsIds=" + myContactsIds + " options=" + options, e);
     } finally {
@@ -1856,12 +1844,12 @@ public class PublicationBmEJB implements PublicationBm {
       int maxSize, List<String> componentIds) {
     Connection con = getConnection();
     try {
-      return PublicationDAO.selectUpdatedPublicationsSince(con, componentIds, status, since,
-          maxSize);
+      return PublicationDAO
+          .selectUpdatedPublicationsSince(con, componentIds, status, since, maxSize);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getPublicationPKsByStatus()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "status = "
-          + status + ", componentIds = " + componentIds, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "status = " + status + ", componentIds = " + componentIds, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1874,8 +1862,8 @@ public class PublicationBmEJB implements PublicationBm {
       return PublicationDAO.getDraftsByUser(con, userId);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDraftsByUser()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED", "userId = "
-          + userId, e);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_DRAFTS_FAILED",
+          "userId = " + userId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1886,8 +1874,8 @@ public class PublicationBmEJB implements PublicationBm {
   private static final String thumbnailDirectory;
 
   static {
-    ResourceLocator publicationSettings = new ResourceLocator(
-        "org.silverpeas.util.publication.publicationSettings", "");
+    ResourceLocator publicationSettings =
+        new ResourceLocator("org.silverpeas.util.publication.publicationSettings", "");
     useTagCloud = publicationSettings.getBoolean("useTagCloud", false);
     indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
     thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");

@@ -31,7 +31,6 @@ import java.util.Map;
 
 /**
  * @author Norbert CHAIX
- * @version
  */
 public class GeneralPropertiesManager {
 
@@ -39,9 +38,10 @@ public class GeneralPropertiesManager {
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
   public static final String GENERAL_PROPERTIES_FILE = "org.silverpeas.multilang.generalMultilang";
-  static final ResourceLocator generalProperties = new ResourceLocator("org.silverpeas.general", "");
+  static final ResourceLocator generalProperties =
+      new ResourceLocator("org.silverpeas.general", "");
   static int dvis = Integer.parseInt(generalProperties.getString("domainVisibility", "0"));
-  static final Map<String, Collection<String>> listProperties = new HashMap<String, Collection<String>>();
+  static final Map<String, Collection<String>> listProperties = new HashMap<>();
 
 
   /**
@@ -71,13 +71,14 @@ public class GeneralPropertiesManager {
   }
 
   public static Collection<String> getStringCollection(String property) {
-    return getStringCollection(property,"[ ,;]");
+    return getStringCollection(property, "[ ,;]");
   }
 
-  public static Collection<String> getStringCollection(String property, String regexValueSeparator) {
+  public static Collection<String> getStringCollection(String property,
+      String regexValueSeparator) {
     Collection<String> propertyValues = listProperties.get(property);
     if (propertyValues == null) {
-      propertyValues = new LinkedHashSet<String>();
+      propertyValues = new LinkedHashSet<>();
       listProperties.put(property, propertyValues);
       final String stringValues = generalProperties.getString(property, null);
       if (stringValues != null && !"".equals(stringValues.trim())) {
