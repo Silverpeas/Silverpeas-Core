@@ -25,7 +25,7 @@
 /**
  * Silverpeas plugin build upon JQuery to manage parts of subscription services.
  */
-(function($, undefined) {
+(function($) {
 
   $.subscription = {
     subscriptionType : {
@@ -85,6 +85,11 @@
       if (typeof options.callback !== 'function') {
         options.callback = function() {
           alert("No callback function is defined!");
+        }
+      }
+      if (options.validationCallback && typeof options.validationCallback !== 'function') {
+        options.validationCallback = function() {
+          alert("The validation callback is not well specified!");
         }
       }
       return this.each(function() {
@@ -173,32 +178,19 @@
       return;
     }
 
-    var enrichXMLHttpRequestForSubscriptionSendingConfirmation = function() {
-      if (!XMLHttpRequest.prototype._openSubscriptionSendingConfirmation) {
-        XMLHttpRequest.prototype._openSubscriptionSendingConfirmation =
-            XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
-          this.url = url;
-          this._openSubscriptionSendingConfirmation.apply(this, arguments);
-        };
+    if ($settings.validationCallback && !$settings.validationCallback.call(this)) {
+      // The data of the form to submit are not valid.
+      return;
+    }
 
-        XMLHttpRequest.prototype._sendSubscriptionSendingConfirmation =
-            XMLHttpRequest.prototype.send;
-        XMLHttpRequest.prototype.send = function(data) {
-          if (this.onSubscriptionSendingConfirmation != null) {
-            this.onSubscriptionSendingConfirmation.apply(this, arguments);
-          }
-          this._sendSubscriptionSendingConfirmation.apply(this, arguments);
-        };
+    var setSubscriptionNotificationSendingParameter = function(mustSend) {
+      var targetContainer = $(document);
+      var forms = $('form', targetContainer);
+      $('input[name="SKIP_SUBSCRIPTION_NOTIFICATION_SENDING"]', forms).remove();
+      if (!mustSend) {
+        forms.append($('<input>',
+            {'name' : 'SKIP_SUBSCRIPTION_NOTIFICATION_SENDING', 'type' : 'hidden'}).val('true'));
       }
-    };
-
-    var setSubscriptionNotificationSendingParameter = function() {
-      var targetContainer = jQuery(document);
-      var forms = jQuery('form', targetContainer);
-      jQuery('input[name="SKIP_SUBSCRIPTION_NOTIFICATION_SENDING"]', forms).remove();
-      forms.append(jQuery('<input>',
-          {'name' : 'SKIP_SUBSCRIPTION_NOTIFICATION_SENDING', 'type' : 'hidden'}).val('true'));
     };
 
     var confirmSubscriptionNotificationSending = function() {
@@ -206,13 +198,11 @@
           '/subscription/jsp/messages/confirmSubscriptionNotificationSending.jsp';
       displaySingleConfirmationPopupFrom(urlOfDialogMessage, {
         callback : function() {
+          setSubscriptionNotificationSendingParameter.call(this, true);
           $settings.callback.call(this);
+          return true;
         }, alternativeCallback : function() {
-          XMLHttpRequest.prototype.onSubscriptionSendingConfirmation = function(data) {
-            this.setRequestHeader("SKIP_SUBSCRIPTION_NOTIFICATION_SENDING", "true");
-          };
-          enrichXMLHttpRequestForSubscriptionSendingConfirmation.call(this);
-          setSubscriptionNotificationSendingParameter.call(this);
+          setSubscriptionNotificationSendingParameter.call(this, false);
           $settings.callback.call(this);
         }
       });
@@ -229,4 +219,4 @@
     });
   }
 
-})(jQuery, undefined);
+})(jQuery);
