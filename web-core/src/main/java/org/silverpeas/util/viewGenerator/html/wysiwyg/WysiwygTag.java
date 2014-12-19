@@ -1,6 +1,7 @@
 package org.silverpeas.util.viewGenerator.html.wysiwyg;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -140,16 +141,16 @@ public class WysiwygTag extends TagSupport {
       session.setAttribute("WYSIWYG_SpaceId", getSpaceId());
     }
     if(getSpaceName() != null) {
-      session.setAttribute("WYSIWYG_SpaceName", getSpaceName());
+      session.setAttribute("WYSIWYG_SpaceName", URLDecoder.decode(getSpaceName()));
     }
     if(getComponentId() != null) {
       session.setAttribute("WYSIWYG_ComponentId", getComponentId());
     }
     if(getComponentName() != null) {
-      session.setAttribute("WYSIWYG_ComponentName", getComponentName());
+      session.setAttribute("WYSIWYG_ComponentName", URLDecoder.decode(getComponentName()));
     }
     if(getBrowseInfo() != null) {
-      session.setAttribute("WYSIWYG_BrowseInfo", getBrowseInfo());
+      session.setAttribute("WYSIWYG_BrowseInfo", URLDecoder.decode(getBrowseInfo()));
     }
     if(getObjectId() != null) {
       session.setAttribute("WYSIWYG_ObjectId", getObjectId());

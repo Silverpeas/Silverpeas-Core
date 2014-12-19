@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion;
 import org.apache.ecs.xhtml.script;
@@ -44,6 +45,7 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
 
   private SubscriptionResourceType subscriptionResourceType = SubscriptionResourceType.COMPONENT;
   private String subscriptionResourceId = null;
+  private String jsValidationCallbackMethodName;
 
   public SubscriptionResourceType getSubscriptionResourceType() {
     return subscriptionResourceType;
@@ -59,6 +61,14 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
 
   public void setSubscriptionResourceId(final String subscriptionResourceId) {
     this.subscriptionResourceId = subscriptionResourceId;
+  }
+
+  public String getJsValidationCallbackMethodName() {
+    return jsValidationCallbackMethodName;
+  }
+
+  public void setJsValidationCallbackMethodName(final String jsValidationCallbackMethodName) {
+    this.jsValidationCallbackMethodName = jsValidationCallbackMethodName;
   }
 
   @Override
@@ -105,6 +115,9 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     sb.append("  },callback: function() {");
     sb.append("    {action};");
     sb.append("  }");
+    if (StringUtil.isDefined(getJsValidationCallbackMethodName())) {
+      sb.append("  ,validationCallback:").append(getJsValidationCallbackMethodName());
+    }
     sb.append("});");
     return sb.toString();
   }
