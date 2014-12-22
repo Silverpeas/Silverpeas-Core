@@ -1875,7 +1875,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   static {
     ResourceLocator publicationSettings =
-        new ResourceLocator("org.silverpeas.util.publication.publicationSettings", "");
+        new ResourceLocator("org.silverpeas.publication.publicationSettings", "");
     useTagCloud = publicationSettings.getBoolean("useTagCloud", false);
     indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
     thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");

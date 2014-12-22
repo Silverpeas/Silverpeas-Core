@@ -15,11 +15,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.workflow.engine.model;
@@ -36,14 +36,15 @@ import com.silverpeas.workflow.api.model.ContextualDesignations;
 import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;item&gt; element of a Process Model.
- **/
-public class ItemImpl extends AbstractReferrableObject implements AbstractDescriptor, Item,
-    Serializable {
+ */
+public class ItemImpl extends AbstractReferrableObject
+    implements AbstractDescriptor, Item, Serializable {
   private static final long serialVersionUID = -888974957146029109L;
   private String name;
   private boolean computed = false;
@@ -176,8 +177,8 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
 
   /**
    * Get description in specific language for the given role
-   * @param lang description's language
    * @param role role for which the description is
+   * @param language description's language
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
    * given language, if not found again, return the default description in default language, if not
@@ -222,8 +223,8 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
    * @param role role for which the label is
+   * @param language label's language
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
    * found again, return the default label in default language, if not found again, return empty
@@ -269,10 +270,11 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
     reference.setName(strName);
     idx = parameters.indexOf(reference);
 
-    if (idx >= 0)
+    if (idx >= 0) {
       return parameters.get(idx);
-    else
+    } else {
       return null;
+    }
   }
 
   /*
@@ -309,14 +311,16 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
 
     parameter.setName(strName);
 
-    if (parameters == null)
+    if (parameters == null) {
       return;
+    }
 
-    if (!parameters.remove(parameter))
+    if (!parameters.remove(parameter)) {
       throw new WorkflowException("ItemImpl.removeParameter()", //$NON-NLS-1$
           "workflowEngine.EX_PARAMETER_NOT_FOUND", // $NON-NLS-1$
           strName == null ? "<null>" //$NON-NLS-1$
               : strName);
+    }
   }
 
   /**
@@ -335,10 +339,12 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
       String values = null;
 
       for (Parameter parameter : parameters) {
-        if (parameter != null && "keys".equals(parameter.getName()))
+        if (parameter != null && "keys".equals(parameter.getName())) {
           keys = parameter.getValue();
-        if (parameter != null && "values".equals(parameter.getName()))
+        }
+        if (parameter != null && "values".equals(parameter.getName())) {
           values = parameter.getValue();
+        }
       }
 
       if (keys != null && values != null) {
@@ -366,7 +372,9 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
     return keyValuePairs;
   }
 
-  /************* Implemented methods *****************************************/
+  /**
+   * ********** Implemented methods ****************************************
+   */
   // ~ Instance fields ////////////////////////////////////////////////////////
 
   private AbstractDescriptor parent;
