@@ -28,18 +28,15 @@ import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Insert;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.DbSetupRule;
-import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -84,30 +81,32 @@ public class JdbcSqlQueryTest {
         .build();
   }
 
-  @Ignore @Test
+  @Test
   public void deletionCommitWithExceptionAfterTransaction() throws Exception {
     List<String> result = executeMultiThreadedOperations(false);
-    assertThat(result, Matchers.contains("DELETION PROCESS - In transaction",
+    assertThat(String.join(System.lineSeparator(), result), is(String.join(System.lineSeparator(),
+        "DELETION PROCESS - In transaction",
         "DELETION PROCESS - Waiting for verification",
         "VERIFICATION PROCESS - BEFORE DELETION - " + NB_ROW_AT_BEGINNING + " line(s)",
         "DELETION PROCESS - Waiting for verification (lines deleted)",
         "VERIFICATION PROCESS - AFTER DELETION - " + NB_ROW_AT_BEGINNING + " line(s)",
         "DELETION PROCESS - Transaction closed",
-        "VERIFICATION PROCESS - AFTER TRANSACTION - 0 line(s)"));
+        "VERIFICATION PROCESS - AFTER TRANSACTION - 0 line(s)")));
   }
 
-  @Ignore
+
   @Test
   public void deletionRollbackWithExceptionDuringTransaction() throws Exception {
     List<String> result = executeMultiThreadedOperations(true);
-    assertThat(result, Matchers.contains("DELETION PROCESS - In transaction",
+    assertThat(String.join(System.lineSeparator(), result), is(String.join(System.lineSeparator(),
+        "DELETION PROCESS - In transaction",
         "DELETION PROCESS - Waiting for verification",
         "VERIFICATION PROCESS - BEFORE DELETION - " + NB_ROW_AT_BEGINNING + " line(s)",
         "DELETION PROCESS - Waiting for verification (lines deleted)",
         "VERIFICATION PROCESS - AFTER DELETION - " + NB_ROW_AT_BEGINNING + " line(s)",
         "DELETION PROCESS - Perform rollback", "DELETION PROCESS - Rollback performed",
         "DELETION PROCESS - Transaction closed",
-        "VERIFICATION PROCESS - AFTER TRANSACTION - " + NB_ROW_AT_BEGINNING + " line(s)"));
+        "VERIFICATION PROCESS - AFTER TRANSACTION - " + NB_ROW_AT_BEGINNING + " line(s)")));
   }
 
   @SuppressWarnings("UnusedDeclaration")
@@ -120,9 +119,9 @@ public class JdbcSqlQueryTest {
     Thread deletionProcess = new Thread(() -> {
       try {
         Transaction.performInOne(() -> {
-          try (final Connection connection = DBUtil.openConnection()) {
+          try (final Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
             Transaction.performInOne(() -> {
-              try (Connection otherConnection = DBUtil.openConnection()) {
+              try (Connection otherConnection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
                 // Just opening two connections for pleasure :-)
                 Thread.sleep(50);
                 synchronized (monitorOfVerification) {
@@ -130,7 +129,6 @@ public class JdbcSqlQueryTest {
                   info(result, "DELETION PROCESS - Waiting for verification");
                   monitorOfVerification.notifyAll();
                 }
-                Thread.sleep(10);
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
@@ -140,7 +138,6 @@ public class JdbcSqlQueryTest {
                   info(result, "DELETION PROCESS - Waiting for verification (lines deleted)");
                   monitorOfVerification.notifyAll();
                 }
-                Thread.sleep(10);
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
@@ -175,7 +172,6 @@ public class JdbcSqlQueryTest {
               "VERIFICATION PROCESS - BEFORE DELETION - " + getTableLines().size() + " line(s)");
           monitorOfDeletion.notifyAll();
         }
-        Thread.sleep(10);
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
@@ -185,7 +181,6 @@ public class JdbcSqlQueryTest {
               "VERIFICATION PROCESS - AFTER DELETION - " + getTableLines().size() + " line(s)");
           monitorOfDeletion.notifyAll();
         }
-        Thread.sleep(10);
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
@@ -213,7 +208,7 @@ public class JdbcSqlQueryTest {
     Logger.getAnonymousLogger().info("[" + Thread.currentThread().getId() + "] " + message);
   }
 
-  @Ignore @Test
+  @Test
   public void selectCountVerifications() throws SQLException {
     assertThat(createCountFor("a_table").execute(), is(NB_ROW_AT_BEGINNING));
     assertThat(createCountFor("a_table").where("id != ?", 8).execute(),
@@ -222,7 +217,7 @@ public class JdbcSqlQueryTest {
         is(9l));
   }
 
-  @Ignore @Test
+  @Test
   public void selectAll() throws SQLException {
     List<Pair<Long, String>> rows =
         createSelect("* from a_table").execute(new TableResultProcess());
@@ -239,12 +234,12 @@ public class JdbcSqlQueryTest {
     assertThat(rows, hasSize(resultLimit));
   }
 
-  @Ignore @Test(expected = IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void selectAllButUsingUnique() throws SQLException {
     createSelect("* from a_table").executeUnique(new TableResultProcess());
   }
 
-  @Ignore @Test
+  @Test
   public void selectOneParameter() throws SQLException {
     final String sqlQuery = "* from a_table where id = ?";
     List<Pair<Long, String>> rows = createSelect(sqlQuery, 30).execute(new TableResultProcess());
@@ -255,7 +250,7 @@ public class JdbcSqlQueryTest {
     assertThat(unique(rows), nullValue());
   }
 
-  @Ignore @Test
+  @Test
   public void selectUsingOneAppendParameter() throws SQLException {
     List<Pair<Long, String>> rows =
         createSelect("* from a_table where id = ?", 26).execute(new TableResultProcess());
@@ -263,7 +258,7 @@ public class JdbcSqlQueryTest {
     assertThat(unique(rows).getLeft(), is(26L));
   }
 
-  @Ignore @Test
+  @Test
   public void selectUsingTwoAppendParametersAndAppendListOfParameters() throws SQLException {
     JdbcSqlQuery sqlQuery = createSelect("* from a_table where (id = ?", 26);
     sqlQuery.or("LENGTH(value) <= ?)", 7);
@@ -272,7 +267,7 @@ public class JdbcSqlQueryTest {
     assertThat(rows, hasSize(14));
   }
 
-  @Ignore @Test
+  @Test
   public void selectUsingAppendListOfParameters() throws SQLException {
     List<Pair<Long, String>> rows =
         createSelect("* from a_table where id").in(38, 39, 40).execute(new TableResultProcess());
@@ -286,7 +281,7 @@ public class JdbcSqlQueryTest {
     }
   }
 
-  @Ignore @Test
+  @Test
   public void createRowUsingAppendSaveParameter() {
     assertThat(getTableLines(), hasSize(100));
     JdbcSqlQuery insertSqlQuery = JdbcSqlQuery.createInsertFor("a_table");
@@ -301,7 +296,7 @@ public class JdbcSqlQueryTest {
     assertThat(getTableLines().get(100), is("200@value_200_inserted"));
   }
 
-  @Ignore @Test
+  @Test
   public void updateTwoRowsFromThreeUpdatesUsingAppendSaveParameter() {
     assertThat(getTableLines().get(0), is("0@value_0"));
     assertThat(getTableLines().get(26), is("26@value_26"));
@@ -331,7 +326,7 @@ public class JdbcSqlQueryTest {
     assertThat(getTableLines().get(38), is("38@value_38_updated"));
   }
 
-  @Ignore @Test
+  @Test
   public void deleteRows() {
     assertThat(getTableLines(), hasSize(100));
     Transaction.performInOne(() -> {
@@ -342,7 +337,7 @@ public class JdbcSqlQueryTest {
     assertThat(getTableLines(), hasSize(90));
   }
 
-  @Ignore @Test
+  @Test
   public void dropTableA() throws SQLException {
     assertThat(createCountFor("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "a_table")
         .execute(), is(1L));
@@ -354,7 +349,7 @@ public class JdbcSqlQueryTest {
         .execute(), is(0L));
   }
 
-  @Ignore @Test
+  @Test
   public void createTableB() throws SQLException {
     assertThat(createCountFor("INFORMATION_SCHEMA.TABLES").where("lower(TABLE_NAME) = ?", "b_table")
         .execute(), is(0L));
@@ -375,15 +370,15 @@ public class JdbcSqlQueryTest {
    * @return the content of a_table.
    */
   private List<String> getTableLines() {
-    try (Connection connection = dbSetupRule.getSafeConnection();
-         PreparedStatement statement = connection.prepareStatement(
-             "SELECT * FROM a_table ORDER BY id");
+    try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread();
+         PreparedStatement statement = connection
+             .prepareStatement("SELECT * FROM a_table ORDER BY id");
          ResultSet resultSet = statement.executeQuery()) {
-          List<String> result = new ArrayList<>();
-          while (resultSet.next()) {
-            result.add(resultSet.getLong(1) + "@" + resultSet.getString(2));
-          }
-          return result;
+      List<String> result = new ArrayList<>();
+      while (resultSet.next()) {
+        result.add(resultSet.getLong(1) + "@" + resultSet.getString(2));
+      }
+      return result;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

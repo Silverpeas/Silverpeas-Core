@@ -327,10 +327,12 @@ public class DbSetupRule implements TestRule {
     DbSetupRule theCurrentRuleInstance = me.get();
     if (theCurrentRuleInstance == null) {
       String message =
-          "The test must use directly DbSetupRule or extends DataSetTest in order to use " +
-              "getSafeConnection method.";
+          "Calling getSafeConnection method requires that the test must use directly DbSetupRule " +
+              "or extends DataSetTest.\n";
+      message += "Maybe is the method called from a Thread instantiated from a Test method. " +
+          "Please call instead getSafeConnectionFromDifferentThread method if it is the case.";
       Logger.getLogger(DbSetupRule.class.getName()).severe(message);
-      //throw new IllegalStateException(message);
+      throw new IllegalStateException(message);
     }
     return theCurrentRuleInstance;
   }
@@ -346,6 +348,15 @@ public class DbSetupRule implements TestRule {
    */
   public static Connection getSafeConnection() throws SQLException {
     return getCurrentRuleInstance().openSafeConnection();
+  }
+
+  /**
+   * Gets a new connection to the database that will be closed automatically closed at the end of
+   * test if it is not already done.
+   * @throws SQLException
+   */
+  public Connection getSafeConnectionFromDifferentThread() throws SQLException {
+    return openSafeConnection();
   }
 
   /**
