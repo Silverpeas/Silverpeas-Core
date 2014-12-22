@@ -20,25 +20,19 @@
  */
 package com.stratelia.webactiv.publication.social;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
-
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Singleton
 public class SocialPublications implements SocialPublicationsInterface {

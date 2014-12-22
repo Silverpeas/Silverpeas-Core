@@ -36,8 +36,6 @@ import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.path.BasicPath;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.test.util.lang.TestSystemWrapper;
-import org.silverpeas.test.util.log.TestSilverpeasTrace;
 
 import java.io.File;
 import java.io.InputStream;
