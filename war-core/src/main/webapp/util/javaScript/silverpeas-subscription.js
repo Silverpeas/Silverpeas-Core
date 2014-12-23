@@ -178,7 +178,8 @@
       return;
     }
 
-    if ($settings.validationCallback && !$settings.validationCallback.call(this)) {
+    if (typeof $settings.validationCallback === 'function' &&
+        !$settings.validationCallback.call(this)) {
       // The data of the form to submit are not valid.
       return;
     }
