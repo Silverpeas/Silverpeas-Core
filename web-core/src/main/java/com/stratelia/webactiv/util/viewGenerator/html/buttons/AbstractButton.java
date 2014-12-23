@@ -134,7 +134,6 @@ public abstract class AbstractButton implements Button {
       script actionPreProcessFunction = new script().setType("text/javascript");
       actionPreProcessFunction.addElement("function handleButtonAction() {\n");
       actionPreProcessFunction.addElement(tempActionPreProcessing);
-      actionPreProcessFunction.addElement("\nreturn false;");
       actionPreProcessFunction.addElement("\n}");
       sb.append(actionPreProcessFunction.toString()).append("\n");
 
