@@ -21,16 +21,8 @@
 
 package org.silverpeas.notification.util;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.util.JSONCodec;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -44,7 +36,7 @@ public class TestResourceEvent extends AbstractResourceEvent<TestResource> {
   }
 
   /**
-   * @see org.silverpeas.notification.AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, Object[])
+   * @see AbstractResourceEvent#AbstractResourceEvent(org.silverpeas.notification.ResourceEvent.Type, java.io.Serializable[])
    */
   public TestResourceEvent(final Type type, final TestResource... resource) {
     super(type, resource);

@@ -55,6 +55,10 @@
       <artifactId>javax.servlet.jsp.jstl-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>javax.servlet.jsp.jstl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
       <scope>provided</scope>

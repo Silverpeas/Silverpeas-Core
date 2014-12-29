@@ -28,7 +28,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +113,7 @@ public class ResourceSubscriptionProvider {
    */
   private static ResourceSubscriptionService getService(String componentInstanceId) {
     ComponentInstLight componentInstLight =
-        OrganisationControllerFactory.getOrganisationController()
+        OrganizationControllerProvider.getOrganisationController()
             .getComponentInstLight(componentInstanceId);
     if (componentInstLight == null) {
       throw new IllegalStateException(

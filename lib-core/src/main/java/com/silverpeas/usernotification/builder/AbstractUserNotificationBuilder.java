@@ -23,8 +23,6 @@
  */
 package com.silverpeas.usernotification.builder;
 
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.ExternalRecipient;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -32,11 +30,12 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 

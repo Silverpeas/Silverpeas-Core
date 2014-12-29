@@ -25,16 +25,11 @@ package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.AbstractCommonSubscriptionTest;
 import com.silverpeas.subscribe.ResourceSubscriptionService;
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collection;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

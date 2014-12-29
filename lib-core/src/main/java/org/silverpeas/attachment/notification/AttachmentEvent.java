@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** An event about the life-cycle change of an attachment in Silverpeas.
+/**
+ * An event about the life-cycle change of an attachment in Silverpeas.
  * It represents an event occurring when an attachment, represented by a simple document, is either
  * created, or updated or deleted.
  * @author mmoquillon

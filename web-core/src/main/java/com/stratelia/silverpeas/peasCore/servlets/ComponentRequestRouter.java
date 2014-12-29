@@ -21,7 +21,7 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
 import com.stratelia.silverpeas.peasCore.ComponentContext;

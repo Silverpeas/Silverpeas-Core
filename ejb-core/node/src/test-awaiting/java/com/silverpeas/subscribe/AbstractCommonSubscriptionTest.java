@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.OrganizationController;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.naming.InitialContext;

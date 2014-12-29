@@ -33,9 +33,9 @@
 
 package org.silverpeas.util.viewGenerator.html.buttons;
 
-import com.silverpeas.util.StringUtil;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import java.text.MessageFormat;
 import java.util.regex.Matcher;

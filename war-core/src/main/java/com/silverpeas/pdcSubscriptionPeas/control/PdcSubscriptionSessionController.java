@@ -78,7 +78,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return ServiceProvider.getService(PdcManager.class);
   }
 
-  private SubscriptionService getSubscribeBm() {
+  private SubscriptionService getSubscribeService() {
     return SubscriptionServiceProvider.getSubscribeService();
   }
 

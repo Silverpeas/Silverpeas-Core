@@ -21,9 +21,10 @@
 
 package org.silverpeas.notification;
 
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +56,7 @@ import java.util.logging.Logger;
  * </p>
  * @author mmoquillon
  */
-public abstract class JMSResourceEventListener<T extends ResourceEvent>
+public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
     extends AbstractResourceEventListener<T> implements MessageListener {
 
   protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
@@ -93,8 +94,9 @@ public abstract class JMSResourceEventListener<T extends ResourceEvent>
   @Override
   public void onMessage(final Message message) {
     try {
-        T event = message.getBody(getResourceEventClass());
-        dispatchEvent(event);
+      T event = message.getBody(getResourceEventClass());
+      UserSubscriptionNotificationSendingHandler.verifyResourceEvent(event);
+      dispatchEvent(event);
     } catch (Exception e) {
       if (retryAtFailure()) {
         throw new RuntimeException(e);

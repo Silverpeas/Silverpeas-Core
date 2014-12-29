@@ -28,26 +28,25 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.initialization.Initialization;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.HashSet;
 
 import static com.silverpeas.subscribe.SubscriptionServiceProvider.getSubscribeService;
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractResourceSubscriptionService implements ResourceSubscriptionService {
+public abstract class AbstractResourceSubscriptionService implements ResourceSubscriptionService,
+    Initialization {
 
-  @PostConstruct
-  final protected void register() {
+  @Override
+  public void init() throws Exception {
     ResourceSubscriptionProvider
         .registerResourceSubscriptionService(this);
   }
@@ -76,7 +75,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       final String componentInstanceId, final SubscriptionResourceType resourceType,
       final String resourceId) {
 
-    Collection<SubscriptionSubscriber> subscribers = new HashSet<SubscriptionSubscriber>();
+    Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
 
     switch (resourceType) {
       case FORUM_MESSAGE:
@@ -86,7 +85,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
       case NODE:
         Collection<NodeDetail> path = null;
         if (!"kmax".equals(componentInstanceId)) {
-          path = getNodeBm().getPath(new NodePK(resourceId, componentInstanceId));
+          path = getNodeService().getPath(new NodePK(resourceId, componentInstanceId));
         }
         if (path != null) {
           for (final NodeDetail descendant : path) {
@@ -102,12 +101,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
     return new SubscriptionSubscriberList(subscribers);
   }
 
-  protected NodeBm getNodeBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
-    } catch (final Exception e) {
-      throw new SubscribeRuntimeException("DefaultResourceSubscriptionService.getNodeBm()", ERROR,
-          "subscribe.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-    }
+  protected NodeService getNodeService() {
+    return NodeService.get();
   }
 }

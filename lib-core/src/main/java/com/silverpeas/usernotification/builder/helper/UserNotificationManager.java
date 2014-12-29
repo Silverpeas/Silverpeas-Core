@@ -23,7 +23,7 @@
  */
 package com.silverpeas.usernotification.builder.helper;
 
-import com.silverpeas.usernotification.builder.UserNotificationBuider;
+import com.silverpeas.usernotification.builder.UserNotificationBuilder;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 

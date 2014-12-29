@@ -25,8 +25,8 @@ package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,11 +56,11 @@ public class SubscriptionSubscriberList extends ArrayList<SubscriptionSubscriber
    * {@link com.silverpeas.subscribe.constant.SubscriberType}.
    */
   public List<String> getAllIds() {
-    Set<String> allIds = new HashSet<String>();
+    Set<String> allIds = new HashSet<>();
     for (SubscriptionSubscriber subscriber : this) {
       allIds.add(subscriber.getId());
     }
-    return new ArrayList<String>(allIds);
+    return new ArrayList<>(allIds);
   }
 
   /**
@@ -71,8 +71,8 @@ public class SubscriptionSubscriberList extends ArrayList<SubscriptionSubscriber
   public List<String> getAllUserIds() {
 
     // Retrieving
-    Set<String> allUserSubscriberIds = new HashSet<String>();
-    Set<String> groupIds = new HashSet<String>();
+    Set<String> allUserSubscriberIds = new HashSet<>();
+    Set<String> groupIds = new HashSet<>();
     for (SubscriptionSubscriber subscriber : this) {
       switch (subscriber.getType()) {
         case USER:
@@ -86,8 +86,8 @@ public class SubscriptionSubscriberList extends ArrayList<SubscriptionSubscriber
 
     // Retrieving users from groups if any
     if (!groupIds.isEmpty()) {
-      final OrganisationController organisationController =
-          OrganisationControllerFactory.getOrganisationController();
+      final OrganizationController organisationController =
+          OrganizationControllerProvider.getOrganisationController();
       for (String groupId : groupIds) {
         for (UserDetail user : organisationController.getAllUsersOfGroup(groupId)) {
           allUserSubscriberIds.add(user.getId());
@@ -96,7 +96,7 @@ public class SubscriptionSubscriberList extends ArrayList<SubscriptionSubscriber
     }
 
     // Result
-    return new ArrayList<String>(allUserSubscriberIds);
+    return new ArrayList<>(allUserSubscriberIds);
   }
 
   /**

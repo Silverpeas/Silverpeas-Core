@@ -25,11 +25,12 @@
 package com.stratelia.webactiv.util.viewGenerator.html.buttons;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion;
+import org.silverpeas.util.viewGenerator.html.buttons.ButtonTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;

@@ -31,6 +31,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.apache.ecs.ElementContainer;
 
+import static org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion.*;
+
 /**
  * This tag is for including javascript plugins with their stylesheets.
  */
@@ -54,88 +56,88 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       SupportedJavaScriptPlugins jsPlugin = SupportedJavaScriptPlugins.valueOf(getName());
       switch (jsPlugin) {
         case embedPlayer:
-          JavascriptPluginInclusion.includeEmbedPlayer(xhtml);
+          includeEmbedPlayer(xhtml);
           break;
         case audioPlayer:
-          JavascriptPluginInclusion.includeAudioPlayer(xhtml);
+          includeAudioPlayer(xhtml);
           break;
         case videoPlayer:
-          JavascriptPluginInclusion.includeVideoPlayer(xhtml);
+          includeVideoPlayer(xhtml);
           break;
         case qtip:
-          JavascriptPluginInclusion.includeQTip(xhtml);
+          includeQTip(xhtml);
           break;
         case datepicker:
-          JavascriptPluginInclusion.includeDatePicker(xhtml, getLanguage());
+          includeDatePicker(xhtml, getLanguage());
           break;
         case pagination:
-          JavascriptPluginInclusion.includePagination(xhtml);
+          includePagination(xhtml);
           break;
         case breadcrumb:
-          JavascriptPluginInclusion.includeBreadCrumb(xhtml);
+          includeBreadCrumb(xhtml);
           break;
         case userZoom:
-          JavascriptPluginInclusion.includeUserZoom(xhtml);
+          includeUserZoom(xhtml);
           break;
         case invitme:
-          JavascriptPluginInclusion.includeInvitMe(xhtml);
+          includeInvitMe(xhtml);
           break;
         case messageme:
-          JavascriptPluginInclusion.includeMessageMe(xhtml);
+          includeMessageMe(xhtml);
           break;
         case wysiwyg:
-          JavascriptPluginInclusion.includeWysiwygEditor(xhtml);
+          includeWysiwygEditor(xhtml);
           break;
         case responsibles:
-          JavascriptPluginInclusion.includeResponsibles(xhtml, getLanguage());
+          includeResponsibles(xhtml, getLanguage());
           break;
         case popup:
-          JavascriptPluginInclusion.includePopup(xhtml);
+          includePopup(xhtml);
           break;
         case calendar:
-          JavascriptPluginInclusion.includeCalendar(xhtml);
+          includeCalendar(xhtml);
           break;
         case iframeajaxtransport:
-          JavascriptPluginInclusion.includeIFrameAjaxTransport(xhtml);
+          includeIFrameAjaxTransport(xhtml);
           break;
         case preview:
-          JavascriptPluginInclusion.includePreview(xhtml);
+          includePreview(xhtml);
           break;
         case notifier:
-          JavascriptPluginInclusion.includeNotifier(xhtml);
+          includeNotifier(xhtml);
           break;
         case password:
-          JavascriptPluginInclusion.includePassword(xhtml);
+          includePassword(xhtml);
           break;
         case gauge:
-          JavascriptPluginInclusion.includeGauge(xhtml);
+          includeGauge(xhtml);
           break;
         case jquery:
-          JavascriptPluginInclusion.includeJQuery(xhtml);
+          includeJQuery(xhtml);
           break;
         case tags:
-          JavascriptPluginInclusion.includeTags(xhtml);
+          includeTags(xhtml);
           break;
         case pdc:
-          JavascriptPluginInclusion.includePdc(xhtml);
+          includePdc(xhtml);
           break;
         case tkn:
-          JavascriptPluginInclusion.includeSecurityTokenizing(xhtml);
+          includeSecurityTokenizing(xhtml);
           break;
         case rating:
-          JavascriptPluginInclusion.includeRating(xhtml);
+          includeRating(xhtml);
           break;
         case toggle:
-          JavascriptPluginInclusion.includeToggle(xhtml);
+          includeToggle(xhtml);
           break;
         case lightslideshow:
-          JavascriptPluginInclusion.includeLightweightSlideshow(xhtml);
+          includeLightweightSlideshow(xhtml);
           break;
         case lang:
-          JavascriptPluginInclusion.includeLang(xhtml);
+          includeLang(xhtml);
           break;
         case ticker:
-          JavascriptPluginInclusion.includeTicker(xhtml);
+          includeTicker(xhtml);
           break;
         case subscription:
           includeDynamicallySubscription(xhtml, null);

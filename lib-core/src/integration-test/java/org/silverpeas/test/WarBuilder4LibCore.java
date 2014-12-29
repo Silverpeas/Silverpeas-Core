@@ -61,6 +61,8 @@ import org.silverpeas.quota.service.QuotaService;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.util.exception.EncodingException;
 import org.silverpeas.util.exception.FromModule;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -114,6 +116,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>ehcache maven dependencies</li>
    * <li>org.silverpeas.cache</li>
    * </ul>
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addCommonBasicUtilities()}</li>
+   * </ul>
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addCacheFeatures() {
@@ -121,6 +127,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addMavenDependencies("net.sf.ehcache:ehcache-core");
       addPackages(true, "org.silverpeas.cache");
       addClasses(SessionInfo.class);
+      addCommonBasicUtilities();
     }
     return this;
   }
@@ -437,6 +444,27 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       // Centralized features
       addSilverpeasUrlFeatures();
     }
+    return this;
+  }
+
+  /**
+   * Sets subscription features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addSubscriptionFeatures() {
+    addPackages(true, "org.silverpeas.subscription");
+    addAsResource("org/silverpeas/subscription/settings/subscriptionSettings.properties");
+    return this;
+  }
+
+  /**
+   * Sets synchronous/asynchronous resource event features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addSynchAndAsynchResourceEventFeatures() {
+    addClasses(DecodingException.class, EncodingException.class, StateTransition.class);
+    addPackages(false, "org.silverpeas.notification");
+    applyManually(war -> war.addAsManifestResource("META-INF/test-MANIFEST.MF", "MANIFEST.MF"));
     return this;
   }
 

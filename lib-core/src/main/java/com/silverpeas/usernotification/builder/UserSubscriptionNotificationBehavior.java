@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.builder;
+package com.silverpeas.usernotification.builder;
 
 /**
  * Implementation of {@link UserNotificationBuilder} must implement this interface if it deals with

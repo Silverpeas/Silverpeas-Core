@@ -23,7 +23,7 @@
  */
 package org.silverpeas.subscription;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * All settings around the subscription services.

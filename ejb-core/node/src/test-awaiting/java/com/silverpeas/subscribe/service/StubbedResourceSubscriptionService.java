@@ -23,9 +23,9 @@
  */
 package com.silverpeas.subscribe.service;
 
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.node.control.NodeService;
+import com.stratelia.webactiv.node.model.NodeDetail;
+import com.stratelia.webactiv.node.model.NodePK;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -47,7 +47,7 @@ public class StubbedResourceSubscriptionService
     return DefaultResourceSubscriptionService.DEFAULT_IMPLEMENTATION_ID;
   }
 
-  private NodeBm mock = Mockito.mock(NodeBm.class);
+  private NodeService mock = Mockito.mock(NodeBm.class);
 
   public StubbedResourceSubscriptionService() {
     when(mock.getPath(any(NodePK.class))).thenAnswer(new Answer<Collection<NodeDetail>>() {
@@ -69,7 +69,7 @@ public class StubbedResourceSubscriptionService
   }
 
   @Override
-  protected NodeBm getNodeBm() {
+  protected NodeService getNodeService() {
     return mock;
   }
 }

@@ -21,14 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.builder;
+package com.silverpeas.usernotification.builder;
 
-import com.silverpeas.notification.SilverpeasNotification;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.notification.AbstractResourceEvent;
+import org.silverpeas.notification.ResourceEvent;
+import org.silverpeas.notification.util.UnitTestResource;
+import org.silverpeas.notification.util.UnitTestResourceEvent;
+import org.silverpeas.test.rule.CommonAPI4Test;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,21 +43,25 @@ import static org.mockito.Mockito.when;
 
 public class UserSubscriptionNotificationSendingHandlerTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   private HttpServletRequest request;
-  private SilverpeasNotification notification;
+  private AbstractResourceEvent resourceEvent;
 
   @Before
   public void setup() {
-    CacheServiceFactory.getThreadCacheService().clear();
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getThreadCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     request = mock(HttpServletRequest.class);
-    notification = new SilverpeasNotification(null, null);
+    resourceEvent = new UnitTestResourceEvent(ResourceEvent.Type.CREATION,
+        new UnitTestResource("26", "Toto Chez-les-Papoos", new Date()));
   }
 
   @Test
   public void enabledByDefault() {
     UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
-    UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
+    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
@@ -81,40 +91,40 @@ public class UserSubscriptionNotificationSendingHandlerTest {
         .thenReturn("true");
     UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceFactory.getThreadCacheService().clear();
+    CacheServiceProvider.getThreadCacheService().clear();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpParameterFromNotificationIsNotEqualToTrueOrFalse() {
-    notification.addParameter(
+    resourceEvent.putParameter(
         UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
         "toto");
-    UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
+    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpParameterFromNotificationIsNotEqualToFalse() {
-    notification.addParameter(
+    resourceEvent.putParameter(
         UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
         "false");
-    UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
+    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void notEnabledIfSkipHttpFromNotificationParameterIsNotEqualToFalse() {
-    notification.addParameter(
+    resourceEvent.putParameter(
         UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
         "true");
-    UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
+    UserSubscriptionNotificationSendingHandler.verifyResourceEvent(resourceEvent);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
-    CacheServiceFactory.getThreadCacheService().clear();
+    CacheServiceProvider.getThreadCacheService().clear();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 }

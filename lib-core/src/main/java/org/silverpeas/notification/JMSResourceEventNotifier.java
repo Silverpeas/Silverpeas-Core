@@ -21,6 +21,8 @@
 
 package org.silverpeas.notification;
 
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+
 import javax.inject.Inject;
 import javax.jms.Destination;
 import javax.jms.JMSContext;
@@ -35,7 +37,7 @@ import java.io.Serializable;
  * @param <T> the type of the resource event.
  * @author mmoquillon
  */
-public abstract class JMSResourceEventNotifier<R extends Serializable, T extends ResourceEvent>
+public abstract class JMSResourceEventNotifier<R extends Serializable, T extends AbstractResourceEvent>
     implements ResourceEventNotifier<R, T> {
 
   @Inject
@@ -59,6 +61,13 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
 
   @Override
   public final void notify(final T event) {
+
+    // As treatments of asynchronous JMS notifications are executed in an other context of the
+    // user request, the indicator of the confirmation of subscription notification sending must
+    // be managed here (as this indicator is attached to the user request).
+    UserSubscriptionNotificationSendingHandler.setupResourceEvent(event);
+
+    // Sending
     JMSProducer producer = context.createProducer();
     producer.send(getDestination(), event);
   }

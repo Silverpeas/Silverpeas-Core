@@ -21,16 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification.builder;
+package com.silverpeas.usernotification.builder;
 
-import com.silverpeas.notification.SilverpeasNotification;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.notification.AbstractResourceEvent;
 import org.silverpeas.subscription.SubscriptionSettings;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.silverpeas.cache.service.CacheServiceFactory.getRequestCacheService;
-import static org.silverpeas.cache.service.CacheServiceFactory.getThreadCacheService;
+import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.cache.service.CacheServiceProvider.getThreadCacheService;
 
 /**
  * This class handles the feature that permits to skip the user subscription notification sending.
@@ -48,24 +48,24 @@ public class UserSubscriptionNotificationSendingHandler {
    * As treatments of asynchronous JMS notifications are executed in an other context of the user
    * request, the indicator of the confirmation of subscription notification sending must be
    * managed here (as this indicator is attached to the user request).
-   * @param silverpeasNotification the notification that will be send on JMS.
+   * @param resourceEvent the resource event that will be send on JMS.
    */
-  public static void setupSilverpeasNotification(SilverpeasNotification silverpeasNotification) {
+  public static void setupResourceEvent(AbstractResourceEvent resourceEvent) {
     if (!isEnabledForCurrentRequest()) {
-      silverpeasNotification.addParameter(
+      resourceEvent.putParameter(
           UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
           "true");
     }
   }
 
   /**
-   * Verifies from a silverpeas notification if it is indicated that subscription notification
+   * Verifies from a resource event if it is indicated that subscription notification
    * sending must be skipped.
-   * @param silverpeasNotification the notification sent on JMS.
+   * @param resourceEvent the resource event sent on JMS.
    */
-  public static void verifySilverpeasNotification(SilverpeasNotification silverpeasNotification) {
+  public static void verifyResourceEvent(AbstractResourceEvent resourceEvent) {
     if (SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() && StringUtil
-        .getBooleanValue(silverpeasNotification.getParameterValue(
+        .getBooleanValue(resourceEvent.getParameterValue(
             UserSubscriptionNotificationBehavior
                 .SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))) {
       getThreadCacheService().put(SENDING_NOT_ENABLED_JMS_WAY_KEY, true);

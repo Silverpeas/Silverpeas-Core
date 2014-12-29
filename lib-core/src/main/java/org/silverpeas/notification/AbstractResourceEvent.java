@@ -28,6 +28,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * It is an abstract implementation of a resource event. It defines the common properties all
@@ -46,6 +50,8 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
   private Type type;
   @XmlElement
   private StateTransition<T> resource;
+  @XmlElement
+  private Map<String, String> parameters = new HashMap<String, String>();
 
   protected AbstractResourceEvent() {
 
@@ -85,6 +91,34 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
   @Override
   public StateTransition<T> getTransition() {
     return resource;
+  }
+
+  /**
+   * Puts a new parameter to this resource. Parameters in event resource carries additional
+   * information and has to be simple.
+   * @param name the parameter name.
+   * @param value the parameter value.
+   */
+  public void putParameter(String name, String value) {
+    parameters.put(name, value);
+  }
+
+  /**
+   * Gets the value of the specified parameter. If the parameter isn't set in the event resource,
+   * then null is returned.
+   * @param name the name of the parameter to get.
+   * @return the value of the parameter or null if no such parameter is set in this notification.
+   */
+  public String getParameterValue(String name) {
+    return parameters.get(name);
+  }
+
+  /**
+   * Gets the set of this event resource's parameters.
+   * @return an unmodifiable set of parameter names.
+   */
+  public Set<String> getParameters() {
+    return Collections.unmodifiableSet(parameters.keySet());
   }
 
   @Override

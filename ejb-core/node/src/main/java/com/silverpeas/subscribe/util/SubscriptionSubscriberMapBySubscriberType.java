@@ -25,7 +25,7 @@ package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,10 +113,10 @@ public class SubscriptionSubscriberMapBySubscriberType
    * @return the complete list of user identifiers (those of groups too).
    */
   public List<String> getAllUserIds() {
-    Set<String> userIds = new HashSet<String>();
+    Set<String> userIds = new HashSet<>();
     for (SubscriptionSubscriberList subscriptionSubscribers : values()) {
       userIds.addAll(subscriptionSubscribers.getAllUserIds());
     }
-    return new ArrayList<String>(userIds);
+    return new ArrayList<>(userIds);
   }
 }

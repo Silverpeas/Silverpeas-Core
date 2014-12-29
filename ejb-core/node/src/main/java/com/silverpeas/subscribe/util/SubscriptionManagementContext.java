@@ -24,8 +24,8 @@
 package com.silverpeas.subscribe.util;
 
 import com.silverpeas.subscribe.SubscriptionResource;
-import com.stratelia.webactiv.util.ActionType;
 import org.silverpeas.contribution.ContributionStatus;
+import org.silverpeas.util.ActionType;
 
 /**
  * This class permits to specify a context into which the subscriptions have to be managed.

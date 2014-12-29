@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.util.viewGenerator.html.buttons;
+package org.silverpeas.util.viewGenerator.html.buttons;
 
 import org.junit.Test;
+import org.silverpeas.util.viewGenerator.html.buttons.AbstractButton;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -99,7 +100,7 @@ public class AbstractButtonTest {
 
 
   /**
-   * Implementation of {@link Button}
+   * Implementation of {@link org.silverpeas.util.viewGenerator.html.buttons.Button}
    */
   private static class ButtonForTest extends AbstractButton {
 
