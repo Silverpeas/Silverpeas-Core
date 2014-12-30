@@ -42,10 +42,13 @@ import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.ServiceProvider;
 
+import java.sql.Connection;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.silverpeas.test.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.test.rule.DbSetupRule.getSafeConnection;
 
 /**
  * @author Yohann Chastagnier
@@ -114,30 +117,35 @@ public class TransactionTest {
     final Person person = jpaEntityServiceTest.getPersonById("person_1");
     assertThat(person, notNullValue());
 
-    IDataSet actualDataSet = getActualDataSet();
-    ITable table = actualDataSet.getTable("test_persons");
-    int index = getTableIndexForId(table, person.getId());
-    assertThat(table.getValue(index, "id"), is("person_1"));
-    assertThat(table.getValue(index, "id"), is(person.getId()));
-    assertThat(table.getValue(index, "firstName"), is("Yohann"));
-    assertThat(table.getValue(index, "firstName"), is(person.getFirstName()));
-    assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
-    assertThat(table.getValue(index, "lastUpdatedBy"), is(person.getLastUpdatedBy()));
+    try(Connection connection = getSafeConnection()) {
+      IDataSet actualDataSet = getActualDataSet(connection);
+      ITable table = actualDataSet.getTable("test_persons");
+      int index = getTableIndexForId(table, person.getId());
+      assertThat(table.getValue(index, "id"), is("person_1"));
+      assertThat(table.getValue(index, "id"), is(person.getId()));
+      assertThat(table.getValue(index, "firstName"), is("Yohann"));
+      assertThat(table.getValue(index, "firstName"), is(person.getFirstName()));
+      assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
+      assertThat(table.getValue(index, "lastUpdatedBy"), is(person.getLastUpdatedBy()));
+    }
 
-    // Modifying person data
-    person.setFirstName("UnknownFirstName");
+      // Modifying person data
+      person.setFirstName("UnknownFirstName");
 
-    Transaction transaction = Transaction.getTransaction();
-    transaction.perform(() -> {
-      jpaEntityServiceTest.save(createOperationContext("26"), person);
-      return null;
-    });
+      Transaction transaction = Transaction.getTransaction();
+      transaction.perform(() -> {
+        jpaEntityServiceTest.save(createOperationContext("26"), person);
+        return null;
+      });
 
-    table = actualDataSet.getTable("test_persons");
-    index = getTableIndexForId(table, person.getId());
-    assertThat(table.getValue(index, "id"), is("person_1"));
-    assertThat(table.getValue(index, "firstName"), is("UnknownFirstName"));
-    assertThat(table.getValue(index, "lastUpdatedBy"), is("26"));
+    try(Connection connection = getSafeConnection()) {
+      IDataSet actualDataSet = getActualDataSet(connection);
+      ITable table = actualDataSet.getTable("test_persons");
+      int index = getTableIndexForId(table, person.getId());
+      assertThat(table.getValue(index, "id"), is("person_1"));
+      assertThat(table.getValue(index, "firstName"), is("UnknownFirstName"));
+      assertThat(table.getValue(index, "lastUpdatedBy"), is("26"));
+    }
   }
 
   @Test
@@ -145,39 +153,43 @@ public class TransactionTest {
     final Person person = jpaEntityServiceTest.getPersonById("person_1");
     assertThat(person, notNullValue());
 
-    IDataSet actualDataSet = getActualDataSet();
-    ITable table = actualDataSet.getTable("test_persons");
-    int index = getTableIndexForId(table, person.getId());
-    assertThat(table.getValue(index, "id"), is("person_1"));
-    assertThat(table.getValue(index, "id"), is(person.getId()));
-    assertThat(table.getValue(index, "firstName"), is("Yohann"));
-    assertThat(table.getValue(index, "firstName"), is(person.getFirstName()));
-    assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
-    assertThat(table.getValue(index, "lastUpdatedBy"), is(person.getLastUpdatedBy()));
-
-    // Modifying person data
-    person.setFirstName("UnknownFirstName");
-
-    boolean exceptionThrown = false;
-    try {
-      Transaction transaction = Transaction.getTransaction();
-      transaction.perform(() -> {
-        jpaEntityServiceTest.save(createOperationContext("26"), person);
-        jpaEntityServiceTest.flush();
-        throw new IllegalArgumentException("ExpectedTransactionError");
-      });
-    } catch (TransactionRuntimeException e) {
-      assertThat(e.getMessage(),
-          is("java.lang.IllegalArgumentException: ExpectedTransactionError"));
-      exceptionThrown = true;
+    try(Connection connection = getSafeConnection()) {
+      IDataSet actualDataSet = getActualDataSet(connection);
+      ITable table = actualDataSet.getTable("test_persons");
+      int index = getTableIndexForId(table, person.getId());
+      assertThat(table.getValue(index, "id"), is("person_1"));
+      assertThat(table.getValue(index, "id"), is(person.getId()));
+      assertThat(table.getValue(index, "firstName"), is("Yohann"));
+      assertThat(table.getValue(index, "firstName"), is(person.getFirstName()));
+      assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
+      assertThat(table.getValue(index, "lastUpdatedBy"), is(person.getLastUpdatedBy()));
     }
-    assertThat(exceptionThrown, is(true));
 
-    table = actualDataSet.getTable("test_persons");
-    index = getTableIndexForId(table, person.getId());
-    assertThat(table.getValue(index, "id"), is("person_1"));
-    assertThat(table.getValue(index, "firstName"), is("Yohann"));
-    assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
+      // Modifying person data
+      person.setFirstName("UnknownFirstName");
+
+      boolean exceptionThrown = false;
+      try {
+        Transaction transaction = Transaction.getTransaction();
+        transaction.perform(() -> {
+          jpaEntityServiceTest.save(createOperationContext("26"), person);
+          jpaEntityServiceTest.flush();
+          throw new IllegalArgumentException("ExpectedTransactionError");
+        });
+      } catch (TransactionRuntimeException e) {
+        assertThat(e.getMessage(), is("java.lang.IllegalArgumentException: ExpectedTransactionError"));
+        exceptionThrown = true;
+      }
+      assertThat(exceptionThrown, is(true));
+
+    try(Connection connection = getSafeConnection()) {
+      IDataSet actualDataSet = getActualDataSet(connection);
+      ITable table = actualDataSet.getTable("test_persons");
+      int index = getTableIndexForId(table, person.getId());
+      assertThat(table.getValue(index, "id"), is("person_1"));
+      assertThat(table.getValue(index, "firstName"), is("Yohann"));
+      assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
+    }
   }
 
   /**

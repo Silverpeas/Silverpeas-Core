@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.junit.Assert.fail;
+
 /**
  * A rule to set up the database before any integration tests implying the persistence engine of
  * Silverpeas.
@@ -147,7 +149,7 @@ public class DbSetupRule implements TestRule {
           }
         } finally {
           try {
-            cleanUpDataSource();
+            cleanUpDataSource(description);
           } finally {
             me.set(null);
           }
@@ -223,7 +225,7 @@ public class DbSetupRule implements TestRule {
 //    }
 //  }
 
-  private void cleanUpDataSource() throws Exception {
+  private void cleanUpDataSource(Description description) throws Exception {
     try {
       // the deletion must occurs in the reverse order from the insertion to take into account the
       // constrains.
@@ -250,7 +252,7 @@ public class DbSetupRule implements TestRule {
         throw e;
       }
     } finally {
-      closeConnectionsQuietly();
+      closeConnectionsQuietly(description);
     }
   }
 
@@ -277,7 +279,7 @@ public class DbSetupRule implements TestRule {
    * Closes quietly all unclosed database connections opened by {@link #openSafeConnection()} or
    * {@link #getSafeConnection()}.
    */
-  private void closeConnectionsQuietly() {
+  private void closeConnectionsQuietly(Description description) {
     if (safeConnectionPool.isEmpty()) {
       Logger.getLogger(DbSetupRule.class.getName()).info("No database safe connection to close.");
       return;
@@ -310,6 +312,11 @@ public class DbSetupRule implements TestRule {
             " - {2} already closed,\n" +
             " - {3} closed in error",
         new Object[]{total, nbCloseSuccessfully, nbAlreadyClosed, nbCloseErrors});
+    if (nbCloseSuccessfully > 0) {
+      fail(
+          nbCloseSuccessfully + " connection(s) not closed, please review the test performed by: " +
+              description.getTestClass() + "#" + description.getMethodName());
+    }
   }
 
   /*
@@ -365,8 +372,8 @@ public class DbSetupRule implements TestRule {
    * @return the actual data set.
    * @throws Exception if an error occurs while fetching the data set in the database.
    */
-  public static IDataSet getActualDataSet() throws Exception {
-    IDatabaseConnection databaseConnection = new DatabaseConnection(getSafeConnection());
+  public static IDataSet getActualDataSet(Connection connection) throws Exception {
+    IDatabaseConnection databaseConnection = new DatabaseConnection(connection);
     return databaseConnection.createDataSet();
   }
 
