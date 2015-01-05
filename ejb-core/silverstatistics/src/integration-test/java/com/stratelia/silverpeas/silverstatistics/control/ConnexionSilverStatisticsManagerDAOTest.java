@@ -102,9 +102,10 @@ public class ConnexionSilverStatisticsManagerDAOTest extends DataSetTest {
 
   @Test
   public void testInsertDataCumul() throws Exception {
-    Connection connection = getConnection();
     List<String> data = Arrays.asList("2011-04-17", "1308", "512", "262");
-    SilverStatisticsManagerDAO.insertDataStatsCumul(connection, typeofStat, data, config);
+    try (Connection connection = getConnection()) {
+      SilverStatisticsManagerDAO.insertDataStatsCumul(connection, typeofStat, data, config);
+    }
     JdbcSqlQuery selectQuery = JdbcSqlQuery.createSelect("* FROM SB_Stat_ConnectionCumul");
     List<DataStatsCumul> results = selectQuery.execute(
         row -> new DataStatsCumul(row.getString(1), row.getInt(2), row.getLong(3), row.getLong(4)));

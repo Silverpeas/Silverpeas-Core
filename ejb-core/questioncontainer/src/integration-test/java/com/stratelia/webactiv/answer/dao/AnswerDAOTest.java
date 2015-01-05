@@ -166,8 +166,8 @@ public class AnswerDAOTest extends DataSetTest {
   public void testDeleteAnswersToAQuestion() throws Exception {
     Connection con = getConnection();
     ForeignPK foreignPK = new ForeignPK("178", "quizz83");
-    try {
-      AnswerDAO.deleteAnswersToAQuestion(getConnection(), foreignPK);
+    try (Connection otherCon = getConnection()) {
+      AnswerDAO.deleteAnswersToAQuestion(otherCon, foreignPK);
       Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, foreignPK);
       Assert.assertEquals(0, answers.size());
     } finally {
@@ -183,8 +183,8 @@ public class AnswerDAOTest extends DataSetTest {
     Connection con = getConnection();
     String answerId = "1018";
     ForeignPK foreignPK = new ForeignPK("178", "quizz83");
-    try {
-      AnswerDAO.deleteAnswerToAQuestion(getConnection(), foreignPK, answerId);
+    try (Connection otherCon = getConnection()) {
+      AnswerDAO.deleteAnswerToAQuestion(otherCon, foreignPK, answerId);
       Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, foreignPK);
       Assert.assertEquals(2, answers.size());
     } finally {

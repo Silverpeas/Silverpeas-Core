@@ -226,8 +226,10 @@ public class QuestionContainerDAOTest extends DataSetTest {
     String quizId = "2";
     String instanceId = "quizz83";
     QuestionContainerPK questionContainerPK = new QuestionContainerPK(quizId, "", instanceId);
-    QuestionContainerHeader result =
-        QuestionContainerDAO.getQuestionContainerHeader(getConnection(), questionContainerPK);
+    final QuestionContainerHeader result;
+    try (Connection con = getConnection()) {
+      result = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
+    }
     assertEquals("2012-01-12", result.getBeginDate());
     assertEquals("RAS", result.getComment());
     assertEquals("2012-01-12", result.getCreationDate());
@@ -252,11 +254,12 @@ public class QuestionContainerDAOTest extends DataSetTest {
   public void testCloseQuestionContainer() throws Exception {
     String quizId = "1";
     String instanceId = "quizz83";
-    Connection con = getConnection();
-    QuestionContainerPK questionContainerPK = new QuestionContainerPK(quizId, "", instanceId);
-    QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
-    QuestionContainerHeader curQC =
-        QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
+    final QuestionContainerHeader curQC;
+    try (Connection con = getConnection()) {
+      QuestionContainerPK questionContainerPK = new QuestionContainerPK(quizId, "", instanceId);
+      QuestionContainerDAO.closeQuestionContainer(con, questionContainerPK);
+      curQC = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
+    }
     assertEquals(curQC.isClosed(), true);
   }
 
@@ -267,11 +270,12 @@ public class QuestionContainerDAOTest extends DataSetTest {
   public void testOpenQuestionContainer() throws Exception {
     String quizId = "3";
     String instanceId = "quizz83";
-    Connection con = getConnection();
-    QuestionContainerPK questionContainerPK = new QuestionContainerPK(quizId, "", instanceId);
-    QuestionContainerDAO.openQuestionContainer(con, questionContainerPK);
-    QuestionContainerHeader curQC =
-        QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
+    final QuestionContainerHeader curQC;
+    try (Connection con = getConnection()) {
+      QuestionContainerPK questionContainerPK = new QuestionContainerPK(quizId, "", instanceId);
+      QuestionContainerDAO.openQuestionContainer(con, questionContainerPK);
+      curQC = QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
+    }
     assertEquals(curQC.isClosed(), false);
   }
 
