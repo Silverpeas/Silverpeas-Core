@@ -25,6 +25,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
@@ -33,12 +34,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.commons.lang3.CharEncoding;
+
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
@@ -49,18 +46,19 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.apache.commons.lang3.CharEncoding;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.util.MailUtil.*;
-
-import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SECURE_TRANSPORT;
-import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SIMPLE_TRANSPORT;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
-    .notification_serverurl;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
-.notification_link;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
-.notification_linkLabel;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
+import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant
+    .SECURE_TRANSPORT;
+import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant
+    .SIMPLE_TRANSPORT;
 
 
 @MessageDriven(activationConfig = {
@@ -72,8 +70,6 @@ import static com.stratelia.silverpeas.notificationManager.NotificationTemplateK
     description = "Message driven bean to send notifications by email")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SMTPListener extends AbstractListener implements MessageListener {
-
-  private static final long serialVersionUID = -241712070051475710L;
 
   public SMTPListener() {
   }
@@ -154,22 +150,34 @@ public class SMTPListener extends AbstractListener implements MessageListener {
         
       }
 
+      // The next treatments use String replacement mechanism
+      StringBuilder beforeFooterMessage = new StringBuilder();
+      StringBuilder afterFooterMessage = new StringBuilder();
 
       if (hideSmtpHeaderFooter == null) {
-        // Footer Message
-        String SMTPmessageFooter =
-            templateHeaderFooter.applyFileTemplate("SMTPmessageFooter" + '_' + tmpLanguageString);
-        body.append(SMTPmessageFooter);
+        // Before Footer Message
+        String smtpMessageBeforeFooter = templateHeaderFooter
+            .applyFileTemplate("SMTPmessageFooter_before" + '_' + tmpLanguageString);
+        beforeFooterMessage.append(smtpMessageBeforeFooter);
+        // After Footer Message
+        String smtpMessageAfterFooter = templateHeaderFooter
+            .applyFileTemplate("SMTPmessageFooter_after" + '_' + tmpLanguageString);
+        afterFooterMessage.append(smtpMessageAfterFooter);
       }
 
-      
+
+      String bodyAsString = body.toString();
+      bodyAsString = bodyAsString.replace(NotificationMetaData.BEFORE_MESSAGE_FOOTER_TAG,
+          beforeFooterMessage.toString().replaceAll("[\\n\\r]", ""));
+      bodyAsString = bodyAsString.replace(NotificationMetaData.AFTER_MESSAGE_FOOTER_TAG,
+          afterFooterMessage.toString().replaceAll("[\\n\\r]", ""));
       if (tmpAttachmentIdString == null) {
         sendEmail(tmpFromString, notification.getSenderName(), notification.getTargetReceipt(),
-            tmpSubjectString, body.toString(), true);
+            tmpSubjectString, bodyAsString, true);
       } else {
         // For the moment, send the email without attachment
         sendEmail(tmpFromString, notification.getSenderName(), notification.getTargetReceipt(),
-            tmpSubjectString, body.toString(), false);
+            tmpSubjectString, bodyAsString, false);
       }
     }
   }
@@ -194,7 +202,6 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     properties.put("mail.smtp.auth", String.valueOf(isAuthenticated()));
     javax.mail.Session session = javax.mail.Session.getInstance(properties, null);
     session.setDebug(isDebug()); // print on the console all SMTP messages.
-    Transport transport = null;
     try {
       InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom, personalName);
       InternetAddress replyToAddress = null;
@@ -238,6 +245,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       email.setSentDate(new Date());
 
       // create a Transport connection (TCP)
+      final Transport transport;
       if (isSecure()) {
         transport = session.getTransport(SECURE_TRANSPORT);
       } else {

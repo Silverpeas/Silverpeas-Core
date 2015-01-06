@@ -225,7 +225,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
 
     notifMetaData.addUserRecipient(new UserRecipient(document.getEditedBy()));
     notifMetaData.setComponentId(document.getInstanceId());
-    notifyUser(notifMetaData, document.getEditedBy(), document.getInstanceId());
+    notifyUser(notifMetaData, "-1", document.getInstanceId());
   }
 
   private String createMessageBody(ResourceLocator message, StringBuilder body, String date,

@@ -33,6 +33,16 @@ public class POPUPMessage extends SilverpeasMessage {
   public POPUPMessage() {
   }
 
+  private String m_Url;
+
+  public void setUrl(String url) {
+    m_Url = url;
+  }
+
+  public String getUrl() {
+    return m_Url;
+  }
+
   private String m_Source;
 
   public void setSource(String source) {
