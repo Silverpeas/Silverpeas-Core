@@ -24,8 +24,19 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_groups;
-import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.notification_receiver_users;
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.Link;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,24 +48,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.util.Link;
-
-import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+    .notification_receiver_groups;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
+    .notification_receiver_users;
 
 public class NotificationMetaData implements java.io.Serializable {
-
   private static final long serialVersionUID = 6004274748540324759L;
+
+  public final static String BEFORE_MESSAGE_FOOTER_TAG = "<!--BEFORE_MESSAGE_FOOTER-->";
+  public final static String AFTER_MESSAGE_FOOTER_TAG = "<!--AFTER_MESSAGE_FOOTER-->";
+
   private int messageType;
   private Date date;
   private String sender;
@@ -258,17 +262,16 @@ public class NotificationMetaData implements java.io.Serializable {
       }
 
       if(getOriginalExtraMessage() != null) {
-        ResourceLocator alertUserPeasMessage = new ResourceLocator("org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
-            language);
-        result.append("\n\n").append(alertUserPeasMessage.getString("AuthorMessage"))
-            .append(" : \n")
-            .append("<div style=\"background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; " +
-                    "width:390px;\">")
+        result.append("<div style=\"padding=10px 0 10px 0;\">")
+            .append("<div style=\"background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;\">")
             .append(getOriginalExtraMessage())
-            .append("</div>");
+            .append("</div></div>");
       }
     }
-    
+
+    // This below TAG permits to next treatments to decorate the message just before this footer
+    result.append(BEFORE_MESSAGE_FOOTER_TAG);
+
     //add messageFooter containing receivers
     SilverpeasTemplate templateMessageFooter = getTemplateMessageFooter(language);
     if (templateMessageFooter != null && this.displayReceiversInFooter) {
@@ -286,10 +289,18 @@ public class NotificationMetaData implements java.io.Serializable {
             "NotificationMetaData.getContent()",
             "root.EX_ADD_USERS_FAILED", e);
       }
-      
-      String messageFooter = templateMessageFooter.applyFileTemplate("messageFooter" + '_' + language);
-      result.append("\n\n"+messageFooter);
+
+      String messageFooter =
+          templateMessageFooter.applyFileTemplate("messageFooter" + '_' + language)
+              .replaceAll("[\\n\\r]", "");
+      if (messageFooter.length() > 0) {
+        result.append(messageFooter);
+      }
     }
+
+    // This below TAG permits to next treatments to decorate the message just after this footer
+    result.append(AFTER_MESSAGE_FOOTER_TAG);
+
     SilverTrace.info("notificationManager", "NotificationMetaData.getContent()",
         "root.MSG_GEN_EXIT_METHOD", "result = " + result);
     return EncodeHelper.convertWhiteSpacesForHTMLDisplay(result.toString());
@@ -635,22 +646,22 @@ public class NotificationMetaData implements java.io.Serializable {
   }
   
   private SilverpeasTemplate createTemplateMessageFooter(String language) {
-    SilverpeasTemplate templateFooter = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
-    this.templatesMessageFooter.put(language, templateFooter);  
+    SilverpeasTemplate templateFooter =
+        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+    this.templatesMessageFooter.put(language, templateFooter);
     return templateFooter;
   }
-  
+
   public SilverpeasTemplate getTemplateMessageFooter(String language) {
-    if(this.templatesMessageFooter == null || this.templatesMessageFooter.isEmpty()) {
+    if(this.templatesMessageFooter == null) {
       this.templatesMessageFooter = new HashMap<String, SilverpeasTemplate>();
-      return createTemplateMessageFooter(language);
     }
-    
+
     SilverpeasTemplate templateMessageFooter = this.templatesMessageFooter.get(language);
     if(templateMessageFooter == null) {
-      return createTemplateMessageFooter(language);
+      templateMessageFooter = createTemplateMessageFooter(language);
     }
-   
+
     return templateMessageFooter;
   }
   

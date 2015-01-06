@@ -51,6 +51,8 @@ public class POPUPPersistence {
         smb.setSenderName(popupMsg.getSenderName());
         smb.setBody(Integer.toString(LongText.addLongText(popupMsg.getBody())));
         smb.setAnswerAllowed(popupMsg.isAnswerAllowed());
+        smb.setUrl(popupMsg.getUrl());
+        smb.setSource(popupMsg.getSource());
         smb.setMsgDate(popupMsg.getDate());
         smb.setMsgTime(popupMsg.getTime());
         SilverTrace.debug("popup", "POPUPPersistence.getMessage()",
@@ -94,6 +96,8 @@ public class POPUPPersistence {
         }
         result.setBody(body);
         result.setAnswerAllowed(smb.getAnswerAllowed());
+        result.setUrl(smb.getUrl());
+        result.setSource(smb.getSource());
         result.setDate(smb.getMsgDate());
         result.setTime(smb.getMsgTime());
       }

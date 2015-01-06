@@ -29,9 +29,9 @@ import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.GeneralPropertiesManager;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.token.exception.TokenValidationException;
+import org.silverpeas.util.security.SecuritySettings;
+
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -43,8 +43,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.silverpeas.token.exception.TokenValidationException;
-import org.silverpeas.util.security.SecuritySettings;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A validator of a session token for each incoming request. For each protected web resources, the
@@ -156,9 +157,10 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isCredentialManagement(HttpServletRequest request) {
     String uri = request.getRequestURI();
-    return uri.contains("/CredentialsServlet/") || uri.contains("/services/password/") || uri.
-        contains("/AuthenticationServlet") || (isWebServiceRequested(request)
-        && StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION)));
+    return uri.endsWith("/Qaptcha") || uri.contains("/CredentialsServlet/") ||
+        uri.contains("/services/password/") || uri.contains("/AuthenticationServlet") ||
+        (isWebServiceRequested(request) &&
+            StringUtil.isDefined(request.getHeader(UserPriviledgeValidation.HTTP_AUTHORIZATION)));
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {

@@ -64,12 +64,12 @@ public class SynchronizerTokenService {
   public static final String SESSION_TOKEN_KEY = "X-STKN";
   public static final String NAVIGATION_TOKEN_KEY = "X-NTKN";
   private static final String UNPROTECTED_URI_RULE =
-      "(?i)(?!.*(rpdcsearch/|rclipboard/|rchat/chat[0-9]+|blockingNews|services/password/)).*";
+      "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rchat/chat[0-9]+|blockingNews|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
   private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
-  private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList(new String[]{"POST",
-    "PUT", "DELETE"});
+  private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList("POST", "PUT",
+      "DELETE");
 
 
   public static SynchronizerTokenService getInstance() {
@@ -220,10 +220,9 @@ public class SynchronizerTokenService {
   }
 
   private String getRequestPath(HttpServletRequest request) {
-    HttpServletRequest httpRequest = (HttpServletRequest) request;
-    String path = httpRequest.getRequestURI();
-    if (path.startsWith(httpRequest.getContextPath())) {
-      path = path.substring(httpRequest.getContextPath().length());
+    String path = request.getRequestURI();
+    if (path.startsWith(request.getContextPath())) {
+      path = path.substring(request.getContextPath().length());
     }
     return path;
   }

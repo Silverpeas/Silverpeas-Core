@@ -30,6 +30,10 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionValidationContext;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -403,19 +407,26 @@ public class SessionManager implements SessionManagement {
       throws NotificationManagerException {
     SilverTrace.debug("peasCore", "SessionManager.notifyEndOfSession", "userId=" + userId
         + " sessionId=" + sessionId);
+    UserDetail user = UserDetail.getById(userId);
+    String userLanguage = DisplayI18NHelper.getDefaultLanguage();
+    if (user != null) {
+      userLanguage = user.getUserPreferences().getLanguage();
+    }
+    ResourceLocator bundle =
+        new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
+            userLanguage);
     String endOfSessionDate = DateUtil.formatDate(new Date(endOfSession), NOTIFY_DATE_FORMAT);
-    String msgTitle = messages.getString("EndOfSessionNotificationMsgTitle");
+    String msgTitle = bundle.getString("EndOfSessionNotificationMsgTitle");
     msgTitle += endOfSessionDate;
 
     // Notify user the end of session
     NotificationSender notifSender = new NotificationSender(null);
 
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        msgTitle, messages.getString("EndOfSessionNotificationMsgText"));
-    notifMetaData.setSender(null);
+        msgTitle, bundle.getString("EndOfSessionNotificationMsgText"));
     notifMetaData.setSessionId(sessionId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
-    notifMetaData.setSource(messages.getString("administrator"));
+    notifMetaData.setSender(bundle.getString("administrator"));
     notifSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
   }
 

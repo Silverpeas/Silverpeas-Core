@@ -122,7 +122,9 @@
 
     <% if (displayConnectedUsers) { %>
     function refreshTopBar() {
-      top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
+      if (typeof top.topFrame.setConnectedUsers === 'function') {
+        top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
+      }
     }
     <% } %>
 

@@ -52,11 +52,13 @@
         window.close();
       }
 
+      <c:if test="${!empty notif.link}">
       function goTo()
       {
         window.opener.location="<c:url value="${notif.link}"/>";
         window.close();
       }
+      </c:if>
 
       function closeWindow()
       {
@@ -77,26 +79,25 @@
     <view:window popup="true">
     <div class="popup-read-notification">
     <div class="entete">
-    	<div class="from"><span class="label">&nbsp;</span></div>
+      <div class="from"><span class="label">&nbsp;</span></div>
         <div class="date"><view:formatDateTime value="${notif.notifDate}" /></div>
       </div>
       <div class="source">
         <span class="label"><fmt:message key="source" /> :</span> <c:out value="${notif.source}" /> </div>
       <c:if test="${!empty notif.link}">
-      	<div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /> </a> </div>
+        <div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /> </a> </div>
       </c:if>
       <div class="content-notification">
         ${notif.body}
       </div>
-           <view:buttonPane>
-                <fmt:message var="deleteLabel" key="delete" />
-                <c:set var="deleteAction">javascript:onclick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
-           		<view:button label="${deleteLabel}" action="${deleteAction}"/>
-           		
-           		<fmt:message var="closeLabel" key="close" />
-           		<view:button label="${closeLabel}" action="javascript:onclick=closeWindow();"/>
-           </view:buttonPane>
-		</div>
+       <view:buttonPane>
+         <fmt:message var="deleteLabel" key="delete" />
+         <c:set var="deleteAction">javascript:onclick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
+       <view:button label="${deleteLabel}" action="${deleteAction}"/>
+         <fmt:message var="closeLabel" key="close" />
+         <view:button label="${closeLabel}" action="javascript:onclick=closeWindow();"/>
+       </view:buttonPane>
+    </div>
     </view:window>
   </body>
 </html>

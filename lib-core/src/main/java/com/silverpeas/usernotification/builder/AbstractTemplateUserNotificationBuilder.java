@@ -111,7 +111,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       //set link url and link label
       String linkUrl = getResourceURL(resource);
       String linkLabel = "";
-      if(getContributionAccessLinkLabelBundleKey() != null) {
+      if (getContributionAccessLinkLabelBundleKey() != null) {
         linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey(), "");
       }
       Link link = new Link(linkUrl, linkLabel);
@@ -199,6 +199,6 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * @return
    */
   protected String getContributionAccessLinkLabelBundleKey() {
-      return null;
+    return null;
   }
 }

@@ -271,11 +271,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
             + "MyInvitations";
         Link link = new Link(url, localizedMessage.getString("myProfile.invitations.notification.notifLinkLabel"));
         notifMetaData.setLink(link, language);
-      }
-      if (StringUtil.isDefined(message)) {
-        setNotificationContent(notifMetaData, message, "fr");
-        setNotificationContent(notifMetaData, message, "en");
-        setNotificationContent(notifMetaData, message, "de");
+        if (StringUtil.isDefined(message)) {
+          setNotificationContent(notifMetaData, message, language);
+        }
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipient(new UserRecipient(receiverId));
