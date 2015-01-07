@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -240,6 +241,13 @@ public class JSONCodec {
     public JSONArray addJSONObject(Function<JSONObject, JSONObject> beanBuilder) {
       ObjectNode node = jsonArray.addObject();
       beanBuilder.apply(new JSONObject(node));
+      return this;
+    }
+
+    public JSONArray addJSONArray(List<String> elements) {
+      for (String element : elements) {
+        jsonArray.add(element);
+      }
       return this;
     }
   }

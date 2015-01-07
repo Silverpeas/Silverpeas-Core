@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.exception.DecodingException;
 import org.silverpeas.util.exception.EncodingException;
 
@@ -38,8 +39,11 @@ import javax.json.JsonWriter;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.Object;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -56,11 +60,10 @@ public class JSONCodecIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(JSONCodecIntegrationTest.class)
-        .testFocusedOn(war -> war.addClasses(TestSerializableBean.class, TestBean.class,
-            DecodingException.class, EncodingException.class, JSONCodec.class))
-        .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF")
-        .build();
+    return BasicWarBuilder.onWarForTestClass(JSONCodecIntegrationTest.class).testFocusedOn(
+        war -> war.addClasses(TestSerializableBean.class, TestBean.class, DecodingException.class,
+            EncodingException.class, JSONCodec.class))
+        .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF").build();
   }
 
   @Test
@@ -127,11 +130,9 @@ public class JSONCodecIntegrationTest {
   public void decodeJSONObjectIntoABeanShouldWork() {
     StringWriter json = new StringWriter();
     JsonWriter writer = Json.createWriter(json);
-    JsonObject object = Json.createObjectBuilder()
-        .add("id", "42")
-        .add("name", "Toto Chez-les-Papoos")
-        .add("date", new Date().getTime())
-        .build();
+    JsonObject object =
+        Json.createObjectBuilder().add("id", "42").add("name", "Toto Chez-les-Papoos")
+            .add("date", new Date().getTime()).build();
     writer.writeObject(object);
 
     TestSerializableBean bean = JSONCodec.decode(json.toString(), TestSerializableBean.class);
@@ -145,11 +146,9 @@ public class JSONCodecIntegrationTest {
   public void decodeJSONObjectIntoAnUnannotatedBeanShouldWork() {
     StringWriter json = new StringWriter();
     JsonWriter writer = Json.createWriter(json);
-    JsonObject object = Json.createObjectBuilder()
-        .add("id", "42")
-        .add("name", "Toto Chez-les-Papoos")
-        .add("date", new Date().getTime())
-        .build();
+    JsonObject object =
+        Json.createObjectBuilder().add("id", "42").add("name", "Toto Chez-les-Papoos")
+            .add("date", new Date().getTime()).build();
     writer.writeObject(object);
 
     TestBean bean = JSONCodec.decode(json.toString(), TestBean.class);
@@ -173,16 +172,11 @@ public class JSONCodecIntegrationTest {
   public void decodeJSONArrayIntoAnArrayOfBeansShouldWork() {
     StringWriter json = new StringWriter();
     JsonWriter writer = Json.createWriter(json);
-    JsonArray array = Json.createArrayBuilder()
-        .add(Json.createObjectBuilder()
-            .add("id", "42")
-            .add("name", "Toto Chez-les-Papoos")
-            .add("date", new Date().getTime()))
-        .add(Json.createObjectBuilder()
-            .add("id", "24")
-            .add("name", "Titi Gros-Minet")
-            .add("date", new Date().getTime()))
-        .build();
+    JsonArray array = Json.createArrayBuilder().add(
+        Json.createObjectBuilder().add("id", "42").add("name", "Toto Chez-les-Papoos")
+            .add("date", new Date().getTime())).add(
+        Json.createObjectBuilder().add("id", "24").add("name", "Titi Gros-Minet")
+            .add("date", new Date().getTime())).build();
     writer.writeArray(array);
 
     TestSerializableBean[] beans = JSONCodec.decode(json.toString(), TestSerializableBean[].class);
@@ -260,4 +254,20 @@ public class JSONCodecIntegrationTest {
     assertThat(json.isEmpty(), is(false));
     assertThat(json, is("[]"));
   }
+
+  @Test
+  public void encodeListAsJSONArrayShouldWork() {
+    List<String> elements = new ArrayList<>();
+    elements.add("one");
+    elements.add("two");
+    elements.add("three");
+
+    String result = JSONCodec.encodeArray(jsonArray -> {
+      jsonArray.addJSONArray(elements);
+      return jsonArray;
+    });
+    assertThat(result, notNullValue());
+    assertThat(result, is("[\"one\",\"two\",\"three\"]"));
+  }
+
 }
