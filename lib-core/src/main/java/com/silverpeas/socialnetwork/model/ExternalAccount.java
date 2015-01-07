@@ -35,8 +35,10 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "sb_sn_externalaccount")
-@NamedQueries( { @NamedQuery(name = "ExternalAccount.findBySilverpeasUserId", query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId") })
-public class ExternalAccount  extends AbstractJpaCustomEntity<ExternalAccount, ExternalAccountIdentifier>
+@NamedQueries({@NamedQuery(name = "ExternalAccount.findBySilverpeasUserId",
+    query = "select e FROM ExternalAccount e WHERE e.silverpeasUserId = :silverpeasUserId")})
+public class ExternalAccount
+    extends AbstractJpaCustomEntity<ExternalAccount, ExternalAccountIdentifier>
     implements Serializable {
 
   @Column(name = "silverpeasUserId")
