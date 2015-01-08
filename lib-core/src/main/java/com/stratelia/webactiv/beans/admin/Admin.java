@@ -1077,7 +1077,7 @@ class Admin implements Administration {
 
       // Instantiate the component
       String componentName = componentInst.getName();
-      String componentId = componentName + componentInst.getId();
+      String componentId = componentInst.getId();
 
       String[] asCompoNames = {componentName};
       String[] asCompoIds = {componentId};
