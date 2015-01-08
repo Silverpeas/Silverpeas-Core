@@ -106,7 +106,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
   }
 
   public String getId() {
-    return m_sId + m_sName;
+    return m_sName + m_sId;
   }
 
   public int getLocalId() {

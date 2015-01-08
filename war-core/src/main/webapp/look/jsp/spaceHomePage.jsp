@@ -32,7 +32,6 @@
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page import="org.silverpeas.util.DateUtil"%>
-<%@page import="ucar.nc2.units.DateUnit"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@page import="com.silverpeas.look.DefaultSpaceHomePage"%>
