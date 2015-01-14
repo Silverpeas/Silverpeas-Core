@@ -124,17 +124,19 @@ public class WysiwygContentTransformer {
       String attachmentLink = attachmentByLink.getKey();
       SimpleDocument attachment = attachmentByLink.getValue();
 
-      String cid = "attachment-content-" + (idCount++);
+      if(attachment != null) {
+        String cid = "attachment-content-" + (idCount++);
 
-      // CID links
-      transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, attachmentLink, cid);
+        // CID links
+        transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, attachmentLink, cid);
 
-      // CID references
-      MimeBodyPart mbp = new MimeBodyPart();
-      FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
-      mbp.setDataHandler(new DataHandler(fds));
-      mbp.setHeader("Content-ID", "<" + cid + ">");
-      bodyParts.add(mbp);
+        // CID references
+        MimeBodyPart mbp = new MimeBodyPart();
+        FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
+        mbp.setDataHandler(new DataHandler(fds));
+        mbp.setHeader("Content-ID", "<" + cid + ">");
+        bodyParts.add(mbp);
+      }
     }
 
     // Returning the result of complete parsing
