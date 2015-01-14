@@ -561,6 +561,9 @@ public class PublicationDAO {
           "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + detail.toString());
 
       prepStmt.executeUpdate();
+    } catch (Exception e) {
+      SilverTrace.error("publication", "PublicationDAO.insertRow()",
+          "root.MSG_GEN_PARAM_VALUE", e);
     } finally {
       DBUtil.close(prepStmt);
     }

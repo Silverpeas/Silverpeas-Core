@@ -39,7 +39,7 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
+import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -306,7 +306,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
+    this.importance = Integer.parseInt(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -323,7 +323,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
+    this.importance = Integer.parseInt(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -342,7 +342,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
+    this.importance = Integer.parseInt(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -360,7 +360,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
+    this.importance = Integer.parseInt(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -380,7 +380,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
+    this.importance = Integer.parseInt(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -709,12 +709,12 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = new Integer(silverObjectId).toString();
+    this.silverObjectId = Integer.toString(silverObjectId);
   }
 
   public String getSilverObjectId() {
     if (this.silverObjectId == null) {
-      ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
+      ContentManager contentManager = ContentManagerProvider.getContentManager();
       try {
         int objectId = contentManager.getSilverContentId(getId(), getInstanceId());
         if (objectId >= 0) {
@@ -802,7 +802,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public HashMap<String, String> getFormValues(String language) {
-    HashMap<String, String> formValues = new HashMap<String, String>();
+    HashMap<String, String> formValues = new HashMap<>();
     if ("0".equals(getInfoId())) {
       // this publication does not use a form
       return formValues;
@@ -1047,7 +1047,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public Object clone() {
+  public Object clone() throws CloneNotSupportedException {
     PublicationDetail clone = new PublicationDetail();
     clone.setAuthor(author);
     clone.setBeginDate(beginDate);

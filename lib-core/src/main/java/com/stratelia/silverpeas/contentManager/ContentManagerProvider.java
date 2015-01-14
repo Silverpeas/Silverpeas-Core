@@ -24,33 +24,20 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import javax.inject.Inject;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * A factory of content manager instances. This factory is managed by the underlying IoC container
  * so that is can get from it the actual instances of the ContentManager class. This factory servs
  * mainly for beans not managed by the IoC container.
  */
-public class ContentManagerFactory {
-
-  private static final ContentManagerFactory instance = new ContentManagerFactory();
-
-  @Inject
-  private ContentManager contentManager;
-
-  /**
-   * Gets an instance of this factory.
-   * @return a ContentManagerFactory instance.
-   */
-  public static ContentManagerFactory getFactory() {
-    return instance;
-  }
+public class ContentManagerProvider {
 
   /**
    * Gets a content manager instance.
    * @return a ContentManager instance (managed by the IoC container).
    */
-  public ContentManager getContentManager() {
-    return contentManager;
+  public static ContentManager getContentManager() {
+    return ServiceProvider.getService(ContentManager.class);
   }
 }
