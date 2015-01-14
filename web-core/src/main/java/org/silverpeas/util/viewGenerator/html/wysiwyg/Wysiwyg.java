@@ -19,6 +19,8 @@ public class Wysiwyg {
 
   ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
 
+  private static final String INFO_LETTER_APPLICATION = "infoLetter";
+
   public Wysiwyg() {
 
   }
@@ -27,6 +29,13 @@ public class Wysiwyg {
     String baseDir = wysiwygSettings.getString("baseDir", "ckeditor");
     String configFile = wysiwygSettings.getString("configFile",
         URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/silverconfig.js");
+
+    //special case of infoLetter application : special configFile
+    if(INFO_LETTER_APPLICATION.equals(getToolbar())) {
+      configFile = wysiwygSettings.getString("infoLetterConfigFile",
+          URLManager.getApplicationURL() + "/wysiwyg/jsp/" + baseDir + "/infoLetterConfig.js");
+    }
+
     StringBuilder builder = new StringBuilder(100);
 
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
@@ -46,14 +55,19 @@ public class Wysiwyg {
 
     String skin = wysiwygSettings.getString("skin");
     if (StringUtil.isDefined(skin)) {
-      builder.append("skin : '").append(skin).append("',\n");
+      builder.append("skin : '").append(skin).append("'");
     }
 
-    String standardCSS = URLManager.getApplicationURL()+GraphicElementFactory.STANDARD_CSS;
-    if (StringUtil.isDefined(css)) {
-      builder.append("contentsCss : ['").append(standardCSS).append("', '").append(css).append("']\n");
-    } else {
-      builder.append("contentsCss : '").append(standardCSS).append("'\n");
+    //special case of infoLetter application : no CSS
+    if(!INFO_LETTER_APPLICATION.equals(getToolbar())) {
+      builder.append(",\n");
+      String standardCSS = URLManager.getApplicationURL() + GraphicElementFactory.STANDARD_CSS;
+      if (StringUtil.isDefined(css)) {
+        builder.append("contentsCss : ['").append(standardCSS).append("', '").append(css)
+            .append("']\n");
+      } else {
+        builder.append("contentsCss : '").append(standardCSS).append("'\n");
+      }
     }
 
     builder.append("});\n");
