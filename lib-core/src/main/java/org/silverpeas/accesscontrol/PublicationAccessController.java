@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AbstractAccessController;
@@ -47,12 +46,12 @@ import java.util.Set;
  * @author neysseric
  */
 @Singleton
-@PublicationAccessControl
-public class PublicationAccessController extends AbstractAccessController<PublicationPK> {
+public class PublicationAccessController extends AbstractAccessController<PublicationPK>
+    implements PublicationAccessControl {
 
-  @Inject @NodeAccessControl
+  @Inject
   private NodeAccessController accessController;
-  
+
   @Inject
   private OrganizationController controller;
 
@@ -70,19 +69,17 @@ public class PublicationAccessController extends AbstractAccessController<Public
       final AccessControlContext context) {
     boolean authorized = true;
     boolean isRoleVerificationRequired = true;
-    
+
     boolean sharingOperation = context.getOperations().contains(AccessControlOperation.sharing);
-    
+
     // Verifying sharing is possible
     if (sharingOperation) {
-      authorized =
-          StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
-              object.getInstanceId(), "usePublicationSharing"));
+      authorized = StringUtil.getBooleanValue(getOrganisationController()
+          .getComponentParameterValue(object.getInstanceId(), "usePublicationSharing"));
       isRoleVerificationRequired = authorized;
     }
-    
-    if (isRoleVerificationRequired &&
-        componentHelper.isThemeTracker(object.getInstanceId())) {
+
+    if (isRoleVerificationRequired && componentHelper.isThemeTracker(object.getInstanceId())) {
       String foreignId = object.getId();
       try {
         foreignId = getActualForeignId(foreignId, object.getInstanceId());
@@ -92,11 +89,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
         return false;
       }
       try {
-        Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
-            object.getInstanceId()));
+        Collection<NodePK> nodes =
+            getPublicationBm().getAllFatherPK(new PublicationPK(foreignId, object.getInstanceId()));
         for (NodePK nodePk : nodes) {
           if (sharingOperation) {
-            Set<SilverpeasRole> userRoles = getNodeAccessController().getUserRoles(context, userId, nodePk);
+            Set<SilverpeasRole> userRoles =
+                getNodeAccessController().getUserRoles(context, userId, nodePk);
             SilverpeasRole greaterUserRole = SilverpeasRole.getGreaterFrom(userRoles);
             return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
           } else {
@@ -128,8 +126,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * @throws Exception
    */
   private String getActualForeignId(String foreignId, String instanceId) throws Exception {
-    PublicationDetail pubDetail = getPublicationBm().getDetail(new PublicationPK(foreignId,
-        instanceId));
+    PublicationDetail pubDetail =
+        getPublicationBm().getDetail(new PublicationPK(foreignId, instanceId));
     if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
       return pubDetail.getCloneId();
     }
@@ -143,7 +141,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
   protected NodeAccessController getNodeAccessController() {
     return accessController;
   }
-  
+
   /**
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.

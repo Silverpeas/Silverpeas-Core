@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,19 +7,19 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.attachment.model;
 
@@ -36,7 +36,6 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.*;
 import org.silverpeas.util.i18n.I18NHelper;
 
-import javax.enterprise.util.AnnotationLiteral;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -801,7 +800,7 @@ public class SimpleDocument implements Serializable {
 
     // Access is verified for sharing context
     AccessController<SimpleDocument> accessController = AccessControllerProvider
-        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
+        .getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
@@ -814,7 +813,7 @@ public class SimpleDocument implements Serializable {
    */
   public boolean canBeAccessedBy(final UserDetail user) {
     AccessController<SimpleDocument> accessController = AccessControllerProvider
-        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
+        .getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), this);
   }
 
@@ -840,7 +839,7 @@ public class SimpleDocument implements Serializable {
 
     // Otherwise access is verified for download context
     AccessController<SimpleDocument> accessController = AccessControllerProvider
-        .getAccessController(new AnnotationLiteral<SimpleDocumentAccessControl>() {});
+        .getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }
