@@ -1200,7 +1200,7 @@
     <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
       <div id="attachment-delete-select-lang" style="display:none">
         <div id="languages">
-          <c:forEach items="<%=I18NHelper.I18NHelperAllSupportedLanguages()%>" var="supportedLanguage">
+          <c:forEach items="<%=I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
             <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
           </c:forEach>
         </div>
