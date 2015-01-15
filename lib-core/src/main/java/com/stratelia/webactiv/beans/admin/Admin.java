@@ -3227,10 +3227,14 @@ class Admin implements Administration {
    * Converts client space id to driver space id
    */
   private int getDriverSpaceId(String sClientSpaceId) {
-    if (sClientSpaceId != null && sClientSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
-      return Integer.parseInt(sClientSpaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length()));
+    if (sClientSpaceId != null) {
+      if (sClientSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
+        return Integer.parseInt(sClientSpaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length()));
+      } else {
+        return Integer.parseInt(sClientSpaceId);
+      }
     }
-    return Integer.parseInt(sClientSpaceId);
+    return -1;
   }
 
   @Override
