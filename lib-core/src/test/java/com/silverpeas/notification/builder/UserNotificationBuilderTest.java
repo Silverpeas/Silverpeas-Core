@@ -23,27 +23,6 @@
  */
 package com.silverpeas.notification.builder;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.reset;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.inject.Inject;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.notification.builder.mock.OrganizationControllerMock;
 import com.silverpeas.notification.model.NotificationResourceData;
@@ -53,6 +32,23 @@ import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.reset;
 
 /**
  * @author Yohann Chastagnier
@@ -60,6 +56,9 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/spring-user-notification-builder.xml" })
 public class UserNotificationBuilderTest {
+
+  private static final String TECHNICAL_CONTENT =
+      "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
 
   @Inject
   OrganizationControllerMock organizationController;
@@ -84,7 +83,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.CREATE));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getContent(), is(TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(0));
@@ -133,7 +132,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.REPORT));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is("Content_ANB_1Bis"));
+    assertThat(notifTest.getContent(), is("Content_ANB_1Bis" + TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(1));
@@ -176,7 +175,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.CREATE));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getContent(), is(TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(0));
@@ -203,7 +202,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.CREATE));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is("aContent"));
+    assertThat(notifTest.getContent(), is("aContent" + TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(1));
@@ -253,7 +252,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.UPDATE));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getContent(), is(TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(0));
@@ -306,7 +305,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.UPDATE));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is(""));
+    assertThat(notifTest.getContent(), is(TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(0));
@@ -341,7 +340,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getAction(), is(NotifAction.UPDATE));
     assertThat(notifTest.getComponentId(), is("aComponentInstanceId"));
     assertThat(notifTest.getSender(), is("aSenderId"));
-    assertThat(notifTest.getContent(), is("aContent"));
+    assertThat(notifTest.getContent(), is("aContent" + TECHNICAL_CONTENT));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), nullValue());
     assertThat(notifTest.getLanguages().size(), is(1));
@@ -410,7 +409,8 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getUserRecipients().size(), is(3));
 
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
-      assertThat(notifTest.getContent(curLanguage), is(curLanguage + "-" + contentValue + " :-)"));
+      assertThat(notifTest.getContent(curLanguage),
+          is(curLanguage + "-" + contentValue + " :-)" + TECHNICAL_CONTENT));
     }
   }
 
@@ -460,7 +460,8 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getUserRecipients().size(), is(3));
 
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
-      assertThat(notifTest.getContent(curLanguage), is(curLanguage + "-bundleValue :-) - components"));
+      assertThat(notifTest.getContent(curLanguage),
+          is(curLanguage + "-bundleValue :-) - components" + TECHNICAL_CONTENT));
     }
   }
 
