@@ -32,7 +32,6 @@ package com.stratelia.silverpeas.notificationManager;
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;
@@ -758,7 +757,6 @@ public class NotificationManager extends AbstractNotification
   /**
    * Method declaration
    * @param params
-   * @param notifRecips
    * @throws NotificationManagerException
    * @see
    */
@@ -768,8 +766,8 @@ public class NotificationManager extends AbstractNotification
     // First Tests if the user is a guest
     // Then notify himself that he cant notify anyone
     if (UserAccessLevel.GUEST.equals(getUserAccessLevel(params.iFromUserId))) {
-      params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "\n"
-          + params.sTitle + "\n\n"
+      params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "<br/>"
+          + params.sTitle + "<br/><br/>"
           + m_Multilang.getString("guestNotAllowedBody2");
       params.sTitle = m_Multilang.getString("guestNotAllowedTitle");
       params.iMessagePriority = NotificationParameters.NORMAL;
@@ -1346,7 +1344,7 @@ public class NotificationManager extends AbstractNotification
       theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
-          .append("\n\n");
+          .append("<br/><br/>");
     }
 
     String senderName;
@@ -1380,18 +1378,18 @@ public class NotificationManager extends AbstractNotification
       theExtraParams.put(NotificationParameterNames.FROM, senderName);
     } else {
       theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append(
-          "\n\n");
+          "<br/><br/>");
     }
 
     // Set Url parameter
-    if (params.sURL != null && params.sURL.length() > 0) {
+    if (StringUtil.isDefined(params.sURL)) {
       theExtraParams.put(NotificationParameterNames.URL, (params.sURL.startsWith("http")
           ? params.sURL : getUserAutoRedirectURL(aUserId,
               params.sURL)));
     }
 
     // Set Source parameter
-    if (params.sSource != null && params.sSource.length() > 0) {
+    if (StringUtil.isDefined(params.sSource)) {
       theExtraParams.put(NotificationParameterNames.SOURCE, params.sSource);
     } else {
       if (params.iComponentInstance != -1) {
@@ -1409,7 +1407,7 @@ public class NotificationManager extends AbstractNotification
     }
 
     // Set sessionId parameter
-    if (params.sSessionId != null && params.sSessionId.length() > 0) {
+    if (StringUtil.isDefined(params.sSessionId)) {
       theExtraParams.put(NotificationParameterNames.SESSIONID,
           params.sSessionId);
     }
@@ -1449,7 +1447,6 @@ public class NotificationManager extends AbstractNotification
   /**
    * Method declaration
    * @param params
-   * @param aUserId
    * @param schema
    * @return
    * @throws UtilException
@@ -1480,7 +1477,7 @@ public class NotificationManager extends AbstractNotification
       theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
-          .append("\n\n");
+          .append("<br/><br/>");
     }
 
     String senderName;
@@ -1504,6 +1501,11 @@ public class NotificationManager extends AbstractNotification
     SilverTrace.info("notificationManager", "NotificationManager.createNotificationData()",
         "root.MSG_GEN_PARAM_VALUE", "nd.getUserEmail(params.iFromUserId) ="
             + getUserEmail(params.iFromUserId));
+
+    if (StringUtil.isDefined(params.sURL)) {
+      theExtraParams.put(NotificationParameterNames.URL, params.sURL);
+      theExtraParams.put(NotificationParameterNames.LINKLABEL, params.sLinkLabel);
+    }
 
     // Set Source parameter
     if (params.sSource != null && params.sSource.length() > 0) {
@@ -1595,7 +1597,7 @@ public class NotificationManager extends AbstractNotification
         theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
       } else if (params.iFromUserId < 0) {
         theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle).
-            append("\n\n");
+            append("<br/><br/>");
       }
 
       String senderName;
@@ -1629,16 +1631,18 @@ public class NotificationManager extends AbstractNotification
         theExtraParams.put(NotificationParameterNames.FROM, senderName);
       } else {
         theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append(
-            "\n\n");
+            "<br/><br/>");
       }
 
       // Set Url parameter
-      if (params.sURL != null && params.sURL.length() > 0) {
+      theExtraParams.put(NotificationParameterNames.SERVERURL, getUserAutoRedirectSilverpeasServerURL(aUserId));
+      if (StringUtil.isDefined(params.sURL)) {
         theExtraParams.put(NotificationParameterNames.URL, computeURL(aUserId, params.sURL));
+        theExtraParams.put(NotificationParameterNames.LINKLABEL, params.sLinkLabel);
       }
 
       // Set Source parameter
-      if (params.sSource != null && params.sSource.length() > 0) {
+      if (StringUtil.isDefined(params.sSource)) {
         theExtraParams.put(NotificationParameterNames.SOURCE, params.sSource);
       } else {
         if (params.iComponentInstance != -1) {
@@ -1662,7 +1666,7 @@ public class NotificationManager extends AbstractNotification
       }
 
       // Set sessionId parameter
-      if (params.sSessionId != null && params.sSessionId.length() > 0) {
+      if (StringUtil.isDefined(params.sSessionId)) {
         theExtraParams.put(NotificationParameterNames.SESSIONID,
             params.sSessionId);
       }
@@ -1675,7 +1679,7 @@ public class NotificationManager extends AbstractNotification
       if (params.sLanguage != null) {
         theExtraParams.put(NotificationParameterNames.LANGUAGE, params.sLanguage);
       }
-
+    
       notificationData.setSenderName(senderName);
 
       if (theExtraParams.size() > 0) {

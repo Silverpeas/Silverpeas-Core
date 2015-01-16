@@ -84,7 +84,7 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
    * @return
    */
   public String getName(String language) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18nContentActivated) {
       return name;
     }
     T translation = selectTranslation(language);
@@ -101,7 +101,7 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
    * @return
    */
   public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18nContentActivated) {
       return description;
     }
     T translation = selectTranslation(language);
@@ -127,7 +127,7 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
   }
 
   public String getLanguage() {
-    if (I18NHelper.isI18N && StringUtil.isNotDefined(language)) {
+    if (I18NHelper.isI18nContentActivated && StringUtil.isNotDefined(language)) {
       return I18NHelper.defaultLanguage;
     }
     return language;

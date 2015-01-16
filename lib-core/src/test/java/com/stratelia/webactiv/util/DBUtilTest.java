@@ -25,6 +25,7 @@ package com.stratelia.webactiv.util;
 
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -42,11 +43,21 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class DBUtilTest {
 
@@ -260,5 +271,105 @@ public class DBUtilTest {
   @Test
   public void testGetAllTableNames() {
     assertThat(29, is(DBUtil.getAllTableNames().size()));
+  }
+
+  @Test
+  public void nextUniqueIdUpdateForAnExistingTablesShouldWorkAndConcurrency() throws Exception {
+    final int nbSetOfThreads = 150;
+    final List<Object> count = new ArrayList<Object>();
+    final List<Callable<Pair<String, Integer>>> listsOfGetNextId =
+        new ArrayList<Callable<Pair<String, Integer>>>(150);
+    for (int i = 0; i < 150; i++) {
+      listsOfGetNextId.add(new Callable<Pair<String, Integer>>() {
+        @Override
+        public Pair<String, Integer> call() throws Exception {
+          String tableName;
+          synchronized (count) {
+            count.add("");
+            tableName = "User_" + count.size() + "_table";
+          }
+          return Pair.of(tableName,
+              nextUniqueIdUpdateForAnExistingTableShouldWorkAndConcurrency(tableName,
+                  nbSetOfThreads));
+        }
+      });
+    }
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+    List<Pair<String, Integer>> tableNextIdsInError = new ArrayList<Pair<String, Integer>>();
+    try {
+      for (Future<Pair<String, Integer>> aTreatment : executorService.invokeAll(listsOfGetNextId)) {
+        Pair<String, Integer> tableIdValue = aTreatment.get();
+        if (tableIdValue.getRight() != nbSetOfThreads) {
+          if (tableNextIdsInError.isEmpty()) {
+            Logger.getAnonymousLogger().severe("Some errors...");
+          }
+          tableNextIdsInError.add(tableIdValue);
+          Logger.getAnonymousLogger().severe(
+              "Next id value must be " + nbSetOfThreads + " for table " + tableIdValue.getLeft() +
+                  ", but was " + tableIdValue.getRight());
+        }
+      }
+    } finally {
+      executorService.shutdown();
+    }
+    if (!tableNextIdsInError.isEmpty()) {
+      fail("The next id of " + tableNextIdsInError.size() + " tables is in error.");
+    }
+  }
+
+  private int nextUniqueIdUpdateForAnExistingTableShouldWorkAndConcurrency(final String tableName,
+      final int nbThreads) throws SQLException, InterruptedException {
+    Logger.getAnonymousLogger().info(
+        "Start at " + System.currentTimeMillis() + " with " + nbThreads + " threads for table " +
+            tableName);
+    final Thread[] threads = new Thread[nbThreads];
+    for (int i = 0; i < nbThreads; i++) {
+      threads[i] = new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            int nextId = DBUtil.getNextId(tableName, "id");
+            Logger.getAnonymousLogger().info("Next id for " + tableName + " is " + nextId + " at " +
+                System.currentTimeMillis());
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        }
+      });
+    }
+
+    try {
+      for (Thread thread : threads) {
+        thread.start();
+      }
+      for (Thread thread : threads) {
+        thread.join(60000);
+      }
+      return actualMaxIdInUniqueIdFor(tableName);
+    } finally {
+      for (Thread thread : threads) {
+        thread.interrupt();
+      }
+    }
+  }
+
+  private int actualMaxIdInUniqueIdFor(String tableName) throws SQLException {
+    final String query = "select maxId from UniqueId where tableName = ?";
+    Connection connection = dataSource.getConnection();
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+    try {
+      statement = connection.prepareStatement(query);
+      statement.setString(1, tableName.toLowerCase());
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        return resultSet.getInt(1);
+      } else {
+        return 0;
+      }
+    } finally {
+      DBUtil.close(resultSet, statement);
+      DBUtil.close(connection);
+    }
   }
 }

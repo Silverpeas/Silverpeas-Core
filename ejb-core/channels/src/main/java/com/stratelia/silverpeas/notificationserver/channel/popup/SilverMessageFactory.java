@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -172,10 +173,15 @@ public class SilverMessageFactory {
             .getMessage())));
       }
       // CBO : FIN UPDATE
+      Map<String, Object> keyValue = notifMsg.getTargetParam();
+      String tmpSourceString = (String) keyValue.get("SOURCE"); // retrieves the SOURCE key value.
+      String tmpUrlString = (String) keyValue.get("URL"); // retrieves the URL key value.
 
       pmb.setSenderId(notifMsg.getSenderId());
       pmb.setSenderName(notifMsg.getSenderName());
       pmb.setAnswerAllowed(notifMsg.isAnswerAllowed());
+      pmb.setUrl(tmpUrlString);
+      pmb.setSource(tmpSourceString);
       pmb.setMsgDate(DateUtil.date2SQLDate(new Date()));
       pmb.setMsgTime(DateUtil.getFormattedTime(new Date()));
       dao.add(pmb);

@@ -184,7 +184,7 @@ public class DBUtil {
    * @return a unique id.
    * @throws UtilException
    */
-  public static int getNextId(String tableName, String idName) throws UtilException {
+  public static synchronized int getNextId(String tableName, String idName) throws UtilException {
     Connection privateConnection = null;
     boolean testingMode = false;
     try {
@@ -227,7 +227,7 @@ public class DBUtil {
    * @return a unique id.
    * @throws SQLException
    */
-  public static int getNextId(Connection connection, String tableName, String idName)
+  public static synchronized int getNextId(Connection connection, String tableName, String idName)
       throws SQLException {
     return getMaxId(connection, tableName, idName);
   }

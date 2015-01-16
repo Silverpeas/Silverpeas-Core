@@ -3,6 +3,8 @@ package com.stratelia.silverpeas.notificationUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.owasp.encoder.Encode;
 
 import com.silverpeas.util.StringUtil;
@@ -139,6 +141,13 @@ public class Notification {
       }
     }
     notifMetaData.addGroupRecipients(groupRecipients);
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      ResourceLocator bundle =
+          new ResourceLocator("org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
+              language);
+      notifMetaData.addLanguage(language, getSubject(), bundle.getString("AuthorMessage") + " :");
+      notifMetaData.addExtraMessage(getBody(), language);
+    }
     return notifMetaData;
   }
   

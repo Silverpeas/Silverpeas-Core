@@ -31,6 +31,12 @@ import java.util.StringTokenizer;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 
+/**
+ * This class permits to handle the different languages that a user can choose to display the
+ * labels of the application.<br/>
+ * Be careful, this class handles possible user languages and not possible content languages.<br/>
+ * The different content languages are managed by {@link com.silverpeas.util.i18n.I18NHelper}.
+ */
 public class DisplayI18NHelper {
 
   private static final List<String> languages = new ArrayList<String>();

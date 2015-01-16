@@ -1792,7 +1792,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     } else {
       for (UsedAxis axis : usedAxis) {
 
-        if (I18NHelper.isI18N) {
+        if (I18NHelper.isI18nContentActivated) {
           AxisHeader header = getAxisHeader(Integer.toString(axis.getAxisId()));
           axis._setAxisHeader(header);
         }

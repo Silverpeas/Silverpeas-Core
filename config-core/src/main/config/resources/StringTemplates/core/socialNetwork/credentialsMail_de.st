@@ -1,4 +1,3 @@
-<div style="font-family:Arial;font-size:11px">
 Hello $fullName$
 
 Thank you for being registered on Silverpeas.
@@ -12,4 +11,3 @@ $endif$
 
 
 To log on, click <a href="$url$">here</a>
-</ div>

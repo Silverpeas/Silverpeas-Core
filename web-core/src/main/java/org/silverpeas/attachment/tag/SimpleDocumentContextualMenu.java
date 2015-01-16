@@ -138,7 +138,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
     String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
     String webdavContentEditionLanguageLabel = "";
-    if (I18NHelper.isI18nActivated()) {
+    if (I18NHelper.isI18nContentEnabled()) {
       webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
           .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
               attachment.getLanguage()), userLanguage);

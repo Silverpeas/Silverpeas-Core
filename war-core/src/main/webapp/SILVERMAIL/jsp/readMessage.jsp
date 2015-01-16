@@ -30,6 +30,7 @@
 <%@ include file="checkSilvermail.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController" value="${requestScope.SILVERMAIL}" />
@@ -38,6 +39,9 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="senderName" value="${silfn:defaultEmptyString(msg.senderName)}"/>
+<c:set var="msgSource" value="${(msg.source eq msg.senderName) ? '' : msg.source}"/>
 
 <%
       response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -65,10 +69,12 @@
         }
       }
 
+      <c:if test="${!empty msg.url}">
       function goTo() {
         window.opener.top.location = "<c:url value="${msg.url}" />";
         window.close();
       }
+      </c:if>
 
       function closeWindow() {
       <c:choose>
@@ -88,13 +94,16 @@
     <view:window popup="true">
     <div class="popup-read-notification">
     <div class="entete">
-        <div class="from">
-          <span class="label"><fmt:message key="from" /> : </span>
-          <c:out value="${msg.senderName}" /></div>
+      <div class="from">
+        <c:if test="${!empty senderName}">
+        <span class="label"><fmt:message key="from" /> : </span>
+        </c:if>
+        <c:out value="${senderName}" />${silfn:isDefined(senderName) ? '' : '&#160;'}
+      </div>
         <div class="date"><view:formatDateTime value="${msg.date}" /></div>
       </div>
-      <c:if test="${!empty msg.source}">
-      <div class="source"> <span class="label"><fmt:message key="source" /> :</span> <c:out value="${msg.source}" /> </div>
+      <c:if test="${!empty msgSource}">
+      <div class="source"> <span class="label"><fmt:message key="source" /> :</span> <c:out value="${msgSource}" /> </div>
       </c:if>
       <c:if test="${!empty msg.url}">
       	<div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /></a> </div>
@@ -102,7 +111,7 @@
       <div class="content-notification">
         ${msg.body}
       </div>
-        
+
       <view:buttonPane>
             <fmt:message var="closeLabel" key="close" />
             <fmt:message var="deleteLabel" key="delete" />

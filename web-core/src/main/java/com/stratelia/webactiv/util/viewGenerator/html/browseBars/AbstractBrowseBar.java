@@ -268,7 +268,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public boolean isI18N() {
-    return I18NHelper.isI18N
+    return I18NHelper.isI18nContentActivated
         && (getI18NBean() != null || getUrl() != null || getLanguages() != null);
   }
 

@@ -351,7 +351,7 @@
 
 <form method="post" name="recupHtml" action="javascript:saveCalledByFormSubmit();">
 
-  <% if (I18NHelper.isI18N && StringUtil.isDefined(contentLanguage)) { %>
+  <% if (I18NHelper.isI18nContentActivated && StringUtil.isDefined(contentLanguage)) { %>
   <div class="container-wysiwyg wysiwyg-language"><%=I18NHelper
       .getLanguageLabel(contentLanguage, language)%>
   </div>

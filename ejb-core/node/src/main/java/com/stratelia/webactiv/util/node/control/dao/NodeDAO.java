@@ -34,7 +34,6 @@ import javax.ejb.NoSuchEntityException;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -434,7 +433,7 @@ public class NodeDAO {
     NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node.getName(), node.
         getDescription());
     node.addTranslation(nodeI18NDetail);
-    if (I18NHelper.isI18N) {
+    if (I18NHelper.isI18nContentActivated) {
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, node.getId());
       for (int t = 0; translations != null && t < translations.size(); t++) {
         nodeI18NDetail = translations.get(t);

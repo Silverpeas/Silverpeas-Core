@@ -548,7 +548,7 @@ public class IndexManager {
   }
 
   private String getFieldName(String name, String language) {
-    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
+    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
       return name;
     }
     return name + "_" + language;
