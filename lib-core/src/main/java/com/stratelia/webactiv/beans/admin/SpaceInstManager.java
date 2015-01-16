@@ -174,7 +174,7 @@ public class SpaceInstManager {
           spaceInstLocalId);
       List<SpaceInst> spaceInsts = new ArrayList<>(asSubSpaces.size());
       for (SpaceRow spaceRow: asSubSpaces) {
-        spaceInsts.add(spaceRow2SpaceInst(space));
+        spaceInsts.add(spaceRow2SpaceInst(spaceRow));
       }
       spaceInst.setSubSpaces(spaceInsts);
 
