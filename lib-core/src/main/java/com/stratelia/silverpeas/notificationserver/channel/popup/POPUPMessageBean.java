@@ -176,6 +176,12 @@ public class POPUPMessageBean
     if (body != null ? !body.equals(that.body) : that.body != null) {
       return false;
     }
+    if (source != null ? !source.equals(that.source) : that.source != null) {
+      return false;
+    }
+    if (url != null ? !url.equals(that.url) : that.url != null) {
+      return false;
+    }
     if (msgDate != null ? !msgDate.equals(that.msgDate) : that.msgDate != null) {
       return false;
     }
@@ -201,6 +207,8 @@ public class POPUPMessageBean
     result = 31 * result + (senderId != null ? senderId.hashCode() : 0);
     result = 31 * result + (senderName != null ? senderName.hashCode() : 0);
     result = 31 * result + (answerAllowed != null ? answerAllowed.hashCode() : 0);
+    result = 31 * result + (source != null ? source.hashCode() : 0);
+    result = 31 * result + (url != null ? url.hashCode() : 0);
     result = 31 * result + (msgDate != null ? msgDate.hashCode() : 0);
     result = 31 * result + (msgTime != null ? msgTime.hashCode() : 0);
     return result;

@@ -46,10 +46,10 @@ public class POPUPMessageBeanRepositoryIntegrationTest {
   private static final String TABLE_CREATION =
       "/com/stratelia/silverpeas/notificationserver/channel/popup/create_table.sql";
   private static final Operation MESSAGES_SETUP = Operations.insertInto("ST_PopupMessage")
-      .columns("id", "userId", "body", "senderId", "senderName", "answerAllowed", "msgDate",
-          "msgTime")
-      .values(0, 0, "Toto chez les papoos", "42", "Toto", "0", "2014/10/31", "10:30")
-      .values(1, 0, "Bidule a faim", "30", "Tartempion", "0", "2014/11/01", "09:30")
+      .columns("id", "userId", "body", "senderId", "senderName", "answerAllowed", "source", "url",
+          "msgDate", "msgTime")
+      .values(0, 0, "Toto chez les papoos", "42", "Toto", "0", "src", "url", "2014/10/31", "10:30")
+      .values(1, 0, "Bidule a faim", "30", "Tartempion", "0", null, null, "2014/11/01", "09:30")
       .build();
   private static final Operation UNIQUE_ID_SETUP = Operations.insertInto("UniqueId")
       .columns("maxId", "tableName")
@@ -87,6 +87,8 @@ public class POPUPMessageBeanRepositoryIntegrationTest {
     assertThat(bean.getSenderId(), is("42"));
     assertThat(bean.getSenderName(), is("Toto"));
     assertThat(bean.isAnswerAllowed(), is(false));
+    assertThat(bean.getSource(), is("src"));
+    assertThat(bean.getUrl(), is("url"));
     assertThat(bean.getMsgDate(), is("2014/10/31"));
     assertThat(bean.getMsgTime(), is("10:30"));
   }
@@ -140,6 +142,8 @@ public class POPUPMessageBeanRepositoryIntegrationTest {
     expected.setSenderName("Administrateur");
     expected.setBody("The body of the message");
     expected.setAnswerAllowed(false);
+    expected.setSource("source");
+    expected.setUrl("urlLink");
     expected.setMsgDate("2014/11/02");
     expected.setMsgTime("11:10");
     Transaction.performInOne(() -> repository.save(expected));
