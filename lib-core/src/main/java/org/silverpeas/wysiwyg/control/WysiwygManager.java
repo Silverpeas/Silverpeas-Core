@@ -487,6 +487,8 @@ public class WysiwygManager {
     SimpleDocument document =
         searchAttachmentDetail(content.getContributionId(), wysiwygType, lang);
     if (document != null) {
+      // Load old content
+      WysiwygContent beforeUpdateContent = load(content.getContributionId(), lang);
       if (!document.getLanguage().equals(lang)) {
         document.setFilename(fileName);
       }
@@ -497,7 +499,7 @@ public class WysiwygManager {
       if (document.getSize() > 0) {
         AttachmentServiceProvider.getAttachmentService().updateAttachment(document,
             new ByteArrayInputStream(content.getData().getBytes(Charsets.UTF_8)), indexIt, false);
-        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, content);
+        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, beforeUpdateContent, content);
       } else {
         AttachmentServiceProvider.getAttachmentService().removeContent(document, lang, true);
       }
