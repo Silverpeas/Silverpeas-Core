@@ -618,7 +618,7 @@ public class WysiwygManager {
    */
   public WysiwygContent load(final ContributionIdentifier id, String language) {
     String content = internalLoad(id, language);
-    if (I18NHelper.isI18nActivated() && content != null && StringUtil.isNotDefined(content)) {
+    if (I18NHelper.isI18nContentEnabled() && content != null && StringUtil.isNotDefined(content)) {
       List<String> languages = new ArrayList<>(I18NHelper.getAllSupportedLanguages());
       languages.remove(language);
       for (String lang : languages) {

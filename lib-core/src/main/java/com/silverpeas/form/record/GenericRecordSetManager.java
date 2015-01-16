@@ -869,7 +869,7 @@ public class GenericRecordSetManager {
       insert.setInt(1, internalId);
       insert.setInt(2, templateId);
       insert.setString(3, externalId);
-      if (!I18NHelper.isI18N
+      if (!I18NHelper.isI18nContentActivated
           || I18NHelper.isDefaultLanguage(record.getLanguage())) {
         insert.setNull(4, Types.VARCHAR);
       } else {
@@ -926,7 +926,7 @@ public class GenericRecordSetManager {
     ResultSet rs = null;
 
     try {
-      if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
+      if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
         language = null;
       }
 

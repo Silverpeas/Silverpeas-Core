@@ -577,7 +577,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           && request.getParameter("NameObject").length() > 0) {
         jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request.
             getParameter("Description"),
-            request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
+            request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedContentLanguage(
                 request),
             request.getParameter("SelectedLook"),
             request.getParameter("ComponentSpaceQuota"),

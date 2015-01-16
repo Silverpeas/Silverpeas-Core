@@ -437,7 +437,7 @@ public class DefaultTreeService implements TreeService {
 
   private void setTranslations(Connection con, TreeNode node)
       throws TreeManagerException {
-    if (I18NHelper.isI18N) {
+    if (I18NHelper.isI18nContentActivated) {
       // ajout de la traduction par defaut
       TreeNodeI18N translation = new TreeNodeI18N(Integer.parseInt(node.getPK()
           .getId()), node.getLanguage(), node.getName(), node.getDescription());

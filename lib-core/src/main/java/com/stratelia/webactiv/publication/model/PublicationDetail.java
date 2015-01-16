@@ -581,7 +581,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getKeywords(String lang) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18nContentActivated) {
       return getKeywords();
     }
     PublicationI18N p = (PublicationI18N) getTranslations().get(lang);

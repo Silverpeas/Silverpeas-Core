@@ -312,7 +312,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
             "root.MSG_GEN_PARAM_VALUE", "Before creation");
 
         // ajout de la langue
-        axisHeader.setLanguage(I18NHelper.getSelectedLanguage(request));
+        axisHeader.setLanguage(I18NHelper.getSelectedContentLanguage(request));
 
         // récupération des traductions
         I18NHelper.setI18NInfo(axisHeader, request);

@@ -106,7 +106,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
    */
   @Override
   public DataRecord getRecord(String objectId, String language) throws FormException {
-    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
+    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
       language = null;
     }
     return getGenericRecordSetManager().getRecord(recordTemplate, objectId, language);
@@ -187,7 +187,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   @Override
   public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18nContentActivated) {
       indexRecord(recordId, formName, indexEntry, null);
     } else {
       List<String> languages =

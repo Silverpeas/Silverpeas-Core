@@ -462,7 +462,7 @@ public class SpaceInstManager {
       SpaceI18N translation = new SpaceI18N(row.lang, row.name, row.description);
       space.addTranslation(translation);
 
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         List<SpaceI18NRow> translations =
             ddManager.getOrganization().spaceI18N.getTranslations(row.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {

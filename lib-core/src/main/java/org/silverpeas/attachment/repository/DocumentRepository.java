@@ -237,7 +237,7 @@ public class DocumentRepository {
     targetDoc.setUpdatedBy(null);
     targetDoc.computeNodeName();
     pk = createDocument(session, targetDoc);
-    if (I18NHelper.isI18nActivated()) {
+    if (I18NHelper.isI18nContentEnabled()) {
       // The first version can have several language contents.
       Set<String> checkedLanguages = new HashSet<String>();
       checkedLanguages.add(targetDoc.getLanguage());
@@ -260,7 +260,7 @@ public class DocumentRepository {
     VersionManager versionManager = session.getWorkspace().getVersionManager();
     String currentVersion = targetDoc.getVersion();
     for (SimpleDocument doc : history) {
-      if (I18NHelper.isI18nActivated()) {
+      if (I18NHelper.isI18nContentEnabled()) {
         // One language content is aimed by a version. So the first step here is to search the
         // language content updated.
         Set<String> checkedLanguages = new HashSet<String>();

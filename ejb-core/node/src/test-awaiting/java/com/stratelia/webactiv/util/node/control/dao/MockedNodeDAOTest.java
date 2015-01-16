@@ -64,7 +64,7 @@ public class MockedNodeDAOTest {
 
   @Before
   public void setup() {
-    I18NHelper.isI18N = false;
+    I18NHelper.isI18nContentActivated = false;
     I18NHelper.defaultLanguage = "de";
   }
 
@@ -180,7 +180,7 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testStoreRowI18nActivated() throws Exception {
-    I18NHelper.isI18N = true;
+    I18NHelper.isI18nContentActivated = true;
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
     JDBCTestModule module = new JDBCTestModule(jdbcFactory);
     MockConnection mockedConnection = jdbcFactory.getMockConnection();
@@ -287,7 +287,7 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testMoveNodeI18nActivated() throws Exception {
-    I18NHelper.isI18N = true;
+    I18NHelper.isI18nContentActivated = true;
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
     JDBCTestModule module = new JDBCTestModule(jdbcFactory);
     MockConnection mockedConnection = jdbcFactory.getMockConnection();
@@ -394,7 +394,7 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testUpdateRightsDependencyI18nActivated() throws Exception {
-    I18NHelper.isI18N = true;
+    I18NHelper.isI18nContentActivated = true;
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
     JDBCTestModule module = new JDBCTestModule(jdbcFactory);
     MockConnection mockedConnection = jdbcFactory.getMockConnection();

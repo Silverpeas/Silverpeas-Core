@@ -82,7 +82,7 @@ public class LanguageSelectorTag extends TagSupport {
   @Override
   public int doStartTag() throws JspException {
     ElementContainer xhtml = new ElementContainer();
-    if (I18NHelper.isI18N) {
+    if (I18NHelper.isI18nContentActivated) {
       String userLanguage = null;
       final Locale locale = (Locale) Config.find(pageContext, Config.FMT_LOCALE);
       if (locale != null) {
@@ -94,7 +94,8 @@ public class LanguageSelectorTag extends TagSupport {
         langSelector.setID(elementId);
         langSelector.setName(elementName);
         List<Option> options = new ArrayList<Option>(I18NHelper.getNumberOfLanguages());
-        for (I18NLanguage language : I18NHelper.getAllLanguages(userLanguage)) {
+        for (I18NLanguage language : I18NHelper.getAllUserTranslationsOfContentLanguages(
+            userLanguage)) {
           Option option = new Option(language.getLabel(), language.getCode());
           option.addElement(language.getLabel());
           if (getLangCode().equalsIgnoreCase(language.getCode())) {

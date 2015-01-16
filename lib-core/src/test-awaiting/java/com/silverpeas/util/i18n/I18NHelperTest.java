@@ -21,6 +21,10 @@
 
 package com.silverpeas.util.i18n;
 
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.apache.commons.collections.CollectionUtils;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -28,18 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.silverpeas.util.ResourcesWrapper;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.silverpeas.util.i18n.I18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.i18n.Translation;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -52,25 +44,6 @@ import static org.mockito.Mockito.when;
  * @author ehugonnet
  */
 public class I18NHelperTest {
-
-  public I18NHelperTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
-  }
 
   /**
    * Test of getLanguageLabel method, of class I18NHelper.
@@ -301,14 +274,14 @@ public class I18NHelperTest {
 //  }
 //
 //  /**
-//   * Test of getSelectedLanguage method, of class I18NHelper.
+//   * Test of getSelectedContentLanguage method, of class I18NHelper.
 //   */
 //  @Test
 //  public void testGetSelectedLanguage() {
-//    System.out.println("getSelectedLanguage");
+//    System.out.println("getSelectedContentLanguage");
 //    HttpServletRequest request = null;
 //    String expResult = "";
-//    String result = I18NHelper.getSelectedLanguage(request);
+//    String result = I18NHelper.getSelectedContentLanguage(request);
 //    assertEquals(expResult, result);
 //    // TODO review the generated test code and remove the default call to fail.
 //    fail("The test case is a prototype.");

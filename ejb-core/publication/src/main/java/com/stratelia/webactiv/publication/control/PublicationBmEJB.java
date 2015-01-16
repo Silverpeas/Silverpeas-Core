@@ -172,7 +172,7 @@ public class PublicationBmEJB implements PublicationBm {
         throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_ENTITY_ATTRIBUTES", ex);
       }
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         try {
           createTranslations(con, detail);
         } catch (SQLException | UtilException ex) {
@@ -665,7 +665,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> pubDetails = PublicationDAO.getOrphanPublications(con, pubPK);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
@@ -683,7 +683,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> pubDetails =
           PublicationDAO.getNotOrphanPublications(con, pubPK);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
@@ -717,7 +717,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> pubDetails =
           PublicationDAO.getUnavailablePublicationsByPublisherId(con, pubPK, publisherId, nodeId);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
@@ -843,7 +843,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> publis =
           PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publis);
       }
       return publis;
@@ -863,7 +863,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> publis =
           PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, userId);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publis);
       }
       return publis;
@@ -887,7 +887,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> detailList =
           PublicationDAO.selectNotInFatherPK(con, fatherPK, sorting);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detailList);
       }
       return detailList;
@@ -914,7 +914,7 @@ public class PublicationBmEJB implements PublicationBm {
         result.add(it.next());
         i++;
       }
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, result);
       }
       return result;
@@ -935,7 +935,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> detailList = PublicationDAO.
           selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, pk, status, fatherId, nbPubs);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detailList);
       }
       return detailList;
@@ -961,7 +961,7 @@ public class PublicationBmEJB implements PublicationBm {
         result.add(it.next());
         i++;
       }
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, result);
       }
       return result;
@@ -1004,7 +1004,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       PublicationDetail detail = PublicationDAO.loadRow(con, pubPK);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detail);
       }
       List<ForeignPK> links = SeeAlsoDAO.getLinks(con, pubPK);
@@ -1026,7 +1026,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> resultList = PublicationDAO.searchByKeywords(con, query, pubPK);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, resultList);
       }
       return resultList;
@@ -1046,7 +1046,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> publications =
           PublicationDAO.selectByPublicationPKs(con, publicationPKs);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
       return publications;
@@ -1066,7 +1066,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> publications =
           PublicationDAO.selectByStatus(con, pubPK, status);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
       return publications;
@@ -1101,7 +1101,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> publications =
           PublicationDAO.selectByStatus(con, componentIds, status);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
       return publications;
@@ -1200,7 +1200,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       Collection<PublicationDetail> detailList = PublicationDAO
           .selectByFatherIds(con, fatherIds, pubPK, sorting, status, filterOnVisibilityPeriod);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detailList);
       }
       return detailList;
@@ -1595,7 +1595,7 @@ public class PublicationBmEJB implements PublicationBm {
       Collection<PublicationDetail> detailList =
           PublicationDAO.selectBetweenDate(con, beginDate, endDate, instanceId);
       List<PublicationDetail> result = new ArrayList<PublicationDetail>(detailList);
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, result);
       }
       return result;
@@ -1613,7 +1613,7 @@ public class PublicationBmEJB implements PublicationBm {
             detail.getKeywords());
     List<PublicationI18N> translations = new ArrayList<>();
     translations.add(translation);
-    if (I18NHelper.isI18N) {
+    if (I18NHelper.isI18nContentActivated) {
       Connection con = getConnection();
       try {
         translations.addAll(PublicationI18NDAO.getTranslations(con, detail.getPK()));

@@ -265,7 +265,7 @@ public class WAIndexSearcher {
     Analyzer analyzer = indexManager.getAnalyzer(language);
 
     Query parsedQuery;
-    if (I18NHelper.isI18N && "*".equals(language)) {
+    if (I18NHelper.isI18nContentActivated && "*".equals(language)) {
       // search over all languages
       String[] fields = new String[I18NHelper.getNumberOfLanguages()];
 
@@ -281,7 +281,7 @@ public class WAIndexSearcher {
       parsedQuery = mfqp.parse(query.getQuery());
     } else {
       // search only specified language
-      if (I18NHelper.isI18N && !"*".equals(language) && !I18NHelper.isDefaultLanguage(language)) {
+      if (I18NHelper.isI18nContentActivated && !"*".equals(language) && !I18NHelper.isDefaultLanguage(language)) {
         searchField = getFieldName(searchField, language);
       }
 
@@ -378,7 +378,7 @@ public class WAIndexSearcher {
   }
 
   private String getFieldName(String name, String language) {
-    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
+    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
       return name;
     }
     return name + "_" + language;
