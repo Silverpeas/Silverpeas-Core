@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -683,7 +683,7 @@ public class NotificationMetaData implements java.io.Serializable {
   
   private boolean displayGroup(String groupId) {
     String threshold = settings.getString("notif.receiver.displayUser.threshold");
-    OrganisationController orgaController = OrganisationControllerFactory.
+    OrganizationController orgaController = OrganizationControllerProvider.
         getOrganisationController();
     Group group = orgaController.getGroup(groupId);
     int nbUsers = group.getNbUsers();
@@ -703,8 +703,8 @@ public class NotificationMetaData implements java.io.Serializable {
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false) && this.displayReceiversInFooter) {
       Set<UserRecipient> usersSet = getUserSet();
-      OrganisationController orgaController = OrganisationControllerFactory.
-        getOrganisationController();
+      OrganizationController orgaController = OrganizationControllerProvider.
+          getOrganisationController();
       boolean first = true;
       for (UserRecipient anUsersSet : usersSet) {
         if (!first) {
@@ -732,8 +732,8 @@ public class NotificationMetaData implements java.io.Serializable {
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false) && this.displayReceiversInFooter) {
       Set<GroupRecipient> groupsSet = getGroupSet();
-      OrganisationController orgaController =
-        OrganisationControllerFactory.getOrganisationController();
+      OrganizationController orgaController =
+          OrganizationControllerProvider.getOrganisationController();
       boolean first = true;
       for (GroupRecipient aGroupsSet : groupsSet) {
         if (!first) {

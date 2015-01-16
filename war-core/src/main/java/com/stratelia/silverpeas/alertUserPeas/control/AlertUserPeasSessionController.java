@@ -21,7 +21,6 @@
 package com.stratelia.silverpeas.alertUserPeas.control;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -35,10 +34,11 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.owasp.encoder.Encode;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Arrays;
 

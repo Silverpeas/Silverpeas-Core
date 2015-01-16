@@ -20,21 +20,21 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -53,12 +53,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.silverpeas.util.MailUtil.*;
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant
     .SECURE_TRANSPORT;
 import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant
     .SIMPLE_TRANSPORT;
+import static org.silverpeas.util.MailUtil.*;
 
 
 @MessageDriven(activationConfig = {

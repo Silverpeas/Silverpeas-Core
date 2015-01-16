@@ -74,9 +74,6 @@ import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;

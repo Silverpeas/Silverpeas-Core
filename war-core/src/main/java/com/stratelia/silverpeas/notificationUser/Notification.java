@@ -1,19 +1,18 @@
 package com.stratelia.silverpeas.notificationUser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.owasp.encoder.Encode;
-
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.owasp.encoder.Encode;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Notification {
   

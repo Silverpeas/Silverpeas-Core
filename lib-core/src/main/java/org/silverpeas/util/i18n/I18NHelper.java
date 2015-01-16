@@ -25,12 +25,12 @@
 package org.silverpeas.util.i18n;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourcesWrapper;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

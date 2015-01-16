@@ -25,11 +25,10 @@ package org.silverpeas.web.token;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
-import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.UserPrivilegeValidation;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.token.exception.TokenValidationException;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
 
 import javax.inject.Inject;
@@ -160,7 +159,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
     return uri.endsWith("/Qaptcha") || uri.contains("/CredentialsServlet/") ||
         uri.contains("/services/password/") || uri.contains("/AuthenticationServlet") ||
         (isWebServiceRequested(request) &&
-            StringUtil.isDefined(request.getHeader(UserPriviledgeValidation.HTTP_AUTHORIZATION)));
+            StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION)));
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {

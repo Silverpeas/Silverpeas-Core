@@ -117,14 +117,15 @@ public class DBUtil {
    * @return a unique id.
    * @throws java.sql.SQLException
    */
-  public static int getNextId(final String tableName, final String idName) throws SQLException {
+  public static synchronized int getNextId(final String tableName, final String idName)
+      throws SQLException {
     //noinspection RedundantCast
     final Pair<Integer, SQLException> result =
         Transaction.performInNew((Transaction.Process<Pair<Integer, SQLException>>) () -> {
           Connection connection = null;
           try {
             connection = openConnection();
-            return Pair.of(getNextId(connection, tableName, idName), null);
+            return Pair.of(getMaxId(connection, tableName, idName), null);
           } catch (SQLException ex) {
             return Pair.of(null, ex);
           } finally {
@@ -136,19 +137,6 @@ public class DBUtil {
       throw result.getRight();
     }
     return result.getLeft();
-  }
-
-  /**
-   * Return a new unique Id for a table.
-   * @param connection the JDBC connection.
-   * @param tableName the name of the table.
-   * @param idName the name of the column.
-   * @return a unique id.
-   * @throws SQLException
-   */
-  private static int getNextId(Connection connection, String tableName, String idName)
-  throws SQLException {
-    return getMaxId(connection, tableName, idName);
   }
 
   private static int getMaxId(Connection connection, String tableName, String idName)

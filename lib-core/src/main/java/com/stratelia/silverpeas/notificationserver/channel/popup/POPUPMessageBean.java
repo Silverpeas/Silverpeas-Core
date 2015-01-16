@@ -57,6 +57,8 @@ public class POPUPMessageBean
   private String senderId = null;
   private String senderName = null;
   private String answerAllowed = "0";
+  private String source = "";
+  private String url = "";
   private String msgDate = null;
   private String msgTime = null;
 
@@ -106,6 +108,22 @@ public class POPUPMessageBean
     } else {
       this.answerAllowed = "0";
     }
+  }
+
+  public void setSource(String value) {
+    source = value;
+  }
+
+  public String getSource() {
+    return source;
+  }
+
+  public void setUrl(String value) {
+    url = value;
+  }
+
+  public String getUrl() {
+    return url;
   }
 
   public String getMsgDate() {

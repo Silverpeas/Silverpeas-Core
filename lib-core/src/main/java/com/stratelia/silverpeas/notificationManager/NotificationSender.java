@@ -21,18 +21,16 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.SilverpeasServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMediaType;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterface;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationInterfaceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
