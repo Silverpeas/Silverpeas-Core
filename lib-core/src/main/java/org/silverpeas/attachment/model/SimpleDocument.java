@@ -677,7 +677,7 @@ public class SimpleDocument implements Serializable {
   public String getAliasURL() {
     String aliasUrl =
         FileServerUtils.getAliasURL(getPk().getInstanceId(), getFilename(), getPk().getId());
-    if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(getLanguage())) {
+    if (I18NHelper.isI18nContentActivated && !I18NHelper.isDefaultLanguage(getLanguage())) {
       aliasUrl += "&lang=" + getLanguage();
     }
     String extension = FileRepositoryManager.getFileExtension(getFilename());
