@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,33 +9,24 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 /**
  * Titre : SILVERMAILRequestRouter.java
- * Description :
- * Copyright :    Copyright (c) 2001
- * Société :
  * @author eDurand
- * @version 1.0
  */
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -46,8 +37,6 @@ import java.util.HashMap;
 
 /**
  * Class declaration
- * @author
- * @version %I%, %G%
  */
 public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSessionController> {
 
@@ -57,7 +46,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * Package from which to attempt to load RequestHandler objects
    */
   private static final String REQUEST_HANDLER_PACKAGE =
-      "org.silverpeas.notificationserver.channel.silvermail.requesthandlers";
+      "com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers";
 
   /**
    * Name of the session bean that will be used for this application. This must be matched by the
@@ -87,14 +76,13 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
     return SESSION_BEAN_NAME;
   }
 
-  public String getDestination(String action,
-      SILVERMAILSessionController componentSC, HttpRequest request) {
+  public String getDestination(String action, SILVERMAILSessionController componentSC,
+      HttpRequest request) {
     String destination = "/SILVERMAIL/jsp/" + action;
     String function = extractFunctionName(action);
 
     // If we have an action parameter, obtain the RequestHandler that implements
-    // the action. This method will throw a exception if no handler is
-    // associated with the action.
+    // the action. This method will throw a exception if no handler is associated with the action.
     SILVERMAILRequestHandler requestHandler;
 
     try {
@@ -117,11 +105,10 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * table once instantiated, so after the initial use of Class.forName() this method is very fast
    * and does not rely on reflection.
    */
-  protected SILVERMAILRequestHandler getHandlerInstance(String action)
-      throws SILVERMAILException {
+  protected SILVERMAILRequestHandler getHandlerInstance(String action) throws SILVERMAILException {
     String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
-    SILVERMAILRequestHandler requestHandler = (SILVERMAILRequestHandler) handlerHash
-        .get(handlerName);
+    SILVERMAILRequestHandler requestHandler =
+        (SILVERMAILRequestHandler) handlerHash.get(handlerName);
 
     if (requestHandler == null) {
       // We don't have a handler instance associated with this action,
@@ -132,8 +119,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
 
         // Check the class we obtained implements the RequestHandler interface
         if (!SILVERMAILRequestHandler.class.isAssignableFrom(handlerClass)) {
-          throw new SILVERMAILException(
-              "SILVERMAILRequestRouter.getHandlerInstance()",
+          throw new SILVERMAILException("SILVERMAILRequestRouter.getHandlerInstance()",
               SilverpeasException.ERROR, "silvermail.EX_NOT_A_REQUESTHANDLER",
               "Class=" + handlerName);
         }
@@ -143,39 +129,28 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
         // further requests from this user
         handlerHash.put(handlerName, requestHandler);
       } catch (ClassNotFoundException ex) {
-        throw new SILVERMAILException(
-            "SILVERMAILRequestRouter.getHandlerInstance()",
-            SilverpeasException.ERROR, "silvermail.EX_NO_HANDLER", "Class="
-            + handlerName, ex);
-      } catch (InstantiationException ex) {
+        throw new SILVERMAILException("SILVERMAILRequestRouter.getHandlerInstance()",
+            SilverpeasException.ERROR, "silvermail.EX_NO_HANDLER", "Class=" + handlerName, ex);
+      } catch (InstantiationException | IllegalAccessException ex) {
         // It probably doesn't have a no-argument constructor
-        throw new SILVERMAILException(
-            "SILVERMAILRequestRouter.getHandlerInstance()",
-            SilverpeasException.ERROR, "silvermail.EX_CANT_BE_INSTANCIATED",
-            "Class=" + handlerName, ex);
-      } catch (IllegalAccessException ex) {
-        throw new SILVERMAILException(
-            "SILVERMAILRequestRouter.getHandlerInstance()",
-            SilverpeasException.ERROR, "silvermail.EX_CANT_BE_INSTANCIATED",
-            "Class=" + handlerName, ex);
+        throw new SILVERMAILException("SILVERMAILRequestRouter.getHandlerInstance()",
+            SilverpeasException.ERROR, "silvermail.EX_CANT_BE_INSTANCIATED", "Class=" + handlerName,
+            ex);
       }
     }
-
     // If we get to here, we have a valid RequestHandler instance,
     // whether it came from the hash table or from dynamical class loading
     return requestHandler;
   }
 
   /**
-   * Method declaration
    * @param action
    * @return
-   * @see
    */
   protected String extractFunctionName(String action) {
     String result = action;
 
-    if (action.endsWith(".jsp") == true) {
+    if (action.endsWith(".jsp")) {
       result = action.substring(0, action.length() - 4);
     }
     return result;
