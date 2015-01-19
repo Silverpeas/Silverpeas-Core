@@ -30,8 +30,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.ServiceProvider;
 
-import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -59,8 +59,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   private static final long serialVersionUID = -5011846708353591604L;
 
-  @Inject
-  ServletContext context;
+  private ServletContext context = ServiceProvider.getService(ServletContext.class);
 
   /**
    * Decorates the specified user details with the required WEB exposition features.
