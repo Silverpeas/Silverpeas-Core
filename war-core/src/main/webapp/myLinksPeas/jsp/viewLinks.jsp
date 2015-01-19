@@ -97,6 +97,29 @@ function editLink(id) {
   updateLinkPopup();
 }
 
+ function saveArrayLinesOrder(e, ui) {
+	  var ajaxUrl = webContext + '/services/mylinks/saveLinesOrder';
+
+	  var cleanUrl = $("#urlId").val().replace(webContext, '');
+	  var updatedLink = {
+	      "position":ui.item.index(),
+	      "linkId":ui.item.find("input[name=hiddenLinkId]").val()
+	  };
+	  jQuery.ajax({
+	    url: ajaxUrl,
+	    type: 'POST',
+	    data: $.toJSON(updatedLink),
+	    contentType: "application/json",
+	    cache: false,
+	    dataType: "json",
+	    async: true,
+	    success: function(result) {
+	      notySuccess(getString('myLinks.updateLink.messageConfirm'));
+	      reloadPage();
+	    }
+	  });
+}
+
 function cleanMyLinkForm() {
   $("#linkFormId").attr('action', '');
   $("#hiddenLinkId").val("");
@@ -287,6 +310,9 @@ function reloadPage() {
 <%
    ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
    arrayPane.setSortableLines(true);
+   arrayPane.getState().setMaximumVisibleLine(-1);
+   arrayPane.setActivateUpdateMethodOnSort(true);
+   arrayPane.setUpdateMethodOnSort("saveArrayLinesOrder(e, ui)");
    arrayPane.addArrayColumn(resource.getString("GML.nom"));
    arrayPane.addArrayColumn(resource.getString("GML.description"));
    ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operations"));
@@ -321,9 +347,15 @@ function reloadPage() {
      Icon updateIcon = iconPane.addIcon();
      updateIcon.setProperties(resource.getIcon("myLinks.update"), resource
          .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
-     line.addArrayCellText(updateIcon.print() +
-         "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
-         link.getLinkId() + "\"/>");
+     StringBuffer buffer = new StringBuffer();
+     buffer.append(updateIcon.print());
+     buffer.append("&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"");
+     buffer.append(link.getLinkId());
+     buffer.append("\"/>");
+     buffer.append("<input type=\"hidden\" name=\"hiddenLinkId\" value=\"");
+     buffer.append(link.getLinkId());
+     buffer.append("\"/>");
+     line.addArrayCellText(buffer.toString());
    }
 
    out.println(arrayPane.print());

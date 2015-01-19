@@ -41,4 +41,6 @@ public interface MyLinksBm {
   void deleteLinks(String[] links);
 
   void updateLink(LinkDetail link);
+  
+  void setLinksOrderIfNeeded(Collection<LinkDetail> links);
 }

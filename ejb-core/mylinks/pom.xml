@@ -12,4 +12,12 @@
   <packaging>jar</packaging>
   <name>My Links - ${project.version}</name>
   
+  <dependencies>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies> 
 </project>

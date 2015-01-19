@@ -27,7 +27,11 @@ package com.silverpeas.myLinks.model;
 import java.io.Serializable;
 
 public class LinkDetail implements Serializable {
+
+  private static final long serialVersionUID = 1841282101128766762L;
   private int linkId;
+  private int position;
+  private boolean hasPosition;
   private String name;
   private String description;
   private String url;
@@ -120,6 +124,22 @@ public class LinkDetail implements Serializable {
 
   public void setObjectId(String objectId) {
     this.objectId = objectId;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
+  }
+
+  public boolean hasPosition() {
+    return hasPosition;
+  }
+
+  public void setHasPosition(boolean hasPosition) {
+    this.hasPosition = hasPosition;
   }
 
 }
