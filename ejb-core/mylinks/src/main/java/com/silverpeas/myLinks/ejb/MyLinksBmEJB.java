@@ -22,6 +22,8 @@ package com.silverpeas.myLinks.ejb;
 
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -30,7 +32,6 @@ import javax.ejb.TransactionAttributeType;
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.dao.LinkDAO;
 import com.silverpeas.myLinks.model.LinkDetail;
-
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -54,7 +55,9 @@ public class MyLinksBmEJB implements MyLinksBm {
   public Collection<LinkDetail> getAllLinksByUser(String userId) {
     Connection con = initCon();
     try {
-      return LinkDAO.getAllLinksByUser(con, userId);
+      List<LinkDetail> allLinksByUser = LinkDAO.getAllLinksByUser(con, userId);
+      setLinksOrderIfNeeded(allLinksByUser);
+      return allLinksByUser;
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByUser()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
@@ -153,5 +156,33 @@ public class MyLinksBmEJB implements MyLinksBm {
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
+  }
+
+  @Override
+  public void setLinksOrderIfNeeded(Collection<LinkDetail> links) {
+    boolean hasNoPosition = false;
+    boolean isPositionMissing = false;
+    Iterator<LinkDetail> iter = links.iterator();
+    int position = 0;
+    while (iter.hasNext() && !hasNoPosition && !isPositionMissing) {
+      LinkDetail next = iter.next();
+      hasNoPosition = !next.hasPosition();
+      if(!hasNoPosition){
+        isPositionMissing = next.getPosition() != position++;
+      }
+    }
+
+    if (hasNoPosition || isPositionMissing) {
+      setLinksOrder(links);
+    }
+  }
+
+  protected void setLinksOrder(Collection<LinkDetail> links) {
+    int position = 0;
+    for (LinkDetail link : links) {
+      link.setHasPosition(true);
+      link.setPosition(position++);
+      updateLink(link);
+    }
   }
 }

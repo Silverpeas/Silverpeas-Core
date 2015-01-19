@@ -80,9 +80,7 @@ public class MyLinksResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<MyLinkEntity> getMyLinks() {
-    UserDetail curUser = getUserDetail();
-
-    Collection<LinkDetail> links = getMyLinksBm().getAllLinks(curUser.getId());
+    Collection<LinkDetail> links = getAllMyLinks();
     String baseUri = getUriInfo().getAbsolutePath().toString();
 
     List<MyLinkEntity> myLinkEntities = new ArrayList<MyLinkEntity>();
@@ -93,6 +91,13 @@ public class MyLinksResource extends RESTWebService {
       }
     }
     return myLinkEntities;
+  }
+
+  protected Collection<LinkDetail> getAllMyLinks() {
+    UserDetail curUser = getUserDetail();
+
+    Collection<LinkDetail> links = getMyLinksBm().getAllLinks(curUser.getId());
+    return links;
   }
 
   /**
@@ -158,6 +163,47 @@ public class MyLinksResource extends RESTWebService {
           MyLinkEntity.fromLinkDetail(linkDetail,
               getURI(linkDetail, getUriInfo().getAbsolutePath().toString()));
       return Response.ok(createdEntity).build();
+    } else {
+      return Response.status(Status.BAD_REQUEST).build();
+    }
+  }
+
+  @POST
+  @Path("saveLinesOrder")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response saveLinesOrder(MyLinkPosition position) {
+    if (position != null) {
+      Collection<LinkDetail> linksDetail = getAllMyLinks();
+      ArrayList<MyLinkEntity> links = new ArrayList<MyLinkEntity>();
+      for(LinkDetail linkDetail : linksDetail){
+        links.add(MyLinkEntity.fromLinkDetail(linkDetail, null));
+      }
+      
+      MyLinkEntity originalLink = getMyLink(Integer.toString(position.getLinkId()));
+      int originalPosition = originalLink.getPosition();
+      links.remove(originalPosition);
+      int finalPosition = position.getPosition();
+      links.add(finalPosition, originalLink);
+
+      int begin;
+      int end;
+      if (originalPosition < finalPosition) {
+        begin = originalPosition;
+        end = finalPosition;
+      } else {
+        begin = finalPosition;
+        end = originalPosition;
+      }
+      for (int i = begin; i <= end; i++) {
+        MyLinkEntity link = links.get(i);
+        LinkDetail detail = link.toLinkDetail();
+        detail.hasPosition();
+        detail.setPosition(i);
+        MyLinkEntity updatedLink = MyLinkEntity.fromLinkDetail(detail, null);
+        updateLink(Integer.toString(updatedLink.getLinkId()), updatedLink);
+      }
+
+      return Response.ok().build();
     } else {
       return Response.status(Status.BAD_REQUEST).build();
     }
