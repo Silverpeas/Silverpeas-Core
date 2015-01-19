@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdc.control;
 
 import com.silverpeas.pdc.dao.PdcRightsDAO;
@@ -60,7 +59,6 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.security.ComponentSecurity;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -83,7 +81,6 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
    */
   private SilverpeasBeanDAO<AxisHeaderPersistence> dao = null;
 
-  @Inject
   private AxisHeaderI18NDAO axisHeaderI18NDAO;
   /**
    * PdcUtilizationBm, the pdc utilization interface to manage which axis are used by which
@@ -95,23 +92,19 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
    */
   private PdcClassifyManager pdcClassifyManager;
 
-  @Inject
   private ContentManager contentManager;
   private PdcClassificationService pdcClassificationService;
-  @Inject
   private PdcSubscriptionManager pdcSubscriptionManager;
 
   /**
    * TreeBm, the node interface to manage operations user
    */
-  @Inject
   private TreeService treeService;
 
   private static Map<String, AxisHeader> axisHeaders = Collections.synchronizedMap(new HashMap<>());
 
   /**
    * Constructor declaration
-   * @see
    */
   public GlobalPdcManager() {
     try {
@@ -120,9 +113,13 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     } catch (PersistenceException exceDAO) {
       SilverTrace.error("Pdc", "PdcBmImpl", "Pdc.CANNOT_CONSTRUCT_PERSISTENCE", exceDAO);
     }
+    axisHeaderI18NDAO = ServiceProvider.getService(AxisHeaderI18NDAO.class);
     pdcUtilizationService = ServiceProvider.getService(PdcUtilizationService.class);
     pdcClassifyManager = ServiceProvider.getService(PdcClassifyManager.class);
+    contentManager = ServiceProvider.getService(ContentManager.class);
     pdcClassificationService = ServiceProvider.getService(PdcClassificationService.class);
+    pdcSubscriptionManager = ServiceProvider.getService(PdcSubscriptionManager.class);
+    treeService = ServiceProvider.getService(TreeService.class);
   }
 
   @Override
