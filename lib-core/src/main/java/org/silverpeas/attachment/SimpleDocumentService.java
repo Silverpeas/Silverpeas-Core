@@ -86,7 +86,6 @@ import java.util.Map;
 import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
 
 /**
- *
  * @author ehugonnet
  */
 @Singleton
@@ -100,8 +99,8 @@ public class SimpleDocumentService implements AttachmentService {
   @Inject
   private AttachmentEventNotifier notificationService;
 
-  private final ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.util.attachment.Attachment", "");
+  private final ResourceLocator resources =
+      new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
 
   @Override
   public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
@@ -168,13 +167,12 @@ public class SimpleDocumentService implements AttachmentService {
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (PublicationTemplateException | FormException e) {
-      SilverTrace.error("attachment",
-          "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
+      SilverTrace
+          .error("attachment", "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
     }
   }
 
   /**
-   *
    * @param document
    * @param lang
    */
@@ -206,7 +204,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       SimpleDocument doc = repository.findDocumentById(session, pk, language);
       doc.setXmlFormId(xmlFormName);
       repository.updateDocument(session, doc);
@@ -218,7 +216,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @return the stored document.
@@ -234,7 +231,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
@@ -251,7 +247,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
@@ -265,7 +260,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       InputStream content, boolean indexIt, boolean notify) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
       if (notify && StringUtil.isDefined(document.getCreatedBy())) {
         notificationService.notifyEventOn(ResourceEvent.Type.CREATION, document);
@@ -287,7 +282,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Delete a given attachment.
-   *
    * @param document the document to deleted.
    */
   @Override
@@ -306,14 +300,13 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Delete a given attachment.
-   *
    * @param document the attachmentDetail object to deleted.
    * @param notify <code>true</code> to notify about the deletion of an attachment,
    * <code>false</code> otherwise.</code>
    */
   @Override
   public void deleteAttachment(SimpleDocument document, boolean notify) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       deleteAttachment(session, document, notify);
       session.save();
     } catch (RepositoryException ex) {
@@ -338,12 +331,13 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       if (StringUtil.isDefined(primaryKey.getId()) && !StringUtil.isLong(primaryKey.getId())) {
         return repository.findDocumentById(session, primaryKey, lang);
       }
-      SimpleDocument doc = repository.findDocumentByOldSilverpeasId(session, primaryKey
-          .getComponentName(), primaryKey.getOldSilverpeasId(), false, lang);
+      SimpleDocument doc = repository
+          .findDocumentByOldSilverpeasId(session, primaryKey.getComponentName(),
+              primaryKey.getOldSilverpeasId(), false, lang);
       if (doc == null) {
         doc = repository.findDocumentByOldSilverpeasId(session, primaryKey.getComponentName(),
             primaryKey.getOldSilverpeasId(), true, lang);
@@ -357,7 +351,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
       String lang) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository.listAllDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
           getId(), lang);
     } catch (RepositoryException ex) {
@@ -368,7 +362,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
       String lang) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
           getId(), lang);
     } catch (RepositoryException ex) {
@@ -381,9 +375,9 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, boolean indexIt,
       boolean notify) {
-    try(JcrSession session = openSystemSession()) {
-      SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
-          document.getLanguage());
+    try (JcrSession session = openSystemSession()) {
+      SimpleDocument oldAttachment =
+          repository.findDocumentById(session, document.getPk(), document.getLanguage());
       repository.fillNodeName(session, document);
       repository.updateDocument(session, document);
       if (!oldAttachment.isVersioned()) {
@@ -417,12 +411,14 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, InputStream in,
       boolean indexIt, boolean notify) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       String owner = document.getEditedBy();
       if (!StringUtil.isDefined(owner)) {
         owner = document.getUpdatedBy();
       }
       boolean checkinRequired = repository.lock(session, document, owner);
+      SimpleDocument docBeforeUpdate =
+          repository.findDocumentById(session, document.getPk(), document.getLanguage());
       repository.updateDocument(session, document);
       repository.addContent(session, document.getPk(), document.getAttachment());
       repository.fillNodeName(session, document);
@@ -437,7 +433,7 @@ public class SimpleDocumentService implements AttachmentService {
       repository.duplicateContent(document, finalDocument);
       String userId = finalDocument.getUpdatedBy();
       if (StringUtil.isDefined(userId) && notify && finalDocument.isPublic()) {
-        notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
+        notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, docBeforeUpdate, document);
       }
       if (indexIt) {
         createIndex(finalDocument);
@@ -450,7 +446,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void removeContent(SimpleDocument document, String lang, boolean notifiy) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
       boolean existsOtherContents = repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
@@ -490,7 +486,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Clone the attachment.
-   *
    * @param original
    * @param foreignCloneId
    * @return
@@ -499,8 +494,8 @@ public class SimpleDocumentService implements AttachmentService {
   public SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId) {
     try (JcrSession session = openSystemSession();
          InputStream in = new FileInputStream(original.getAttachmentPath())) {
-      SimpleDocumentPK clonePk = repository.copyDocument(session, original, new ForeignPK(
-          foreignCloneId, original.getInstanceId()));
+      SimpleDocumentPK clonePk = repository
+          .copyDocument(session, original, new ForeignPK(foreignCloneId, original.getInstanceId()));
       SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
       repository.copyMultilangContent(original, clone);
       repository.setClone(session, original, clone);
@@ -513,7 +508,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Clone the attachment.
-   *
    * @param original
    * @param targetPk
    * @return
@@ -523,7 +517,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentPK copyDocument(@SourceObject SimpleDocument original,
       @TargetPK ForeignPK targetPk) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK copyPk;
       if (original instanceof HistorisedDocument) {
         copyPk = repository.copyDocument(session, (HistorisedDocument) original, targetPk);
@@ -556,15 +550,15 @@ public class SimpleDocumentService implements AttachmentService {
     }
     return copiedDocumentKeys;
   }
+
   /**
    * Reorder the attachments according to the order in the list.
-   *
    * @param pks
    * @throws AttachmentException
    */
   @Override
   public void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       int i = STEP;
       for (SimpleDocumentPK pk : pks) {
         SimpleDocument doc = repository.findDocumentById(session, pk, null);
@@ -580,14 +574,12 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Reorder the attachments according to the order in the list.
-   *
-   *
    * @param documents
    * @throws AttachmentException
    */
   @Override
   public void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       int i = STEP;
       for (SimpleDocument doc : documents) {
         doc.setOrder(i);
@@ -618,7 +610,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listDocumentsRequiringWarning(Date alertDate, String language) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsRequiringWarning(session, alertDate, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -627,7 +619,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listExpiringDocuments(Date expiryDate, String language) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository.listExpiringDocuments(session, expiryDate, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -636,7 +628,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listDocumentsToUnlock(Date expiryDate, String language) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsToUnlock(session, expiryDate, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -706,17 +698,19 @@ public class SimpleDocumentService implements AttachmentService {
 
   /**
    * Release a locked file.
-   *
    * @param context : the unlock parameters.
    * @return false if the file is locked - true if the unlock succeeded.
    * @throws AttachmentException
    */
   @Override
   public boolean unlock(UnlockContext context) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       String contentLanguage = I18NHelper.checkLanguage(context.getLang());
-      SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
-          context.getAttachmentId()), contentLanguage);
+      SimpleDocument document = repository
+          .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
+              contentLanguage);
+      SimpleDocument docBeforeUpdate =
+          repository.findDocumentById(session, document.getPk(), contentLanguage);
       contentLanguage = document.getLanguage();
       if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
         // Verifying if the content language handled in WEBDAV repository is the same as the
@@ -732,8 +726,8 @@ public class SimpleDocumentService implements AttachmentService {
                   contentLanguage);
         }
       }
-      if (document.isOpenOfficeCompatible() && !context.isForce() && webdavRepository.isNodeLocked(
-          session, document)) {
+      if (document.isOpenOfficeCompatible() && !context.isForce() &&
+          webdavRepository.isNodeLocked(session, document)) {
         return false;
       }
       if (!context.isForce() && document.isReadOnly() && !document.getEditedBy().equals(context.
@@ -768,19 +762,18 @@ public class SimpleDocumentService implements AttachmentService {
       if (document.isPublic()) {
         String userId = context.getUserId();
         if (StringUtil.isDefined(userId) && notify) {
-          notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
+          notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, docBeforeUpdate, document);
         }
       }
     } catch (IOException | RepositoryException e) {
-      throw new AttachmentException("AttachmentService.unlock()",
-          SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
+      throw new AttachmentException("AttachmentService.unlock()", SilverpeasRuntimeException.ERROR,
+          "attachment.CHECKIN_FAILED", e);
     }
     return true;
   }
 
   /**
    * Lock a file so it can be edited by an user.
-   *
    * @param attachmentId
    * @param userId
    * @param language
@@ -810,8 +803,8 @@ public class SimpleDocumentService implements AttachmentService {
 
   private void updateAttachment(Session session, SimpleDocument document, boolean indexIt,
       boolean notify) throws RepositoryException, IOException {
-    SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
-        document.getLanguage());
+    SimpleDocument oldAttachment =
+        repository.findDocumentById(session, document.getPk(), document.getLanguage());
     repository.updateDocument(session, document);
     if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
       if (!oldAttachment.getFilename().equals(document.getFilename())) {
@@ -832,7 +825,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK updatedPk = repository.changeVersionState(session, pk, comment);
       session.save();
       return updatedPk;
@@ -842,8 +835,8 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
-      String lang) {
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName,
+      ForeignPK foreign, String lang) {
     List<SimpleDocument> exisitingsDocuments = listDocumentsByForeignKey(foreign, lang);
     SimpleDocument document = searchDocumentById(pk, lang);
     if (document == null) {
@@ -859,11 +852,10 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
       WAPrimaryKey foreignKey, DocumentType type, String lang) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository
           .listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
-                  getId(), type, lang
-          );
+              getId(), type, lang);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
@@ -871,7 +863,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsLockedByUser(session, usedId, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -883,7 +875,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentPK moveDocument(@SourceObject SimpleDocument document,
       @TargetPK ForeignPK destination) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
       SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
       repository.moveFullContent(document, moveDoc);
@@ -939,10 +931,10 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
       DocumentType type) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
-      List<SimpleDocument> attachments = listDocumentsByForeignKeyAndType(originalForeignKey, type,
-          null);
+      List<SimpleDocument> attachments =
+          listDocumentsByForeignKeyAndType(originalForeignKey, type, null);
       Map<String, SimpleDocument> clones = listDocumentsOfClone(cloneForeignKey, type, null);
       Map<String, String> ids = new HashMap<String, String>(clones.size());
       // looking for updates and deletions
@@ -994,7 +986,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void switchComponentBehaviour(String componentId, boolean toVersionning) {
-    try(JcrSession session = openSystemSession()) {
+    try (JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
       List<SimpleDocument> attachments = repository
           .listDocumentsByComponentIdAndType(session, componentId, DocumentType.attachment,
@@ -1024,7 +1016,7 @@ public class SimpleDocumentService implements AttachmentService {
 
     // Updating JCR if required
     if (documentUpdateRequired) {
-      try(JcrSession session = openSystemSession()) {
+      try (JcrSession session = openSystemSession()) {
         repository.saveForbiddenDownloadForRoles(session, document);
         session.save();
       } catch (RepositoryException ex) {
