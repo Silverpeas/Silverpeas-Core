@@ -97,6 +97,28 @@ function editLink(id) {
   updateLinkPopup();
 }
 
+ function saveArrayLinesOrder() {
+	  var ajaxUrl = webContext + '/services/mylinks/saveLinesOrder';
+
+	  var cleanUrl = $("#urlId").val().replace(webContext, '');
+	  var updatedLink = {
+	      "ids":["1","2"]
+	  };
+	  jQuery.ajax({
+	    url: ajaxUrl,
+	    type: 'POST',
+	    data: $.toJSON(updatedLink),
+	    contentType: "application/json",
+	    cache: false,
+	    dataType: "json",
+	    async: true,
+	    success: function(result) {
+	      notySuccess(getString('myLinks.updateLink.messageConfirm'));
+	      reloadPage();
+	    }
+	  });
+}
+
 function cleanMyLinkForm() {
   $("#linkFormId").attr('action', '');
   $("#hiddenLinkId").val("");
@@ -287,6 +309,9 @@ function reloadPage() {
 <%
    ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
    arrayPane.setSortableLines(true);
+   arrayPane.getState().setMaximumVisibleLine(-1);
+   arrayPane.setActivateUpdateMethodOnSort(true);
+   arrayPane.setUpdateMethodOnSort("saveArrayLinesOrder()");
    arrayPane.addArrayColumn(resource.getString("GML.nom"));
    arrayPane.addArrayColumn(resource.getString("GML.description"));
    ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operations"));
