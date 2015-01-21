@@ -98,8 +98,8 @@
               <c:set var="indentation">&nbsp;&nbsp;<c:out value="${indentation}" escapeXml="false"/></c:set>
             </c:forEach>
             </c:if>
-            <option value="<c:out value="${space.fullId}"/>"
-                    <c:if test="${space.fullId eq preferences.personalWorkSpaceId}">selected="selected"</c:if> >
+            <option value="<c:out value="${space.id}"/>"
+                    <c:if test="${space.id eq preferences.personalWorkSpaceId}">selected="selected"</c:if> >
               <c:out value="${indentation}" escapeXml="false"/><c:out
                 value="${space.name}"/></option>
           </c:forEach>

@@ -41,7 +41,7 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <%
-List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
+List<ComponentInstLight> galleries = new ArrayList<>();
 OrganizationController orgaController = OrganizationControllerProvider.getOrganisationController();
 String[] compoIds = orgaController.getCompoId("gallery");
 for (String compoId : compoIds) {
@@ -196,7 +196,7 @@ function updateThumbnail() {
 				<select id="galleries" name="galleries" onchange="openGallery(this);this.selectedIndex=0;">
 					<option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
 				    <c:forEach items="${galleries}" var="gallery">
-				    	<option value="${gallery.id()}">${gallery.label}</option>
+				    	<option value="${gallery.id}">${gallery.label}</option>
 					</c:forEach>
                	</select>
 			</c:if>
