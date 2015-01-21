@@ -20,7 +20,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import au.id.jericho.lib.html.Source;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -42,6 +41,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.silverpeas.attachment.AttachmentServiceFactory;
