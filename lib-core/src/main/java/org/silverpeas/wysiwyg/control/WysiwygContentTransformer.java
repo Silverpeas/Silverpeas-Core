@@ -23,7 +23,15 @@
  */
 package org.silverpeas.wysiwyg.control;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import net.htmlparser.jericho.Attributes;
+import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.HTMLElementName;
+import net.htmlparser.jericho.HTMLElements;
+import net.htmlparser.jericho.Source;
+import org.apache.tika.parser.html.HtmlParser;
+import org.cyberneko.html.parsers.DOMParser;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -36,6 +44,7 @@ import javax.mail.internet.MimeBodyPart;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -81,6 +90,75 @@ public class WysiwygContentTransformer {
    */
   private WysiwygContentTransformer(final String wysiwygContent) {
     this.wysiwygContent = wysiwygContent;
+  }
+
+  /**
+   * Transforms all URL of images to take into account theirs display size.
+   * @return the WYSIWYG content transformed to be stored.
+   */
+  public String updateURLOfImagesAccordingToSizes() {
+    String transformedWysiwygContent = wysiwygContent;
+
+    Source source = new Source(transformedWysiwygContent);
+    //get all images
+    List<Element> images = source.getAllElements(HTMLElementName.IMG);
+    Map<String, String> replacements = new HashMap<String, String>();
+    for (Element image : images) {
+      String src = image.getAttributeValue("src");
+
+      //update only URL of images stored in Silverpeas
+      if (src.contains("/attachmentId/")) {
+        String width = image.getAttributeValue("width");
+
+        // extract width from 'style' attribute
+        if (!StringUtil.isDefined(width)) {
+          String style = image.getAttributeValue("style");
+          if (StringUtil.isDefined(style)) {
+            int i = style.indexOf("width:");
+            if (i != -1) {
+              int j = style.indexOf(";", i);
+              if (j != -1) {
+                width = style.substring(i + 6, j).trim();
+              }
+            }
+          }
+        }
+
+        // process URL
+        String newSrc = "";
+        if (StringUtil.isDefined(width)) {
+          if (width.contains("px")) {
+            //remove 'px'
+            width = width.substring(0, width.length() - 2);
+          }
+
+          if (src.contains("/size/")) {
+            //replace existing 'size' parameter
+            int i = src.indexOf("/size/");
+            int j = src.indexOf("/", i+"/size/".length());
+            String size = src.substring(i, j);
+            newSrc = src.replace(size, "/size/"+width+"x");
+            replacements.put(src, newSrc);
+          } else {
+            //add 'size' parameter
+            int i = src.indexOf("/name/");
+            if (i != -1) {
+              newSrc = src.substring(0, i);
+              newSrc += "/size/" + width + "x";
+              newSrc += src.substring(i, src.length());
+              replacements.put(src, newSrc);
+            }
+          }
+        }
+      }
+
+      //replace all Silverpeas images URL
+      for (String url : replacements.keySet()) {
+        transformedWysiwygContent = transformedWysiwygContent.replaceAll(url, replacements.get(url));
+      }
+    }
+
+    return transformedWysiwygContent;
   }
 
   /**
