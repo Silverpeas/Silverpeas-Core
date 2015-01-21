@@ -137,6 +137,17 @@ public class WysiwygContentTransformerTest {
     assertThat(attachmentIdsByLinks, hasEntry(LINK_ATTACHMENT_LINK_BIS, LINK_ATTACHMENT_ID_BIS));
   }
 
+  @Test
+  public void manageImageResizing() throws Exception {
+    WysiwygContentTransformer transformer = WysiwygContentTransformer
+        .on(getContentOfDocumentNamed("wysiwygWithSeveralImages.txt"));
+
+    String result = transformer.updateURLOfImagesAccordingToSizes();
+
+    assertThat(result, is(FileUtils.readFileToString(
+        getDocumentNamed("wysiwygWithSeveralImagesTransformedForImageResizingResult.txt"))));
+  }
+
   /*
   TOOL METHODS
    */

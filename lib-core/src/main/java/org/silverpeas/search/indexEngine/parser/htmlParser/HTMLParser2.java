@@ -34,6 +34,10 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import net.htmlparser.jericho.Source;
+import org.silverpeas.search.indexEngine.parser.Parser;
+
 public class HTMLParser2 implements Parser {
   public HTMLParser2() {
   }
