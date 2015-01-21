@@ -97,12 +97,13 @@ function editLink(id) {
   updateLinkPopup();
 }
 
- function saveArrayLinesOrder() {
+ function saveArrayLinesOrder(e, ui) {
 	  var ajaxUrl = webContext + '/services/mylinks/saveLinesOrder';
 
 	  var cleanUrl = $("#urlId").val().replace(webContext, '');
 	  var updatedLink = {
-	      "ids":["1","2"]
+	      "position":ui.item.index(),
+	      "linkId":ui.item.find("input[name=hiddenLinkId]").val()
 	  };
 	  jQuery.ajax({
 	    url: ajaxUrl,
@@ -311,7 +312,7 @@ function reloadPage() {
    arrayPane.setSortableLines(true);
    arrayPane.getState().setMaximumVisibleLine(-1);
    arrayPane.setActivateUpdateMethodOnSort(true);
-   arrayPane.setUpdateMethodOnSort("saveArrayLinesOrder()");
+   arrayPane.setUpdateMethodOnSort("saveArrayLinesOrder(e, ui)");
    arrayPane.addArrayColumn(resource.getString("GML.nom"));
    arrayPane.addArrayColumn(resource.getString("GML.description"));
    ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operations"));
@@ -346,9 +347,15 @@ function reloadPage() {
      Icon updateIcon = iconPane.addIcon();
      updateIcon.setProperties(resource.getIcon("myLinks.update"), resource
          .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
-     line.addArrayCellText(updateIcon.print() +
-         "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
-         link.getLinkId() + "\"/>");
+     StringBuffer buffer = new StringBuffer();
+     buffer.append(updateIcon.print());
+     buffer.append("&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"");
+     buffer.append(link.getLinkId());
+     buffer.append("\"/>");
+     buffer.append("<input type=\"hidden\" name=\"hiddenLinkId\" value=\"");
+     buffer.append(link.getLinkId());
+     buffer.append("\"/>");
+     line.addArrayCellText(buffer.toString());
    }
 
    out.println(arrayPane.print());

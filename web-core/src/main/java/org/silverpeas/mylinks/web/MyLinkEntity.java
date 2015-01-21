@@ -53,6 +53,9 @@ public class MyLinkEntity implements Exposable {
   @XmlElement
   @NotNull
   private int linkId;
+  
+  @XmlElement
+  private int position;
 
   @XmlElement
   @NotNull
@@ -200,6 +203,14 @@ public class MyLinkEntity implements Exposable {
    */
   public String getObjectId() {
     return objectId;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
   }
 
 }
