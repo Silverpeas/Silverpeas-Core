@@ -23,6 +23,7 @@ package com.silverpeas.util;
 
 import javax.mail.internet.InternetAddress;
 
+import org.junit.After;
 import org.junit.Test;
 import org.silverpeas.util.MailUtil;
 
@@ -34,7 +35,9 @@ import static org.junit.Assert.assertThat;
  */
 public class MailUtilTest {
 
-  public MailUtilTest() {
+  @After
+  public void tearDown() {
+    MailUtil.reloadConfiguration(null);
   }
 
   /**
