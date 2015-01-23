@@ -148,7 +148,9 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public Set<String> getLanguages() {
-    return titles.keySet();
+    Set<String> languages = new HashSet<String>(titles.keySet());
+    languages.addAll(templates.keySet());
+    return languages;
   }
 
   public Map<String, SilverpeasTemplate> getTemplates() {
