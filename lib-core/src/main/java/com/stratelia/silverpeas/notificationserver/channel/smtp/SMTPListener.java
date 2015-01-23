@@ -27,7 +27,8 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.mail.MailAddress;
+import org.silverpeas.mail.MailSending;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -42,22 +43,14 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.MessageListener;
 import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
-import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant
-    .SECURE_TRANSPORT;
-import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant
-    .SIMPLE_TRANSPORT;
+import static org.silverpeas.mail.MailAddress.eMail;
 import static org.silverpeas.util.MailUtil.*;
 
 
@@ -186,97 +179,32 @@ public class SMTPListener extends AbstractListener implements MessageListener {
    * send email to destination using SMTP protocol and JavaMail 1.3 API (compliant with MIME
    * format).
    *
-   * @param pFrom : from field that will appear in the email header.
-   * @param personalName :
+   * @param from : from field that will appear in the email header.
+   * @param fromName :
    * @see {@link InternetAddress}
-   * @param pTo : the email target destination.
-   * @param pSubject : the subject of the email.
-   * @param pMessage : the message or payload of the email.
+   * @param to : the email target destination.
+   * @param subject : the subject of the email.
+   * @param content : the message or payload of the email.
    */
-  private void sendEmail(String pFrom, String personalName, String pTo, String pSubject,
-      String pMessage, boolean htmlFormat) throws NotificationServerException {
-    // retrieves system properties and set up Delivery Status Notification
-    // @see RFC1891
-    Properties properties = System.getProperties();
-    properties.put("mail.smtp.host", getMailServer());
-    properties.put("mail.smtp.auth", String.valueOf(isAuthenticated()));
-    javax.mail.Session session = javax.mail.Session.getInstance(properties, null);
-    session.setDebug(isDebug()); // print on the console all SMTP messages.
+  private void sendEmail(String from, String fromName, String to, String subject,
+      String content, boolean isHtml) throws NotificationServerException {
+    MailAddress fromMailAddress = eMail(from).withName(fromName);
+    MailSending mail = MailSending.from(fromMailAddress).to(eMail(to)).withSubject(subject);
     try {
-      InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom, personalName);
-      InternetAddress replyToAddress = null;
-      InternetAddress[] toAddress = null;
-      // parsing destination address for compliance with RFC822
-      try {
-        toAddress = InternetAddress.parse(pTo, false);
-        if (!AdministrationServiceProvider.getAdminService().getAdministratorEmail().equals(pFrom)
-            && (!fromAddress.getAddress().equals(pFrom) || isForceReplyToSenderField())) {
-          replyToAddress = new InternetAddress(pFrom, false);
-          if (StringUtil.isDefined(personalName)) {
-            replyToAddress.setPersonal(personalName, CharEncoding.UTF_8);
-          }
-        }
-      } catch (AddressException e) {
-        SilverTrace.warn("smtp", "SMTPListener.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
-            "From = " + pFrom + ", To = " + pTo);
+      InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
+      if (!AdminReference.getAdminService().getAdministratorEmail().equals(from) &&
+          (!fromAddress.getAddress().equals(from) || isForceReplyToSenderField())) {
+        mail.setReplyToRequired();
       }
-      MimeMessage email = new MimeMessage(session);
-      email.setFrom(fromAddress);
-      if (replyToAddress != null) {
-        email.setReplyTo(new InternetAddress[]{replyToAddress});
-      }
-      email.setRecipients(javax.mail.Message.RecipientType.TO, toAddress);
-      email.setHeader("Precedence", "list");
-      email.setHeader("List-ID", fromAddress.getAddress());
-      String subject = pSubject;
-      if (subject == null) {
-        subject = "";
-      }
-      String content = pMessage;
-      if (content == null) {
-        content = "";
-      }
-      email.setSubject(subject, CharEncoding.UTF_8);
-      if (content.toLowerCase().contains("<html>") || htmlFormat) {
-        email.setContent(content, "text/html; charset=\"UTF-8\"");
+
+      if (isHtml) {
+        mail.withContent(content);
       } else {
-        email.setText(content, CharEncoding.UTF_8);
-      }
-      email.setSentDate(new Date());
-
-      // create a Transport connection (TCP)
-      final Transport transport;
-      if (isSecure()) {
-        transport = session.getTransport(SECURE_TRANSPORT);
-      } else {
-        transport = session.getTransport(SIMPLE_TRANSPORT);
+        mail.withTextContent(content);
       }
 
-      // A synchronization is done here because of some SMTP servers that does not support to
-      // much opened connexions at same time
-      synchronized (SMTPListener.class) {
-        try {
-          if (isAuthenticated()) {
-            SilverTrace.info("smtp", "SMTPListener.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
-                "Host = " + getMailServer() + " Port=" + getPort() + " User=" + getLogin());
-            transport.connect(getMailServer(), getPort(), getLogin(), getPassword());
-          } else {
-            transport.connect();
-          }
+      mail.sendSynchronously();
 
-          transport.sendMessage(email, toAddress);
-        } finally {
-          if (transport != null) {
-            try {
-              transport.close();
-            } catch (Exception e) {
-              SilverTrace.
-                  error("smtp", "SMTPListener.sendEmail()", "root.EX_IGNORED", "ClosingTransport",
-                      e);
-            }
-          }
-        }
-      }
     } catch (MessagingException | UnsupportedEncodingException e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
     } catch (Exception e) {
