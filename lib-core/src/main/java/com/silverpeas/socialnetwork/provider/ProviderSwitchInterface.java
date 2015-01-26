@@ -40,9 +40,9 @@ public interface ProviderSwitchInterface {
    * get my social Informations list according to the social information type and the UserId
    * @param socialInformationType
    * @param userId
-   * @param String classification
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param classification
+   * @param begin
+   * @param end
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
@@ -56,8 +56,8 @@ public interface ProviderSwitchInterface {
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
@@ -73,14 +73,14 @@ public interface ProviderSwitchInterface {
 
   /**
    * set SocialEvent providor (by using Inversion of Control Containers )
-   * @param socialGalleryInterface
+   * @param socialEventsInterface
    */
 
   public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface);
 
   /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialGalleryInterface
    */
   public SocialGalleryInterface getSocialGalleryInterface();
 
@@ -91,8 +91,20 @@ public interface ProviderSwitchInterface {
   public void setSocialGalleryInterface(SocialGalleryInterface socialGalleryInterface);
 
   /**
+   * return the SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @return SocialCommentGalleryInterface
+   */
+  public SocialCommentGalleryInterface getSocialCommentGalleryInterface();
+
+  /**
+   * set SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @param socialCommentGalleryInterface
+   */
+  public void setSocialCommentGalleryInterface(SocialCommentGalleryInterface socialCommentGalleryInterface);
+
+  /**
    * return the SocialPublications providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialPublicationsInterface
    */
   public SocialPublicationsInterface getSocialPublicationsInterface();
 
@@ -103,26 +115,50 @@ public interface ProviderSwitchInterface {
   public void setSocialPublicationsInterface(SocialPublicationsInterface socialPublicationsInterface);
 
   /**
+   * return the SocialCommentPublications providor (by using Inversion of Control Containers )
+   * @return SocialCommentPublicationsInterface
+   */
+  public SocialCommentPublicationsInterface getSocialCommentPublicationsInterface();
+
+  /**
+   * set SocialCommentPublications providor (by using Inversion of Control Containers )
+   * @param socialCommentPublicationsInterface
+   */
+  public void setSocialCommentPublicationsInterface(SocialCommentPublicationsInterface socialCommentPublicationsInterface);
+
+  /**
+   * return the SocialCommentQuickInfos providor (by using Inversion of Control Containers )
+   * @return SocialCommentQuickInfosInterface
+   */
+  public SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface();
+
+  /**
+   * set SocialCommentQuickInfos providor (by using Inversion of Control Containers )
+   * @param socialCommentQuickInfosInterface
+   */
+  public void setSocialCommentQuickInfosInterface(SocialCommentQuickInfosInterface socialCommentQuickInfosInterface);
+
+  /**
    * return SocialStatus providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialStatusInterface
    */
   public SocialStatusInterface getSocialStatusInterface();
 
   /**
    * set SocialStatus providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialStatusInterface
    */
   public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface);
 
   /**
    * return the SocialRelationShips providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialRelationShipsInterface
    */
   public SocialRelationShipsInterface getSocialRelationShipsInterface();
 
   /**
    * set SocialRelationShips providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialRelationShipsInterface
    */
   public void setSocialRelationShipsInterface(
       SocialRelationShipsInterface socialRelationShipsInterface);
