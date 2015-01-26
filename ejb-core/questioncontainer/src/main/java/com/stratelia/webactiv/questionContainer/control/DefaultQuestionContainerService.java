@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.questionContainer.control;
 
@@ -50,8 +53,6 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
-import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.io.FileOutputStream;
@@ -73,21 +74,20 @@ import java.util.Map;
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class DefaultQuestionContainerService implements QuestionContainerService {
 
-  private static final long serialVersionUID = -2214591704695533730L;
-  @Inject
-  private QuestionService currentQuestionService;
-  @EJB
-  private QuestionResultService currentQuestionResultService;
-  @Inject
-  private AnswerService currentAnswerService = null;
-  @EJB
-  private ScoreService currentScoreService;
+  private QuestionService questionService;
+  private QuestionResultService questionResultService;
+  private AnswerService answerService;
+  private ScoreService scoreService;
   // if beginDate is null, it will be replace in database with it
-  private final static String nullBeginDate = "0000/00/00";
+  private static final String nullBeginDate = "0000/00/00";
   // if endDate is null, it will be replace in database with it
-  private final static String nullEndDate = "9999/99/99";
+  private static final String nullEndDate = "9999/99/99";
 
   public DefaultQuestionContainerService() {
+    questionService = QuestionService.get();
+    questionResultService = QuestionResultService.get();
+    answerService = AnswerService.get();
+    scoreService = ScoreService.get();
   }
 
   @Override
@@ -133,7 +133,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
       Collection<QuestionContainerHeader> questionContainerHeaders) {
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.setNbMaxPoints()",
         "root.MSG_GEN_ENTER_METHOD", "");
-    QuestionService questionService = currentQuestionService;
+    QuestionService questionService = this.questionService;
     Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
     List<QuestionContainerHeader> result = new ArrayList<>();
 
@@ -163,7 +163,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.setNbMaxPoint()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
     int nbMaxPoints = 0;
-    QuestionService questionService = currentQuestionService;
+    QuestionService questionService = this.questionService;
     Collection<Question> questions;
     QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
     try {
@@ -371,7 +371,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             "root.MSG_GEN_ENTER_METHOD",
             "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
@@ -402,7 +402,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             "root.MSG_GEN_ENTER_METHOD",
             "questionContainerPK = " + questionContainerPK + ", nbBestScores = " + nbBestScores);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
@@ -424,7 +424,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             "root.MSG_GEN_ENTER_METHOD",
             "questionContainerPK = " + questionContainerPK + ", nbScores = " + nbScores);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
@@ -443,7 +443,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     Collection<ScoreDetail> scores;
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
@@ -471,7 +471,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         .info("questionContainer", "DefaultQuestionContainerService.getAverageScoreByFatherId()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     float averageScore;
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
     try {
@@ -499,7 +499,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
-    QuestionService questionService = currentQuestionService;
+    QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     int nbMaxPoints = 0;
 
@@ -574,8 +574,8 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
-    QuestionService questionService = currentQuestionService;
-    QuestionResultService questionResultService = currentQuestionResultService;
+    QuestionService questionService = this.questionService;
+    QuestionResultService questionResultService = this.questionResultService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     int nbMaxPoints = 0;
 
@@ -662,7 +662,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
 
     try {
       nbVoters = scoreService.getNbVotersByFatherId(scorePK, questionContainerPK.getId());
@@ -688,10 +688,10 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     AnswerPK answerPK;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
     QuestionResult result;
-    QuestionResultService questionResultService = currentQuestionResultService;
-    AnswerService answerService = currentAnswerService;
-    QuestionService questionService = currentQuestionService;
-    ScoreService scoreService = currentScoreService;
+    QuestionResultService questionResultService = this.questionResultService;
+    AnswerService answerService = this.answerService;
+    QuestionService questionService = this.questionService;
+    ScoreService scoreService = this.scoreService;
     Answer answer;
     int participationId =
         scoreService.getUserNbParticipationsByFatherId(scorePK, questionContainerPK.getId(), userId) + 1;
@@ -904,7 +904,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     } finally {
       DBUtil.close(con);
     }
-    QuestionService questionService = currentQuestionService;
+    QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     Collection<Question> questions = questionContainerDetail.getQuestions();
     List<Question> q = new ArrayList<>(questions.size());
@@ -954,7 +954,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
       Collection<Question> questions) {
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.updateQuestions()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    QuestionService questionService = currentQuestionService;
+    QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     for (Question question : questions) {
       question.setPK(questionPK);
@@ -981,9 +981,9 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     QuestionPK questionPK =
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
             questionContainerPK.getComponentName());
-    QuestionService questionService = currentQuestionService;
-    ScoreService scoreService = currentScoreService;
-    QuestionResultService questionResultService = currentQuestionResultService;
+    QuestionService questionService = this.questionService;
+    ScoreService scoreService = this.scoreService;
+    QuestionResultService questionResultService = this.questionResultService;
 
     try {
       QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
@@ -1037,7 +1037,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
             questionContainerPK.getComponentName());
     try {
-      currentScoreService.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
+      scoreService.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
           "DefaultQuestionContainerService.deleteQuestionContainer()",
@@ -1045,7 +1045,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           e);
     }
     try {
-      currentQuestionService.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
+      questionService.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
       deleteIndex(questionContainerPK);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
@@ -1092,7 +1092,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     QuestionPK questionPK =
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
             questionContainerPK.getComponentName());
-    QuestionResultService questionResultService = currentQuestionResultService;
+    QuestionResultService questionResultService = this.questionResultService;
 
     try {
       suggestions = questionResultService.getQuestionResultToQuestion(new ForeignPK(questionPK));
@@ -1110,7 +1110,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         "root.MSG_GEN_ENTER_METHOD",
         "userId=" + userId + ", questionPK = " + questionPK + ", answerPK = " + answerPK);
     QuestionResult suggestion;
-    QuestionResultService questionResultService = currentQuestionResultService;
+    QuestionResultService questionResultService = this.questionResultService;
 
     try {
       suggestion =
@@ -1132,7 +1132,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     Collection<QuestionResult> votes = null;
     QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
-    QuestionService questionService = currentQuestionService;
+    QuestionService questionService = this.questionService;
     Collection<Question> questions;
 
     try {
@@ -1144,7 +1144,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "questionContainer.GETTING_QUESTIONCONTAINER_USER_RESPONSES_FAILED", e);
     }
     for (Question question : questions) {
-      QuestionResultService questionResultService = currentQuestionResultService;
+      QuestionResultService questionResultService = this.questionResultService;
       try {
         votes = questionResultService
             .getUserQuestionResultsToQuestion(userId, new ForeignPK(question.getPK()));
@@ -1168,7 +1168,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     float averagePoints;
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
 
     try {
       averagePoints = scoreService.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
@@ -1191,7 +1191,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
 
     try {
       nbPart =
@@ -1217,7 +1217,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
-    ScoreService scoreService = currentScoreService;
+    ScoreService scoreService = this.scoreService;
 
     try {
       scoreDetail = scoreService
@@ -1238,7 +1238,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", scoreDetail = " + scoreDetail);
     try {
-      currentScoreService.updateScore(scoreDetail);
+      scoreService.updateScore(scoreDetail);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.updateScore()",
           SilverpeasRuntimeException.ERROR,
@@ -1339,7 +1339,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             // question fermée
             Collection<Answer> answers = question.getAnswers();
             for (Answer answer : answers) {
-              int nbUsers = currentQuestionResultService
+              int nbUsers = questionResultService
                   .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
               String percent = Math.round((answer.getNbVoters() * 100f) / nbUsers) + "%";
               addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore,
@@ -1366,7 +1366,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             Collection<Answer> answers = question.getAnswers();
             for (Answer answer : answers) {
               Collection<String> users =
-                  currentQuestionResultService.getUsersByAnswer(answer.getPK().getId());
+                  questionResultService.getUsersByAnswer(answer.getPK().getId());
               for (String user : users) {
                 // suggestion
                 if (answer.isOpened()) {
@@ -1464,13 +1464,13 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   }
 
   private String getSpacesPath(String componentId) {
-    String spacesPath = "";
+    StringBuilder spacesPath = new StringBuilder();
     List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(componentId);
     for (SpaceInst spaceInst : spaces) {
-      spacesPath += spaceInst.getName();
-      spacesPath += " > ";
+      spacesPath.append(spaceInst.getName());
+      spacesPath.append(" > ");
     }
-    return spacesPath;
+    return spacesPath.toString();
   }
 
   private String getComponentLabel(String componentId) {
