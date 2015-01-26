@@ -543,17 +543,17 @@
       <fmt:message key="attachment.switchState.toVersioned" var="warningTitleSimple"/>
       <fmt:message key="attachment.switchState.toSimple" var="warningTitleVersioned"/>
       if(isVersioned) {
-        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
+        $("#dialog-attachment-switch-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
         $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
         $("#attachment-switch-versioned").hide();
         $("#attachment-switch-simple").show();
       } else {
-        $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
+        $("#dialog-attachment-switch-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
         $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
         $("#attachment-switch-simple").hide();
         $("#attachment-switch-versioned").show();
       }
-      $("#dialog-attachment-switch").data("id", id).dialog("open");
+      $("#dialog-attachment-switch-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data("id", id).dialog("open");
       pageMustBeReloadingAfterSorting = true;
     }
 
@@ -576,7 +576,7 @@
         $versionedAttachmentCheckinBlock.hide();
         $attachmentCheckinBlock.css('display', 'inline-block');
       }
-      $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
+      $("#dialog-attachment-checkin-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
       pageMustBeReloadingAfterSorting = true;
     }
 
@@ -602,12 +602,12 @@
 
     function addAttachment(foreignId) {
       $("#add-attachment-form #foreignId").val(foreignId);
-      $("#dialog-attachment-add").dialog("open");
+      $("#dialog-attachment-add-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog("open");
     }
 
     function deleteAttachment(id, filename) {
       $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
-      $("#dialog-attachment-delete").data("id", id).data("filename", filename).dialog("open");
+      $("#dialog-attachment-delete-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data("id", id).data("filename", filename).dialog("open");
     }
 
     function deleteContent(id, lang) {
@@ -660,7 +660,7 @@
 
     function updateAttachment(attachmentId, lang) {
       loadAttachment(attachmentId, lang);
-      $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
+      $("#dialog-attachment-update-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data('attachmentId', attachmentId).dialog("open");
     }
 
     function switchDownloadAllowedForReaders(attachmentId, allowed) {
@@ -731,7 +731,7 @@
       }
     });
 
-    $("#dialog-attachment-delete").dialog({
+    $("#dialog-attachment-delete-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog({
       autoOpen: false,
       open:function() {
         var filename = $(this).data("filename");
@@ -789,7 +789,7 @@
                   });
                 });
                 reloadIncludingPage();
-                $("#dialog-attachment-delete").dialog("close");
+                $("#dialog-attachment-delete-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog("close");
               </c:when>
               <c:otherwise>
                   var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
@@ -840,7 +840,7 @@
         $.closeProgressMessage();
       });
 
-      $("#dialog-attachment-add").dialog({
+      $("#dialog-attachment-add-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog({
         autoOpen : false,
         title : "<fmt:message key="attachment.dialog.add" />",
         height : 'auto',
@@ -879,7 +879,7 @@
         }
       });
 
-      $("#dialog-attachment-update").dialog({
+      $("#dialog-attachment-update-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog({
         autoOpen : false,
         title : "<fmt:message key="attachment.dialog.update" />",
         height : 'auto',
@@ -964,7 +964,7 @@
             });
         }
 
-        $("#dialog-attachment-switch").dialog({
+        $("#dialog-attachment-switch-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.switch"/>",
         height: 'auto',
@@ -972,7 +972,7 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $("#dialog-attachment-switch").data('id') + '/switchState';
+            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $("#dialog-attachment-switch-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data('id') + '/switchState';
             $.ajax(submitUrl, {
               type: 'PUT',
               dataType: "json",
@@ -992,7 +992,7 @@
         }
       });
 
-        $("#dialog-attachment-checkin").dialog({
+        $("#dialog-attachment-checkin-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.checkin"/>",
         height: 'auto',
@@ -1000,9 +1000,9 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            $('#force').val($("#dialog-attachment-checkin").data('forceRelease'));
-            $('#webdav').val($("#dialog-attachment-checkin").data('webdav'));
-            $('#checkin_oldId').val($("#dialog-attachment-checkin").data('oldId'));
+            $('#force').val($("#dialog-attachment-checkin-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data('forceRelease'));
+            $('#webdav').val($("#dialog-attachment-checkin-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data('webdav'));
+            $('#checkin_oldId').val($("#dialog-attachment-checkin-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>").data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
             submitCheckin(submitUrl);
           },
@@ -1133,7 +1133,7 @@
   }
 </script>
 
-<div id="dialog-attachment-update" style="display:none">
+<div id="dialog-attachment-update-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
         <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
@@ -1164,7 +1164,7 @@
   </form>
 </div>
 
-<div id="dialog-attachment-add" style="display:none">
+<div id="dialog-attachment-add-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>" style="display:none">
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
@@ -1189,7 +1189,7 @@
   </form>
 </div>
 
-<div id="dialog-attachment-delete" style="display:none">
+<div id="dialog-attachment-delete-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
     <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
       <div id="attachment-delete-select-lang" style="display:none">
@@ -1202,7 +1202,7 @@
     </c:if>
 </div>
 
-  <div id="dialog-attachment-switch" style="display:none">
+  <div id="dialog-attachment-switch-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>" style="display:none">
     <p id="attachment-switch-warning-message">Prout</p>
     <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
       <div id="attachment-switch-simple" style="display:none">
@@ -1219,7 +1219,7 @@
     </form>
   </div>
 
- <div id="dialog-attachment-checkin" style="display:none">
+ <div id="dialog-attachment-checkin-<c:out value='${sessionScope.Silverpeas_Attachment_ObjectId}'/>" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8">
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
