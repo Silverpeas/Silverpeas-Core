@@ -39,7 +39,10 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   private SocialEventsInterface socialEventsInterface;
   private SocialGalleryInterface socialGalleryInterface;
+  private SocialCommentGalleryInterface socialCommentGalleryInterface;
   private SocialPublicationsInterface socialPublicationsInterface;
+  private SocialCommentPublicationsInterface socialCommentPublicationsInterface;
+  private SocialCommentQuickInfosInterface socialCommentQuickInfosInterface;
   private SocialStatusInterface socialStatusInterface;
   private SocialRelationShipsInterface socialRelationShipsInterface;
 
@@ -54,7 +57,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * set SocialEvent providor (by using Inversion of Control Containers )
-   * @param socialGalleryInterface
+   * @param socialEventsInterface
    */
   @Override
   public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface) {
@@ -63,7 +66,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialGalleryInterface
    */
   @Override
   public SocialGalleryInterface getSocialGalleryInterface() {
@@ -80,12 +83,30 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
+   * return the SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @return SocialCommentGalleryInterface
+   */
+  @Override
+  public SocialCommentGalleryInterface getSocialCommentGalleryInterface() {
+    return socialCommentGalleryInterface;
+  }
+
+  /**
+   * set SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @param socialCommentGalleryInterface
+   */
+  @Override
+  public void setSocialCommentGalleryInterface(SocialCommentGalleryInterface socialCommentGalleryInterface) {
+    this.socialCommentGalleryInterface = socialCommentGalleryInterface;
+  }
+
+  /**
    * get my social Informations list according to the social information type and the UserId
    * @param socialInformationType
    * @param userId
-   * @param String classification
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param classification
+   * @param begin
+   * @param end
    * @return List<SocialInformation>
    */
   @Override
@@ -101,15 +122,78 @@ public class ProviderSwitch implements ProviderSwitchInterface {
               getSocialEventsInterface().getSocialInformationsList(userId, classification, begin,
               end);
           break;
-        case MEDIA:
 
+        case MEDIA:
           listResult = getSocialGalleryInterface().getSocialInformationsList(userId, begin, end);
+
+          //MEDIA filter displays also comments on medias
+          List<SocialInformation> listCommentMedia =
+              getSocialInformationsList(SocialInformationType.COMMENTMEDIA, userId,
+                  classification, begin, end);
+
+          if (listCommentMedia != null) {
+            listResult.addAll(listCommentMedia);
+          }
           break;
+
+        case COMMENTMEDIA:
+          //Comments on gallery components
+          listResult =
+              getSocialCommentGalleryInterface().getSocialInformationsList(userId, begin, end);
+          break;
+
         case PUBLICATION:
           listResult =
               getSocialPublicationsInterface().getSocialInformationsList(userId, begin, end);
 
+          //PUBLICATION filter displays also comments on publications
+          List<SocialInformation> listCommentPublication =
+              getSocialInformationsList(SocialInformationType.COMMENTPUBLICATION, userId,
+                  classification, begin, end);
+
+          if (listCommentPublication != null) {
+            listResult.addAll(listCommentPublication);
+          }
           break;
+
+        case COMMENTPUBLICATION:
+          //Comments on kmelia and blog components
+          listResult =
+              getSocialCommentPublicationsInterface().getSocialInformationsList(userId, begin, end);
+
+          List<SocialInformation> listCommentNews =
+              getSocialInformationsList(SocialInformationType.COMMENTNEWS, userId, classification,
+                  begin, end);
+
+          if (listCommentNews != null) {
+            listResult.addAll(listCommentNews);
+          }
+          break;
+
+        case COMMENTNEWS:
+          //Comments on quickinfo components
+          listResult =
+              getSocialCommentQuickInfosInterface().getSocialInformationsList(userId, begin, end);
+          break;
+
+        case COMMENT:
+          List<SocialInformation> listCommentKmeliaBlogQuickInfos =
+              getSocialInformationsList(SocialInformationType.COMMENTPUBLICATION, userId,
+                  classification, begin, end);
+
+          if (listCommentKmeliaBlogQuickInfos != null) {
+            listResult.addAll(listCommentKmeliaBlogQuickInfos);
+          }
+
+          List<SocialInformation> listCommentGallery =
+              getSocialInformationsList(SocialInformationType.COMMENTMEDIA, userId, classification,
+                  begin, end);
+
+          if (listCommentGallery != null) {
+            listResult.addAll(listCommentGallery);
+          }
+          break;
+
         case STATUS:
           listResult = getSocialStatusInterface().getSocialInformationsList(userId, begin, end);
           break;
@@ -126,17 +210,22 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
-            if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
+            if (SocialInformationType.ALL != type &&
+                SocialInformationType.EVENT != type &&
+                SocialInformationType.COMMENT != type &&
+                SocialInformationType.COMMENTPUBLICATION != type &&
+                SocialInformationType.COMMENTNEWS != type &&
+                SocialInformationType.COMMENTMEDIA != type) {
               List<SocialInformation> listAll = getSocialInformationsList(type, userId,
                   classification, begin, end);
 
-              if (!(listAll == null)) {
+              if (listAll != null) {
                 listResult.addAll(listAll);
               }
             }
           }
-
           break;
+
         default:
       }
 
@@ -151,7 +240,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * return the SocialPublications providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialPublicationsInterface
    */
   @Override
   public SocialPublicationsInterface getSocialPublicationsInterface() {
@@ -168,8 +257,44 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
+   * return the SocialCommentPublications providor (by using Inversion of Control Containers )
+   * @return SocialCommentPublicationsInterface
+   */
+  @Override
+  public SocialCommentPublicationsInterface getSocialCommentPublicationsInterface() {
+    return socialCommentPublicationsInterface;
+  }
+
+  /**
+   * set SocialCommentPublications providor (by using Inversion of Control Containers )
+   * @param socialCommentPublicationsInterface
+   */
+  @Override
+  public void setSocialCommentPublicationsInterface(SocialCommentPublicationsInterface socialCommentPublicationsInterface) {
+    this.socialCommentPublicationsInterface = socialCommentPublicationsInterface;
+  }
+
+  /**
+   * return the SocialCommentQuickInfos providor (by using Inversion of Control Containers )
+   * @return SocialCommentQuickInfosInterface
+   */
+  @Override
+  public SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface() {
+    return socialCommentQuickInfosInterface;
+  }
+
+  /**
+   * set SocialCommentQuickInfos providor (by using Inversion of Control Containers )
+   * @param socialCommentQuickInfosInterface
+   */
+  @Override
+  public void setSocialCommentQuickInfosInterface(SocialCommentQuickInfosInterface socialCommentQuickInfosInterface) {
+    this.socialCommentQuickInfosInterface = socialCommentQuickInfosInterface;
+  }
+
+  /**
    * return SocialStatus providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialStatusInterface
    */
   @Override
   public SocialStatusInterface getSocialStatusInterface() {
@@ -178,7 +303,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * set SocialStatus providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialStatusInterface
    */
   @Override
   public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface) {
@@ -187,7 +312,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * set SocialRelationShips providor (by using Inversion of Control Containers )
-   * @param socialPublicationsInterface
+   * @param socialRelationShipsInterface
    */
   @Override
   public void setSocialRelationShipsInterface(
@@ -197,7 +322,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * return the SocialRelationShips providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialRelationShipsInterface
    */
   @Override
   public SocialRelationShipsInterface getSocialRelationShipsInterface() {
@@ -210,8 +335,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts
-   * @param limit nb of element
-   * @param offset firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformation>
    */
   @Override
@@ -229,11 +354,75 @@ public class ProviderSwitch implements ProviderSwitchInterface {
         case MEDIA:
           list = getSocialGalleryInterface().getSocialInformationsListOfMyContacts(myId,
               myContactsIds, begin, end);
+
+          //MEDIA filter displays also comments on medias
+          List<SocialInformation> listCommentMedia =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTMEDIA, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentMedia != null) {
+            list.addAll(listCommentMedia);
+          }
+          break;
+
+        case COMMENTMEDIA:
+          //Comments on gallery components
+          list =
+              getSocialCommentGalleryInterface().getSocialInformationsListOfMyContacts(myId, myContactsIds, begin,
+                  end);
           break;
 
         case PUBLICATION:
           list = getSocialPublicationsInterface().getSocialInformationsListOfMyContacts(myId,
               myContactsIds, begin, end);
+
+          //PUBLICATION filter displays publications and comments on publications
+          List<SocialInformation> listCommentPublication =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTPUBLICATION, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentPublication != null) {
+            list.addAll(listCommentPublication);
+          }
+          break;
+
+        case COMMENTPUBLICATION:
+          //Comments on kmelia and blog components
+          list = getSocialCommentPublicationsInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
+
+          List<SocialInformation> listCommentNews =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTNEWS, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentNews != null) {
+            list.addAll(listCommentNews);
+          }
+          break;
+
+        case COMMENTNEWS:
+          //Comments on quickinfo components
+          list =
+              getSocialCommentQuickInfosInterface().getSocialInformationsListOfMyContacts(myId,
+                  myContactsIds, begin, end);
+          break;
+
+        case COMMENT:
+          List<SocialInformation> listCommentKmeliaBlogQuickInfos =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTPUBLICATION, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentKmeliaBlogQuickInfos != null) {
+            list.addAll(listCommentKmeliaBlogQuickInfos);
+          }
+
+          List<SocialInformation> listCommentGallery =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTMEDIA, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentGallery != null) {
+            list.addAll(listCommentGallery);
+          }
           break;
 
         case STATUS:
@@ -254,16 +443,22 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
-            if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
+            if (SocialInformationType.ALL != type &&
+                SocialInformationType.EVENT != type &&
+                SocialInformationType.COMMENT != type &&
+                SocialInformationType.COMMENTPUBLICATION != type &&
+                SocialInformationType.COMMENTNEWS != type &&
+                SocialInformationType.COMMENTMEDIA != type) {
               List<SocialInformation> listAll = getSocialInformationsListOfMyContacts(type, myId,
                   myContactsIds, begin, end);
-              if (!(listAll == null)) {
+
+              if (listAll != null) {
                 list.addAll(listAll);
               }
             }
           }
-
           break;
+
         default:
       }
 

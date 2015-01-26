@@ -55,8 +55,8 @@ public class SocialNetworkService {
   /**
    * get my wall : the List of my social information according to the type of social information
    * @param type
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
@@ -69,9 +69,7 @@ public class SocialNetworkService {
         new ProviderService().getSocialInformationsList(type, myId,
         null, dEnd, dBegin);
 
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
+    Collections.sort(socialInformationsFull);
 
     return processResults(socialInformationsFull);
   }
@@ -90,8 +88,16 @@ public class SocialNetworkService {
           lsi.add(information);
           lastInfoAdded = information;
         } else {
-          // change action of last info added
-          lsi.get(lsi.size()-1).setUpdated(false);
+          if (SocialInformationType.COMMENTPUBLICATION.name().equals(information.getType()) ||
+              SocialInformationType.COMMENTPOST.name().equals(information.getType()) ||
+              SocialInformationType.COMMENTNEWS.name().equals(information.getType()) ||
+              SocialInformationType.COMMENTMEDIA.name().equals(information.getType())) {
+            lsi.add(information);
+            lastInfoAdded = information;
+          } else {
+            // change update attribute of last info added (except for comments)
+            lsi.get(lsi.size() - 1).setUpdated(false);
+          }
         }
       } else {
         date = DateUtil.formatDate(information.getDate());
@@ -107,8 +113,8 @@ public class SocialNetworkService {
   /**
    * get my feed : the List of my social information and those of my contacts, according to the type of social information
    * @param type
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
@@ -124,9 +130,7 @@ public class SocialNetworkService {
         new ProviderService().getSocialInformationsListOfMyContact(type, myId,
         myContactIds, dEnd, dBegin);
 
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
+    Collections.sort(socialInformationsFull);
 
     return processResults(socialInformationsFull);
   }
@@ -135,8 +139,8 @@ public class SocialNetworkService {
    * get my contact wall : the List of social information of the contacts of user in parameter, according to the type of social information
    * @param myContactId
    * @param type
-   * @param beginDate
-   * @param endDate
+   * @param begin
+   * @param end
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
@@ -151,9 +155,7 @@ public class SocialNetworkService {
         new ProviderService().getSocialInformationsListOfMyContact(type, myId,
         myContactIds, dEnd, dBegin);
 
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
+    Collections.sort(socialInformationsFull);
 
     return processResults(socialInformationsFull);
   }

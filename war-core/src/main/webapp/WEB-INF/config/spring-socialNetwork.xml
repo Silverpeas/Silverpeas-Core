@@ -42,8 +42,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <property name="socialGalleryInterface">
       <ref bean="socialGallery" />
     </property>
+    <property name="socialCommentGalleryInterface">
+      <ref bean="socialCommentGallery" />
+    </property>
     <property name="socialPublicationsInterface">
       <ref bean="socialPublications" />
+    </property>
+    <property name="socialCommentPublicationsInterface">
+      <ref bean="socialCommentPublications" />
+    </property>
+    <property name="socialCommentQuickInfosInterface">
+      <ref bean="socialCommentQuickInfos" />
     </property>
     <property name="socialStatusInterface">
       <ref bean="socialStatus" />
@@ -57,7 +66,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
   </bean>
   <bean id="socialGallery" class="com.silverpeas.gallery.socialNetwork.SocialGallery">
   </bean>
+  <bean id="socialCommentGallery" class="com.silverpeas.gallery.socialNetwork.SocialCommentGallery">
+  </bean>
   <bean id="socialPublications" class="com.stratelia.webactiv.publication.social.SocialPublications">
+  </bean>
+  <bean id="socialCommentPublications" class="com.stratelia.webactiv.publication.social.SocialCommentPublications">
+  </bean>
+  <bean id="socialCommentQuickInfos" class="org.silverpeas.components.quickinfo.socialNetwork.SocialCommentQuickInfos">
   </bean>
   <bean id="socialStatus" class="com.silverpeas.socialnetwork.status.SocialStatus">
   </bean>
