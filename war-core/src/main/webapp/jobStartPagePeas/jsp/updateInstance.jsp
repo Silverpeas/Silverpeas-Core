@@ -155,6 +155,7 @@ for (ProfileInst theProfile : m_Profiles) {
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <link type="text/css" href="/silverpeas/util/styleSheets/fieldset.css" rel="stylesheet" />
+<link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -287,12 +288,12 @@ out.println(tabbedPane.print());
 	<ul class="fields">
 		<li class="field entireWidth">
 		<label class="txtlibform"><%=resource.getString("GML.name")%> </label>
-		<div class="champs"><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel())%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></div>
+		<div class="champs"><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></div>
 	</li>
 
 	<li class="field entireWidth">
 		<label class="txtlibform"><%=resource.getString("GML.description")%></label>
-		<div class="champs"><textarea name="Description" id="compoDesc" rows="3" cols="59"><%=EncodeHelper.javaStringToHtmlString(compoInst.getDescription())%></textarea></div>
+		<div class="champs"><textarea name="Description" id="compoDesc" rows="3" cols="59"><%=EncodeHelper.javaStringToHtmlString(compoInst.getDescription(translation))%></textarea></div>
 	</li>
 	<% if (isInHeritanceEnable) { %>
 

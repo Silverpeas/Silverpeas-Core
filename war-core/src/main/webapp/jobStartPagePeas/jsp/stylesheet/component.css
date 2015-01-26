@@ -22,22 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$(document).ready(function() {
-  // By suppling no content attribute, the library uses each elements title attribute by default
-  $('img[title]').each(function() {
-    $(this).qtip({
-      style : {
-        classes : "qtip-shadow qtip-green"
-      }, content : {
-        text : "<span>" + $(this).attr("title") + "</span>"
-      }, position : {
-        my : "bottom left",
-        at : "top right",
-        adjust : {
-          method : "flipinvert"
-        },
-        viewport : $(window)
-      }
-    });
-  });
-});
+.qtip,.qtip {
+  max-width: 350px;
+}
