@@ -70,9 +70,7 @@ public class SocialNetworkService {
         socialInformationService().getSocialInformationsList(type, myId,
         null, dEnd, dBegin);
 
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
+    Collections.sort(socialInformationsFull);
 
     return processResults(socialInformationsFull);
   }
@@ -90,8 +88,16 @@ public class SocialNetworkService {
           lsi.add(information);
           lastInfoAdded = information;
         } else {
-          // change action of last info added
-          lsi.get(lsi.size()-1).setUpdated(false);
+          if (SocialInformationType.COMMENTPUBLICATION.name().equals(information.getType()) ||
+              SocialInformationType.COMMENTPOST.name().equals(information.getType()) ||
+              SocialInformationType.COMMENTNEWS.name().equals(information.getType()) ||
+              SocialInformationType.COMMENTMEDIA.name().equals(information.getType())) {
+            lsi.add(information);
+            lastInfoAdded = information;
+          } else {
+            // change update attribute of last info added (except for comments)
+            lsi.get(lsi.size() - 1).setUpdated(false);
+          }
         }
       } else {
         date = DateUtil.formatDate(information.getDate());
@@ -124,9 +130,7 @@ public class SocialNetworkService {
         socialInformationService().getSocialInformationsListOfMyContact(type, myId,
         myContactIds, dEnd, dBegin);
 
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
+    Collections.sort(socialInformationsFull);
 
     return processResults(socialInformationsFull);
   }
@@ -151,9 +155,7 @@ public class SocialNetworkService {
         socialInformationService().getSocialInformationsListOfMyContact(type, myId,
         myContactIds, dEnd, dBegin);
 
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
+    Collections.sort(socialInformationsFull);
 
     return processResults(socialInformationsFull);
   }

@@ -39,8 +39,9 @@ public class SocialPublications implements SocialPublicationsInterface {
 
   @Inject
   private PublicationService publicationService;
-
   protected SocialPublications() {
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
   }
 
@@ -71,20 +72,43 @@ public class SocialPublications implements SocialPublicationsInterface {
    * @return List
    * @throws SilverpeasException
    */
+  @SuppressWarnings("unchecked")
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     // getting all components allowed to me
-    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> options = new ArrayList<>();
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmax")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "bookmark")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "webSites")));
-    return getPublicationService()
-        .getSocialInformationsListOfMyContacts(myContactsIds, options, begin, end);
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    List<String> instanceIds = new ArrayList<String>();
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmax")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "bookmark")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "webSites")));
+    List<SocialInformationPublication> socialPublications =
+        getEJB().getSocialInformationsListOfMyContacts(myContactsIds, instanceIds, begin, end);
+
+    // Even if the data has been found by filtering on instanceIds that the user can access, it
+    // could exists more precise right rules to apply.
+    Iterator<SocialInformationPublication> socialPublicationIt = socialPublications.iterator();
+    while (socialPublicationIt.hasNext()) {
+      SocialInformationPublication socialPublication = socialPublicationIt.next();
+      String instanceId = socialPublication.getPublication().getComponentInstanceId();
+
+      if (!myId.equals(socialPublication.getAuthor()) && instanceId.startsWith("kmelia")) {
+
+        // On Kmelia application, if the user has not right access to the publication, then it is
+        // removed from the result
+
+        AccessController<PublicationPK> publicationAccessController =
+            AccessControllerProvider.getAccessController("publicationAccessController");
+        if (!publicationAccessController.isUserAuthorized(myId,
+            new PublicationPK(socialPublication.getPublication().getId(), instanceId))) {
+          socialPublicationIt.remove();
+        }
+      }
+    }
+    return (List) socialPublications;
   }
 }

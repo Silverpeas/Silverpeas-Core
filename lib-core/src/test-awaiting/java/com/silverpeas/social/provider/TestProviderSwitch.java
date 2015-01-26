@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.socialnetwork.provider.SocialCommentGalleryInterface;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,6 +42,8 @@ import com.silverpeas.socialnetwork.provider.ProviderSwitch;
 import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
+import com.silverpeas.socialnetwork.provider.SocialCommentPublicationsInterface;
+import com.silverpeas.socialnetwork.provider.SocialCommentQuickInfosInterface;
 import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
 import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 import com.silverpeas.socialnetwork.status.SocialInformationStatus;
@@ -84,32 +87,73 @@ public class TestProviderSwitch {
   //
   @Test
   public void testGetSocialInformationsList() throws SilverpeasException {
-    List<SocialInformation> listEvent = new ArrayList<SocialInformation>();
     Status status = new Status(0, new Date(), "description");
+
+    List<SocialInformation> listEvent = new ArrayList<SocialInformation>();
     for (int i = 0; i < 4; i++) {
       SocialInformationStatus event = new SocialInformationStatus(status);
       listEvent.add(event);
     }
-    List<SocialInformation> listPub = new ArrayList<SocialInformation>();
-    for (int i = 0; i < 3; i++) {
-      SocialInformationStatus publi = new SocialInformationStatus(status);
-      listPub.add(publi);
-    }
+
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     for (int i = 0; i < 2; i++) {
       SocialInformationStatus image = new SocialInformationStatus(status);
       listPhoto.add(image);
     }
+
+    List<SocialInformation> listCommentPhoto = new ArrayList<SocialInformation>();
+    for (int i = 0; i < 6; i++) {
+      SocialInformationStatus commentImage = new SocialInformationStatus(status);
+      listCommentPhoto.add(commentImage);
+    }
+
+    List<SocialInformation> listPub = new ArrayList<SocialInformation>();
+    for (int i = 0; i < 3; i++) {
+      SocialInformationStatus publi = new SocialInformationStatus(status);
+      listPub.add(publi);
+    }
+
+    List<SocialInformation> listCommentPub = new ArrayList<SocialInformation>();
+    for (int i = 0; i < 5; i++) {
+      SocialInformationStatus commentPubli = new SocialInformationStatus(status);
+      listCommentPub.add(commentPubli);
+    }
+
+    List<SocialInformation> listCommentNews = new ArrayList<SocialInformation>();
+    for (int i = 0; i < 1; i++) {
+      SocialInformationStatus commentNews = new SocialInformationStatus(status);
+      listCommentNews.add(commentNews);
+    }
+
+    List<SocialInformation> listStatus = new ArrayList<SocialInformation>();
+    for (int i = 0; i < 4; i++) {
+      SocialInformationStatus eventStatus = new SocialInformationStatus(status);
+      listStatus.add(eventStatus);
+    }
+
+    List<SocialInformation> listRelationShip = new ArrayList<SocialInformation>();
+    for (int i = 0; i < 2; i++) {
+      SocialInformationStatus relationShip = new SocialInformationStatus(status);
+      listRelationShip.add(relationShip);
+    }
+
     SocialEventsInterface eventsInterface = mock(SocialEventsInterface.class);
     SocialGalleryInterface galleryInterface = mock(SocialGalleryInterface.class);
+    SocialCommentGalleryInterface commentGalleryInterface = mock(SocialCommentGalleryInterface.class);
     SocialPublicationsInterface publicationsInterface = mock(SocialPublicationsInterface.class);
+    SocialCommentPublicationsInterface commentPublicationsInterface = mock(SocialCommentPublicationsInterface.class);
+    SocialCommentQuickInfosInterface commentNewsInterface = mock(SocialCommentQuickInfosInterface.class);
     SocialStatusInterface statusInterface = mock(SocialStatusInterface.class);
     SocialRelationShipsInterface socialRelationShipsInterface = mock(
         SocialRelationShipsInterface.class);
+
     ProviderSwitch switch1 = new ProviderSwitch();
     switch1.setSocialEventsInterface(eventsInterface);
     switch1.setSocialGalleryInterface(galleryInterface);
+    switch1.setSocialCommentGalleryInterface(commentGalleryInterface);
     switch1.setSocialPublicationsInterface(publicationsInterface);
+    switch1.setSocialCommentPublicationsInterface(commentPublicationsInterface);
+    switch1.setSocialCommentQuickInfosInterface(commentNewsInterface);
     switch1.setSocialStatusInterface(statusInterface);
     switch1.setSocialRelationShipsInterface(socialRelationShipsInterface);
 
@@ -126,28 +170,34 @@ public class TestProviderSwitch {
         listEvent);
     when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, begin, end)).thenReturn(
         listPhoto);
+    when(switch1.getSocialCommentGalleryInterface().getSocialInformationsList(null, begin, end)).thenReturn(
+        listCommentPhoto);
     when(switch1.getSocialPublicationsInterface().getSocialInformationsList(null, begin, end)).thenReturn(
         listPub);
+    when(switch1.getSocialCommentPublicationsInterface().getSocialInformationsList(null, begin, end)).thenReturn(
+        listCommentPub);
+    when(switch1.getSocialCommentQuickInfosInterface().getSocialInformationsList(null, begin, end)).thenReturn(
+        listCommentNews);
     when(switch1.getSocialStatusInterface().getSocialInformationsList(null, begin, end)).thenReturn(
-        null);
+        listStatus);
     when(switch1.getSocialRelationShipsInterface().getSocialInformationsList(null, begin, end)).thenReturn(
-        null);
+        listRelationShip);
 
-    List<SocialInformation> list = switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
+    List<SocialInformation>  list = switch1.getSocialInformationsList(SocialInformationType.ALL, null,
+        null, begin, end);
+    assertEquals("must be equal 23", list.size(), 23);
+
+    list = switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
         null, begin, end);
     assertEquals("must be equal 4", list.size(), 4);
-    list = switch1.getSocialInformationsList(SocialInformationType.PUBLICATION, null,
+
+    list = switch1.getSocialInformationsList(SocialInformationType.COMMENTMEDIA, null,
         null, begin, end);
-    assertEquals("must be equal 3", list.size(), 3);
-    list = switch1.getSocialInformationsList(SocialInformationType.MEDIA, null,
+    assertEquals("must be equal 6", list.size(), 6);
+
+    list = switch1.getSocialInformationsList(SocialInformationType.COMMENTNEWS, null,
         null, begin, end);
-    assertNotNull("must be not null", list);
-    list = switch1.getSocialInformationsList(SocialInformationType.ALL, null,
-        null, begin, end);
-    assertEquals("must be equal 3", list.size(), 5);
-    when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, begin, end)).thenReturn(null);
-    list = switch1.getSocialInformationsList(SocialInformationType.ALL, null,
-        null, begin, end);
-    assertEquals("must be equal 3", list.size(), 3);
+    assertEquals("must be equal 1", list.size(), 1);
+    
   }
 }

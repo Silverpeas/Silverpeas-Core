@@ -40,7 +40,13 @@ import java.util.List;
 public class ProviderSwitch implements ProviderSwitchInterface {
 
   @Inject
+  private SocialCommentGalleryInterface socialCommentGalleryInterface;
+  @Inject
   private SocialPublicationsInterface socialPublicationsInterface;
+  @Inject
+  private SocialCommentPublicationsInterface socialCommentPublicationsInterface;
+  @Inject
+  private SocialCommentQuickInfosInterface socialCommentQuickInfosInterface;
   @Inject
   private SocialStatusInterface socialStatusInterface;
   @Inject
@@ -57,11 +63,29 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialGalleryInterface
    */
   @Override
   public SocialGalleryInterface getSocialGalleryInterface() {
     return SocialGalleryInterface.get();
+  }
+
+  /**
+   * return the SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @return SocialCommentGalleryInterface
+   */
+  @Override
+  public SocialCommentGalleryInterface getSocialCommentGalleryInterface() {
+    return socialCommentGalleryInterface;
+  }
+
+  /**
+   * set SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @param socialCommentGalleryInterface
+   */
+  @Override
+  public void setSocialCommentGalleryInterface(SocialCommentGalleryInterface socialCommentGalleryInterface) {
+    this.socialCommentGalleryInterface = socialCommentGalleryInterface;
   }
 
   /**
@@ -85,15 +109,78 @@ public class ProviderSwitch implements ProviderSwitchInterface {
           listResult = getSocialEventsInterface()
               .getSocialInformationsList(userId, classification, begin, end);
           break;
-        case MEDIA:
 
+        case MEDIA:
           listResult = getSocialGalleryInterface().getSocialInformationsList(userId, begin, end);
+
+          //MEDIA filter displays also comments on medias
+          List<SocialInformation> listCommentMedia =
+              getSocialInformationsList(SocialInformationType.COMMENTMEDIA, userId,
+                  classification, begin, end);
+
+          if (listCommentMedia != null) {
+            listResult.addAll(listCommentMedia);
+          }
           break;
+
+        case COMMENTMEDIA:
+          //Comments on gallery components
+          listResult =
+              getSocialCommentGalleryInterface().getSocialInformationsList(userId, begin, end);
+          break;
+
         case PUBLICATION:
           listResult =
               getSocialPublicationsInterface().getSocialInformationsList(userId, begin, end);
 
+          //PUBLICATION filter displays also comments on publications
+          List<SocialInformation> listCommentPublication =
+              getSocialInformationsList(SocialInformationType.COMMENTPUBLICATION, userId,
+                  classification, begin, end);
+
+          if (listCommentPublication != null) {
+            listResult.addAll(listCommentPublication);
+          }
           break;
+
+        case COMMENTPUBLICATION:
+          //Comments on kmelia and blog components
+          listResult =
+              getSocialCommentPublicationsInterface().getSocialInformationsList(userId, begin, end);
+
+          List<SocialInformation> listCommentNews =
+              getSocialInformationsList(SocialInformationType.COMMENTNEWS, userId, classification,
+                  begin, end);
+
+          if (listCommentNews != null) {
+            listResult.addAll(listCommentNews);
+          }
+          break;
+
+        case COMMENTNEWS:
+          //Comments on quickinfo components
+          listResult =
+              getSocialCommentQuickInfosInterface().getSocialInformationsList(userId, begin, end);
+          break;
+
+        case COMMENT:
+          List<SocialInformation> listCommentKmeliaBlogQuickInfos =
+              getSocialInformationsList(SocialInformationType.COMMENTPUBLICATION, userId,
+                  classification, begin, end);
+
+          if (listCommentKmeliaBlogQuickInfos != null) {
+            listResult.addAll(listCommentKmeliaBlogQuickInfos);
+          }
+
+          List<SocialInformation> listCommentGallery =
+              getSocialInformationsList(SocialInformationType.COMMENTMEDIA, userId, classification,
+                  begin, end);
+
+          if (listCommentGallery != null) {
+            listResult.addAll(listCommentGallery);
+          }
+          break;
+
         case STATUS:
           listResult = getSocialStatusInterface().getSocialInformationsList(userId, begin, end);
           break;
@@ -110,17 +197,22 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
-            if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
+            if (SocialInformationType.ALL != type &&
+                SocialInformationType.EVENT != type &&
+                SocialInformationType.COMMENT != type &&
+                SocialInformationType.COMMENTPUBLICATION != type &&
+                SocialInformationType.COMMENTNEWS != type &&
+                SocialInformationType.COMMENTMEDIA != type) {
               List<SocialInformation> listAll =
                   getSocialInformationsList(type, userId, classification, begin, end);
 
-              if (!(listAll == null)) {
+              if (listAll != null) {
                 listResult.addAll(listAll);
               }
             }
           }
-
           break;
+
         default:
       }
 
@@ -135,7 +227,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * return the SocialPublications providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialPublicationsInterface
    */
   @Override
   public SocialPublicationsInterface getSocialPublicationsInterface() {
@@ -143,8 +235,26 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
+   * return the SocialCommentPublications providor (by using Inversion of Control Containers )
+   * @return SocialCommentPublicationsInterface
+   */
+  @Override
+  public SocialCommentPublicationsInterface getSocialCommentPublicationsInterface() {
+    return socialCommentPublicationsInterface;
+  }
+
+  /**
+   * return the SocialCommentQuickInfos providor (by using Inversion of Control Containers )
+   * @return SocialCommentQuickInfosInterface
+   */
+  @Override
+  public SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface() {
+    return socialCommentQuickInfosInterface;
+  }
+
+  /**
    * return SocialStatus providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialStatusInterface
    */
   @Override
   public SocialStatusInterface getSocialStatusInterface() {
@@ -153,7 +263,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
   /**
    * return the SocialRelationShips providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialRelationShipsInterface
    */
   @Override
   public SocialRelationShipsInterface getSocialRelationShipsInterface() {
@@ -186,11 +296,74 @@ public class ProviderSwitch implements ProviderSwitchInterface {
         case MEDIA:
           list = getSocialGalleryInterface()
               .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
+
+          //MEDIA filter displays also comments on medias
+          List<SocialInformation> listCommentMedia =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTMEDIA, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentMedia != null) {
+            list.addAll(listCommentMedia);
+          }
+          break;
+
+        case COMMENTMEDIA:
+          //Comments on gallery components
+          list = getSocialCommentGalleryInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case PUBLICATION:
           list = getSocialPublicationsInterface()
               .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
+
+          //PUBLICATION filter displays publications and comments on publications
+          List<SocialInformation> listCommentPublication =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTPUBLICATION, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentPublication != null) {
+            list.addAll(listCommentPublication);
+          }
+          break;
+
+        case COMMENTPUBLICATION:
+          //Comments on kmelia and blog components
+          list = getSocialCommentPublicationsInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
+
+          List<SocialInformation> listCommentNews =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTNEWS, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentNews != null) {
+            list.addAll(listCommentNews);
+          }
+          break;
+
+        case COMMENTNEWS:
+          //Comments on quickinfo components
+          list =
+              getSocialCommentQuickInfosInterface().getSocialInformationsListOfMyContacts(myId,
+                  myContactsIds, begin, end);
+          break;
+
+        case COMMENT:
+          List<SocialInformation> listCommentKmeliaBlogQuickInfos =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTPUBLICATION, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentKmeliaBlogQuickInfos != null) {
+            list.addAll(listCommentKmeliaBlogQuickInfos);
+          }
+
+          List<SocialInformation> listCommentGallery =
+              getSocialInformationsListOfMyContacts(SocialInformationType.COMMENTMEDIA, myId,
+                  myContactsIds, begin, end);
+
+          if (listCommentGallery != null) {
+            list.addAll(listCommentGallery);
+          }
           break;
 
         case STATUS:
@@ -210,15 +383,20 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
-            if (SocialInformationType.ALL != type && SocialInformationType.EVENT != type) {
+            if (SocialInformationType.ALL != type &&
+                SocialInformationType.EVENT != type &&
+                SocialInformationType.COMMENT != type &&
+                SocialInformationType.COMMENTPUBLICATION != type &&
+                SocialInformationType.COMMENTNEWS != type &&
+                SocialInformationType.COMMENTMEDIA != type) {
               List<SocialInformation> listAll =
                   getSocialInformationsListOfMyContacts(type, myId, myContactsIds, begin, end);
-              if (!(listAll == null)) {
+
+              if (listAll != null) {
                 list.addAll(listAll);
               }
             }
           }
-          break;
         default:
       }
     } catch (SilverpeasException ex) {

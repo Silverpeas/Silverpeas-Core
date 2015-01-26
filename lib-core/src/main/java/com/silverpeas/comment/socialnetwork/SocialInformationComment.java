@@ -22,52 +22,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.publication.social;
+package com.silverpeas.comment.socialnetwork;
 
+import com.silverpeas.comment.model.Comment;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 
-public class SocialInformationPublication extends AbstractSocialInformation {
+public class SocialInformationComment extends AbstractSocialInformation {
 
-  private final PublicationDetail publication;
+  private final Comment comment;
 
   /**
    * Constructor with one param
-   * @param publication
+   * @param comment
    */
-  public SocialInformationPublication(PublicationWithStatus publication) {
-    this.publication = publication.getPublication();
-    if (publication.isUpdate()) {
-      setAuthor(publication.getPublication().getUpdaterId());
-      setDate(publication.getPublication().getUpdateDate());
+  public SocialInformationComment(Comment comment) {
+    this.comment = comment;
+    setAuthor(comment.getCreator().getId());
+    if (comment.getModificationDate() != null) {
+      setDate(comment.getModificationDate());
+      setUpdated(true);
     } else {
-      setAuthor(publication.getPublication().getCreatorId());
-      setDate(publication.getPublication().getCreationDate());
+      setDate(comment.getCreationDate());
+      setUpdated(false);
     }
-    String instanceId = publication.getPublication().getInstanceId();
-    SocialInformationType type = SocialInformationType.PUBLICATION;
+    String instanceId = comment.getComponentInstanceId();
+    SocialInformationType type = SocialInformationType.COMMENTPUBLICATION;
     if (instanceId.startsWith("blog")) {
-      type = SocialInformationType.POST;
+      type = SocialInformationType.COMMENTPOST;
     } else if (instanceId.startsWith("quickinfo")) {
-      type = SocialInformationType.NEWS;
-    } else if (instanceId.startsWith("bookmark")) {
-      type = SocialInformationType.BOOKMARK;
-    } else if (instanceId.startsWith("webSites")) {
-      type = SocialInformationType.SITE;
+      type = SocialInformationType.COMMENTNEWS;
+    } else if (instanceId.startsWith("gallery")) {
+      type = SocialInformationType.COMMENTMEDIA;
     }
     setType(type.toString());
-    setUrl(URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getPublication().getId(),
-        instanceId, false));
-    setUpdated(publication.isUpdate());
-    setTitle(publication.getPublication().getTitle());
-    setDescription(publication.getPublication().getDescription());
+    setDescription(comment.getMessage());
   }
 
   /**
-   * compare to SocialInformationPublication if are iquals or not
+   * compare to SocialInformationComment if are equals or not
    * @param obj
    * @return boolean
    */
@@ -76,7 +70,7 @@ public class SocialInformationPublication extends AbstractSocialInformation {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    final SocialInformationPublication other = (SocialInformationPublication) obj;
+    final SocialInformationComment other = (SocialInformationComment) obj;
 
     if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
       return false;
@@ -112,7 +106,7 @@ public class SocialInformationPublication extends AbstractSocialInformation {
     return hash;
   }
 
-  public PublicationDetail getPublication() {
-    return publication;
+  public Comment getComment() {
+    return comment;
   }
 }

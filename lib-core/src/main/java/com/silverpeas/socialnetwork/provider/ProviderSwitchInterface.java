@@ -73,25 +73,43 @@ public interface ProviderSwitchInterface {
 
   /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialGalleryInterface
    */
   public SocialGalleryInterface getSocialGalleryInterface();
 
   /**
+   * return the SocialCommentGallery providor (by using Inversion of Control Containers )
+   * @return SocialCommentGalleryInterface
+   */
+  public SocialCommentGalleryInterface getSocialCommentGalleryInterface();
+
+  /**
    * return the SocialPublications providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialPublicationsInterface
    */
   public SocialPublicationsInterface getSocialPublicationsInterface();
 
   /**
+   * return the SocialCommentPublications providor (by using Inversion of Control Containers )
+   * @return SocialCommentPublicationsInterface
+   */
+  public SocialCommentPublicationsInterface getSocialCommentPublicationsInterface();
+
+  /**
+   * return the SocialCommentQuickInfos providor (by using Inversion of Control Containers )
+   * @return SocialCommentQuickInfosInterface
+   */
+  public SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface();
+
+  /**
    * return SocialStatus providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialStatusInterface
    */
   public SocialStatusInterface getSocialStatusInterface();
 
   /**
    * return the SocialRelationShips providor (by using Inversion of Control Containers )
-   * @return SocialEventsInterface
+   * @return SocialRelationShipsInterface
    */
   public SocialRelationShipsInterface getSocialRelationShipsInterface();
 

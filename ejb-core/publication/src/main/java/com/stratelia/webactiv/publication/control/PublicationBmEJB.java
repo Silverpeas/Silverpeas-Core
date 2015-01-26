@@ -39,25 +39,31 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.coordinates.control.CoordinatesService;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.node.control.NodeService;
-import com.stratelia.webactiv.node.model.NodeDetail;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.info.SeeAlsoDAO;
-import com.stratelia.webactiv.publication.model.Alias;
-import com.stratelia.webactiv.publication.model.CompletePublication;
-import com.stratelia.webactiv.publication.model.NodeTree;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationI18N;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
-import com.stratelia.webactiv.publication.model.ValidationStep;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.publication.notification.PublicationEventNotifier;
+import com.stratelia.webactiv.publication.social.SocialInformationPublication;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
+import com.stratelia.webactiv.util.coordinates.model.Coordinate;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.info.SeeAlsoDAO;
+import com.stratelia.webactiv.util.publication.model.Alias;
+import com.stratelia.webactiv.util.publication.model.CompletePublication;
+import com.stratelia.webactiv.util.publication.model.NodeTree;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationI18N;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.publication.notification.PublicationNotificationService;
 import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -1806,8 +1812,8 @@ public class PublicationBmEJB implements PublicationBm {
    * @return
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
-      List<String> options, Date begin, Date end) {
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, Date begin, Date end) {
     Connection con = getConnection();
     try {
       return PublicationDAO

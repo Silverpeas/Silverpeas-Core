@@ -32,6 +32,8 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.date.Period;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -141,4 +143,16 @@ public class CommentDAOMock implements CommentDAO {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
+  @Override
+  public List<SocialInformationComment> getSocialInformationCommentsListByUserId(
+      final List<String> resourceTypes, final String userId, final Period period) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
+      final List<String> resourceTypes, final List<String> myContactsIds,
+      final List<String> instanceIds, final Period period) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }

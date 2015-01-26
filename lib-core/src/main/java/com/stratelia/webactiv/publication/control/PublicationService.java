@@ -436,8 +436,8 @@ public interface PublicationService {
    * @param end
    * @return
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
-      List<String> options, Date begin, Date end);
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, Date begin, Date end);
 
   public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone);
 

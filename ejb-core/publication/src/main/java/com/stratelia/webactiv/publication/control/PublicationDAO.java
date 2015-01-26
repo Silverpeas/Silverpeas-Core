@@ -2082,10 +2082,11 @@ public class PublicationDAO {
    * @param end
    * @return List <SocialInformation>
    */
-  public static List<SocialInformation> getSocialInformationsListOfMyContacts(
+  public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
-    List<SocialInformation> listPublications = new ArrayList<SocialInformation>();
+    List<SocialInformationPublication> listPublications =
+        new ArrayList<SocialInformationPublication>();
 
     String query =
         "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type FROM sb_publication_publi WHERE pubcreatorid in(" +

@@ -26,9 +26,12 @@ package com.silverpeas.comment.service;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
+import com.silverpeas.comment.socialnetwork.SocialInformationComment;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.date.Period;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,4 +81,11 @@ public interface CommentService {
   ResourceLocator getComponentMessages(String language);
 
   ResourceLocator getComponentSettings();
+
+  List<SocialInformationComment> getSocialInformationCommentsListByUserId(
+      List<String> listResourceType, String userId, Period period);
+
+  List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
+      List<String> listResourceType, List<String> myContactsIds, List<String> listInstanceId,
+      Period period);
 }
