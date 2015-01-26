@@ -41,10 +41,7 @@ public class LocalizedOption {
   }
 
   public String getName() {
-    if (realOption.getName().containsKey(lang)) {
-      return realOption.getName().get(lang);
-    }
-    return realOption.getName().get(DisplayI18NHelper.getDefaultLanguage());
+    return realOption.getName(lang);
   }
 
   public String getValue() {

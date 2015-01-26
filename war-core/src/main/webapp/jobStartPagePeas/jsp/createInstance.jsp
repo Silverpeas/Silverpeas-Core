@@ -142,6 +142,7 @@ browseBar.setPath(resource.getString("JSPP.creationInstance"));
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <link type="text/css" href="/silverpeas/util/styleSheets/fieldset.css" rel="stylesheet" />
+<link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
