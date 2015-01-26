@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,19 +9,18 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine;
 
 import java.util.Date;
@@ -59,12 +58,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WorkflowEngineImpl implements WorkflowEngine {
+  private static WorkflowEngineManagedThread wfEngineThread = new WorkflowEngineManagedThread();
+
   /**
    * default constructor
    */
   public WorkflowEngineImpl() {
     // Start the WorkflowEngine thread
-    WorkflowEngineThread.starts();
+    wfEngineThread.start();
   }
 
   /**
@@ -91,10 +92,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     if (action != null && action.getKind().equals("create")) {
       if (!event.isResumingAction()) {
         UpdatableProcessInstanceManager instanceManager =
-            (UpdatableProcessInstanceManager) WorkflowHub
-            .getProcessInstanceManager();
-        instance = (UpdatableProcessInstance) instanceManager
-            .createProcessInstance(model.getModelId());
+            (UpdatableProcessInstanceManager) WorkflowHub.getProcessInstanceManager();
+        instance =
+            (UpdatableProcessInstance) instanceManager.createProcessInstance(model.getModelId());
         event.setProcessInstance(instance);
       } else {
         instance = (UpdatableProcessInstance) event.getProcessInstance();
@@ -113,8 +113,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-            instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // Do workflow stuff
         try {
@@ -122,12 +122,14 @@ public class WorkflowEngineImpl implements WorkflowEngine {
           this.manageLocks(event, instance);
 
           // Tests if user is declared as a working user
-          if (!creationEvent)
+          if (!creationEvent) {
             this.manageRights(event, instance);
+          }
 
           // Tests if user is declared as the working user for this state
-          if (!creationEvent)
+          if (!creationEvent) {
             this.checkUserLock(event, instance);
+          }
 
           // Checks the datas associated to the event
           /* xoxox a faire en concordance avec les specs du form manager */
@@ -149,7 +151,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     }
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
-    WorkflowEngineThread.addTaskDoneRequest(event);
+    WorkflowEngineTask.addTaskDoneRequest(event);
   }
 
   /**
@@ -161,16 +163,15 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     boolean creationEvent = false;
     ProcessModel model = event.getProcessModel();
     Database db = null;
-    UpdatableProcessInstance instance = null;
+    UpdatableProcessInstance instance;
 
     // Tests if action is creation
     Action action = model.getAction(event.getActionName());
     if (event.isFirstTimeSaved() && action != null && action.getKind().equals("create")) {
       UpdatableProcessInstanceManager instanceManager =
-          (UpdatableProcessInstanceManager) WorkflowHub
-          .getProcessInstanceManager();
-      instance = (UpdatableProcessInstance) instanceManager
-          .createProcessInstance(model.getModelId());
+          (UpdatableProcessInstanceManager) WorkflowHub.getProcessInstanceManager();
+      instance =
+          (UpdatableProcessInstance) instanceManager.createProcessInstance(model.getModelId());
       event.setProcessInstance(instance);
       creationEvent = true;
     } else {
@@ -185,8 +186,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
@@ -222,7 +223,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     }
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
-    WorkflowEngineThread.addTaskSavedRequest(event);
+    WorkflowEngineTask.addTaskSavedRequest(event);
   }
 
   /**
@@ -230,8 +231,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    * @param event the question event containing all necessary information
    */
   public void process(QuestionEvent event) throws WorkflowException {
-    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
-        .getProcessInstance();
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
     Database db = null;
 
     try {
@@ -242,8 +242,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
@@ -275,7 +275,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     }
 
     // All is OK, send the QuestionEvent to the WorkflowEngineThread
-    WorkflowEngineThread.addQuestionRequest(event);
+    WorkflowEngineTask.addQuestionRequest(event);
   }
 
   /**
@@ -283,8 +283,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    * @param event the response event containing all necessary information
    */
   public void process(ResponseEvent event) throws WorkflowException {
-    UpdatableProcessInstance instance = (UpdatableProcessInstance) event
-        .getProcessInstance();
+    UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
     Database db = null;
 
     try {
@@ -295,8 +294,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
@@ -328,21 +327,19 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     }
 
     // All is OK, send the ResponseEvent to the WorkflowEngineThread
-    WorkflowEngineThread.addResponseRequest(event);
+    WorkflowEngineTask.addResponseRequest(event);
   }
 
   /**
    * Do re-affectation for given states Remove users as working users and unassign corresponding
    * tasks Add users as working users and assign corresponding tasks
    */
-  public void reAssignActors(UpdatableProcessInstance instance,
-      Actor[] unAssignedActors, Actor[] assignedActors, User user)
-      throws WorkflowException {
+  public void reAssignActors(UpdatableProcessInstance instance, Actor[] unAssignedActors,
+      Actor[] assignedActors, User user) throws WorkflowException {
     // Get the process instance
-    ProcessInstanceManager instanceManager = WorkflowHub
-        .getProcessInstanceManager();
+    ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
     Database db = null;
-    UpdatableHistoryStep step = null;
+    UpdatableHistoryStep step;
 
     // Get the task manager
     TaskManager taskManager = WorkflowHub.getTaskManager();
@@ -355,8 +352,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // first create the history step
       try {
@@ -371,8 +368,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         instance.addHistoryStep(step);
       } catch (WorkflowException we) {
         db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.assignActors",
-            "EX_ERR_REASSIGN_ACTORS", we);
+        throw new WorkflowException("WorkflowEngineImpl.assignActors", "EX_ERR_REASSIGN_ACTORS",
+            we);
       }
 
       // commit
@@ -382,8 +379,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
       step = (UpdatableHistoryStep) instance.getHistoryStep(step.getId());
       instance.updateHistoryStep(step); // only to set the current step of
       // instance to that step
@@ -392,36 +389,34 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       try {
         // Unassign tasks to these working users
         Task[] tasks = taskManager.createTasks(unAssignedActors, instance);
-        for (int i = 0; i < tasks.length; i++) {
-          taskManager.unAssignTask(tasks[i]);
+        for (final Task task : tasks) {
+          taskManager.unAssignTask(task);
         }
 
         // Remove these working users from instance
-        for (int i = 0; i < unAssignedActors.length; i++) {
-          instance.removeWorkingUser(unAssignedActors[i].getUser(),
-              unAssignedActors[i].getState(), unAssignedActors[i]
-              .getUserRoleName());
+        for (final Actor unAssignedActor : unAssignedActors) {
+          instance.removeWorkingUser(unAssignedActor.getUser(), unAssignedActor.getState(),
+              unAssignedActor.getUserRoleName());
         }
 
         // Assign tasks to these working users
         tasks = taskManager.createTasks(assignedActors, instance);
-        for (int i = 0; i < tasks.length; i++) {
-          taskManager.assignTask(tasks[i], user);
+        for (final Task task : tasks) {
+          taskManager.assignTask(task, user);
         }
 
         // Declare these working users in instance
-        for (int i = 0; i < assignedActors.length; i++) {
-          instance
-              .addWorkingUser(assignedActors[i].getUser(), assignedActors[i]
-              .getState(), assignedActors[i].getUserRoleName());
+        for (final Actor assignedActor : assignedActors) {
+          instance.addWorkingUser(assignedActor.getUser(), assignedActor.getState(),
+              assignedActor.getUserRoleName());
         }
 
         step.setActionStatus(2);
         instance.updateHistoryStep(step);
       } catch (WorkflowException we) {
         db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.reAssignActors",
-            "EX_ERR_REASSIGN_ACTORS", we);
+        throw new WorkflowException("WorkflowEngineImpl.reAssignActors", "EX_ERR_REASSIGN_ACTORS",
+            we);
       }
 
       // commit
@@ -450,8 +445,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   /**
    * Tests if user is declared as a working user
    */
-  private void manageRights(GenericEvent event,
-      UpdatableProcessInstance instance) throws WorkflowException {
+  private void manageRights(GenericEvent event, UpdatableProcessInstance instance)
+      throws WorkflowException {
     State resolvedState;
     User actor;
     Actor[] wkUsers;
@@ -462,27 +457,25 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       resolvedState = new StateImpl("");
     }
     actor = event.getUser();
-    wkUsers = instance.getWorkingUsers(resolvedState.getName(), event
-        .getUserRoleName());
+    wkUsers = instance.getWorkingUsers(resolvedState.getName(), event.getUserRoleName());
     if (wkUsers != null) {
-      for (int i = 0; i < wkUsers.length; i++) {
-        if (wkUsers[i].getUser().equals(actor)) {
+      for (final Actor wkUser : wkUsers) {
+        if (wkUser.getUser().equals(actor)) {
           validUser = true;
         }
       }
     }
 
     if (!validUser) {
-      throw new WorkflowException("WorkflowEngineImpl.manageRights",
-          "EX_ERR_FORBIDDEN_ACTION");
+      throw new WorkflowException("WorkflowEngineImpl.manageRights", "EX_ERR_FORBIDDEN_ACTION");
     }
   }
 
   /**
    * Tests if user has locked this instance
    */
-  private void checkUserLock(GenericEvent event,
-      UpdatableProcessInstance instance) throws WorkflowException {
+  private void checkUserLock(GenericEvent event, UpdatableProcessInstance instance)
+      throws WorkflowException {
     State resolvedState;
     LockingUser lockingUser;
     User actor;

@@ -34,7 +34,7 @@ import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.silverpeas.workflow.engine.WorkflowEngineThread;
+import com.silverpeas.workflow.engine.WorkflowEngineTask;
 import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -99,7 +99,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
           ActionAndState timeoutActionAndState = instance.getTimeOutAction(now);
           TimeoutEvent event = new TimeoutEventImpl(instance, timeoutActionAndState.getState(),
               timeoutActionAndState.getAction());
-          WorkflowEngineThread.addTimeoutRequest(event);
+          WorkflowEngineTask.addTimeoutRequest(event);
           SilverTrace.info("workflowEngine", "TimeoutManagerImpl.doTimeoutManagement",
               "workflowEngine.WARN_TIMEOUT_DETECTED",
               "instance Id : '" + instance.getInstanceId() + "' state : '" +

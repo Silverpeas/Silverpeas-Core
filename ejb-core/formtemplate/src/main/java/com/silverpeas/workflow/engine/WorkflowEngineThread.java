@@ -59,187 +59,17 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * A thread WorkflowEngineThread process in the background a batch of events sent to workflow All
- * the public methods are static, so only one thread runs and processes the requests.
+ * This Thread is no longer used. We keep it for merge refactoring purpose.
+ * @deprecated
+ * @see com.silverpeas.workflow.engine.WorkflowEngineManagedThread
  */
-public class WorkflowEngineThread extends Thread {
-
-  /**
-   * Builds and starts the thread which will process all the requests. This method is synchonized on
-   * the requests queue in order to guarantee that only one WorkflowEngineThread is running.
-   */
-  static public void starts() {
-    synchronized (requestList) {
-      if (wfEngineThread == null) {
-        SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-            "workflowEngine.INFO_STARTS_WORKFLOWENGINE_THREAD");
-        wfEngineThread = new WorkflowEngineThread();
-        wfEngineThread.start();
-      }
-    }
-  }
-
-  /**
-   * Add a request 'TaskDoneEvent'
-   */
-  static public void addTaskDoneRequest(TaskDoneEvent event) {
-    synchronized (requestList) {
-      TaskDoneRequest request = new TaskDoneRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
-  }
-
-  /**
-   * Add a request 'TaskSavedEvent'
-   */
-  public static void addTaskSavedRequest(TaskSavedEvent event) {
-    synchronized (requestList) {
-      TaskSavedRequest request = new TaskSavedRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
-  }
-
-  /**
-   * Add a request 'QuestionEvent'
-   */
-  static public void addQuestionRequest(QuestionEvent event) {
-    synchronized (requestList) {
-      QuestionRequest request = new QuestionRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
-  }
-
-  /**
-   * Add a request 'ResponseEvent'
-   */
-  static public void addResponseRequest(ResponseEvent event) {
-    synchronized (requestList) {
-      ResponseRequest request = new ResponseRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
-  }
-
-  /**
-   * Add a request 'TimeoutEvent'
-   */
-  static public void addTimeoutRequest(TimeoutEvent event) {
-    synchronized (requestList) {
-      TimeoutRequest request = new TimeoutRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-          "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
-  }
-
-  /**
-   * Process all the requests. This method should be private but is already declared public in the
-   * base class Thread.
-   */
-  public void run() {
-    Request request = null;
-
-    try {
-      while (true) {
-
-        /*
-         * First, all the requests are processed until the queue becomes empty.
-         */
-        do {
-          request = null;
-
-          synchronized (requestList) {
-            if (!requestList.isEmpty()) {
-              request = requestList.remove(0);
-            }
-          }
-
-          /*
-           * Each request is processed out of the synchronized block so the others threads (which
-           * put the requests) will not be blocked.
-           */
-          if (request != null) {
-            try {
-              request.process();
-            } catch (Exception e) {
-              SilverTrace.error("workflowEngine", "WorkflowEngineThread",
-                  "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request.toString(), e);
-            }
-          }
-
-        } while (request != null);
-
-        /*
-         * Finally, we wait the notification of a new request to be processed.
-         */
-        try {
-          synchronized (requestList) {
-            if (requestList.isEmpty()) {
-              requestList.wait();
-            }
-          }
-        } catch (InterruptedException e) {
-          SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-              "workflowEngine.INFO_INTERRUPTED_WHILE_WAITING");
-        }
-      }
-    } catch (Throwable error) {
-      /*
-       * Keep this log, we really need to know why this thread has been down. Problem can happen
-       * when external workflow is not synchronize with current Silverpeas platform version.
-       */
-      SilverTrace.fatal("workflowEngine", "WorkflowEngineThread", "Exit from workflow thread loop",
-          error);
-      throw new RuntimeException("End of thread", error);
-    }
-  }
-
-  /**
-   * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
-   * access will be synchronized on this list. Futhermore this list is used to synchronize the
-   * providers and the consumers of the list :
-   *
-   * <PRE>
-   * // provider
-   * synchronized(requestList)
-   * {
-   * requestList.add(...);
-   * requestList.notify();
-   * }
-   * // consumer
-   * synchronized(requestList)
-   * {
-   * requestList.wait();
-   * ... = requestList.remove(...);
-   * }
-   * </PRE>
-   */
-  static private final List<Request> requestList = new ArrayList<>();
-  /**
-   * All the requests are processed by a single background thread. This thread is built and started
-   * by the start method.
-   */
-  static private WorkflowEngineThread wfEngineThread = null;
-
+public class WorkflowEngineThread {
   /**
    * The constructor is private : only one WorkflowEngineThread will be created to process all the
    * request.
@@ -294,8 +124,8 @@ class TaskDoneRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // if task has previously been saved as draft, step already exists
       if (event.isResumingAction()) {
@@ -323,8 +153,8 @@ class TaskDoneRequest implements Request {
           db.begin();
 
           // Re-load process instance
-          instance = (UpdatableProcessInstance) db.load(
-              ProcessInstanceImpl.class, instance.getInstanceId());
+          instance = (UpdatableProcessInstance) db
+              .load(ProcessInstanceImpl.class, instance.getInstanceId());
 
           // set errorStatus to true
           instance.setErrorStatus(true);
@@ -343,15 +173,16 @@ class TaskDoneRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
         boolean removeInstance = processEvent(instance, step.getId());
         if (removeInstance) {
-          SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
-              "root.MSG_GEN_PARAM_VALUE", "DELETE INSTANCE " + instance.getInstanceId());
+          SilverTrace
+              .info("workflowEngine", "workflowEngineThread.process()", "root.MSG_GEN_PARAM_VALUE",
+                  "DELETE INSTANCE " + instance.getInstanceId());
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager).removeProcessInstanceData(instance);
 
@@ -359,8 +190,7 @@ class TaskDoneRequest implements Request {
           db.remove(instance);
 
           // remove errors
-          WorkflowHub.getErrorManager().removeErrorsOfInstance(
-              instance.getInstanceId());
+          WorkflowHub.getErrorManager().removeErrorsOfInstance(instance.getInstanceId());
         }
       } catch (WorkflowException we) {
         db.rollback();
@@ -370,8 +200,8 @@ class TaskDoneRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -430,6 +260,7 @@ class TaskDoneRequest implements Request {
 }
 
 // --
+
 /**
  * vient A TaskSaved indicates the workflow engine that a task has been saved
  */
@@ -464,8 +295,8 @@ class TaskSavedRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // first time saved : history step must be created
       if (event.isFirstTimeSaved()) {
@@ -490,8 +321,8 @@ class TaskSavedRequest implements Request {
           db.begin();
 
           // Re-load process instance
-          instance = (UpdatableProcessInstance) db.load(
-              ProcessInstanceImpl.class, instance.getInstanceId());
+          instance = (UpdatableProcessInstance) db
+              .load(ProcessInstanceImpl.class, instance.getInstanceId());
 
           // set errorStatus to true
           instance.setErrorStatus(true);
@@ -514,8 +345,8 @@ class TaskSavedRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
@@ -528,8 +359,8 @@ class TaskSavedRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -585,6 +416,7 @@ class TaskSavedRequest implements Request {
 }
 
 // --
+
 /**
  * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent
  * actor/activity
@@ -620,8 +452,8 @@ class QuestionRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // first create the history step
       try {
@@ -643,8 +475,8 @@ class QuestionRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -663,8 +495,8 @@ class QuestionRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
@@ -676,8 +508,8 @@ class QuestionRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -714,16 +546,15 @@ class QuestionRequest implements Request {
     // instance to that step
 
     // add the question
-    String question = null;
+    String question;
     try {
       question = (String) event.getDataRecord().getField("Content").getObjectValue();
     } catch (FormException fe) {
-      throw new WorkflowException("WorkflowEngineThread.process",
-          "workflowEngine.EXP_UNKNOWN_ITEM", fe);
+      throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EXP_UNKNOWN_ITEM",
+          fe);
     }
-    State state =
-        instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.
-            getUser());
+    State state = instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.
+        getUser());
 
     // add the state that is discussed in the list of active states
     instance.addActiveState(state);
@@ -790,8 +621,8 @@ class ResponseRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // first create the history step
       try {
@@ -813,8 +644,8 @@ class ResponseRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -833,8 +664,8 @@ class ResponseRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
@@ -846,8 +677,8 @@ class ResponseRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -888,8 +719,8 @@ class ResponseRequest implements Request {
     try {
       answer = (String) event.getDataRecord().getField("Content").getObjectValue();
     } catch (FormException fe) {
-      throw new WorkflowException("WorkflowEngineThread.process",
-          "workflowEngine.EXP_UNKNOWN_ITEM", fe);
+      throw new WorkflowException("WorkflowEngineThread.process", "workflowEngine.EXP_UNKNOWN_ITEM",
+          fe);
     }
     State state = instance.answerQuestion(answer, event.getQuestionId());
 
@@ -925,7 +756,8 @@ class ResponseRequest implements Request {
 }
 
 /**
- * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a too
+ * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a
+ * too
  * long period
  */
 class TimeoutRequest implements Request {
@@ -959,8 +791,8 @@ class TimeoutRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // first create the history step
       try {
@@ -986,15 +818,16 @@ class TimeoutRequest implements Request {
       db.begin();
 
       // Re-load process instance
-      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
-          instance.getInstanceId());
+      instance =
+          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
       // Do workflow stuff
       try {
         boolean removeInstance = processEvent(instance, step.getId());
         if (removeInstance) {
-          SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
-              "root.MSG_GEN_PARAM_VALUE", "DELETE INSTANCE " + instance.getInstanceId());
+          SilverTrace
+              .info("workflowEngine", "workflowEngineThread.process()", "root.MSG_GEN_PARAM_VALUE",
+                  "DELETE INSTANCE " + instance.getInstanceId());
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager).removeProcessInstanceData(instance);
 
@@ -1002,8 +835,7 @@ class TimeoutRequest implements Request {
           db.remove(instance);
 
           // remove errors
-          WorkflowHub.getErrorManager().removeErrorsOfInstance(
-              instance.getInstanceId());
+          WorkflowHub.getErrorManager().removeErrorsOfInstance(instance.getInstanceId());
         }
       } catch (WorkflowException we) {
         db.rollback();
@@ -1012,8 +844,8 @@ class TimeoutRequest implements Request {
         db.begin();
 
         // Re-load process instance
-        instance = (UpdatableProcessInstance) db.load(
-            ProcessInstanceImpl.class, instance.getInstanceId());
+        instance =
+            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
 
         // set errorStatus to true
         instance.setErrorStatus(true);
@@ -1060,8 +892,8 @@ class TimeoutRequest implements Request {
 }
 
 /**
- * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a too
- * long period
+ * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a
+ * too long period
  */
 class WorkflowTools {
 
@@ -1069,9 +901,8 @@ class WorkflowTools {
    * Compute the new active states and updates affections
    * @param event the task done event
    */
-  public static boolean processAction(UpdatableProcessInstance instance,
-      GenericEvent event, UpdatableHistoryStep step,
-      boolean unactivateResolvedState) throws WorkflowException {
+  public static boolean processAction(UpdatableProcessInstance instance, GenericEvent event,
+      UpdatableHistoryStep step, boolean unactivateResolvedState) throws WorkflowException {
     // Get the process model
     ProcessModel model = instance.getProcessModel();
 
@@ -1085,10 +916,10 @@ class WorkflowTools {
     String[] states = instance.getActiveStates();
     String resolvedStateName = (event.getResolvedState() == null) ? "" : event.getResolvedState().
         getName();
-    boolean backStatus = (event.getResolvedState() == null) ? false : instance.isStateInBackStatus(
-        resolvedStateName);
-    Hashtable oldActiveStates = new Hashtable();
-    Hashtable eligibleStates = new Hashtable();
+    boolean backStatus =
+        (event.getResolvedState() != null) && instance.isStateInBackStatus(resolvedStateName);
+    Hashtable<String, String> oldActiveStates = new Hashtable<>();
+    Hashtable<String, String> eligibleStates = new Hashtable<>();
 
     // Check for actions "redone"
     for (int i = 0; backStatus && i < states.length; i++) {
@@ -1102,9 +933,9 @@ class WorkflowTools {
 
     // Compute eligibility for states
     states = instance.getActiveStates();
-    for (int i = 0; i < states.length; i++) {
-      eligibleStates.put(states[i], states[i]);
-      oldActiveStates.put(states[i], states[i]);
+    for (final String state : states) {
+      eligibleStates.put(state, state);
+      oldActiveStates.put(state, state);
     }
 
     Consequence consequence = null;
@@ -1136,8 +967,7 @@ class WorkflowTools {
       while (!verified && iConsequences.hasNext()) {
         consequence = iConsequences.next();
         if (consequence.getItem() != null) {
-          Field fieldToCompare = instance.getFolder().getField(
-              consequence.getItem());
+          Field fieldToCompare = instance.getFolder().getField(consequence.getItem());
           if ((fieldToCompare != null) && (fieldToCompare.getStringValue() != null)) {
             verified = consequence.isVerified(fieldToCompare.getStringValue());
           }
@@ -1146,15 +976,16 @@ class WorkflowTools {
         }
       }
 
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread.processAction("
-          + event.getActionName() + ")", "root.MSG_GEN_PARAM_VALUE", "item = "
-          + consequence.getItem() + ", operator = " + consequence.getOperator()
-          + ", value = " + consequence.getValue());
+      SilverTrace.info("workflowEngine",
+          "WorkflowEngineThread.processAction(" + event.getActionName() + ")",
+          "root.MSG_GEN_PARAM_VALUE",
+          "item = " + consequence.getItem() + ", operator = " + consequence.getOperator() +
+              ", value = " + consequence.getValue());
 
       // if no consequence is verified, then last one will be used
       if (consequence.getKill()) {
-        for (int i = 0; i < states.length; i++) {
-          removeAffectations(instance, event, model.getState(states[i]));
+        for (final String state : states) {
+          removeAffectations(instance, event, model.getState(state));
         }
 
         // process external actions
@@ -1166,17 +997,17 @@ class WorkflowTools {
       State[] unsetStates = consequence.getUnsetStates();
 
       // for each target state, set eligibility to true
-      for (int i = 0; i < targetStates.length; i++) {
-        if (targetStates[i] != null) {
-          String name = targetStates[i].getName();
+      for (final State targetState : targetStates) {
+        if (targetState != null) {
+          String name = targetState.getName();
           eligibleStates.put(name, name);
         }
       }
 
       // for each unset state, set eligibility to false
-      for (int i = 0; i < unsetStates.length; i++) {
-        if (unsetStates[i] != null) {
-          String name = unsetStates[i].getName();
+      for (final State unsetState : unsetStates) {
+        if (unsetState != null) {
+          String name = unsetState.getName();
           eligibleStates.remove(name);
         }
       }
@@ -1186,7 +1017,7 @@ class WorkflowTools {
       for (QualifiedUsers notifiedUsers : notifiedUsersList) {
         Actor[] actors = instance.getActors(notifiedUsers, null);
         Task[] tasks = taskManager.createTasks(actors, instance);
-        String message = "";
+        String message;
 
         for (int i = 0; i < actors.length; i++) {
           message = notifiedUsers.getMessage();
@@ -1202,10 +1033,9 @@ class WorkflowTools {
               forcedUser = userManager.getUser(senderId);
             } catch (WorkflowException we) {
               SilverTrace.info("workflowEngine",
-                  "WorkflowEngineThread.processAction(" + event.getActionName()
-                      + ")", "root.EX_ERR_PROCESS_EVENT",
-                  "Impossible de trouver l'expediteur avec le user id : "
-                      + senderId);
+                  "WorkflowEngineThread.processAction(" + event.getActionName() + ")",
+                  "root.EX_ERR_PROCESS_EVENT",
+                  "Impossible de trouver l'expediteur avec le user id : " + senderId);
             }
           }
 
@@ -1253,11 +1083,9 @@ class WorkflowTools {
             externalAction.setTrigger(trigger);
             externalAction.execute();
           } catch (Exception e) {
-            SilverTrace.error("workflowEngine",
-                "WorkflowEngineThread.processTriggers()",
-                "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "
-                    + event.getActionName() + ", trigger = "
-                    + trigger.getName(), e);
+            SilverTrace.error("workflowEngine", "WorkflowEngineThread.processTriggers()",
+                "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION",
+                "action = " + event.getActionName() + ", trigger = " + trigger.getName(), e);
           }
         }
       }
@@ -1268,9 +1096,8 @@ class WorkflowTools {
    * Compute the new active states and updates affections
    * @param event the task done event
    */
-  public static void computeStates(UpdatableProcessInstance instance,
-      GenericEvent event, Hashtable eligibleStates, Hashtable oldActiveStates)
-      throws WorkflowException {
+  public static void computeStates(UpdatableProcessInstance instance, GenericEvent event,
+      Hashtable eligibleStates, Hashtable oldActiveStates) throws WorkflowException {
     // Get the process model associated to this event
     ProcessModel model = instance.getProcessModel();
 
@@ -1278,9 +1105,7 @@ class WorkflowTools {
     State[] states = model.getStates();
 
     // Test if each state must be activated or not
-    State state = null;
-    for (int i = 0; i < states.length; i++) {
-      state = states[i];
+    for (final State state : states) {
       boolean eligible = (eligibleStates.containsKey(state.getName()));
       // xoxox a completer : gestion de la liste des pre-requis
 
@@ -1306,8 +1131,8 @@ class WorkflowTools {
    * Compute the new affectations for a given state
    * @param event the event
    */
-  public static void computeAffectations(UpdatableProcessInstance instance,
-      GenericEvent event, State state) throws WorkflowException {
+  public static void computeAffectations(UpdatableProcessInstance instance, GenericEvent event,
+      State state) throws WorkflowException {
     // Get the process model associated to this event
     instance.getProcessModel();
 
@@ -1322,14 +1147,14 @@ class WorkflowTools {
     // event)
     if (event.getUser() != null) {
       Task[] tasks = taskManager.createTasks(actors, instance);
-      for (int i = 0; i < tasks.length; i++) {
-        taskManager.assignTask(tasks[i], event.getUser());
+      for (final Task task : tasks) {
+        taskManager.assignTask(task, event.getUser());
       }
     }
 
     // Declare these working users in instance
-    for (int i = 0; i < actors.length; i++) {
-      instance.addWorkingUser(actors[i], state);
+    for (final Actor actor : actors) {
+      instance.addWorkingUser(actor, state);
     }
 
     // Get the interested users
@@ -1337,8 +1162,8 @@ class WorkflowTools {
     actors = instance.getActors(intUsers, state);
 
     // Declare these interested users in instance
-    for (int i = 0; i < actors.length; i++) {
-      instance.addInterestedUser(actors[i], state);
+    for (final Actor actor : actors) {
+      instance.addInterestedUser(actor, state);
     }
   }
 
@@ -1346,8 +1171,8 @@ class WorkflowTools {
    * Remove the old affectations for this state and unassign tasks
    * @param event the event
    */
-  public static void removeAffectations(UpdatableProcessInstance instance,
-      GenericEvent event, State state) throws WorkflowException {
+  public static void removeAffectations(UpdatableProcessInstance instance, GenericEvent event,
+      State state) throws WorkflowException {
     // Get process model associated to this event
     instance.getProcessModel();
 
@@ -1359,8 +1184,8 @@ class WorkflowTools {
 
     // Unassign tasks to these working users
     Task[] tasks = taskManager.createTasks(actors, instance);
-    for (int i = 0; i < tasks.length; i++) {
-      taskManager.unAssignTask(tasks[i]);
+    for (final Task task : tasks) {
+      taskManager.unAssignTask(task);
     }
 
     // removes interested users and working users for resolved state
@@ -1374,8 +1199,8 @@ class WorkflowTools {
    * @param instance Process instance
    * @param resolvedStateName state name
    */
-  static public void checkQuestions(UpdatableProcessInstance instance,
-      String resolvedStateName) throws WorkflowException {
+  static public void checkQuestions(UpdatableProcessInstance instance, String resolvedStateName)
+      throws WorkflowException {
     Question[] questions = instance.getSentQuestions(resolvedStateName);
 
     for (int i = 0; questions != null && i < questions.length; i++) {
