@@ -31,6 +31,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.silverpeas.ui.DisplayI18NHelper;
+
 /**
  * <p>
  * Java class for ParameterOptionType complex type.
@@ -69,6 +71,13 @@ public class Option implements Cloneable {
       name = new HashMap<String, String>();
     }
     return name;
+  }
+  
+  public String getName(String lang) {
+    if (getName().containsKey(lang)) {
+      return getName().get(lang);
+    }
+    return getName().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
   /**

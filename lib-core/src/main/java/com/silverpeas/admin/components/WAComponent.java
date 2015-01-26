@@ -24,6 +24,7 @@
 
 package com.silverpeas.admin.components;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -90,7 +91,7 @@ import java.util.Map;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = { "name", "label", "description", "suite",
     "visible", "visibleInPersonalSpace", "portlet", "router", "instanceClassName", "profiles",
-    "parameters" })
+    "groupsOfParameters", "parameters" })
 public class WAComponent {
   @XmlTransient
   private ParameterSorter sorter = new ParameterSorter();
@@ -115,6 +116,9 @@ public class WAComponent {
   @XmlElementWrapper(name = "profiles")
   @XmlElement(name = "profile", required = true)
   protected List<Profile> profiles;
+  @XmlElementWrapper(name = "groupsOfParameters")
+  @XmlElement(name = "groupOfParameters")
+  protected List<GroupOfParameters> groupsOfParameters;
   @XmlElementWrapper(name = "parameters")
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
@@ -147,6 +151,13 @@ public class WAComponent {
     }
     return label;
   }
+  
+  public String getLabel(String lang) {
+    if (getLabel().containsKey(lang)) {
+      return getLabel().get(lang);
+    }
+    return getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+  }
 
   /**
    * Sets the value of the label property.
@@ -166,6 +177,13 @@ public class WAComponent {
     }
     return description;
   }
+  
+  public String getDescription(String lang) {
+    if (getDescription().containsKey(lang)) {
+      return getDescription().get(lang);
+    }
+    return getDescription().get(DisplayI18NHelper.getDefaultLanguage());
+  }
 
   /**
    * Sets the value of the description property.
@@ -184,6 +202,13 @@ public class WAComponent {
       suite = new HashMap<String, String>();
     }
     return suite;
+  }
+  
+  public String getSuite(String lang) {
+    if (getSuite().containsKey(lang)) {
+      return getSuite().get(lang);
+    }
+    return getSuite().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
   /**
@@ -321,6 +346,12 @@ public class WAComponent {
         indexedParametersByName.put(parameter.getName(), parameter);
       }
     }
+    List<GroupOfParameters> groupsOfParameters = getGroupsOfParameters();
+    for (GroupOfParameters group : groupsOfParameters) {
+      for (Parameter parameter : group.getParameters()) {
+        indexedParametersByName.put(parameter.getName(), parameter);
+      }
+    }
     return indexedParametersByName;
   }
 
@@ -347,13 +378,27 @@ public class WAComponent {
     return this.parameters;
   }
 
-  public List<Parameter> cloneParameters() {
-    List<Parameter> result = new ArrayList<Parameter>(getParameters().size());
+  public ParameterList getAllParameters() {
+    ParameterList result = new ParameterList();
     for (Parameter param : getParameters()) {
-      result.add(param.clone());
+      result.add(param);
     }
-    Collections.sort(result, sorter);
+    for (GroupOfParameters group : getGroupsOfParameters()) {
+      result.addAll(group.getParameters());
+    }
     return result;
+  }
+  
+  public List<GroupOfParameters> getGroupsOfParameters() {
+    if (groupsOfParameters == null) {
+      groupsOfParameters = new ArrayList<GroupOfParameters>();
+    }
+    return groupsOfParameters;
+  }
+  
+  public List<GroupOfParameters> getSortedGroupsOfParameters() {
+    Collections.sort(getGroupsOfParameters(), new GroupOfParametersSorter());
+    return this.groupsOfParameters;
   }
 
 }

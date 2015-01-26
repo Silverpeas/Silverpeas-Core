@@ -26,10 +26,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.silverpeas.admin.localized;
+package com.silverpeas.admin.components;
 
-import com.silverpeas.admin.components.Option;
-import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.ui.DisplayI18NHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +80,7 @@ public class LocalizedParameter {
     }
     return localizedOptions;
   }
-  
+
   public void setOptions(List<LocalizedOption> options) {
     localizedOptions = options;
   }

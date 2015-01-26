@@ -27,7 +27,7 @@
 <%@page import="org.apache.commons.io.FilenameUtils"%>
 <%@page import="org.apache.commons.io.FileUtils"%>
 <%@page import="org.silverpeas.util.crypto.CryptoException"%>
-<%@page import="com.silverpeas.admin.localized.LocalizedComponent"%>
+<%@page import="com.silverpeas.admin.components.LocalizedComponent"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
