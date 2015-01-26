@@ -10,5 +10,4 @@ CREATE TABLE SB_MyLinks_Link
 	instanceId		varchar (50)	NULL,
 	objectId		varchar	(50)	NULL,
 	position		int		NULL
-) 
-;
+);

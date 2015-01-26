@@ -53,8 +53,8 @@ public class MyLinkEntity implements Exposable {
   @XmlElement
   @NotNull
   private int linkId;
-  
-  @XmlElement
+
+  @XmlElement(defaultValue = "-1")
   private int position;
 
   @XmlElement
@@ -107,6 +107,11 @@ public class MyLinkEntity implements Exposable {
     this.description = link.getDescription();
     this.url = link.getUrl();
     this.linkId = link.getLinkId();
+    if (link.hasPosition()) {
+      this.position = link.getPosition();
+    } else {
+      this.position = -1;
+    }
     this.visible = link.isVisible();
     this.popup = link.isPopup();
     this.userId = link.getUserId();
@@ -132,6 +137,12 @@ public class MyLinkEntity implements Exposable {
     linkDetail.setObjectId(this.objectId);
     linkDetail.setUserId(this.userId);
     linkDetail.setLinkId(this.linkId);
+    if (this.position != -1) {
+      linkDetail.setHasPosition(true);
+      linkDetail.setPosition(this.position);
+    } else {
+      linkDetail.setHasPosition(false);
+    }
     return linkDetail;
   }
 
@@ -205,12 +216,11 @@ public class MyLinkEntity implements Exposable {
     return objectId;
   }
 
+  /**
+   * @return the position of the object in the list
+   */
   public int getPosition() {
     return position;
-  }
-
-  public void setPosition(int position) {
-    this.position = position;
   }
 
 }

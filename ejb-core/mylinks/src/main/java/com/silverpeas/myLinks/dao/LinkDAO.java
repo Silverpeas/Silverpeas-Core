@@ -51,7 +51,7 @@ public class LinkDAO {
     List<LinkDetail> listLink = new ArrayList<LinkDetail>();
 
     String query =
-        "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '')";
+        "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '') order by position asc nulls first";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -143,6 +143,7 @@ public class LinkDAO {
       throws SQLException, UtilException {
     // Création d'un nouveau lien
     LinkDetail newLink = link;
+    newLink.setHasPosition(false);
     int newId = 0;
     PreparedStatement prepStmt = null;
     try {
@@ -167,15 +168,21 @@ public class LinkDAO {
     LinkDetail updatedLink = link;
     PreparedStatement prepStmt = null;
     try {
-      String query =
-          "update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , "
-              + "userId = ? , instanceId = ? , objectId = ? where linkId = ? ";
+      StringBuffer queryBuffer = new StringBuffer();
+      queryBuffer
+          .append("update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , ");
+      queryBuffer
+          .append("userId = ? , instanceId = ? , objectId = ? ");
+      if (link.hasPosition()) {
+        queryBuffer.append(" , position = ? ");
+      }
+      queryBuffer.append("where linkId = ? ");
       // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement(queryBuffer.toString());
       int linkId = updatedLink.getLinkId();
-      initParam(prepStmt, linkId, updatedLink);
+      int npParam = initParam(prepStmt, linkId, updatedLink);
       // initialisation du dernier paramètre
-      prepStmt.setInt(10, linkId);
+      prepStmt.setInt(npParam++, linkId);
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -229,6 +236,8 @@ public class LinkDAO {
     LinkDetail link = new LinkDetail();
     // recuperation des colonnes du resulSet et construction de l'objet LinkDetail
     int linkId = rs.getInt("linkId");
+    int position = rs.getInt("position");
+    boolean hasPosition = !rs.wasNull();
     String name = rs.getString("name");
     String description = rs.getString("description");
     String url = rs.getString("url");
@@ -245,6 +254,9 @@ public class LinkDAO {
     String objectId = rs.getString("objectId");
 
     link.setLinkId(linkId);
+    link.setPosition(position);
+
+    link.setHasPosition(hasPosition);
     link.setName(name);
     link.setDescription(description);
     link.setUrl(url);
@@ -257,26 +269,33 @@ public class LinkDAO {
     return link;
   }
 
-  private static void initParam(PreparedStatement prepStmt, int linkId,
+  private static int initParam(PreparedStatement prepStmt, int linkId,
       LinkDetail link) throws SQLException {
-    prepStmt.setInt(1, linkId);
-    prepStmt.setString(2, link.getName());
+    int i = 1;
+    prepStmt.setInt(i++, linkId);
+    prepStmt.setString(i++, link.getName());
     String description = StringUtil.truncate(link.getDescription(), 255);
-    prepStmt.setString(3, description);
-    prepStmt.setString(4, link.getUrl());
+    prepStmt.setString(i++, description);
+    prepStmt.setString(i++, link.getUrl());
     if (link.isVisible()) {
-      prepStmt.setInt(5, 1);
+      prepStmt.setInt(i++, 1);
     } else {
-      prepStmt.setInt(5, 0);
+      prepStmt.setInt(i++, 0);
     }
     if (link.isPopup()) {
-      prepStmt.setInt(6, 1);
+      prepStmt.setInt(i++, 1);
     } else {
-      prepStmt.setInt(6, 0);
+      prepStmt.setInt(i++, 0);
     }
-    prepStmt.setString(7, link.getUserId());
-    prepStmt.setString(8, link.getInstanceId());
-    prepStmt.setString(9, link.getObjectId());
+    prepStmt.setString(i++, link.getUserId());
+    prepStmt.setString(i++, link.getInstanceId());
+    prepStmt.setString(i++, link.getObjectId());
+    if (link.hasPosition()) {
+      prepStmt.setInt(i++, link.getPosition());
+    }
+
+    return i;
+
   }
 
 }
