@@ -91,13 +91,14 @@ public class WysiwygDisplayerTag extends TagSupport {
   public int doStartTag() throws JspException {
     try {
       String currentLang = getLanguage();
-      String content = WysiwygController.load(getComponentId(), getObjectId(), currentLang);
+      String content = WysiwygController.loadForReadOnly(getComponentId(), getObjectId(),
+          currentLang);
       //if content not found in specified language, check other ones
       if (!StringUtil.isDefined(content) && I18NHelper.isI18nContentActivated) {
         Iterator<String> languages = I18NHelper.getLanguages();
         while (languages.hasNext() && !StringUtil.isDefined(content)) {
           currentLang = languages.next();
-          content = WysiwygController.load(getComponentId(), getObjectId(), currentLang);
+          content = WysiwygController.loadForReadOnly(getComponentId(), getObjectId(), currentLang);
         }
       }
 

@@ -1,14 +1,12 @@
 package org.silverpeas.file;
 
-import javax.ws.rs.Produces;
-
 /**
  * A processor of a {@link org.silverpeas.file.SilverpeasFile} instance. It performs some peculiar
  * tasks according to a file path in order to apply some additional business or technical rules
  * on the asked file.
  * @author mmoquillon
  */
-public interface SilverpeasFileProcessor {
+public interface SilverpeasFileProcessor extends Comparable<SilverpeasFileProcessor> {
 
   public static enum ProcessingContext {
     /**
@@ -32,6 +30,15 @@ public interface SilverpeasFileProcessor {
      */
     MOVING
   }
+
+  /**
+   * Gets the priority that permits to sort the processor list to execute.<br/>
+   * The more the value of the priority is high, the more the processor is executed first.<br/>
+   * The chained execution of processors that have the same priority could be known.<br/>
+   * By default, the priority is set to 50.
+   * @return the priority value.
+   */
+  public int getPriority();
 
   /**
    * Processes the specified path and returns the new path of the SilverpeasFile to get. This method

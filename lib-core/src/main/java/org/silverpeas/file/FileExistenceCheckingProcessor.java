@@ -7,7 +7,8 @@ import org.silverpeas.initialization.Initialization;
  * file doesn't exist, then {@¢ode NO_FILE} is returned.
  * @author mmoquillon
  */
-public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor, Initialization {
+@Named("fileExistenceCheckingProcessor")
+public class FileExistenceCheckingProcessor extends AbstractSilverpeasFileProcessor{
 
   /**
    * Register itself at silverpeas startup

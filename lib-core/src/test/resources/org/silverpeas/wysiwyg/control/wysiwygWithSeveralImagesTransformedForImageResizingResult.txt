@@ -12,9 +12,42 @@
 
 <p>Upload image :</p>
 
-<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg" style="width: 100px; height: 100px;" /></p>
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/x100/name/Aikido16.jpg" style="height: 100px;" /></p>
+
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg" style="width: 100px; height = 100px;" /></p>
+
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/300x200/name/Aikido16.jpg" style="width :300 px; height: 200px ;" /></p>
 
 <p><img alt="" width="100" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg" /></p>
+
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/name/Aikido16.jpg" /></p>
+
+<p><img alt="" style="height :250" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/350x250/name/Aikido16.jpg" width="350" /></p>
+
+<p><img alt="" style="width: 250 px" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/250x350/name/Aikido16.jpg" height = " 350" /></p>
+
+<p><img alt="" style="width: 250 px" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/250x350/name/Aikido16.jpg" height = " 350" /></p>
+
+<p><img alt=""
+        style="width: 850 px"
+        src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/850x650/name/Aikido16.jpg"
+        height = " 650" /></p>
+
+<p><img alt=""
+        style="width: 850 px"
+        src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/1080x650/name/Aikido16.jpg"
+        height = " 650"
+        width="1080" /></p>
+
+<p><img alt=""
+        src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/1080x650/name/Aikido16.jpg"
+        height = " 650"
+        width="1080"
+        style="width: 850 px" /></p>
+
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/name/Aikido16.jpg" /></p>
+
+<p><img alt="" src="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/name/Aikido16.jpg" /></p>
 
 <p><img alt="" width="100" src="http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis" /></p>
 

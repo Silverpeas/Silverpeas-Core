@@ -19,7 +19,8 @@ import java.util.logging.Logger;
  *
  * @author mmoquillon
  */
-public class ImageResizingProcessor implements SilverpeasFileProcessor, Initialization {
+@Named("imageResizingProcessor")
+public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
 
   protected static final String IMAGE_CACHE_PATH = FileRepositoryManager.getAbsolutePath("cache");
 

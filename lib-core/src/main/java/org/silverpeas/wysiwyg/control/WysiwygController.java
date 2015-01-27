@@ -230,7 +230,7 @@ public class WysiwygController {
   }
 
   /**
-   * Load wysiwyg content.
+   * Loads wysiwyg content.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    * @param language the language of the content.
@@ -239,6 +239,21 @@ public class WysiwygController {
   public static String load(String componentId, String objectId, String language) {
     ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
     return getManager().load(id, language).getData();
+  }
+
+  /**
+   * Loads wysiwyg content that will only be read and never updated.<br/>
+   * Indeed, this method will call standard WYSIWYG transformations that are necessary only in
+   * readOnly mode. The resizing of image attachments for example.
+   * @param componentId String : the id of component.
+   * @param objectId String : for example the id of the publication.
+   * @param language the language of the content.
+   * @return text : the contents of the file attached.
+   */
+  public static String loadForReadOnly(String componentId, String objectId, String language) {
+    String wysiwygContent = getInstance().getManager().load(componentId, objectId, language);
+    return WysiwygContentTransformer.on(wysiwygContent).modifyImageUrlAccordingToHtmlSizeDirective()
+        .transform();
   }
 
   /**
