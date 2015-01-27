@@ -14,16 +14,7 @@ import javax.inject.Named;
  * @author mmoquillon
  */
 @Named("fileExistenceCheckingProcessor")
-public class FileExistenceCheckingProcessor implements SilverpeasFileProcessor {
-
-  /**
-   * Registers itself among the SilverpeasFileFactory instance.
-   */
-  @PostConstruct
-  public void registerItself() {
-    SilverpeasFileProvider fileFactory = SilverpeasFileProvider.getInstance();
-    fileFactory.addProcessor(this);
-  }
+public class FileExistenceCheckingProcessor extends AbstractSilverpeasFileProcessor{
 
   @Override
   public String processBefore(final String path, ProcessingContext context) {

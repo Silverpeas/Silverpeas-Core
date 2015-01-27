@@ -512,7 +512,6 @@ public class WysiwygManager {
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
         "root.MSG_GEN_PARAM_VALUE",
         "fileName=" + fileName + " context=" + wysiwygType + "objectId=" + foreignKey.getId());
-    textHtml = WysiwygContentTransformer.on(textHtml).updateURLOfImagesAccordingToSizes();
     SimpleDocument document = searchAttachmentDetail(foreignKey, wysiwygType, lang);
     if (document != null) {
       if (!document.getLanguage().equals(lang)) {

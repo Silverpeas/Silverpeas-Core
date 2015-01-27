@@ -23,35 +23,11 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import net.htmlparser.jericho.Attributes;
-import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.HTMLElementName;
-import net.htmlparser.jericho.HTMLElements;
-import net.htmlparser.jericho.Source;
-import org.apache.tika.parser.html.HtmlParser;
-import org.cyberneko.html.parsers.DOMParser;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.wysiwyg.control.directive.ImageUrlAccordingToHtmlSizeDirective;
+import org.silverpeas.wysiwyg.control.result.MailContentProcess;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class provides method to transform wysiwyg content source into other wysiwyg formats.
@@ -59,21 +35,9 @@ import java.util.regex.Pattern;
  */
 public class WysiwygContentTransformer {
 
-  private static List<Pattern> CKEDITOR_LINK_PATTERNS =
-      Arrays.asList(Pattern.compile("(?i)=\"([^\"]*/wysiwyg/jsp/ckeditor/[^\"]+)"));
-
-  private static List<Pattern> ATTACHMENT_LINK_PATTERNS = Arrays
-      .asList(Pattern.compile("(?i)=\"([^\"]*/attachmentId/[a-z\\-0-9]+/[^\"]+)"),
-          Pattern.compile("(?i)=\"([^\"]*/File/[a-z\\-0-9]+[^\"]*)"));
-
-  private static List<Pattern> ATTACHMENT_ID_FROM_LINK_PATTERNS = Arrays
-      .asList(Pattern.compile("(?i)/attachmentId/([a-z\\-0-9]+)/"),
-          Pattern.compile("(?i)/File/([a-z\\-0-9]+)"));
-
-  private static List<Pattern> GALLERY_CONTENT_LINK_PATTERNS =
-      Arrays.asList(Pattern.compile("(?i)=\"([^\"]*/GalleryInWysiwyg/[^\"]+)"));
-
   private final String wysiwygContent;
+  private final List<WysiwygContentTransformerDirective> directives =
+      new ArrayList<WysiwygContentTransformerDirective>();
 
   /**
    * An instance of WYSIWYG transformer on the given content.
@@ -94,224 +58,45 @@ public class WysiwygContentTransformer {
 
   /**
    * Transforms all URL of images to take into account theirs display size.
-   * @return the WYSIWYG content transformed to be stored.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
    */
-  public String updateURLOfImagesAccordingToSizes() {
-    String transformedWysiwygContent = wysiwygContent;
-
-    Source source = new Source(transformedWysiwygContent);
-    //get all images
-    List<Element> images = source.getAllElements(HTMLElementName.IMG);
-    Map<String, String> replacements = new HashMap<String, String>();
-    for (Element image : images) {
-      String src = image.getAttributeValue("src");
-
-      //update only URL of images stored in Silverpeas
-      if (src.contains("/attachmentId/")) {
-        String width = image.getAttributeValue("width");
-
-        // extract width from 'style' attribute
-        if (!StringUtil.isDefined(width)) {
-          String style = image.getAttributeValue("style");
-          if (StringUtil.isDefined(style)) {
-            int i = style.indexOf("width:");
-            if (i != -1) {
-              int j = style.indexOf(";", i);
-              if (j != -1) {
-                width = style.substring(i + 6, j).trim();
-              }
-            }
-          }
-        }
-
-        // process URL
-        String newSrc = "";
-        if (StringUtil.isDefined(width)) {
-          if (width.contains("px")) {
-            //remove 'px'
-            width = width.substring(0, width.length() - 2);
-          }
-
-          if (src.contains("/size/")) {
-            //replace existing 'size' parameter
-            int i = src.indexOf("/size/");
-            int j = src.indexOf("/", i+"/size/".length());
-            String size = src.substring(i, j);
-            newSrc = src.replace(size, "/size/"+width+"x");
-            replacements.put(src, newSrc);
-          } else {
-            //add 'size' parameter
-            int i = src.indexOf("/name/");
-            if (i != -1) {
-              newSrc = src.substring(0, i);
-              newSrc += "/size/" + width + "x";
-              newSrc += src.substring(i, src.length());
-              replacements.put(src, newSrc);
-            }
-          }
-        }
-      }
-
-      //replace all Silverpeas images URL
-      for (String url : replacements.keySet()) {
-        transformedWysiwygContent = transformedWysiwygContent.replaceAll(url, replacements.get(url));
-      }
-    }
-
-    return transformedWysiwygContent;
+  public WysiwygContentTransformer modifyImageUrlAccordingToHtmlSizeDirective() {
+    directives.add(new ImageUrlAccordingToHtmlSizeDirective());
+    return this;
   }
 
   /**
-   * Transforms all referenced content links in order to be handled in mail sending.
-   * A content can be for example an attachment.
+   * Default method in order to apply all the transformation directives and recover immediately the
+   * result as string.
+   * @return the transformed wysiwyg content.
+   */
+  public String transform() {
+    String transformedWysiwyg = wysiwygContent;
+    for (WysiwygContentTransformerDirective directive : directives) {
+      transformedWysiwyg = directive.execute(transformedWysiwyg);
+    }
+    return transformedWysiwyg;
+  }
+
+  /**
+   * Applies all the transformation directives and finally processing the given treatment.
+   * @param process the process to execute after all the directives.
+   * @param <TYPED_RESULT> the result type of the process.
+   * @return the result of the process execution.
+   * @throws Exception
+   */
+  public <TYPED_RESULT> TYPED_RESULT transform(
+      WysiwygContentTransformerProcess<TYPED_RESULT> process) throws Exception {
+    return process.execute(transform());
+  }
+
+  /**
+   * Transforms all referenced content links in order to be handled in mail sending. A content
+   * can be for example an attachment.<br/>
+   * The directive set by method {@link #modifyImageUrlAccordingToHtmlSizeDirective()} is applied.
    * @return the wysiwyg content transformed to be sent by mail.
    */
-  public MailResult toMailContent() throws Exception {
-    String transformedWysiwygContent = wysiwygContent;
-    List<MimeBodyPart> bodyParts = new ArrayList<MimeBodyPart>();
-    int idCount = 0;
-
-    // Handling CKEditor and Gallery links
-    List<Pattern> linkPatterns = new ArrayList<Pattern>(CKEDITOR_LINK_PATTERNS);
-    linkPatterns.addAll(GALLERY_CONTENT_LINK_PATTERNS);
-    for (String link : extractUniqueData(transformedWysiwygContent, linkPatterns)) {
-
-      String cid = "link-content-" + (idCount++);
-
-      // CID links
-      transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, link, cid);
-
-      // CID references
-      MimeBodyPart mbp = new MimeBodyPart();
-      String linkForDataSource = link;
-      if (!linkForDataSource.toLowerCase()
-          .startsWith(URLManager.getCurrentServerURL().toLowerCase())) {
-        linkForDataSource = (URLManager.getCurrentServerURL() + link);
-      }
-      linkForDataSource = linkForDataSource.replace("&amp;", "&");
-
-      URLDataSource uds = new URLDataSource(new URL(linkForDataSource));
-      mbp.setDataHandler(new DataHandler(uds));
-      mbp.setHeader("Content-ID", "<" + cid + ">");
-      bodyParts.add(mbp);
-    }
-
-    // Handling attachments
-    for (Map.Entry<String, SimpleDocument> attachmentByLink : extractAttachmentsByLinks()
-        .entrySet()) {
-      String attachmentLink = attachmentByLink.getKey();
-      SimpleDocument attachment = attachmentByLink.getValue();
-
-      if(attachment != null) {
-        String cid = "attachment-content-" + (idCount++);
-
-        // CID links
-        transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, attachmentLink, cid);
-
-        // CID references
-        MimeBodyPart mbp = new MimeBodyPart();
-        FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
-        mbp.setDataHandler(new DataHandler(fds));
-        mbp.setHeader("Content-ID", "<" + cid + ">");
-        bodyParts.add(mbp);
-      }
-    }
-
-    // Returning the result of complete parsing
-    return new MailResult(transformedWysiwygContent, bodyParts);
-  }
-
-  /**
-   * Container of Mail transformation resulting.
-   */
-  public static class MailResult {
-    private final String wysiwygContent;
-    private final List<MimeBodyPart> bodyParts;
-
-    public MailResult(final String wysiwygContent, final List<MimeBodyPart> bodyParts) {
-      this.wysiwygContent = wysiwygContent;
-      this.bodyParts = bodyParts;
-    }
-
-    public String getWysiwygContent() {
-      return wysiwygContent;
-    }
-
-    protected List<MimeBodyPart> getBodyParts() {
-      return bodyParts;
-    }
-
-    public void applyOn(Multipart multipart) throws Exception {
-      for (MimeBodyPart mimeBodyPart : getBodyParts()) {
-        multipart.addBodyPart(mimeBodyPart);
-      }
-    }
-  }
-
-  /**
-   * Centralization of link replacement.
-   * @param wysiwygContent the content in which some parts will be replaced
-   * @param link the link to replace by cid.
-   * @param cid the cid to put instead of the link.
-   * @return
-   */
-  private static String replaceLinkByCid(String wysiwygContent, String link, String cid) {
-    return wysiwygContent.replace("=\"" + link + "\"", "=\"cid:" + cid + "\"");
-  }
-
-  /**
-   * Extracts from a WYSIWYG content all links and data of referenced attachments.
-   * @return referenced {@link SimpleDocument} links and instance, empty if no attachment detected.
-   */
-  protected Map<String, SimpleDocument> extractAttachmentsByLinks() {
-    Map<String, SimpleDocument> attachmentsByLinks = new LinkedHashMap<String, SimpleDocument>();
-    for (String attachmentLink : extractAllLinksOfReferencedAttachments()) {
-      String attachmentId =
-          extractUniqueData(attachmentLink, ATTACHMENT_ID_FROM_LINK_PATTERNS).iterator().next();
-      SimpleDocumentPK sdPK = new SimpleDocumentPK(attachmentId);
-      attachmentsByLinks.put(attachmentLink, AttachmentServiceFactory.getAttachmentService().
-          searchDocumentById(sdPK, null));
-    }
-    return attachmentsByLinks;
-  }
-
-  /**
-   * Extracts from a WYSIWYG content all the links of referenced attachments.
-   * @return a link list of referenced attachments, empty if no attachment detected.
-   */
-  private List<String> extractAllLinksOfReferencedAttachments() {
-    Set<String> attachmentLinks = extractUniqueData(wysiwygContent, ATTACHMENT_LINK_PATTERNS);
-    return new ArrayList<String>(attachmentLinks);
-  }
-
-  /**
-   * Extracts data from a pattern list definition.
-   * @param fromWysiwygContent the content to parse.
-   * @param withPatterns the patterns to apply for data extraction.
-   * @return the list of data.
-   */
-  private static Set<String> extractUniqueData(final String fromWysiwygContent,
-      List<Pattern> withPatterns) {
-    Set<String> data = new LinkedHashSet<String>();
-    for (Pattern pattern : withPatterns) {
-      data.addAll(extractUniqueData(fromWysiwygContent, pattern));
-    }
-    return data;
-  }
-
-  /**
-   * Extracts data from a pattern definition.
-   * @param fromWysiwygContent the content to parse.
-   * @param withPattern the pattern to apply for data extraction.
-   * @return the list of data.
-   */
-  private static Set<String> extractUniqueData(final String fromWysiwygContent,
-      Pattern withPattern) {
-    Set<String> data = new LinkedHashSet<String>();
-    Matcher matcher = withPattern.matcher(fromWysiwygContent);
-    while (matcher.find()) {
-      data.add(matcher.group(1));
-    }
-    return data;
+  public MailContentProcess.MailResult toMailContent() throws Exception {
+    return modifyImageUrlAccordingToHtmlSizeDirective().transform(new MailContentProcess());
   }
 }

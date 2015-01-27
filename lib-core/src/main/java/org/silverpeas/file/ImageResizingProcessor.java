@@ -2,6 +2,7 @@ package org.silverpeas.file;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.option.DimensionOption;
@@ -15,23 +16,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Unit tests on the image resizing.
- *
+ * Unit tests on the image resizing. *
  * @author mmoquillon
  */
 @Named("imageResizingProcessor")
-public class ImageResizingProcessor implements SilverpeasFileProcessor {
+public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
 
   protected static final String IMAGE_CACHE_PATH = FileRepositoryManager.getAbsolutePath("cache");
 
   @Inject
   private ImageTool imageTool;
-
-  @PostConstruct
-  public void registerItself() {
-    SilverpeasFileProvider fileFactory = SilverpeasFileProvider.getInstance();
-    fileFactory.addProcessor(this);
-  }
 
   @Override
   public String processBefore(final String path, ProcessingContext context) {

@@ -14,13 +14,13 @@
 
 <p><img alt="" src="cid:attachment-content-2" style="width: 100px; height: 100px;" /></p>
 
-<p><img alt="" src="cid:attachment-content-3" style="width: 100px; height: 100px;" /></p>
+<p><img alt="" src="cid:attachment-content-2" style="width: 100px; height: 100px;" /></p>
 
-<p><img alt="" src="cid:attachment-content-5" style="width: 100px; height: 100px;" /></p>
+<p><img alt="" src="cid:attachment-content-4" style="width: 100px; height: 100px;" /></p>
 
 <p><img alt="" src="/silverpeas/File_bad_link/d07411cc-19af-49f8-af57-16fc9fabf318-bis" style="width: 100px; height: 100px;" /></p>
 
-<p><a href="cid:attachment-content-4">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg</a></p>
+<p><a href="cid:attachment-content-2">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg</a></p>
 
 <p><a href="cid:attachment-content-3">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg</a></p>
 

@@ -183,6 +183,11 @@
       <artifactId>antlr</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.carrotsearch</groupId>
+      <artifactId>junit-benchmarks</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
