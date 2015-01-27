@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdc.control;
 
 import com.silverpeas.pdc.dao.PdcRightsDAO;
@@ -111,7 +112,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       dao = SilverpeasBeanDAOFactory.<AxisHeaderPersistence>getDAO(
           "com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence");
     } catch (PersistenceException exceDAO) {
-      SilverTrace.error("Pdc", "PdcBmImpl", "Pdc.CANNOT_CONSTRUCT_PERSISTENCE", exceDAO);
+      SilverTrace.error("Pdc", "GlobalPdcManager", "Pdc.CANNOT_CONSTRUCT_PERSISTENCE", exceDAO);
     }
     axisHeaderI18NDAO = ServiceProvider.getService(AxisHeaderI18NDAO.class);
     pdcUtilizationService = ServiceProvider.getService(PdcUtilizationService.class);
@@ -152,7 +153,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           " AxisType='" + type + "' order by AxisOrder ");
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exSelect) {
-      throw new PdcException("PdcBmImpl.getAxisByType", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getAxisByType", SilverpeasException.ERROR,
           "Pdc.CANNOT_FIND_AXES_TYPE", exSelect);
     }
   }
@@ -186,7 +187,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         axisHeader.addTranslation(tr);
       }
     } catch (Exception e) {
-      SilverTrace.error("Pdc", "PdcBmImpl", "setTranslations error", e);
+      SilverTrace.error("Pdc", "GlobalPdcManager", "setTranslations error", e);
     } finally {
       DBUtil.close(con);
     }
@@ -203,8 +204,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           " 1=1 order by AxisType asc, AxisOrder asc ");
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exSelect) {
-      throw new PdcException("PdcBmImpl.getAxis", SilverpeasException.ERROR, "Pdc.CANNOT_FIND_AXES",
-          exSelect);
+      throw new PdcException("GlobalPdcManager.getAxis", SilverpeasException.ERROR,
+          "Pdc.CANNOT_FIND_AXES", exSelect);
     }
 
   }
@@ -278,7 +279,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         String treeId = treeService.createRoot(con, value);
 
         axisHeader.setRootId(Integer.parseInt(treeId));
-        SilverTrace.info("Pdc", "PdcBmImpl.createAxis()", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.info("Pdc", "GlobalPdcManager.createAxis()", "root.MSG_GEN_PARAM_VALUE",
             "axisHeader = " + axisHeader.toString());
         AxisHeaderPersistence ahp = new AxisHeaderPersistence(axisHeader);
         AxisPK axisPK = (AxisPK) dao.add(con, ahp);
@@ -289,7 +290,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         commitTransaction(con);
       } catch (Exception exCreate) {
         rollbackTransaction(con);
-        throw new PdcException("PdcBmImpl.createAxis", SilverpeasException.ERROR,
+        throw new PdcException("GlobalPdcManager.createAxis", SilverpeasException.ERROR,
             "Pdc.CANNOT_CREATE_AXE", exCreate);
       } finally {
         DBUtil.close(con);
@@ -306,7 +307,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
    */
   @Override
   public int updateAxis(AxisHeader axisHeader) throws PdcException {
-    SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("Pdc", "GlobalPdcManager.updateAxis()", "root.MSG_GEN_PARAM_VALUE",
         "axisHeader = " + axisHeader.toString());
     int status = 0;
     List<AxisHeader> axis = getAxis();
@@ -356,11 +357,11 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           }
         }
         // update root value linked to this axis
-        SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.info("Pdc", "GlobalPdcManager.updateAxis()", "root.MSG_GEN_PARAM_VALUE",
             "axisHeader.getPK().getId() = " + axisHeader.getPK().getId());
         AxisHeader oldAxisHeader = getAxisHeader(con, axisHeader.getPK().getId());
 
-        SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.info("Pdc", "GlobalPdcManager.updateAxis()", "root.MSG_GEN_PARAM_VALUE",
             "oldAxisHeader.getRootId() = " + oldAxisHeader.getRootId());
 
         // regarder si le nom et la description ont changé en fonction de la langue
@@ -464,7 +465,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         commitTransaction(con);
       } catch (Exception exUpdate) {
         rollbackTransaction(con);
-        throw new PdcException("PdcBmImpl.updateAxis", SilverpeasException.ERROR,
+        throw new PdcException("GlobalPdcManager.updateAxis", SilverpeasException.ERROR,
             "Pdc.CANNOT_UPDATE_AXE", exUpdate);
       } finally {
         DBUtil.close(con);
@@ -504,7 +505,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       // suppression des traductions
       axisHeaderI18NDAO.deleteTranslations(con, Integer.parseInt(axisId));
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.deleteAxis", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.deleteAxis", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_AXE", e);
     }
   }
@@ -556,7 +557,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       TreeNode node = treeService.getNode(con, new TreeNodePK(valueId), getTreeId(axisId));
       value = createValue(node);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_ACCESS_VALUE", e);
     } finally {
       DBUtil.close(con);
@@ -578,7 +579,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       con = openConnection();
       return createValue(treeService.getNode(con, new TreeNodePK(valueId), treeId));
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getAxisValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getAxisValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_ACCESS_VALUE", e);
     } finally {
       DBUtil.close(con);
@@ -600,7 +601,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       List<TreeNode> listTreeNodes = treeService.getNodesByName(con, valueName);
       return createValuesList(listTreeNodes);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getAxisValuesByName", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getAxisValuesByName", SilverpeasException.ERROR,
           "Pdc.CANNOT_FIND_VALUES", e);
     } finally {
       DBUtil.close(con);
@@ -625,7 +626,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         listValuesString.add(value.getPK().getId());
       }
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getDaughterValues", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getDaughterValues", SilverpeasException.ERROR,
           "Pdc.CANNOT_RETRIEVE_SUBNODES", e);
     } finally {
       DBUtil.close(con);
@@ -651,7 +652,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       }
       return values;
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getFilteredAxisValues", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getFilteredAxisValues", SilverpeasException.ERROR,
           "Pdc.CANNOT_RETRIEVE_SUBNODES", e);
     }
   }
@@ -666,7 +667,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   @Override
   public com.stratelia.silverpeas.pdc.model.Value getRoot(String axisId) throws PdcException {
     Connection con = openConnection();
-    SilverTrace.info("Pdc", "PdcBmImpl.getRoot", "root.MSG_GEN_PARAM_VALUE", "axisId = " + axisId);
+    SilverTrace
+        .info("Pdc", "GlobalPdcManager.getRoot", "root.MSG_GEN_PARAM_VALUE", "axisId = " + axisId);
     try {
       // get the header of the axis to obtain the rootId.
       AxisHeader axisHeader = getAxisHeader(axisId, false);
@@ -674,8 +676,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       TreeNode treeNode = treeService.getRoot(con, Integer.toString(treeId));
       return createValue(treeNode);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getRoot", SilverpeasException.ERROR, "Pdc.CANNOT_GET_VALUE",
-          e);
+      throw new PdcException("GlobalPdcManager.getRoot", SilverpeasException.ERROR,
+          "Pdc.CANNOT_GET_VALUE", e);
     } finally {
       DBUtil.close(con);
     }
@@ -696,7 +698,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       return createValuesList(treeService.getTree(con, Integer.toString(treeId), filter));
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getAxisValues", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getAxisValues", SilverpeasException.ERROR,
           "Pdc.CANNOT_ACCESS_LIST_OF_VALUES", e);
     } finally {
       DBUtil.close(con);
@@ -749,7 +751,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       commitTransaction(con);
     } catch (Exception e) {
       rollbackTransaction(con);
-      throw new PdcException("PdcBmImpl.insertMotherValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.insertMotherValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_UPDATE_POSTION", e);
     } finally {
       DBUtil.close(con);
@@ -789,8 +791,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           treeService.moveSubTreeToNewFather(con, new TreeNodePK(valueToMoveId),
               new TreeNodePK(newFatherId), treeId, orderNumber);
         } catch (Exception e) {
-          throw new PdcException("PdcBmImpl.moveValueToNewFatherId", SilverpeasException.ERROR,
-              "Pdc.CANNOT_MOVE_VALUE", e);
+          throw new PdcException("GlobalPdcManager.moveValueToNewFatherId",
+              SilverpeasException.ERROR, "Pdc.CANNOT_MOVE_VALUE", e);
         }
       }
 
@@ -808,7 +810,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       commitTransaction(con);
     } catch (Exception e) {
       rollbackTransaction(con);
-      throw new PdcException("PdcBmImpl.moveValueToNewFatherId", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.moveValueToNewFatherId", SilverpeasException.ERROR,
           "Pdc.CANNOT_MOVE_VALUE", e);
     } finally {
       DBUtil.close(con);
@@ -866,7 +868,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       usersId = PdcRightsDAO.getUserIds(con, axisId, valueId);
       groupsId = PdcRightsDAO.getGroupIds(con, axisId, valueId);
     } catch (SQLException e) {
-      throw new PdcException("PdcBmImpl.getManagers", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getManagers", SilverpeasException.ERROR,
           "Pdc.CANNOT_GET_MANAGERS", e);
     } finally {
       DBUtil.close(con);
@@ -899,7 +901,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
       return isManager;
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.isUserManager", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.isUserManager", SilverpeasException.ERROR,
           "Pdc.CANNOT_GET_MANAGERS", e);
     } finally {
       DBUtil.close(con);
@@ -911,7 +913,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       return PdcRightsDAO.isGroupManager(con, groupIds);
     } catch (SQLException e) {
-      throw new PdcException("PdcBmImpl.isGroupManager", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.isGroupManager", SilverpeasException.ERROR,
           "Pdc.CANNOT_GET_MANAGERS", e);
     } finally {
       DBUtil.close(con);
@@ -941,7 +943,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       commitTransaction(con);
     } catch (SQLException e) {
       rollbackTransaction(con);
-      throw new PdcException("PdcBmImpl.setManagers", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.setManagers", SilverpeasException.ERROR,
           "Pdc.CANNOT_SET_MANAGER", e);
     } finally {
       DBUtil.close(con);
@@ -954,7 +956,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       PdcRightsDAO.deleteRights(con, axisId, valueId);
     } catch (SQLException e) {
-      throw new PdcException("PdcBmImpl.razManagers", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.razManagers", SilverpeasException.ERROR,
           "Pdc.CANNOT_REMOVE_MANAGER", e);
     } finally {
       DBUtil.close(con);
@@ -972,7 +974,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       PdcRightsDAO.deleteManager(con, userId);
     } catch (SQLException e) {
-      throw new PdcException("PdcBmImpl.deleteManager", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.deleteManager", SilverpeasException.ERROR,
           "Pdc.CANNOT_REMOVE_MANAGER", e);
     } finally {
       DBUtil.close(con);
@@ -990,7 +992,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       PdcRightsDAO.deleteGroupManager(con, groupId);
     } catch (SQLException e) {
-      throw new PdcException("PdcBmImpl.deleteGroupManager", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.deleteGroupManager", SilverpeasException.ERROR,
           "Pdc.CANNOT_REMOVE_MANAGER", e);
     } finally {
       DBUtil.close(con);
@@ -1013,7 +1015,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         pathList.add(nodeTree.getPath() + nodeTree.getPK().getId() + "/");
       }
     } catch (Exception e) {
-      SilverTrace.info("PDC", "PdcBmImpl.getPathes", "Pdc.CANNOT_RETRIEVE_PATH", e);
+      SilverTrace.info("PDC", "GlobalPdcManager.getPathes", "Pdc.CANNOT_RETRIEVE_PATH", e);
     }
     return pathList;
   }
@@ -1033,7 +1035,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       // Insertion de la nouvelle racine
       treeService.insertFatherToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.insertMotherValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.insertMotherValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_INSERT_VALUE", e);
     }
   }
@@ -1061,7 +1063,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       try {
         treeService.insertFatherToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
       } catch (Exception e) {
-        throw new PdcException("PdcBmImpl.insertMotherValue", SilverpeasException.ERROR,
+        throw new PdcException("GlobalPdcManager.insertMotherValue", SilverpeasException.ERROR,
             "Pdc.CANNOT_INSERT_VALUE", e);
       }
     }
@@ -1090,7 +1092,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       try {
         treeService.createSonToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
       } catch (Exception e) {
-        throw new PdcException("PdcBmImpl.createDaughterValue", SilverpeasException.ERROR,
+        throw new PdcException("GlobalPdcManager.createDaughterValue", SilverpeasException.ERROR,
             "Pdc.CANNOT_CREATE_VALUE", e);
       } finally {
         DBUtil.close(con);
@@ -1124,8 +1126,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         daughterId =
             treeService.createSonToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
       } catch (Exception e) {
-        throw new PdcException("PdcBmImpl.createDaughterValueWithId", SilverpeasException.ERROR,
-            "Pdc.CANNOT_CREATE_VALUE", e);
+        throw new PdcException("GlobalPdcManager.createDaughterValueWithId",
+            SilverpeasException.ERROR, "Pdc.CANNOT_CREATE_VALUE", e);
       } finally {
         DBUtil.close(con);
       }
@@ -1164,7 +1166,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         treeService.updateNode(con, node);
       }
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.updateValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.updateValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_UPDATE_VALUE", e);
     } finally {
       DBUtil.close(con);
@@ -1180,7 +1182,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   @Override
   public void deleteValueAndSubtree(Connection con, String valueId, String axisId, String treeId)
       throws PdcException {
-    SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("Pdc", "GlobalPdcManager.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
         "axisId = " + axisId);
 
     try {
@@ -1199,7 +1201,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       // Avant l'effacement de la valeur, on recupere les vieux chemins
       ArrayList<String> oldPath = getPathes(con, valueId, treeId);
 
-      SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("Pdc", "GlobalPdcManager.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
           "oldPath.size() = " + oldPath.size() + ", oldPath =" + oldPath.toString());
 
       TreeNodePK treeNodePK = new TreeNodePK(valueId);
@@ -1210,7 +1212,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       TreeNode mother = treeService.getNode(con, motherPK, treeId);
       String motherPath = mother.getPath() + motherId + "/";
 
-      SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("Pdc", "GlobalPdcManager.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
           "motherId = " + motherId);
 
       AxisHeader axisHeader = getAxisHeader(con, axisId);
@@ -1234,8 +1236,9 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         for (String anOldPath : oldPath) {
           newPath.add(motherPath);
         }
-        SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
-            "newPath.size() = " + newPath.size());
+        SilverTrace
+            .info("Pdc", "GlobalPdcManager.deleteValueAndSubtree", "root.MSG_GEN_PARAM_VALUE",
+                "newPath.size() = " + newPath.size());
 
         pdcSubscriptionManager
             .checkValueOnDelete(Integer.parseInt(axisId), axisName, oldPath, newPath, pathInfo);
@@ -1245,7 +1248,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         pdcClassifyManager.createValuesAndReplace(con, axisId, oldPath, newPath);
       }
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.deleteValueAndSubtree", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.deleteValueAndSubtree", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_VALUE_SUBTREE", e);
     }
   }
@@ -1319,7 +1322,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         }
       }
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.deleteValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.deleteValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_VALUE", e);
     }
     return possibleDaughterName;
@@ -1339,7 +1342,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       List<TreeNode> listTreeNode = treeService.getFullPath(con, new TreeNodePK(valueId), treeId);
       return createValuesList(listTreeNode);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.deleteValue", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.deleteValue", SilverpeasException.ERROR,
           "Pdc.CANNOT_DELETE_VALUE", e);
     } finally {
       DBUtil.close(con);
@@ -1433,8 +1436,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
         axisHeaders.put(axisHeader.getPK().getId(), axisHeader);
       } catch (PersistenceException err_select) {
-        SilverTrace
-            .info("PDC", "PdcBmImpl.getAxisHeader", "Pdc.CANNOT_RETRIEVE_HEADER_AXE", err_select);
+        SilverTrace.info("PDC", "GlobalPdcManager.getAxisHeader", "Pdc.CANNOT_RETRIEVE_HEADER_AXE",
+            err_select);
       }
     }
     if (setTranslations) {
@@ -1447,9 +1450,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       return dao.findByPrimaryKey(new AxisPK(axisId));
     } catch (PersistenceException exSelect) {
-      SilverTrace
-          .error("PDC", "PdcBmImpl.getAxisHeaderPersistence", "Pdc.CANNOT_RETRIEVE_HEADER_AXE",
-              "axisId = " + axisId, exSelect);
+      SilverTrace.error("PDC", "GlobalPdcManager.getAxisHeaderPersistence",
+          "Pdc.CANNOT_RETRIEVE_HEADER_AXE", "axisId = " + axisId, exSelect);
     }
     return null;
   }
@@ -1467,8 +1469,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           dao.findByPrimaryKey(connection, new AxisPK(axisId));
       axisHeader = new AxisHeader(axisHeaderPersistence);
     } catch (PersistenceException exSelect) {
-      SilverTrace
-          .info("PDC", "PdcBmImpl.getAxisHeader", "Pdc.CANNOT_RETRIEVE_HEADER_AXE", exSelect);
+      SilverTrace.info("PDC", "GlobalPdcManager.getAxisHeader", "Pdc.CANNOT_RETRIEVE_HEADER_AXE",
+          exSelect);
     }
 
     return axisHeader;
@@ -1487,7 +1489,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       daughters =
           createValuesList(treeService.getSonsToNode(con, new TreeNodePK(refValue), treeId));
     } catch (Exception exList) {
-      SilverTrace.info("PDC", "PdcBmImpl.getDaughters", "Pdc.CANNOT_RETRIEVE_SUBNODES", exList);
+      SilverTrace
+          .info("PDC", "GlobalPdcManager.getDaughters", "Pdc.CANNOT_RETRIEVE_SUBNODES", exList);
     }
 
     return daughters;
@@ -1503,7 +1506,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       int tId = axisHeader.getRootId();
       return getAxisValues(tId);
     } catch (Exception err_list) {
-      SilverTrace.info("PDC", "PdcBmImpl.getDaughters", "Pdc.CANNOT_RETRIEVE_SUBNODES", err_list);
+      SilverTrace
+          .info("PDC", "GlobalPdcManager.getDaughters", "Pdc.CANNOT_RETRIEVE_SUBNODES", err_list);
     } finally {
       DBUtil.close(con);
     }
@@ -1521,7 +1525,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       daughters = createValuesList(
           treeService.getSubTree(con, new TreeNodePK(valueId), Integer.toString(tId)));
     } catch (Exception err_list) {
-      SilverTrace.info("PDC", "PdcBmImpl.getSubAxis", "Pdc.CANNOT_RETRIEVE_SUBNODES", err_list);
+      SilverTrace
+          .info("PDC", "GlobalPdcManager.getSubAxis", "Pdc.CANNOT_RETRIEVE_SUBNODES", err_list);
     } finally {
       DBUtil.close(con);
     }
@@ -1660,8 +1665,9 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     com.stratelia.silverpeas.pdc.model.Value value = getAxisValue(baseValueToUpdate, treeId);
     int newBaseValue = Integer.parseInt(value.getMotherId());
 
-    SilverTrace.info("Pdc", "PdcBmImpl.updateBaseValueInInstances", "root.MSG_GEN_PARAM_VALUE",
-        "newBaseValue = " + newBaseValue);
+    SilverTrace
+        .info("Pdc", "GlobalPdcManager.updateBaseValueInInstances", "root.MSG_GEN_PARAM_VALUE",
+            "newBaseValue = " + newBaseValue);
 
     pdcUtilizationService
         .updateOrDeleteBaseValue(con, Integer.parseInt(baseValueToUpdate), newBaseValue,
@@ -1679,23 +1685,25 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       descendants = treeService.getSubTree(con, new TreeNodePK(baseValueToUpdate), treeId);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.updateBaseValuesInInstances", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_VALUE", e);
+      throw new PdcException("GlobalPdcManager.updateBaseValuesInInstances",
+          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_VALUE", e);
     }
 
     // recherche la valeur mère de baseValueToUpdate
     com.stratelia.silverpeas.pdc.model.Value value = getAxisValue(baseValueToUpdate, treeId);
     int newBaseValue = Integer.parseInt(value.getMotherId());
 
-    SilverTrace.info("Pdc", "PdcBmImpl.updateBaseValuesInInstances", "root.MSG_GEN_PARAM_VALUE",
-        "newBaseValue = " + newBaseValue);
+    SilverTrace
+        .info("Pdc", "GlobalPdcManager.updateBaseValuesInInstances", "root.MSG_GEN_PARAM_VALUE",
+            "newBaseValue = " + newBaseValue);
 
     String descendantId = null;
     for (TreeNode descendant : descendants) {
       descendantId = descendant.getPK().getId();
 
-      SilverTrace.info("Pdc", "PdcBmImpl.updateBaseValuesInInstances", "root.MSG_GEN_PARAM_VALUE",
-          "descendantId = " + descendantId);
+      SilverTrace
+          .info("Pdc", "GlobalPdcManager.updateBaseValuesInInstances", "root.MSG_GEN_PARAM_VALUE",
+              "descendantId = " + descendantId);
 
       pdcUtilizationService
           .updateOrDeleteBaseValue(con, Integer.parseInt(descendantId), newBaseValue,
@@ -1879,7 +1887,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           pdcSubscriptionManager
               .checkSubscriptions(position.getValues(), sComponentId, silverObjectId);
         } catch (RemoteException e) {
-          throw new PdcException("PdcBmImpl.addPosition", PdcException.ERROR,
+          throw new PdcException("GlobalPdcManager.addPosition", PdcException.ERROR,
               "pdcPeas.EX_CHECK_SUBSCRIPTION", e);
         }
       }
@@ -1927,7 +1935,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       try {
         pdcSubscriptionManager.checkSubscriptions(position.getValues(), instanceId, silverObjectId);
       } catch (RemoteException e) {
-        throw new PdcException("PdcBmImpl.updatePosition", PdcException.ERROR,
+        throw new PdcException("GlobalPdcManager.updatePosition", PdcException.ERROR,
             "pdcPeas.EX_CHECH_SUBSCRIPTION", e);
       }
     }
@@ -2023,12 +2031,14 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   @Override
   public List<SearchAxis> getPertinentAxisByInstanceIds(SearchContext searchContext,
       String axisType, List<String> instanceIds, AxisFilter filter) throws PdcException {
-    SilverTrace.info("Pdc", "PdcBmImpl.getPertinentAxisByInstanceIds", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace
+        .info("Pdc", "GlobalPdcManager.getPertinentAxisByInstanceIds", "root.MSG_GEN_ENTER_METHOD");
     // quels sont les axes utilisés par l'instance
     List<AxisHeader> axis =
         pdcUtilizationService.getAxisHeaderUsedByInstanceIds(instanceIds, filter);
-    SilverTrace.info("Pdc", "PdcBmImpl.getPertinentAxisByInstanceIds", "root.MSG_GEN_PARAM_VALUE",
-        axis.size() + " axis used !");
+    SilverTrace
+        .info("Pdc", "GlobalPdcManager.getPertinentAxisByInstanceIds", "root.MSG_GEN_PARAM_VALUE",
+            axis.size() + " axis used !");
 
     ArrayList<Integer> axisIds = new ArrayList<Integer>();
     String axisId = null;
@@ -2041,8 +2051,9 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
     List<PertinentAxis> pertinentAxis = pdcClassifyManager.getPertinentAxis(searchContext, axisIds,
         pdcClassifyManager.getPositionsJoinStatement(instanceIds));
-    SilverTrace.info("Pdc", "PdcBmImpl.getPertinentAxisByInstanceIds", "root.MSG_GEN_EXIT_METHOD",
-        pertinentAxis.size() + " pertinent axis !");
+    SilverTrace
+        .info("Pdc", "GlobalPdcManager.getPertinentAxisByInstanceIds", "root.MSG_GEN_EXIT_METHOD",
+            pertinentAxis.size() + " pertinent axis !");
     return transformPertinentAxisIntoSearchAxis(pertinentAxis, axis);
   }
 
@@ -2096,7 +2107,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   public List<Value> getPertinentDaughterValuesByInstanceIds(SearchContext searchContext,
       String axisId, String valueId, List<String> instanceIds, AxisFilter filter)
       throws PdcException {
-    SilverTrace.info("Pdc", "PdcBmImpl.getPertinentDaughterValuesByInstanceIds",
+    SilverTrace.info("Pdc", "GlobalPdcManager.getPertinentDaughterValuesByInstanceIds",
         "root.MSG_GEN_ENTER_METHOD",
         "axisId = " + axisId + ", valueId = " + valueId + ", userId = " +
             searchContext.getUserId());
@@ -2126,9 +2137,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
   @Override
   public List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
       String axisId, List<String> instanceIds) throws PdcException {
-    SilverTrace
-        .info("Pdc", "PdcBmImpl.getFirstLevelAxisValuesByInstanceIds", "root.MSG_GEN_ENTER_METHOD",
-            "axisId = " + axisId);
+    SilverTrace.info("Pdc", "GlobalPdcManager.getFirstLevelAxisValuesByInstanceIds",
+        "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId);
 
     // quelle est la racine de l'axe
     String rootId = getRootId(axisId);
@@ -2149,8 +2159,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
   private String getRootId(String axisId) throws PdcException {
     Connection con = openConnection();
-    SilverTrace
-        .info("Pdc", "PdcBmImpl.getRootId", "root.MSG_GEN_PARAM_VALUE", "axisId = " + axisId);
+    SilverTrace.info("Pdc", "GlobalPdcManager.getRootId", "root.MSG_GEN_PARAM_VALUE",
+        "axisId = " + axisId);
     String rootId = null;
     try {
       AxisHeader axisHeader = getAxisHeader(axisId, false); // get the header of
@@ -2160,13 +2170,13 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       TreeNode root = treeService.getRoot(con, Integer.toString(treeId));
       rootId = root.getPK().getId();
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getRootId", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.getRootId", SilverpeasException.ERROR,
           "Pdc.CANNOT_GET_VALUE", e);
     } finally {
       DBUtil.close(con);
     }
-    SilverTrace
-        .info("Pdc", "PdcBmImpl.getRootId", "root.MSG_GEN_PARAM_VALUE", "rootId = " + rootId);
+    SilverTrace.info("Pdc", "GlobalPdcManager.getRootId", "root.MSG_GEN_PARAM_VALUE",
+        "rootId = " + rootId);
     return rootId;
   }
 
@@ -2177,7 +2187,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
   private List<Value> filterValues(SearchContext searchContext, String axisId, String motherId,
       List<String> instanceIds, AxisFilter filter) throws PdcException {
-    SilverTrace.info("Pdc", "PdcBmImpl.filterValues", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_ENTER_METHOD",
         "axisId = " + axisId + ", motherId = " + motherId);
     List<Value> descendants = null;
     ArrayList<String> emptyValues = new ArrayList<String>();
@@ -2193,8 +2203,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
     List<ObjectValuePair> objectValuePairs = null;
 
-    SilverTrace
-        .info("Pdc", "PdcBmImpl.filterValues", "root.MSG_GEN_PARAM_VALUE", "apres getHeader()");
+    SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_PARAM_VALUE",
+        "apres getHeader()");
 
     ComponentSecurity componentSecurity = null;
 
@@ -2202,18 +2212,18 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       // Get all the values for this treeService
       descendants = getAxisValues(treeId, filter);
 
-      SilverTrace.info("Pdc", "PdcBmImpl.filterValues", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_PARAM_VALUE",
           "apres getAxisValues()");
 
       JoinStatement joinStatement = pdcClassifyManager.getPositionsJoinStatement(instanceIds);
 
-      SilverTrace.info("Pdc", "PdcBmImpl.filterValues", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_PARAM_VALUE",
           "apres getPositionsJoinStatement()");
 
       List<PertinentValue> pertinentValues = pdcClassifyManager
           .getPertinentValues(searchContext, Integer.parseInt(axisId), joinStatement);
 
-      SilverTrace.info("Pdc", "PdcBmImpl.filterValues", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_PARAM_VALUE",
           "apres getPertinentValues()");
 
       // Set the NbObject for all the pertinent values
@@ -2314,11 +2324,11 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         nextDescendant = null;
       }
 
-      SilverTrace.info("Pdc", "PdcBmImpl.filterValues", "root.MSG_GEN_EXIT_METHOD");
+      SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_EXIT_METHOD");
       return descendants;
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.getPertinentDaughterValues", SilverpeasException.ERROR,
-          "Pdc.CANNOT_FILTER_VALUES", e);
+      throw new PdcException("GlobalPdcManager.getPertinentDaughterValues",
+          SilverpeasException.ERROR, "Pdc.CANNOT_FILTER_VALUES", e);
     } finally {
       if (componentSecurity != null) {
         componentSecurity.disableCache();
@@ -2360,7 +2370,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         treeService.indexTree(con, rootId);
       }
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.indexAllAxis()", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.indexAllAxis()", SilverpeasException.ERROR,
           "Pdc.INDEXING_AXIS_FAILED", e);
     } finally {
       DBUtil.close(con);
@@ -2375,7 +2385,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       con = DBUtil.openConnection();
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.openConnection()", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.openConnection()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
@@ -2387,7 +2397,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.openTransaction()", SilverpeasException.ERROR,
+      throw new PdcException("GlobalPdcManager.openTransaction()", SilverpeasException.ERROR,
           "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
@@ -2401,9 +2411,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       try {
         con.rollback();
       } catch (Exception e) {
-        SilverTrace
-            .error("Pdc", "PdcBmImpl.rollbackConnection()", "root.EX_CONNECTION_ROLLBACK_FAILED",
-                e);
+        SilverTrace.error("Pdc", "GlobalPdcManager.rollbackConnection()",
+            "root.EX_CONNECTION_ROLLBACK_FAILED", e);
       }
     }
   }
@@ -2416,8 +2425,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       try {
         con.commit();
       } catch (Exception e) {
-        SilverTrace
-            .error("Pdc", "PdcBmImpl.commitTransaction()", "root.EX_CONNECTION_COMMIT_FAILED", e);
+        SilverTrace.error("Pdc", "GlobalPdcManager.commitTransaction()",
+            "root.EX_CONNECTION_COMMIT_FAILED", e);
       }
     }
   }
@@ -2444,8 +2453,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     try {
       return pdcClassifyManager.removePosition(connection, nSilverContentId);
     } catch (Exception e) {
-      throw new ContainerManagerException("PdcBmImpl.removePosition", SilverpeasException.ERROR,
-          "containerManager.EX_INTERFACE_REMOVE_FUNCTIONS", e);
+      throw new ContainerManagerException("GlobalPdcManager.removePosition",
+          SilverpeasException.ERROR, "containerManager.EX_INTERFACE_REMOVE_FUNCTIONS", e);
     }
 
   }
@@ -2476,7 +2485,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
 
       return searchContext;
     } catch (Exception e) {
-      throw new ContainerManagerException("PdcBmImpl.getSilverContentIdPositions",
+      throw new ContainerManagerException("GlobalPdcManager.getSilverContentIdPositions",
           SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);
     }
   }
@@ -2502,7 +2511,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           .findSilverContentIdByPosition(containerPosition, alComponentId, authorId, afterDate,
               beforeDate, recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
-      throw new ContainerManagerException("PdcBmImpl.findSilverContentIdByPosition",
+      throw new ContainerManagerException("GlobalPdcManager.findSilverContentIdByPosition",
           SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);
     }
   }
