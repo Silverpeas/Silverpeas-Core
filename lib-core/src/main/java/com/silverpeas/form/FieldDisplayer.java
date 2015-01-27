@@ -20,7 +20,6 @@
 */
 package com.silverpeas.form;
 
-import au.id.jericho.lib.html.FormField;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,7 +34,6 @@ import org.apache.commons.fileupload.FileItem;
 *
 * @param <T> the type of field.
 * @see Field
-* @see FormField
 * @see Form
 */
 public interface FieldDisplayer<T extends Field> {
