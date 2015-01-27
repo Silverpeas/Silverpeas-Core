@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,92 +9,71 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.io.Closeable;
+import org.silverpeas.util.ServiceProvider;
+
+import javax.jms.JMSContext;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
 import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_JMS_FACTORY;
-import static org.silverpeas.util.JNDINames.SILVERSTATISTICS_JMS_QUEUE;
 
 /**
  * @author
  */
-public final class SilverStatisticsSender implements Closeable {
-
-  private QueueConnectionFactory factory;
-  private QueueConnection queueConnection = null;
-  private QueueSender queueSender = null;
-  private QueueSession queueSession = null;
-  private TextMessage msg = null;
-  private Context ctx;
+@JMSDestinationDefinitions(
+    value = {@JMSDestinationDefinition(
+        name = "java:/queue/statisticsQueue",
+        interfaceName = "javax.jms.Queue",
+        destinationName = "queue/statisticsQueue")})
+public final class SilverStatisticsSender {
+  private JMSContext context;
 
   public SilverStatisticsSender() {
-    try {
-      ctx = new InitialContext();
-      factory = (QueueConnectionFactory) ctx.lookup(SILVERSTATISTICS_JMS_FACTORY);
-    } catch (NamingException ex) {
-      SilverTrace
-          .error("silverstatistics", "SilverStatisticsSender", "SilverStatisticsSender ", ex);
-    }
+    context = ServiceProvider.getService(JMSContext.class);
+  }
+
+  public static SilverStatisticsSender get() {
+    return ServiceProvider.getService(SilverStatisticsSender.class);
   }
 
   /**
-   * @param message
+   * @param typeOfStats the type of statistic to send
+   * @param message the message to send
    * @throws JMSException
    * @throws NamingException
    */
   public void send(StatType typeOfStats, String message) throws JMSException, NamingException {
-    queueConnection = factory.createQueueConnection();
-    queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-    Queue queue = (Queue) ctx.lookup(SILVERSTATISTICS_JMS_QUEUE);
-    queueSender = queueSession.createSender(queue);
-    msg = queueSession.createTextMessage();
-    queueConnection.start();
-    msg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);
-    queueSender.send(msg);
-  }
-
-  @Override
-  public void close() {
+    InitialContext ic = new InitialContext();
+    Queue queue = (Queue) ic.lookup("java:/queue/statisticsQueue");
+    TextMessage textMsg = context.createTextMessage();
+    textMsg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);
     try {
-      if (queueSender != null) {
-        queueSender.close();
-      }
-      if (queueSession != null) {
-        queueSession.close();
-      }
-      if (queueConnection != null) {
-        queueConnection.close();
-      }
-    } catch (JMSException ex) {
-      SilverTrace
-          .error("silverstatistics", "SilverStatisticsSender.close", "SilverStatisticsSender ", ex);
+      context.createProducer().send(queue, textMsg);
+    } catch (Exception exc) {
+      SilverTrace.error("silverstatistics", "SilverStatisticsSender.send",
+          "SilverStatisticsSender.EX_CANT_SEND_TO_JSM_QUEUE", exc);
+      throw exc;
     }
   }
+
 }

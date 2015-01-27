@@ -20,7 +20,8 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import java.util.StringTokenizer;
+import com.stratelia.silverpeas.silverstatistics.util.StatType;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -29,11 +30,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-
-import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
-import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
-import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.StringTokenizer;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
 
@@ -51,13 +48,6 @@ import static com.stratelia.silverpeas.silverstatistics.control.SilverStatistics
 public class SilverStatisticsMessageDriven implements MessageListener {
 
   public SilverStatisticsMessageDriven() {
-    StatisticsConfig myStatsConfig = new StatisticsConfig();
-    try {
-      myStatsConfig.init();
-    } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.setSessionContext",
-          "silverstatistics.MSG_CONFIG_FILE", e);
-    }
   }
 
   /**

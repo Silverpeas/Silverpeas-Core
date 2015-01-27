@@ -246,7 +246,7 @@ public class SilverStatisticsManager {
 
   private void sendStatistic(StatType type, CharSequence stat) {
     if (isAsynchronStats(type)) {
-      SilverStatisticsSender mySilverStatisticsSender = new SilverStatisticsSender();
+      SilverStatisticsSender mySilverStatisticsSender = SilverStatisticsSender.get();
       try {
         SilverTrace.info("silverstatistics", "SilverStatisticsManager.sendStatistic",
             "root.MSG_GEN_PARAM_VALUE", "stat=" + type + ' ' + stat.toString());
@@ -256,8 +256,6 @@ public class SilverStatisticsManager {
       } catch (Exception e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsManager.sendStatistic",
             "SilverStatisticsSender ", e);
-      } finally {
-        IOUtils.closeQuietly(mySilverStatisticsSender);
       }
     } // synchrone
     else {
