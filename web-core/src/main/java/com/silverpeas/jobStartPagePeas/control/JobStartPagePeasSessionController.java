@@ -20,37 +20,9 @@
  */
 package com.silverpeas.jobStartPagePeas.control;
 
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import com.silverpeas.admin.components.*;
-import com.silverpeas.jobStartPagePeas.AllComponentParameters;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.admin.space.SpaceServiceFactory;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
-
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.jobStartPagePeas.AllComponentParameters;
 import com.silverpeas.jobStartPagePeas.DisplaySorted;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasException;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;

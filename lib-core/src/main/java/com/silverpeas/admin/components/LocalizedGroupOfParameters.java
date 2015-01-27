@@ -23,8 +23,6 @@
  */
 package com.silverpeas.admin.components;
 
-import java.util.List;
-
 /**
  * @author Nicolas Eysseric
  */

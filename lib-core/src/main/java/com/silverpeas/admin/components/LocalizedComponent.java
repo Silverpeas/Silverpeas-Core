@@ -64,7 +64,7 @@ public class LocalizedComponent {
   }
 
   public List<LocalizedProfile> getProfiles() {
-    List<LocalizedProfile> localizedProfiles = new ArrayList<LocalizedProfile>();
+    List<LocalizedProfile> localizedProfiles = new ArrayList<>();
     for (Profile profile : realComponent.getProfiles()) {
       localizedProfiles.add(new LocalizedProfile(profile, lang));
     }

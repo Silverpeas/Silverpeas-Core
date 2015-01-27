@@ -20,36 +20,12 @@
  */
 package com.silverpeas.jobStartPagePeas.servlets;
 
-import java.rmi.RemoteException;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.silverpeas.admin.components.LocalizedParameter;
-import com.silverpeas.admin.components.LocalizedParameterList;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
-
-import com.silverpeas.admin.components.GroupOfParameters;
 import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterList;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
-import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.clipboard.ClipboardException;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -63,9 +39,25 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.util.template.SilverpeasTemplate;
+
+import javax.servlet.http.HttpServletRequest;
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
@@ -502,7 +494,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
   private Map<String, String> getPasteOptions(HttpServletRequest request) {
     Map<String, String[]> parameters = request.getParameterMap();
-    Map<String, String> pasteOptions = new HashMap<String, String>();
+    Map<String, String> pasteOptions = new HashMap<>();
     for (String parameterName : parameters.keySet()) {
       if (parameterName.startsWith(PasteDetail.OPTION_PREFIX)) {
         pasteOptions.put(parameterName, parameters.get(parameterName)[0]);

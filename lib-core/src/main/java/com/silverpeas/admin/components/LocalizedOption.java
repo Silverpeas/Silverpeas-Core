@@ -24,9 +24,6 @@
 
 package com.silverpeas.admin.components;
 
-import com.silverpeas.admin.components.Option;
-import com.silverpeas.ui.DisplayI18NHelper;
-
 /**
  * @author ehugonnet
  */

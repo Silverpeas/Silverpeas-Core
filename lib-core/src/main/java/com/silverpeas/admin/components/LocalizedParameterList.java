@@ -40,7 +40,7 @@ public class LocalizedParameterList extends ArrayList<LocalizedParameter> {
   }
 
   public List<LocalizedParameter> getVisibleParameters() {
-    List<LocalizedParameter> parameters = new ArrayList<LocalizedParameter>();
+    List<LocalizedParameter> parameters = new ArrayList<>();
     for (LocalizedParameter parameter : this) {
       if (parameter.isVisible()) {
         parameters.add(parameter);
@@ -50,7 +50,7 @@ public class LocalizedParameterList extends ArrayList<LocalizedParameter> {
   }
 
   public List<LocalizedParameter> getHiddenParameters() {
-    List<LocalizedParameter> parameters = new ArrayList<LocalizedParameter>();
+    List<LocalizedParameter> parameters = new ArrayList<>();
     for (LocalizedParameter parameter : this) {
       if (parameter.isHidden()) {
         parameters.add(parameter);

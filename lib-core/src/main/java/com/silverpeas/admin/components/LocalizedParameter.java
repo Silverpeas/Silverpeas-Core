@@ -73,7 +73,7 @@ public class LocalizedParameter {
 
   public List<LocalizedOption> getOptions() {
     if (localizedOptions == null) {
-      localizedOptions = new ArrayList<LocalizedOption>();
+      localizedOptions = new ArrayList<>();
       for (Option option : realParameter.getOptions()) {
         localizedOptions.add(new LocalizedOption(option, lang));
       }

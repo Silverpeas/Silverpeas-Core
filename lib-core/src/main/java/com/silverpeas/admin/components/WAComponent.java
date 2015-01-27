@@ -25,7 +25,7 @@
 package com.silverpeas.admin.components;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -123,7 +123,7 @@ public class WAComponent {
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
   @XmlTransient
-  protected Map<String, Parameter> indexedParametersByName = new HashMap<String, Parameter>();
+  protected Map<String, Parameter> indexedParametersByName = new HashMap<>();
 
   /**
    * Gets the value of the name property.
@@ -147,7 +147,7 @@ public class WAComponent {
    */
   public HashMap<String, String> getLabel() {
     if (label == null) {
-      label = new HashMap<String, String>();
+      label = new HashMap<>();
     }
     return label;
   }
@@ -173,7 +173,7 @@ public class WAComponent {
    */
   public HashMap<String, String> getDescription() {
     if (description == null) {
-      description = new HashMap<String, String>();
+      description = new HashMap<>();
     }
     return description;
   }
@@ -199,7 +199,7 @@ public class WAComponent {
    */
   public HashMap<String, String> getSuite() {
     if (suite == null) {
-      suite = new HashMap<String, String>();
+      suite = new HashMap<>();
     }
     return suite;
   }
@@ -301,7 +301,7 @@ public class WAComponent {
    */
   public List<Profile> getProfiles() {
     if (profiles == null) {
-      profiles = new ArrayList<Profile>();
+      profiles = new ArrayList<>();
     }
     return profiles;
   }
@@ -329,7 +329,7 @@ public class WAComponent {
    */
   public List<Parameter> getParameters() {
     if (parameters == null) {
-      parameters = new ArrayList<Parameter>();
+      parameters = new ArrayList<>();
     }
     return parameters;
   }
@@ -391,7 +391,7 @@ public class WAComponent {
   
   public List<GroupOfParameters> getGroupsOfParameters() {
     if (groupsOfParameters == null) {
-      groupsOfParameters = new ArrayList<GroupOfParameters>();
+      groupsOfParameters = new ArrayList<>();
     }
     return groupsOfParameters;
   }
