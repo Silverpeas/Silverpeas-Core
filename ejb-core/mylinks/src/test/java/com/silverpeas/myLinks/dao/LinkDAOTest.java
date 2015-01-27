@@ -40,7 +40,7 @@ public class LinkDAOTest extends AbstractTestDao {
       }
     }
   }
-  
+
   @Test
   public void testUpdateLinks() throws Exception {
     Connection con = null;
@@ -51,14 +51,35 @@ public class LinkDAOTest extends AbstractTestDao {
       link.setHasPosition(true);
       LinkDAO.updateLink(con, link);
 
-
       List<LinkDetail> result = LinkDAO.getAllLinksByUser(con, "user");
-      
+
       Assert.assertEquals(1, result.get(0).getLinkId());
       Assert.assertEquals(5, result.get(1).getLinkId());
       Assert.assertEquals(3, result.get(2).getLinkId());
       Assert.assertEquals(2, result.get(3).getLinkId());
       Assert.assertEquals(4, result.get(4).getLinkId());
+    } finally {
+      if (con != null) {
+        DBUtil.close(con);
+      }
+    }
+  }
+
+  @Test
+  public void testDeleteLink() throws Exception {
+    Connection con = null;
+    try {
+      con = getConnection().getConnection();
+      LinkDAO.deleteLink(con, "4");
+
+      List<LinkDetail> result = LinkDAO.getAllLinksByUser(con, "user");
+
+      Assert.assertEquals(4, result.size());
+      Assert.assertEquals(1, result.get(0).getLinkId());
+      Assert.assertEquals(5, result.get(1).getLinkId());
+      Assert.assertEquals(3, result.get(2).getLinkId());
+      Assert.assertEquals(2, result.get(3).getLinkId());
+
     } finally {
       if (con != null) {
         DBUtil.close(con);
