@@ -33,7 +33,7 @@ public class ImageResizingProcessorTest {
 
   private ConfigurableApplicationContext ctx;
   private File originalImage;
-  ImageResizingProcessor processor;
+  private ImageResizingProcessor processor;
 
   @Before
   public void setUp() throws Exception {

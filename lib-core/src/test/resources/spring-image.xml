@@ -37,5 +37,6 @@
 
   <bean id="imageResizingProcessor" class="org.silverpeas.file.ImageResizingProcessor"/>
   <bean id="fileExistenceCheckingProcessor" class="org.silverpeas.file.FileExistenceCheckingProcessor"/>
+  <bean id="attachmentUrlLinkProcessor" class="org.silverpeas.file.AttachmentUrlLinkProcessor"/>
 
 </beans>

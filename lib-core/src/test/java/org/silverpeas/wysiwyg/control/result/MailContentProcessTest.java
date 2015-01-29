@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.wysiwyg.control;
+package org.silverpeas.wysiwyg.control.result;
 
 import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -39,7 +39,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.file.SilverpeasFileProcessor;
 import org.silverpeas.file.SilverpeasFileProvider;
-import org.silverpeas.wysiwyg.control.result.MailContentProcess;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformerTest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -49,13 +49,14 @@ import java.net.URL;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class WysiwygContentTransformerTest {
+public class MailContentProcessTest {
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -66,6 +67,24 @@ public class WysiwygContentTransformerTest {
   private File originalImageWithResize100x100;
 
   private static final String ODT_ATTACHMENT_ID = "72f56ba9-b089-40c4-b16c-255e93658259";
+
+  private static final String IMAGE_ATTACHMENT_LINK =
+      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
+          "-16fc9fabf318/lang/fr/name/Aikido16.jpg";
+  private static final String IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x =
+      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
+          "-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg";
+  private static final String IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x100 =
+      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
+          "-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg";
+  private static final String LINK_ATTACHMENT_LINK =
+      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c" +
+          "-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf";
+  private static final String LINK_ATTACHMENT_LINK_BIS =
+      "https://www.toto.fr/silverpeas/attached_file/componentId/infoLetter175/attachmentId" +
+          "/72f56ba9-b089-40c4-b16c-255e93658259-bis/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf";
+  private static final String IMAGE_ATTACHMENT_LINK_BIS =
+      "http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis";
 
   private AttachmentService oldAttachmentService;
 
@@ -150,25 +169,29 @@ public class WysiwygContentTransformerTest {
 
   @Test
   public void toMailContent() throws Exception {
-    WysiwygContentTransformer transformer = WysiwygContentTransformer
-        .on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
+    MailContentProcess mailContentProcess = new MailContentProcess();
+    String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt");
 
-    MailContentProcess.MailResult mailResult = transformer.toMailContent();
+    MailContentProcess.MailResult mailResult = mailContentProcess.execute(wysiwygContentSource);
 
+    assertThat(mailResult.getBodyParts().size(), is(6));
     assertThat(mailResult.getWysiwygContent(), is(getContentOfDocumentNamed(
-        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResultWithImageResizePreProcessing" +
-            ".txt")));
+        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResult.txt")));
   }
 
   @Test
-  public void manageImageResizing() throws Exception {
-    WysiwygContentTransformer transformer = WysiwygContentTransformer
-        .on(getContentOfDocumentNamed("wysiwygWithSeveralImages.txt"));
+  public void extractAttachmentsByLinks() {
+    MailContentProcess mailContentProcess = new MailContentProcess();
+    String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt");
 
-    String result = transformer.modifyImageUrlAccordingToHtmlSizeDirective().transform();
+    List<String> attachmentLinks =
+        mailContentProcess.extractAllLinksOfReferencedAttachments(wysiwygContentSource);
 
-    assertThat(result, is(getContentOfDocumentNamed(
-        "wysiwygWithSeveralImagesTransformedForImageResizingResult.txt")));
+    assertThat(attachmentLinks.size(), is(6));
+    assertThat(attachmentLinks,
+        contains(IMAGE_ATTACHMENT_LINK, IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x,
+            IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x100, LINK_ATTACHMENT_LINK_BIS, LINK_ATTACHMENT_LINK,
+            IMAGE_ATTACHMENT_LINK_BIS));
   }
 
   /*

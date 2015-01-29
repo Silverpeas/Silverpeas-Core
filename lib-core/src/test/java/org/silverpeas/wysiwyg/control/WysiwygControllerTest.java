@@ -1148,6 +1148,37 @@ public class WysiwygControllerTest {
    * Test of load method, of class WysiwygController.
    */
   @Test
+  public void testLoadWysiwygForDisplayOnly() throws Exception {
+    new JcrTest() {
+      @Override
+      public void run() {
+        String componentId = "blog974";
+        String messageId = "18";
+        String expectedContent = "EN_Content";
+        String userId = "7";
+        String language = "en";
+        WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+        expectedContent = "<mark>FR_Content";
+        language = "fr";
+        WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
+        // Jcr State
+        ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+        assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
+        assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
+        assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
+        // Tests
+        assertThat(WysiwygController.loadForReadOnly(componentId, messageId, "fr"),
+            is("<mark>FR_Content"));
+        assertThat(WysiwygController.loadForReadOnly(componentId, messageId, "en"),
+            is("EN_Content"));
+      }
+    }.execute();
+  }
+
+  /**
+   * Test of load method, of class WysiwygController.
+   */
+  @Test
   public void testLoadWysiwyg() throws Exception {
     new JcrTest() {
       @Override

@@ -3,6 +3,7 @@ package org.silverpeas.file;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext;
@@ -33,7 +34,7 @@ public class SilverpeasFileProvider {
 
   private static final SilverpeasFileProvider instance = new SilverpeasFileProvider();
 
-  public static final SilverpeasFileProvider getInstance() {
+  public static SilverpeasFileProvider getInstance() {
     return instance;
   }
 
@@ -176,14 +177,18 @@ public class SilverpeasFileProvider {
    * file. For others operations (like deletion, update, ...) only the chain of post processing is
    * ran against the Silverpeas file once the operation done, as the Silverpeas file was already
    * get. Each processor are triggered in the order they are added and the output of one processor
-   * acts as an input for the second processor.
+   * acts as an input for the second processor.<br/>
+   * The chained execution of the processors is established according to the priority of a
+   * processor, provided by {@link SilverpeasFileProcessor#getPriority()} method.
    * <p/>
    * {@see SilverpeasFileProcessor}
    * @param processor a SilverpeasFile processor to add.
    */
-  public void addProcessor(final SilverpeasFileProcessor processor) {
+  public synchronized void addProcessor(final SilverpeasFileProcessor processor) {
     if (!this.processors.contains(processor)) {
       this.processors.add(processor);
+      // Apply the priority for chained execution.
+      Collections.sort(this.processors);
     }
   }
 
