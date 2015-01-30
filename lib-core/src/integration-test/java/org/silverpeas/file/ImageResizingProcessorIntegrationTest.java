@@ -33,7 +33,6 @@ public class ImageResizingProcessorIntegrationTest {
   public ImageResizingProcessorIntegrationTest() {
   }
 
-  private static final String IMAGE_PATH = "org/silverpeas/file";
   private static final String IMAGE_NAME = "image-test.jpg";
   private static final int IMAGE_WIDTH = 550;
   private static final int IMAGE_HEIGHT = 413;
@@ -53,13 +52,12 @@ public class ImageResizingProcessorIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(ImageResizingProcessorIntegrationTest.class)
         .addCommonBasicUtilities().addSilverpeasExceptionBases().addFileRepositoryFeatures()
+        .addImageToolFeatures()
         .testFocusedOn(warBuilder -> {
-          warBuilder.addMavenDependencies("org.im4java:im4java", "org.apache.tika:tika-core",
-              "org.apache.tika:tika-parsers");
-          warBuilder.addPackages(true, "org.silverpeas.image");
-          warBuilder.addClasses(ImageResizingProcessor.class, SilverpeasFileProcessor.class,
-              SilverpeasFile.class, SilverpeasFileProvider.class, ImageCache.class);
-          warBuilder.addAsResource(IMAGE_PATH + File.separator + IMAGE_NAME);
+          warBuilder.addClasses(AbstractSilverpeasFileProcessor.class, ImageResizingProcessor.class,
+              SilverpeasFileProcessor.class, SilverpeasFile.class, SilverpeasFileProvider.class,
+              ImageCache.class);
+          warBuilder.addAsResource(File.separator + IMAGE_NAME);
         }).build();
   }
 
@@ -68,7 +66,7 @@ public class ImageResizingProcessorIntegrationTest {
   public void setUp() throws Exception {
     // get the original path
     originalImage = new File(mavenTargetDirectoryRule.getResourceTestDirFile(),
-        File.separator + IMAGE_PATH + File.separator + IMAGE_NAME);
+        File.separator + IMAGE_NAME);
     assertThat(originalImage.exists(), is(true));
     processor = ServiceProvider.getService(ImageResizingProcessor.class);
   }

@@ -12,7 +12,7 @@ import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext;
  * A provider of Silverpeas files. This provider aims to provide a single point to simply retrieve
  * files managed in Silverpeas in the form of a {@link org.silverpeas.file.SilverpeasFile}
  * instances. The {@link org.silverpeas.file.SilverpeasFile} class provides useful methods to
- * manage the files in Silverpeas. Both {@¢ode SilverpeasFileProvider} and {@code SilverpeasFile}
+ * manage the files in Silverpeas. Both {@code SilverpeasFileProvider} and {@code SilverpeasFile}
  * classes support a mechanism of pre and post operations processing permitting to hook additional
  * treatments on the files handled in Silverpeas.
  * <p/>
@@ -33,12 +33,6 @@ import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext;
 public class SilverpeasFileProvider {
 
   private static List<SilverpeasFileProcessor> processors = new ArrayList<>();
-
-  public static SilverpeasFileProvider getInstance() {
-    return instance;
-  }
-
-  private List<SilverpeasFileProcessor> processors = new ArrayList<SilverpeasFileProcessor>();
 
   private SilverpeasFileProvider() {
   }
@@ -144,11 +138,11 @@ public class SilverpeasFileProvider {
    * {@see SilverpeasFileProcessor}
    * @param processor a SilverpeasFile processor to add.
    */
-  public synchronized void addProcessor(final SilverpeasFileProcessor processor) {
-    if (!this.processors.contains(processor)) {
-      this.processors.add(processor);
+  public synchronized static void addProcessor(final SilverpeasFileProcessor processor) {
+    if (!processors.contains(processor)) {
+      processors.add(processor);
       // Apply the priority for chained execution.
-      Collections.sort(this.processors);
+      Collections.sort(processors);
     }
   }
 

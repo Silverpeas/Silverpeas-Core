@@ -31,6 +31,7 @@ import org.silverpeas.image.option.AbstractImageToolOption;
 import org.silverpeas.image.option.BackgroundOption;
 import org.silverpeas.image.option.DimensionOption;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,7 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
+@Singleton
 public class Im4javaImageTool extends AbstractImageTool {
 
   private static final String FIRST_PAGE_ONLY = "[0]";

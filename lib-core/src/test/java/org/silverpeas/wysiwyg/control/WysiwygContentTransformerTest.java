@@ -25,6 +25,8 @@ package org.silverpeas.wysiwyg.control;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +36,9 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.file.SilverpeasFileProcessor;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.wysiwyg.control.result.MailContentProcess;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,8 +70,6 @@ public class WysiwygContentTransformerTest {
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
-  private AttachmentService oldAttachmentService;
-
   @SuppressWarnings("unchecked")
   @Before
   public void setup() throws Exception {
@@ -74,8 +77,7 @@ public class WysiwygContentTransformerTest {
     assertThat(originalOdt.exists(), is(true));
     originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
     assertThat(originalImage.exists(), is(true));
-    originalImageWithResize100x =
-        new File(originalImage.getParentFile(), "100x/" + IMAGE_NAME);
+    originalImageWithResize100x = new File(originalImage.getParentFile(), "100x/" + IMAGE_NAME);
     FileUtils.touch(originalImageWithResize100x);
     assertThat(originalImageWithResize100x.exists(), is(true));
     originalImageWithResize100x100 =
@@ -85,15 +87,11 @@ public class WysiwygContentTransformerTest {
 
     // SilverpeasFile
     List<SilverpeasFileProcessor> processors = (List<SilverpeasFileProcessor>) FieldUtils
-        .readDeclaredField(SilverpeasFileProvider.getInstance(), "processors", true);
+        .readDeclaredStaticField(SilverpeasFileProvider.class, "processors", true);
     processors.clear();
-    SilverpeasFileProvider.getInstance().addProcessor(new AttachmentUrlLinkProcessor());
+    SilverpeasFileProvider.addProcessor(new AttachmentUrlLinkProcessor());
 
-    // Injecting by reflection the mock instance
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    oldAttachmentService =
-        (AttachmentService) FieldUtils.readDeclaredField(attachmentServiceFactory, "service", true);
+    // The mock instance
     AttachmentService mockAttachmentService = mock(AttachmentService.class);
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
         .thenReturn(mockAttachmentService);
@@ -105,19 +103,16 @@ public class WysiwygContentTransformerTest {
     // searchDocumentById returns always a simple document which the PK is the one specified
     // from method parameters.
     when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
-        .then(new Answer<SimpleDocument>() {
-          @Override
-          public SimpleDocument answer(final InvocationOnMock invocation) throws Throwable {
-            SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
-            SimpleDocument simpleDocument = mock(SimpleDocument.class);
-            when(simpleDocument.getPk()).thenReturn(pk);
-            if (pk.getId().contains(ODT_ATTACHMENT_ID)) {
-              when(simpleDocument.getAttachmentPath()).thenReturn(originalOdt.getPath());
-            } else {
-              when(simpleDocument.getAttachmentPath()).thenReturn(originalImage.getPath());
-            }
-            return simpleDocument;
+        .then(invocation -> {
+          SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
+          SimpleDocument simpleDocument = mock(SimpleDocument.class);
+          when(simpleDocument.getPk()).thenReturn(pk);
+          if (pk.getId().contains(ODT_ATTACHMENT_ID)) {
+            when(simpleDocument.getAttachmentPath()).thenReturn(originalOdt.getPath());
+          } else {
+            when(simpleDocument.getAttachmentPath()).thenReturn(originalImage.getPath());
           }
+          return simpleDocument;
         });
 
     /*
@@ -138,13 +133,8 @@ public class WysiwygContentTransformerTest {
 
     // SilverpeasFile
     List<SilverpeasFileProcessor> processors = (List<SilverpeasFileProcessor>) FieldUtils
-        .readDeclaredField(SilverpeasFileProvider.getInstance(), "processors", true);
+        .readDeclaredStaticField(SilverpeasFileProvider.class, "processors", true);
     processors.clear();
-
-    // Replacing by reflection the mock instances by the previous extracted one.
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", oldAttachmentService, true);
   }
 
   @Test
@@ -161,8 +151,8 @@ public class WysiwygContentTransformerTest {
 
   @Test
   public void manageImageResizing() throws Exception {
-    WysiwygContentTransformer transformer = WysiwygContentTransformer
-        .on(getContentOfDocumentNamed("wysiwygWithSeveralImages.txt"));
+    WysiwygContentTransformer transformer =
+        WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralImages.txt"));
 
     String result = transformer.modifyImageUrlAccordingToHtmlSizeDirective().transform();
 

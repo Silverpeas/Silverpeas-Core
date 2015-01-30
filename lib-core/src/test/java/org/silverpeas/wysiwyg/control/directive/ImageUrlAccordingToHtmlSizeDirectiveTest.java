@@ -25,13 +25,14 @@ package org.silverpeas.wysiwyg.control.directive;
 
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.wysiwyg.control.WysiwygContentTransformerTest;
 
 import java.io.File;
@@ -47,6 +48,9 @@ import static org.hamcrest.Matchers.is;
 
 @BenchmarkOptions(benchmarkRounds = 500, warmupRounds = 500)
 public class ImageUrlAccordingToHtmlSizeDirectiveTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
   public BenchmarkRule benchmarkRule = new BenchmarkRule();
@@ -107,7 +111,7 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
     Source source = new Source(transformedWysiwygContent);
     //get all images
     List<Element> images = source.getAllElements(HTMLElementName.IMG);
-    Map<String, String> replacements = new HashMap<String, String>();
+    Map<String, String> replacements = new HashMap<>();
     for (Element image : images) {
       String src = image.getAttributeValue("src");
 

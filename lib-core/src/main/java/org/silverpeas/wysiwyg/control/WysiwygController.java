@@ -251,7 +251,7 @@ public class WysiwygController {
    * @return text : the contents of the file attached.
    */
   public static String loadForReadOnly(String componentId, String objectId, String language) {
-    String wysiwygContent = getInstance().getManager().load(componentId, objectId, language);
+    String wysiwygContent = load(componentId, objectId, language);
     return WysiwygContentTransformer.on(wysiwygContent).modifyImageUrlAccordingToHtmlSizeDirective()
         .transform();
   }

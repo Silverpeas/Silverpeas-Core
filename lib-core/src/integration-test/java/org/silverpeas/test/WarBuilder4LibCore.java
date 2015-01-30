@@ -574,4 +574,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
     return this;
   }
+
+  /**
+   * Add image tool features. ImageMagick must be installed on machine.
+   * @return the instance of the war with image tool feature.
+   */
+  public WarBuilder4LibCore addImageToolFeatures() {
+    addMavenDependencies("org.im4java:im4java", "org.apache.tika:tika-core",
+        "org.apache.tika:tika-parsers");
+    addPackages(true, "org.silverpeas.image");
+    return this;
+  }
 }

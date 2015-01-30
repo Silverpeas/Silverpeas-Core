@@ -28,9 +28,9 @@ import org.junit.Test;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.silverpeas.util.CollectionUtil.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.util.CollectionUtil.asList;
 import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexps;
 

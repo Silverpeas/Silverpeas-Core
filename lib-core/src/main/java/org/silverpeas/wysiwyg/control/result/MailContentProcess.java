@@ -23,7 +23,6 @@
  */
 package org.silverpeas.wysiwyg.control.result;
 
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileProvider;
@@ -42,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexps;
 import static org.silverpeas.util.StringDataExtractor.from;
 
@@ -67,11 +65,11 @@ public class MailContentProcess
   @Override
   public MailResult execute(final String wysiwygContent) throws Exception {
     String transformedWysiwygContent = wysiwygContent;
-    List<MimeBodyPart> bodyParts = new ArrayList<MimeBodyPart>();
+    List<MimeBodyPart> bodyParts = new ArrayList<>();
     int idCount = 0;
 
     // Handling CKEditor and Gallery links
-    List<Pattern> linkPatterns = new ArrayList<Pattern>(CKEDITOR_LINK_PATTERNS);
+    List<Pattern> linkPatterns = new ArrayList<>(CKEDITOR_LINK_PATTERNS);
     linkPatterns.addAll(GALLERY_CONTENT_LINK_PATTERNS);
     for (String link : from(transformedWysiwygContent).withDirectives(regexps(linkPatterns, 1))
         .extract()) {
@@ -97,7 +95,7 @@ public class MailContentProcess
     }
 
     // Handling attachments
-    Map<String, String> attachmentCidCache = new HashMap<String, String>();
+    Map<String, String> attachmentCidCache = new HashMap<>();
     for (String attachmentUrlLink : extractAllLinksOfReferencedAttachments(
         transformedWysiwygContent)) {
 

@@ -23,22 +23,22 @@
  */
 package org.silverpeas.wysiwyg.control.result;
 
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.file.SilverpeasFileProcessor;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.wysiwyg.control.WysiwygContentTransformerTest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +57,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MailContentProcessTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -86,8 +89,6 @@ public class MailContentProcessTest {
   private static final String IMAGE_ATTACHMENT_LINK_BIS =
       "http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis";
 
-  private AttachmentService oldAttachmentService;
-
   @SuppressWarnings("unchecked")
   @Before
   public void setup() throws Exception {
@@ -106,17 +107,14 @@ public class MailContentProcessTest {
 
     // SilverpeasFile
     List<SilverpeasFileProcessor> processors = (List<SilverpeasFileProcessor>) FieldUtils
-        .readDeclaredField(SilverpeasFileProvider.getInstance(), "processors", true);
+        .readDeclaredStaticField(SilverpeasFileProvider.class, "processors", true);
     processors.clear();
-    SilverpeasFileProvider.getInstance().addProcessor(new AttachmentUrlLinkProcessor());
+    SilverpeasFileProvider.addProcessor(new AttachmentUrlLinkProcessor());
 
-    // Injecting by reflection the mock instance
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    oldAttachmentService =
-        (AttachmentService) FieldUtils.readDeclaredField(attachmentServiceFactory, "service", true);
+    // The mock instance
     AttachmentService mockAttachmentService = mock(AttachmentService.class);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", mockAttachmentService, true);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
+        .thenReturn(mockAttachmentService);
 
     /*
     Mocking methods of attachment service instance
@@ -125,19 +123,16 @@ public class MailContentProcessTest {
     // searchDocumentById returns always a simple document which the PK is the one specified from
     // method parameters.
     when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
-        .then(new Answer<SimpleDocument>() {
-          @Override
-          public SimpleDocument answer(final InvocationOnMock invocation) throws Throwable {
-            SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
-            SimpleDocument simpleDocument = mock(SimpleDocument.class);
-            when(simpleDocument.getPk()).thenReturn(pk);
-            if (pk.getId().contains(ODT_ATTACHMENT_ID)) {
-              when(simpleDocument.getAttachmentPath()).thenReturn(originalOdt.getPath());
-            } else {
-              when(simpleDocument.getAttachmentPath()).thenReturn(originalImage.getPath());
-            }
-            return simpleDocument;
+        .then(invocation -> {
+          SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
+          SimpleDocument simpleDocument = mock(SimpleDocument.class);
+          when(simpleDocument.getPk()).thenReturn(pk);
+          if (pk.getId().contains(ODT_ATTACHMENT_ID)) {
+            when(simpleDocument.getAttachmentPath()).thenReturn(originalOdt.getPath());
+          } else {
+            when(simpleDocument.getAttachmentPath()).thenReturn(originalImage.getPath());
           }
+          return simpleDocument;
         });
 
     /*
@@ -158,13 +153,8 @@ public class MailContentProcessTest {
 
     // SilverpeasFile
     List<SilverpeasFileProcessor> processors = (List<SilverpeasFileProcessor>) FieldUtils
-        .readDeclaredField(SilverpeasFileProvider.getInstance(), "processors", true);
+        .readDeclaredStaticField(SilverpeasFileProvider.class, "processors", true);
     processors.clear();
-
-    // Replacing by reflection the mock instances by the previous extracted one.
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", oldAttachmentService, true);
   }
 
   @Test

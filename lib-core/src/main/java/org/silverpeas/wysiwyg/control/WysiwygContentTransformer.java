@@ -36,8 +36,7 @@ import java.util.List;
 public class WysiwygContentTransformer {
 
   private final String wysiwygContent;
-  private final List<WysiwygContentTransformerDirective> directives =
-      new ArrayList<WysiwygContentTransformerDirective>();
+  private final List<WysiwygContentTransformerDirective> directives = new ArrayList<>();
 
   /**
    * An instance of WYSIWYG transformer on the given content.

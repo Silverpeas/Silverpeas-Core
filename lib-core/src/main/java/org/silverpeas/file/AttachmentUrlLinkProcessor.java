@@ -23,23 +23,22 @@
  */
 package org.silverpeas.file;
 
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.i18n.I18NHelper;
 
-import javax.inject.Named;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.silverpeas.util.StringUtil.isDefined;
 import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.util.StringDataExtractor.RegexpPatternDirective.regexps;
 import static org.silverpeas.util.StringDataExtractor.from;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A processor to verify if the given path corresponds to an attachment URL link in order to
@@ -47,7 +46,6 @@ import static org.silverpeas.util.StringDataExtractor.from;
  * This processor must have a high priority.<br/>
  * @author Yohann Chastagnier
  */
-@Named("attachmentUrlLinkProcessor")
 public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor {
 
   private static List<Pattern> ATTACHMENT_ID_FROM_LINK_PATTERNS = Arrays
@@ -82,7 +80,7 @@ public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor 
 
       // Getting the attachment
       SimpleDocumentPK sdPK = new SimpleDocumentPK(attachmentId);
-      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(sdPK, contentLanguage);
       if (attachment == null) {
         return SilverpeasFile.NO_FILE.getPath();

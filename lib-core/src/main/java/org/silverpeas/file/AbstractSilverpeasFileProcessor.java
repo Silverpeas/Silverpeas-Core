@@ -23,20 +23,20 @@
  */
 package org.silverpeas.file;
 
-import javax.annotation.PostConstruct;
+import org.silverpeas.initialization.Initialization;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractSilverpeasFileProcessor implements SilverpeasFileProcessor {
+public abstract class AbstractSilverpeasFileProcessor
+    implements SilverpeasFileProcessor, Initialization {
 
   /**
    * Registers itself among the SilverpeasFileFactory instance.
    */
-  @PostConstruct
-  public final void registerItself() {
-    SilverpeasFileProvider fileFactory = SilverpeasFileProvider.getInstance();
-    fileFactory.addProcessor(this);
+  @Override
+  public final void init() {
+    SilverpeasFileProvider.addProcessor(this);
   }
 
   @Override

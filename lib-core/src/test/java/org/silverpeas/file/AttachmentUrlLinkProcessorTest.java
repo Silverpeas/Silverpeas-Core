@@ -23,20 +23,18 @@
  */
 package org.silverpeas.file;
 
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.silverpeas.test.TestBeanContainer;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.FileUtil;
 
 import java.io.File;
 
@@ -52,30 +50,32 @@ import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext.WRIT
 
 public class AttachmentUrlLinkProcessorTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   private static final String IMAGE_NAME = "image-test.jpg";
 
-  private ConfigurableApplicationContext ctx;
   private File originalImage;
   private File originalImageWithResizeDirective;
   private AttachmentUrlLinkProcessor processor;
 
-  private AttachmentService oldAttachmentService;
-  private AttachmentService mockAttachmentService;
+  private String originalImageNotAnAttachmentUrlLink;
+  private String originalImageAttachmentUrlLink;
+  private String originalImageAttachmentUrlLinkWithoutLang;
+  private String originalImageAttachmentUrlLinkWithResizeDirective;
 
-  private String originalImageNotAnAttachmentUrlLink =
-      "dummy_begin" + URLManager.getApplicationURL() +
-          "uriPart/notAnAttachmentId/09-ab-89/lang/en/whaou";
-
-  private String originalImageAttachmentUrlLink = "dummy_begin" + URLManager.getApplicationURL() +
-      "uriPart/attachmentId/09-ab-89/lang/en/whaou";
-
-  private String originalImageAttachmentUrlLinkWithoutLang =
-      "dummy_begin" + URLManager.getApplicationURL() +
-          "uriPart/attachmentId/09-ab-89/whaou";
-
-  private String originalImageAttachmentUrlLinkWithResizeDirective =
-      "dummy_begin" + URLManager.getApplicationURL() +
-          "uriPart/attachmentId/09-ab-89/lang/en/size/250x150/whaou";
+  @Before
+  public void variableInit() throws Exception {
+    originalImageNotAnAttachmentUrlLink = "dummy_begin" + URLManager.getApplicationURL() +
+        "uriPart/notAnAttachmentId/09-ab-89/lang/en/whaou";
+    originalImageAttachmentUrlLink = "dummy_begin" + URLManager.getApplicationURL() +
+        "uriPart/attachmentId/09-ab-89/lang/en/whaou";
+    originalImageAttachmentUrlLinkWithoutLang = "dummy_begin" + URLManager.getApplicationURL() +
+        "uriPart/attachmentId/09-ab-89/whaou";
+    originalImageAttachmentUrlLinkWithResizeDirective =
+        "dummy_begin" + URLManager.getApplicationURL() +
+            "uriPart/attachmentId/09-ab-89/lang/en/size/250x150/whaou";
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -86,14 +86,11 @@ public class AttachmentUrlLinkProcessorTest {
         new File(originalImage.getParentFile(), "250x150/" + IMAGE_NAME);
 
     // bootstrap the Spring context
-    ctx = new ClassPathXmlApplicationContext("classpath:/spring-image.xml");
-    ctx.start();
-    processor = ctx.getBean(AttachmentUrlLinkProcessor.class);
+    processor = new AttachmentUrlLinkProcessor();
   }
 
   @After
   public void tearDown() throws Exception {
-    ctx.close();
     File cache = new File(IMAGE_CACHE_PATH);
     if (cache.exists()) {
       FileUtil.forceDeletion(new File(IMAGE_CACHE_PATH));
@@ -102,13 +99,11 @@ public class AttachmentUrlLinkProcessorTest {
 
   @Before
   public void setupAttachmentService() throws Exception {
-    // Injecting by reflection the mock instance
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    oldAttachmentService =
-        (AttachmentService) FieldUtils.readDeclaredField(attachmentServiceFactory, "service", true);
-    mockAttachmentService = mock(AttachmentService.class);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", mockAttachmentService, true);
+
+    // The mock instance
+    AttachmentService mockAttachmentService = mock(AttachmentService.class);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
+        .thenReturn(mockAttachmentService);
 
     /*
     Mocking methods of attachment service instance
@@ -117,24 +112,13 @@ public class AttachmentUrlLinkProcessorTest {
     // searchDocumentById returns always a simple document which the PK is the one specified from
     // method parameters.
     when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
-        .then(new Answer<SimpleDocument>() {
-          @Override
-          public SimpleDocument answer(final InvocationOnMock invocation) throws Throwable {
-            SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
-            SimpleDocument simpleDocument = mock(SimpleDocument.class);
-            when(simpleDocument.getPk()).thenReturn(pk);
-            when(simpleDocument.getAttachmentPath()).thenReturn(originalImage.getPath());
-            return simpleDocument;
-          }
+        .then(invocation -> {
+          SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
+          SimpleDocument simpleDocument = mock(SimpleDocument.class);
+          when(simpleDocument.getPk()).thenReturn(pk);
+          when(simpleDocument.getAttachmentPath()).thenReturn(originalImage.getPath());
+          return simpleDocument;
         });
-  }
-
-  @After
-  public void destroyAttachmentService() throws Exception {
-    // Replacing by reflection the mock instances by the previous extracted one.
-    AttachmentServiceFactory attachmentServiceFactory = (AttachmentServiceFactory) FieldUtils
-        .readDeclaredStaticField(AttachmentServiceFactory.class, "factory", true);
-    FieldUtils.writeDeclaredField(attachmentServiceFactory, "service", oldAttachmentService, true);
   }
 
   @Test
@@ -163,7 +147,7 @@ public class AttachmentUrlLinkProcessorTest {
 
   @Test
   public void anAttachmentUrlLinkOnAttachmentThatDoesNotExist() throws Exception {
-    reset(mockAttachmentService);
+    reset(AttachmentServiceProvider.getAttachmentService());
     String actualPath = processor.processBefore(originalImageAttachmentUrlLink, GETTING);
     assertThat(actualPath, isEmptyString());
   }

@@ -2,7 +2,6 @@ package org.silverpeas.file;
 
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.option.DimensionOption;
-import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
@@ -19,22 +18,12 @@ import java.util.logging.Logger;
  *
  * @author mmoquillon
  */
-@Named("imageResizingProcessor")
 public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
 
   protected static final String IMAGE_CACHE_PATH = FileRepositoryManager.getAbsolutePath("cache");
 
   @Inject
   private ImageTool imageTool;
-
-  /**
-   * Register itself at silverpeas startup
-   * @throws Exception
-   */
-  @Override
-  public void init() throws Exception {
-    SilverpeasFileProvider.addProcessor(this);
-  }
 
   @Override
   public String processBefore(final String path, ProcessingContext context) {
@@ -74,7 +63,7 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
               new File(IMAGE_CACHE_PATH + parent + File.separator + imageSource.getName());
           parameters = new ResizingParameters(imageSource, imageDestination, width, height);
         }
-      } catch (NumberFormatException ex) {
+      } catch (NumberFormatException ignore) {
       }
     }
     return parameters;
