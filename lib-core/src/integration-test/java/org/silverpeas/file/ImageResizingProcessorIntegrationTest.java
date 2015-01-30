@@ -57,7 +57,6 @@ public class ImageResizingProcessorIntegrationTest {
           warBuilder.addClasses(AbstractSilverpeasFileProcessor.class, ImageResizingProcessor.class,
               SilverpeasFileProcessor.class, SilverpeasFile.class, SilverpeasFileProvider.class,
               ImageCache.class);
-          warBuilder.addAsResource(File.separator + IMAGE_NAME);
         }).build();
   }
 
@@ -65,8 +64,7 @@ public class ImageResizingProcessorIntegrationTest {
   @Before
   public void setUp() throws Exception {
     // get the original path
-    originalImage = new File(mavenTargetDirectoryRule.getResourceTestDirFile(),
-        File.separator + IMAGE_NAME);
+    originalImage = new File(mavenTargetDirectoryRule.getResourceTestDirFile(), IMAGE_NAME);
     assertThat(originalImage.exists(), is(true));
     processor = ServiceProvider.getService(ImageResizingProcessor.class);
   }
