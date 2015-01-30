@@ -24,16 +24,15 @@
 
 package org.silverpeas.search.indexEngine.parser.htmlParser;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import net.htmlparser.jericho.Source;
+import org.silverpeas.search.indexEngine.parser.Parser;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-
-import au.id.jericho.lib.html.Source;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.search.indexEngine.parser.Parser;
 
 public class HTMLParser2 implements Parser {
   public HTMLParser2() {

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import au.id.jericho.lib.html.Source;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -33,18 +32,11 @@ import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.UtilException;
-import org.silverpeas.util.fileFolder.FileFolderManager;
+import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -53,6 +45,14 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.File;

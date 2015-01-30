@@ -23,7 +23,6 @@
  */
 package com.silverpeas.form;
 
-import au.id.jericho.lib.html.FormField;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
@@ -34,20 +33,19 @@ import java.util.List;
 /**
 * A FieldDisplayer is an object which can display in HTML the content of a field to a end user and
 * can retrieve via HTTP any updated value. A FieldDisplayer can only manage fields of a specific
-* type. The links between Fields and FieldDisplayers are managed by a FormField. FieldDisplayers
+* type. The links between Fields and FieldDisplayers are managed by a Field. FieldDisplayers
 * are grouped in Form in order to display each fields of a DataRecord.
 *
 * @param <T> the type of field.
 * @see Field
-* @see FormField
 * @see Form
 */
 public interface FieldDisplayer<T extends Field> {
 
   /**
 * Prints the javascripts which will be used to control the new value given to the named field.
-* The error messages may be adapted to a local language. The FormField gives the field type and
-* constraints. The FormField gives the local labeld too. Never throws an Exception but log a
+* The error messages may be adapted to a local language. The Field gives the field type and
+* constraints. The Field gives the local labeld too. Never throws an Exception but log a
 * silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
 * template. <LI>the field type is not a managed type. </UL>
 * @throws IOException
