@@ -208,6 +208,7 @@ Definition des class de style Silverpeas
 
 .principalContent{
   margin-right:320px;
+  margin-top:10px;
 }
 .rightContent{
   width:310px;
@@ -1906,7 +1907,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 #portletPages dl.sort dt span.options a.remove {
   margin-right: 3px;
-  background-image: url(../icons/delete.gif);
+  background-image: url(../../util/icons/delete.gif);
   background-repeat: no-repeat;
 }
 
@@ -2428,7 +2429,7 @@ ul#globalResultListDetails {
 }
 
 #searchGroupTitle span.author {
-  background:url("../icons/user.gif") no-repeat scroll left top transparent;
+  background:url("../../util/icons/user.gif") no-repeat scroll left top transparent;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2447,7 +2448,7 @@ ul#globalResultListDetails {
 }
 
 #searchGroupTitle span.component {
-  background:url("../icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
+  background:url("../../util/icons/component/vsicPuzzleSmall.gif") no-repeat scroll left top transparent;
   display:block;
   font-weight:bold;
   height:16px;
@@ -2492,11 +2493,11 @@ ul#globalResultListDetails {
 }
 
 #searchGroupValues a.toggle.less {
-  background: transparent url(../icons/arrow/arrowTop.gif) right 1px no-repeat;
+  background: transparent url(../../util/icons/arrow/arrowTop.gif) right 1px no-repeat;
 }
 
 #searchGroupValues a.toggle.more {
-  background: transparent url(../icons/arrow/arrowBottom.gif) right 1px no-repeat;
+  background: transparent url(../../util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
 div.silverpeas-toggle {
@@ -2533,7 +2534,7 @@ div.silverpeas-toggle {
 }
 
 .attachments h4 {
-  background:transparent url(../icons/attachedFiles.gif)  top right no-repeat;
+  background:transparent url(../../util/icons/attachedFiles.gif)  top right no-repeat;
   height:16px;
 }
 
@@ -3683,6 +3684,15 @@ html > body #newsFeedProfil	.a_new {
   height:auto;
 }
 
+.newsFeed .linkMore {
+  background-image: none;
+}
+
+.newsFeed .linkMore span {
+  background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
+  padding-right: 30px;
+}
+
 .newsFeed .inprogress {
   background-color: #EAEAEA;
   border-bottom: 1px solid #CCC;
@@ -4056,7 +4066,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
 /* slt pour ie8 bug sous ie7*/
 html>/**/body .commentaires #edition-box ,
 html>/**/body .commentaires .oneComment{
-  behavior: url("PIE.htc");
+  behavior: url("../../util/styleSheets/PIE.htc");
 }
 
 .commentaires div.avatar {
@@ -4097,6 +4107,24 @@ html>/**/body .commentaires .oneComment{
   line-height:10px;
   padding:0 0 20px 50px;
   background:transparent url(../icons/commentStartBubble.gif) 50px bottom no-repeat;
+}
+
+.commentaires .oneComment.inlineMessage-ok .author{
+  background:transparent url(../icons/commentStartBubble-ok.png) 50px bottom no-repeat;
+}
+
+.commentaires .oneComment.inlineMessage-nok .author{
+  background:transparent url(../icons/commentStartBubble-nok.png) 50px bottom no-repeat;
+}
+
+.commentaires .oneComment.inlineMessage-ok {
+  background-color:#b5df7d;
+  border:1px solid #9bd94a;
+}
+
+.commentaires .oneComment.inlineMessage-nok {
+  background-color:#f79992;
+  border:1px solid #ce6f6f;
 }
 
 .commentaires .oneComment p.author {
@@ -4311,7 +4339,7 @@ button {
 }
 
 .add_position {
-  background:url(../icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
+  background:url(../../util/icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
   padding:1px 8px 0 22px;
   margin:0;
   cursor:pointer;
@@ -4354,7 +4382,7 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .classification legend {
-  background:transparent url('../icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
+  background:transparent url('../../util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }
 
 .classification .another-value img,
@@ -4372,11 +4400,11 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification-mo legend {
-  background:transparent url('../icons/ok.gif') 11px 0px no-repeat;
+  background:transparent url('../../util/icons/ok.gif') 11px 0px no-repeat;
 }
 
 #classification-modification  legend {
-  background:transparent url('../icons/update.gif') 11px 0px no-repeat;
+  background:transparent url('../../util/icons/update.gif') 11px 0px no-repeat;
 }
 
 .classification .pdc-edition-box .field,
@@ -4430,7 +4458,7 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 .classification.preview .header h4 {
-  background:transparent url("../icons/component/pdcPeasSmall.gif") right top no-repeat;
+  background:transparent url("../../util/icons/component/pdcPeasSmall.gif") right top no-repeat;
   height: 16px;
 }
 
@@ -4457,7 +4485,7 @@ html:not([lang*=""]) .add_position:hover {
 
 #classification-modification span.header {
   display:block;
-  background:transparent url("../icons/mini_publi.gif") 4px 5px no-repeat ;
+  background:transparent url("../../util/icons/mini_publi.gif") 4px 5px no-repeat ;
   background-color:#F0F0F0;
   border:1px solid #CDCDCD;
   border-left:0;
@@ -4468,12 +4496,12 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #okForAll, #modifyForAll, #modifyForEach {
-  background:transparent url("../icons/update.gif") right 0 no-repeat ;
+  background:transparent url("../../util/icons/update.gif") right 0 no-repeat ;
   padding:2px 20px 2px 0;
 }
 
 #okForAll {
-  background-image:url("../icons/ok.gif") ;
+  background-image:url("../../util/icons/ok.gif") ;
 }
 
 .vertical_align {
@@ -5064,7 +5092,7 @@ input.search:focus {
 #sharing-overview a.Node,
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned  {
-  background: transparent url(../icons/folder.gif) top left no-repeat;
+  background: transparent url(../../util/icons/folder.gif) top left no-repeat;
   padding: 2px 0px 0px 20px;
   display: block;
   line-height: 16px;
@@ -5072,7 +5100,7 @@ input.search:focus {
 
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
-  background-image:url(../icons/fileType/unknown.gif);
+  background-image:url(../../util/icons/fileType/unknown.gif);
 }
 
 /* subscription-management */
@@ -6076,52 +6104,6 @@ blockquote {
 	text-align:center;
 }
 
-/*responsive design */
-@media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
-  .rightContent {
-    width: 230px;
-  }
-  .attachments {
-    min-width: 230px;
-	}
-  .header h4 {
-    min-width: 210px;
-   }
-  .rightContent .attachments {
-    min-width:auto;
-  }
-  .principalContent {
-    margin-right: 245px;
-  }
-   #directory .aff_colonnes li {
-	float:none;
-	width:auto;
-  }
-}
-
-@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
-  .rightContent {
-    clear: inherit;
-    float: none;
-    margin-top: 10px;
-    width: auto;
-  }
-  .rightContent .attachments {
-    min-width:auto;
-  }
-  .principalContent {
-    margin-right: 0;
-    margin-top: 10px;
-  }
-  .header h4 {
-    min-width: auto;
-  }
-   #directory .aff_colonnes li {
-	float:none;
-	width:auto;
-  }
-}
-
 /* Default forms look n feel */
 .forms .form-border {
 	border:1px solid #CCC;
@@ -6398,7 +6380,7 @@ div.user-card .field{
 
 /****** Ticker ******/
 #topBar #desktop-notifications-permission {
-	background: url('../icons/cog.png') no-repeat scroll 0 0 transparent;
+	background: url('../../util/icons/cog.png') no-repeat scroll 0 0 transparent;
     line-height: 17px;
     padding-left: 20px;
 	position: absolute;
@@ -6465,7 +6447,7 @@ div.user-card .field{
 
 /*********************** advanced search help *********************/
 input[title] {
-  background-image:url(../icons/input-info.png);
+  background-image:url(../../util/icons/input-info.png);
   background-position:top right;
   background-repeat:no-repeat;
 }
@@ -6609,4 +6591,127 @@ a.navigation-button {
 }
 #goToApplication a.navigation-button span {
     background: url("../icons/go-to.png") no-repeat scroll 0 1px transparent;
+}
+
+/** Generic list of users and groups **/
+.access-list {
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+
+.access-list li {
+  float:left;
+  border:1px solid #ccc;
+  height:30px;
+  margin-right:1em;
+  padding:0.25em 3em 0.25em 0.25em;
+  margin-bottom:1em;
+  position:relative;
+  line-height:30px;
+  background-color:#F6F6F6;
+}
+
+.access-list li img{
+  vertical-align:middle;
+  margin-right:0.25em;
+}
+
+.access-list li img.user-avatar{
+  border:1px solid #ccc;
+  width: 20px;
+  height:auto;
+}
+.access-list li .operation {
+  position:absolute;
+  right:0.25em;
+  top:10px;
+}
+
+.access-list li:first-child{
+  clear:left;
+}
+
+.fields .explorePanel, .fields .emptyList {
+    background-color: #f4f4f4;
+    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #4c4c4c;
+    font-size: 100%;
+    padding: 5px 10px;
+    width: auto;
+	display:inline-block;
+	margin-top:5px;
+	position:absolute;
+	right:0;
+	top:-38px;
+}
+
+.fields .emptyList { 
+	right:100px;
+}
+
+.fields .explorePanel  span, .fields .emptyList span{
+	background:transparent url("/silverpeas/util/icons/create-action/add-existing-user.png") 0 0 no-repeat;
+	display: inline-block;
+    line-height: 23px;
+    padding-left: 23px;
+}
+
+.fields  .emptyList span{
+	background:transparent url("/silverpeas/util/icons/trashcan.gif") 0 3px no-repeat;
+}
+
+/*responsive design */
+@media only screen and (max-width: 800px), only screen and (max-device-width: 800px){
+  .rightContent {
+    width: 230px;
+  }
+  .attachments {
+    min-width: 230px;
+	}
+  .header h4 {
+    min-width: 210px;
+   }
+  .rightContent .attachments {
+    min-width:auto;
+  }
+  .principalContent {
+    margin-right: 245px;
+  }
+   #directory .aff_colonnes li {
+	float:none;
+	width:auto;
+  }
+  .fields .explorePanel  span, .fields .emptyList span{
+		text-indent:-3000px;
+	}
+	.fields .emptyList {
+		right:50px
+	}
+}
+
+@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+  .rightContent {
+    clear: inherit;
+    float: none;
+    margin-top: 10px;
+    width: auto;
+  }
+  .rightContent .attachments {
+    min-width:auto;
+  }
+  .principalContent {
+    margin-right: 0;
+    margin-top: 10px;
+  }
+  .header h4 {
+    min-width: auto;
+  }
+   #directory .aff_colonnes li {
+	float:none;
+	width:auto;
+  }  
+	
 }

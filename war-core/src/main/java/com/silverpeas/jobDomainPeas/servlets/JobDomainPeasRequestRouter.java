@@ -369,32 +369,26 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 
-          request.setAttribute("Users", groupManagers.get(0).iterator());
-          request.setAttribute("Groups", groupManagers.get(1).iterator());
+          request.setAttribute("Users", groupManagers.get(0));
+          request.setAttribute("Groups", groupManagers.get(1));
 
           destination = "groupManagers.jsp";
         } else if (function.equals("groupManagersChoose")) {
-          try {
-            jobDomainSC.initUserPanelForGroupManagers(
-                (String) request.getAttribute("myComponentURL"));
-          } catch (Exception e) {
-            SilverTrace.warn("jobStartPagePeas",
-                "JobStartPagePeasRequestRouter.getDestination()",
-                "root.EX_USERPANEL_FAILED", "function = " + function, e);
-          }
+          List<String> userIds = (List<String>) StringUtil
+              .splitString(request.getParameter("UserPanelCurrentUserIds"), ',');
+          List<String> groupIds = (List<String>) StringUtil
+              .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
+          jobDomainSC.initUserPanelForGroupManagers((String) request.getAttribute("myComponentURL"),
+              userIds, groupIds);
           destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
-        } else if (function.equals("groupManagersDelete")) {
-          jobDomainSC.deleteGroupProfile();
-          destination = getDestination("groupManagersView", jobDomainSC,
-              request);
         } else if (function.equals("groupManagersUpdate")) {
-          jobDomainSC.updateGroupProfile();
+          List<String> userIds = (List<String>) StringUtil
+              .splitString(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
+          List<String> groupIds = (List<String>) StringUtil
+              .splitString(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
+          jobDomainSC.updateGroupProfile(userIds, groupIds);
 
-          request.setAttribute("urlToReload", "groupManagersView");
-          destination = "closeWindow.jsp";
-        } else if (function.equals("groupManagersCancel")) {
-          request.setAttribute("urlToReload", "groupManagersView");
-          destination = "closeWindow.jsp";
+          destination = getDestination("groupManagersView", jobDomainSC, request);
         } else if (function.equals("groupOpen")) {
           String groupId = request.getParameter("groupId");
 

@@ -1196,8 +1196,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   // user panel de selection de n groupes et n users
-  public void initUserPanelForGroupManagers(String compoURL) throws SelectionException,
-      JobDomainPeasException {
+  public void initUserPanelForGroupManagers(String compoURL, List<String> userIds,
+      List<String> groupIds) throws SelectionException, JobDomainPeasException {
     sel.resetAll();
     sel.setHostSpaceName(getMultilang().getString("JDP.jobDomain"));
     sel.setHostComponentName(new PairObject(getTargetGroup().getName(), null));
@@ -1205,43 +1205,22 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     PairObject[] hostPath = {new PairObject(getMultilang().getString("JDP.roleManager")
       + " > " + generalMessage.getString("GML.selection"), null)};
     sel.setHostPath(hostPath);
-    sel.setGoBackURL(compoURL + "groupManagersUpdate");
-    sel.setCancelURL(compoURL + "groupManagersCancel");
+    //sel.setGoBackURL(compoURL + "groupManagersUpdate");
+    //sel.setCancelURL(compoURL + "groupManagersCancel");
     setDomainIdOnSelection(sel);
-    GroupProfileInst profile = m_AdminCtrl.getGroupProfile(getTargetGroup().getId());
-    List<String> allUsers = profile.getAllUsers();
-    List<String> allGroups = profile.getAllGroups();
-    sel.setSelectedElements(allUsers.toArray(new String[allUsers.size()]));
-    sel.setSelectedSets(allGroups.toArray(new String[allGroups.size()]));
+    sel.setPopupMode(true);
+    sel.setHtmlFormElementId("roleItems");
+    sel.setHtmlFormName("dummy");
+    sel.setSelectedElements(userIds);
+    sel.setSelectedSets(groupIds);
   }
 
-  public void updateGroupProfile() throws JobDomainPeasException {
+  public void updateGroupProfile(List<String> userIds, List<String> groupIds)
+      throws JobDomainPeasException {
     GroupProfileInst profile = m_AdminCtrl.getGroupProfile(getTargetGroup().getId());
-    profile.removeAllGroups();
-    profile.removeAllUsers();
-    setGroupsAndUsers(profile, sel.getSelectedSets(), sel.getSelectedElements());
+    profile.setUsers(userIds);
+    profile.setGroups(groupIds);
     m_AdminCtrl.updateGroupProfile(profile);
-  }
-
-  public void deleteGroupProfile() throws JobDomainPeasException {
-    m_AdminCtrl.deleteGroupProfile(getTargetGroup().getId());
-  }
-
-  private void setGroupsAndUsers(GroupProfileInst profile, String[] groupIds,
-      String[] userIds) {
-    // groups
-    for (int i = 0; groupIds != null && i < groupIds.length; i++) {
-      if (groupIds[i] != null && groupIds[i].length() > 0) {
-        profile.addGroup(groupIds[i]);
-      }
-    }
-
-    // users
-    for (int i = 0; userIds != null && i < userIds.length; i++) {
-      if (userIds[i] != null && userIds[i].length() > 0) {
-        profile.addUser(userIds[i]);
-      }
-    }
   }
 
   public boolean isGroupRoot(String groupId) throws JobDomainPeasException {

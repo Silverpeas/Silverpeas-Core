@@ -51,6 +51,7 @@ public class ArrayPaneTag extends TagSupport {
   private String exportDataURL = null;
   
   private boolean sortableLines = false;
+  private int     numberLinesPerPage = 10;
 
   public String getRoutingAddress() {
     return routingAddress;
@@ -81,6 +82,7 @@ public class ArrayPaneTag extends TagSupport {
       arrayPane.setExportDataURL(exportDataURL);
     }
     arrayPane.setSortableLines(sortableLines);
+    arrayPane.setVisibleLineNumber(numberLinesPerPage);
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
   }
@@ -128,5 +130,9 @@ public class ArrayPaneTag extends TagSupport {
   
   public void setSortableLines(boolean sortable) {
     this.sortableLines = sortable;
+  }
+
+  public void setNumberLinesPerPage(final int numberLinesPerPage) {
+    this.numberLinesPerPage = numberLinesPerPage;
   }
 }
