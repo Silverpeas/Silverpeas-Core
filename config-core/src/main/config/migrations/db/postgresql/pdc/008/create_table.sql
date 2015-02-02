@@ -66,6 +66,11 @@ CREATE TABLE IF NOT EXISTS PdcClassification (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS PdcPosition (
+  id INT8 NOT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS PdcClassification_PdcPosition (
   PdcClassification_id INT8 NOT NULL,
   positions_id         INT8 NOT NULL,
@@ -73,11 +78,6 @@ CREATE TABLE IF NOT EXISTS PdcClassification_PdcPosition (
   UNIQUE (positions_id),
   CONSTRAINT FK_PdcClassification_PdcPosition_PositionId FOREIGN KEY (positions_id) REFERENCES PdcPosition,
   CONSTRAINT FK_PdcClassification_PdcPosition_PositionId_PdcClassificationId FOREIGN KEY (PdcClassification_id) REFERENCES PdcClassification
-);
-
-CREATE TABLE IF NOT EXISTS PdcPosition (
-  id INT8 NOT NULL,
-  PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS PdcPosition_PdcAxisValue (
