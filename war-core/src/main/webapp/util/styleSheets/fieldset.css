@@ -36,7 +36,7 @@ form {
 
 fieldset.skinFieldset {
 	position:relative;
-	margin:0 10px  1%;
+	margin:0 0  1%;
 	padding-bottom:15px;
 	background-color :#CCC;
 	border:1px solid #CCC;
@@ -73,6 +73,7 @@ fieldset.skinFieldset {
 .cell {
 	display:table-cell;
 	height:100%;
+	width:50%;
 	}
 
 
@@ -288,3 +289,10 @@ fieldset.parameters {
 	margin:0 0 0.5em;
 }
 
+
+@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+	.cell  {
+		width:100%;
+		display:block;
+	}
+}

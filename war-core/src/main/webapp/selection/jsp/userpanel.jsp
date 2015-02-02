@@ -655,6 +655,12 @@
               if(selectionTypeField != null && selectionTypeField.length > 0) {
               	window.opener.$('#' + selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
               }
+
+              window.opener.$('#' + selectionIdField + "-userIds").val(selectedUserIds);
+              window.opener.$('#' + selectionIdField + "-groupIds").val(selectedGroupIds);
+              window.opener.$('#' + selectionIdField + "-userIds").trigger("change");
+              window.opener.$('#' + selectionIdField + "-groupIds").trigger("change");
+
               window.close();
         </c:when>
         <c:otherwise>

@@ -26,9 +26,17 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
 
 <%@ include file="check.jsp" %>
 <%
@@ -43,7 +51,6 @@
 	ProfileInst m_Profile 			= (ProfileInst) request.getAttribute("Profile");
 	List 		m_listGroup 		= (List) request.getAttribute("listGroup"); //List of GroupDetail
 	List 		m_listUser 			= (List) request.getAttribute("listUser"); //List of UserDetail
-	Boolean 	m_ProfileEditable 	= (Boolean) request.getAttribute("ProfileEditable");
 	boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 	String		help				= (String) request.getAttribute("ProfileHelp");
 	int			scope				= ((Integer) request.getAttribute("Scope")).intValue();
@@ -56,7 +63,6 @@
 	
 	browseBar.setComponentId(componentInst.getId());
  	
- 	String idProfile = m_Profile.getId();
  	String profile = m_Profile.getLabel();
 	String labelProfile = resource.getString(profile.replace(' ', '_'));
 	if (labelProfile == null || labelProfile.equals("")) 
@@ -85,194 +91,47 @@
 		else 
 			tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+name+"&LabelProfile="+theProfile.getLabel(),false);
 	}
+
+  String labelInheritedRights = resource.getString("JSPP.inheritedRights");
+  String labelLocalRights = resource.getString("JSPP.localRights");
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<script language="javascript">
-function goToOperationInAnotherWindow(action, larg, haut) {
-	url = action;
-	windowName = "userPanelWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	userPanelWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-}    
-
-function goToOperationInUserPanel(action) {
-	url = action;
-	windowName = "userPanelWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	userPanelWindow = SP_openUserPanel(url, windowName, windowParams);
-}
-
-function deleteUsersGroupsProfileInstance() {
-  if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceManager")%>")) {
-    jQuery('#genericForm').attr('action', "DeleteUsersGroupsProfileInstance").submit();
-  }
-}
-</script>                
-</HEAD>
-<BODY id="admin-role">
+<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
+</head>
+<body id="admin-role">
 <%
-	// Profile edition
-	if (idProfile == null || idProfile.equals("")) {//creation
-		operationPane.addOperation(resource.getIcon("JSPP.userManage"),resource.getString("JSPP.SpaceProfilePanelCreateTitle"),"javaScript:onClick=goToOperationInUserPanel('SelectUsersGroupsProfileInstance')");
-	}
-	else {//update
-		operationPane.addOperation(resource.getIcon("JSPP.userManage"),resource.getString("JSPP.SpaceProfilePanelModifyTitle"),"javaScript:onClick=goToOperationInUserPanel('SelectUsersGroupsProfileInstance')");
-		if (m_ProfileEditable.equals(Boolean.TRUE))
-			operationPane.addOperation(resource.getIcon("JSPP.spaceManagerDescription"),resource.getString("JSPP.ProfilePanelModifyTitle"),"javaScript:onClick=goToOperationInAnotherWindow('ProfileInstanceDescription', 750, 250)"); 
-			
-		if (m_listGroup.size() > 0 || m_listUser.size() > 0) 
-			operationPane.addOperation(resource.getIcon("JSPP.usersGroupsDelete"),resource.getString("JSPP.SpaceProfilePanelDeleteTitle"),"javaScript:onClick=deleteUsersGroupsProfileInstance()");
-	}
-	
 out.println(window.printBefore());
 out.println(tabbedPane.print());
-out.println(frame.printBefore());
 %>
+<view:frame>
 <% if (StringUtil.isDefined(help)) { %>
 	<span class="inlineMessage">
 	<%= help %>
 	</span>
 	<br clear="all"/>
 <% } %>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<br><br>
-<!--	<TABLE CELLPADDING="5" width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<tr>
-			<td class="textePetitBold" nowrap>
-				<%=resource.getString("GML.name") %> :
-			</td>
-			<td align=left valign="baseline" width="100%">
-			<%
-			out.println(m_Profile.getLabel());
-			%>
-			</td>
-		</tr>
-		<tr>
-			<td class="textePetitBold" nowrap valign="top">
-				<%=resource.getString("GML.description") %> :
-			</td>
-			<td align=left valign="top" width="100%">
-			<%
-			out.println(m_Profile.getDescription());
-			%>
-			</td>
-		</tr>
-	</TABLE>
-	<br><br>
--->	
-	<% if (inheritedProfile != null && (inheritedGroups.size() > 0 || inheritedUsers.size()>0)) { %>
-	<TABLE width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<TR>
-			<TD colspan="2" class="txttitrecol"><%=resource.getString("JSPP.inheritedRights")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-		<TR>
-			<TD align="center" class="txttitrecol"><%=resource.getString("GML.type")%></TD>
-			<TD align="center" class="txttitrecol"><%=resource.getString("GML.name")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-		
-		<%
-		// La boucle sur les groupes 
-		Iterator groups = inheritedGroups.iterator();
-		Group group = null;
-		while (groups.hasNext())
-		{
-			group = (Group) groups.next();
-			out.println("<TR>");
-			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.scheduledGroup")+"\" class=\"group-icon\"/></TD>");
-			else
-				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.group")+"\" class=\"group-icon\"/></TD>");
-			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
-			out.println("</TR>");
-		}
-		
-		// La boucle sur les users
-		Iterator users = inheritedUsers.iterator();
-		UserDetail user = null;
-		while (users.hasNext()) {
-			user = (UserDetail) users.next();
-		%>
-			<tr>
-			<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
-			<td align="center"><view:username userId="<%=user.getId()%>"/></td>
-			</tr>
-		<% } %>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-	</TABLE>
-	<br/><br/>
-	<% } %>
 
-	<TABLE width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<% if (isInHeritanceEnable) { %>
-		<TR>
-			<TD colspan="2" class="txttitrecol"><%=resource.getString("JSPP.localRights")%></TD>
-		</TR>
-		<% } %>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-		<TR>
-			<TD align="center" class="txttitrecol"><%=resource.getString("GML.type")%></TD>
-			<TD align="center" class="txttitrecol"><%=resource.getString("GML.name")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-		
-		<%
-		// La boucle sur les groupes 
-		Iterator groups = m_listGroup.iterator();
-		Group group = null;
-		while (groups.hasNext())
-		{
-			group = (Group) groups.next();
-			out.println("<TR>");
-			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.scheduledGroup")+"\" class=\"group-icon\"/></TD>");
-			else
-				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.group")+"\" class=\"group-icon\"/></TD>");
-			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
-			out.println("</TR>");
-		}
-		
-		// La boucle sur les users
-		Iterator users = m_listUser.iterator();
-		UserDetail user = null;
-		while (users.hasNext()) {
-			user = (UserDetail) users.next();
-		%>
-			<tr>
-			<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
-			<td align="center"><view:username userId="<%=user.getId()%>"/></td>
-			</tr>
-		<% } %>			
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-	</TABLE>
-<br><br>
+	<% if (inheritedProfile != null && (!inheritedGroups.isEmpty() || !inheritedUsers.isEmpty())) { %>
+  <viewTags:displayListOfUsersAndGroups users="<%=inheritedUsers%>" groups="<%=inheritedGroups%>" label="<%=labelInheritedRights%>" displayAvatar="false"/>
+	<br/>
+	<% } %>
+<form name="roleList" action="EffectiveSetInstanceProfile">
+	<viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>" label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>" id="roleItems" updateCallback="SelectUsersGroupsProfileInstance" displayAvatar="false"/>
+</form>
+<view:buttonPane>
+  <fmt:message var="buttonCancel" key="GML.cancel"/>
+  <fmt:message var="buttonOK" key="GML.validate"/>
+  <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
+  <view:button label="${buttonCancel}" action="GoToCurrentComponent"/>
+</view:buttonPane>
+</view:frame>
 <%
-out.println(board.printAfter());
-%>
-</center>
-<%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<form id="genericForm" action="" method="POST"></form>
-</BODY>
-</HTML>
+</body>
+</html>

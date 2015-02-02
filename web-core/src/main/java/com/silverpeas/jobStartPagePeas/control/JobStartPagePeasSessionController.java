@@ -785,30 +785,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return name;
   }
 
-  // arrayList de String
-  private List<String> getAllCurrentGroupIdSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
-    if (m_SpaceProfileInst != null) {
-      return m_SpaceProfileInst.getAllGroups();
-    }
-
-    return new ArrayList<String>();
-  }
-
   // arrayList de Group
   public List<Group> getAllCurrentGroupSpace(String role) {
     SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
     return getGroupsFromSpaceProfile(m_SpaceProfileInst);
-  }
-
-  // arrayList de String
-  private List<String> getAllCurrentUserIdSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
-    if (m_SpaceProfileInst != null) {
-      return m_SpaceProfileInst.getAllUsers();
-    }
-
-    return new ArrayList<String>();
   }
 
   // List de userDetail
@@ -879,8 +859,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   // user panel de selection de n groupes et n users
-  public void initUserPanelSpaceForGroupsUsers(String compoURL, String role)
-      throws SelectionException {
+  public void initUserPanelSpaceForGroupsUsers(String compoURL, String role, List<String> userIds,
+      List<String> groupIds) throws SelectionException {
     SpaceInst spaceint1 = getSpaceInstById();
     SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
 
@@ -926,65 +906,46 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         + " hostComponentName=" + getSpaceInstById().
         getName() + " hostUrlTest=" + hostUrl);
     selection.setGoBackURL(hostUrl);
-    selection.setCancelURL(compoURL + "CancelCreateOrUpdateSpaceProfile?Role=" + role);
+    //selection.setCancelURL(compoURL + "CancelCreateOrUpdateSpaceProfile?Role=" + role);
 
-    List<String> users = getAllCurrentUserIdSpace(role);
-    List<String> groups = getAllCurrentGroupIdSpace(role);
-    selection.setSelectedElements(users.toArray(new String[users.size()]));
-    selection.setSelectedSets(groups.toArray(new String[groups.size()]));
+    selection.setPopupMode(true);
+    selection.setHtmlFormElementId("roleItems");
+    selection.setHtmlFormName("dummy");
+    selection.setSelectedElements(userIds);
+    selection.setSelectedSets(groupIds);
   }
 
-  public void createSpaceRole(String role) {
-    // Create the profile
-    SpaceProfileInst spaceProfileInst = new SpaceProfileInst();
-    spaceProfileInst.setName(role);
-    if (role.equals("Manager")) {
-      spaceProfileInst.setLabel("Manager d'espace");
-    }
-    spaceProfileInst.setSpaceFatherId(getSpaceInstById().getId());
-
-    setGroupsAndUsers(spaceProfileInst, selection.getSelectedSets(), selection
-        .getSelectedElements());
-
-    SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.createSpaceRole", spaceProfileInst.
-        getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(),
-        SilverTrace.SPY_ACTION_CREATE);
-
-    // Add the profile
-    adminController.addSpaceProfileInst(spaceProfileInst, getUserId());
-  }
-
-  public void updateSpaceRole(String role) {
+  public void updateSpaceRole(String role, List<String> userIds, List<String> groupIds) {
     // Update the profile
+
+    String spyAction = SilverTrace.SPY_ACTION_UPDATE;
+
     SpaceInst spaceint1 = getSpaceInstById();
-    SpaceProfileInst m_SpaceProfileInst = spaceint1.getSpaceProfileInst(role);
+    SpaceProfileInst spaceProfileInst = spaceint1.getSpaceProfileInst(role);
+    if (spaceProfileInst == null) {
+      spaceProfileInst = new SpaceProfileInst();
+      spaceProfileInst.setName(role);
+      if (role.equals("Manager")) {
+        spaceProfileInst.setLabel("Manager d'espace");
+      }
+      spaceProfileInst.setSpaceFatherId(spaceint1.getId());
+      spaceProfileInst.setUsers(userIds);
+      spaceProfileInst.setGroups(groupIds);
 
-    SpaceProfileInst spaceProfileInst = new SpaceProfileInst();
-    spaceProfileInst.setId(m_SpaceProfileInst.getId());
-    spaceProfileInst.setSpaceFatherId(spaceint1.getId());
-    spaceProfileInst.setName(m_SpaceProfileInst.getName());
+      spyAction = SilverTrace.SPY_ACTION_CREATE;
 
-    setGroupsAndUsers(spaceProfileInst, selection.getSelectedSets(), selection
-        .getSelectedElements());
+      // Add the profile
+      adminController.addSpaceProfileInst(spaceProfileInst, getUserId());
+    } else {
+      spaceProfileInst.setUsers(userIds);
+      spaceProfileInst.setGroups(groupIds);
+
+      // Update the profile
+      adminController.updateSpaceProfileInst(spaceProfileInst, getUserId());
+    }
 
     SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.updateSpaceRole", spaceProfileInst.
-        getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(),
-        SilverTrace.SPY_ACTION_UPDATE);
-
-    // Update the profile
-    adminController.updateSpaceProfileInst(spaceProfileInst, getUserId());
-  }
-
-  public void deleteSpaceRole(String role) {
-    // Delete the space profile
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(
-        role);
-    if (m_SpaceProfileInst != null) {
-      SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.deleteSpaceRole", m_SpaceProfileInst.
-          getSpaceFatherId(), "N/A", m_SpaceProfileInst.getName(), getUserId(),
-          SilverTrace.SPY_ACTION_DELETE);
-      adminController.deleteSpaceProfileInst(m_SpaceProfileInst.getId(), getUserId());
-    }
+        getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(), spyAction);
   }
 
   public void updateSpaceManagersDescription(SpaceProfileInst spaceProfileInst) {
@@ -1438,8 +1399,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   // user panel de selection de n groupes et n users
-  public void initUserPanelInstanceForGroupsUsers(String compoURL) throws
-      SelectionException {
+  public void initUserPanelInstanceForGroupsUsers(String compoURL, List<String> userIds,
+      List<String> groupIds) {
     String profileId = getManagedProfile().getId();
     String profile = getManagedProfile().getLabel();
     SilverTrace.info("jobStartPagePeas",
@@ -1488,114 +1449,44 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
         "root.MSG_GEN_PARAM_VALUE", "hostUrl=" + hostUrl);
     selection.setGoBackURL(hostUrl);
-    selection.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
-    List<String> users = getManagedProfile().getAllUsers();
-    List<String> groups = getManagedProfile().getAllGroups();
-    selection.setSelectedElements(users.toArray(new String[users.size()]));
-    selection.setSelectedSets(groups.toArray(new String[groups.size()]));
+    //selection.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
+    selection.setPopupMode(true);
+    selection.setHtmlFormElementId("roleItems");
+    selection.setHtmlFormName("dummy");
+    selection.setSelectedElements(userIds);
+    selection.setSelectedSets(groupIds);
   }
 
-  public void createInstanceProfile() {
-    // Create the profile
-    ProfileInst profileInst = new ProfileInst();
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.createInstanceProfile()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "name='" + getManagedProfile().getName() + "'");
-    profileInst.setName(getManagedProfile().getName());
-    profileInst.setLabel(getManagedProfile().getLabel());
-    profileInst.setComponentFatherId(getManagedInstanceId());
+  public void updateInstanceProfile(String[] userIds, String[] groupIds) {
+
+    ProfileInst profile = getManagedProfile();
 
     // set groupIds and userIds
-    setGroupsAndUsers(profileInst, selection.getSelectedSets(), selection.getSelectedElements());
+    profile.removeAllGroups();
+    profile.removeAllUsers();
+    profile.setGroupsAndUsers(groupIds, userIds);
 
-    SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSC.createInstanceProfile", "unknown", profileInst.getComponentFatherId(),
-        profileInst.getName(), getUserId(),
-        SilverTrace.SPY_ACTION_CREATE);
+    if (!StringUtil.isDefined(profile.getId())) {
+      profile.setComponentFatherId(getManagedInstanceId());
 
-    // Add the profile
-    adminController.addProfileInst(profileInst, getUserId());
+      SilverTrace.spy("jobStartPagePeas",
+          "JobStartPagePeasSC.createInstanceProfile", "unknown", profile.getComponentFatherId(),
+          profile.getName(), getUserId(), SilverTrace.SPY_ACTION_CREATE);
 
-    // mise à jour
-    setManagedProfile(profileInst);
-  }
+      // Add the profile
+      adminController.addProfileInst(profile, getUserId());
 
-  public String updateInstanceProfile() {
-    // Update the profile
-    ProfileInst profile = new ProfileInst();
-    profile.setId(getManagedProfile().getId());
-    profile.setName(getManagedProfile().getName());
-    profile.setLabel(getManagedProfile().getLabel());
-    profile.setDescription(getManagedProfile().getDescription());
-    profile.setComponentFatherId(getManagedProfile().getComponentFatherId());
+    } else {
+      SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.updateInstanceProfile", "unknown",
+          profile.getComponentFatherId(), profile.getName(), getUserId(),
+          SilverTrace.SPY_ACTION_UPDATE);
 
-    // set groupIds and userIds
-    setGroupsAndUsers(profile, selection.getSelectedSets(), selection.getSelectedElements());
-
-    SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.updateInstanceProfile", "unknown",
-        profile.getComponentFatherId(), profile.getName(), getUserId(),
-        SilverTrace.SPY_ACTION_UPDATE);
+      // Update the profile
+      adminController.updateProfileInst(profile, getUserId());
+    }
 
     // mise à jour
     setManagedProfile(profile);
-
-    // Update the profile
-    return adminController.updateProfileInst(profile, getUserId());
-  }
-
-  private void setGroupsAndUsers(ProfileInst profile, String[] groupIds,
-      String[] userIds) {
-    // groups
-    for (int i = 0; groupIds != null && i < groupIds.length; i++) {
-      if (groupIds[i] != null && groupIds[i].length() > 0) {
-        profile.addGroup(groupIds[i]);
-      }
-    }
-
-    // users
-    for (int i = 0; userIds != null && i < userIds.length; i++) {
-      if (userIds[i] != null && userIds[i].length() > 0) {
-        profile.addUser(userIds[i]);
-      }
-    }
-  }
-
-  private void setGroupsAndUsers(SpaceProfileInst profile, String[] groupIds,
-      String[] userIds) {
-    // groups
-    for (int i = 0; groupIds != null && i < groupIds.length; i++) {
-      if (groupIds[i] != null && groupIds[i].length() > 0) {
-        profile.addGroup(groupIds[i]);
-      }
-    }
-
-    // users
-    for (int i = 0; userIds != null && i < userIds.length; i++) {
-      if (userIds[i] != null && userIds[i].length() > 0) {
-        profile.addUser(userIds[i]);
-      }
-    }
-  }
-
-  public String deleteInstanceProfile() {
-    // Update the profile
-    ProfileInst profile = new ProfileInst();
-    profile.setId(getManagedProfile().getId());
-    profile.setName(getManagedProfile().getName());
-    profile.setLabel(getManagedProfile().getLabel());
-    profile.setDescription(getManagedProfile().getDescription());
-    profile.setComponentFatherId(getManagedProfile().getComponentFatherId());
-
-    SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.deleteInstanceProfile", "unknown",
-        profile.getComponentFatherId(), profile.getName(), getUserId(),
-        SilverTrace.SPY_ACTION_DELETE);
-
-    // mise à jour
-    setManagedProfile(profile);
-
-    // Update the profile
-    return adminController.updateProfileInst(profile, getUserId());
   }
 
   public void updateProfileInstanceDescription(String name, String desc) {
