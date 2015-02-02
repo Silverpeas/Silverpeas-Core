@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="busCore">
+<migration module="busCore" order="1">
 
   <current version="032">
     <script name="create_table.sql" type="sql"/>

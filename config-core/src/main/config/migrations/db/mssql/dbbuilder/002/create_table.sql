@@ -5,14 +5,14 @@ create table SR_RELLOG2
     SR_ACTION          varchar(32)           not null,
     SR_TXT             varchar(2000)         null
 )
-go
+;
 
 create table SR_PACKAGES
 (
     SR_PACKAGE         varchar(32)           not null,
     SR_VERSION         char(3)               not null
 )
-go
+;
 
 create table SR_UNINSTITEMS
 (
@@ -26,7 +26,7 @@ create table SR_UNINSTITEMS
     SR_KEEP_DELIMITER  smallint              null    ,
     SR_DBPROC_NAME     varchar(256)          null
 )
-go
+;
 
 create table SR_SCRIPTS
 (
@@ -34,11 +34,11 @@ create table SR_SCRIPTS
     SR_SEQ_NUM         smallint              not null,
     SR_TEXT            varchar(1100)         not null
 )
-go
+;
 
 create table SR_DEPENDENCIES
 (
     SR_PACKAGE         varchar(32)           not null,
     SR_PKDEPENDENCY    varchar(32)           not null
 )
-go
+;

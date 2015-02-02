@@ -25,11 +25,11 @@
 
 -->
 
-<contribution product="tagCloud">
+<migration module="tagCloud">
 
   <current version="002">
     <script name="create_table.sql" type="sql"/>
     <script name="create_constraint.sql" type="sql"/>
   </current>
 
-</contribution>
+</migration>
