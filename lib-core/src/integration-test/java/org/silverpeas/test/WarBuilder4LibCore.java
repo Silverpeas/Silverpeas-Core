@@ -40,6 +40,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
+import org.apache.commons.collections.list.UnmodifiableList;
 import org.silverpeas.EntityReference;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
@@ -72,6 +73,9 @@ import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.time.TimeConversionBoardKey;
+import org.silverpeas.util.time.TimeData;
+import org.silverpeas.util.time.TimeUnit;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -147,6 +151,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * <li>{@link AbstractComplexComparator}</li>
    * <li>{@link AbstractComparator}</li>
    * <li>{@link ListSlice}</li>
+   * <li>{@link UnitUtil}</li>
    * </ul>
    * @return the instance of the war builder.
    */
@@ -189,6 +194,12 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(ListSlice.class)) {
       addClasses(ListSlice.class);
+    }
+    if (!contains(UnitUtil.class)) {
+      addClasses(UnitUtil.class);
+      addClasses(TimeData.class);
+      addClasses(TimeUnit.class);
+      addClasses(TimeConversionBoardKey.class);
     }
     return this;
   }

@@ -24,12 +24,18 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.Properties;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface SilverpeasTrace {
+
+  public static SilverpeasTrace get() {
+    return ServiceProvider.getService(SilverpeasTrace.class);
+  }
 
   void debug(String module, String classe, String message);
 

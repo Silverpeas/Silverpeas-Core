@@ -25,13 +25,17 @@
 package org.silverpeas.test.rule;
 
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.util.lang.TestSystemWrapper;
 import org.silverpeas.test.util.log.TestSilverpeasTrace;
+import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.lang.SystemWrapper;
+
+import javax.enterprise.concurrent.ManagedThreadFactory;
 
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -50,6 +54,7 @@ public class CommonAPI4Test implements TestRule {
         reset(TestBeanContainer.getMockedBeanContainer());
         systemWrapper();
         silverTrace();
+        managedThreadFactory();
         base.evaluate();
       }
     };
@@ -63,5 +68,17 @@ public class CommonAPI4Test implements TestRule {
   public void systemWrapper() {
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SystemWrapper.class))
         .thenReturn(new TestSystemWrapper());
+  }
+
+  public void managedThreadFactory() {
+    ManagedThreadPool managedThreadPool = new ManagedThreadPool();
+    try {
+      ManagedThreadFactory managedThreadFactory = Thread::new;
+      FieldUtils.writeField(managedThreadPool, "managedThreadFactory", managedThreadFactory, true);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(ManagedThreadPool.class))
+        .thenReturn(managedThreadPool);
   }
 }
