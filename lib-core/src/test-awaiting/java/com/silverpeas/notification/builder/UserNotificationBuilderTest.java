@@ -390,7 +390,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getSender(), is("aSenderId"));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), is("notificationHelperTemplateFile"));
-    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(notifTest.getLanguages().size(), is(3));
     assertThat(StringUtil.isDefined(notifTest.getLink()), is(true));
     assertThat(notifTest.getSource(), is("aSource"));
     assertThat(notifTest.getTitle(), is("aTitle"));
@@ -441,7 +441,7 @@ public class UserNotificationBuilderTest {
     assertThat(notifTest.getSender(), is("aSenderId"));
     assertThat(notifTest.getDate(), notNullValue());
     assertThat(notifTest.getFileName(), is("notificationHelperTemplateFile"));
-    assertThat(notifTest.getLanguages().size(), is(1));
+    assertThat(notifTest.getLanguages().size(), is(3));
     assertThat(StringUtil.isDefined(notifTest.getLink()), is(true));
     assertThat(notifTest.getSource(), is("aSource"));
     assertThat(notifTest.getTitle(), is("aTitle"));
