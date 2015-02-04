@@ -48,7 +48,7 @@ import static org.silverpeas.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext.GETTING;
 import static org.silverpeas.file.SilverpeasFileProcessor.ProcessingContext.WRITING;
 
-public class AttachmentUrlLinkProcessorTest {
+public class TestAttachmentUrlLinkProcessor {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();

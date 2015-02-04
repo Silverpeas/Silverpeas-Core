@@ -23,8 +23,8 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.util.StringUtil;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.StringUtil;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;

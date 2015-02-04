@@ -41,7 +41,7 @@ public class MailSending {
    * Gets a new instance of {@link MailSending} by specifying the email of the sender.
    * @param senderEmail the email of the sender. This email can be changed just before the send
    * in case it is a not authorized one
-   * (see {@link com.silverpeas.util.MailUtil#getAuthorizedEmailAddress(String, String)}).
+   * (see {@link org.silverpeas.util.MailUtil#getAuthorizedEmailAddress(String, String)}).
    * @return the new instance of {@link MailSending}.
    */
   public static MailSending from(MailAddress senderEmail) {
@@ -157,7 +157,6 @@ public class MailSending {
   /**
    * Performs the send of the mail synchronously.
    * So the caller wait for the end of the sending treatment before to continue its processing.
-   * @return the completed instance of {@link MailSending}.
    */
   public void sendSynchronously() {
     mailToSend.sendSynchronously();

@@ -26,7 +26,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import com.stratelia.webactiv.beans.admin.Administration;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.util.EncodeHelper;
@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
 import static org.silverpeas.mail.MailAddress.eMail;
-import static org.silverpeas.util.MailUtil.*;
+import static org.silverpeas.util.MailUtil.isForceReplyToSenderField;
 
 
 @MessageDriven(activationConfig = {
@@ -192,7 +192,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     MailSending mail = MailSending.from(fromMailAddress).to(eMail(to)).withSubject(subject);
     try {
       InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
-      if (!AdminReference.getAdminService().getAdministratorEmail().equals(from) &&
+      if (!Administration.get().getAdministratorEmail().equals(from) &&
           (!fromAddress.getAddress().equals(from) || isForceReplyToSenderField())) {
         mail.setReplyToRequired();
       }

@@ -39,7 +39,7 @@ import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.wysiwyg.control.WysiwygContentTransformerTest;
+import org.silverpeas.wysiwyg.control.TestWysiwygContentTransformer;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -56,7 +56,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MailContentProcessTest {
+public class TestMailContentProcess {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
@@ -197,7 +197,7 @@ public class MailContentProcessTest {
   }
 
   private synchronized static File getDocumentNamed(final String name) {
-    final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
+    final URL documentLocation = TestWysiwygContentTransformer.class.getResource(name);
     try {
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {

@@ -23,22 +23,26 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetup;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.mock_javamail.Mailbox;
 import org.silverpeas.mail.engine.MailSender;
 import org.silverpeas.mail.engine.MailSenderProvider;
 import org.silverpeas.mail.engine.SmtpMailSender;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.StringUtil;
 
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.Date;
 
@@ -46,7 +50,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.mail.MailAddress.eMail;
 
-public class SmtpMailSendingTest {
+public class TestSmtpMailSending {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public GreenMailRule greenMailRule = new GreenMailRule(ServerSetup.SMTP);
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String MALFORMED_FROM = "fromATtiti.org";
@@ -57,7 +67,6 @@ public class SmtpMailSendingTest {
 
   @Before
   public void setup() throws Exception {
-    Mailbox.clearAll();
     // Injecting by reflection the mock instance
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
@@ -66,13 +75,12 @@ public class SmtpMailSendingTest {
 
   @After
   public void destroy() throws Exception {
-    Mailbox.clearAll();
     // Replacing by reflection the mock instances by the previous extracted one.
     FieldUtils
         .writeDeclaredStaticField(MailSenderProvider.class, "mailSender", oldMailSender, true);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void sendingMailSynchronouslyWithDefaultValues() throws Exception {
     MailSending mailSending = MailSending.from(null);
 
@@ -308,11 +316,11 @@ public class SmtpMailSendingTest {
     mailSending.send();
 
     // Verifying immediately that the mail is not yet processed and waiting a moment that it will be
-    assertThat(Mailbox.get(COMMON_TO), empty());
-    Thread.sleep(200);
+    assertThat(greenMailRule.getReceivedMessages(), emptyArray());
+    greenMailRule.waitForIncomingEmail(2000, 1);
 
     // Verifying that the mail has been sent
-    assertThat(Mailbox.get(COMMON_TO), hasSize(1));
+    assertThat(greenMailRule.getReceivedMessages(), arrayWithSize(1));
   }
 
   /*
@@ -323,7 +331,7 @@ public class SmtpMailSendingTest {
       throws Exception {
     mailSending.sendSynchronously();
     // Verifying sent data
-    assertThat(Mailbox.get(mailSending.getMailToSend().getFrom().getEmail()), empty());
+    assertThat(greenMailRule.getReceivedMessages(), emptyArray());
   }
 
   private void assertMailSent(MailToSend verifiedMailToSend)
@@ -334,10 +342,10 @@ public class SmtpMailSendingTest {
     assertThat(verifiedMailToSend.getTo().getRecipientType().getTechnicalType(),
         is(Message.RecipientType.TO));
 
-    Mailbox mailbox = Mailbox.get(verifiedMailToSend.getTo().iterator().next().getEmail());
-    assertThat(mailbox, hasSize(1));
+    MimeMessage[] messages = greenMailRule.getReceivedMessages();
+    assertThat(messages, arrayWithSize(1));
 
-    Message sentMessage = mailbox.get(0);
+    MimeMessage sentMessage = messages[0];
     MailAddress originalReceiverMailAddress = verifiedMailToSend.getTo().iterator().next();
 
     assertThat(sentMessage.getFrom().length, is(1));
@@ -363,7 +371,8 @@ public class SmtpMailSendingTest {
       assertThat(sentMessage.getContent(),
           instanceOf(verifiedMailToSend.getContent().getValue().getClass()));
     } else {
-      assertThat(sentMessage.getContent(), is(verifiedMailToSend.getContent().getValue()));
+      assertThat(sentMessage.getContent().toString().replaceAll("[\n\r]*$", ""),
+          is(verifiedMailToSend.getContent().getValue()));
     }
 
     assertThat(DateUtils.addSeconds(sentMessage.getSentDate(), 10),

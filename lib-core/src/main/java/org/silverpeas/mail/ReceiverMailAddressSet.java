@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.CollectionUtil;
 
 import javax.mail.Message;
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
   /**
    * Adds several {@link MailAddress} instances.
    * @param mailAddresses the {@link MailAddress} instances.
-   * @return
+   * @return the set instance
    */
   public static ReceiverMailAddressSet with(Collection<MailAddress> mailAddresses) {
     ReceiverMailAddressSet list = new ReceiverMailAddressSet();
@@ -112,7 +112,7 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
   /**
    * Adds several {@link MailAddress} instances.
    * @param mailRecipientType the recipient type to take into account.
-   * @return
+   * @return the set instance
    */
   public static ReceiverMailAddressSet ofRecipientType(MailRecipientType mailRecipientType) {
     return new ReceiverMailAddressSet().withRecipientType(mailRecipientType);
@@ -126,7 +126,7 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
 
   /**
    * Gets the recipient type.
-   * @return the recepient type.
+   * @return the recipient type.
    */
   public MailRecipientType getRecipientType() {
     return recipientType;
@@ -138,7 +138,7 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
    * is taken in
    * account by default
    * @param recipientType the new recipient type to take into account.
-   * @return the list instance.
+   * @return the set instance
    */
   public ReceiverMailAddressSet withRecipientType(final MailRecipientType recipientType) {
     this.recipientType = recipientType;
@@ -159,7 +159,7 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
    * single send.
    * @param receiversBatchSizeForOneSend the new number of receivers that must be specified for one
    * send.
-   * @return the list instance.
+   * @return the set instance
    */
   public ReceiverMailAddressSet withReceiversBatchSizeOf(final int receiversBatchSizeForOneSend) {
     this.receiversBatchSizeForOneSend =
@@ -176,7 +176,7 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
       return Collections.singletonList(this);
     }
     List<ReceiverMailAddressSet> batchedReceiverList =
-        new ArrayList<ReceiverMailAddressSet>((size() / getReceiversBatchSizeForOneSend()) + 1);
+        new ArrayList<>((size() / getReceiversBatchSizeForOneSend()) + 1);
 
     ReceiverMailAddressSet current = null;
     for (MailAddress mailAddress : this) {

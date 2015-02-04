@@ -23,26 +23,34 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.util.StringUtil;
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetup;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.mock_javamail.Mailbox;
 import org.silverpeas.mail.engine.MailSender;
 import org.silverpeas.mail.engine.MailSenderProvider;
 import org.silverpeas.mail.engine.SmtpMailSender;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.StringUtil;
 
-import javax.mail.Message;
+import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.mail.MailAddress.eMail;
 
-public class SmtpMailSendingMassiveTest {
+public class TestSmtpMailSendingMassive {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public GreenMailRule greenMailRule = new GreenMailRule(ServerSetup.SMTP);
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String COMMON_TO = "to@toto.org";
@@ -52,7 +60,6 @@ public class SmtpMailSendingMassiveTest {
 
   @Before
   public void setup() throws Exception {
-    Mailbox.clearAll();
     // Injecting by reflection the mock instance
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
@@ -61,7 +68,6 @@ public class SmtpMailSendingMassiveTest {
 
   @After
   public void destroy() throws Exception {
-    Mailbox.clearAll();
     // Replacing by reflection the mock instances by the previous extracted one.
     FieldUtils
         .writeDeclaredStaticField(MailSenderProvider.class, "mailSender", oldMailSender, true);
@@ -72,8 +78,8 @@ public class SmtpMailSendingMassiveTest {
   sendingSeveralMailsSynchronouslyAndAsynchronouslyAndVerifyingSendingPerformedOneByOne()
       throws Exception {
 
-    List<Runnable> runnables = new ArrayList<Runnable>();
-    List<Thread> threads = new ArrayList<Thread>();
+    List<Runnable> runnables = new ArrayList<>();
+    List<Thread> threads = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       Runnable runnable =
           new SendOperation("ID_" + StringUtil.leftPad(String.valueOf(i), 3, "0"), (i % 4 != 0));
@@ -100,14 +106,15 @@ public class SmtpMailSendingMassiveTest {
     log(runnables.size() + " THREADS STOPPED");
 
     // Verifying that mails has been sent
-    Thread.sleep(1500);
+    greenMailRule.waitForIncomingEmail(2000, runnables.size());
+    Thread.sleep(100);
     assertMailSentOneByOne(runnables);
 
-    Mailbox mailbox = Mailbox.get(COMMON_TO);
-    assertThat(mailbox, hasSize(runnables.size()));
+    MimeMessage[] messages = greenMailRule.getReceivedMessages();
+    assertThat(messages, arrayWithSize(runnables.size()));
 
     System.out.println("Received messages:");
-    for (Message message : mailbox) {
+    for (MimeMessage message : messages) {
       System.out.println("\t" + message.getSubject());
     }
   }
@@ -174,7 +181,7 @@ public class SmtpMailSendingMassiveTest {
    */
   class StubbedSmtpMailSender extends SmtpMailSender {
 
-    public List<String> sentOneByOne = new ArrayList<String>();
+    public List<String> sentOneByOne = new ArrayList<>();
 
     @Override
     public void send(final MailToSend mail) {

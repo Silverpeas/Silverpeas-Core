@@ -23,8 +23,8 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.util.MailUtil;
-import com.silverpeas.util.StringUtil;
+import org.silverpeas.util.MailUtil;
+import org.silverpeas.util.StringUtil;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -79,7 +79,7 @@ public class MailAddress {
 
   /**
    * Gets the name.
-   * @return
+   * @return the functional name.
    */
   public String getName() {
     return name;

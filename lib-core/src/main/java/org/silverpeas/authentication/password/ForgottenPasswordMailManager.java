@@ -24,6 +24,7 @@
 
 package org.silverpeas.authentication.password;
 
+import com.stratelia.webactiv.beans.admin.Administration;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.mail.MailSending;
 
@@ -55,9 +56,7 @@ public class ForgottenPasswordMailManager {
   private void initFromAddress() {
     ResourceLocator mailSettings = new ResourceLocator(
         "com.silverpeas.authentication.settings.forgottenPasswordMail", "");
-    adminEmail =
-        mailSettings.getString("admin.mail", AdministrationServiceProvider.getAdminService()
-        .getAdministratorEmail());
+    adminEmail = mailSettings.getString("admin.mail", Administration.get().getAdministratorEmail());
     fromAddress = mailSettings.getString("fromAddress", adminEmail);
     fromName = mailSettings.getString("fromName", "Silverpeas");
   }

@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.wysiwyg.control.WysiwygContentTransformerTest;
+import org.silverpeas.wysiwyg.control.TestWysiwygContentTransformer;
 
 import java.io.File;
 import java.io.IOException;
@@ -185,7 +185,7 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   }
 
   private synchronized static File getDocumentNamed(final String name) {
-    final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
+    final URL documentLocation = TestWysiwygContentTransformer.class.getResource(name);
     try {
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {

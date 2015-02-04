@@ -55,7 +55,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class WysiwygContentTransformerTest {
+public class TestWysiwygContentTransformer {
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -173,7 +173,7 @@ public class WysiwygContentTransformerTest {
   }
 
   private synchronized static File getDocumentNamed(final String name) {
-    final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
+    final URL documentLocation = TestWysiwygContentTransformer.class.getResource(name);
     try {
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.mail.engine;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailToSend;
 import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.StringUtil;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 
 /**
  * This is the SMTP implementation of the {@link MailSender} interface.
- * This implementation uses the parameters provided by {@link com.silverpeas.util.MailUtil}.
+ * This implementation uses the parameters provided by {@link org.silverpeas.util.MailUtil}.
  * @author Yohann Chastagnier
  */
 public class SmtpMailSender implements MailSender {
@@ -78,7 +78,7 @@ public class SmtpMailSender implements MailSender {
     try {
       InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
       InternetAddress replyToAddress = null;
-      List<InternetAddress[]> toAddresses = new ArrayList<InternetAddress[]>();
+      List<InternetAddress[]> toAddresses = new ArrayList<>();
 
       // Parsing destination address for compliance with RFC822.
       final Collection<ReceiverMailAddressSet> addressBatches =
@@ -117,9 +117,7 @@ public class SmtpMailSender implements MailSender {
       // Sending.
       performSend(mail, smtpConfiguration, session, email, toAddresses);
 
-    } catch (MessagingException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
-    } catch (UnsupportedEncodingException e) {
+    } catch (MessagingException | UnsupportedEncodingException e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
     } catch (Exception e) {
       throw new RuntimeException(e);
