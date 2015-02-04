@@ -178,7 +178,7 @@
     <persistence.lib>lib-core-${project.version}.jar</persistence.lib>
     <persistence.pdc>pdc-${project.version}.jar</persistence.pdc>
     <persistence.node>node-${project.version}.jar</persistence.node>
-    <jackrabbit>deployment.jackrabbit-jca-2.8.0.rar</jackrabbit>
+    <jackrabbit>deployment.jackrabbit-jca.rar</jackrabbit>
   </properties>
   <build>
     <finalName>silverpeas</finalName>
