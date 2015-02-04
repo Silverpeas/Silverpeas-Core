@@ -26,8 +26,10 @@ package org.silverpeas.wysiwyg.control.directive;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
+import org.silverpeas.util.StringDataExtractor.RegexpPatternDirective;
 import org.silverpeas.wysiwyg.control.WysiwygContentTransformerDirective;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,10 +48,12 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
   private static final String HEIGHT_ATTR = "height";
   private static final String STYLE_ATTR = "style";
 
-  private static Pattern WIDTH_NUMERIC_VALUE =
-      Pattern.compile("(?i).*" + WIDTH_ATTR + "(Attr[ ]*([0-9]+)|[ ]*:[ ]*([0-9]+)).*");
-  private static Pattern HEIGHT_NUMERIC_VALUE =
-      Pattern.compile("(?i).*" + HEIGHT_ATTR + "(Attr[ ]*([0-9]+)|[ ]*:[ ]*([0-9]+)).*");
+  private static List<RegexpPatternDirective> WIDTH_NUMERIC_VALUE = Arrays
+      .asList(regexp(Pattern.compile("(?i)" + WIDTH_ATTR + "Attr[ ]*([0-9]+)"), 1),
+          regexp(Pattern.compile("(?i)[ ;]" + WIDTH_ATTR + "[ ]*:[ ]*([0-9]+)"), 1));
+  private static List<RegexpPatternDirective> HEIGHT_NUMERIC_VALUE = Arrays
+      .asList(regexp(Pattern.compile("(?i)" + HEIGHT_ATTR + "Attr[ ]*([0-9]+)"), 1),
+          regexp(Pattern.compile("(?i)[ ;]" + HEIGHT_ATTR + "[ ]*:[ ]*([0-9]+)"), 1));
 
   @Override
   public String execute(final String wysiwygContent) {
@@ -116,10 +120,13 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
   /**
    * Centralized method.
    */
-  private String getSizeOf(Pattern pattern, Element imgElement, String attrName) {
-    String stringToParse = imgElement.getAttributeValue(STYLE_ATTR) + "@" + attrName + "Attr" +
-        imgElement.getAttributeValue(attrName);
-    List<String> sizeData = from(stringToParse).withDirective(regexp(pattern, 2, 3)).extract();
+  private String getSizeOf(List<RegexpPatternDirective> directives, Element imgElement,
+      String attrName) {
+    String stringToParse =
+        ";" + imgElement.getAttributeValue(STYLE_ATTR) + "@" + attrName + "Attr" +
+            imgElement.getAttributeValue(attrName);
+    List<String> sizeData =
+        from(stringToParse.replaceAll("[\n\r]*", "")).withDirectives(directives).extract();
     return sizeData.isEmpty() ? "" : sizeData.get(0);
   }
 }
