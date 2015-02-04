@@ -56,7 +56,7 @@ public class TestSmtpMailSending {
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
-  public GreenMailRule greenMailRule = new GreenMailRule(ServerSetup.SMTP);
+  public GreenMailRule greenMailRule = new GreenMailRule(new SmtpConfigTest());
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String MALFORMED_FROM = "fromATtiti.org";
