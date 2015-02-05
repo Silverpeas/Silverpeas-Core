@@ -27,6 +27,7 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.ForeignPK;
 
 import java.util.HashMap;
@@ -127,9 +128,8 @@ public class VolatileResourceCacheService {
    */
   public void clear() {
     final VolatileResourceCacheService current = this;
-    Thread thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
+    try {
+      ManagedThreadPool.invoke(() -> {
         try {
           current.deleteAllAttachments();
         } catch (Throwable throwable) {
@@ -137,10 +137,7 @@ public class VolatileResourceCacheService {
           SilverTrace.warn("cache", VolatileResourceCacheService.class.getName(),
               "The clear of volatile cache did not end successfully...");
         }
-      }
-    });
-    try {
-      thread.start();
+      });
     } catch (Throwable throwable) {
       // This treatment must not disturb the server in any case, so nothing is thrown here.
       SilverTrace.warn("cache", VolatileResourceCacheService.class.getName(),
