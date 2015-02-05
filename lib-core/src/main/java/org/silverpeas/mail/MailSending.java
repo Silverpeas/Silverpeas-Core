@@ -23,7 +23,7 @@
  */
 package org.silverpeas.mail;
 
-import org.silverpeas.mail.engine.MailSenderThread;
+import org.silverpeas.mail.engine.MailSenderTask;
 
 import javax.mail.Multipart;
 
@@ -151,7 +151,7 @@ public class MailSending {
    * This will be executed into a Threaded mechanism.
    */
   public void send() {
-    MailSenderThread.addMailToSend(mailToSend);
+    MailSenderTask.addMailToSend(mailToSend);
   }
 
   /**
