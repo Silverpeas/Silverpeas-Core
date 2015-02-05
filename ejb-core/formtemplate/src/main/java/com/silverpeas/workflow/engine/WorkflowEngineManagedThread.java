@@ -23,11 +23,7 @@
  */
 package com.silverpeas.workflow.engine;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.enterprise.concurrent.ManagedThreadFactory;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import org.silverpeas.thread.ManagedThreadPool;
 
 /**
  * A thread WorkflowEngineManagedThread process in the background a batch of events sent to
@@ -38,18 +34,6 @@ import javax.naming.NamingException;
 public class WorkflowEngineManagedThread {
 
   public void start() {
-    WorkflowEngineTask workflowEngine = new WorkflowEngineTask();
-    //Get the default ManagedThreadFactory implementation.
-    try {
-      InitialContext ctx = new InitialContext();
-      ManagedThreadFactory threadFactory =
-          (ManagedThreadFactory) ctx.lookup("java:comp/DefaultManagedThreadFactory");
-      Thread thread = threadFactory.newThread(workflowEngine);
-      thread.start();
-    } catch (NamingException e) {
-      SilverTrace.error("workflowEngine", "WorkflowEngineManagedThread",
-          "Error when trying to start WorkflowEngineTask managed Thread", e);
-    }
+    ManagedThreadPool.invoke(new WorkflowEngineTask());
   }
-
 }
