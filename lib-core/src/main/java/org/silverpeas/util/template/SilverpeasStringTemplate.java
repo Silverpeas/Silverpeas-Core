@@ -91,6 +91,10 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
   @Override
   public void setAttribute(String name, Object value) {
+    if (value instanceof String && StringUtil.isNotDefined((String) value)) {
+      // It exists no reason to get true on conditional if performed on a not defined string.
+      value = null;
+    }
     attributes.put(name, value);
   }
 
