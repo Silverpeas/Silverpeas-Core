@@ -265,8 +265,8 @@ public class ManagedThreadPoolIntegrationTest {
     log("Getting future result at {0}...", valueOf(beginLoop));
     for (Future<Long> future : futures) {
       log("\tprocess ended at {0}", valueOf(future.get()));
-      assertThat(future.get(), greaterThan(beginLoop));
-      assertThat(future.get(), lessThan(beginLoop + SHORT_TIMEOUT + 10));
+      assertThat(future.get(), greaterThanOrEqualTo(beginLoop));
+      assertThat(future.get(), lessThan(beginLoop + SHORT_TIMEOUT + 100));
     }
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(callables.size()));
     log("... OK");
