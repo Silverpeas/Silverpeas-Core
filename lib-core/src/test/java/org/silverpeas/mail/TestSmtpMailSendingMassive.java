@@ -132,9 +132,8 @@ public class TestSmtpMailSendingMassive {
     public void run() {
       MailAddress senderEmail = eMail(COMMON_FROM);
       MailAddress receiverEmail = eMail(COMMON_TO);
-      MailSending mailSending =
-          MailSending.from(senderEmail).to(receiverEmail).withSubject(id + " subject")
-              .withContent(id + " content");
+      MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail)
+          .withSubject(id + " subject - " + (asynch ? "A" : "S")).withContent(id + " content");
 
       // Sending mail
       if (asynch) {
