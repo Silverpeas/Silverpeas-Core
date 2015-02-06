@@ -316,7 +316,7 @@ public class TestSmtpMailSending {
 
     // Verifying immediately that the mail is not yet processed and waiting a moment that it will be
     assertThat(greenMailRule.getReceivedMessages(), emptyArray());
-    greenMailRule.waitForIncomingEmail(2000, 1);
+    greenMailRule.waitForIncomingEmail(60000, 1);
 
     // Verifying that the mail has been sent
     assertThat(greenMailRule.getReceivedMessages(), arrayWithSize(1));

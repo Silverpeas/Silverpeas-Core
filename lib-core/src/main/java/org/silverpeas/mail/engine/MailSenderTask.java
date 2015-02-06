@@ -109,9 +109,12 @@ public class MailSenderTask implements Runnable {
    */
   @Override
   public void run() {
+    boolean existsAtLeastOneRequestToPerform = true;
     Request request;
 
-    while (running) {
+    // The loop condition must be verified on a private attribute of run method (not on the static
+    // running attribute) in order to avoid concurrent access.
+    while (existsAtLeastOneRequestToPerform) {
       /*
        * First, all the requests are processed until the queue becomes empty.
        */
@@ -148,9 +151,13 @@ public class MailSenderTask implements Runnable {
        * will end.
        */
       synchronized (requestList) {
-        running = requestList.isEmpty();
+        running = !requestList.isEmpty();
+        existsAtLeastOneRequestToPerform = running;
       }
     }
+
+    SilverTrace.info("mailSenderEngine", "MailSenderThread",
+        "mailSenderEngine.INFO_STOPS_MAIL_SENDING_THREAD");
   }
 }
 

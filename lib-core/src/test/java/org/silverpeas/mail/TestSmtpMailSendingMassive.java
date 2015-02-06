@@ -24,7 +24,6 @@
 package org.silverpeas.mail;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
-import com.icegreen.greenmail.util.ServerSetup;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -91,7 +90,7 @@ public class TestSmtpMailSendingMassive {
 
     // Starting threads
     for (Thread thread : threads) {
-      Thread.sleep(5);
+      Thread.sleep(50);
       thread.start();
     }
 
@@ -100,13 +99,13 @@ public class TestSmtpMailSendingMassive {
 
     // Waiting for the end of all threads.
     for (Thread thread : threads) {
-      thread.join(2000);
+      thread.join(60000);
     }
 
     log(runnables.size() + " THREADS STOPPED");
 
     // Verifying that mails has been sent
-    greenMailRule.waitForIncomingEmail(2000, runnables.size());
+    greenMailRule.waitForIncomingEmail(60000, runnables.size());
     Thread.sleep(100);
     assertMailSentOneByOne(runnables);
 
