@@ -33,30 +33,19 @@ import java.util.concurrent.Semaphore;
 
 /**
  * A thread MailSenderThread in the background a batch of mail sending. All the public methods
- * are static, so only one thread runs and processes the mail sending.
+ * are static, so only one thread runs and processes the mail sending.<br/>
+ * When it get no more mail to send, the thread ends a new one will be instantiated on the next
+ * mail sending request.<br/>
+ * Priority is given to synchronous mail sending request.
  */
 public class MailSenderThread extends Thread {
 
   /**
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
    * access will be synchronized on this list. Furthermore this list is used to synchronize the
-   * providers and the consumers of the list :
-   * <p/>
-   * <PRE>
-   * // provider
-   * synchronized(requestList)
-   * {
-   * requestList.add(...);
-   * requestList.notify();
-   * }
-   * <p/>
-   * // consumer
-   * synchronized(requestList)
-   * {
-   * requestList.wait();
-   * ... = requestList.remove(...);
-   * }
-   * </PRE>
+   * providers and the consumers of the list.<br/>
+   * When the list is empty, then the thread is killed. It will be instantiated again on the next
+   * mail to send.
    */
   private static final List<Request> requestList = new ArrayList<Request>();
 
@@ -72,13 +61,9 @@ public class MailSenderThread extends Thread {
    * on the requests queue in order to guarantee that only one MailSenderThread is running.
    */
   private static void startIfNotAlreadyDone() {
-    synchronized (requestList) {
-      if (mailSenderThread == null) {
-        SilverTrace.info("mailSenderEngine", "MailSenderThread",
-            "mailSenderEngine.INFO_STARTS_MAIL_SENDING_THREAD");
-        mailSenderThread = new MailSenderThread();
-        mailSenderThread.start();
-      }
+    if (mailSenderThread == null) {
+      mailSenderThread = new MailSenderThread();
+      mailSenderThread.start();
     }
   }
 
@@ -87,26 +72,24 @@ public class MailSenderThread extends Thread {
    * @param mailToSend
    */
   public static void addMailToSend(MailToSend mailToSend) {
-    startIfNotAlreadyDone();
-    synchronized (requestList) {
-      AddMailToSendRequest addMailToSendRequest = new AddMailToSendRequest(mailToSend);
-      if (mailToSend.isAsynchronous()) {
+    AddMailToSendRequest addMailToSendRequest = new AddMailToSendRequest(mailToSend);
+    if (mailToSend.isAsynchronous()) {
+      synchronized (requestList) {
         SilverTrace
             .debug("mailSenderEngine", "MailSenderThread", "mailSenderEngine.INFO_ADDS_ADD_REQUEST",
                 mailToSend.toString());
         requestList.add(addMailToSendRequest);
-      } else {
-        // The sending is performed synchronously
-        try {
-          addMailToSendRequest.process(orderedOneByOneSemaphore);
-        } catch (Exception e) {
-          e.printStackTrace();
-          SilverTrace
-              .error("mailSenderEngine", "MailSenderThread", "mailSenderEngine.UNEXPECTED_ERROR",
-                  e);
-        }
+        startIfNotAlreadyDone();
       }
-      requestList.notify();
+    } else {
+      // The sending is performed synchronously
+      try {
+        addMailToSendRequest.process(orderedOneByOneSemaphore);
+      } catch (Exception e) {
+        e.printStackTrace();
+        SilverTrace
+            .error("mailSenderEngine", "MailSenderThread", "mailSenderEngine.UNEXPECTED_ERROR", e);
+      }
     }
   }
 
@@ -123,54 +106,51 @@ public class MailSenderThread extends Thread {
    */
   @Override
   public void run() {
-    Request request;
+    SilverTrace.info("mailSenderEngine", "MailSenderThread",
+        "mailSenderEngine.INFO_STARTS_MAIL_SENDING_THREAD");
 
-    //noinspection InfiniteLoopStatement
-    while (true) {
-      /*
-       * First, all the requests are processed until the queue becomes empty.
-       */
-      do {
-        request = null;
+    Request currentRequest = nextRequest();
 
-        synchronized (requestList) {
-          SilverTrace.info("mailSenderEngine", "MailSenderThread", "root.MSG_GEN_PARAM_VALUE",
-              "# of mails to send = " + requestList.size());
-          if (!requestList.isEmpty()) {
-            request = requestList.remove(0);
-          }
-        }
+    // The loop condition must be verified on a private attribute of run method (not on the static
+    // running attribute) in order to avoid concurrent access.
+    while (currentRequest != null) {
 
         /*
          * Each request is processed out of the synchronized block so the others threads (which put
          * the requests) will not be blocked.
          */
-        if (request != null) {
-          try {
-            request.process(orderedOneByOneSemaphore);
-          } catch (Exception e) {
-            e.printStackTrace();
-            SilverTrace
-                .error("mailSenderEngine", "MailSenderThread", "mailSenderEngine.UNEXPECTED_ERROR",
-                    e);
-          }
-        }
-
-      } while (request != null);
-
-      /*
-       * Finally, waiting for the notification of a new request to be processed.
-       */
       try {
-        synchronized (requestList) {
-          if (requestList.isEmpty()) {
-            requestList.wait();
-          }
-        }
-      } catch (InterruptedException e) {
-        SilverTrace.debug("mailSenderEngine", "MailSenderThread",
-            "mailSenderEngine.INFO_INTERRUPTED_WHILE_WAITING");
+        currentRequest.process(orderedOneByOneSemaphore);
+      } catch (Exception e) {
+        e.printStackTrace();
+        SilverTrace
+            .error("mailSenderEngine", "MailSenderThread", "mailSenderEngine.UNEXPECTED_ERROR", e);
       }
+
+      // Getting the next request if any.
+      currentRequest = nextRequest();
+    }
+
+    SilverTrace.info("mailSenderEngine", "MailSenderThread",
+        "mailSenderEngine.INFO_STOPS_MAIL_SENDING_THREAD");
+  }
+
+  /**
+   * Gets the next request.
+   * @return the next request.
+   */
+  private Request nextRequest() {
+    synchronized (requestList) {
+      final Request nextRequest;
+      if (!requestList.isEmpty()) {
+        SilverTrace.info("mailSenderEngine", "MailSenderThread", "root.MSG_GEN_PARAM_VALUE",
+            "# of mails to send = " + requestList.size());
+        nextRequest = requestList.remove(0);
+      } else {
+        nextRequest = null;
+        mailSenderThread = null;
+      }
+      return nextRequest;
     }
   }
 }
@@ -203,8 +183,7 @@ class AddMailToSendRequest implements Request {
    * @param orderedOneByOneSemaphore
    */
   @Override
-  public void process(final Semaphore orderedOneByOneSemaphore)
-      throws InterruptedException {
+  public void process(final Semaphore orderedOneByOneSemaphore) throws InterruptedException {
     try {
       orderedOneByOneSemaphore.acquire();
       MailSenderProvider.get().send(mailToSend);
