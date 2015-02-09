@@ -289,7 +289,7 @@
 </head>
 <body>
 <c:if test="${actionWysiwyg eq 'Load' or actionWysiwyg eq 'Refresh'}">
-<view:browseBar componentId="<%=componentName%>" extraInformations="<%=browseInformation%>"/>
+<view:browseBar componentId="<%=componentId%>" extraInformations="<%=browseInformation%>"/>
 <view:window>
 
 <script type="text/javascript">
