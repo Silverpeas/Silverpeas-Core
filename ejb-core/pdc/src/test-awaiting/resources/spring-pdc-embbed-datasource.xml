@@ -32,7 +32,7 @@
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
   <jdbc:embedded-database id="jpaDataSource" type="H2" >
-    <jdbc:script location="classpath:/com/silverpeas/pdc/dao/create-database.sql" />
+    <jdbc:script location="classpath:/com/silverpeas/pdc/service/create-database.sql" />
   </jdbc:embedded-database>
 
 </beans>

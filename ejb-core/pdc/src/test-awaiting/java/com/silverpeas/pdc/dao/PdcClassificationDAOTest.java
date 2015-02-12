@@ -74,7 +74,7 @@ public class PdcClassificationDAOTest {
   public void generalSetUp() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
             PdcClassificationDAOTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/pdc/dao/pdc-dataset.xml")));
+                "com/silverpeas/pdc/service/pdc-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);

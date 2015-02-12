@@ -28,6 +28,8 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.List;
 
 /**
@@ -52,6 +54,10 @@ import java.util.List;
  * given node, then it is seeked back upto the root node (that is the component instance ifself).
  */
 public interface PdcClassificationService {
+
+  static PdcClassificationService get() {
+    return ServiceProvider.getService(PdcClassificationService.class);
+  }
 
   /**
    * Finds a predefined classification on the PdC that was set for any new contents in the specified
