@@ -96,8 +96,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
       QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
       return this.setNbMaxPoints(questionContainerHeaders);
@@ -105,9 +104,8 @@ public class DefaultQuestionContainerService implements QuestionContainerService
       throw new QuestionContainerRuntimeException(
           "DefaultQuestionContainerService.getQuestionContainers()",
           SilverpeasRuntimeException.ERROR,
+
           "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -117,16 +115,13 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.getQuestionContainerHeaders()",
             "root.MSG_GEN_ENTER_METHOD", "pks = " + pks.toString());
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       return QuestionContainerDAO.getQuestionContainers(con, pks);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
           "DefaultQuestionContainerService.getQuestionContainerHeaders()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_QUESTIONCONTAINER_LIST_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -187,9 +182,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace.info("questionContainer",
         "DefaultQuestionContainerService.getNotClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
-
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getNotClosedQuestionContainers(con, questionContainerPK);
       return this.setNbMaxPoints(questionContainerHeaders);
@@ -198,8 +191,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getNotClosedQuestionContainers()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_NOT_CLOSED_QUESTIONCONTAINERS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -209,9 +200,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.getOpenedQuestionContainers()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
-
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> result =
           QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
       return setNbMaxPoints(result);
@@ -220,8 +209,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getOpenedQuestionContainers()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -232,10 +219,8 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         "DefaultQuestionContainerService.getOpenedQuestionContainersAndUserScores()",
         "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
-    Connection con = getConnection();
-    try {
-
-      Collection<QuestionContainerHeader> questionContainerHeaders =
+    try (Connection con = getConnection()) {
+    Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
       List<QuestionContainerHeader> result = new ArrayList<>(questionContainerHeaders.size());
       for (QuestionContainerHeader questionContainerHeader : questionContainerHeaders) {
@@ -249,8 +234,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getOpenedQuestionContainersAndUserScores()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_OPENED_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -261,8 +244,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         info("questionContainer",
             "DefaultQuestionContainerService.getQuestionContainersWithScores()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
       List<QuestionContainerHeader> result = new ArrayList<>(questionContainerHeaders.size());
@@ -279,8 +261,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getQuestionContainersWithScores()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_QUESTIONCONTAINERS_AND_SCORES_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -291,10 +271,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         "DefaultQuestionContainerService.getQuestionContainersWithUserScores()",
         "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
-    Connection con = getConnection();
-
-    try {
-
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
       Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
@@ -315,8 +292,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getQuestionContainersWithUserScores()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_QUESTIONCONTAINERS_AND_USER_SCORES_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -326,9 +301,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.getClosedQuestionContainers()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
-
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> result =
           QuestionContainerDAO.getClosedQuestionContainers(con, questionContainerPK);
       return setNbMaxPoints(result);
@@ -337,8 +310,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getClosedQuestionContainers()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_CLOSED_QUESTIONCONTAINERS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -348,9 +319,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.getInWaitQuestionContainers()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
-
+    try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> result =
           QuestionContainerDAO.getInWaitQuestionContainers(con, questionContainerPK);
       return setNbMaxPoints(result);
@@ -359,8 +328,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getInWaitQuestionContainers()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_INWAIT_QUESTIONCONTAINERS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -405,7 +372,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     Collection<ScoreDetail> scores;
     ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
-
     try {
       scores = scoreService.getBestScoresByFatherId(scorePK, nbBestScores, questionContainerPK.getId());
       return scores;
@@ -427,7 +393,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     Collection<ScoreDetail> scores;
     ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
-
     try {
       scores = scoreService.getWorstScoresByFatherId(scorePK, nbScores, questionContainerPK.getId());
       return scores;
@@ -446,7 +411,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     Collection<ScoreDetail> scores;
     ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
-
     try {
       scores = scoreService.getScoresByFatherId(scorePK, questionContainerPK.getId());
       if (scores != null) {
@@ -474,7 +438,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     float averageScore;
     ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
-
     try {
       averageScore = scoreService.getAverageScoreByFatherId(scorePK, questionContainerPK.getId());
       return averageScore;
@@ -492,18 +455,16 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
-    Connection con = getConnection();
     Collection<Question> questions;
-    Collection<Comment> comments = null;
+    Collection<Comment> comments;
     QuestionContainerHeader questionContainerHeader;
-    Collection<QuestionResult> userVotes = null;
+    Collection<QuestionResult> userVotes;
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
     QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     int nbMaxPoints = 0;
-
     try {
       questions = questionService.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
       for (Question question : questions) {
@@ -516,18 +477,8 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED",
           e);
     }
-
-    try {
-      userVotes = getUserVotesToQuestionContainer(userId, questionContainerPK);
-    } finally {
-      DBUtil.close(con);
-    }
-
-    try {
-      comments = getComments(questionContainerPK);
-    } finally {
-      DBUtil.close(con);
-    }
+    userVotes = getUserVotesToQuestionContainer(userId, questionContainerPK);
+    comments = getComments(questionContainerPK);
 
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getQuestionContainer()",
         "root.MSG_GEN_EXIT_METHOD",
@@ -541,10 +492,8 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.getQuestionContainerHeader()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
     QuestionContainerHeader questionContainerHeader = null;
-
-    try {
+    try (Connection con = getConnection()) {
 
       questionContainerHeader =
           QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
@@ -553,10 +502,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.getQuestionContainer()",
           SilverpeasRuntimeException.ERROR, "questionContainer.GETTING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
-
     return questionContainerHeader;
   }
 
@@ -612,8 +558,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.closeQuestionContainer()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
 
       // begin PDC integration
       QuestionContainerHeader qc =
@@ -626,8 +571,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.closeQuestionContainer()",
           SilverpeasRuntimeException.ERROR, "questionContainer.CLOSING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -636,8 +579,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   public void openQuestionContainer(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.openQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       // begin PDC integration
       QuestionContainerHeader qc =
           QuestionContainerDAO.getQuestionContainerHeader(con, questionContainerPK);
@@ -649,8 +591,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.openQuestionContainer()",
           SilverpeasRuntimeException.ERROR, "questionContainer.OPENING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -664,7 +604,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
     ScoreService scoreService = this.scoreService;
-
     try {
       nbVoters = scoreService.getNbVotersByFatherId(scorePK, questionContainerPK.getId());
     } catch (Exception e) {
@@ -829,10 +768,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     scoreService.addScore(scoreDetail);
 
-    Connection con = getConnection();
-
-    try {
-
+    try (Connection con = getConnection()) {
       // Increment the number of voters
       QuestionContainerDAO.addAVoter(con, questionContainerPK);
     } catch (Exception e) {
@@ -840,8 +776,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -864,17 +798,13 @@ public class DefaultQuestionContainerService implements QuestionContainerService
         "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK + ", userId = " + userId + ", comment = " +
             comment);
-    Connection con = getConnection();
-    try {
-
+    try (Connection con = getConnection()) {
       Comment c = new Comment(null, questionContainerPK, userId, comment, isAnonymousComment, null);
       QuestionContainerDAO.addComment(con, c);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.addComment()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.ADDING_QUESTIONCONTAINER_COMMENT_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -886,12 +816,10 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             "root.MSG_GEN_ENTER_METHOD",
             "questionContainerPK = " + questionContainerPK + ", questionContainerDetail = " +
                 questionContainerDetail + ", userId = " + userId);
-    Connection con = getConnection();
     QuestionContainerHeader questionContainerHeader = questionContainerDetail.getHeader();
     questionContainerHeader.setPK(questionContainerPK);
     questionContainerHeader.setCreatorId(userId);
-    try {
-
+    try (Connection con = getConnection()) {
       questionContainerPK =
           QuestionContainerDAO.createQuestionContainerHeader(con, questionContainerHeader);
       questionContainerHeader.setPK(questionContainerPK);
@@ -902,8 +830,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.createQuestionContainer()",
           SilverpeasRuntimeException.ERROR, "questionContainer.CREATING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
     QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
@@ -932,8 +858,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace.info("questionContainer",
         "DefaultQuestionContainerService.updateQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       QuestionContainerDAO.updateQuestionContainerHeader(con, questionContainerHeader);
       // start PDC integration
       QuestionContainerContentManager.updateSilverContentVisibility(questionContainerHeader, true);
@@ -944,8 +869,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.updateQuestionContainerHeader()",
           SilverpeasRuntimeException.ERROR, "questionContainer.UPDATING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -976,7 +899,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   public void deleteVotes(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.deleteVotes()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
     ScorePK scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
     QuestionPK questionPK =
@@ -986,13 +908,11 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     ScoreService scoreService = this.scoreService;
     QuestionResultService questionResultService = this.questionResultService;
 
-    try {
+    try (Connection con = getConnection()) {
       QuestionContainerHeader qch = getQuestionContainerHeader(questionContainerPK);
       // mise a zero du nombre de participation
       qch.setNbVoters(0);
       updateQuestionContainerHeader(qch);
-
-
       scoreService.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
 
       // delete comments
@@ -1020,8 +940,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
       throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.deleteVotes()",
           SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -1031,7 +949,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     SilverTrace
         .info("questionContainer", "DefaultQuestionContainerService.deleteQuestionContainer()",
             "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
     ScorePK scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
     QuestionPK questionPK =
@@ -1054,7 +971,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
           e);
     }
-    try {
+    try (Connection con = getConnection()) {
       QuestionContainerDAO.deleteComments(con, questionContainerPK);
       QuestionContainerDAO.deleteQuestionContainerHeader(con, questionContainerPK);
       QuestionContainerContentManager.deleteSilverContent(con, questionContainerPK);
@@ -1063,25 +980,18 @@ public class DefaultQuestionContainerService implements QuestionContainerService
           "DefaultQuestionContainerService.deleteQuestionContainer()",
           SilverpeasRuntimeException.ERROR, "questionContainer.DELETING_QUESTIONCONTAINER_FAILED",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   private Collection<Comment> getComments(QuestionContainerPK questionContainerPK) {
     SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getComments()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
-    Connection con = getConnection();
-
-    try {
-
+    try (Connection con = getConnection()) {
       return QuestionContainerDAO.getComments(con, questionContainerPK);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException("DefaultQuestionContainerService.getComments()",
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_QUESTIONCONTAINER_COMMENTS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
