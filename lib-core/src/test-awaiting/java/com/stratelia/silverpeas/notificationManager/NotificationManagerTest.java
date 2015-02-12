@@ -25,39 +25,35 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import org.silverpeas.util.ResourceLocator;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.silverpeas.test.rule.MockByReflectionRule;
+
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
 import static com.stratelia.silverpeas.notificationManager.NotificationParameters.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests on the manager of notifications.
  */
 public class NotificationManagerTest {
 
-  public NotificationManagerTest() {
-  }
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
+  private ResourceLocator mockedSettings;
 
   @Before
   public void setUp() {
-  }
 
-  @After
-  public void tearDown() {
+    // Settings
+    mockedSettings = reflectionRule
+        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
   }
 
   /**
@@ -75,16 +71,14 @@ public class NotificationManagerTest {
    */
   @Test
   public void loadOfDefaultChannelSettingsSetsTheSpecifiedKnownChannelsAsDefault() {
-    ResourceLocator mockedResourceLocator = mock(ResourceLocator.class);
-    when(mockedResourceLocator.getString("multiChannelNotification")).thenReturn("true");
-    when(mockedResourceLocator.getString("notif.defaultChannels")).thenReturn(
+    when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(true);
+    when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn(
         "BASIC_SMTP_MAIL   BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    BASIC_SILVERMAIL");
     List<Integer> expectedDefaultChannels = Arrays.asList(ADDRESS_BASIC_SMTP_MAIL,
         ADDRESS_BASIC_SERVER,
         ADDRESS_BASIC_SILVERMAIL);
 
     NotificationManager notificationManager = new NotificationManager(null);
-    notificationManager.setNotificationResources(mockedResourceLocator);
     List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
     assertTrue(expectedDefaultChannels.containsAll(actualDefaultChannels));
   }
@@ -95,16 +89,15 @@ public class NotificationManagerTest {
    */
   @Test
   public void noMultiSupportChannelSettingSetsOnlyOneSpecifiedDefaultChannel() {
-    ResourceLocator mockedResourceLocator = mock(ResourceLocator.class);
-    when(mockedResourceLocator.getString("multiChannelNotification")).thenReturn("false");
-    when(mockedResourceLocator.getString("notif.defaultChannels")).thenReturn(
-        "TOTO BASIC_COMMUNICATION_USER   BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    BASIC_SILVERMAIL");
+    when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(false);
+    when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn(
+        "TOTO BASIC_COMMUNICATION_USER   BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    " +
+            "BASIC_SILVERMAIL");
 
     NotificationManager notificationManager = new NotificationManager(null);
-    notificationManager.setNotificationResources(mockedResourceLocator);
     List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
     assertEquals(1, actualDefaultChannels.size());
-    assertEquals((int)ADDRESS_BASIC_COMMUNICATION_USER, (int)actualDefaultChannels.get(0));
+    assertEquals(ADDRESS_BASIC_COMMUNICATION_USER, (int)actualDefaultChannels.get(0));
   }
 
   /**
@@ -113,31 +106,12 @@ public class NotificationManagerTest {
    */
   @Test
   public void emptyDefaultChannelsSetsSMTPChannelAsDefault() {
-    ResourceLocator mockedResourceLocator = mock(ResourceLocator.class);
-    when(mockedResourceLocator.getString("multiChannelNotification")).thenReturn("true");
-    when(mockedResourceLocator.getString("notif.defaultChannels")).thenReturn("");
+    when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(true);
+    when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn("");
 
     NotificationManager notificationManager = new NotificationManager(null);
-    notificationManager.setNotificationResources(mockedResourceLocator);
     List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
     assertEquals(1, actualDefaultChannels.size());
-    assertEquals((int)ADDRESS_BASIC_SMTP_MAIL, (int)actualDefaultChannels.get(0));
-  }
-
-  /**
-   * No defined default channels means previous behaviour of Silverpeas: the SMTP mail channel is
-   * set as default channel.
-   */
-  @Test
-  public void noDefinedDefaultChannelsSetsSMTPChannelAsDefault() {
-    ResourceLocator mockedResourceLocator = mock(ResourceLocator.class);
-    when(mockedResourceLocator.getString("multiChannelNotification")).thenReturn("true");
-    when(mockedResourceLocator.getString("notif.defaultChannels")).thenReturn(null);
-
-    NotificationManager notificationManager = new NotificationManager(null);
-    notificationManager.setNotificationResources(mockedResourceLocator);
-    List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
-    assertEquals(1, actualDefaultChannels.size());
-    assertEquals((int)ADDRESS_BASIC_SMTP_MAIL, (int)actualDefaultChannels.get(0));
+    assertEquals(ADDRESS_BASIC_SMTP_MAIL, (int)actualDefaultChannels.get(0));
   }
 }

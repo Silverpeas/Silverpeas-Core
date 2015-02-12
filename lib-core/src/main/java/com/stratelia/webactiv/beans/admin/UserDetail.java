@@ -53,6 +53,10 @@ import java.util.List;
 
 import static org.silverpeas.util.StringUtil.areStringEquals;
 import static org.silverpeas.util.StringUtil.isDefined;
+import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+    .getUserManualNotificationRecipientLimit;
+import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+    .isUserManualNotificationRecipientLimitEnabled;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String CURRENT_REQUESTER_KEY =
@@ -767,6 +771,28 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       SilverTrace.warn("admin", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
     }
     return false;
+  }
+
+  /**
+   * Indicates if a limitation exists about the number of receivers the user can notify manually.
+   * @return true if the limitation exists, false otherwise.
+   */
+  public boolean isUserManualNotificationUserReceiverLimit() {
+    return getUserManualNotificationUserReceiverLimit() > 0;
+  }
+
+  /**
+   * Gets the maximum user receivers the user can notify manually.
+   * @return the maximum user receivers the user can notify manually. If the value is not greater
+   * than 0, the user is not limited.
+   */
+  public int getUserManualNotificationUserReceiverLimit() {
+    int limit = 0;
+    if (isUserManualNotificationRecipientLimitEnabled() && (isAccessUser() || isAccessGuest() ||
+        isAnonymous())) {
+      limit = getUserManualNotificationRecipientLimit();
+    }
+    return limit;
   }
 
   /**

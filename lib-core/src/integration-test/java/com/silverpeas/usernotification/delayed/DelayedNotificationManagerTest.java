@@ -74,7 +74,6 @@ public class DelayedNotificationManagerTest {
   @Test
   public void testGetPossibleFrequencies() throws Exception {
     final Set<DelayedNotificationFrequency> possibleFrequencies = manager.getPossibleFrequencies();
-    assertThat(manager.getPossibleFrequencies(), sameInstance(possibleFrequencies));
     assertThat(possibleFrequencies, containsInAnyOrder(DelayedNotificationFrequency.values()));
   }
 

@@ -33,14 +33,15 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import static com.stratelia.silverpeas.notificationManager.CurrentUserNotificationContext
+    .getCurrentUserNotificationContext;
 
 /**
  * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
@@ -90,32 +91,10 @@ public class NotificationSender implements java.io.Serializable {
    */
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {
+    getCurrentUserNotificationContext().checkManualUserNotification(metaData);
 
-    // String[] allUsers;
-    Set<UserRecipient> usersSet = new HashSet<>();
-    Collection<UserRecipient> userRecipients = metaData.getUserRecipients();
-    Collection<GroupRecipient> groupRecipients = metaData.getGroupRecipients();
-
-    // Delete doublons between direct users and users included in groups
-    SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    // If sender exists, it is excluded
-    String senderId = metaData.getSender();
-    if (StringUtil.isInteger(senderId) && Integer.parseInt(senderId) > 0) {
-      metaData.addUserRecipientToExclude(new UserRecipient(senderId));
-    }
-
-    // First get direct users
-    usersSet.addAll(userRecipients);
-
-    // Then get users included in groups
-    for (GroupRecipient group : groupRecipients) {
-      usersSet.addAll(notificationManager.getUsersFromGroup(group.getGroupId()));
-    }
-
-    // Then exclude users that don't have to be notified
-    usersSet.removeAll(metaData.getUserRecipientsToExclude());
+    // Getting all the user recipients that represents the user and group recipients
+    Set<UserRecipient> usersSet = metaData.getAllUserRecipients(true);
 
     Set<String> languages = metaData.getLanguages();
     Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
@@ -162,7 +141,7 @@ public class NotificationSender implements java.io.Serializable {
       notificationManager.notifyExternals(params, metaData.getExternalRecipients());
     }
 
-    if (metaData.isManual() &&
+    if (metaData.isSendByAUser() &&
         aMediaType != NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
       // save notification for history
       saveNotification(metaData, usersSet);

@@ -60,18 +60,6 @@ public class DelayedNotificationManager implements DelayedNotification {
   private static final Object SYNCHRONIZED = new Object();
 
   /**
-   * Settings location
-   */
-  private final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.notificationManager.settings.notificationManagerSettings",
-          "");
-
-  /**
-   * Contains the possible frequencies for users
-   */
-  private static Set<DelayedNotificationFrequency> POSSIBLE_FREQUENCIES;
-
-  /**
    * For now, only the SMTP channel can be delayed (mail)
    */
   private static final Set<NotifChannel> WIRED_CHANNELS = new HashSet<>();
@@ -255,47 +243,13 @@ public class DelayedNotificationManager implements DelayedNotification {
   @Override
   @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public Set<DelayedNotificationFrequency> getPossibleFrequencies() {
-    if (POSSIBLE_FREQUENCIES == null) {
-      synchronized (SYNCHRONIZED) {
-        if (POSSIBLE_FREQUENCIES == null) {
-
-          // Initialization
-          final Set<DelayedNotificationFrequency> possibleFrequencies = new HashSet<>();
-
-          // The parameter value
-          final String frequencyChoiceList =
-              settings.getString("DELAYED_NOTIFICATION_FREQUENCY_CHOICE_LIST", "")
-                  .replaceAll(" ", "");
-
-          // The posible frequencies
-          if (StringUtils.isNotBlank(frequencyChoiceList)) {
-            for (final String frequencyCode : frequencyChoiceList.split("[,;|]")) {
-              if ("*".equals(frequencyCode)) {
-                possibleFrequencies.addAll(Arrays.asList(DelayedNotificationFrequency.values()));
-              } else {
-                possibleFrequencies.add(DelayedNotificationFrequency.decode(frequencyCode));
-              }
-            }
-          }
-
-          // Eliminating wrong frequencies
-          possibleFrequencies.remove(null);
-          POSSIBLE_FREQUENCIES = new TreeSet<>(possibleFrequencies);
-        }
-      }
-    }
-    return POSSIBLE_FREQUENCIES;
+    return NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList();
   }
 
   @Override
   @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
-    DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency
-        .decode(settings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
-    if (defaultFrequency == null) {
-      defaultFrequency = DelayedNotificationFrequency.NONE;
-    }
-    return defaultFrequency;
+    return NotificationManagerSettings.getDefaultDelayedNotificationFrequency();
   }
 
   @Override

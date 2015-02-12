@@ -48,10 +48,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings.*;
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
     .notification_receiver_groups;
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
     .notification_receiver_users;
+import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 public class NotificationMetaData implements java.io.Serializable {
   private static final long serialVersionUID = 6004274748540324759L;
@@ -86,9 +88,10 @@ public class NotificationMetaData implements java.io.Serializable {
 
   private String originalExtraMessage = null;
   private boolean displayReceiversInFooter = false;
-  
-  private ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.notificationManager.settings.notificationManagerSettings", "");
+
+  private boolean isManualUserOne = false;
+
+  protected NotificationManager notificationManager = null;
 
 
   /**
@@ -278,13 +281,15 @@ public class NotificationMetaData implements java.io.Serializable {
     SilverpeasTemplate templateMessageFooter = getTemplateMessageFooter(language);
     if (templateMessageFooter != null && this.displayReceiversInFooter) {
       try {
-        String receiver_users = addReceiverUsers();
+        String receiver_users = getUserReceiverFormattedList();
         if (StringUtil.isDefined(receiver_users)) {
-          templateMessageFooter.setAttribute(notification_receiver_users.toString(), receiver_users);
+          templateMessageFooter
+              .setAttribute(notification_receiver_users.toString(), receiver_users);
         }
-        String receiver_groups = addReceiverGroups();
+        String receiver_groups = getGroupReceiverFormattedList();
         if (StringUtil.isDefined(receiver_groups)) {
-          templateMessageFooter.setAttribute(notification_receiver_groups.toString(), receiver_groups);
+          templateMessageFooter
+              .setAttribute(notification_receiver_groups.toString(), receiver_groups);
         }
       } catch (NotificationManagerException e) {
         SilverTrace.warn("notificationManager",
@@ -639,11 +644,10 @@ public class NotificationMetaData implements java.io.Serializable {
   }
   
   /**
-   * Indicates if the notification is manual (sent by a Silverpeas user) or automatic.
-   *
-   * @return true if the notification is sent by a Silverpeas user - false otherwise.
+   * Indicates if the notification is sent by a Silverpeas user or by a batch treatment.
+   * @return true if the notification is sent by a Silverpeas user, false otherwise.
    */
-  public boolean isManual() {
+  public boolean isSendByAUser() {
     return StringUtil.isInteger(getSender());
   }
   
@@ -666,14 +670,68 @@ public class NotificationMetaData implements java.io.Serializable {
 
     return templateMessageFooter;
   }
-  
-  public Set<UserRecipient> getUserSet()
+
+  /**
+   * Gets the complete list of users that will receive the notification, so it takes into account
+   * users of groups.<br/>
+   * If the sender is identified, it is removed from the result.<br/>
+   * No internal data of the current {@link NotificationMetaData} is updated.
+   * @return the complete list of users that will receive the notification.
+   */
+  public Set<UserRecipient> getAllUserRecipients() throws NotificationManagerException {
+    return getAllUserRecipients(false);
+  }
+
+  /**
+   * Gets the complete list of users that will receive the notification, so it takes into account
+   * users of groups.<br/>
+   * If the sender is identified (as a user), it is removed from the result.<br/>
+   * @param updateInternalUserRecipientsToExclude if true, the internal container of user
+   * recipients
+   * to exclude will be updated. This container is provided by {@link
+   * #getUserRecipientsToExclude()}. If false, nothing is done.
+   * @return the complete list of users that will receive the notification.
+   */
+  public Set<UserRecipient> getAllUserRecipients(boolean updateInternalUserRecipientsToExclude)
+      throws NotificationManagerException {
+
+    Set<UserRecipient> allUniqueUserRecipients = new HashSet<UserRecipient>();
+    Collection<UserRecipient> userRecipients = getUserRecipients();
+    Collection<GroupRecipient> groupRecipients = getGroupRecipients();
+    Collection<UserRecipient> userRecipientsToExclude =
+        updateInternalUserRecipientsToExclude ? getUserRecipientsToExclude() :
+            new HashSet<UserRecipient>(getUserRecipientsToExclude());
+
+    // If sender exists, it is excluded
+    String senderId = getSender();
+    if (StringUtil.isInteger(senderId) && Integer.parseInt(senderId) > 0) {
+      UserRecipient senderUserRecipient = new UserRecipient(senderId);
+      userRecipientsToExclude.add(senderUserRecipient);
+    }
+
+    // First get direct users
+    allUniqueUserRecipients.addAll(userRecipients);
+
+    // Then get users included in groups
+    for (GroupRecipient group : groupRecipients) {
+      allUniqueUserRecipients
+          .addAll(getNotificationManager().getUsersFromGroup(group.getGroupId()));
+    }
+
+    // Then exclude users that don't have to be notified
+    allUniqueUserRecipients.removeAll(userRecipientsToExclude);
+
+    // Returning the completed list
+    return allUniqueUserRecipients;
+  }
+
+  private Set<UserRecipient> getUsersForReceiverBlock()
       throws NotificationManagerException {
     HashSet<UserRecipient> usersSet = new HashSet<UserRecipient>();
     usersSet.addAll(getUserRecipients());
     for (GroupRecipient group : getGroupRecipients()) {
       if (!displayGroup(group.getGroupId())) {
-        usersSet.addAll(new NotificationManager(null).getUsersFromGroup(group.getGroupId()));
+        usersSet.addAll(getNotificationManager().getUsersFromGroup(group.getGroupId()));
       }
     }
 
@@ -682,44 +740,34 @@ public class NotificationMetaData implements java.io.Serializable {
 
     return usersSet;
   }
-  
-  private boolean displayGroup(String groupId) {
-    String threshold = settings.getString("notif.receiver.displayUser.threshold");
-    OrganizationController orgaController = OrganizationControllerProvider.
-        getOrganisationController();
-    Group group = orgaController.getGroup(groupId);
+
+  protected boolean displayGroup(String groupId) {
+    int threshold = getReceiverThresholdAfterThatReplaceUserNameListByGroupName();
+    Group group = getOrganisationController().getGroup(groupId);
     int nbUsers = group.getNbUsers();
-    boolean res1 = settings.getBoolean("notif.receiver.displayGroup", false);
-    boolean res2 = StringUtil.isDefined(threshold);
-    boolean res3 = StringUtil.isInteger(threshold);
-    boolean res4 = nbUsers > Integer.parseInt(threshold);
-    boolean result = res1 || (res2 && res3 && res4);
-    return result;
+    boolean res1 = isDisplayingUserNameListInsteadOfGroupEnabled();
+    boolean res2 = threshold > 0 && nbUsers > threshold;
+    return res1 || res2;
   }
-  
-  public void displayReceiversInFooter() {
-    this.displayReceiversInFooter = true;
-  }
-  
-  public String addReceiverUsers() throws NotificationManagerException {
+
+  private String getUserReceiverFormattedList() throws NotificationManagerException {
     StringBuilder users = new StringBuilder();
-    if (settings.getBoolean("addReceiversInBody", false) && this.displayReceiversInFooter) {
-      Set<UserRecipient> usersSet = getUserSet();
-      OrganizationController orgaController = OrganizationControllerProvider.
-          getOrganisationController();
+    if (isDisplayingReceiversInNotificationMessageEnabled() && this.displayReceiversInFooter) {
+      Set<UserRecipient> usersSet = getUsersForReceiverBlock();
       boolean first = true;
       for (UserRecipient anUsersSet : usersSet) {
         if (!first) {
           users.append(", ");
         }
-        users.append(orgaController.getUserDetail(anUsersSet.getUserId()).getDisplayedName());
+        users.append(
+            getOrganisationController().getUserDetail(anUsersSet.getUserId()).getDisplayedName());
         first = false;
       }
     }
     return users.toString();
   }
-  
-  public Set<GroupRecipient> getGroupSet() {
+
+  private Set<GroupRecipient> getGroupsForReceiverBlock() {
     HashSet<GroupRecipient> groupsSet = new HashSet<GroupRecipient>();
     for (GroupRecipient group : getGroupRecipients()) {
       if (displayGroup(group.getGroupId())) {
@@ -730,21 +778,61 @@ public class NotificationMetaData implements java.io.Serializable {
     return groupsSet;
   }
 
-  public String addReceiverGroups() {
+  private String getGroupReceiverFormattedList() {
     StringBuilder groups = new StringBuilder();
-    if (settings.getBoolean("addReceiversInBody", false) && this.displayReceiversInFooter) {
-      Set<GroupRecipient> groupsSet = getGroupSet();
-      OrganizationController orgaController =
-          OrganizationControllerProvider.getOrganisationController();
+    if (isDisplayingReceiversInNotificationMessageEnabled() && this.displayReceiversInFooter) {
+      Set<GroupRecipient> groupsSet = getGroupsForReceiverBlock();
       boolean first = true;
       for (GroupRecipient aGroupsSet : groupsSet) {
         if (!first) {
           groups.append(", ");
         }
-        groups.append(orgaController.getGroup(aGroupsSet.getGroupId()).getName());
+        groups.append(getOrganisationController().getGroup(aGroupsSet.getGroupId()).getName());
         first = false;
       }
     }
     return groups.toString();
+  }
+
+  /**
+   * Calling this method to authorize the display of the users and groups that will
+   * received the same notification in the footer of the notification message.
+   * @return the current {@link NotificationMetaData} instance.
+   */
+  public NotificationMetaData displayReceiversInFooter() {
+    this.displayReceiversInFooter = true;
+    return this;
+  }
+
+  /**
+   * Sets that the current {@link NotificationMetaData} instance concerns a manual notification
+   * between a sender user and several user/group receivers.
+   * @return the current {@link NotificationMetaData} instance.
+   */
+  public NotificationMetaData manualUserNotification() {
+    this.isManualUserOne = true;
+    return this;
+  }
+
+  /**
+   * Indicates if the current {@link NotificationMetaData} concerns a manual notification between a
+   * sender user and several user/group receivers. <br/>
+   * Warning : the sender information is not verified.
+   * @return true if the current {@link NotificationMetaData} concerns a manual one, false
+   * otherwise.
+   */
+  public boolean isManualUserOne() {
+    return isManualUserOne;
+  }
+
+  /**
+   * Gets the notification manager instance.
+   * @return the notification manager instance.
+   */
+  private NotificationManager getNotificationManager() {
+    if (notificationManager == null) {
+      notificationManager = new NotificationManager(null);
+    }
+    return notificationManager;
   }
 }
