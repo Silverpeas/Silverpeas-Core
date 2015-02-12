@@ -23,23 +23,6 @@
  */
 package com.silverpeas.notification.delayed;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ibm.icu.util.Calendar;
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
@@ -50,9 +33,21 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.notification.repository.NotificationResourceRepository;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.MapUtil;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
@@ -61,13 +56,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 @Transactional
 public class DelayedNotificationManager implements DelayedNotification {
   private static final Object SYNCHRONIZED = new Object();
-
-  /** Settings location */
-  private final ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
-
-  /** Contains the possible frequencies for users */
-  private static Set<DelayedNotificationFrequency> POSSIBLE_FREQUENCIES;
 
   /** For now, only the SMTP channel can be delayed (mail) */
   private static final Set<NotifChannel> WIRED_CHANNELS = new HashSet<NotifChannel>();
@@ -259,46 +247,13 @@ public class DelayedNotificationManager implements DelayedNotification {
   @Override
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Set<DelayedNotificationFrequency> getPossibleFrequencies() {
-    if (POSSIBLE_FREQUENCIES == null) {
-      synchronized (SYNCHRONIZED) {
-        if (POSSIBLE_FREQUENCIES == null) {
-
-          // Initialization
-          final Set<DelayedNotificationFrequency> possibleFrequencies = new HashSet<DelayedNotificationFrequency>();
-
-          // The parameter value
-          final String frequencyChoiceList =
-              settings.getString("DELAYED_NOTIFICATION_FREQUENCY_CHOICE_LIST", "").replaceAll(" ", "");
-
-          // The posible frequencies
-          if (StringUtils.isNotBlank(frequencyChoiceList)) {
-            for (final String frequencyCode : frequencyChoiceList.split("[,;|]")) {
-              if ("*".equals(frequencyCode)) {
-                possibleFrequencies.addAll(Arrays.asList(DelayedNotificationFrequency.values()));
-              } else {
-                possibleFrequencies.add(DelayedNotificationFrequency.decode(frequencyCode));
-              }
-            }
-          }
-
-          // Eliminating wrong frequencies
-          possibleFrequencies.remove(null);
-          POSSIBLE_FREQUENCIES = new TreeSet<DelayedNotificationFrequency>(possibleFrequencies);
-        }
-      }
-    }
-    return POSSIBLE_FREQUENCIES;
+    return NotificationManagerSettings.getDelayedNotificationFrequencyChoiceList();
   }
 
   @Override
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
-    DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency.decode(settings.getString(
-        "DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
-    if (defaultFrequency == null) {
-      defaultFrequency = DelayedNotificationFrequency.NONE;
-    }
-    return defaultFrequency;
+    return NotificationManagerSettings.getDefaultDelayedNotificationFrequency();
   }
 
   @Override
