@@ -51,15 +51,16 @@ CREATE TABLE SB_Pdc_Group_Rights
 	axisId	int	NOT NULL,
 	valueId	int	NOT NULL,
 	groupId	int	NOT NULL,
-	CONSTRAINT FK_Pdc_Group_Rights_1 FOREIGN KEY (axisId) REFERENCES SB_Pdc_Axis(id)
+	CONSTRAINT FK_Pdc_Group_Rights_1 FOREIGN KEY (axisId) REFERENCES SB_Pdc_Axis(id),
+	CONSTRAINT FK_Pdc_Group_Rights_2 FOREIGN KEY (groupId) REFERENCES ST_Group(id)
 )
 ;
 
 create table PdcAxisValue (
   valueId bigint not null,
   axisId bigint not null,
-  CONSTRAINT FK_Pdc_Group_Rights_2 FOREIGN KEY (groupId) REFERENCES ST_Group(id)
 );
+ALTER TABLE PdcAxisValue ADD CONSTRAINT PK_PdcAxisValue PRIMARY KEY  CLUSTERED (valueId, axisId);
 
 create table PdcClassification (
   id bigint identity not null,
@@ -68,10 +69,12 @@ create table PdcClassification (
   modifiable bit not null,
   nodeId varchar(255) null
 );
+ALTER TABLE PdcClassification ADD CONSTRAINT PK_PdcClassification PRIMARY KEY  CLUSTERED (id);
 
 create table PdcPosition (
   id bigint identity not null
 );
+ALTER TABLE PdcPosition ADD CONSTRAINT PK_PdcPosition PRIMARY KEY CLUSTERED (id);
 
 create table PdcClassification_PdcPosition (
   PdcClassification_id bigint not null,
@@ -79,7 +82,8 @@ create table PdcClassification_PdcPosition (
   constraint FK_PdcClassification_PdcPosition_PositionId foreign key (positions_id) references PdcPosition,
   constraint FK_PdcClassification_PdcPosition_PositionId_PdcClassificationId foreign key (PdcClassification_id) references PdcClassification
 );
-
+ALTER TABLE PdcClassification_PdcPosition ADD CONSTRAINT PK_PdcClassification_PdcPosition PRIMARY KEY CLUSTERED (PdcClassification_id, positions_id);
+ALTER TABLE PdcClassification_PdcPosition ADD CONSTRAINT UQ_PdcClassification_PdcPosition UNIQUE (positions_id);
 
 create table PdcPosition_PdcAxisValue (
   PdcPosition_id bigint not null,
@@ -88,14 +92,4 @@ create table PdcPosition_PdcAxisValue (
   constraint FK_PdcPosition_PdcAxisValue_AxisValuesId foreign key (axisValues_valueId, axisValues_axisId) references PdcAxisValue,
   constraint FK_PdcPosition_PdcAxisValue_PdcPositionId foreign key (PdcPosition_id) references PdcPosition
 );
-
-ALTER TABLE PdcAxisValue ADD CONSTRAINT PK_PdcAxisValue PRIMARY KEY  CLUSTERED (valueId, axisId);
-
-ALTER TABLE PdcClassification ADD CONSTRAINT PK_PdcClassification PRIMARY KEY  CLUSTERED (id);
-
-ALTER TABLE PdcClassification_PdcPosition ADD CONSTRAINT PK_PdcClassification_PdcPosition PRIMARY KEY CLUSTERED (PdcClassification_id, positions_id);
-ALTER TABLE PdcClassification_PdcPosition ADD CONSTRAINT UQ_PdcClassification_PdcPosition UNIQUE (positions_id);
-
-ALTER TABLE PdcPosition ADD CONSTRAINT PK_PdcPosition PRIMARY KEY CLUSTERED (id);
-
 ALTER TABLE PdcPosition_PdcAxisValue ADD CONSTRAINT PK_PdcPosition_PdcAxisValue PRIMARY KEY CLUSTERED (PdcPosition_id, axisValues_valueId, axisValues_axisId);
