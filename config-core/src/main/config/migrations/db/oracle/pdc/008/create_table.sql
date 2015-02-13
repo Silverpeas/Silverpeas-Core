@@ -20,7 +20,7 @@ CREATE TABLE SB_Pdc_Utilization
 	axisId			int		NOT NULL ,
 	baseValue		int		NOT NULL ,
 	mandatory		int		NOT NULL ,
-	variant			int		NOT NULL
+	variant			int		NOT NULL ,
 	PRIMARY KEY(id)
 )
 ;
@@ -31,7 +31,7 @@ CREATE TABLE SB_Pdc_AxisI18N
 	AxisId			int		NOT NULL ,
 	lang			char(2)		NOT NULL ,
 	Name			varchar (255)	NOT NULL ,
-	description             varchar (1000)  NULL
+	description             varchar (1000)  NULL ,
 	PRIMARY KEY (id)
 )
 ;
