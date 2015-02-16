@@ -13,7 +13,8 @@
 %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.selection.multilang.selectionBundle" />
+<view:setBundle basename="org.silverpeas.selection.multilang.selectionBundle" />
+<view:setBundle basename="org.silverpeas.notificationManager.multilang.notificationManagerBundle" var="notificationBundle" />
 
 <c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="selection"         value="${requestScope.SELECTION}"/>
@@ -25,6 +26,7 @@
 <c:set var="validationURL"     value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
 <c:set var="hotSetting"        value="${selection.hotSetting}"/>
+<c:set var="selectedUserLimit" value="${selection.selectedUserLimit}"/>
 
 <c:url var="userProfileUrl"      value="/util/javaScript/angularjs/services/silverpeas-profile.js"/>
 <c:url var="silverpeasSearchUrl" value="/util/javaScript/angularjs/directives/silverpeas-searchbox.js"/>
@@ -130,13 +132,13 @@
             <silverpeas-search label="${defaultUserSearchText}" ng-model="userNameFilter"></silverpeas-search>
             <div class="listing_users">
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
-              <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
+              <a href="#" ng-show="selectedUsers.multipleSelection && !selectedUsers.selectedLimit" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
               <ul id="user_list">
                 <li ng-repeat="user in users" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
                   <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
                   <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                  <a href="#" ng-show="selectedUsers.indexOf(user) < 0" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
+                  <a href="#" ng-show="selectedUsers.indexOf(user) < 0 && !selectedUsers.selectedLimitReached()" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
               <silverpeas-pagination page-size="userPageSize" items-size="totalUsersSize" on-page="changeUserListingPage(page)"></silverpeas-pagination>
@@ -203,6 +205,14 @@
       </div>
     </div>
     <script type="text/javascript">
+      <c:if test="${not empty selectedUserLimit and selectedUserLimit > 0}">
+      notyInfo("<fmt:message bundle="${notificationBundle}" key="notif.manual.receiver.limit.message.warning"><fmt:param value="${selectedUserLimit}"/></fmt:message>", {
+        "timeout" : false,
+        "closeWith": ['hover']
+      });
+      </c:if>
+
+
         /* configure for the current application the context of the module silverpeas in which all
          * are defined the business objects and services */
         angular.module('silverpeas').
@@ -210,6 +220,7 @@
           currentUserId: '${currentUserId}',
           multiSelection: ${multipleSelection},
           selectionScope: '${selectionScope}',
+          selectedUserLimit: ${selectedUserLimit},
           component: '${instanceId}',
           resource: '${resourceId}',
           roles: '${roles}',
@@ -397,13 +408,20 @@
               }
               $scope.currentGroup = rootGroup;
               UserGroup.get({page: {number: 1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
-              $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
+              $scope.selectedUsers = new Selection({
+                "multiselection" : context.multiSelection,
+                "selectedLimit" : context.selectedUserLimit,
+                "pageSize" : $scope.userSelectionPageSize
+                });
               for(var i = 0; i < preselectedUsers.length; i++) {
                 User.get(preselectedUsers[i]).then(function(user) {
                   $scope.selectedUsers.add(user);
                 });
               }
-              $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
+              $scope.selectedGroups = new Selection({
+                "multiselection" : context.multiSelection,
+                "pageSize" : $scope.groupSelectionPageSize
+              });
               for(var i = 0; i < preselectedUserGroups.length; i++) {
                 UserGroup.get(preselectedUserGroups[i]).then(function(group) {
                   $scope.selectedGroups.add(group);

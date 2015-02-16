@@ -26,14 +26,18 @@
 /**
  * Selection of items.
  * @param {boolean} multiselection is the selection multiple?
+ * @param {integer} selectedLimit is a limit of selected item (undefined or zero = no limit)
  * @param {number} pageSize is, optionally, the size in items of a pagination's page. 0 means no pagination.
  * @returns {Selection} a Selection instance.
  */
-function Selection(multiselection, pageSize) {
+function Selection(options) {
+  this.parameters = {"multiselection" : false, "selectedLimit": 0, "pageSize" : 0};
+  jQuery.extend(this.parameters, options);
   this.items = [];
-  this.multipleSelection = multiselection;
+  this.multipleSelection = this.parameters.multiselection;
+  this.selectedLimit = this.parameters.selectedLimit;
 
-  var pagesize = (pageSize ? pageSize : 0);
+  var pagesize = this.parameters.pageSize;
   var startpage = 0;
 
   this.currentpage = function() {
@@ -75,6 +79,10 @@ Selection.prototype.indexOf = function(item) {
 
 Selection.prototype.length = function() {
   return this.items.length;
+};
+
+Selection.prototype.selectedLimitReached = function() {
+  return this.selectedLimit && this.selectedLimit === this.items.length;
 };
 
 Selection.prototype.itemIdsAsString = function() {

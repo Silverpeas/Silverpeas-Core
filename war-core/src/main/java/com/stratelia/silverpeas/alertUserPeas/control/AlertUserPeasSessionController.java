@@ -134,6 +134,13 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     sug.setComponentId(getHostComponentId());
     m_Selection.setExtraParams(sug);
 
+    // Limitations
+    if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
+      m_Selection.setSetSelectable(false);
+      m_Selection
+          .setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimit());
+    }
+
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
@@ -169,14 +176,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     getNotificationMetaData().addExtraMessage(message, language);
   }
 
-  public void sendNotification() {
-    try {
-      SilverTrace.info("alertUserPeas", "AlertUserPeasSessionController.sendNotification()",
-          "root.MSG_GEN_PARAM_VALUE", "content_en = " + getNotificationMetaData().getContent("en"));
-      notificationSender.notifyUser(getNotificationMetaData());
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("alertUserPeas", "AlertUserPeasSessionController.sendNotification()",
-          "root.EX_NOTIFY_USERS_FAILED", e);
-    }
+  public void sendNotification() throws NotificationManagerException  {
+    notificationSender.notifyUser(getNotificationMetaData().manualUserNotification());
   }
 }
