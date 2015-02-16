@@ -37,6 +37,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import java.util.ArrayList;
+import java.util.Properties;
+
 /**
  * @author tleroi
  * @version
@@ -65,6 +68,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   public Notification resetNotification() {
     notification = new Notification();
+    sel.resetAll();
     return notification;
   }
 
@@ -99,6 +103,14 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     NotificationMetaData notifMetaData = notification.toNotificationMetaData();
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
+    if (sel.getSelectedUserLimit() > 0) {
+      // A limitation has been set when the selection screen has been initialized.
+      notifMetaData.manualUserNotification();
+    } else {
+      // The user panel has not been displayed, so the notification is not tagged as a manual one
+      // in order to skip centralized verifications.
+    }
+
     notifSender.notifyUser(notification.getChannel(), notifMetaData);
   }
 
@@ -138,6 +150,13 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     // Contraintes
     sel.setMultiSelect(true);
     sel.setPopupMode(true);
+
+    // Limitations
+    if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
+      sel.setSetSelectable(false);
+      sel.setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimit());
+    }
+
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
   

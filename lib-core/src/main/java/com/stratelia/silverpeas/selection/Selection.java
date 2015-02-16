@@ -54,6 +54,7 @@ public final class Selection {
   protected Pair<String, String> hostComponentName;
   protected Pair<String, String>[] hostPath;
   protected SelectionExtraParams extraParams;
+  protected int selectedUserLimit;
 
   public Selection() {
     resetAll();
@@ -82,6 +83,7 @@ public final class Selection {
     hostPath = new Pair[0];
 
     extraParams = null;
+    selectedUserLimit = 0;
   }
 
   static public String getSelectionURL(String selectionType) {
@@ -294,5 +296,13 @@ public final class Selection {
 
   public void setHtmlFormElementType(String formElementType) {
     htmlFormElementType = formElementType;
+  }
+
+  public int getSelectedUserLimit() {
+    return selectedUserLimit;
+  }
+
+  public void setSelectedUserLimit(final int selectedUserLimit) {
+    this.selectedUserLimit = selectedUserLimit;
   }
 }
