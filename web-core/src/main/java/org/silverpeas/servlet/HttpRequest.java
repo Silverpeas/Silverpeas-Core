@@ -30,6 +30,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.NotImplementedException;
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -426,11 +428,23 @@ public class HttpRequest extends HttpServletRequestWrapper {
     return asDate(getParameter(dateParameterName), getParameter(hourParameterName));
   }
 
+  /**
+   * Get an enum instance from one parameter.
+   *
+   * @param enumValue the string value of the expected enum instance.
+   * @param enumClass the class of the expected enum instance.
+   * @param <ENUM> the type of the expected enum instance.
+   * @return the expected enum instance or null if enum has not been well decoded
+   */
+  public <ENUM extends Enum> ENUM getParameterAsEnum(String enumValue, Class<ENUM> enumClass) {
+    return asEnum(getParameter(enumValue), enumClass);
+  }
+
   private <T> boolean asBoolean(T object) {
     if (object instanceof Boolean) {
       return (Boolean) object;
     } else if (object instanceof String) {
-      String typedObject = (String) object;
+      String typedObject = ((String) object).trim();
       return StringUtil.getBooleanValue(typedObject);
     }
     if (object != null) {
@@ -443,7 +457,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
     if (object instanceof Number) {
       return ((Number) object).longValue();
     } else if (object instanceof String) {
-      String typedObject = (String) object;
+      String typedObject = ((String) object).trim();
       if (StringUtil.isLong(typedObject)) {
         return Long.valueOf(typedObject);
       }
@@ -459,7 +473,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
     if (object instanceof Number) {
       return ((Number) object).intValue();
     } else if (object instanceof String) {
-      String typedObject = (String) object;
+      String typedObject = ((String) object).trim();
       if (StringUtil.isInteger(typedObject)) {
         return Integer.valueOf(typedObject);
       }
@@ -485,6 +499,36 @@ public class HttpRequest extends HttpServletRequestWrapper {
     }
     return null;
   }
+
+  @SuppressWarnings({"unchecked", "ConstantConditions"})
+  private <ENUM extends Enum> ENUM asEnum(String enumValue, Class<ENUM> enumClass) {
+    Method fromMethod = null;
+
+    for (Method method : enumClass.getMethods()) {
+      Class[] methodParameterTypes = method.getParameterTypes();
+      if (method.getAnnotation(JsonCreator.class) != null && methodParameterTypes.length == 1 &&
+          methodParameterTypes[0].isAssignableFrom(String.class)) {
+        fromMethod = method;
+        break;
+      }
+    }
+
+    if (fromMethod == null) {
+      try {
+        fromMethod = enumClass.getMethod("valueOf", String.class);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    try {
+      return (ENUM) fromMethod.invoke(null, enumValue);
+    } catch (Exception ignore) {
+    }
+
+    return null;
+  }
+
 
   /**
    * Is the content in this request is encoded in a multipart stream.

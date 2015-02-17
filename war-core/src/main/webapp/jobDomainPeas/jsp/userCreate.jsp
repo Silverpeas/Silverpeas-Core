@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationManagerSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -41,15 +42,22 @@
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 
 <c:set var="context" value="${pageContext.request.contextPath}"/>
+<c:set var="USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED" value="<%= NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled()%>"/>
+<c:set var="USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE" value="<%= NotificationManagerSettings.getUserManualNotificationRecipientLimit()%>"/>
+
+<fmt:message key="JDP.userManualNotifReceiverLimitValue" var="userManualNotifReceiverLimitValueLabel"><fmt:param value="${USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE}"/></fmt:message>
+
+<c:set var="userObject" value="${requestScope.userObject}"/>
+<jsp:useBean id="userObject" type="com.stratelia.webactiv.beans.admin.UserFull"/>
+<c:set var="currentUser" value="${requestScope.CurrentUser}"/>
+<jsp:useBean id="currentUser" type="com.stratelia.webactiv.beans.admin.UserDetail"/>
 
 <%
   Domain domObject = (Domain) request.getAttribute("domainObject");
-  UserFull userObject = (UserFull) request.getAttribute("userObject");
   String action = (String) request.getAttribute("action");
   String groupsPath = (String) request.getAttribute("groupsPath");
   Boolean userRW = (Boolean) request.getAttribute("isUserRW");
   Integer minLengthLogin = (Integer) request.getAttribute("minLengthLogin");
-  UserDetail currentUser = (UserDetail) request.getAttribute("CurrentUser");
   List<Group> groups = (List) request.getAttribute("GroupsManagedByCurrentUser");
 
   boolean bUserRW = (userRW != null) ? userRW : false;
@@ -70,6 +78,31 @@
   // Password
   $(document).ready(function(){
     $('#userPasswordId').password();
+
+    <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
+    $("input[name='userAccessLevel']").on("change", function() {
+      var selectedRightAccess = $("input[name='userAccessLevel']:checked").val();
+      var $manualNotificationBlock = $('#identity-manual-notification');
+      if(selectedRightAccess === 'USER' || selectedRightAccess === 'GUEST') {
+        $manualNotificationBlock.show();
+      } else {
+        $manualNotificationBlock.hide();
+      }
+    });
+
+    var $limitActivation = $('#userManualNotifReceiverLimitEnabled').on("change", function() {
+      var $me = $(this);
+      var $limitValue = $('#form-row-user-manual-notification-limitation-value');
+      if($me.is(':checked')) {
+        $limitValue.show();
+      } else {
+        $limitValue.hide();
+      }
+    });
+
+    $limitActivation.trigger("change");
+    $("input[name='userAccessLevel']:checked").trigger("change");
+    </c:if>
   });
 
 function SubmitWithVerif()
@@ -109,6 +142,16 @@ function SubmitWithVerif()
     <% } %>
   }
   <% } %>
+
+  <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
+  var rightAccess = $("input[name='userAccessLevel']:checked").val();
+  var limitValue = $.trim($(document.userForm.userManualNotifReceiverLimitValue).val());
+  if ((rightAccess === 'USER' || rightAccess === 'GUEST')
+      && $(document.userForm.userManualNotifReceiverLimitEnabled).is(":checked")
+      && (!isInteger(limitValue) || (limitValue.length > 0 && eval(limitValue) <= 0))) {
+    errorMsg += "- <fmt:message key="GML.thefield" /> '${userManualNotifReceiverLimitValueLabel}' <fmt:message key="GML.MustContainsPositiveNumber" />";
+  }
+  </c:if>
 
   if (errorMsg == "")
   {
@@ -315,6 +358,34 @@ out.println(window.printBefore());
       <% } %>
       </div>
     </fieldset>
+
+      <%--User Manual Notification User Receiver Limit--%>
+    <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
+      <fieldset id="identity-manual-notification" class="skinFieldset" style="display: none">
+        <legend class="without-img"><fmt:message key="JDP.userManualNotif"/></legend>
+        <div class="fields">
+          <div class="field" id="form-row-user-manual-notification-limitation-activation">
+            <label class="txtlibform"><fmt:message key="JDP.userManualNotifReceiverLimitActivation"/></label>
+
+            <div class="champs">
+              <input type="checkbox" name="userManualNotifReceiverLimitEnabled" id="userManualNotifReceiverLimitEnabled" value="true"
+                     ${(userObject.userManualNotificationUserReceiverLimit)?' checked':''}/>
+              &nbsp;<fmt:message key="GML.yes"/>
+            </div>
+          </div>
+          <div class="field" id="form-row-user-manual-notification-limitation-value">
+            <label class="txtlibform">${userManualNotifReceiverLimitValueLabel}</label>
+
+            <div class="champs">
+              <input type="text" name="userManualNotifReceiverLimitValue" id="userManualNotifReceiverLimitValue" size="50" maxlength="3"
+                     value="${userObject.userManualNotificationUserReceiverLimit
+                              and not empty userObject.notifManualReceiverLimit
+                              and userObject.notifManualReceiverLimit gt 0 ? ('' + userObject.notifManualReceiverLimit) : ''}"/>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </c:if>
     
     <fieldset id="identity-extra" class="skinFieldset">
       <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>

@@ -33,6 +33,9 @@ import org.mockito.Mockito;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
+
+import static java.text.MessageFormat.format;
 
 /**
  * This rule handles field injections. <br/>
@@ -50,6 +53,8 @@ public class MockByReflectionRule implements TestRule {
   private Map<Object, Map<FieldInjectionDirective, Object>> entitiesOldValues =
       new HashMap<Object, Map<FieldInjectionDirective, Object>>();
 
+  private Logger logger = Logger.getLogger(MockByReflectionRule.class.getSimpleName());
+
   @Override
   public Statement apply(final Statement base, final Description description) {
 
@@ -60,6 +65,9 @@ public class MockByReflectionRule implements TestRule {
         try {
           base.evaluate();
         } finally {
+          if (!entitiesOldValues.isEmpty()) {
+            logger.info("Unset mocked fields...");
+          }
           for (Map.Entry<Object, Map<FieldInjectionDirective, Object>> objectOldValue :
               entitiesOldValues
               .entrySet()) {
@@ -88,7 +96,11 @@ public class MockByReflectionRule implements TestRule {
    */
   public <T> T mockField(Object instanceOrClass, Class<T> classToMock, String fieldNames) {
     try {
-      return inject(instanceOrClass, new FieldInjectionDirective<T>(instanceOrClass, fieldNames),
+      if (entitiesOldValues.isEmpty()) {
+        logger.info("Set mocked fields...");
+      }
+      return inject(instanceOrClass,
+          new FieldInjectionDirective<T>(instanceOrClass, fieldNames, logger),
           Mockito.mock(classToMock));
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -117,10 +129,16 @@ public class MockByReflectionRule implements TestRule {
   private static class FieldInjectionDirective<T> {
     private final Object instanceOrClass;
     private final String fieldNames;
+    private final Logger logger;
 
-    private FieldInjectionDirective(final Object instanceOrClass, final String fieldNames) {
+    private final static String WRITE_MESSAGE =
+        "{0} - ''{1}'' field - set ''{2}'' instead of current ''{3}'' value";
+
+    private FieldInjectionDirective(final Object instanceOrClass, final String fieldNames,
+        final Logger logger) {
       this.instanceOrClass = instanceOrClass;
       this.fieldNames = fieldNames;
+      this.logger = logger;
     }
 
     /**
@@ -175,10 +193,16 @@ public class MockByReflectionRule implements TestRule {
       if (finalObjectField.getLeft() instanceof Class) {
         FieldUtils.writeDeclaredStaticField((Class) finalObjectField.getLeft(),
             finalObjectField.getRight(), object, true);
+        logger.info(
+            format(WRITE_MESSAGE, ((Class) finalObjectField.getLeft()).getSimpleName() + " class",
+                finalObjectField.getRight(), object, previousValue));
       } else {
         FieldUtils
             .writeDeclaredField(finalObjectField.getLeft(), finalObjectField.getRight(), object,
                 true);
+        logger.info(format(WRITE_MESSAGE,
+            finalObjectField.getLeft().getClass().getSimpleName() + " instance",
+            finalObjectField.getRight(), object, previousValue));
       }
       return previousValue;
     }

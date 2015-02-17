@@ -89,6 +89,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private Date expirationDate = null;
   private UserState state = UserState.from(null);
   private Date stateSaveDate = null;
+  private Integer notifManualReceiverLimit;
 
   /**
    * Gets the detail about the specified user.
@@ -558,6 +559,10 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return UserAccessLevel.GUEST.equals(accessLevel);
   }
 
+  public boolean isAccessUnknown() {
+    return UserAccessLevel.UNKNOWN.equals(accessLevel);
+  }
+
   /**
    * This method is the only one able to indicate the user validity state. Please do not use
    * {@link UserDetail#getState()} to retrieve user validity information.
@@ -807,7 +812,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if the limitation exists, false otherwise.
    */
   public boolean isUserManualNotificationUserReceiverLimit() {
-    return getUserManualNotificationUserReceiverLimit() > 0;
+    return getUserManualNotificationUserReceiverLimitValue() > 0;
   }
 
   /**
@@ -815,13 +820,58 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the maximum user receivers the user can notify manually. If the value is not greater
    * than 0, the user is not limited.
    */
-  public int getUserManualNotificationUserReceiverLimit() {
+  public int getUserManualNotificationUserReceiverLimitValue() {
     int limit = 0;
     if (isUserManualNotificationRecipientLimitEnabled() && (isAccessUser() || isAccessGuest() ||
-        isAnonymous())) {
-      limit = getUserManualNotificationRecipientLimit();
+        isAnonymous() || isAccessUnknown())) {
+      if (!isAnonymous() && !isAccessUnknown() && getNotifManualReceiverLimit() != null) {
+        limit = getNotifManualReceiverLimit();
+      } else {
+        limit = getUserManualNotificationRecipientLimit();
+      }
     }
     return limit;
+  }
+
+  /**
+   * Sets the maximum user receivers the user can notify manually.
+   * If the given value is:
+   * <ul>
+   * <li>null or less than/equal to -1 or equal to the default server limitation value, then it is
+   * considered that the default server value will be taken into account</li>
+   * <li>greater than or equal to 0, then the user has a specific limitation set</li>
+   * </ul>
+   * The value is persisted only if the user has USER or GUEST access right and if the limitation
+   * is enabled at server level.
+   * @param limit the maximum user receivers the user can notify manually.
+   */
+  public void setUserManualNotificationUserReceiverLimit(Integer limit) {
+    if (isUserManualNotificationRecipientLimitEnabled() && (isAccessUser() || isAccessGuest())) {
+      if (limit != null && (limit <= -1 || limit == getUserManualNotificationRecipientLimit())) {
+        limit = null;
+      }
+      setNotifManualReceiverLimit(limit);
+    }
+  }
+
+  /**
+   * Sets the maximum user receivers the user can notify manually from the persistence
+   * context.<br/>
+   * This method must only be used be the administration persistence services.
+   * @param notifManualReceiverLimit the maximum user receivers the user can notify manually from
+   * the persistence context.
+   */
+  public void setNotifManualReceiverLimit(final Integer notifManualReceiverLimit) {
+    this.notifManualReceiverLimit = notifManualReceiverLimit;
+  }
+
+  /*
+   * Gets the maximum user receivers the user can notify manually from the persistence context.<br/>
+   * This method must only be used be the administration persistence services.
+   * @return the maximum user receivers the user can notify manually from the persistence context.
+   */
+  public Integer getNotifManualReceiverLimit() {
+    return notifManualReceiverLimit;
   }
 
   /**

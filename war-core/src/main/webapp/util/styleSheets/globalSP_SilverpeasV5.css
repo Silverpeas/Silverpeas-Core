@@ -5099,7 +5099,9 @@ li.application  .applicationName {
   overflow:hidden;
 }
 
-
+#selected_userPanel .inlineMessage {
+  margin: 3%;
+}
 
 
 #filter_userPanel {
@@ -6525,8 +6527,8 @@ form .forms .fields > li:nth-child(even) {
 /*******************************/
 
 #identity-main .field {
-	clear:left;
-    width: 96%;
+  clear: left;
+  width: 96%;
 }
 
 #profil-groups-belong #form-row-desc {
@@ -6539,6 +6541,11 @@ form .forms .fields > li:nth-child(even) {
 
 #identity-main legend {
     background: url("../icons/contactCard.gif") no-repeat scroll 11px 0 transparent;
+}
+
+#identity-manual-notification .field {
+  clear:left;
+  width: 96%;
 }
 
 #profil table.tableArrayPane {

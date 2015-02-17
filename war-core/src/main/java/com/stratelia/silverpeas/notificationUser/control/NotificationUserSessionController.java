@@ -151,8 +151,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
     // Limitations
     if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
-      sel.setSetSelectable(false);
-      sel.setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimit());
+      sel.setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
     }
 
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

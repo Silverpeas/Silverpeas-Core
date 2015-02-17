@@ -16,31 +16,33 @@
 <view:setBundle basename="org.silverpeas.selection.multilang.selectionBundle" />
 <view:setBundle basename="org.silverpeas.notificationManager.multilang.notificationManagerBundle" var="notificationBundle" />
 
-<c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
-<c:set var="selection"         value="${requestScope.SELECTION}"/>
-<c:set var="multipleSelection" value="${selection.multiSelect}"/>
-<c:set var="instanceId"        value="${selection.extraParams.componentId}"/>
-<c:set var="domainId"          value="${selection.extraParams.domainId}"/>
-<c:set var="roles"             value="${selection.extraParams.joinedProfileNames}"/>
-<c:set var="resourceId"        value="${selection.extraParams.objectId}"/>
-<c:set var="validationURL"     value="${selection.goBackURL}"/>
-<c:set var="cancelationURL"    value="${selection.cancelURL}"/>
-<c:set var="hotSetting"        value="${selection.hotSetting}"/>
-<c:set var="selectedUserLimit" value="${selection.selectedUserLimit}"/>
+<c:set var="currentUserId"           value="${sessionScope['SilverSessionController'].userId}"/>
+<c:set var="selection"               value="${requestScope.SELECTION}"/>
+<jsp:useBean id="selection" type="com.stratelia.silverpeas.selection.Selection"/>
+<c:set var="registeredServerDomains" value="${selection.registeredServerDomains}"/>
+<c:set var="multipleSelection"       value="${selection.multiSelect}"/>
+<c:set var="instanceId"              value="${selection.extraParams.componentId}"/>
+<c:set var="domainId"                value="${selection.extraParams.domainId}"/>
+<c:set var="roles"                   value="${selection.extraParams.joinedProfileNames}"/>
+<c:set var="resourceId"              value="${selection.extraParams.objectId}"/>
+<c:set var="validationURL"           value="${selection.goBackURL}"/>
+<c:set var="cancelationURL"          value="${selection.cancelURL}"/>
+<c:set var="hotSetting"              value="${selection.hotSetting}"/>
+<c:set var="selectedUserLimit"       value="${selection.selectedUserLimit}"/>
 
-<c:url var="userProfileUrl"      value="/util/javaScript/angularjs/services/silverpeas-profile.js"/>
-<c:url var="silverpeasSearchUrl" value="/util/javaScript/angularjs/directives/silverpeas-searchbox.js"/>
-<c:url var="selectionUrl"        value="/selection/jsp/javaScript/selection.js"/>
+<c:url var="userProfileUrl"          value="/util/javaScript/angularjs/services/silverpeas-profile.js"/>
+<c:url var="silverpeasSearchUrl"     value="/util/javaScript/angularjs/directives/silverpeas-searchbox.js"/>
+<c:url var="selectionUrl"            value="/selection/jsp/javaScript/selection.js"/>
 
-<c:set var="selectionScope"   value=""/>
+<c:set var="selectionScope"          value=""/>
 <c:if test="${selection.elementSelectable}">
-  <c:set var="selectionScope" value="user"/>
+  <c:set var="selectionScope"        value="user"/>
 </c:if>
 <c:if test="${selection.setSelectable}">
-  <c:set var="selectionScope" value="${selectionScope}group"/>
+  <c:set var="selectionScope"        value="${selectionScope}group"/>
 </c:if>
 <c:if test="${selectionScope == null || fn:length(fn:trim(selectionScope)) == 0}">
-  <c:set var="selectionScope" value="usergroup"/>
+  <c:set var="selectionScope"        value="usergroup"/>
 </c:if>
 <c:choose>
   <c:when test='${!multipleSelection}'>
@@ -59,8 +61,8 @@
 <fmt:message key='selection.userSelected' var="selectedUserText"/>
 <fmt:message key='selection.groupSelected' var="selectedGroupText"/>
 <c:if test="${multipleSelection}">
-  <fmt:message key='selection.usersSelected' var="selectedUserText"/>
-  <fmt:message key='selection.groupsSelected' var="selectedGroupText"/>
+  <fmt:message key='selection.selectedUsers' var="selectedUserText"/>
+  <fmt:message key='selection.selectedGroups' var="selectedGroupText"/>
 </c:if>
 
 <fmt:message key="selection.RemoveAllGroupsFromSelection" var="removeAllGroupsFromSelection"/>
@@ -114,13 +116,14 @@
             <silverpeas-search label="${defaultGroupSearchText}" ng-model="groupNameFilter"></silverpeas-search>
             <div class="listing_groups">
               <p class="nb_results" id="group_result_count">{{ groups.maxlength }} <fmt:message key='selection.groupsFound'/></p>
-              <a href="#" ng-show="selectedGroups.multipleSelection" ng-click="selectAllGroups()" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all"><fmt:message key="selection.AddAllGroups"/></a>
+              <a href="#" ng-show="selectedGroups.multipleSelection && !isSelectedUserLimitEnabled()" ng-click="selectAllGroups()" title="<fmt:message key='selection.AddAllGroupsToSelection'/>" class="add_all"><fmt:message key="selection.AddAllGroups"/></a>
               <ul id="group_list">
                 <li ng-repeat="group in groups" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
-                  <span class="name_group"><a href="#" title="<fmt:message key='selection.group.goto'/>" ng-click="goToGroup(group)">{{ group.name }}</a></span><span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
-                  <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
-                  <a href="#" ng-show="selectedGroups.indexOf(group) < 0" ng-click="selectGroup(group)" id="{{ 'add_group_' + group.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add group"><fmt:message key="selection.AddToSelection"/></a>
+                  <span class="name_group"><a href="#" title="<fmt:message key='selection.group.goto'/>" ng-click="goToGroup(group)">{{ group.name }}</a></span>
+                  <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
+                  <span class="sep_nb_user_group" ng-show="showDomainData()"> - </span><span class="domain_group" ng-show="showDomainData()">{{ group.domainName }}</span>
+                  <a href="#" ng-show="isGroupSelectable(group)" ng-click="selectGroup(group)" id="{{ 'add_group_' + group.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add group"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
               <silverpeas-pagination page-size="groupPageSize" items-size="totalGroupsSize" on-page="changeGroupListingPage(page)"></silverpeas-pagination>
@@ -132,13 +135,14 @@
             <silverpeas-search label="${defaultUserSearchText}" ng-model="userNameFilter"></silverpeas-search>
             <div class="listing_users">
               <p class="nb_results" id="user_result_count">{{ users.maxlength }} <fmt:message key='selection.usersFound'/></p>
-              <a href="#" ng-show="selectedUsers.multipleSelection && !selectedUsers.selectedLimit" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
+              <a href="#" ng-show="selectedUsers.multipleSelection && !isSelectedUserLimitEnabled()" ng-click="selectAllUsers()" title="<fmt:message key='selection.AddAllUsersToSelection'/>" class="add_all"><fmt:message key="selection.AddAllUsers"/></a>
               <ul id="user_list">
                 <li ng-repeat="user in users" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
                   <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
-                  <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
-                  <a href="#" ng-show="selectedUsers.indexOf(user) < 0 && !selectedUsers.selectedLimitReached()" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
+                  <span class="mail_user">{{ user.eMail }}</span>
+                  <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
+                  <a href="#" ng-show="isUserSelectable(user)" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
                 </li>
               </ul>
               <silverpeas-pagination page-size="userPageSize" items-size="totalUsersSize" on-page="changeUserListingPage(page)"></silverpeas-pagination>
@@ -150,6 +154,11 @@
       <div id="selected_userPanel">
         <div class="container">
           <h4 class="title">${selectionTitle}</h4>
+          <c:if test="${not empty selectedUserLimit and selectedUserLimit > 0}">
+            <div class="inlineMessage">
+              <fmt:message bundle="${notificationBundle}" key="notif.manual.receiver.limit.message.warning"><fmt:param value="${selectedUserLimit}"/></fmt:message>
+            </div>
+          </c:if>
           <c:if test='${selectionScope == "group" || selectionScope == "usergroup"}'>
           <div class="groups_selected_userPanel">
             <div class="listing_groups">
@@ -160,7 +169,7 @@
                   <div class="avatar"><img alt="" src="/silverpeas/util/icons/component/groupe_Type_gestionCollaborative.png"/></div>
                   <span class="name_group">{{ group.name }}</span>
                   <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
-                  <span class="sep_nb_user_group"> - </span><span class="domain_group">{{ group.domainName }}</span>
+                  <span class="sep_nb_user_group" ng-show="showDomainData()"> - </span><span class="domain_group" ng-show="showDomainData()">{{ group.domainName }}</span>
                   <a ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
                 </li>
               </ul>
@@ -178,7 +187,8 @@
                 <li ng-repeat="user in selectedUsers.currentpage()" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
                   <span class="name_user">{{ user.lastName + ' ' + user.firstName }} </span>
-                  <span class="mail_user">{{ user.eMail }}</span><span class="sep_mail_user"> - </span><span class="domain_user">{{ user.domainName }}</span>
+                  <span class="mail_user">{{ user.eMail }}</span>
+                  <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                 </li>
               </ul>
@@ -205,13 +215,6 @@
       </div>
     </div>
     <script type="text/javascript">
-      <c:if test="${not empty selectedUserLimit and selectedUserLimit > 0}">
-      notyInfo("<fmt:message bundle="${notificationBundle}" key="notif.manual.receiver.limit.message.warning"><fmt:param value="${selectedUserLimit}"/></fmt:message>", {
-        "timeout" : false,
-        "closeWith": ['hover']
-      });
-      </c:if>
-
 
         /* configure for the current application the context of the module silverpeas in which all
          * are defined the business objects and services */
@@ -378,6 +381,15 @@
                 $scope.currentGroup.subgroups({name: name, page: {number: 1, size: $scope.groupPageSize}}).then(updateGroupsListing);
             };
 
+            /* Total number of selected users (from user and group lists) */
+            function getTotalNumberOfSelectedUsers () {
+              var nbSelectedUsers = $scope.selectedUsers.length();
+              $.each($scope.selectedGroups.items, function(index, group) {
+                nbSelectedUsers += group.userCount;
+              });
+              return nbSelectedUsers;
+            };
+
             /* initialize the userSelection app by filling it with some values */
             function init() {
               switch(context.selectionScope) {
@@ -408,20 +420,13 @@
               }
               $scope.currentGroup = rootGroup;
               UserGroup.get({page: {number: 1, size: GroupsFilterSizeStep}}).then(setGroupsFilter);
-              $scope.selectedUsers = new Selection({
-                "multiselection" : context.multiSelection,
-                "selectedLimit" : context.selectedUserLimit,
-                "pageSize" : $scope.userSelectionPageSize
-                });
+              $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
               for(var i = 0; i < preselectedUsers.length; i++) {
                 User.get(preselectedUsers[i]).then(function(user) {
                   $scope.selectedUsers.add(user);
                 });
               }
-              $scope.selectedGroups = new Selection({
-                "multiselection" : context.multiSelection,
-                "pageSize" : $scope.groupSelectionPageSize
-              });
+              $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
               for(var i = 0; i < preselectedUserGroups.length; i++) {
                 UserGroup.get(preselectedUserGroups[i]).then(function(group) {
                   $scope.selectedGroups.add(group);
@@ -436,6 +441,36 @@
            $scope.$watch('userNameFilter', searchUsers);
 
            /* Functions provided by the scope in order to be used in GUI */
+
+          /* Indicates if the information of domain has to be displayed */
+          $scope.showDomainData = function() {
+            return ${fn:length(registeredServerDomains) > 1};
+          };
+
+           /* Indicates if a limitation exist around the maximum number of selectable users (from group & user lists) */
+           $scope.isSelectedUserLimitEnabled = function() {
+             return !(typeof context.selectedUserLimit === 'undefined') && context.selectedUserLimit > 0;
+           };
+
+           /* Indicates if the current group is selectable */
+           $scope.isGroupSelectable = function(group) {
+             var isSelectable = $scope.selectedGroups.indexOf(group) < 0;
+             if (isSelectable && $scope.isSelectedUserLimitEnabled()) {
+               var totalOfSelectedUsers = getTotalNumberOfSelectedUsers();
+               isSelectable = group.userCount > 0
+                              && context.selectedUserLimit >= (totalOfSelectedUsers + group.userCount);
+             }
+             return isSelectable;
+           };
+
+           /* Indicates if the current user is selectable */
+           $scope.isUserSelectable = function(user) {
+             var isSelectable = $scope.selectedUsers.indexOf(user) < 0;
+             if (isSelectable && $scope.isSelectedUserLimitEnabled()) {
+               isSelectable = context.selectedUserLimit > getTotalNumberOfSelectedUsers();
+             }
+             return isSelectable;
+           };
 
            /* pagination in the listings and in the selections panels */
            $scope.changeGroupListingPage = function(pageNumber) {
@@ -620,7 +655,7 @@
 
         $(document).ready(function() {
           try {
-            var documentWidth = 980;
+            var documentWidth = 990;
             if ($(window).width() < documentWidth) {
               window.resizeTo(documentWidth, 600);
             }

@@ -48,4 +48,5 @@ public class UserRow {
   public Date expirationDate = null;
   public String state = "";
   public Date stateSaveDate  = null;
+  public Integer notifManualReceiverLimit  = null;
 }

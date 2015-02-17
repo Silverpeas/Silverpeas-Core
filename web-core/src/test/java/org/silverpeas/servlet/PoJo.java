@@ -24,7 +24,6 @@
 package org.silverpeas.servlet;
 
 import javax.ws.rs.FormParam;
-import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -42,6 +41,14 @@ public class PoJo {
 
   @FormParam("")
   private String aString;
+
+  @FormParam("")
+  @UnescapeHtml
+  private String aStringNotInParameterToUnescape;
+
+  @FormParam("")
+  @UnescapeHtml
+  private String aStringToUnescape;
 
   @FormParam("anIntegerNotInParameter")
   private Integer anIntegerNotInParameter;
@@ -76,6 +83,12 @@ public class PoJo {
   @FormParam("")
   private Date aDate;
 
+  @FormParam("")
+  private EnumWithoutCreationAnnotation anEnumNotInParameter;
+
+  @FormParam("")
+  private EnumWithoutCreationAnnotation anEnum;
+
   public PoJo() {
     // To be instantiated
   }
@@ -94,6 +107,14 @@ public class PoJo {
 
   public String getaString() {
     return aString;
+  }
+
+  public String getaStringNotInParameterToUnescape() {
+    return aStringNotInParameterToUnescape;
+  }
+
+  public String getaStringToUnescape() {
+    return aStringToUnescape;
   }
 
   public Integer getAnIntegerNotInParameter() {
@@ -138,5 +159,13 @@ public class PoJo {
 
   public Date getaDate() {
     return aDate;
+  }
+
+  public EnumWithoutCreationAnnotation getAnEnumNotInParameter() {
+    return anEnumNotInParameter;
+  }
+
+  public EnumWithoutCreationAnnotation getAnEnum() {
+    return anEnum;
   }
 }
