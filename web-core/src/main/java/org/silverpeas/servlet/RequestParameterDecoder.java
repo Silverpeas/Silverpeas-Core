@@ -23,7 +23,10 @@
  */
 package org.silverpeas.servlet;
 
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import org.apache.commons.lang.NotImplementedException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
@@ -93,7 +96,7 @@ public class RequestParameterDecoder {
           }
           field.set(newInstance, getParameterValue(request,
               StringUtil.isDefined(param.value()) ? param.value() : field.getName(),
-              field.getType()));
+              field.getType(), field.getAnnotation(UnescapeHtml.class) != null));
           if (!isAccessible) {
             field.setAccessible(false);
           }
@@ -116,13 +119,18 @@ public class RequestParameterDecoder {
    * @return
    * @throws Exception
    */
-  private Object getParameterValue(HttpRequest request, String parameterName,
-      Class<?> parameterClass) throws Exception {
+  @SuppressWarnings("unchecked")
+  private <ENUM extends Enum> Object getParameterValue(HttpRequest request, String parameterName,
+      Class<?> parameterClass, boolean unescapeHtml) throws Exception {
     final Object value;
     if (parameterClass.isAssignableFrom(RequestFile.class)) {
       value = request.getParameterAsRequestFile(parameterName);
     } else if (parameterClass.isAssignableFrom(String.class)) {
-      value = request.getParameter(parameterName);
+      if (unescapeHtml) {
+        value = EncodeHelper.htmlStringToJavaString(request.getParameter(parameterName));
+      } else {
+        value = request.getParameter(parameterName);
+      }
     } else if (parameterClass.isAssignableFrom(Long.class)) {
       value = request.getParameterAsLong(parameterName);
     } else if (parameterClass.getName().equals("long")) {
@@ -137,6 +145,8 @@ public class RequestParameterDecoder {
       value = request.getParameterAsBoolean(parameterName);
     } else if (parameterClass.getName().equals("boolean")) {
       value = request.getParameterAsBoolean(parameterName);
+    } else if (parameterClass.isEnum()) {
+      value = request.getParameterAsEnum(parameterName, (Class) parameterClass);
     } else {
       throw new UnsupportedOperationException(
           "The type " + parameterClass.getName() + " is not handled...");

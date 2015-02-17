@@ -50,7 +50,8 @@ public class UserTable extends Table<UserRow> {
       "id, specificId, domainId, login, firstName, lastName," +
           " loginMail, email, accessLevel, loginQuestion, loginAnswer, creationDate, saveDate," +
           " version, tosAcceptanceDate, lastLoginDate, nbSuccessfulLoginAttempts," +
-          " lastLoginCredentialUpdateDate, expirationDate, state, stateSaveDate";
+          " lastLoginCredentialUpdateDate, expirationDate, state, stateSaveDate, " +
+          "notifManualReceiverLimit";
 
   /**
    * Fetch the current user row from a resultSet.
@@ -81,6 +82,9 @@ public class UserTable extends Table<UserRow> {
     u.expirationDate = rs.getTimestamp("expirationDate");
     u.state = rs.getString("state");
     u.stateSaveDate = rs.getTimestamp("stateSaveDate");
+    if (StringUtil.isInteger(rs.getString("notifManualReceiverLimit"))) {
+      u.notifManualReceiverLimit= rs.getInt("notifManualReceiverLimit");
+    }
     return u;
   }
 
@@ -461,6 +465,10 @@ public class UserTable extends Table<UserRow> {
     concatAndOr =
         addParamToQuery(params, query, getSqlTimestamp(userModel.stateSaveDate), "stateSaveDate",
             concatAndOr, andOr);
+    if (userModel.notifManualReceiverLimit != null) {
+      concatAndOr = addParamToQuery(params, query, userModel.notifManualReceiverLimit,
+          "notifManualReceiverLimit", concatAndOr, andOr);
+    }
 
     // Mandatory filters
     if (concatAndOr) {
@@ -554,7 +562,7 @@ public class UserTable extends Table<UserRow> {
   }
 
   static final private String INSERT_USER = "insert into ST_User (" + USER_COLUMNS +
-      ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, UserRow row)
@@ -586,6 +594,7 @@ public class UserTable extends Table<UserRow> {
     insert.setString(20,
         !UserState.UNKNOWN.equals(UserState.from(row.state)) ? row.state : UserState.VALID.name());
     insert.setTimestamp(21, now);
+    insert.setObject(22, row.notifManualReceiverLimit);
   }
 
   /**
@@ -605,7 +614,8 @@ public class UserTable extends Table<UserRow> {
           " accessLevel = ?," + " loginQuestion = ?," + " loginAnswer = ?," + " saveDate = ?," +
           " version = ?," + " tosAcceptanceDate = ?," + " lastLoginDate = ?," +
           " nbSuccessfulLoginAttempts = ?," + " lastLoginCredentialUpdateDate = ?," +
-          " expirationDate = ?," + " state = ?," + " stateSaveDate = ?" + " where id = ?";
+          " expirationDate = ?," + " state = ?," + " stateSaveDate = ?," +
+          " notifManualReceiverLimit = ?" + " where id = ?";
 
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update, UserRow row)
@@ -629,8 +639,9 @@ public class UserTable extends Table<UserRow> {
     update.setTimestamp(17, getSqlTimestamp(row.expirationDate));
     update.setString(18, row.state);
     update.setTimestamp(19, getSqlTimestamp(row.stateSaveDate));
+    update.setObject(20, row.notifManualReceiverLimit);
 
-    update.setInt(20, row.id);
+    update.setInt(21, row.id);
   }
 
   /**

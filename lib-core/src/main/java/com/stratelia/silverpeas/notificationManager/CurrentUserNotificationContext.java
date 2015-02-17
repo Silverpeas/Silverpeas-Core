@@ -70,7 +70,7 @@ public class CurrentUserNotificationContext {
       UserDetail currentUser = UserDetail.getCurrentRequester();
       if (currentUser != null) {
         limitExceeded = currentUser.isUserManualNotificationUserReceiverLimit() &&
-            currentUser.getUserManualNotificationUserReceiverLimit() < nbUserReceivers;
+            currentUser.getUserManualNotificationUserReceiverLimitValue() < nbUserReceivers;
       } else {
         limitExceeded = getUserManualNotificationRecipientLimit() < nbUserReceivers;
       }

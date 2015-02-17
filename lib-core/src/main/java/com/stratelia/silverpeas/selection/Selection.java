@@ -22,7 +22,13 @@ package com.stratelia.silverpeas.selection;
 
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.Pair;
+import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.Collection;
+import java.util.List;
+
+import static com.silverpeas.util.CollectionUtil.asList;
 
 public final class Selection {
 
@@ -37,6 +43,7 @@ public final class Selection {
   final public static String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
   final public static String TYPE_SELECTED_SET = "Set"; //group selected
   final public static String TYPE_SELECTED_ELEMENT = "Element"; //user selected
+  protected List<Domain> registeredServerDomains;
   protected String goBackURL;
   protected String cancelURL;
   protected String htmlFormName;
@@ -61,6 +68,7 @@ public final class Selection {
   }
 
   public void resetAll() {
+    registeredServerDomains = null;
     goBackURL = "";
     cancelURL = "";
 
@@ -304,5 +312,16 @@ public final class Selection {
 
   public void setSelectedUserLimit(final int selectedUserLimit) {
     this.selectedUserLimit = selectedUserLimit;
+  }
+
+  /**
+   * Gets all the domains registered on the server.
+   */
+  public List<Domain> getRegisteredServerDomains() {
+    if (registeredServerDomains == null) {
+      registeredServerDomains = asList(
+          OrganisationControllerFactory.getOrganisationController().getAllDomains());
+    }
+    return registeredServerDomains;
   }
 }

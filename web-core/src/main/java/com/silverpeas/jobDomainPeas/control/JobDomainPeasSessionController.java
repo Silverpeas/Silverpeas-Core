@@ -199,34 +199,22 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   /**
    * Create a user
    *
-   * @param userLogin the user login
-   * @param userLastName the user last name
-   * @param userFirstName the user first name
-   * @param userEMail the user email
-   * @param userAccessLevel the user access level
-   * @param userPasswordValid the user valid password
-   * @param userPassword the user password
-   * @param properties
-   * @param groupId
+   * @param userRequestData the data of the user from the request.
+   * @param properties the user extra data.
    * @param req the current HttpServletRequest
-   * @param sendEmail true if admin selected to send an automatic email, false else if
    * @return
    * @throws JobDomainPeasException
    * @throws JobDomainPeasTrappedException
    */
-  public String createUser(String userLogin, String userLastName, String userFirstName,
-      String userEMail, UserAccessLevel userAccessLevel, boolean userPasswordValid,
-      String userPassword,
-      HashMap<String, String> properties, String groupId, HttpServletRequest req, boolean sendEmail)
-      throws JobDomainPeasException, JobDomainPeasTrappedException {
+  public String createUser(UserRequestData userRequestData, HashMap<String, String> properties,
+      HttpServletRequest req) throws JobDomainPeasException, JobDomainPeasTrappedException {
     UserDetail theNewUser = new UserDetail();
 
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createUser()",
-        "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin + " userLastName=" + userLastName
-        + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
-        + userAccessLevel);
+        "root.MSG_GEN_ENTER_METHOD", userRequestData.toString());
 
-    String existingUser = m_AdminCtrl.getUserIdByLoginAndDomain(userLogin, targetDomainId);
+    String existingUser =
+        m_AdminCtrl.getUserIdByLoginAndDomain(userRequestData.getLogin(), targetDomainId);
     if ((existingUser != null) && (existingUser.length() > 0)) {
       JobDomainPeasTrappedException te = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.createUser()",
@@ -239,11 +227,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if ((targetDomainId != null) && (!targetDomainId.equals("-1")) && (targetDomainId.length() > 0)) {
       theNewUser.setDomainId(targetDomainId);
     }
-    theNewUser.setLogin(userLogin);
-    theNewUser.setLastName(userLastName);
-    theNewUser.setFirstName(userFirstName);
-    theNewUser.seteMail(userEMail);
-    theNewUser.setAccessLevel(userAccessLevel);
+    userRequestData.applyDataOnNewUser(theNewUser);
     String idRet = m_AdminCtrl.addUser(theNewUser);
     if ((idRet == null) || (idRet.length() <= 0)) {
       throw new JobDomainPeasException(
@@ -255,14 +239,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewUser.setId(idRet);
 
     // Send an email to alert this user
-    notifyUserAccount(userPasswordValid, userPassword, theNewUser, req, true, sendEmail);
+    notifyUserAccount(userRequestData.isPasswordValid(), userRequestData.getPassword(), theNewUser,
+        req, true, userRequestData.isSendEmail());
 
     // Update UserFull informations
     UserFull uf = getTargetUserFull();
     if (uf != null) {
       if (uf.isPasswordAvailable()) {
-        uf.setPasswordValid(userPasswordValid);
-        uf.setPassword(userPassword);
+        uf.setPasswordValid(userRequestData.isPasswordValid());
+        uf.setPassword(userRequestData.getPassword());
       }
 
       // process extra properties
@@ -280,8 +265,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // regroupement de l'utilisateur dans un groupe
     regroupInGroup(properties, null);
     // If group is provided, add newly created user to it
-    if (StringUtil.isDefined(groupId)) {
-      m_AdminCtrl.addUserInGroup(idRet, groupId);
+    if (StringUtil.isDefined(userRequestData.getGroupId())) {
+      m_AdminCtrl.addUserInGroup(idRet, userRequestData.getGroupId());
     }
 
     return idRet;
@@ -790,8 +775,17 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       boolean passwordValid = StringUtil.isDefined(motDePasse); // password is not mandatory
-      createUser(login, nom, prenom, email, userAccessLevel, passwordValid, motDePasse,
-          properties, null, req, sendEmail); // l'id User créé est dans m_TargetUserId
+      UserRequestData userRequestData = new UserRequestData();
+      userRequestData.setLogin(login);
+      userRequestData.setLastName(nom);
+      userRequestData.setFirstName(prenom);
+      userRequestData.setEmail(email);
+      userRequestData.setAccessLevel(userAccessLevel);
+      userRequestData.setPasswordValid(passwordValid);
+      userRequestData.setPassword(motDePasse);
+      userRequestData.setSendEmail(sendEmail);
+      userRequestData.setUserManualNotifReceiverLimitEnabled(true);
+      createUser(userRequestData, properties, req);
     }
   }
 
@@ -851,27 +845,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   /**
    * Modify user account information
    *
-   * @param idUser the user identifier
-   * @param userLastName user last name
-   * @param userFirstName user first name
-   * @param userEMail user email
-   * @param userAccessLevel user access level (A,U, ...)
-   * @param userPasswordValid is user password valid (boolean true or false)
-   * @param userPassword the user password
-   * @param properties
+   * @param userRequestData the data of the user from the request.
+   * @param properties the user extra data.
    * @param req the current HttpServletRequest
    * @throws JobDomainPeasException
    */
-  public void modifyUser(String idUser, String userLastName, String userFirstName, String userEMail,
-      UserAccessLevel userAccessLevel, boolean userPasswordValid, String userPassword,
-      HashMap<String, String> properties, HttpServletRequest req, boolean sendEmail)
+  public void modifyUser(UserRequestData userRequestData, HashMap<String, String> properties,
+      HttpServletRequest req)
       throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
-        + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
-        + userAccessLevel);
+        "root.MSG_GEN_ENTER_METHOD", userRequestData.toString());
 
-    UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
+    UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
@@ -880,16 +865,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // nom du groupe auquel était rattaché l'utilisateur
     String lastGroupId = getLastGroupId(theModifiedUser);
 
-    theModifiedUser.setLastName(userLastName);
-    theModifiedUser.setFirstName(userFirstName);
-    theModifiedUser.seteMail(userEMail);
-    theModifiedUser.setAccessLevel(userAccessLevel);
-    if (theModifiedUser.isPasswordAvailable()) {
-      theModifiedUser.setPasswordValid(userPasswordValid);
-      theModifiedUser.setPassword(userPassword);
-    }
+    userRequestData.applyDataOnExistingUser(theModifiedUser);
 
-    notifyUserAccount(userPasswordValid, userPassword, theModifiedUser, req, false, sendEmail);
+    notifyUserAccount(userRequestData.isPasswordValid(), userRequestData.getPassword(),
+        theModifiedUser, req, false, userRequestData.isSendEmail());
 
     // process extra properties
     for (Map.Entry<String, String> entry : properties.entrySet()) {
@@ -901,7 +880,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
     } catch (AdminException e) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId=" + idUser, e);
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER",
+          "UserId=" + userRequestData.getId(), e);
     }
     refresh();
     setTargetUser(idRet);
@@ -910,45 +890,48 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     regroupInGroup(properties, lastGroupId);
   }
 
-  public void modifySynchronizedUser(String idUser, UserAccessLevel userAccessLevel)
+  public void modifySynchronizedUser(UserRequestData userRequestData)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.modifySynchronizedUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
+    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifySynchronizedUser()",
+        "root.MSG_GEN_ENTER_METHOD", "UserId=" + userRequestData.getId());
 
-    UserDetail theModifiedUser = m_AdminCtrl.getUserDetail(idUser);
+    UserDetail theModifiedUser = m_AdminCtrl.getUserDetail(userRequestData.getId());
     if (theModifiedUser == null) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySynchronizedUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
     }
-    theModifiedUser.setAccessLevel(userAccessLevel);
+    theModifiedUser.setAccessLevel(userRequestData.getAccessLevel());
+    theModifiedUser.setUserManualNotificationUserReceiverLimit(
+        userRequestData.getUserManualNotifReceiverLimitValue());
     String idRet = m_AdminCtrl.updateSynchronizedUser(theModifiedUser);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySynchronizedUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
+          + userRequestData.getId());
     }
     refresh();
     setTargetUser(idRet);
   }
 
-  public void modifyUserFull(String idUser, UserAccessLevel userAccessLevel,
+  public void modifyUserFull(UserRequestData userRequestData,
       HashMap<String, String> properties)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.modifyUserFull()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userAccessLevel=" + userAccessLevel);
+    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyUserFull()",
+        "root.MSG_GEN_ENTER_METHOD", "UserId=" + userRequestData.getId() + " userAccessLevel=" +
+        userRequestData.getAccessLevel());
 
-    UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
+    UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUserFull()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
     }
 
-    theModifiedUser.setAccessLevel(userAccessLevel);
+    theModifiedUser.setAccessLevel(userRequestData.getAccessLevel());
+    theModifiedUser.setUserManualNotificationUserReceiverLimit(
+        userRequestData.getUserManualNotifReceiverLimitValue());
 
     // process extra properties
     for (Map.Entry<String, String> entry : properties.entrySet()) {
@@ -959,10 +942,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
     } catch (AdminException e) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifyUserFull()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser, e);
+      throw new JobDomainPeasException("JobDomainPeasSessionController.modifyUserFull()",
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER",
+          "UserId=" + userRequestData.getId(), e);
     }
     refresh();
     setTargetUser(idRet);

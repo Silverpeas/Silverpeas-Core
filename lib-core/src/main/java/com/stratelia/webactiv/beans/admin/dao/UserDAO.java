@@ -45,7 +45,7 @@ public class UserDAO {
       "DISTINCT(id),specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,"
       + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
-      + "state,stateSaveDate";
+      + "state,stateSaveDate, notifManualReceiverLimit";
   private static final String SELECT_DOMAINS_BY_LOGIN = "SELECT DISTINCT(domainId) AS domain FROM "
       + "st_user WHERE state <> 'DELETED' AND state <> 'UNKNOWN' AND state <> 'BLOCKED' "
       + "AND state <> 'EXPIRED' AND login = ? ORDER BY domainId";
@@ -262,6 +262,9 @@ public class UserDAO {
     u.setExpirationDate(rs.getTimestamp(19));
     u.setState(UserState.from(rs.getString(20)));
     u.setStateSaveDate(rs.getTimestamp(21));
+    if (StringUtil.isInteger(rs.getString(22))) {
+      u.setNotifManualReceiverLimit(rs.getInt(22));
+    }
     return u;
   }
 }

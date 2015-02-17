@@ -294,6 +294,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       userModel.setExpirationDate(ur.expirationDate);
       userModel.setState(UserState.from(ur.state));
       userModel.setStateSaveDate(ur.stateSaveDate);
+      userModel.setNotifManualReceiverLimit(ur.notifManualReceiverLimit);
 
       if (isUserFull) {
         userModel.setLoginQuestion(ur.loginQuestion);

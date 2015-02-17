@@ -33,7 +33,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.owasp.encoder.Encode;
@@ -136,9 +135,8 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
 
     // Limitations
     if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
-      m_Selection.setSetSelectable(false);
       m_Selection
-          .setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimit());
+          .setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
     }
 
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

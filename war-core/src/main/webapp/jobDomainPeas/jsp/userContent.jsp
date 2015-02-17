@@ -23,6 +23,7 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationManagerSettings" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -32,7 +33,15 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 
+<c:set var="USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED" value="<%= NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled()%>"/>
+<c:set var="USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE" value="<%= NotificationManagerSettings.getUserManualNotificationRecipientLimit()%>"/>
+
+<fmt:message key="GML.yes" var="yesLabel"/>
+<fmt:message key="GML.no" var="noLabel"/>
+<fmt:message key="JDP.userManualNotifReceiverLimitValue" var="userManualNotifReceiverLimitValueLabel"><fmt:param value="${USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE}"/></fmt:message>
+
 <c:set var="userInfos" value="${requestScope.userObject}" />
+<jsp:useBean id="userInfos" type="com.stratelia.webactiv.beans.admin.UserFull"/>
 
 <c:set var="lastName" value="${userInfos.lastName}" />
 <c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
@@ -201,6 +210,33 @@ out.println(window.printBefore());
    		</li>
 	</ul>
 </fieldset>
+
+  <%--User Manual Notification User Receiver Limit--%>
+  <c:if test="${USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED
+              and (userInfos.accessUser or userInfos.accessGuest)}">
+    <fieldset id="identity-manual-notification" class="skinFieldset">
+      <legend class="without-img"><fmt:message key="JDP.userManualNotif"/></legend>
+      <div class="fields">
+        <div class="field" id="form-row-user-manual-notification-limitation-activation">
+          <label class="txtlibform"><fmt:message key="JDP.userManualNotifReceiverLimitActivation"/></label>
+
+          <div class="champs">
+              ${(userInfos.userManualNotificationUserReceiverLimit)? yesLabel : noLabel}
+          </div>
+        </div>
+        <c:if test="${userInfos.userManualNotificationUserReceiverLimit}">
+          <div class="field" id="form-row-user-manual-notification-limitation-value">
+            <label class="txtlibform">${userManualNotifReceiverLimitValueLabel}</label>
+
+            <div class="champs">
+                ${userInfos.notifManualReceiverLimit}
+            </div>
+          </div>
+        </c:if>
+      </div>
+    </fieldset>
+  </c:if>
+
 <fieldset id="identity-extra" class="skinFieldset">
 	<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
 	<ul class="fields">
