@@ -75,6 +75,18 @@
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-api</artifactId>
     </dependency>
+    <!-- required only by the taglibs -->
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>admin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>authentication</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- end of the specific taglibs requirement declaration -->
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
@@ -148,6 +160,11 @@
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>tagcloud</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>questioncontainer</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
