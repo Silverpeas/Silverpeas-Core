@@ -27,8 +27,8 @@
 
 <jdo-conf engine="postgresql">
     <database name="Silverpeas" engine="postgresql">
-        <jndi name="Silverpeas" />
-        <mapping href="file:///C:/Silverpeas/KMEdition/Production/silverpeas/resources/instanceManager/mapping.xml" />
+      <jndi name="java:/datasources/silverpeas"/>
+      <mapping href="file:///C:/Silverpeas/KMEdition/Production/silverpeas/resources/instanceManager/mapping.xml" />
     </database>
     <transaction-demarcation mode="local" />
     <jndi name="Silverpeas" />
