@@ -192,9 +192,6 @@
   </dependencies>
 
   <properties>
-    <persistence.lib>lib-core-${project.version}.jar</persistence.lib>
-    <persistence.pdc>pdc-${project.version}.jar</persistence.pdc>
-    <persistence.node>node-${project.version}.jar</persistence.node>
     <jackrabbit>deployment.jackrabbit-jca.rar</jackrabbit>
   </properties>
   <build>
