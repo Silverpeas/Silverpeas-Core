@@ -62,7 +62,7 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:silverstatistics");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:publication");
     warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:clipboard");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
@@ -72,6 +72,7 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
     warBuilder.addPackages(true, "org.silverpeas.servlet");
     warBuilder.addPackages(true, "org.silverpeas.subscription");
     // Bundles & Settings
+    warBuilder.addAsResource("org/silverpeas/publication/publicationSettings.properties");
     warBuilder.addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
     warBuilder.addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");
     warBuilder.addAsResource("org/silverpeas/peasCore/SessionManager.properties");
