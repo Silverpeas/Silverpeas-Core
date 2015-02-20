@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="nsChannelPOPUP">
+<migration module="nsChannelPOPUP" order="2">
 
   <current version="005">
       <script name="create_table.sql" type="sql"/>

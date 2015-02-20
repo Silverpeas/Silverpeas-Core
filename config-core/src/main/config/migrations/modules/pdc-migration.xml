@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="pdc">
+<migration module="pdc" order="2">
 
   <current version="008">
     <script name="create_table.sql" type="sql"/>

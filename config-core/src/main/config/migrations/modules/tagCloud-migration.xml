@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="tagCloud">
+<migration module="tagCloud" order="2">
 
   <current version="002">
     <script name="create_table.sql" type="sql"/>

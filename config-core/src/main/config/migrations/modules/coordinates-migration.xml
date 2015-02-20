@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="coordinates">
+<migration module="coordinates" order="2">
 
   <current version="003">
     <script name="create_table.sql" type="sql"/>

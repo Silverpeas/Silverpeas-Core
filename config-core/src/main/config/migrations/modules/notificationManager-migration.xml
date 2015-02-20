@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="notificationManager">
+<migration module="notificationManager" order="2">
 
   <current version="005">
     <script name="create_table.sql" type="sql"/>

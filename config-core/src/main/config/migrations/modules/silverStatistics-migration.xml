@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="silverStatistics">
+<migration module="silverStatistics" order="2">
 
   <current version="002">
     <script name="create_table.sql" type="sql"/>

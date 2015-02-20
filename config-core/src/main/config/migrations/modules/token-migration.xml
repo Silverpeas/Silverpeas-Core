@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="token">
+<migration module="token" order="2">
 
   <current version="001">
     <script name="create_table.sql" type="sql"/>

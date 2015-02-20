@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="publication">
+<migration module="publication" order="2">
 
   <current version="020">
     <script name="create_table.sql" type="sql"/>

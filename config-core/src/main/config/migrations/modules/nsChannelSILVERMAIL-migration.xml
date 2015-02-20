@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="nsChannelSILVERMAIL">
+<migration module="nsChannelSILVERMAIL" order="2">
 
   <current version="003">
 

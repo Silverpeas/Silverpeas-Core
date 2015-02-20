@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="node">
+<migration module="node" order="2">
 
   <current version="006">
     <script name="create_table.sql" type="sql"/>

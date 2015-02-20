@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="questionContainer">
+<migration module="questionContainer" order="2">
 
   <current version="004">
     <script name="create_table.sql" type="sql"/>

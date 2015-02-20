@@ -25,7 +25,7 @@
 
 -->
 
-<migration module="versioning">
+<migration module="versioning" order="2">
 
   <current version="014">
     <script name="create_table.sql" type="sql"/>
