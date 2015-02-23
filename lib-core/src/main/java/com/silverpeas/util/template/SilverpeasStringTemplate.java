@@ -20,6 +20,14 @@
  */
 package com.silverpeas.util.template;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.renderer.DateRenderer;
+import org.antlr.stringtemplate.AutoIndentWriter;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,14 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.antlr.stringtemplate.AutoIndentWriter;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-
-import com.silverpeas.util.template.renderer.DateRenderer;
 
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
@@ -91,6 +91,10 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
   @Override
   public void setAttribute(String name, Object value) {
+    if (value instanceof String && StringUtil.isNotDefined((String) value)) {
+      // It exists no reason to get true on conditional if performed on a not defined string.
+      value = null;
+    }
     attributes.put(name, value);
   }
 

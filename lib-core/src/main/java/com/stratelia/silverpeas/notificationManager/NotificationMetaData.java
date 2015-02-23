@@ -263,7 +263,7 @@ public class NotificationMetaData implements java.io.Serializable {
         result.append(content);
       }
 
-      if(getOriginalExtraMessage() != null) {
+      if(StringUtil.isDefined(getOriginalExtraMessage())) {
         result.append("<div style=\"padding=10px 0 10px 0;\">")
             .append("<div style=\"background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;\">")
             .append(getOriginalExtraMessage())

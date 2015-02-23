@@ -42,9 +42,24 @@ if (!Array.prototype.indexOf) {
   };
 }
 
-String.prototype.startsWith = function(str) {
-  return this.indexOf(str) === 0;
-};
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(str) {
+    return this.indexOf(str) === 0;
+  };
+}
+
+if (!String.prototype.isDefined) {
+  String.prototype.isDefined = function() {
+    var withoutWhitespaces = this.replace(/[ \r\n\t]/g, '');
+    return withoutWhitespaces.length > 0 && withoutWhitespaces !== 'null';
+  };
+}
+
+if (!String.prototype.isNotDefined) {
+  String.prototype.isNotDefined = function() {
+    return !this.isDefined();
+  };
+}
 
 function SP_openWindow(page, name, width, height, options) {
   var top = (screen.height - height) / 2;
