@@ -3265,7 +3265,7 @@ class Admin implements Administration {
   }
 
   /**
-   * Return 23 for parameter kmelia23
+   * @return 23 for parameter kmelia23
    */
   private Integer getTableClientComponentIdFromClientComponentId(String sClientComponentId) {
     String sTableClientId = "";
@@ -3279,7 +3279,10 @@ class Admin implements Administration {
         sTableClientId = sClientComponentId.substring(nI);
       }
     }
-    return Integer.parseInt(sTableClientId);
+    if (StringUtil.isDefined(sTableClientId)) {
+      return Integer.parseInt(sTableClientId);
+    }
+    return -1;
   }
 
   /**
