@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <%
 	String roles = "";
 	String groupsOfInstanceOnlyChecked = "";
@@ -50,11 +50,11 @@
      	return checkErrors();
 	}
 </script>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.usedInstanceOnly")%> :</td><td><input type="checkbox" name="Param_groupsOfInstanceOnly" value="true" <%=groupsOfInstanceOnlyChecked%>/></td>
 </tr>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.roles")%> :</td><td><input type="text" name="Param_roles" value="<%=roles%>" /></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

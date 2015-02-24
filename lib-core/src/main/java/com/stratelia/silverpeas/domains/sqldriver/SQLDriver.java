@@ -42,6 +42,8 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -122,9 +124,8 @@ public class SQLDriver extends AbstractDomainDriver {
       SilverTrace.info("admin", "SQLDriver.openConnection()",
           "root.MSG_GEN_ENTER_METHOD");
       try {
-        Class.forName(drvSettings.getClassName());
-        openedConnection = DriverManager.getConnection(drvSettings.getJDBCUrl(), drvSettings.
-            getAccessLogin(), drvSettings.getAccessPasswd());
+        DataSource dataSource = InitialContext.doLookup(drvSettings.getDataSourceJNDIName());
+        openedConnection = dataSource.getConnection();
       } catch (Exception e) {
         throw new AdminException("SQLDriver.openConnection",
             SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

@@ -27,7 +27,7 @@
 <%@page import="com.silverpeas.form.displayers.EmailFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
 function isCorrectForm() {
  	checkFieldName();
@@ -48,11 +48,11 @@ function isCorrectForm() {
 		}
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.size")%> :</td><td><input type="text" name="Param_<%=EmailFieldDisplayer.PARAM_SIZE %>" value="<%=size%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.email.mailto")%> :</td><td><input type="checkbox" name="Param_<%=EmailFieldDisplayer.PARAM_MAILTO %>" value="true" <%=mailto%>/></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

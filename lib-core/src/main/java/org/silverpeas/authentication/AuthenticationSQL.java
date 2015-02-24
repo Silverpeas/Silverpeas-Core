@@ -20,37 +20,33 @@
  */
 package org.silverpeas.authentication;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Properties;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationHostException;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
-import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.util.exception.SilverpeasException;
+
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * This class performs the authentication using an SQL table.
  */
 public class AuthenticationSQL extends Authentication {
 
-  protected String jdbcUrl;
-  protected String jdbcLogin;
-  protected String jdbcPassword;
-  protected String jdbcDriver;
+  protected String dataSourceJndiName;
   protected String userTableName;
   protected String loginColumnName;
   protected String passwordColumnName;
@@ -59,10 +55,7 @@ public class AuthenticationSQL extends Authentication {
   @Override
   public void loadProperties(ResourceLocator settings) {
     String serverName = getServerName();
-    jdbcUrl = settings.getString(serverName + ".SQLJDBCUrl");
-    jdbcLogin = settings.getString(serverName + ".SQLAccessLogin");
-    jdbcPassword = settings.getString(serverName + ".SQLAccessPasswd");
-    jdbcDriver = settings.getString(serverName + ".SQLDriverClass");
+    dataSourceJndiName = settings.getString(serverName + ".SQLDataSourceJNDIName");
     userTableName = settings.getString(serverName + ".SQLUserTableName");
     loginColumnName = settings.getString(serverName + ".SQLUserLoginColumnName");
     passwordColumnName = settings.getString(serverName + ".SQLUserPasswordColumnName");
@@ -72,23 +65,14 @@ public class AuthenticationSQL extends Authentication {
 
   @Override
   protected AuthenticationConnection<Connection> openConnection() throws AuthenticationException {
-    Properties info = new Properties();
-    Driver driverSQL;
     try {
-      info.setProperty("user", jdbcLogin);
-      info.setProperty("password", jdbcPassword);
-      driverSQL = (Driver) Class.forName(jdbcDriver).newInstance();
+      DataSource dataSource = InitialContext.doLookup(dataSourceJndiName);
+      Connection connection = dataSource.getConnection();
+      return new AuthenticationConnection<Connection>(connection);
     } catch (Exception iex) {
       throw new AuthenticationHostException("AuthenticationSQL.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver="
-          + jdbcDriver, iex);
-    }
-    try {
-      Connection connection = driverSQL.connect(jdbcUrl, info);
-      return new AuthenticationConnection<Connection>(connection);
-    } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationSQL.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
+          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
+          "Datasource=" + dataSourceJndiName, iex);
     }
   }
 
@@ -101,7 +85,8 @@ public class AuthenticationSQL extends Authentication {
       }
     } catch (SQLException ex) {
       throw new AuthenticationHostException("AuthenticationSQL.closeConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "JDBCUrl=" + jdbcUrl, ex);
+          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED",
+          "Datasource=" + dataSourceJndiName, ex);
     }
   }
 

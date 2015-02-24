@@ -27,7 +27,7 @@
 <%@page import="com.silverpeas.form.displayers.TextAreaFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
 	function isCorrectForm() 
 	{
@@ -49,11 +49,11 @@
 		}
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.rows")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_ROWS%>" value="<%=rows%>" size="5" maxLength="3"/></td>
 </tr>
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.cols")%> :</td><td><input type="text" name="Param_<%= TextAreaFieldDisplayer.PARAM_COLS%>" value="<%=cols%>" size="5" maxLength="3"/></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
 	function isCorrectForm() {
      	checkFieldName();
@@ -34,8 +34,7 @@
 	}
 </script>
 <%
-	String driverName = "";
-	String url = "";
+	String dataSourceName = "";
 	String login = "";
 	String password = "";
 	String query = "";
@@ -44,12 +43,8 @@
 	
 	if (field != null)
 	{
-		if (parameters.containsKey("driverName")) {
-			driverName = parameters.get("driverName");
-		}
-		
-		if (parameters.containsKey("url")) {
-			url = parameters.get("url");
+		if (parameters.containsKey("dataSourceName")) {
+      dataSourceName = parameters.get("dataSourceName");
 		}
 
 		if (parameters.containsKey("login")) {
@@ -73,12 +68,9 @@
 		}
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
-	<td class="txtlibform"><%=resource.getString("templateDesigner.driverName")%> :</td><td><input type="text" name="Param_driverName" value="<%=driverName%>" size="30"/></td>
-</tr>
-<tr>
-	<td class="txtlibform"><%=resource.getString("templateDesigner.url")%> :</td><td><input type="text" name="Param_url" value="<%=url%>" size="30"/></td>
+	<td class="txtlibform"><%=resource.getString("templateDesigner.dataSourceName")%> :</td><td><input type="text" name="Param_dataSourceName" value="<%=dataSourceName%>" size="30"/></td>
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("templateDesigner.login")%> :</td><td><input type="text" name="Param_login" value="<%=login%>" size="30"/></td>
@@ -101,4 +93,4 @@
 		</select>
 	</td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

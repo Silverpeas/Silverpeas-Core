@@ -40,34 +40,31 @@ public class SQLSettings extends DriverSettings {
   public static final int DATABASE_COLUMN_NAME_MAX_LENGTH = 30;
 
   // For DB Access
-  protected String SQLClassName = "";
-  protected String SQLJDBCUrl = "";
-  protected String SQLAccessLogin = "";
-  protected String SQLAccessPasswd = "";
+  protected String sqlDataSourceJNDIName = "java:/datasources/silverpeas";
 
   // For Table Names
-  protected String SQLUserTableName = "DomainSQL_User";
-  protected String SQLGroupTableName = "DomainSQL_Group";
-  protected String SQLUserGroupTableName = "DomainSQL_Group_User_Rel";
+  protected String sqlUserTableName = "DomainSQL_User";
+  protected String sqlGroupTableName = "DomainSQL_Group";
+  protected String sqlUserGroupTableName = "DomainSQL_Group_User_Rel";
 
   // For Users
-  protected String SQLUserSpecificIdColumnName = "id";
-  protected String SQLUserLoginColumnName = "login";
-  protected String SQLUserFirstNameColumnName = "firstName";
-  protected String SQLUserLastNameColumnName = "lastName";
-  protected String SQLUserEMailColumnName = "email";
-  protected String SQLUserPasswordColumnName = "";
-  protected String SQLUserPasswordValidColumnName = "";
+  protected String sqlUserSpecificIdColumnName = "id";
+  protected String sqlUserLoginColumnName = "login";
+  protected String sqlUserFirstNameColumnName = "firstName";
+  protected String sqlUserLastNameColumnName = "lastName";
+  protected String sqlUserEMailColumnName = "email";
+  protected String sqlUserPasswordColumnName = "";
+  protected String sqlUserPasswordValidColumnName = "";
 
   // For Groups
-  protected String SQLGroupSpecificIdColumnName = "id";
-  protected String SQLGroupNameColumnName = "name";
-  protected String SQLGroupDescriptionColumnName = "description";
-  protected String SQLGroupParentIdColumnName = "superGroupId";
+  protected String sqlGroupSpecificIdColumnName = "id";
+  protected String sqlGroupNameColumnName = "name";
+  protected String sqlGroupDescriptionColumnName = "description";
+  protected String sqlGroupParentIdColumnName = "superGroupId";
 
   // For Users-Groups relations
-  protected String SQLUserGroupUIDColumnName = "userId";
-  protected String SQLUserGroupGIDColumnName = "groupId";
+  protected String sqlUserGroupUIDColumnName = "userId";
+  protected String sqlUserGroupGIDColumnName = "groupId";
 
   /**
    * Performs initialization from a properties file. The optional properties are retreive with
@@ -77,146 +74,123 @@ public class SQLSettings extends DriverSettings {
   public void initFromProperties(ResourceLocator rs) {
     // Database Settings
     // -----------------
-    SQLClassName = rs.getString("database.SQLClassName", SQLClassName);
-    SQLJDBCUrl = rs.getString("database.SQLJDBCUrl", SQLJDBCUrl);
-    SQLAccessLogin = rs.getString("database.SQLAccessLogin", SQLAccessLogin);
-    SQLAccessPasswd = rs.getString("database.SQLAccessPasswd", SQLAccessPasswd);
+    sqlDataSourceJNDIName = rs.getString("database.SQLDataSourceJNDIName", sqlDataSourceJNDIName);
 
     // For Table Names
-    SQLUserTableName = rs.getString("database.SQLUserTableName",
-        SQLUserTableName);
-    SQLGroupTableName = rs.getString("database.SQLGroupTableName",
-        SQLGroupTableName);
-    SQLUserGroupTableName = rs.getString("database.SQLUserGroupTableName",
-        SQLUserGroupTableName);
+    sqlUserTableName = rs.getString("database.SQLUserTableName", sqlUserTableName);
+    sqlGroupTableName = rs.getString("database.SQLGroupTableName", sqlGroupTableName);
+    sqlUserGroupTableName = rs.getString("database.SQLUserGroupTableName", sqlUserGroupTableName);
 
     // For Users
-    SQLUserSpecificIdColumnName = rs.getString(
-        "database.SQLUserSpecificIdColumnName", SQLUserSpecificIdColumnName);
-    SQLUserLoginColumnName = rs.getString("database.SQLUserLoginColumnName",
-        SQLUserLoginColumnName);
-    SQLUserFirstNameColumnName = rs.getString(
-        "database.SQLUserFirstNameColumnName", SQLUserFirstNameColumnName);
-    SQLUserLastNameColumnName = rs.getString(
-        "database.SQLUserLastNameColumnName", SQLUserLastNameColumnName);
-    SQLUserEMailColumnName = rs.getString("database.SQLUserEMailColumnName",
-        SQLUserEMailColumnName);
-    SQLUserPasswordColumnName = rs.getString(
-        "database.SQLUserPasswordColumnName", SQLUserPasswordColumnName);
-    SQLUserPasswordValidColumnName = rs.getString(
-        "database.SQLUserPasswordValidColumnName",
-        SQLUserPasswordValidColumnName);
+    sqlUserSpecificIdColumnName = rs.getString(
+        "database.SQLUserSpecificIdColumnName", sqlUserSpecificIdColumnName);
+    sqlUserLoginColumnName = rs.getString("database.SQLUserLoginColumnName", sqlUserLoginColumnName);
+    sqlUserFirstNameColumnName = rs.getString(
+        "database.SQLUserFirstNameColumnName", sqlUserFirstNameColumnName);
+    sqlUserLastNameColumnName = rs.getString(
+        "database.SQLUserLastNameColumnName", sqlUserLastNameColumnName);
+    sqlUserEMailColumnName = rs.getString("database.SQLUserEMailColumnName", sqlUserEMailColumnName);
+    sqlUserPasswordColumnName = rs.getString(
+        "database.SQLUserPasswordColumnName", sqlUserPasswordColumnName);
+    sqlUserPasswordValidColumnName = rs.getString(
+        "database.SQLUserPasswordValidColumnName", sqlUserPasswordValidColumnName);
 
     // For Groups
-    SQLGroupSpecificIdColumnName = rs.getString(
-        "database.SQLGroupSpecificIdColumnName", SQLGroupSpecificIdColumnName);
-    SQLGroupNameColumnName = rs.getString("database.SQLGroupNameColumnName",
-        SQLGroupNameColumnName);
-    SQLGroupDescriptionColumnName = rs
-        .getString("database.SQLGroupDescriptionColumnName",
-        SQLGroupDescriptionColumnName);
-    SQLGroupParentIdColumnName = rs.getString(
-        "database.SQLGroupParentIdColumnName", SQLGroupParentIdColumnName);
+    sqlGroupSpecificIdColumnName = rs.getString(
+        "database.SQLGroupSpecificIdColumnName", sqlGroupSpecificIdColumnName);
+    sqlGroupNameColumnName = rs.getString("database.SQLGroupNameColumnName", sqlGroupNameColumnName);
+    sqlGroupDescriptionColumnName = rs
+        .getString("database.SQLGroupDescriptionColumnName", sqlGroupDescriptionColumnName);
+    sqlGroupParentIdColumnName = rs.getString(
+        "database.SQLGroupParentIdColumnName", sqlGroupParentIdColumnName);
 
     // For Users-Groups relations
-    SQLUserGroupUIDColumnName = rs.getString(
-        "database.SQLUserGroupUIDColumnName", SQLUserGroupUIDColumnName);
-    SQLUserGroupGIDColumnName = rs.getString(
-        "database.SQLUserGroupGIDColumnName", SQLUserGroupGIDColumnName);
+    sqlUserGroupUIDColumnName = rs.getString(
+        "database.SQLUserGroupUIDColumnName", sqlUserGroupUIDColumnName);
+    sqlUserGroupGIDColumnName = rs.getString(
+        "database.SQLUserGroupGIDColumnName", sqlUserGroupGIDColumnName);
   }
 
   // DB FIELDS
   // ---------
-  public String getClassName() {
-    return SQLClassName;
-  }
-
-  public String getJDBCUrl() {
-    return SQLJDBCUrl;
-  }
-
-  public String getAccessLogin() {
-    return SQLAccessLogin;
-  }
-
-  public String getAccessPasswd() {
-    return SQLAccessPasswd;
+  public String getDataSourceJNDIName() {
+    return sqlDataSourceJNDIName;
   }
 
   // For Table Names
   public String getUserTableName() {
-    return SQLUserTableName;
+    return sqlUserTableName;
   }
 
   public String getGroupTableName() {
-    return SQLGroupTableName;
+    return sqlGroupTableName;
   }
 
   public String getRelTableName() {
-    return SQLUserGroupTableName;
+    return sqlUserGroupTableName;
   }
 
   // For Users
   public String getUserSpecificIdColumnName() {
-    return SQLUserSpecificIdColumnName;
+    return sqlUserSpecificIdColumnName;
   }
 
   public String getUserLoginColumnName() {
-    return SQLUserLoginColumnName;
+    return sqlUserLoginColumnName;
   }
 
   public String getUserFirstNameColumnName() {
-    return SQLUserFirstNameColumnName;
+    return sqlUserFirstNameColumnName;
   }
 
   public String getUserLastNameColumnName() {
-    return SQLUserLastNameColumnName;
+    return sqlUserLastNameColumnName;
   }
 
   public String getUserEMailColumnName() {
-    return SQLUserEMailColumnName;
+    return sqlUserEMailColumnName;
   }
 
   public String getUserPasswordColumnName() {
-    return SQLUserPasswordColumnName;
+    return sqlUserPasswordColumnName;
   }
 
   public String getUserPasswordValidColumnName() {
-    return SQLUserPasswordValidColumnName;
+    return sqlUserPasswordValidColumnName;
   }
 
   public boolean isUserPasswordAvailable() {
-    return (SQLUserPasswordColumnName.length() > 0);
+    return (sqlUserPasswordColumnName.length() > 0);
   }
 
   public boolean isUserPasswordValidAvailable() {
-    return (SQLUserPasswordValidColumnName.length() > 0);
+    return (sqlUserPasswordValidColumnName.length() > 0);
   }
 
   // For Groups
   public String getGroupSpecificIdColumnName() {
-    return SQLGroupSpecificIdColumnName;
+    return sqlGroupSpecificIdColumnName;
   }
 
   public String getGroupNameColumnName() {
-    return SQLGroupNameColumnName;
+    return sqlGroupNameColumnName;
   }
 
   public String getGroupDescriptionColumnName() {
-    return SQLGroupDescriptionColumnName;
+    return sqlGroupDescriptionColumnName;
   }
 
   public String getGroupParentIdColumnName() {
-    return SQLGroupParentIdColumnName;
+    return sqlGroupParentIdColumnName;
   }
 
   // For Users-Groups relations
   public String getRelUIDColumnName() {
-    return SQLUserGroupUIDColumnName;
+    return sqlUserGroupUIDColumnName;
   }
 
   public String getRelGIDColumnName() {
-    return SQLUserGroupGIDColumnName;
+    return sqlUserGroupGIDColumnName;
   }
 
   public String trunc(String src, int max) {

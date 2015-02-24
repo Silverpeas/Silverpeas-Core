@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
 	function isCorrectForm() {
      	checkFieldName();
@@ -55,7 +55,7 @@
 		}
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.image.maxWidth")%> :</td><td><input type="text" name="Param_width" value="<%=maxWidth%>" size="5" maxLength="4"/></td>
 </tr>
@@ -65,4 +65,4 @@
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.image.galleries")%> :</td><td><input type="checkbox" name="Param_galleries" value="true" <%=galleriesChecked%>/></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

@@ -26,12 +26,12 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <script language="javascript">
 	function isCorrectForm() {
      	checkFieldName();
      	return checkErrors();
 	}
 </script>
-<%@ include file="includeTopField.jsp.inc" %>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
+<%@ include file="includeBottomField.jsp" %>

@@ -26,7 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <script type="text/javascript">
 function isCorrectForm() {
  	checkFieldName();
@@ -77,7 +77,7 @@ function isCorrectForm() {
 		}
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.width")%> :</td><td><input type="text" name="Param_width" value="<%=width%>" size="5" maxLength="4"/></td>
 </tr>
@@ -90,4 +90,4 @@ function isCorrectForm() {
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.wysiwyg.fileStorages")%> :</td><td><input type="checkbox" id="fileStorages" <%=fileStoragesChecked%>/><input type="hidden" name="Param_fileStorages" id="Param_fileStorages"/></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

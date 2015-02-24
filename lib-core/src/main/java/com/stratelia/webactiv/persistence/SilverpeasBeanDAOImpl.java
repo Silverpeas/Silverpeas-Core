@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.persistence;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.sun.org.apache.xpath.internal.SourceTree;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.WAPrimaryKey;
@@ -412,6 +413,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           break;
         }
         case CONNECTION_TYPE_JDBC_CLASSIC: {
+          System.out.println("WARNING COMMECTION TYPE JDBC BASIC");
           Class.forName(jdbcConnectionParameters.JDBCdriverName);
           con = DriverManager
               .getConnection(jdbcConnectionParameters.JDBCurl, jdbcConnectionParameters.JDBClogin,

@@ -28,7 +28,7 @@
 <%@page import="com.silverpeas.form.displayers.MapFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 <style type="text/css">
 .map-param .txtlibform {
 	padding-left: 20px;
@@ -86,7 +86,7 @@
 		}
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.map")%> :</td><td><input type="checkbox" name="Param_<%=MapFieldDisplayer.PARAM_MAP %>" value="true" <%=map %> onclick="toggleMapOptions(this)"/></td>
 </tr>
@@ -113,4 +113,4 @@
 <tr class="map-param">
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.map.link")%> :</td><td><input type="checkbox" name="Param_<%=MapFieldDisplayer.PARAM_ENLARGE %>" value="true" <%=enlarge %>/></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

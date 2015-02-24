@@ -273,10 +273,7 @@ public class SQLDomainService extends AbstractDomainService {
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
 
     SilverpeasTemplate template = getNewTemplate();
-    template.setAttribute("SQLClassName", adminSettings.getString("AdminDBDriver"));
-    template.setAttribute("SQLJDBCUrl", adminSettings.getString("WaProductionDb"));
-    template.setAttribute("SQLAccessLogin", adminSettings.getString("WaProductionUser"));
-    template.setAttribute("SQLAccessPasswd", adminSettings.getString("WaProductionPswd"));
+    template.setAttribute("SQLDataSourceJNDIName", adminSettings.getString("DefaultDataSourceJNDIName"));
     template.setAttribute("SQLUserTableName",
         DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX);
     template.setAttribute("SQLGroupTableName",
@@ -320,10 +317,7 @@ public class SQLDomainService extends AbstractDomainService {
     SilverpeasTemplate template = getNewTemplate();
     template.setAttribute("allowPasswordChange", allowPasswordChange);
 
-    template.setAttribute("SQLDriverClass", adminSettings.getString("AdminDBDriver"));
-    template.setAttribute("SQLJDBCUrl", adminSettings.getString("WaProductionDb"));
-    template.setAttribute("SQLAccessLogin", adminSettings.getString("WaProductionUser"));
-    template.setAttribute("SQLAccessPasswd", adminSettings.getString("WaProductionPswd"));
+    template.setAttribute("SQLDataSourceJNDIName", adminSettings.getString("DefaultDataSourceJNDIName"));
     template.setAttribute("SQLUserTableName",
         DATABASE_TABLE_NAME_DOMAIN_PREFIX + domainName + DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX);
 

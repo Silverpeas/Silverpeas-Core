@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="org.silverpeas.util.StringUtil"%>
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 	<script type="text/javascript">
 		function isCorrectForm()  {
 	     	checkFieldName();
@@ -72,7 +72,7 @@
 		global = StringUtil.getBooleanValue(parameters.get("global"));
 	}
 %>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.sequence.minLength")%> :</td>
 	<td><input type="text" name="Param_minLength" value="<%=minLength%>" size="5" maxLength="2"/></td>
@@ -99,4 +99,4 @@
 		</select>
 	</td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

@@ -27,7 +27,7 @@
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 
 <%
 	String scope = "";
@@ -50,8 +50,8 @@
      	return checkErrors();
 	}
 </script>
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.explorer.scope")%> :</td><td><input type="text" name="Param_scope" id="Param_scope" value="<%=scope%>" />&nbsp;<img src="<%=resource.getIcon("templateDesigner.mandatory")%>" width="5" height="5"/></td>
 </tr>
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

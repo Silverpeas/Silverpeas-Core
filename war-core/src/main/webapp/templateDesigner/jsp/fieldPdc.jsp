@@ -30,7 +30,7 @@
 <%@ page import="com.stratelia.silverpeas.pdc.model.UsedAxis"%>
 <%@ page import="com.silverpeas.form.displayers.PdcFieldDisplayer"%>
 
-<%@ include file="includeParamsField.jsp.inc" %>
+<%@ include file="includeParamsField.jsp" %>
 
 <%
 	String pdcUtilizationContext = m_context + "/RpdcUtilization/jsp/";
@@ -113,7 +113,7 @@
 
 <body>
 
-<%@ include file="includeTopField.jsp.inc" %>
+<%@ include file="includeTopField.jsp" %>
 
 <tr>
 	<td class="txtlibform" width="25%">Axes :</td>
@@ -127,4 +127,4 @@
 </tr>
 
 
-<%@ include file="includeBottomField.jsp.inc" %>
+<%@ include file="includeBottomField.jsp" %>

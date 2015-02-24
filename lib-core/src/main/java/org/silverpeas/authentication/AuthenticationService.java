@@ -44,6 +44,8 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -68,10 +70,7 @@ import java.util.Random;
 public class AuthenticationService {
 
   private static final String module = "authentication";
-  static final protected String m_JDBCUrl;
-  static final protected String m_AccessLogin;
-  static final protected String m_AccessPasswd;
-  static final protected String m_DriverClass;
+  static final protected String m_DataSourceJNDIName;
   static final protected String m_DomainTableName;
   static final protected String m_DomainIdColumnName;
   static final protected String m_DomainNameColumnName;
@@ -98,10 +97,7 @@ public class AuthenticationService {
         "org.silverpeas.authentication.domains", "");
 
     // Lecture du fichier de proprietes
-    m_JDBCUrl = propFile.getString("SQLDomainJDBCUrl");
-    m_AccessLogin = propFile.getString("SQLDomainAccessLogin");
-    m_AccessPasswd = propFile.getString("SQLDomainAccessPasswd");
-    m_DriverClass = propFile.getString("SQLDomainDriverClass");
+    m_DataSourceJNDIName = propFile.getString("SQLDomainDataSourceJNDIName");
 
     m_DomainTableName = propFile.getString("SQLDomainTableName");
     m_DomainIdColumnName = propFile.getString("SQLDomainIdColumnName");
@@ -133,26 +129,17 @@ public class AuthenticationService {
    * Opens a new connection to the Silverpeas database.
    */
   static private Connection openConnection() throws AuthenticationException {
-    Properties info = new Properties();
-    Driver driverSQL;
-    Connection con;
+    Connection connection;
 
     try {
-      info.setProperty("user", m_AccessLogin);
-      info.setProperty("password", m_AccessPasswd);
-      driverSQL = (Driver) Class.forName(m_DriverClass).newInstance();
+      DataSource dataSource = InitialContext.doLookup(m_DataSourceJNDIName);
+      connection = dataSource.getConnection();
     } catch (Exception iex) {
       throw new AuthenticationHostException("AuthenticationService.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" + m_DriverClass,
-          iex);
+          SilverpeasException.ERROR, "root.root.EX_CONNECTION_OPEN_FAILED",
+          "Datasource=" + m_DataSourceJNDIName, iex);
     }
-    try {
-      con = driverSQL.connect(m_JDBCUrl, info);
-    } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationService.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + m_JDBCUrl, ex);
-    }
-    return con;
+    return connection;
   }
 
   /**

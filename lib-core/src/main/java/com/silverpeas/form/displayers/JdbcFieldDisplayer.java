@@ -125,8 +125,8 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     Connection jdbcConnection = null;
     try {
       jdbcConnection =
-          field.connectJdbc(parameters.get("driverName"), parameters.get("url"), parameters.
-              get("login"), parameters.get("password"));
+          field.connect(parameters.get("dataSourceName"), parameters.get("login"),
+              parameters.get("password"));
       listRes = field.selectSql(jdbcConnection, parameters.get("query"), currentUserId);
     } finally {
       DBUtil.close(jdbcConnection);

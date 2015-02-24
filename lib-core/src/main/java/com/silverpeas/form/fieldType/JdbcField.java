@@ -27,9 +27,11 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.StringUtil;
 
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -90,28 +92,38 @@ public class JdbcField extends TextField {
     return false;
   }
 
-  public Connection connectJdbc(String driverName, String url, String login,
-      String password) throws FormException {
-    Connection result;
-
+  /**
+   * Connects to the specified data source by using the specified credentials. If no credentials
+   * are provided, then the authentication is performed by using the credentials set with the data
+   * source configuration in the JEE application server.
+   * @param dataSourceName the JNDI name of the data source from which it can be retrieved.
+   * @param login the login of the user to access the data source. Can be empty or null if no
+   * explicit authentication is required.
+   * @param password the password of the user to access the data source. Can be empty or null if
+   * no password was set or if no explicit authentication is required.
+   * @return a connection to the specified data source.
+   * @throws FormException if an error occurs while either looking up the data source or opening a
+   * connection with the specified data source.
+   */
+  public Connection connect(String dataSourceName, String login, String password)
+      throws FormException {
+    Connection connection;
     try {
-      Class.forName(driverName);
-    } catch (ClassNotFoundException e) {
-      throw new FormException("JdbcField.connectJdbc",
-          "form.EX_CANT_FIND_DRIVER_JDBC", e);
-    }
-    try {
-      result = DriverManager.getConnection(url, login, password);
-    } catch (SQLException e) {
-      throw new FormException("JdbcField.connectJdbc",
-          "form.EX_CANT_CONNECT_JDBC", e);
+      DataSource dataSource = InitialContext.doLookup(dataSourceName);
+      if (StringUtil.isDefined(login)) {
+        connection = dataSource.getConnection(login, password);
+      } else {
+        connection = dataSource.getConnection();
+      }
+    } catch (Exception ex) {
+      throw new FormException("JdbcField.connect", "form.EX_CANT_CONNECT_JDBC", ex);
     }
 
-    return result;
+    return connection;
   }
 
-  public Collection<String> selectSql(Connection jdbcConnection, String query,
-      String currentUserId) throws FormException {
+  public Collection<String> selectSql(Connection connection, String query, String currentUserId)
+      throws FormException {
 
     Collection<String> result = new ArrayList<>();
 
@@ -121,9 +133,11 @@ public class JdbcField extends TextField {
     PreparedStatement prepStmt;
     ResultSet rs;
 
-    if (jdbcConnection != null) {
+    if (connection != null) {
       try {
-        prepStmt = jdbcConnection.prepareStatement(query);
+        String sqlQuery = (query.toLowerCase().startsWith("select") ? query: "select " + query);
+        System.out.println("QUERY IS " + sqlQuery);
+        prepStmt = connection.prepareStatement(sqlQuery);
       } catch (SQLException e) {
         throw new FormException("JdbcField.selectSql",
             "form.EX_CANT_PREPARE_STATEMENT_JDBC", e);
