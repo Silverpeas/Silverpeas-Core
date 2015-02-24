@@ -25,9 +25,9 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -108,7 +108,7 @@ public class NotificationMetaData implements java.io.Serializable {
     reset();
     this.messageType = messageType;
     this.templates = new HashMap<String, SilverpeasTemplate>();
-    addLanguage(I18NHelper.defaultLanguage, title, content);
+    addLanguage(DisplayI18NHelper.getDefaultLanguage(), title, content);
   }
 
   public NotificationMetaData(int messageType, String title,
@@ -194,7 +194,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param title the title to be set
    */
   public void setTitle(String title) {
-    titles.put(I18NHelper.defaultLanguage, title);
+    titles.put(DisplayI18NHelper.getDefaultLanguage(), title);
   }
 
   public void setTitle(String title, String language) {
@@ -207,7 +207,7 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public String getTitle() {
     // return title;
-    return getTitle(I18NHelper.defaultLanguage);
+    return getTitle(DisplayI18NHelper.getDefaultLanguage());
   }
 
   public String getTitle(String language) {
@@ -229,7 +229,7 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public void setContent(String content) {
     // this.content = content;
-    contents.put(I18NHelper.defaultLanguage, content);
+    contents.put(DisplayI18NHelper.getDefaultLanguage(), content);
   }
 
   public void setContent(String content, String language) {
@@ -244,7 +244,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message content
    */
   public String getContent() {
-    return getContent(I18NHelper.defaultLanguage);
+    return getContent(DisplayI18NHelper.getDefaultLanguage());
   }
 
   public String getContent(String language) {
@@ -379,7 +379,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param link the link to be set
    */
   public void setLink(Link link) {
-    setLink(link, I18NHelper.defaultLanguage);
+    setLink(link, DisplayI18NHelper.getDefaultLanguage());
   }
   
   /**
@@ -397,7 +397,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message linkLabel
    */
   public String getLinkLabel() {
-    return getLinkLabel(I18NHelper.defaultLanguage);
+    return getLinkLabel(DisplayI18NHelper.getDefaultLanguage());
   }
 
   public String getLinkLabel(String language) {
@@ -625,7 +625,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void setNotificationResourceData(final NotificationResourceData notificationResourceData) {
-    setNotificationResourceData(I18NHelper.defaultLanguage, notificationResourceData);
+    setNotificationResourceData(DisplayI18NHelper.getDefaultLanguage(), notificationResourceData);
   }
 
   public void setNotificationResourceData(final String lang, final NotificationResourceData notificationResourceData) {
@@ -633,7 +633,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public NotificationResourceData getNotificationResourceData() {
-    return getNotificationResourceData(I18NHelper.defaultLanguage);
+    return getNotificationResourceData(DisplayI18NHelper.getDefaultLanguage());
   }
 
   public NotificationResourceData getNotificationResourceData(final String lang) {

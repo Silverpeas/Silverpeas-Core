@@ -354,7 +354,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc) {
     UserPreferences preferences = sc.getPreferences();
-    preferences.setLanguage(request.getParameter("SelectedLanguage"));
+    preferences.setLanguage(request.getParameter("SelectedUserLanguage"));
     preferences.setLook(request.getParameter("SelectedLook"));
     preferences.enableThesaurus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
     preferences.enableDragAndDrop(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));

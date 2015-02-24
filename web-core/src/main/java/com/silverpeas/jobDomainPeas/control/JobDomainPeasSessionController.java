@@ -28,12 +28,13 @@ import com.silverpeas.jobDomainPeas.JobDomainPeasTrappedException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.jobDomainPeas.SynchroUserWebServiceItf;
 import com.silverpeas.jobDomainPeas.UserRequestData;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.Variant;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.X509Factory;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -51,38 +52,12 @@ import com.stratelia.silverpeas.selection.SelectionException;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.DomainDriver;
-import com.stratelia.webactiv.beans.admin.DomainProperty;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.DomainType;
@@ -94,6 +69,16 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.password.service.PasswordCheck;
 import org.silverpeas.password.service.PasswordServiceFactory;
 import org.silverpeas.quota.exception.QuotaException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
+import java.util.*;
+
+import static com.silverpeas.SilverpeasServiceProvider.getPersonalizationService;
 
 /**
  * Class declaration
@@ -238,9 +223,16 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     setTargetUser(idRet);
     theNewUser.setId(idRet);
 
+    // Registering the preferred user language if any and if it is different from the default one
+    if (StringUtil.isDefined(userRequestData.getLanguage()) &&
+        !userRequestData.getLanguage().equals(DisplayI18NHelper.getDefaultLanguage())) {
+      UserPreferences userPreferences = theNewUser.getUserPreferences();
+      userPreferences.setLanguage(userRequestData.getLanguage());
+      getPersonalizationService().saveUserSettings(userPreferences);
+    }
+
     // Send an email to alert this user
-    notifyUserAccount(userRequestData.isPasswordValid(), userRequestData.getPassword(), theNewUser,
-        req, true, userRequestData.isSendEmail());
+    notifyUserAccount(userRequestData, theNewUser, req, true);
 
     // Update UserFull informations
     UserFull uf = getTargetUserFull();
@@ -276,32 +268,35 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * notifyUserAccount send an email to the user only if userPasswordValid, sendEmail are true, and
    * if userEMail and userPassword are defined
    *
-   * @param userPasswordValid true if user password is valid, false else if
-   * @param userPassword the user password
+   * @param userRequestData the data of the user from the request.
    * @param user the userDetail
    * @param req the current HttpServletRequest
    * @param isNewUser boolean true if it's a created user, false else if
-   * @param sendEmail TODO
    */
-  private void notifyUserAccount(boolean userPasswordValid, String userPassword, UserDetail user,
-      HttpServletRequest req, boolean isNewUser, boolean sendEmail) {
+  private void notifyUserAccount(UserRequestData userRequestData, UserDetail user,
+      HttpServletRequest req, boolean isNewUser) {
 
     // Add code here in order to send an email notification
-    if (userPasswordValid && sendEmail && StringUtil.isDefined(user.geteMail()) && StringUtil.
-        isDefined(userPassword)) {
+    if (userRequestData.isPasswordValid() && userRequestData.isSendEmail() &&
+        StringUtil.isDefined(user.geteMail()) &&
+        StringUtil.isDefined(userRequestData.getPassword())) {
+
       // Send an email notification
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
 
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, "", templates,
+              USER_ACCOUNT_TEMPLATE_FILE);
+
       String loginUrl = getLoginUrl(user, req);
 
-      for (String lang : I18NHelper.getAllSupportedLanguages()) {
-        templates.put(lang, getTemplate(user, loginUrl, userPassword, isNewUser));
+      for (String lang : DisplayI18NHelper.getLanguages()) {
+        ResourceLocator notifBundle =
+            new ResourceLocator("org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle", lang);
+        notifMetaData.addLanguage(lang, notifBundle.getString("JDP.createAccountNotifTitle"), "");
+        templates.put(lang, getTemplate(user, loginUrl, userRequestData.getPassword(), isNewUser));
       }
 
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.ADDRESS_BASIC_SMTP_MAIL,
-          getString("JDP.createAccountNotifTitle"),
-          templates, USER_ACCOUNT_TEMPLATE_FILE);
       notifMetaData.addUserRecipient(new UserRecipient(user.getId()));
       NotificationSender sender = new NotificationSender(null);
       try {
@@ -867,15 +862,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     userRequestData.applyDataOnExistingUser(theModifiedUser);
 
-    notifyUserAccount(userRequestData.isPasswordValid(), userRequestData.getPassword(),
-        theModifiedUser, req, false, userRequestData.isSendEmail());
+    notifyUserAccount(userRequestData, theModifiedUser, req, false);
 
     // process extra properties
     for (Map.Entry<String, String> entry : properties.entrySet()) {
       theModifiedUser.setValue(entry.getKey(), entry.getValue());
     }
 
-    String idRet = null;
+    String idRet;
     try {
       idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
     } catch (AdminException e) {

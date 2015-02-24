@@ -23,6 +23,7 @@
  */
 package com.silverpeas.jobDomainPeas;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
@@ -31,6 +32,8 @@ import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.servlet.UnescapeHtml;
 
 import javax.ws.rs.FormParam;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * This class is a user data container which the data are retrieved from an HTTP request that
@@ -104,6 +107,12 @@ public class UserRequestData {
    */
   @FormParam("GroupId")
   private String groupId;
+
+  /**
+   * The preferred language of the user.
+   */
+  @FormParam("SelectedUserLanguage")
+  private String language;
 
   /**
    * The indicator that enables the limitation on the maximum number of recipient the user can
@@ -243,6 +252,14 @@ public class UserRequestData {
 
   public void setGroupId(final String groupId) {
     this.groupId = groupId;
+  }
+
+  public String getLanguage() {
+    return DisplayI18NHelper.verifyLanguage(language);
+  }
+
+  public void setLanguage(final String language) {
+    this.language = language;
   }
 
   protected boolean getUserManualNotifReceiverLimitEnabled() {

@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
@@ -356,6 +357,15 @@ out.println(window.printBefore());
 			</div>
 		</div>
       <% } %>
+        <!--User Language-->
+        <div class="field" id="form-row-user-language">
+          <label class="txtlibform"><fmt:message key="JDP.userPreferredLanguage"/></label>
+
+          <div class="champs">
+            <viewTags:userPreferredLanguageSelector user="${not empty userObject.id ? userObject : null}"
+                                                    readOnly="${not empty userObject.id}"/>
+          </div>
+        </div>
       </div>
     </fieldset>
 

@@ -29,6 +29,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
@@ -210,6 +211,14 @@ out.println(window.printBefore());
       			</c:choose>
      		</div>
    		</li>
+    <!--User Language-->
+    <li class="field" id="form-row-user-language">
+      <label class="txtlibform"><fmt:message key="JDP.userPreferredLanguage"/></label>
+
+      <div class="champs">
+        <viewTags:userPreferredLanguageSelector user="${userInfos}" readOnly="true"/>
+      </div>
+    </li>
 	</ul>
 </fieldset>
 
