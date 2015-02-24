@@ -31,6 +31,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
@@ -45,20 +46,7 @@
     <tr id="language">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLanguage'}"/> :</td>
       <td>
-        <select name="SelectedLanguage" size="1">
-          <c:forEach items="${requestScope['AllLanguages']}" var="language">
-            <c:choose>
-              <c:when test="${preferences.language eq language}">
-                <option value="<c:out value="${language}"/>" selected="selected"><fmt:message
-                    key="myProfile.settings.language_${language}"/></option>
-              </c:when>
-              <c:otherwise>
-                <option value="<c:out value="${language}"/>"><fmt:message
-                    key="myProfile.settings.language_${language}"/></option>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-        </select>
+        <viewTags:userPreferredLanguageSelector userPreferences="${preferences}"/>
       </td>
     </tr>
     <c:choose>

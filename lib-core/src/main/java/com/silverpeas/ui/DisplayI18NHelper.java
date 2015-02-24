@@ -24,12 +24,12 @@
 
 package com.silverpeas.ui;
 
+import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.silverpeas.util.ResourceLocator;
 
 /**
  * This class permits to handle the different languages that a user can choose to display the
@@ -70,7 +70,18 @@ public class DisplayI18NHelper {
     return Collections.unmodifiableList(languages);
   }
 
-  private DisplayI18NHelper() {
+  /**
+   * Verifies if the given user language is handled by the server.
+   * @return the given user language if it is handled by the server, the default user language
+   * otherwise.
+   */
+  public static String verifyLanguage(String language) {
+    if (languages.contains(language)) {
+      return language;
+    }
+    return getDefaultLanguage();
   }
 
+  private DisplayI18NHelper() {
+  }
 }

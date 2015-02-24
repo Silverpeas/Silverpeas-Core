@@ -70,6 +70,7 @@ public class UserRequestDataTest {
     setHttpParameter("userPassword", "user.password");
     setHttpParameter("sendEmail", "true");
     setHttpParameter("GroupId", "user.groupId");
+    setHttpParameter("UserLanguage", "user.language");
     setHttpParameter("userManualNotifReceiverLimitEnabled", "true");
     setHttpParameter("userManualNotifReceiverLimitValue", "10");
 
@@ -92,6 +93,7 @@ public class UserRequestDataTest {
     assertThat(userRequestData.getPassword(), is("user.password"));
     assertThat(userRequestData.isSendEmail(), is(false));
     assertThat(userRequestData.getGroupId(), is("user.groupId"));
+    assertThat(userRequestData.getLanguage(), is("user.language"));
     assertThat(userRequestData.getUserManualNotifReceiverLimitEnabled(), is(false));
     assertThat(userRequestData.getUserManualNotifReceiverLimitValue(), is(0));
 
