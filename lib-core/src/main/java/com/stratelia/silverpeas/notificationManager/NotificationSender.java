@@ -55,6 +55,13 @@ public class NotificationSender implements java.io.Serializable {
   protected int instanceId = -1;
 
   /**
+   * Default constructor
+   */
+  protected NotificationSender() {
+    this(null);
+  }
+
+  /**
    * Constructor for a standard component
    * @param instanceId the instance Id of the calling's component
    */
