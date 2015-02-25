@@ -50,6 +50,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.File;
@@ -170,6 +171,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
+      code = WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective()
+          .transform();
+
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         DynamicValueReplacement replacement = new DynamicValueReplacement();
