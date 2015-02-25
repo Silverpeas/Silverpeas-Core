@@ -25,10 +25,7 @@
 # SQL driver
 # DataBase Access
 # ----------------
-database.SQLClassName          = $SQLClassName$
-database.SQLJDBCUrl            = $SQLJDBCUrl$
-database.SQLAccessLogin        = $SQLAccessLogin$
-database.SQLAccessPasswd       = $SQLAccessPasswd$
+database.SQLDataSourceJNDIName = $SQLDataSourceJNDIName$
 
 database.SQLUserTableName      = $SQLUserTableName$
 database.SQLGroupTableName     = $SQLGroupTableName$
