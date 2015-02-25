@@ -61,7 +61,7 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
       objectDND.setAttribute("height", "70");
       objectDND.setAttribute("type", "application/x-java-applet;version=1.6");
     }
-    addParam(objectDND, "archive", "wjhk.jupload.jar,jakarta-commons-net.jar");
+    addParam(objectDND, "archive", "wjhk.jupload.jar");
     addParam(objectDND, "code", "wjhk.jupload2.JUploadApplet");
     addParam(objectDND, "name", "Silverpeas Drag And Drop");
     addParam(objectDND, "codebase", webcontext + "/upload");
@@ -74,7 +74,7 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
     objectDND.setAttribute("width", "100%");
     objectDND.setAttribute("height", "70");
     objectDND.setAttribute("codebase", webcontext + "/upload");
-    objectDND.setAttribute("archive", "wjhk.jupload.jar,jakarta-commons-net.jar");
+    objectDND.setAttribute("archive", "wjhk.jupload.jar");
     objectDND.setAttribute("code", "wjhk.jupload2.JUploadApplet");
     objectDND.setAttribute("name", "Silverpeas Drag And Drop");
     objectDND.setAttribute("hspace", "0");
