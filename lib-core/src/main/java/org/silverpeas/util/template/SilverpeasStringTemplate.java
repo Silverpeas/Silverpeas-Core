@@ -20,6 +20,14 @@
  */
 package org.silverpeas.util.template;
 
+import org.antlr.stringtemplate.AutoIndentWriter;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.renderer.DateRenderer;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,14 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.antlr.stringtemplate.AutoIndentWriter;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-
-import org.silverpeas.util.template.renderer.DateRenderer;
 
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
