@@ -173,6 +173,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
+      code = WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective()
+          .transform();
+
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         DynamicValueReplacement replacement = new DynamicValueReplacement();
