@@ -37,11 +37,20 @@ import java.util.List;
 
 public class LinkDAO {
 
+  private static LinkDAO linkDAO = new LinkDAO();
+
+  /**
+   * Gets the DAO instance associated to the link persistence management.
+   * @return the link DAO instance.
+   */
+  public static LinkDAO getLinkDao() {
+    return linkDAO;
+  }
+
   /**
    * Hide constructor of utility class
    */
   private LinkDAO() {
-    super();
   }
 
   /**
@@ -51,12 +60,13 @@ public class LinkDAO {
    * @return list of user links
    * @throws SQLException
    */
-  public static List<LinkDetail> getAllLinksByUser(Connection con, String userId)
+  public List<LinkDetail> getAllLinksByUser(Connection con, String userId)
       throws SQLException {
     List<LinkDetail> listLink = new ArrayList<>();
 
     String query =
-        "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '') order by position asc nulls first";
+        "SELECT * FROM SB_MyLinks_Link WHERE userId = ? AND (instanceId IS NULL OR instanceId = " +
+            "'') AND (objectId IS NULL OR objectId = '')";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -80,7 +90,7 @@ public class LinkDAO {
    * @return list of LinkDetail
    * @throws SQLException
    */
-  public static List<LinkDetail> getAllLinksByInstance(Connection con, String instanceId)
+  public List<LinkDetail> getAllLinksByInstance(Connection con, String instanceId)
       throws SQLException {
     List<LinkDetail> listLink = new ArrayList<>();
 
@@ -101,7 +111,7 @@ public class LinkDAO {
     return listLink;
   }
 
-  public static List<LinkDetail> getAllLinksByObject(Connection con, String instanceId,
+  public List<LinkDetail> getAllLinksByObject(Connection con, String instanceId,
       String objectId) throws SQLException {
     // Retrieve all link from object
     List<LinkDetail> listLink = new ArrayList<>();
@@ -131,7 +141,7 @@ public class LinkDAO {
    * @return the link detail
    * @throws SQLException
    */
-  public static LinkDetail getLink(Connection con, String linkId) throws SQLException {
+  public LinkDetail getLink(Connection con, String linkId) throws SQLException {
     LinkDetail link = new LinkDetail();
     String query = "select * from SB_MyLinks_Link where linkId = ? ";
     PreparedStatement prepStmt = null;
@@ -157,21 +167,20 @@ public class LinkDAO {
    * @return link identifier
    * @throws SQLException
    */
-  public static int createLink(Connection con, LinkDetail link) throws SQLException {
-    LinkDetail newLink = link;
-    newLink.setHasPosition(false);
+  public int createLink(Connection con, LinkDetail linkToPersist) throws SQLException, UtilException {
+    linkToPersist.setHasPosition(false);
     int newId = 0;
     PreparedStatement prepStmt = null;
     try {
       newId = DBUtil.getNextId("SB_MyLinks_Link", "linkId");
       // Initialize query
       String query =
-          "insert into SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, " +
+          "INSERT INTO SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, " +
               "instanceId, objectId) " +
-              "values (?,?,?,?,?,?,?,?,?)";
+              "VALUES (?,?,?,?,?,?,?,?,?)";
       // Initialize parameters
       prepStmt = con.prepareStatement(query);
-      initParam(prepStmt, newId, newLink);
+      initParam(prepStmt, newId, linkToPersist);
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -182,28 +191,27 @@ public class LinkDAO {
   /**
    * Update a link
    * @param con the connection
-   * @param link link detail to update
+   * @param linkToUpdate link detail to update
    * @throws SQLException
    */
-  public static void updateLink(Connection con, LinkDetail link) throws SQLException {
-    LinkDetail updatedLink = link;
+  public void updateLink(Connection con, LinkDetail linkToUpdate) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      StringBuffer queryBuffer = new StringBuffer();
+      StringBuilder queryBuffer = new StringBuilder();
       queryBuffer
           .append("update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , ");
       queryBuffer
           .append("userId = ? , instanceId = ? , objectId = ? ");
-      if (link.hasPosition()) {
+      if (linkToUpdate.hasPosition()) {
         queryBuffer.append(" , position = ? ");
       }
       queryBuffer.append("where linkId = ? ");
       // initialisation des paramètres
       prepStmt = con.prepareStatement(queryBuffer.toString());
-      int linkId = updatedLink.getLinkId();
-      int npParam = initParam(prepStmt, linkId, updatedLink);
+      int linkId = linkToUpdate.getLinkId();
+      int paramIndex = initParam(prepStmt, linkId, linkToUpdate);
       // Initialize last parameter
-      prepStmt.setInt(npParam++, linkId);
+      prepStmt.setInt(paramIndex, linkId);
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -216,7 +224,7 @@ public class LinkDAO {
    * @param linkId the link identifier to remove
    * @throws SQLException
    */
-  public static void deleteLink(Connection con, String linkId) throws SQLException {
+  public void deleteLink(Connection con, String linkId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from SB_MyLinks_Link where linkId = ? ";
@@ -228,7 +236,7 @@ public class LinkDAO {
     }
   }
 
-  public static void deleteLinksOfComponent(Connection con, String instanceId) throws SQLException {
+  public void deleteLinksOfComponent(Connection con, String instanceId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from SB_MyLinks_Link where instanceId = ? ";
@@ -240,7 +248,7 @@ public class LinkDAO {
     }
   }
 
-  public static void deleteLinksOfObject(Connection con, String objectId) throws SQLException {
+  public void deleteLinksOfObject(Connection con, String objectId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from SB_MyLinks_Link where objectId = ? ";

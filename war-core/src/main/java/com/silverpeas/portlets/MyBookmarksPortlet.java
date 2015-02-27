@@ -47,7 +47,7 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
       try {
         MyLinksBm myLinksBm = getMyLinksBm();
         if (myLinksBm != null) {
-          links = (List<LinkDetail>) myLinksBm.getAllLinks(currentUser.getId());
+          links = myLinksBm.getAllLinks(currentUser.getId());
         }
       } catch (Exception e) {
         SilverTrace.error("portlet", "MyBookmarksPortlet", "portlet.ERROR", e);
