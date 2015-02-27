@@ -63,7 +63,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public Collection<LinkDetail> getAllLinksByUser() {
-    Collection<LinkDetail> links = null;
+    Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByUser(getUserId());
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByUser()",
@@ -77,7 +77,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public Collection<LinkDetail> getAllLinksByInstance() {
-    Collection<LinkDetail> links = null;
+    Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByInstance(instanceId);
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByInstance()",
@@ -93,7 +93,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public Collection<LinkDetail> getAllLinksByObject() {
-    Collection<LinkDetail> links = null;
+    Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByObject(instanceId, objectId);
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByObject()",
@@ -107,7 +107,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   }
 
   public LinkDetail getLink(String linkId) {
-    LinkDetail link = null;
+    LinkDetail link;
     try {
       link = getMyLinksBm().getLink(linkId);
       SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getLink()",

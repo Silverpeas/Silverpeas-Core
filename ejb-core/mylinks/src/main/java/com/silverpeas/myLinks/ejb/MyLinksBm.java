@@ -20,22 +20,31 @@
  */
 package com.silverpeas.myLinks.ejb;
 
-import java.util.Collection;
+import com.silverpeas.myLinks.model.LinkDetail;
 
 import javax.ejb.Local;
-
-import com.silverpeas.myLinks.model.LinkDetail;
+import java.util.Collection;
+import java.util.List;
 
 @Local
 public interface MyLinksBm {
 
-  Collection<LinkDetail> getAllLinks(String userId);
+  /**
+   * @see #getAllLinksByUser(String)
+   */
+  List<LinkDetail> getAllLinks(String userId);
 
-  Collection<LinkDetail> getAllLinksByUser(String userId);
+  /**
+   * Gets all the links associated to the user represented by the given id.<br/>
+   * The result list is sorted by {@link com.silverpeas.myLinks.model.LinkDetailComparator}.
+   * @param userId a user identifier.
+   * @return a sorted list of links, empty if no link found.
+   */
+  List<LinkDetail> getAllLinksByUser(String userId);
 
-  Collection<LinkDetail> getAllLinksByInstance(String instanceId);
+  List<LinkDetail> getAllLinksByInstance(String instanceId);
 
-  Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId);
+  List<LinkDetail> getAllLinksByObject(String instanceId, String objectId);
 
   void createLink(LinkDetail link);
 
@@ -44,6 +53,4 @@ public interface MyLinksBm {
   void deleteLinks(String[] links);
 
   void updateLink(LinkDetail link);
-  
-  void setLinksOrderIfNeeded(Collection<LinkDetail> links);
 }

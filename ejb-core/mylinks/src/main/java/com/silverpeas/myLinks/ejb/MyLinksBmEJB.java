@@ -20,23 +20,22 @@
  */
 package com.silverpeas.myLinks.ejb;
 
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
 import com.silverpeas.myLinks.MyLinksRuntimeException;
-import com.silverpeas.myLinks.dao.LinkDAO;
 import com.silverpeas.myLinks.model.LinkDetail;
+import com.silverpeas.myLinks.model.LinkDetailComparator;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.util.List;
+
+import static com.silverpeas.myLinks.dao.LinkDAO.getLinkDao;
 
 /**
  * @author
@@ -47,17 +46,16 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class MyLinksBmEJB implements MyLinksBm {
 
   @Override
-  public Collection<LinkDetail> getAllLinks(String userId) {
+  public List<LinkDetail> getAllLinks(String userId) {
     return getAllLinksByUser(userId);
   }
 
   @Override
-  public Collection<LinkDetail> getAllLinksByUser(String userId) {
+  public List<LinkDetail> getAllLinksByUser(String userId) {
     Connection con = initCon();
     try {
-      List<LinkDetail> allLinksByUser = LinkDAO.getAllLinksByUser(con, userId);
-      setLinksOrderIfNeeded(allLinksByUser);
-      return allLinksByUser;
+      List<LinkDetail> links = getLinkDao().getAllLinksByUser(con, userId);
+      return LinkDetailComparator.sort(links);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByUser()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
@@ -67,10 +65,10 @@ public class MyLinksBmEJB implements MyLinksBm {
   }
 
   @Override
-  public Collection<LinkDetail> getAllLinksByInstance(String instanceId) {
+  public List<LinkDetail> getAllLinksByInstance(String instanceId) {
     Connection con = initCon();
     try {
-      return LinkDAO.getAllLinksByInstance(con, instanceId);
+      return getLinkDao().getAllLinksByInstance(con, instanceId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByInstance()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
@@ -80,10 +78,10 @@ public class MyLinksBmEJB implements MyLinksBm {
   }
 
   @Override
-  public Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId) {
+  public List<LinkDetail> getAllLinksByObject(String instanceId, String objectId) {
     Connection con = initCon();
     try {
-      return LinkDAO.getAllLinksByObject(con, instanceId, objectId);
+      return getLinkDao().getAllLinksByObject(con, instanceId, objectId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByObject()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
@@ -96,7 +94,7 @@ public class MyLinksBmEJB implements MyLinksBm {
   public void createLink(LinkDetail link) {
     Connection con = initCon();
     try {
-      int id = LinkDAO.createLink(con, link);
+      int id = getLinkDao().createLink(con, link);
       link.setLinkId(id);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.createLink()",
@@ -111,7 +109,7 @@ public class MyLinksBmEJB implements MyLinksBm {
     Connection con = initCon();
     try {
       for (String linkId : links) {
-        LinkDAO.deleteLink(con, linkId);
+        getLinkDao().deleteLink(con, linkId);
       }
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.deleteLinks()",
@@ -125,7 +123,7 @@ public class MyLinksBmEJB implements MyLinksBm {
   public void updateLink(LinkDetail link) {
     Connection con = initCon();
     try {
-      LinkDAO.updateLink(con, link);
+      getLinkDao().updateLink(con, link);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.updateLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_UPDATE", e);
@@ -138,7 +136,7 @@ public class MyLinksBmEJB implements MyLinksBm {
   public LinkDetail getLink(String linkId) {
     Connection con = initCon();
     try {
-      return LinkDAO.getLink(con, linkId);
+      return getLinkDao().getLink(con, linkId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
@@ -147,7 +145,7 @@ public class MyLinksBmEJB implements MyLinksBm {
     }
   }
 
-  private Connection initCon() {
+  protected Connection initCon() {
     Connection con;
     try {
       con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
@@ -156,33 +154,5 @@ public class MyLinksBmEJB implements MyLinksBm {
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
-  }
-
-  @Override
-  public void setLinksOrderIfNeeded(Collection<LinkDetail> links) {
-    boolean hasNoPosition = false;
-    boolean isPositionMissing = false;
-    Iterator<LinkDetail> iter = links.iterator();
-    int position = 0;
-    while (iter.hasNext() && !hasNoPosition && !isPositionMissing) {
-      LinkDetail next = iter.next();
-      hasNoPosition = !next.hasPosition();
-      if(!hasNoPosition){
-        isPositionMissing = next.getPosition() != position++;
-      }
-    }
-
-    if (hasNoPosition || isPositionMissing) {
-      setLinksOrder(links);
-    }
-  }
-
-  protected void setLinksOrder(Collection<LinkDetail> links) {
-    int position = 0;
-    for (LinkDetail link : links) {
-      link.setHasPosition(true);
-      link.setPosition(position++);
-      updateLink(link);
-    }
   }
 }

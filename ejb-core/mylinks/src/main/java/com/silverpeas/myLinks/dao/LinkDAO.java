@@ -24,6 +24,11 @@
 
 package com.silverpeas.myLinks.dao;
 
+import com.silverpeas.myLinks.model.LinkDetail;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,27 +36,32 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
-
 public class LinkDAO {
+
+  private static LinkDAO linkDAO = new LinkDAO();
+
+  /**
+   * Gets the DAO instance associated to the link persistence management.
+   * @return the link DAO instance.
+   */
+  public static LinkDAO getLinkDao() {
+    return linkDAO;
+  }
 
   /**
    * Hide constructor of utility class
    */
   private LinkDAO() {
-    super();
   }
 
-  public static List<LinkDetail> getAllLinksByUser(Connection con, String userId)
+  public List<LinkDetail> getAllLinksByUser(Connection con, String userId)
       throws SQLException {
     // récupérer toutes les liens d'un utilisateur
     List<LinkDetail> listLink = new ArrayList<LinkDetail>();
 
     String query =
-        "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '') order by position asc nulls first";
+        "SELECT * FROM SB_MyLinks_Link WHERE userId = ? AND (instanceId IS NULL OR instanceId = " +
+            "'') AND (objectId IS NULL OR objectId = '')";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -69,7 +79,7 @@ public class LinkDAO {
     return listLink;
   }
 
-  public static List<LinkDetail> getAllLinksByInstance(Connection con,
+  public List<LinkDetail> getAllLinksByInstance(Connection con,
       String instanceId) throws SQLException {
     // récupérer toutes les liens d'un utilisateur sur un composant
     List<LinkDetail> listLink = new ArrayList<LinkDetail>();
@@ -92,7 +102,7 @@ public class LinkDAO {
     return listLink;
   }
 
-  public static List<LinkDetail> getAllLinksByObject(Connection con,
+  public List<LinkDetail> getAllLinksByObject(Connection con,
       String instanceId, String objectId) throws SQLException {
     // récupérer toutes les liens d'un objet
     List<LinkDetail> listLink = new ArrayList<LinkDetail>();
@@ -116,7 +126,7 @@ public class LinkDAO {
     return listLink;
   }
 
-  public static LinkDetail getLink(Connection con, String linkId)
+  public LinkDetail getLink(Connection con, String linkId)
       throws SQLException {
     // récupérer le lien
     LinkDetail link = new LinkDetail();
@@ -139,22 +149,22 @@ public class LinkDAO {
     return link;
   }
 
-  public static int createLink(Connection con, LinkDetail link)
+  public int createLink(Connection con, LinkDetail linkToPersist)
       throws SQLException, UtilException {
     // Création d'un nouveau lien
-    LinkDetail newLink = link;
-    newLink.setHasPosition(false);
+    linkToPersist.setHasPosition(false);
     int newId = 0;
     PreparedStatement prepStmt = null;
     try {
       newId = DBUtil.getNextId("SB_MyLinks_Link", "linkId");
       // création de la requete
       String query =
-          "insert into SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, instanceId, objectId) "
-              + "values (?,?,?,?,?,?,?,?,?)";
+          "INSERT INTO SB_MyLinks_Link (linkId, name, description, url, visible, popup, userId, " +
+              "instanceId, objectId) " +
+              "VALUES (?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
-      initParam(prepStmt, newId, newLink);
+      initParam(prepStmt, newId, linkToPersist);
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -163,26 +173,25 @@ public class LinkDAO {
     return newId;
   }
 
-  public static void updateLink(Connection con, LinkDetail link)
+  public void updateLink(Connection con, LinkDetail linkToUpdate)
       throws SQLException {
-    LinkDetail updatedLink = link;
     PreparedStatement prepStmt = null;
     try {
-      StringBuffer queryBuffer = new StringBuffer();
+      StringBuilder queryBuffer = new StringBuilder();
       queryBuffer
           .append("update SB_MyLinks_Link set linkId = ? , name = ? , description = ?, url = ? , visible = ? , popup = ? , ");
       queryBuffer
           .append("userId = ? , instanceId = ? , objectId = ? ");
-      if (link.hasPosition()) {
+      if (linkToUpdate.hasPosition()) {
         queryBuffer.append(" , position = ? ");
       }
       queryBuffer.append("where linkId = ? ");
       // initialisation des paramètres
       prepStmt = con.prepareStatement(queryBuffer.toString());
-      int linkId = updatedLink.getLinkId();
-      int npParam = initParam(prepStmt, linkId, updatedLink);
+      int linkId = linkToUpdate.getLinkId();
+      int paramIndex = initParam(prepStmt, linkId, linkToUpdate);
       // initialisation du dernier paramètre
-      prepStmt.setInt(npParam++, linkId);
+      prepStmt.setInt(paramIndex, linkId);
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -190,7 +199,7 @@ public class LinkDAO {
     }
   }
 
-  public static void deleteLink(Connection con, String linkId)
+  public void deleteLink(Connection con, String linkId)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
@@ -204,7 +213,7 @@ public class LinkDAO {
     }
   }
 
-  public static void deleteLinksOfComponent(Connection con, String instanceId)
+  public void deleteLinksOfComponent(Connection con, String instanceId)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
@@ -218,7 +227,7 @@ public class LinkDAO {
     }
   }
 
-  public static void deleteLinksOfObject(Connection con, String objectId)
+  public void deleteLinksOfObject(Connection con, String objectId)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
