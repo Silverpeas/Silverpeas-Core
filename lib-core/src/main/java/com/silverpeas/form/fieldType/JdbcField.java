@@ -27,7 +27,6 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -110,11 +109,7 @@ public class JdbcField extends TextField {
     Connection connection;
     try {
       DataSource dataSource = InitialContext.doLookup(dataSourceName);
-      if (StringUtil.isDefined(login)) {
-        connection = dataSource.getConnection(login, password);
-      } else {
-        connection = dataSource.getConnection();
-      }
+      connection = dataSource.getConnection(login, password);
     } catch (Exception ex) {
       throw new FormException("JdbcField.connect", "form.EX_CANT_CONNECT_JDBC", ex);
     }
@@ -136,7 +131,6 @@ public class JdbcField extends TextField {
     if (connection != null) {
       try {
         String sqlQuery = (query.toLowerCase().startsWith("select") ? query: "select " + query);
-        System.out.println("QUERY IS " + sqlQuery);
         prepStmt = connection.prepareStatement(sqlQuery);
       } catch (SQLException e) {
         throw new FormException("JdbcField.selectSql",

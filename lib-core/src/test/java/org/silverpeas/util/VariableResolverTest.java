@@ -42,7 +42,7 @@ public class VariableResolverTest {
 
   @Test
   public void testResolveAStringValueWithPropertyVariables() throws Exception {
-    String value = "${prop.Foo} is at home";
+    String value = "${sys.Foo} is at home";
     String actual = VariableResolver.resolve(value);
     assertThat(actual, is("Toto is at home"));
   }
@@ -63,7 +63,7 @@ public class VariableResolverTest {
 
   @Test
   public void testResolveAStringValueWithAPropertyVariableAtTheMiddle() throws Exception {
-    String value = "Once upon a time, ${prop.Foo} left his home to go at work";
+    String value = "Once upon a time, ${sys.Foo} left his home to go at work";
     String actual = VariableResolver.resolve(value);
     assertThat(actual, is("Once upon a time, Toto left his home to go at work"));
   }
@@ -77,7 +77,7 @@ public class VariableResolverTest {
 
   @Test
   public void testResolveAnObjectBeingAStringWithPropertyVariables() throws Exception {
-    Object value = "${prop.Foo} is at home";
+    Object value = "${sys.Foo} is at home";
     Object actual = VariableResolver.resolve(value);
     assertThat(actual, is("Toto is at home"));
   }

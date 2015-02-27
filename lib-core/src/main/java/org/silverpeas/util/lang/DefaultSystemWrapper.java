@@ -25,6 +25,7 @@
 package org.silverpeas.util.lang;
 
 import javax.inject.Singleton;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 
@@ -52,12 +53,20 @@ public class DefaultSystemWrapper implements SystemWrapper {
 
   @Override
   public void setProperties(final Properties props) {
-    System.getProperties().putAll(props);
+    Enumeration<?> propertyNames = props.propertyNames();
+    while (propertyNames.hasMoreElements()) {
+      String key = (String) propertyNames.nextElement();
+      setProperty(key, props.getProperty(key));
+    }
   }
 
   @Override
   public String setProperty(final String key, final String value) {
-    return System.setProperty(key, value);
+    String previousValue = null;
+    if (value != null && !value.trim().isEmpty()) {
+      previousValue = System.setProperty(key, value);
+    }
+    return previousValue;
   }
 
   @Override

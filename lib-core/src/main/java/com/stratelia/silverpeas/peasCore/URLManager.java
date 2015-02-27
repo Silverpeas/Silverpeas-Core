@@ -159,7 +159,7 @@ public class URLManager {
   }
 
   static {
-    ResourceLocator resources = new ResourceLocator("com.stratelia.silverpeas.peasCore.URLManager",
+    ResourceLocator resources = new ResourceLocator("org.silverpeas.peasCore.URLManager",
         "");
     specialsURL = resources.getProperties();
     httpMode = resources.getString("httpMode");

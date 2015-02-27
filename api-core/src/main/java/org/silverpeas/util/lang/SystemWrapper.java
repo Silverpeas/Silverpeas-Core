@@ -77,11 +77,12 @@ public interface SystemWrapper {
   void setProperties(Properties props);
 
   /**
-   * Sets a new system property.
+   * Sets a new system property. If the property isn't valued, id est has a null or an empty value,
+   * then it is not set. Only non-null and not empty property can be set.
    * @param key the key of the property.
-   * @param value the value of the property.
+   * @param value a non-null and non-empty value of the property.
    * @return the previous value of the system property,
-   * or <code>null</code> if it did not have one.
+   * or <code>null</code> if it did not have one or if the property to set isn't valid.
    * @see System#setProperty(String, String)
    */
   String setProperty(String key, String value);

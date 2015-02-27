@@ -29,14 +29,14 @@ import java.util.regex.Pattern;
 /**
  * A resolver of variables in some properties value. For example, the variable ${env.FOO} in a
  * property will be resolved by fetching the value of the <code>FOO</code> environment variable,
- * and ${prop.TOTO} will be resolved by fetching the value of the <code>FOO</code> system property.
+ * and ${sys.TOTO} will be resolved by fetching the value of the <code>FOO</code> system property.
  * @author mmoquillon
  */
 public class VariableResolver {
 
   private static final Pattern VAR_PATTERN =
-      Pattern.compile(".*(\\$\\{)((env|prop)\\..*)(\\}).*$");
-  private static final Pattern VAR_REPLACEMENT = Pattern.compile("\\$\\{(env|prop)\\..*\\}");
+      Pattern.compile(".*(\\$\\{)((env|sys)\\..*)(\\}).*$");
+  private static final Pattern VAR_REPLACEMENT = Pattern.compile("\\$\\{(env|sys)\\..*\\}");
 
   /**
    * Resolves the specified value. If it contains no variables, then nothing is performed.

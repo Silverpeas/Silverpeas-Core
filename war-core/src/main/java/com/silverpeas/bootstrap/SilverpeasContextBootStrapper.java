@@ -48,24 +48,15 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     ResourceLocator systemSettings = new ResourceLocator("org.silverpeas.systemSettings", "");
-      try {
-        Properties systemProperties = systemSettings.getProperties();
-
-        // Fix - empty proxy port and proxy host not supported by Spring Social
-        if (!StringUtil.isDefined(systemProperties.getProperty("http.proxyPort"))) {
-          systemProperties.remove("http.proxyPort");
-        }
-        if (!StringUtil.isDefined(systemProperties.getProperty("http.proxyHost"))) {
-          systemProperties.remove("http.proxyHost");
-        }
-        SystemWrapper.get().setProperties(systemProperties);
-        if (isTrustoreConfigured()) {
-          registerSSLSocketFactory();
-        }
-      } catch (GeneralSecurityException e) {
-        Logger.getLogger("bootstrap")
-            .log(Level.SEVERE, "Unable to configure the keystore/trustore.");
+    try {
+      Properties systemProperties = systemSettings.getProperties();
+      SystemWrapper.get().setProperties(systemProperties);
+      if (isTrustoreConfigured()) {
+        registerSSLSocketFactory();
       }
+    } catch (GeneralSecurityException e) {
+      Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the keystore/trustore.");
+    }
 
     URLManager.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));
   }

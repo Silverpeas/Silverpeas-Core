@@ -55,7 +55,7 @@ public class JobStartPagePeasSettings {
 
   static {
     ResourceLocator rs = new ResourceLocator(
-        "com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+        "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
     m_IsProfileEditable = rs.getBoolean("IsProfileEditable", false);
     isBackupEnable = rs.getBoolean("IsBackupEnable", false);
     isBasketEnable = rs.getBoolean("UseBasket", false);

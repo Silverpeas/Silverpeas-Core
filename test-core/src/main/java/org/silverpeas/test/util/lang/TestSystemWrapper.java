@@ -29,6 +29,7 @@ import org.silverpeas.util.lang.SystemWrapper;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -68,12 +69,19 @@ public class TestSystemWrapper implements SystemWrapper {
 
   @Override
   public void setProperties(final Properties props) {
-    System.setProperties(props);
+    Enumeration<?> propertyNames = props.propertyNames();
+    while (propertyNames.hasMoreElements()) {
+      String key = (String) propertyNames.nextElement();
+      System.setProperty(key, props.getProperty(key));
+    }
   }
 
   @Override
   public String setProperty(final String key, final String value) {
-    return System.setProperty(key, value);
+    if (value != null && !value.trim().isEmpty()) {
+      return System.setProperty(key, value);
+    }
+    return null;
   }
 
   @Override
