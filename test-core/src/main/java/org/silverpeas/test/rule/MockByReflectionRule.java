@@ -99,9 +99,31 @@ public class MockByReflectionRule implements TestRule {
       if (entitiesOldValues.isEmpty()) {
         logger.info("Set mocked fields...");
       }
+      return setField(instanceOrClass, Mockito.mock(classToMock), fieldNames);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Sets a field specified by the given field name of the given instance with a given value
+   * of the specified class.
+   * @param <T> the type of the mocked instance.
+   * @param instanceOrClass the instance or class into which the field will be mocked.
+   * @param value the value to set.
+   * @param fieldNames the aimed field name. If several, then it represents a path to access to
+   * the field. If the fieldName path part starts with '.' character, it sets that the
+   * field is static.
+   * @return the new mocked instance.
+   * @throws Exception
+   */
+  public <T> T setField(Object instanceOrClass, T value, String fieldNames) {
+    try {
+      if (entitiesOldValues.isEmpty()) {
+        logger.info("Set mocked fields...");
+      }
       return inject(instanceOrClass,
-          new FieldInjectionDirective<T>(instanceOrClass, fieldNames, logger),
-          Mockito.mock(classToMock));
+          new FieldInjectionDirective<T>(instanceOrClass, fieldNames, logger), value);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

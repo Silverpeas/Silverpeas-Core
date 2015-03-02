@@ -39,8 +39,8 @@ import java.util.StringTokenizer;
  */
 public class DisplayI18NHelper {
 
-  private static final List<String> languages = new ArrayList<>();
-  private static final String defaultLanguage;
+  private static List<String> languages = new ArrayList<>();
+  private static String defaultLanguage;
 
   static {
     ResourceLocator rs = new ResourceLocator(

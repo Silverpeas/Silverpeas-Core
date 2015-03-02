@@ -23,6 +23,7 @@
  */
 package com.silverpeas.jobDomainPeas;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -37,6 +38,9 @@ import org.silverpeas.test.rule.MockByReflectionRule;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Arrays;
+
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -55,6 +59,8 @@ public class UserRequestDataTest {
 
   @Before
   public void setup() {
+    reflectionRule.setField(DisplayI18NHelper.class, asList("fr,en,de"), "languages");
+    reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
     httpServletRequestMock = mock(HttpServletRequest.class);
@@ -93,7 +99,7 @@ public class UserRequestDataTest {
     assertThat(userRequestData.getPassword(), is("user.password"));
     assertThat(userRequestData.isSendEmail(), is(false));
     assertThat(userRequestData.getGroupId(), is("user.groupId"));
-    assertThat(userRequestData.getLanguage(), is("user.language"));
+    assertThat(userRequestData.getLanguage(), is("en"));
     assertThat(userRequestData.getUserManualNotifReceiverLimitEnabled(), is(false));
     assertThat(userRequestData.getUserManualNotifReceiverLimitValue(), is(0));
 
