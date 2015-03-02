@@ -40,13 +40,6 @@
   String url = (String) request.getAttribute("UrlReturn");
   String instanceId = (String) request.getAttribute("InstanceId");
   boolean appScope = StringUtil.isDefined(instanceId);
-
-  String action = "CreateLink";
-  
-  String reloadPageURL = "/RmyLinksPeas/jsp/Main";
-  if (appScope) {
-    reloadPageURL = "/RmyLinksPeas/jsp/ComponentLinks?InstanceId="+instanceId;
-  }
 %>
 <%@page import="com.silverpeas.util.StringUtil"%>
 
@@ -57,21 +50,16 @@
 <view:includePlugin name="popup"/>
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript">
-$.i18n.properties({
-  name: 'myLinksBundle',
-  path: webContext + '/services/bundles/org/silverpeas/mylinks/multilang/',
-  language: getUserLanguage(),
-  mode: 'map'
-});
 
 function addLink() {
-  cleanMyLinkForm()
+  cleanMyLinkForm();
   $("#linkFormId").attr('action', 'CreateLink');
   createLinkPopup();
 }
 
 function editLink(id) {
-  cleanMyLinkForm()
+  $.progressMessage();
+  cleanMyLinkForm();
   $("#linkFormId").attr('action', 'UpdateLink');
 
   var ajaxUrl = webContext + '/services/mylinks/' + id;
@@ -81,7 +69,7 @@ function editLink(id) {
     contentType: "application/json",
     cache: false,
     dataType: "json",
-    async: true,
+    async: false,
     success: function(result) {
       if ( window.console && window.console.log ) {
         console.log("Update mylink identifier = #" + result.linkId);
@@ -95,29 +83,28 @@ function editLink(id) {
     }
   });
   updateLinkPopup();
+  $.closeProgressMessage();
 }
 
- function saveArrayLinesOrder(e, ui) {
-	  var ajaxUrl = webContext + '/services/mylinks/saveLinesOrder';
-
-	  var cleanUrl = $("#urlId").val().replace(webContext, '');
-	  var updatedLink = {
-	      "position":ui.item.index(),
-	      "linkId":ui.item.find("input[name=hiddenLinkId]").val()
-	  };
-	  jQuery.ajax({
-	    url: ajaxUrl,
-	    type: 'POST',
-	    data: $.toJSON(updatedLink),
-	    contentType: "application/json",
-	    cache: false,
-	    dataType: "json",
-	    async: true,
-	    success: function(result) {
-	      notySuccess(getString('myLinks.updateLink.messageConfirm'));
-	      reloadPage();
-	    }
-	  });
+function saveArrayLinesOrder(e, ui) {
+  $.progressMessage();
+  var ajaxUrl = webContext + '/services/mylinks/saveLinesOrder';
+  var positionData = {
+    "position" : ui.item.index(), "linkId" : ui.item.find("input[name=hiddenLinkId]").val()
+  };
+  jQuery.ajax({
+    url : ajaxUrl,
+    type : 'POST',
+    data : $.toJSON(positionData),
+    contentType : "application/json",
+    cache : false,
+    dataType : "json",
+    async : false,
+    success : function(result) {
+      notySuccess("<fmt:message key="myLinks.newPositionLink.messageConfirm" />");
+    }
+  });
+  $.closeProgressMessage();
 }
 
 function cleanMyLinkForm() {
@@ -131,10 +118,11 @@ function cleanMyLinkForm() {
 }
 
 function deleteSelectLinksConfirm() {
-	if (confirm('<fmt:message key="myLinks.deleteSelection"/>')) {
-    	document.readForm.mode.value = 'delete';
-    	document.readForm.submit();
-  	}
+  if (confirm('<fmt:message key="myLinks.deleteSelection"/>')) {
+    $.progressMessage();
+    document.readForm.mode.value = 'delete';
+    document.readForm.submit();
+  }
 }
 
 function isCorrectForm() {
@@ -180,11 +168,10 @@ function createLinkPopup() {
         console.log("User create new link !!!");
       }
       if (isCorrectForm()) {
-        createLink();
+        submitLink();
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
   });
 }
@@ -199,90 +186,20 @@ function updateLinkPopup() {
         console.log("User update the following link identifier = " + $("#linkId").attr('value'));
       }
       if (isCorrectForm()) {
-        updateLink();
+        submitLink();
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
   });
 }
 
-function updateLink() {
-  var ajaxUrl = webContext + '/services/mylinks/' + $("#hiddenLinkId").val();
-
-  var cleanUrl = $("#urlId").val().replace(webContext, '');
-  var updatedLink = {
-      "description": $("#descriptionId").val(),
-      "linkId": $("#hiddenLinkId").val(),
-      "name": $("#nameId").val(),
-      "url": cleanUrl,
-      "popup": $("#popupId").is(":checked"),
-      "uri": '',
-      "visible": isVisible(),
-      "instanceId": getAppId()
-  };
-  jQuery.ajax({
-    url: ajaxUrl,
-    type: 'PUT',
-    data: $.toJSON(updatedLink),
-    contentType: "application/json",
-    cache: false,
-    dataType: "json",
-    async: true,
-    success: function(result) {
-      notySuccess(getString('myLinks.updateLink.messageConfirm'));
-      reloadPage();
-    }
-  });
-}
-
-function isVisible() {
-  if ($("#visibleId")) {
-    return $("#visibleId").is(":checked");
-  }
-  return false;
-}
-
-function getAppId() {
-  <% if (appScope) { %>
-  	return "<%=instanceId%>";
-  <% } else { %>
-    return "";
-  <% } %>
-}
-
-function createLink() {
-  var ajaxUrl = webContext + '/services/mylinks/';
-
-  var cleanUrl = $("#urlId").val().replace(webContext, '');
-  var newLink = {
-      "linkId": '',
-      "description": $("#descriptionId").val(),
-      "name": $("#nameId").val(),
-      "url": cleanUrl,
-      "popup": $("#popupId").is(":checked"),
-      "uri": '',
-      "visible": isVisible(),
-      "instanceId": getAppId()
-  };
-  jQuery.ajax({
-    url: ajaxUrl,
-    type: 'POST',
-    data: $.toJSON(newLink),
-    contentType: "application/json",
-    cache: false,
-    dataType: "json",
-    async: true,
-    success: function(result) {
-      notySuccess(getString('myLinks.messageConfirm'));
-      reloadPage();
-    }
-  });
-}
-
-function reloadPage() {
-  setTimeout(function(){ location.href= webContext + '<%=reloadPageURL%>'; }, 1000);
+function submitLink() {
+  $.progressMessage();
+  var $linkUrl = $("#urlId");
+  var cleanUrl = $linkUrl.val().replace(new RegExp("^" + webContext), '');
+  $linkUrl.val(cleanUrl);
+  $("#linkFormId").submit();
 }
 </script>
 </head>
@@ -310,11 +227,10 @@ function reloadPage() {
 <%
    ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
    arrayPane.setSortableLines(true);
-   arrayPane.getState().setMaximumVisibleLine(-1);
-   arrayPane.setActivateUpdateMethodOnSort(true);
-   arrayPane.setUpdateMethodOnSort("saveArrayLinesOrder(e, ui)");
-   arrayPane.addArrayColumn(resource.getString("GML.nom"));
-   arrayPane.addArrayColumn(resource.getString("GML.description"));
+   arrayPane.setVisibleLineNumber(-1);
+   arrayPane.setUpdateSortJavascriptCallback("saveArrayLinesOrder(e, ui)");
+   arrayPane.addArrayColumn(resource.getString("GML.nom")).setSortable(false);
+   arrayPane.addArrayColumn(resource.getString("GML.description")).setSortable(false);
    ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operations"));
    columnOp.setSortable(false);
 
@@ -336,30 +252,25 @@ function reloadPage() {
      if (lien.indexOf("://") == -1) {
        lien = m_context + lien;
      }
-     ArrayCellLink monLien = line.addArrayCellLink(name, lien);
+     ArrayCellLink monLien = line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(name), lien);
      if (link.isPopup()) {
        monLien.setTarget("_blank");
      }
 
-     line.addArrayCellText(desc);
+     line.addArrayCellText(EncodeHelper.javaStringToHtmlString(desc));
 
      IconPane iconPane = gef.getIconPane();
      Icon updateIcon = iconPane.addIcon();
      updateIcon.setProperties(resource.getIcon("myLinks.update"), resource
          .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
-     StringBuffer buffer = new StringBuffer();
-     buffer.append(updateIcon.print());
-     buffer.append("&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"");
-     buffer.append(link.getLinkId());
-     buffer.append("\"/>");
-     buffer.append("<input type=\"hidden\" name=\"hiddenLinkId\" value=\"");
-     buffer.append(link.getLinkId());
-     buffer.append("\"/>");
-     line.addArrayCellText(buffer.toString());
+     line.addArrayCellText(updateIcon.print() +
+         "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
+         link.getLinkId() + "\"/>" +
+         "<input type=\"hidden\" name=\"hiddenLinkId\" value=\"" + link.getLinkId() + "\"/>");
    }
 
    out.println(arrayPane.print());
-   if (instanceId != null) {
+   if (appScope) {
      buttonPane.addButton(returnButton);
      out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
    }
@@ -371,35 +282,46 @@ function reloadPage() {
 %>
 
 <div id="mylink-popup-content" style="display: none">
-<form name="linkForm" action="" method="post" id="linkFormId">
-<label id="url_label" class="label-ui-dialog" for="url"><fmt:message key="myLinks.url"/></label>
-<span class="champ-ui-dialog">
-  <input id="urlId" name="url" size="60" maxlength="150" type="text" />&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>
-</span>
-<label id="name_label" class="label-ui-dialog" for="name"><fmt:message key="GML.nom"/></label>
-<span class="champ-ui-dialog">
-  <input id="nameId" name="name" size="60" maxlength="150" type="text" />&nbsp;<img border="0" src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5"/>
-  <input type="hidden" name="linkId" value="" id="hiddenLinkId"/>
-</span>
-<label id="description_label" class="label-ui-dialog" for="description"><fmt:message key="GML.description" /></label>
-<span class="champ-ui-dialog">
-  <input type="text" name="description" size="60" maxlength="150" value="" id="descriptionId" />
-</span>
-<% if (!appScope) { %>
-<label id="visible_label" class="label-ui-dialog" for="visible"><fmt:message key="myLinks.visible"/></label>
-<span class="champ-ui-dialog">
-  <input type="checkbox" name="visible" value="true" id="visibleId"/>
-</span>
-<% } %>
-<label id="popup_label" class="label-ui-dialog" for="popup"><fmt:message key="myLinks.popup"/></label>
-<span class="champ-ui-dialog">
-  <input type="checkbox" name="popup" value="true" id="popupId"/>
-</span>
+  <form name="linkForm" action="" method="post" id="linkFormId">
+    <div class="table">
+      <label id="url_label" class="label-ui-dialog" for="urlId"><fmt:message key="myLinks.url"/></label>
 
-<label id="mandatory_label"><img border="0" src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5"/> : <fmt:message key="GML.mandatory"/></label>
+      <div class="champ-ui-dialog">
+        <input id="urlId" name="url" size="60" maxlength="150" type="text"/>&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>
+      </div>
+      <label id="name_label" class="label-ui-dialog" for="nameId"><fmt:message key="GML.nom"/></label>
 
-</form>
+      <div class="champ-ui-dialog">
+        <input id="nameId" name="name" size="60" maxlength="150" type="text"/>&nbsp;<img border="0" src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5" alt=""/>
+        <input type="hidden" name="linkId" value="" id="hiddenLinkId"/>
+      </div>
+      <label id="description_label" class="label-ui-dialog" for="descriptionId"><fmt:message key="GML.description"/></label>
+
+      <div class="champ-ui-dialog">
+        <input type="text" name="description" size="60" maxlength="150" value="" id="descriptionId"/>
+      </div>
+      <% if (!appScope) { %>
+      <label id="visible_label" class="label-ui-dialog" for="visibleId"><fmt:message key="myLinks.visible"/></label>
+
+      <div class="champ-ui-dialog">
+        <input type="checkbox" name="visible" value="true" id="visibleId"/>
+      </div>
+      <% } else { %>
+      <input type="hidden" name="instanceId" value="<%=instanceId%>"/>
+      <% } %>
+      <label id="popup_label" class="label-ui-dialog" for="popupId"><fmt:message key="myLinks.popup"/></label>
+
+      <div class="champ-ui-dialog">
+        <input type="checkbox" name="popup" value="true" id="popupId"/>
+      </div>
+    </div>
+
+    <div id="mandatory_label">
+      (<img border="0" src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5" alt=""/>
+      : <fmt:message key="GML.mandatory"/>)
+    </div>
+  </form>
 </div>
-
+<view:progressMessage/>
 </body>
 </html>

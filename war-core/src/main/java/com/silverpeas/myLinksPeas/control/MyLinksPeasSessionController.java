@@ -24,12 +24,9 @@
 
 package com.silverpeas.myLinksPeas.control;
 
-import java.util.Collection;
-
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
-
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -38,6 +35,14 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.mylinks.web.MyLinkEntity;
+import org.silverpeas.util.NotifierUtil;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import java.util.Collection;
+
+import static org.silverpeas.mylinks.web.MyLinksResource.checkMandatoryLinkData;
 
 public class MyLinksPeasSessionController extends AbstractComponentSessionController {
   public static final int SCOPE_USER = 0;
@@ -120,38 +125,49 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     return link;
   }
 
-  public void createLink(LinkDetail link) {
+  /**
+   * This method verify that the owner of the link represented by the given id is the current user.
+   * @param linkId
+   */
+  public void verifyCurrentUserIsOwner(int linkId) {
+    verifyCurrentUserIsOwner(String.valueOf(linkId));
+  }
 
+  /**
+   * This method verify that the owner of the link represented by the given id is the current user.
+   * @param linkId
+   */
+  public void verifyCurrentUserIsOwner(String linkId) {
+    LinkDetail userLink = getLink(linkId);
+    if (userLink == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    } else if (!getUserDetail().getId().equals(userLink.getUserId())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  public void createLink(MyLinkEntity newLink) {
     try {
-      String userId = getUserId();
-      link.setUserId(userId);
-
-      // ajout de l'instanceId si existe
-      if (instanceId != null)
-        link.setInstanceId(instanceId);
-
-      getMyLinksBm().createLink(link);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.createLink()",
-          "root.MSG_GEN_PARAM_VALUE", "liens = " + link.toString());
+      LinkDetail linkDetail = newLink.toLinkDetail();
+      linkDetail.setUserId(getUserId());
+      getMyLinksBm().createLink(linkDetail);
+      NotifierUtil.addSuccess(getString("myLinks.messageConfirm"));
     } catch (Exception e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException(
           "MyLinksPeasSessionController.createLink", SilverpeasException.ERROR,
           "root.EX_RECORD_NOT_FOUND", e);
     }
   }
 
-  public void updateLink(LinkDetail link) {
+  public void updateLink(MyLinkEntity updatedLink) {
     try {
-      // ajout de l'instanceId si existe
-      if (instanceId != null)
-        link.setInstanceId(instanceId);
-
-      String userId = getUserId();
-      link.setUserId(userId);
-      getMyLinksBm().updateLink(link);
+      verifyCurrentUserIsOwner(updatedLink.getLinkId());
+      checkMandatoryLinkData(updatedLink);
+      LinkDetail linkDetail = updatedLink.toLinkDetail();
+      linkDetail.setUserId(getUserId());
+      getMyLinksBm().updateLink(linkDetail);
+      NotifierUtil.addSuccess(getString("myLinks.updateLink.messageConfirm"));
     } catch (Exception e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException(
           "MyLinksPeasSessionController.updateLink", SilverpeasException.ERROR,
           "root.EX_RECORD_NOT_FOUND", e);
@@ -160,19 +176,22 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
 
   public void deleteLinks(String[] links) {
     try {
-      getMyLinksBm().deleteLinks(links);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.deleteLink()",
-          "root.MSG_GEN_PARAM_VALUE", "links = " + links.toString());
+      if (links.length > 0) {
+        for (String linkId : links) {
+          verifyCurrentUserIsOwner(linkId);
+        }
+        getMyLinksBm().deleteLinks(links);
+        NotifierUtil.addSuccess(getString("myLinks.deleteLinks.messageConfirm"), links.length);
+      }
     } catch (Exception e) {
-      // traitement des exceptions
       throw new MyLinksRuntimeException(
           "MyLinksPeasSessionController.createLink", SilverpeasException.ERROR,
           "root.EX_RECORD_NOT_FOUND", e);
     }
   }
 
-  private MyLinksBm getMyLinksBm() {
-    MyLinksBm myLinksBm = null;
+  protected MyLinksBm getMyLinksBm() {
+    MyLinksBm myLinksBm;
     try {
       myLinksBm = EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME, MyLinksBm.class);
     } catch (Exception e) {

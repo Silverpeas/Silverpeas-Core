@@ -55,7 +55,7 @@ public class MyLinkEntity implements Exposable {
   private int linkId;
 
   @XmlElement(defaultValue = "-1")
-  private int position;
+  private int position = -1;
 
   @XmlElement
   @NotNull
@@ -71,11 +71,11 @@ public class MyLinkEntity implements Exposable {
 
   @XmlElement(defaultValue = "true")
   @NotNull
-  private boolean visible;
+  private boolean visible = true;
 
   @XmlElement(defaultValue = "false")
   @NotNull
-  private boolean popup;
+  private boolean popup = false;
 
   @XmlElement
   private String userId;

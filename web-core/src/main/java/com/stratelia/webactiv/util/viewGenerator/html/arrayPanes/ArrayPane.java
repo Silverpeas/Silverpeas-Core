@@ -231,9 +231,5 @@ public interface ArrayPane extends SimpleGraphicElement {
   
   public void setSortableLines(boolean sortableLines);
   
-  public void setUpdateMethodOnSort(String updateMethodOnSort);
-  
-  public void setActivateUpdateMethodOnSort(boolean activateUpdateMethodOnSort);
-  
-  public ArrayPaneStatusBean getState();
+  public void setUpdateSortJavascriptCallback(String callback);
 }

@@ -142,7 +142,7 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity updateLink(final MyLinkEntity updatedLink) {
     verifyCurrentUserIsOwner(updatedLink);
-    checkIsValid(updatedLink);
+    checkMandatoryLinkData(updatedLink);
     LinkDetail linkDetail = updatedLink.toLinkDetail();
     linkDetail.setUserId(getUserDetail().getId());
     getMyLinksBm().updateLink(linkDetail);
@@ -286,7 +286,7 @@ public class MyLinksResource extends RESTWebService {
     return nameBuilder;
   }
 
-  protected void checkIsValid(final MyLinkEntity myLink) {
+  public static void checkMandatoryLinkData(final MyLinkEntity myLink) {
     if (!StringUtil.isDefined(myLink.getUrl()) || !StringUtil.isDefined(myLink.getName())) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
