@@ -20,13 +20,17 @@
  */
 package org.silverpeas.util.viewGenerator.html.arrayPanes;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -43,9 +47,7 @@ public class AbstractArrayPane implements ArrayPane {
   private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
-  private boolean activateUpdateMethodOnSort = false;
-  private String updateMethodOnSort = null;
-  // private PageContext pageContext = null;
+  private String updateSortJavascriptCallback = null;
   private ServletRequest request = null;
   private HttpSession session = null;
   private int m_SortMode = 0;
@@ -57,7 +59,8 @@ public class AbstractArrayPane implements ArrayPane {
   private int m_CellsBorderWidth = 0;
   /**
    * In some cases, it may be preferable to specify the routing address
-   * @see ArrayColum.setRoutingAddress(String address)
+   *
+   * @see ArrayColumn#setRoutingAddress(String)
    */
   private String m_RoutingAddress = null;
   private String paginationJavaScriptCallback = null;
@@ -80,8 +83,7 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   @Override
-  public void init(String name, String url, ServletRequest request,
-      HttpSession session) {
+  public void init(String name, String url, ServletRequest request, HttpSession session) {
     columns = new ArrayList<ArrayColumn>();
     lines = new ArrayList<ArrayLine>();
     this.name = name;
@@ -100,14 +102,12 @@ public class AbstractArrayPane implements ArrayPane {
     if (target != null && target.equals(name)) {
       String action = request.getParameter(ACTION_PARAMETER_NAME);
       SilverTrace.info("viewgenerator", "AbstractArrayPane.init()",
-          "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '"
-              + action + "'");
+          "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action + "'");
       if ("Sort".equals(action)) {
         String newState = request.getParameter(COLUMN_PARAMETER_NAME);
         if (newState != null) {
           int ns = Integer.parseInt(newState);
-          if ((ns == state.getSortColumn())
-              || (ns + state.getSortColumn() == 0)) {
+          if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
             state.setSortColumn(-state.getSortColumn());
           } else {
             state.setSortColumn(ns);
@@ -125,13 +125,13 @@ public class AbstractArrayPane implements ArrayPane {
 
   }
 
-  @Override
   public ArrayPaneStatusBean getState() {
     return state;
   }
 
   /**
    * Add a new column to the table.
+   *
    * @param title The column title to display
    * @return The new column header. You can use this object to modify the default display options.
    */
@@ -172,17 +172,14 @@ public class AbstractArrayPane implements ArrayPane {
 
   @Override
   public void setColumnToSort(int columnNumber) {
-    SilverTrace.info("viewgenerator",
-        "AbstractArrayPane.setColumnToSort()",
-        "root.MSG_GEN_PARAM_VALUE", " columNumber = '" + columnNumber
-            + "'");
+    SilverTrace.info("viewgenerator", "AbstractArrayPane.setColumnToSort()",
+        "root.MSG_GEN_PARAM_VALUE", " columNumber = '" + columnNumber + "'");
     state.setSortColumn(columnNumber);
   }
 
   @Override
   public void setColumnBehaviour(int columnNumber, int mode) {
-    if (columns == null || columnNumber <= 0
-        || columnNumber > columns.size()) {
+    if (columns == null || columnNumber <= 0 || columnNumber > columns.size()) {
       return;
     }
     ArrayColumn col = columns.get(columnNumber - 1);
@@ -216,6 +213,7 @@ public class AbstractArrayPane implements ArrayPane {
   /**
    * This method sets the routing address. This is actually the URL of the page to which requests
    * will be routed when the user clicks on a column header link.
+   *
    * @param address
    */
   @Override
@@ -225,6 +223,7 @@ public class AbstractArrayPane implements ArrayPane {
 
   /**
    * Set all array columns to be sortable or not. By default, all colums are sortable.
+   *
    * @param sortable Set sortable to false if you want all the table to be unsortable.
    */
   @Override
@@ -258,6 +257,7 @@ public class AbstractArrayPane implements ArrayPane {
   /**
    * This method allows for the change of cell presentation values. A negative value means 'do not
    * change this value'
+   *
    * @param spacing
    * @param padding
    * @param borderWidth
@@ -346,8 +346,7 @@ public class AbstractArrayPane implements ArrayPane {
     String contextPath = URLManager.getApplicationURL();
     exportUrl.append(contextPath).append(EXPORT_URL_SERVLET_MAPPING);
     exportUrl.append("?type=ArrayPane&name=");
-    // Change the name parameter if you want to export 2 arrays which are
-    // displayed in the same page
+    // Change the name parameter if you want to export 2 arrays which are displayed in the same page
     exportUrl.append("Silverpeas_arraypane");
     return exportUrl.toString();
   }
@@ -362,15 +361,12 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   public String getUrl() {
-    // routing address computation. By default, route to the short name for
-    // the
+    // routing address computation. By default, route to the short name for the
     // calling page
     if (m_RoutingAddress == null) {
-      String address = ((HttpServletRequest) getRequest())
-          .getRequestURI();
+      String address = ((HttpServletRequest) getRequest()).getRequestURI();
       // only get a relative http address
-      address = address.substring(address.lastIndexOf('/') + 1,
-          address.length());
+      address = address.substring(address.lastIndexOf('/') + 1, address.length());
       // if the previous request had parameters, remove them
       if (address.lastIndexOf('?') >= 0) {
         address = address.substring(0, address.lastIndexOf('?'));
@@ -417,8 +413,8 @@ public class AbstractArrayPane implements ArrayPane {
     sb.append("cursor: \"move\",");
     sb.append("forcePlaceholderSize: true,");
     sb.append("helper: fixArrayPaneWidthHelper,");
-    if (activateUpdateMethodOnSort && StringUtils.isNotBlank(updateMethodOnSort)) {
-      sb.append("update: function(e, ui){").append(updateMethodOnSort).append(";}");
+    if (StringUtil.isDefined(getUpdateSortJavascriptCallback())) {
+      sb.append("update: function(e, ui){").append(getUpdateSortJavascriptCallback()).append(";}");
     }
     sb.append("}).disableSelection();");
     sb.append("</script>");
@@ -433,19 +429,11 @@ public class AbstractArrayPane implements ArrayPane {
     return "Deprecated";
   }
 
-  public boolean isActivateUpdateMethodOnSort() {
-    return activateUpdateMethodOnSort;
+  public String getUpdateSortJavascriptCallback() {
+    return updateSortJavascriptCallback;
   }
 
-  public void setActivateUpdateMethodOnSort(boolean activateUpdateMethodOnSort) {
-    this.activateUpdateMethodOnSort = activateUpdateMethodOnSort;
-  }
-
-  public String getUpdateMethodOnSort() {
-    return updateMethodOnSort;
-  }
-
-  public void setUpdateMethodOnSort(String updateMethodOnSort) {
-    this.updateMethodOnSort = updateMethodOnSort;
+  public void setUpdateSortJavascriptCallback(String callback) {
+    this.updateSortJavascriptCallback = callback;
   }
 }

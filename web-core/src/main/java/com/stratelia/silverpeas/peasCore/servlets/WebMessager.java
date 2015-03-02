@@ -53,37 +53,37 @@ public final class WebMessager {
   }
 
   /**
-   * @see NotifierUtil#addSevere(String)
+   * @see NotifierUtil#addSevere(String, Object...)
    */
-  public Message addSevere(String message) {
-    return NotifierUtil.addSevere(message);
+  public Message addSevere(String message, Object... parameters) {
+    return NotifierUtil.addSevere(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addError(String)
+   * @see NotifierUtil#addError(String, Object...)
    */
-  public Message addError(String message) {
-    return NotifierUtil.addError(message);
+  public Message addError(String message, Object... parameters) {
+    return NotifierUtil.addError(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addWarning(String)
+   * @see NotifierUtil#addWarning(String, Object...)
    */
-  public Message addWarning(String message) {
-    return NotifierUtil.addWarning(message);
+  public Message addWarning(String message, Object... parameters) {
+    return NotifierUtil.addWarning(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addSuccess(String)
+   * @see NotifierUtil#addSuccess(String, Object...)
    */
-  public Message addSuccess(String message) {
-    return NotifierUtil.addSuccess(message);
+  public Message addSuccess(String message, Object... parameters) {
+    return NotifierUtil.addSuccess(message, parameters);
   }
 
   /**
-   * @see NotifierUtil#addInfo(String)
+   * @see NotifierUtil#addInfo(String, Object...)
    */
-  public Message addInfo(String message) {
-    return NotifierUtil.addInfo(message);
+  public Message addInfo(String message, Object... parameters) {
+    return NotifierUtil.addInfo(message, parameters);
   }
 }

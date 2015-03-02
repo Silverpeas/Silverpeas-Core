@@ -26,6 +26,8 @@ package org.silverpeas.util;
 import org.silverpeas.notification.message.Message;
 import org.silverpeas.notification.message.MessageManager;
 
+import java.text.MessageFormat;
+
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
  * notifier
@@ -48,35 +50,48 @@ public class NotifierUtil {
   /**
    * @see MessageManager#addSevere(String)
    */
-  public static Message addSevere(String message) {
-    return MessageManager.addSevere(message);
+  public static Message addSevere(String message, Object... parameters) {
+    return MessageManager.addSevere(format(message, parameters));
   }
 
   /**
    * @see MessageManager#addError(String)
    */
-  public static Message addError(String message) {
-    return MessageManager.addError(message);
+  public static Message addError(String message, Object... parameters) {
+    return MessageManager.addError(format(message, parameters));
   }
 
   /**
    * @see MessageManager#addWarning(String)
    */
-  public static Message addWarning(String message) {
-    return MessageManager.addWarning(message);
+  public static Message addWarning(String message, Object... parameters) {
+    return MessageManager.addWarning(format(message, parameters));
   }
 
   /**
    * @see MessageManager#addSuccess(String)
    */
-  public static Message addSuccess(String message) {
-    return MessageManager.addSuccess(message);
+  public static Message addSuccess(String message, Object... parameters) {
+    return MessageManager.addSuccess(format(message, parameters));
   }
 
   /**
    * @see MessageManager#addInfo(String)
    */
-  public static Message addInfo(String message) {
-    return MessageManager.addInfo(message);
+  public static Message addInfo(String message, Object... parameters) {
+    return MessageManager.addInfo(format(message, parameters));
+  }
+
+  /**
+   * Formats if necessary the given message.
+   * @param message the message to format if necessary.
+   * @param parameters the parameters to take into account in message formatting.
+   * @return the formatted message.
+   */
+  private static String format(String message, Object... parameters) {
+    if (parameters.length != 0) {
+      return MessageFormat.format(message, parameters);
+    }
+    return message;
   }
 }

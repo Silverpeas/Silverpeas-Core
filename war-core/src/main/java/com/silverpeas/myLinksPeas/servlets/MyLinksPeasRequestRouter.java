@@ -26,6 +26,7 @@ package com.silverpeas.myLinksPeas.servlets;
 
 import java.util.Collection;
 
+import org.silverpeas.mylinks.web.MyLinkEntity;
 import org.silverpeas.servlet.HttpRequest;
 
 import com.silverpeas.myLinks.model.LinkDetail;
@@ -36,6 +37,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.util.NotifierUtil;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeasSessionController> {
 
@@ -83,6 +86,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         myLinksSC.setScope(MyLinksPeasSessionController.SCOPE_USER);
         myLinksSC.setUrl(null);
 
+        NotifierUtil.addInfo(myLinksSC.getString("myLinks.draganddrop.info"));
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ComponentLinks")) {
         // Retrieve instance identifier
@@ -125,6 +129,14 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
         request.setAttribute("UrlReturn", myLinksSC.getUrl());
         request.setAttribute("InstanceId", myLinksSC.getInstanceId());
         destination = rootDest + "viewLinks.jsp";
+      } else if (function.equals("CreateLink")) {
+        MyLinkEntity myLinkEntity = RequestParameterDecoder.decode(request, MyLinkEntity.class);
+        myLinksSC.createLink(myLinkEntity);
+        destination = getDestination("ViewLinks", myLinksSC, request);
+      } else if (function.equals("UpdateLink")) {
+        MyLinkEntity myLinkEntity = RequestParameterDecoder.decode(request, MyLinkEntity.class);
+        myLinksSC.updateLink(myLinkEntity);
+        destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("DeleteLinks")) {
         Object o = request.getParameterValues("linkCheck");
         if (o != null) {

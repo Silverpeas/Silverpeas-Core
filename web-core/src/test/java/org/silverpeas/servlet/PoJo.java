@@ -24,6 +24,8 @@
 package org.silverpeas.servlet;
 
 import javax.ws.rs.FormParam;
+import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
 import java.util.Date;
 
 /**
@@ -56,7 +58,10 @@ public class PoJo {
   @FormParam("")
   private Integer anInteger;
 
-  @FormParam("anIntegerFromAnnotation")
+  @FormParam("")
+  private int aPrimitiveIntegerNotInParameter = -1;
+
+  @XmlElement(name = "anIntegerFromAnnotation")
   private int aPrimitiveInteger;
 
   @FormParam("")
@@ -71,7 +76,7 @@ public class PoJo {
   @FormParam("")
   private Boolean aBooleanNotInParameter;
 
-  @FormParam("")
+  @XmlElement
   private Boolean aBoolean;
 
   @FormParam("aBooleanFromAnnotation")
@@ -89,7 +94,13 @@ public class PoJo {
   @FormParam("")
   private EnumWithoutCreationAnnotation anEnum;
 
-  public PoJo() {
+  @FormParam("")
+  private URI anUriNotInParameter;
+
+  @FormParam("")
+  private URI anUri;
+
+  private PoJo() {
     // To be instantiated
   }
 
@@ -123,6 +134,10 @@ public class PoJo {
 
   public Integer getAnInteger() {
     return anInteger;
+  }
+
+  public int getaPrimitiveIntegerNotInParameter() {
+    return aPrimitiveIntegerNotInParameter;
   }
 
   public int getaPrimitiveInteger() {
@@ -167,5 +182,13 @@ public class PoJo {
 
   public EnumWithoutCreationAnnotation getAnEnum() {
     return anEnum;
+  }
+
+  public URI getAnUri() {
+    return anUri;
+  }
+
+  public URI getAnUriNotInParameter() {
+    return anUriNotInParameter;
   }
 }

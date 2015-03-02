@@ -37,6 +37,7 @@ import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -68,6 +69,8 @@ public class RequestParameterDecoderTest {
             return "&lt;a&gt;aStringValue&lt;/a&gt;";
           } else if (parameterName.equals("aStringToUnescape")) {
             return "&lt;a&gt;aStringValueToUnescape&lt;/a&gt;";
+          } else if (parameterName.equals("anUri")) {
+            return "/an/uri/";
           }
         }
         return null;
@@ -181,6 +184,7 @@ public class RequestParameterDecoderTest {
     assertThat(result.getaStringToUnescape(), is("<a>aStringValueToUnescape</a>"));
     assertThat(result.getAnIntegerNotInParameter(), nullValue());
     assertThat(result.getAnInteger(), is(1));
+    assertThat(result.getaPrimitiveIntegerNotInParameter(), is(-1));
     assertThat(result.getaPrimitiveInteger(), is(2));
     assertThat(result.getaLongNotInParameter(), nullValue());
     assertThat(result.getaLong(), is(10L));
@@ -192,6 +196,8 @@ public class RequestParameterDecoderTest {
     assertThat(result.getaDate(), is(TODAY));
     assertThat(result.getAnEnumNotInParameter(), nullValue());
     assertThat(result.getAnEnum(), is(EnumWithoutCreationAnnotation.VALUE_A));
+    assertThat(result.getAnUriNotInParameter(), nullValue());
+    assertThat(result.getAnUri(), is(URI.create("/an/uri/")));
   }
 
   @Test(expected = RuntimeException.class)
