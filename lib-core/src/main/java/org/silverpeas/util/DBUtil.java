@@ -20,6 +20,8 @@
  */
 package org.silverpeas.util;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.pool.ConnectionPool;
 
 import java.sql.Connection;
@@ -118,93 +120,92 @@ public class DBUtil {
   public static synchronized int getNextId(final String tableName, final String idName)
       throws SQLException {
     //noinspection RedundantCast
-    try (Connection connection = openConnection()) {
-      return getMaxId(connection, tableName, idName);
-    }
-    /*
-    TODO replace with another process selectOrInsertMaxId keeping the performInNew transaction
     final Pair<Integer, SQLException> result =
         Transaction.performInNew((Transaction.Process<Pair<Integer, SQLException>>) () -> {
-          Connection connection = null;
-          try {
-            connection = openConnection();
+          try (Connection connection = openConnection()) {
             return Pair.of(getMaxId(connection, tableName, idName), null);
           } catch (SQLException ex) {
             return Pair.of(null, ex);
-          } finally {
-            close(connection);
           }
         });
-    //noinspection ThrowableResultOfMethodCallIgnored
     if (result.getRight() != null) {
       throw result.getRight();
     }
     return result.getLeft();
-     */
   }
 
   private static int getMaxId(Connection connection, String tableName, String idName)
       throws SQLException {
     // tentative d'update
-    try {
-      return updateMaxFromTable(connection, tableName);
-    } catch (Exception ignored) {
-    }
-    int max = getMaxFromTable(connection, tableName, idName);
-    PreparedStatement createStmt = null;
-    try {
-      // on enregistre le max
-      String createStatement = "INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)";
-      createStmt = connection.prepareStatement(createStatement);
-      createStmt.setInt(1, max);
-      createStmt.setString(2, tableName.toLowerCase());
-      createStmt.executeUpdate();
-      return max;
-    } catch (Exception e) {
-      // access concurrency
-      logger.log(Level.WARNING, e.getMessage(), e);
-    } finally {
-      close(createStmt);
-    }
-    max = updateMaxFromTable(connection, tableName);
-    return max;
+    return selectMaxFromTable(connection, tableName, idName);
   }
 
-  private static int updateMaxFromTable(Connection connection, String tableName)
+  private static int updateMaxFromTable(Connection connection, String tableName, int oldValue)
       throws SQLException {
     String table = tableName.toLowerCase(Locale.ROOT);
     int max = 0;
-    PreparedStatement prepStmt = null;
     int count = 0;
-    try {
-      prepStmt =
-          connection.prepareStatement("UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
-      prepStmt.setString(1, table);
-      count = prepStmt.executeUpdate();
-    } finally {
-      close(prepStmt);
+    try (PreparedStatement updateStmt = connection.prepareStatement(
+        "UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?" + " AND maxId = ?")) {
+      updateStmt.setString(1, table);
+      updateStmt.setInt(2, oldValue);
+      count = updateStmt.executeUpdate();
     }
 
     if (count == 1) {
-      PreparedStatement selectStmt = null;
-      ResultSet rs = null;
-      try {
+      try (PreparedStatement selectStmt = connection
+          .prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?")) {
         // update of max identifier has been done successfully, so the value of this new
         // identifier is retrieved
-        selectStmt = connection.prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?");
         selectStmt.setString(1, table);
-        rs = selectStmt.executeQuery();
-        if (!rs.next()) {
-          throw new RuntimeException("Erreur Interne DBUtil.getNextId()");
+        try (ResultSet rs = selectStmt.executeQuery()) {
+          if (!rs.next()) {
+            throw new RuntimeException("Erreur Interne DBUtil.getNextId()");
+          }
+          max = rs.getInt(1);
         }
-        max = rs.getInt(1);
-      } finally {
-        close(rs, selectStmt);
       }
       return max;
     }
     throw new SQLException("Update impossible : Ligne non existante");
   }
+
+  private static int selectMaxFromTable(Connection connection, String tableName, String idName) {
+    int max = 0;
+    try (PreparedStatement selectStmt = connection
+        .prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?")) {
+      selectStmt.setString(1, tableName.toLowerCase(Locale.ROOT));
+      try (ResultSet rs = selectStmt.executeQuery()) {
+        // Insert or update strategy
+        if (!rs.next()) {
+          return insertMax(connection, tableName, idName);
+        } else {
+          // tableName exists inside UniqueId, we have to increment and return new one
+          max = rs.getInt(1);
+          return updateMaxFromTable(connection, tableName, max);
+        }
+      }
+    } catch (SQLException e) {
+      logger.log(Level.WARNING, e.getMessage(), e);
+    }
+    return max;
+  }
+
+  private static int insertMax(Connection connection, String tableName, String idName) {
+    int max = getMaxFromTable(connection, tableName, idName);
+    String createStatement = "INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)";
+    try (PreparedStatement createStmt = connection.prepareStatement(createStatement)) {
+      // Persist the max
+      createStmt.setInt(1, max);
+      createStmt.setString(2, tableName.toLowerCase());
+      createStmt.executeUpdate();
+    } catch (Exception e) {
+      // access concurrency
+      logger.log(Level.WARNING, e.getMessage(), e);
+    }
+    return max;
+  }
+
 
   private static int getMaxFromTable(Connection con, String tableName, String idName) {
     if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(idName)) {
