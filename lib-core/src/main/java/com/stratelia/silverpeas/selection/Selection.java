@@ -20,15 +20,14 @@
  */
 package com.stratelia.silverpeas.selection;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.Pair;
 import com.stratelia.webactiv.beans.admin.Domain;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.Pair;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Collection;
 import java.util.List;
-
-import static com.silverpeas.util.CollectionUtil.asList;
 
 public final class Selection {
 
@@ -319,8 +318,8 @@ public final class Selection {
    */
   public List<Domain> getRegisteredServerDomains() {
     if (registeredServerDomains == null) {
-      registeredServerDomains = asList(
-          OrganisationControllerFactory.getOrganisationController().getAllDomains());
+      registeredServerDomains = CollectionUtil
+          .asList(OrganizationControllerProvider.getOrganisationController().getAllDomains());
     }
     return registeredServerDomains;
   }

@@ -97,7 +97,7 @@ public class NotificationSender implements java.io.Serializable {
     Set<UserRecipient> usersSet = metaData.getAllUserRecipients(true);
 
     Set<String> languages = metaData.getLanguages();
-    Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
+    Map<String, String> usersLanguage = new HashMap<>(usersSet.size());
     for (UserRecipient user : usersSet) {
       usersLanguage.put(user.getUserId(), SilverpeasServiceProvider.getPersonalizationService().
           getUserSettings(user.getUserId()).getLanguage());
@@ -180,9 +180,9 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   private List<String> getUserIds(String lang, Map<String, String> usersLanguage) {
-    List<String> userIds = new ArrayList<String>(usersLanguage.keySet());
+    List<String> userIds = new ArrayList<>(usersLanguage.keySet());
     Iterator<String> languages = usersLanguage.values().iterator();
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     String language;
     int u = 0;
     while (languages.hasNext()) {

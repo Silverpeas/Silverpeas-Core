@@ -23,6 +23,8 @@
  */
 package org.silverpeas.servlet;
 
+import org.junit.Rule;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.DateUtil;
 import org.apache.commons.fileupload.FileItem;
@@ -46,6 +48,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RequestParameterDecoderTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private Date TODAY = DateUtil.getNow();
   private HttpRequest httpRequestMock;

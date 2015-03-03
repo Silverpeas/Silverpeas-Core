@@ -33,8 +33,6 @@ import org.silverpeas.servlet.UnescapeHtml;
 
 import javax.ws.rs.FormParam;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
 /**
  * This class is a user data container which the data are retrieved from an HTTP request that
  * deals with user data creation or modification.<br/>

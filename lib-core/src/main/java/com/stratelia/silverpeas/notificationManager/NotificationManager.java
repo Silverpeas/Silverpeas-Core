@@ -29,11 +29,10 @@ package com.stratelia.silverpeas.notificationManager;
  * @author Eric BURGEL
  * @version 1.0
  */
+
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressTable;
@@ -49,15 +48,17 @@ import com.stratelia.silverpeas.notificationserver.NotificationServer;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
-import org.apache.commons.lang.StringUtils;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,9 +66,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration

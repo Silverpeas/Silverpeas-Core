@@ -24,12 +24,13 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.ResourceLocator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,6 +42,9 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
 
   private static final int NOT_LIMITED = 0;
   private static final int LIMITED = 5;
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();

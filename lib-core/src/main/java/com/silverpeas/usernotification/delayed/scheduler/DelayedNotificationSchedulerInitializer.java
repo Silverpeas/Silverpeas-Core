@@ -31,6 +31,9 @@ import org.silverpeas.initialization.Initialization;
 
 import javax.inject.Inject;
 
+import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+    .getCronOfDelayedNotificationSending;
+
 /**
  * @author Yohann Chastagnier
  */

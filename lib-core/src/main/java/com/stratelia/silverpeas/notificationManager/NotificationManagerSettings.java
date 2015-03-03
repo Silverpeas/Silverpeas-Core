@@ -23,9 +23,9 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +66,7 @@ public class NotificationManagerSettings {
 
     // Initialization
     final Set<DelayedNotificationFrequency> possibleFrequencies =
-        new HashSet<DelayedNotificationFrequency>();
+        new HashSet<>();
 
     // The parameter value
     final String frequencyChoiceList =
@@ -88,7 +88,7 @@ public class NotificationManagerSettings {
 
     // Eliminating wrong frequencies
     possibleFrequencies.remove(null);
-    return new TreeSet<DelayedNotificationFrequency>(possibleFrequencies);
+    return new TreeSet<>(possibleFrequencies);
   }
 
   /**
@@ -160,7 +160,7 @@ public class NotificationManagerSettings {
     boolean isMultiChannelSupported = isMultiChannelNotificationEnabled();
     StringTokenizer channelTokenizer =
         new StringTokenizer(defaultChannels.replaceAll("[ ]{2,}", " "), " ");
-    List<Integer> mediaIds = new ArrayList<Integer>(channelTokenizer.countTokens() + 1);
+    List<Integer> mediaIds = new ArrayList<>(channelTokenizer.countTokens() + 1);
     while (channelTokenizer.hasMoreTokens()) {
       String channel = channelTokenizer.nextToken();
       if ("BASIC_POPUP".equalsIgnoreCase(channel) &&

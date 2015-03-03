@@ -31,6 +31,7 @@ import com.silverpeas.usernotification.delayed.repository.DelayedNotificationDat
 import com.silverpeas.usernotification.delayed.repository.DelayedNotificationUserSettingJpaManager;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.usernotification.repository.NotificationResourceDataManager;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.CollectionUtil;

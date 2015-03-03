@@ -24,6 +24,7 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.PreparedStatement;
@@ -123,7 +124,7 @@ public class UserTable extends Table<UserRow> {
    */
   public UserRow getUserBySpecificId(int domainId, String specificId)
       throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>();
+    List<Object> params = new ArrayList<>();
     params.add(domainId);
     params.add(specificId);
     List<UserRow> users = getRows(SELECT_USER_BY_SPECIFICID_AND_LOGIN, params);
@@ -179,7 +180,7 @@ public class UserTable extends Table<UserRow> {
    * @throws AdminPersistenceException
    */
   public UserRow getUserByLogin(int domainId, String login) throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>();
+    List<Object> params = new ArrayList<>();
     params.add(domainId);
     params.add(login);
     List<UserRow> users = getRows(SELECT_USER_BY_DOMAINID_AND_LOGIN, params);
@@ -276,7 +277,7 @@ public class UserTable extends Table<UserRow> {
    */
   public String[] getUserIdsOfDomainByAccessLevel(int domainId, UserAccessLevel accessLevel)
       throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(2);
+    List<Object> params = new ArrayList<>(2);
     params.add(domainId);
     params.add(accessLevel.code());
     List<String> rows = getIds(SELECT_USER_IDS_BY_ACCESS_LEVEL_AND_DOMAIN, params);
@@ -491,7 +492,7 @@ public class UserTable extends Table<UserRow> {
       throws AdminPersistenceException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
-    List<Object> params = new ArrayList<Object>();
+    List<Object> params = new ArrayList<>();
 
     boolean manualFiltering = userIds != null && !userIds.isEmpty() && userIds.size() > 100;
     StringBuilder query = new StringBuilder(SELECT_SEARCH_USERSID);
@@ -526,7 +527,7 @@ public class UserTable extends Table<UserRow> {
     boolean concatAndOr = false;
     String andOr = isAnd ? ") AND (" : ") OR (";
     StringBuilder query = new StringBuilder(SELECT_SEARCH_USERS);
-    List<Object> params = new ArrayList<Object>();
+    List<Object> params = new ArrayList<>();
     concatAndOr = addIdToQuery(params, query, userModel.domainId, "domainId", concatAndOr, andOr);
     addCommonUserParamToQuery(params, query, userModel, concatAndOr, andOr);
     List<UserRow> rows = getRows(query.toString(), params);

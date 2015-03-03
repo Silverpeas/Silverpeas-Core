@@ -23,31 +23,48 @@
  */
 package com.silverpeas.ui;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.MockByReflectionRule;
 
 import static com.silverpeas.ui.DisplayI18NHelper.getDefaultLanguage;
 import static com.silverpeas.ui.DisplayI18NHelper.verifyLanguage;
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class DisplayI18NHelperTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+
+  @Before
+  public void setup() {
+    reflectionRule.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
+    reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
+  }
+
   @Test
   public void verifyLanguageByGivingNullOne() {
-    assertThat(getDefaultLanguage(), notNullValue());
+    assertThat(getDefaultLanguage(), is("en"));
     assertThat(verifyLanguage(null), is(getDefaultLanguage()));
   }
 
   @Test
   public void verifyLanguageByGivingNotHandledOne() {
-    assertThat(getDefaultLanguage(), notNullValue());
+    assertThat(getDefaultLanguage(), is("en"));
     assertThat(verifyLanguage("ru"), is(getDefaultLanguage()));
   }
 
   @Test
   public void verifyLanguageByGivingHandledOne() {
-    assertThat(getDefaultLanguage(), notNullValue());
-    assertThat(verifyLanguage("en"), is("en"));
+    assertThat(getDefaultLanguage(), is("en"));
+    assertThat(verifyLanguage("de"), is("de"));
   }
 }

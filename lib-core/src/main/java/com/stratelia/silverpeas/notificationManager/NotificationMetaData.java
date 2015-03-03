@@ -24,17 +24,14 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.Link;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
@@ -53,7 +50,7 @@ import static com.stratelia.silverpeas.notificationManager.NotificationTemplateK
     .notification_receiver_groups;
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey
     .notification_receiver_users;
-import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
 
 public class NotificationMetaData implements java.io.Serializable {
   private static final long serialVersionUID = 6004274748540324759L;
@@ -77,11 +74,11 @@ public class NotificationMetaData implements java.io.Serializable {
   private boolean sendImmediately = false;
   private NotifAction action;
   private Map<String, NotificationResourceData> notificationResourceData =
-      new HashMap<String, NotificationResourceData>();
+      new HashMap<>();
 
-  private Map<String, String> titles = new HashMap<String, String>();
-  private Map<String, String> contents = new HashMap<String, String>();
-  private Map<String, String> linkLabels = new HashMap<String, String>();
+  private Map<String, String> titles = new HashMap<>();
+  private Map<String, String> contents = new HashMap<>();
+  private Map<String, String> linkLabels = new HashMap<>();
 
   private Map<String, SilverpeasTemplate> templates;
   private Map<String, SilverpeasTemplate> templatesMessageFooter;
@@ -110,7 +107,7 @@ public class NotificationMetaData implements java.io.Serializable {
   public NotificationMetaData(int messageType, String title, String content) {
     reset();
     this.messageType = messageType;
-    this.templates = new HashMap<String, SilverpeasTemplate>();
+    this.templates = new HashMap<>();
     addLanguage(DisplayI18NHelper.getDefaultLanguage(), title, content);
   }
 
@@ -132,15 +129,15 @@ public class NotificationMetaData implements java.io.Serializable {
     source = "";
     link = "";
     sessionId = "";
-    userRecipients = new ArrayList<UserRecipient>();
-    userRecipientsToExclude = new ArrayList<UserRecipient>();
-    groupRecipients = new ArrayList<GroupRecipient>();
-    externalRecipients = new ArrayList<ExternalRecipient>();
+    userRecipients = new ArrayList<>();
+    userRecipientsToExclude = new ArrayList<>();
+    groupRecipients = new ArrayList<>();
+    externalRecipients = new ArrayList<>();
     componentId = "";
     isAnswerAllowed = false;
     fileName = null;
-    this.templates = new HashMap<String, SilverpeasTemplate>();
-    this.templatesMessageFooter = new HashMap<String, SilverpeasTemplate>();
+    this.templates = new HashMap<>();
+    this.templatesMessageFooter = new HashMap<>();
     action = null;
     notificationResourceData.clear();
   }
@@ -151,7 +148,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public Set<String> getLanguages() {
-    Set<String> languages = new HashSet<String>(titles.keySet());
+    Set<String> languages = new HashSet<>(titles.keySet());
     languages.addAll(templates.keySet());
     return languages;
   }
@@ -429,9 +426,9 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public void setUserRecipients(Collection<UserRecipient> users) {
     if (users != null) {
-      this.userRecipients = new ArrayList<UserRecipient>(users);
+      this.userRecipients = new ArrayList<>(users);
     } else {
-      this.userRecipients = new ArrayList<UserRecipient>();
+      this.userRecipients = new ArrayList<>();
     }
   }
 
@@ -477,9 +474,9 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public void setUserRecipientsToExclude(Collection<UserRecipient> users) {
     if (users != null) {
-      this.userRecipientsToExclude = new ArrayList<UserRecipient>(users);
+      this.userRecipientsToExclude = new ArrayList<>(users);
     } else {
-      this.userRecipientsToExclude = new ArrayList<UserRecipient>();
+      this.userRecipientsToExclude = new ArrayList<>();
     }
   }
 
@@ -548,9 +545,9 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public void setGroupRecipients(Collection<GroupRecipient> groups) {
     if (groups != null) {
-      this.groupRecipients = new ArrayList<GroupRecipient>(groups);
+      this.groupRecipients = new ArrayList<>(groups);
     } else {
-      this.groupRecipients = new ArrayList<GroupRecipient>();
+      this.groupRecipients = new ArrayList<>();
     }
   }
 
@@ -660,7 +657,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   public SilverpeasTemplate getTemplateMessageFooter(String language) {
     if(this.templatesMessageFooter == null) {
-      this.templatesMessageFooter = new HashMap<String, SilverpeasTemplate>();
+      this.templatesMessageFooter = new HashMap<>();
     }
 
     SilverpeasTemplate templateMessageFooter = this.templatesMessageFooter.get(language);
@@ -695,12 +692,12 @@ public class NotificationMetaData implements java.io.Serializable {
   public Set<UserRecipient> getAllUserRecipients(boolean updateInternalUserRecipientsToExclude)
       throws NotificationManagerException {
 
-    Set<UserRecipient> allUniqueUserRecipients = new HashSet<UserRecipient>();
+    Set<UserRecipient> allUniqueUserRecipients = new HashSet<>();
     Collection<UserRecipient> userRecipients = getUserRecipients();
     Collection<GroupRecipient> groupRecipients = getGroupRecipients();
     Collection<UserRecipient> userRecipientsToExclude =
         updateInternalUserRecipientsToExclude ? getUserRecipientsToExclude() :
-            new HashSet<UserRecipient>(getUserRecipientsToExclude());
+            new HashSet<>(getUserRecipientsToExclude());
 
     // If sender exists, it is excluded
     String senderId = getSender();
@@ -727,7 +724,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   private Set<UserRecipient> getUsersForReceiverBlock()
       throws NotificationManagerException {
-    HashSet<UserRecipient> usersSet = new HashSet<UserRecipient>();
+    HashSet<UserRecipient> usersSet = new HashSet<>();
     usersSet.addAll(getUserRecipients());
     for (GroupRecipient group : getGroupRecipients()) {
       if (!displayGroup(group.getGroupId())) {
@@ -768,7 +765,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   private Set<GroupRecipient> getGroupsForReceiverBlock() {
-    HashSet<GroupRecipient> groupsSet = new HashSet<GroupRecipient>();
+    HashSet<GroupRecipient> groupsSet = new HashSet<>();
     for (GroupRecipient group : getGroupRecipients()) {
       if (displayGroup(group.getGroupId())) {
         // add groups names

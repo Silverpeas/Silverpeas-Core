@@ -23,15 +23,15 @@
  */
 package org.silverpeas.servlet;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.apache.commons.fileupload.FileItem;
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
@@ -230,7 +230,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return collection of {@link UploadedFile}. Empty collection if no uploaded file exists.
    */
   public Collection<UploadedFile> getUploadedFiles() {
-    Collection<UploadedFile> uploadedFiles = new ArrayList<UploadedFile>();
+    Collection<UploadedFile> uploadedFiles = new ArrayList<>();
     MainSessionController mainSessionController = getMainSessionController();
     if (mainSessionController != null) {
       uploadedFiles =
@@ -284,7 +284,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
     Enumeration<String> names = super.getParameterNames();
     if (!names.hasMoreElements() && isContentInMultipart()) {
       List<FileItem> items = getFileItems();
-      List<String> itemNames = new ArrayList<String>(items.size());
+      List<String> itemNames = new ArrayList<>(items.size());
       for (FileItem item : items) {
         if (item.isFormField()) {
           itemNames.add(item.getFieldName());
@@ -312,7 +312,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
     Map<String, String[]> map = super.getParameterMap();
     if (map.isEmpty() && isContentInMultipart()) {
       List<FileItem> items = getFileItems();
-      map = new HashMap<String, String[]>(items.size());
+      map = new HashMap<>(items.size());
       for (FileItem item : items) {
         if (item.isFormField()) {
           String[] value;

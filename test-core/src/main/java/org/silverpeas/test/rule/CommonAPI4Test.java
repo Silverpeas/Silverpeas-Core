@@ -29,6 +29,7 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.mockito.internal.util.MockUtil;
 import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.util.lang.TestSystemWrapper;
 import org.silverpeas.test.util.log.TestSilverpeasTrace;
@@ -58,6 +59,19 @@ public class CommonAPI4Test implements TestRule {
         base.evaluate();
       }
     };
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T injectIntoMockedBeanContainer(T bean) {
+    final MockUtil mockUtil = new MockUtil();
+    final Class<T> clazz;
+    if (mockUtil.isMock(bean) || mockUtil.isSpy(bean)) {
+      clazz = mockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
+    } else {
+      clazz = (Class<T>) bean.getClass();
+    }
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz)).thenReturn(bean);
+    return bean;
   }
 
   public void silverTrace() {

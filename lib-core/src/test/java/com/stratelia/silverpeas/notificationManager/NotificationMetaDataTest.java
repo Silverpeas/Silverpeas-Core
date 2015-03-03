@@ -24,15 +24,15 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,11 +40,15 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class NotificationMetaDataTest {
 
   private static final String USER_SENDER = "2406";
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -61,10 +65,9 @@ public class NotificationMetaDataTest {
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
 
     // Organization controller
-    final OrganisationController mockedOrganisationController = reflectionRule
-        .mockField(OrganisationControllerFactory.class, OrganisationController.class,
-            "instance.organisationController");
-    when(mockedOrganisationController.getGroup(anyString())).thenAnswer(new Answer<Group>() {
+    final OrganizationController mockedOrganizationController =
+        commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
+    when(mockedOrganizationController.getGroup(anyString())).thenAnswer(new Answer<Group>() {
       @Override
       public Group answer(final InvocationOnMock invocation) throws Throwable {
         Group group = new Group();

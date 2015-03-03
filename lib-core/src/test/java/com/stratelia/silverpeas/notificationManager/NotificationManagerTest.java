@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ResourceLocator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +43,9 @@ import static org.mockito.Mockito.when;
  * Unit tests on the manager of notifications.
  */
 public class NotificationManagerTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();

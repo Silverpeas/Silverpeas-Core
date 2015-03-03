@@ -27,28 +27,28 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Arrays;
-
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserRequestDataTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -59,7 +59,7 @@ public class UserRequestDataTest {
 
   @Before
   public void setup() {
-    reflectionRule.setField(DisplayI18NHelper.class, asList("fr,en,de"), "languages");
+    reflectionRule.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
     reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");

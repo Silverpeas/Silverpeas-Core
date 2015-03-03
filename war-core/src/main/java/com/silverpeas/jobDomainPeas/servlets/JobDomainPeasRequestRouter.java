@@ -24,11 +24,6 @@ import com.silverpeas.jobDomainPeas.JobDomainPeasException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.jobDomainPeas.UserRequestData;
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -42,14 +37,19 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.SilverpeasTrappedException;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.FileUploadUtil;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.SilverpeasTrappedException;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -60,12 +60,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
@@ -215,7 +209,7 @@ public class JobDomainPeasRequestRouter extends
             query = jobDomainSC.getQueryToImport();
             users = jobDomainSC.getUsersToImport();
           } else {
-            query = new Hashtable<String, String>();
+            query = new Hashtable<>();
             Enumeration<String> parameters = request.getParameterNames();
             String paramName;
             String paramValue;
@@ -255,7 +249,7 @@ public class JobDomainPeasRequestRouter extends
           }
         } else if (function.equals("userImportAll")) {
           Iterator<UserDetail> usersIt = jobDomainSC.getUsersToImport().iterator();
-          ArrayList<String> listSelectedUsersIds = new ArrayList<String>();
+          ArrayList<String> listSelectedUsersIds = new ArrayList<>();
           while (usersIt.hasNext()) {
             listSelectedUsersIds.add(usersIt.next().getSpecificId());
           }
@@ -822,7 +816,7 @@ public class JobDomainPeasRequestRouter extends
   @SuppressWarnings("unchecked")
   private HashMap<String, String> getExtraPropertyValues(HttpServletRequest request) {
     // process extra properties
-    HashMap<String, String> properties = new HashMap<String, String>();
+    HashMap<String, String> properties = new HashMap<>();
     Enumeration<String> parameters = request.getParameterNames();
     while (parameters.hasMoreElements()) {
       String parameterName = parameters.nextElement();

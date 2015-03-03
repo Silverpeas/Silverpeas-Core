@@ -24,8 +24,8 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
     .getUserManualNotificationRecipientLimit;
@@ -44,11 +44,11 @@ public class CurrentUserNotificationContext {
    * instance associated to the current request.
    */
   public static CurrentUserNotificationContext getCurrentUserNotificationContext() {
-    CurrentUserNotificationContext current = CacheServiceFactory.getRequestCacheService()
+    CurrentUserNotificationContext current = CacheServiceProvider.getRequestCacheService()
         .get(CurrentUserNotificationContext.class.getName(), CurrentUserNotificationContext.class);
     if (current == null) {
       current = new CurrentUserNotificationContext();
-      CacheServiceFactory.getRequestCacheService()
+      CacheServiceProvider.getRequestCacheService()
           .put(CurrentUserNotificationContext.class.getName(), current);
     }
     return current;

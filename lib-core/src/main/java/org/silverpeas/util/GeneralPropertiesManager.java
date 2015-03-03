@@ -38,8 +38,7 @@ public class GeneralPropertiesManager {
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
   public static final String GENERAL_PROPERTIES_FILE = "org.silverpeas.multilang.generalMultilang";
-  static final ResourceLocator generalProperties =
-      new ResourceLocator("org.silverpeas.general", "");
+  static ResourceLocator generalProperties = new ResourceLocator("org.silverpeas.general", "");
   static int dvis = Integer.parseInt(generalProperties.getString("domainVisibility", "0"));
   static final Map<String, Collection<String>> listProperties = new HashMap<>();
 

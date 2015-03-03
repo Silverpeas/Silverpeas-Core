@@ -23,18 +23,22 @@
  */
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.ResourceLocator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 public class NotificationManagerSettingsTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();

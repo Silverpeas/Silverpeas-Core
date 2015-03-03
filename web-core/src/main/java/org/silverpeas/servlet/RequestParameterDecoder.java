@@ -23,10 +23,8 @@
  */
 package org.silverpeas.servlet;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import org.apache.commons.lang.NotImplementedException;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;

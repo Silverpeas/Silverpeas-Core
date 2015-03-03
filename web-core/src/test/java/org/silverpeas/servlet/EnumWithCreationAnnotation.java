@@ -23,7 +23,7 @@
  */
 package org.silverpeas.servlet;
 
-import org.codehaus.jackson.annotate.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  * @author Yohann Chastagnier

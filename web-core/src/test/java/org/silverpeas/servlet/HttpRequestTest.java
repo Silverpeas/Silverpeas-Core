@@ -24,9 +24,16 @@
 package org.silverpeas.servlet;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,11 +44,21 @@ import static org.mockito.Mockito.when;
 public class HttpRequestTest {
   private static final String HTTP_PARAMETER = "paramName";
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+
   private HttpServletRequest httpServletRequestMock;
   private HttpRequest httpRequest;
 
   @Before
-  public void setup() {
+  public void setup() throws Exception{
+    ResourceLocator generalSettings = reflectionRule
+        .mockField(GeneralPropertiesManager.class, ResourceLocator.class, "generalProperties");
+    when(generalSettings.getString("tempPath"))
+        .thenReturn(File.createTempFile("prefix", "suffix").getPath());
     httpServletRequestMock = mock(HttpServletRequest.class);
     when(httpServletRequestMock.getMethod()).thenReturn("GET");
 

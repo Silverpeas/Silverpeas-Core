@@ -48,7 +48,7 @@ import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 
 public class ManagedThreadPoolTest {
 
-  private final static long OFFSET_TIME = 250;
+  private final static long OFFSET_TIME = 350;
   private final static long SLEEP_TIME_OF_1_SECOND = 1000;
   private final static long SHORT_TIMEOUT = 500;
   private final static long LARGE_TIMEOUT = 5000;
@@ -206,7 +206,7 @@ public class ManagedThreadPoolTest {
     log("Getting future result at {0} with result {1}...", valueOf(beginLoop),
         valueOf(futures.get(0).get()));
     assertThat(futures.get(0).get(), greaterThan(beginLoop));
-    assertThat(futures.get(0).get(), lessThan(beginLoop + SLEEP_TIME_OF_1_SECOND - 90));
+    assertThat(futures.get(0).get(), lessThan(beginLoop + SLEEP_TIME_OF_1_SECOND));
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(1));
     log("... OK");
   }
@@ -230,7 +230,7 @@ public class ManagedThreadPoolTest {
     for (Future<Long> future : futures) {
       log("\tprocess ended at {0}", valueOf(future.get()));
       assertThat(future.get(), greaterThan(beginLoop));
-      assertThat(future.get(), lessThan(beginLoop + SLEEP_TIME_OF_1_SECOND - 90));
+      assertThat(future.get(), lessThan(beginLoop + SLEEP_TIME_OF_1_SECOND));
     }
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(callables.size()));
     log("... OK");

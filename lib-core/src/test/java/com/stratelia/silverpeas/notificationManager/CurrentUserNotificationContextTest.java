@@ -24,14 +24,16 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 import static com.stratelia.silverpeas.notificationManager.CurrentUserNotificationContext
     .getCurrentUserNotificationContext;
@@ -43,22 +45,26 @@ public class CurrentUserNotificationContextTest {
   private static final String ANONYMOUS_ID = "26598";
 
   @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
-  private UserDetail currentUser = new UserDetail();
+  private UserDetail currentUser;
   private ResourceLocator mockedSettings;
 
   @Before
   public void setup() {
-    CacheServiceFactory.getRequestCacheService().clear();
-    CacheServiceFactory.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
+    currentUser = new UserDetail();
+    CacheServiceProvider.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
   }
 
   @After
   public void tearDown() {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
   }
 
   /*
@@ -70,7 +76,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     getCurrentUserNotificationContext().checkManualUserNotification(null);
   }
 
@@ -78,7 +84,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNullNotificationMetaDataAndNoCurrentUserAndLimitationEnabled()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     enableLimitationAt(1);
     getCurrentUserNotificationContext().checkManualUserNotification(null);
   }
@@ -87,7 +93,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
   }
 
@@ -95,7 +101,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithEmptyNotificationMetaDataAndNoCurrentUserAndLimitationEnabled()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     enableLimitationAt(1);
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
   }
@@ -103,13 +109,13 @@ public class CurrentUserNotificationContextTest {
   @Test
   public void checkManualUserNotificationWithNoCurrentUserAndLimitationNotEnabled()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
 
   @Test
   public void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabled() throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     enableLimitationAt(2);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(2));
   }
@@ -118,7 +124,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimit()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
   }
@@ -127,7 +133,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
-    CacheServiceFactory.getRequestCacheService().clear();
+    CacheServiceProvider.getRequestCacheService().clear();
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getDefaultUserOne(4));
   }

@@ -23,8 +23,7 @@
  */
 package org.silverpeas.test.rule;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -51,7 +50,7 @@ import static java.text.MessageFormat.format;
 public class MockByReflectionRule implements TestRule {
 
   private Map<Object, Map<FieldInjectionDirective, Object>> entitiesOldValues =
-      new HashMap<Object, Map<FieldInjectionDirective, Object>>();
+      new HashMap<>();
 
   private Logger logger = Logger.getLogger(MockByReflectionRule.class.getSimpleName());
 
@@ -92,17 +91,9 @@ public class MockByReflectionRule implements TestRule {
    * the field. If the fieldName path part starts with '.' character, it sets that the
    * field is static.
    * @return the new mocked instance.
-   * @throws Exception
    */
   public <T> T mockField(Object instanceOrClass, Class<T> classToMock, String fieldNames) {
-    try {
-      if (entitiesOldValues.isEmpty()) {
-        logger.info("Set mocked fields...");
-      }
-      return setField(instanceOrClass, Mockito.mock(classToMock), fieldNames);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    return setField(instanceOrClass, Mockito.mock(classToMock), fieldNames);
   }
 
   /**
@@ -115,7 +106,6 @@ public class MockByReflectionRule implements TestRule {
    * the field. If the fieldName path part starts with '.' character, it sets that the
    * field is static.
    * @return the new mocked instance.
-   * @throws Exception
    */
   public <T> T setField(Object instanceOrClass, T value, String fieldNames) {
     try {
@@ -123,7 +113,7 @@ public class MockByReflectionRule implements TestRule {
         logger.info("Set mocked fields...");
       }
       return inject(instanceOrClass,
-          new FieldInjectionDirective<T>(instanceOrClass, fieldNames, logger), value);
+          new FieldInjectionDirective<>(instanceOrClass, fieldNames, logger), value);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -137,7 +127,7 @@ public class MockByReflectionRule implements TestRule {
       T newValue) throws Exception {
     Map<FieldInjectionDirective, Object> entityOldValues = entitiesOldValues.get(instanceOrClass);
     if (entityOldValues == null) {
-      entityOldValues = new HashMap<FieldInjectionDirective, Object>();
+      entityOldValues = new HashMap<>();
       entitiesOldValues.put(instanceOrClass, entityOldValues);
     }
     entityOldValues.put(fieldInjectionDirective, fieldInjectionDirective.write(newValue));
@@ -168,13 +158,13 @@ public class MockByReflectionRule implements TestRule {
      * @return the final Object / Field to set by analyzing the path.
      * @throws Exception
      */
-    private Pair<Object, String> getFinalObjectField() throws Exception {
+    private ObjectField getFinalObjectField() throws Exception {
       Object currentInstanceOrClass = instanceOrClass;
       StringTokenizer fieldNameTokenizer = new StringTokenizer(fieldNames, ".");
       while (fieldNameTokenizer.hasMoreTokens()) {
         String fieldName = fieldNameTokenizer.nextToken();
         if (!fieldNameTokenizer.hasMoreTokens()) {
-          return Pair.of(currentInstanceOrClass, fieldName);
+          return ObjectField.of(currentInstanceOrClass, fieldName);
         }
         if (currentInstanceOrClass instanceof Class) {
           currentInstanceOrClass =
@@ -193,13 +183,13 @@ public class MockByReflectionRule implements TestRule {
      */
     @SuppressWarnings("unchecked")
     public T read() throws Exception {
-      Pair<Object, String> finalObjectField = getFinalObjectField();
-      if (finalObjectField.getLeft() instanceof Class) {
-        return (T) FieldUtils.readDeclaredStaticField((Class) finalObjectField.getLeft(),
-            finalObjectField.getRight(), true);
+      ObjectField finalObjectField = getFinalObjectField();
+      if (finalObjectField.getInstanceOrClass() instanceof Class) {
+        return (T) FieldUtils.readDeclaredStaticField((Class) finalObjectField.getInstanceOrClass(),
+            finalObjectField.getFieldName(), true);
       } else {
-        return (T) FieldUtils
-            .readDeclaredField(finalObjectField.getLeft(), finalObjectField.getRight(), true);
+        return (T) FieldUtils.readDeclaredField(finalObjectField.getInstanceOrClass(),
+            finalObjectField.getFieldName(), true);
       }
     }
 
@@ -211,22 +201,44 @@ public class MockByReflectionRule implements TestRule {
      */
     public T write(T object) throws Exception {
       T previousValue = read();
-      Pair<Object, String> finalObjectField = getFinalObjectField();
-      if (finalObjectField.getLeft() instanceof Class) {
-        FieldUtils.writeDeclaredStaticField((Class) finalObjectField.getLeft(),
-            finalObjectField.getRight(), object, true);
-        logger.info(
-            format(WRITE_MESSAGE, ((Class) finalObjectField.getLeft()).getSimpleName() + " class",
-                finalObjectField.getRight(), object, previousValue));
+      ObjectField finalObjectField = getFinalObjectField();
+      if (finalObjectField.getInstanceOrClass() instanceof Class) {
+        FieldUtils.writeDeclaredStaticField((Class) finalObjectField.getInstanceOrClass(),
+            finalObjectField.getFieldName(), object, true);
+        logger.info(format(WRITE_MESSAGE,
+                ((Class) finalObjectField.getInstanceOrClass()).getSimpleName() + " class",
+                finalObjectField.getFieldName(), object, previousValue));
       } else {
-        FieldUtils
-            .writeDeclaredField(finalObjectField.getLeft(), finalObjectField.getRight(), object,
+        FieldUtils.writeDeclaredField(finalObjectField.getInstanceOrClass(),
+            finalObjectField.getFieldName(), object,
                 true);
         logger.info(format(WRITE_MESSAGE,
-            finalObjectField.getLeft().getClass().getSimpleName() + " instance",
-            finalObjectField.getRight(), object, previousValue));
+            finalObjectField.getInstanceOrClass().getClass().getSimpleName() + " instance",
+            finalObjectField.getFieldName(), object, previousValue));
       }
       return previousValue;
+    }
+  }
+
+  private static class ObjectField {
+    private final Object instanceOrClass;
+    private final String fieldName;
+
+    public static ObjectField of(final Object instanceOrClass, final String fieldName) {
+      return new ObjectField(instanceOrClass, fieldName);
+    }
+
+    private ObjectField(final Object instanceOrClass, final String fieldName) {
+      this.instanceOrClass = instanceOrClass;
+      this.fieldName = fieldName;
+    }
+
+    public String getFieldName() {
+      return fieldName;
+    }
+
+    public Object getInstanceOrClass() {
+      return instanceOrClass;
     }
   }
 }
