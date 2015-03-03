@@ -20,8 +20,6 @@
  */
 package org.silverpeas.util;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.pool.ConnectionPool;
 
 import java.sql.Connection;
@@ -120,6 +118,11 @@ public class DBUtil {
   public static synchronized int getNextId(final String tableName, final String idName)
       throws SQLException {
     //noinspection RedundantCast
+    try (Connection connection = openConnection()) {
+      return getMaxId(connection, tableName, idName);
+    }
+    /*
+    TODO replace with another process selectOrInsertMaxId keeping the performInNew transaction
     final Pair<Integer, SQLException> result =
         Transaction.performInNew((Transaction.Process<Pair<Integer, SQLException>>) () -> {
           Connection connection = null;
@@ -137,10 +140,11 @@ public class DBUtil {
       throw result.getRight();
     }
     return result.getLeft();
+     */
   }
 
   private static int getMaxId(Connection connection, String tableName, String idName)
-  throws SQLException {
+      throws SQLException {
     // tentative d'update
     try {
       return updateMaxFromTable(connection, tableName);
@@ -158,6 +162,7 @@ public class DBUtil {
       return max;
     } catch (Exception e) {
       // access concurrency
+      logger.log(Level.WARNING, e.getMessage(), e);
     } finally {
       close(createStmt);
     }
