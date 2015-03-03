@@ -27,7 +27,7 @@
 
 <migration module="busCore" order="1">
 
-  <current version="032">
+  <current version="033">
     <script name="create_table.sql" type="sql"/>
     <script name="create_table_production.sql" type="sql" />
     <script name="create_constraint.sql" type="sql" />
@@ -36,5 +36,9 @@
     <script name="init.sql" type="sql" />
     <script name="init_production.sql" type="sql" />
   </current>
+
+  <upgrade fromVersion="up032">
+    <script name="alter_table.sql" type="sql"/>
+  </upgrade>
 
 </migration>
