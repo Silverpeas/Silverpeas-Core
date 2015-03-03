@@ -26,7 +26,21 @@ package com.silverpeas.silverstatistics;
 
 import java.util.Collection;
 
-public interface ComponentStatisticsInterface {
+/**
+ * A provider of statistics data about some resources managed in a given Silverpeas Component.
+ *
+ * Each statistics provider must be managed in CDI and retrieved by a name that qualifies them
+ * (annotation @Named). This name must satisfy the following rule: the name of the component that
+ * provides this statistics provider suffixed by the value of the <code>QUALIFIER_SUFFIX</code>
+ * constant.
+ */
+public interface ComponentStatisticsProvider {
+
+  /**
+   * The suffix of the name for each statistics provider.
+   */
+  public static final String QUALIFIER_SUFFIX = "Statistics";
+
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
       Exception;
 }

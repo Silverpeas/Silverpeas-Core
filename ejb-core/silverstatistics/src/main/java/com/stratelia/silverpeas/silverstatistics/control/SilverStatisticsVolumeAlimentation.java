@@ -24,22 +24,21 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.ComponentStatisticsProvider;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import org.silverpeas.util.FileUtil;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.MissingResourceException;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ServiceProvider;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -145,14 +144,11 @@ public class SilverStatisticsVolumeAlimentation {
           "silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
           "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
-      String className = getComponentStatisticsClassName(ci.getName());
-      if (className != null) {
-        ComponentStatisticsInterface myCompo = (ComponentStatisticsInterface) Class.forName(
-            className).newInstance();
-        Collection<UserIdCountVolumeCouple> v = myCompo.getVolume(spaceId, ci.getId());
-        c = agregateUser(v);
-      }
-    } catch (ClassNotFoundException ce) {
+      String qualifier = ci.getName() + "Statistics";
+      ComponentStatisticsProvider statistics = ServiceProvider.getService(qualifier);
+      Collection<UserIdCountVolumeCouple> v = statistics.getVolume(spaceId, ci.getId());
+      c = agregateUser(v);
+    } catch (IllegalStateException ce) {
       SilverTrace.info("silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
           "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",

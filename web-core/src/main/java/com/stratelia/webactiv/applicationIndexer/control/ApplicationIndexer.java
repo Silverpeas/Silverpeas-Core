@@ -132,7 +132,7 @@ public class ApplicationIndexer extends AbstractIndexer {
   ComponentIndexation getIndexer(ComponentInst compoInst) {
     ComponentIndexation componentIndexer;
     try {
-      String qualifier = compoInst.getName() + ComponentIndexation.class.getSimpleName();
+      String qualifier = compoInst.getName() + ComponentIndexation.QUALIFIER_SUFFIX;
       componentIndexer = ServiceProvider.getService(qualifier);
     } catch (IllegalStateException ex) {
       SilverTrace.warn(silvertraceModule, "ApplicationIndexer.getIndexer()",

@@ -30,10 +30,12 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
  * Indexation of the data managed by a given component instance. Each Application in Silverpeas
  * should provide an implementation of this interface as it knows how to index it own data. This
  * implementation must be qualified by a unique name starting by the application name and ending by
- * <code>ComponentIndexation</code> (aka annotated by {@kink javax.inject.Named}). The
- * implementation will be then lookable by the index engine by their qualification name.
+ * the <code>QUALIFIER_SUFFIX</code> constant value (aka annotated by {@kink javax.inject.Named}).
+ * The implementation will be then lookable by the index engine by their qualification name.
  */
 public interface ComponentIndexation {
+
+  public static final String QUALIFIER_SUFFIX = "Indexation";
 
   /**
    * Indexes the data managed by the specified component instance.

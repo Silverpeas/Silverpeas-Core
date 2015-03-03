@@ -103,10 +103,6 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.7+\" />");
     out.println("\t\t<jar href=\"OpenOfficeLauncher.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xercesImpl-2.10.0.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"commons-codec-1.7.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"commons-httpclient-3.1.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.8.0.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-webdav-2.8.0.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"jcl-over-slf4j-1.7.7.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-log4j12-1.7.7.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-api-1.7.7.jar\" download=\"eager\"/>");
