@@ -31,7 +31,7 @@ public class LinkDAOTest extends DAOBasedTest {
 
   @Override
   public String getDataSetPath() {
-    return "com/silverpeas/mylinks/dao/test-mylinks-dataset.xml";
+    return "com/silverpeas/myLinks/dao/test-mylinks-dataset.xml";
   }
 
   @Before
