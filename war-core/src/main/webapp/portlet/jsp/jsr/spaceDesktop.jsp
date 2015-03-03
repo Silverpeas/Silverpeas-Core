@@ -1,3 +1,4 @@
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -31,11 +32,14 @@
 <%@ include file="header.jsp"%>
 
 <%
+  Window window = gef.getWindow();
   String currentSpaceId = request.getParameter("SpaceId");
   if (SpaceInst.PERSONAL_SPACE_ID.equals(currentSpaceId)) {
     currentSpaceId = null;
+    window.getOperationPane().setType(OperationPaneType.personalSpace);
+  } else {
+    window.getOperationPane().setType(OperationPaneType.space);
   }
-	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();
   	browseBar.setSpaceId(currentSpaceId);
