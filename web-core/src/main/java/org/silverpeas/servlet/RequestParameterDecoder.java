@@ -26,23 +26,35 @@ package org.silverpeas.servlet;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import org.apache.commons.lang.NotImplementedException;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
+import javax.xml.bind.annotation.XmlElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.Date;
 
 /**
  * This class decodes the request parameters in order to set them to a simple specified POJO which
- * attributes are annotated by {@link javax.ws.rs.FormParam} annotation.
- * WARNING : for now, the decoder is not compatible with Inner Classes.
+ * attributes are annotated by {@link javax.ws.rs.FormParam} or
+ * {@link javax.xml.bind.annotation.XmlElement} annotation.<br/>
+ * It is possible to annotate the attribute with {@link UnescapeHtml} annotation in order to
+ * perform an HTML unescape operation (string type only).<br/>
+ * WARNINGS:
+ * <ul>
+ * <li>for now, the decoder is not compatible with Inner Classes</li>
+ * <li>specified default value on {@link javax.xml.bind.annotation.XmlElement} is not yet
+ * handled</li>
+ * </ul>
  * @author: Yohann Chastagnier
  */
 public class RequestParameterDecoder {
 
   // Singleton (Could be useful for Unit Tests)
   private static final RequestParameterDecoder decoder = new RequestParameterDecoder();
+
+  private static final String XML_ELEMENT_DEFAULT_NAME_VALUE = "##default";
 
   /**
    * Gets the singleton instance.
@@ -83,22 +95,34 @@ public class RequestParameterDecoder {
     try {
 
       // New instance
-      OBJECT newInstance = objectClass.newInstance();
+      Constructor<OBJECT> constructor = objectClass.getDeclaredConstructor();
+      constructor.setAccessible(true);
+      OBJECT newInstance = constructor.newInstance();
 
       // Reading all class fields.
       for (Field field : objectClass.getDeclaredFields()) {
+        final String paramName;
         // Is existing the FormParam annotation ?
-        FormParam param = field.getAnnotation(FormParam.class);
-        if (param != null) {
-          boolean isAccessible = field.isAccessible();
-          if (!isAccessible) {
-            field.setAccessible(true);
+        FormParam formParam = field.getAnnotation(FormParam.class);
+        if (formParam != null) {
+          paramName = StringUtil.isDefined(formParam.value()) ? formParam.value() : field.getName();
+        } else {
+          // Is existing the XmlElement annotation ?
+          XmlElement xmlParam = field.getAnnotation(XmlElement.class);
+          if (xmlParam != null) {
+            paramName = !XML_ELEMENT_DEFAULT_NAME_VALUE.equals(xmlParam.name()) ? xmlParam.name() :
+                field.getName();
+          } else {
+            // No class attribute for parameter
+            paramName = null;
           }
-          field.set(newInstance, getParameterValue(request,
-              StringUtil.isDefined(param.value()) ? param.value() : field.getName(),
-              field.getType(), field.getAnnotation(UnescapeHtml.class) != null));
-          if (!isAccessible) {
-            field.setAccessible(false);
+        }
+        if (paramName != null) {
+          field.setAccessible(true);
+          Object value = getParameterValue(request, paramName, field.getType(),
+              field.getAnnotation(UnescapeHtml.class) != null);
+          if (!field.getType().isPrimitive() || value != null) {
+            field.set(newInstance, value);
           }
         }
       }
@@ -147,6 +171,12 @@ public class RequestParameterDecoder {
       value = request.getParameterAsBoolean(parameterName);
     } else if (parameterClass.isEnum()) {
       value = request.getParameterAsEnum(parameterName, (Class) parameterClass);
+    } else if (parameterClass.isAssignableFrom(URI.class)) {
+      if (StringUtil.isDefined(request.getParameter(parameterName))) {
+        value = URI.create(request.getParameter(parameterName));
+      } else {
+        value = null;
+      }
     } else {
       throw new NotImplementedException(
           "The type " + parameterClass.getName() + " is not handled...");

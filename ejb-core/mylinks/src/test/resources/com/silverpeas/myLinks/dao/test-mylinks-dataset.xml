@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright (C) 2000 - 2013 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+  <SB_MyLinks_Link linkid="1" name="name1" url="name1Url" userid="user_1" visible="0" popup="0" position="0" />
+  <SB_MyLinks_Link linkid="2" name="name2" url="name2Url" userid="user_1" visible="0" popup="0" position="3" />
+  <SB_MyLinks_Link linkid="3" name="name3" url="name3Url" userid="user_1" visible="0" popup="0" position="4"/>
+  <SB_MyLinks_Link linkid="4" name="name4" url="name4Url" userid="user_1" visible="0" popup="0" position="2"/>
+  <SB_MyLinks_Link linkid="5" name="name5" url="name1Url" userid="user_1" visible="0" popup="0" position="1"/>
+
+
+  <SB_MyLinks_Link linkid="11" name="name1" url="name1Url" userid="user_2" visible="0" popup="0" />
+  <SB_MyLinks_Link linkid="12" name="name2" url="name2Url" userid="user_2" visible="0" popup="0" />
+  <SB_MyLinks_Link linkid="13" name="name3" url="name3Url" userid="user_2" visible="0" popup="0" />
+  <SB_MyLinks_Link linkid="14" name="name4" url="name4Url" userid="user_2" visible="0" popup="0" />
+  <SB_MyLinks_Link linkid="15" name="name5" url="name1Url" userid="user_2" visible="0" popup="0" />
+
+  <SB_MyLinks_Link linkid="21" name="name1" url="name1Url" userid="user_3" visible="0" popup="0" position="10" />
+  <SB_MyLinks_Link linkid="22" name="name2" url="name2Url" userid="user_3" visible="0" popup="0" position="13" />
+  <SB_MyLinks_Link linkid="23" name="name3" url="name3Url" userid="user_3" visible="0" popup="0" position="14"/>
+  <SB_MyLinks_Link linkid="24" name="name4" url="name4Url" userid="user_3" visible="0" popup="0" position="12"/>
+  <SB_MyLinks_Link linkid="25" name="name5" url="name1Url" userid="user_3" visible="0" popup="0" position="11"/>
+</dataset>

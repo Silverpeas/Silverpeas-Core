@@ -230,4 +230,6 @@ public interface ArrayPane extends SimpleGraphicElement {
   public void setExportDataURL(String exportDataURL);
   
   public void setSortableLines(boolean sortableLines);
+  
+  public void setUpdateSortJavascriptCallback(String callback);
 }
