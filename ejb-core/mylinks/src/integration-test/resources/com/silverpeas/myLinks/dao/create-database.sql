@@ -1,8 +1,3 @@
-CREATE TABLE UniqueId (
-  maxId     INT          NOT NULL,
-  tableName VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE SB_MyLinks_Link (
   linkId      INT          NOT NULL,
   name        VARCHAR(255) NOT NULL,

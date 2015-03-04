@@ -46,7 +46,7 @@ import java.util.Date;
  * <li>specified default value on {@link javax.xml.bind.annotation.XmlElement} is not yet
  * handled</li>
  * </ul>
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class RequestParameterDecoder {
 
@@ -57,7 +57,7 @@ public class RequestParameterDecoder {
 
   /**
    * Gets the singleton instance.
-   * @return
+   * @return the singleton instance.
    */
   protected static RequestParameterDecoder getInstance() {
     return decoder;
@@ -68,7 +68,7 @@ public class RequestParameterDecoder {
    * @param request the {@link ServletRequest} that will be wrapped by {@link HttpRequest}
    * @param objectClass the class of the requested returned instance.
    * @param <OBJECT> the type of the requested returned instance.
-   * @return
+   * @return the decoded specified entity.
    */
   public static <OBJECT> OBJECT decode(ServletRequest request, Class<OBJECT> objectClass) {
     return decode(HttpRequest.decorate(request), objectClass);
@@ -81,7 +81,7 @@ public class RequestParameterDecoder {
    * those of multipart request type.
    * @param objectClass the class of the requested returned instance.
    * @param <OBJECT> the type of the requested returned instance.
-   * @return
+   * @return the decoded specified entity.
    */
   public static <OBJECT> OBJECT decode(HttpRequest request, Class<OBJECT> objectClass) {
     return getInstance()._decode(request, objectClass);
@@ -136,14 +136,14 @@ public class RequestParameterDecoder {
 
   /**
    * Gets the parameter value according to the type of the specified field.
-   * @param request
-   * @param parameterName
-   * @param parameterClass
-   * @return
+   * @param request the current request.
+   * @param parameterName the current parameter name to verify.
+   * @param parameterClass the class into which the parameter value must be converted.
+   * @return the decoded parameter value.
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private <ENUM extends Enum> Object getParameterValue(HttpRequest request, String parameterName,
+  private Object getParameterValue(HttpRequest request, String parameterName,
       Class<?> parameterClass, boolean unescapeHtml) throws Exception {
     final Object value;
     if (parameterClass.isAssignableFrom(RequestFile.class)) {

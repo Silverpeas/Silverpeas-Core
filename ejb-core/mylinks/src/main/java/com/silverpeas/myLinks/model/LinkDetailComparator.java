@@ -23,7 +23,7 @@
  */
 package com.silverpeas.myLinks.model;
 
-import com.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
 
 import java.util.Collections;
 import java.util.List;

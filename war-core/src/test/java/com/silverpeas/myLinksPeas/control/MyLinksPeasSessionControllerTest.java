@@ -24,17 +24,20 @@
 package com.silverpeas.myLinksPeas.control;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
-import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.mylinks.web.MyLinkEntity;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,27 +49,31 @@ import static org.mockito.Mockito.*;
 
 public class MyLinksPeasSessionControllerTest {
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+
   private static final String CURRENT_USER_ID = "26";
 
   private MyLinksPeasSessionController ctrl;
   private MyLinksBm ejb;
-  boolean oldI18nActivationValue;
 
   @Before
   public void setup() throws Exception {
-    oldI18nActivationValue = I18NHelper.isI18nContentActivated;
-    I18NHelper.isI18nContentActivated = false;
+    reflectionRule.setField(I18NHelper.class, false, "isI18nContentActivated");
+    commonAPI4Test.injectIntoMockedBeanContainer(mock(ComponentHelper.class));
 
     MainSessionController mainSessionController = mock(MainSessionController.class);
     ctrl =
         spy(new MyLinksPeasSessionController(mainSessionController, mock(ComponentContext.class)));
     doReturn(new UserDetail()).when(mainSessionController).getCurrentUserDetail();
-    FieldUtils.writeField(ctrl, "controller", mainSessionController, true);
+    reflectionRule.setField(ctrl, mainSessionController, "controller");
     doReturn("Bundle value").when(ctrl).getString(anyString());
-    doReturn(mock(MyLinksBm.class)).when(ctrl).getMyLinksBm();
 
     ctrl.getUserDetail().setId(CURRENT_USER_ID);
-    ejb = ctrl.getMyLinksBm();
+    ejb = commonAPI4Test.injectIntoMockedBeanContainer(mock(MyLinksBm.class));
   }
 
   @Test

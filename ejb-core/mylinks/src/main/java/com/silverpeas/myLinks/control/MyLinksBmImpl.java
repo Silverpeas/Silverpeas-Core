@@ -22,19 +22,17 @@ package com.silverpeas.myLinks.control;
 
 import com.silverpeas.myLinks.MyLinksRuntimeException;
 import com.silverpeas.myLinks.model.LinkDetail;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
+import com.silverpeas.myLinks.model.LinkDetailComparator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
-/**
- * @author
- */
+import static com.silverpeas.myLinks.dao.LinkDAO.getLinkDao;
+import static org.silverpeas.util.DBUtil.openConnection;
+
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class MyLinksBmImpl implements MyLinksBm {
@@ -46,107 +44,75 @@ public class MyLinksBmImpl implements MyLinksBm {
 
   @Override
   public List<LinkDetail> getAllLinksByUser(String userId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       List<LinkDetail> links = getLinkDao().getAllLinksByUser(con, userId);
       return LinkDetailComparator.sort(links);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByUser()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public List<LinkDetail> getAllLinksByInstance(String instanceId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       return getLinkDao().getAllLinksByInstance(con, instanceId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByInstance()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public List<LinkDetail> getAllLinksByObject(String instanceId, String objectId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       return getLinkDao().getAllLinksByObject(con, instanceId, objectId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByObject()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void createLink(LinkDetail link) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       int id = getLinkDao().createLink(con, link);
       link.setLinkId(id);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.createLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_CREATE", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void deleteLinks(String[] links) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       for (String linkId : links) {
         getLinkDao().deleteLink(con, linkId);
       }
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.deleteLinks()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_DELETE", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public void updateLink(LinkDetail link) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       getLinkDao().updateLink(con, link);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.updateLink()",
           SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_UPDATE", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public LinkDetail getLink(String linkId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       return getLinkDao().getLink(con, linkId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getLink()", SilverpeasRuntimeException.ERROR,
           "myLinks.MSG_LINKS_NOT_EXIST", e);
-    } finally {
-      DBUtil.close(con);
     }
-  }
-
-  protected Connection initCon() {
-    Connection con;
-    try {
-      con = DBUtil.openConnection();
-    } catch (SQLException e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.initCon()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-    return con;
   }
 }

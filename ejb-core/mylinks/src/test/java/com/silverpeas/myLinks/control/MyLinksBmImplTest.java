@@ -1,14 +1,16 @@
-package com.silverpeas.myLinks.ejb;
+package com.silverpeas.myLinks.control;
 
 import com.silverpeas.myLinks.dao.LinkDAO;
 import com.silverpeas.myLinks.model.LinkDetail;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.pool.ConnectionPool;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -21,24 +23,22 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class MyLinksBmEJBTest {
+public class MyLinksBmImplTest {
 
-  private MyLinksBmEJB ejb;
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+
+  private MyLinksBmImpl service;
   private LinkDAO dao;
-  private LinkDAO oldDao;
 
   @Before
   public void setup() throws Exception {
-    ejb = spy(new MyLinksBmEJB());
-    doReturn(mock(Connection.class)).when(ejb).initCon();
-    oldDao = LinkDAO.getLinkDao();
-    dao = mock(LinkDAO.class);
-    FieldUtils.writeDeclaredStaticField(LinkDAO.class, "linkDAO", dao, true);
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    FieldUtils.writeDeclaredStaticField(LinkDAO.class, "linkDAO", oldDao, true);
+    service = spy(new MyLinksBmImpl());
+    commonAPI4Test.injectIntoMockedBeanContainer(mock(ConnectionPool.class));
+    dao = reflectionRule.mockField(LinkDAO.class, LinkDAO.class, "linkDAO");
   }
 
   @Test
@@ -54,7 +54,7 @@ public class MyLinksBmEJBTest {
 
     LinkDetail linkToAdd = new LinkDetail();
 
-    ejb.createLink(linkToAdd);
+    service.createLink(linkToAdd);
 
     assertThat(linkToAdd.getLinkId(), is(38));
   }
@@ -68,7 +68,7 @@ public class MyLinksBmEJBTest {
     assertThat(extractLinkIdPositions(links),
         contains(of(10, 0), of(11, 0), of(12, 0), of(13, 0), of(14, 0)));
 
-    links = ejb.getAllLinksByUser("");
+    links = service.getAllLinksByUser("");
 
     assertThat(extractLinkIdPositions(links),
         contains(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)));
@@ -83,7 +83,7 @@ public class MyLinksBmEJBTest {
     assertThat(extractLinkIdPositions(links),
         contains(of(10, 5), of(11, 0), of(12, 2), of(13, 1), of(14, 3)));
 
-    links = ejb.getAllLinksByUser("");
+    links = service.getAllLinksByUser("");
 
     assertThat(extractLinkIdPositions(links),
         contains(of(11, 0), of(13, 1), of(12, 2), of(14, 3), of(10, 5)));
@@ -98,7 +98,7 @@ public class MyLinksBmEJBTest {
     assertThat(extractLinkIdPositions(links),
         contains(of(10, 0), of(11, 0), of(12, 0), of(13, 1), of(14, 3)));
 
-    links = ejb.getAllLinksByUser("");
+    links = service.getAllLinksByUser("");
 
     assertThat(extractLinkIdPositions(links),
         contains(of(12, 0), of(10, 0), of(11, 0), of(13, 1), of(14, 3)));

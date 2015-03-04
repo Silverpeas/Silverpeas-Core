@@ -31,12 +31,16 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.mylinks.web.MyLinkEntity;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.util.Collection;
+
+import static org.silverpeas.mylinks.web.MyLinksResource.checkMandatoryLinkData;
 
 public class MyLinksPeasSessionController extends AbstractComponentSessionController {
   public static final int SCOPE_USER = 0;

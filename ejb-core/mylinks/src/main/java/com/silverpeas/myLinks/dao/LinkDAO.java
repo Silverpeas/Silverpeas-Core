@@ -163,11 +163,11 @@ public class LinkDAO {
   /**
    * Create new link
    * @param con the connection
-   * @param link link detail to create
+   * @param linkToPersist link detail to create
    * @return link identifier
    * @throws SQLException
    */
-  public int createLink(Connection con, LinkDetail linkToPersist) throws SQLException, UtilException {
+  public int createLink(Connection con, LinkDetail linkToPersist) throws SQLException {
     linkToPersist.setHasPosition(false);
     int newId = 0;
     PreparedStatement prepStmt = null;

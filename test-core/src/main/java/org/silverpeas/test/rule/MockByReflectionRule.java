@@ -168,9 +168,9 @@ public class MockByReflectionRule implements TestRule {
         }
         if (currentInstanceOrClass instanceof Class) {
           currentInstanceOrClass =
-              FieldUtils.readDeclaredStaticField((Class) instanceOrClass, fieldName, true);
+              FieldUtils.readStaticField((Class) instanceOrClass, fieldName, true);
         } else {
-          currentInstanceOrClass = FieldUtils.readDeclaredField(instanceOrClass, fieldName, true);
+          currentInstanceOrClass = FieldUtils.readField(instanceOrClass, fieldName, true);
         }
       }
       return null;
@@ -185,10 +185,10 @@ public class MockByReflectionRule implements TestRule {
     public T read() throws Exception {
       ObjectField finalObjectField = getFinalObjectField();
       if (finalObjectField.getInstanceOrClass() instanceof Class) {
-        return (T) FieldUtils.readDeclaredStaticField((Class) finalObjectField.getInstanceOrClass(),
+        return (T) FieldUtils.readStaticField((Class) finalObjectField.getInstanceOrClass(),
             finalObjectField.getFieldName(), true);
       } else {
-        return (T) FieldUtils.readDeclaredField(finalObjectField.getInstanceOrClass(),
+        return (T) FieldUtils.readField(finalObjectField.getInstanceOrClass(),
             finalObjectField.getFieldName(), true);
       }
     }
@@ -203,13 +203,13 @@ public class MockByReflectionRule implements TestRule {
       T previousValue = read();
       ObjectField finalObjectField = getFinalObjectField();
       if (finalObjectField.getInstanceOrClass() instanceof Class) {
-        FieldUtils.writeDeclaredStaticField((Class) finalObjectField.getInstanceOrClass(),
+        FieldUtils.writeStaticField((Class) finalObjectField.getInstanceOrClass(),
             finalObjectField.getFieldName(), object, true);
         logger.info(format(WRITE_MESSAGE,
                 ((Class) finalObjectField.getInstanceOrClass()).getSimpleName() + " class",
                 finalObjectField.getFieldName(), object, previousValue));
       } else {
-        FieldUtils.writeDeclaredField(finalObjectField.getInstanceOrClass(),
+        FieldUtils.writeField(finalObjectField.getInstanceOrClass(),
             finalObjectField.getFieldName(), object,
                 true);
         logger.info(format(WRITE_MESSAGE,

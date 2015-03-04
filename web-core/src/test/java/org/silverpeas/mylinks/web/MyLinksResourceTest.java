@@ -23,12 +23,11 @@
  */
 package org.silverpeas.mylinks.web;
 
-import com.silverpeas.myLinks.ejb.MyLinksBm;
+import com.silverpeas.myLinks.control.MyLinksBm;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.myLinks.model.LinkDetailComparator;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -36,11 +35,14 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
@@ -62,10 +64,13 @@ public class MyLinksResourceTest {
   private static final String CURRENT_USER_ID = "26";
   private static final String PATH_BASE = "/test";
   private static final int NOT_VISIBLE_LINK_ID = 12;
+  
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private MyLinksResource4Test rest;
-  private MyLinksBm ejb;
-  private OrganisationController orgaCtrl;
+  private MyLinksBm service;
+  private OrganizationController orgaCtrl;
   boolean oldI18nActivationValue;
 
   @Before
@@ -79,11 +84,12 @@ public class MyLinksResourceTest {
         UserMenuDisplay.ALL)).when(rest).getUserPreferences();
     doReturn(mock(UriInfo.class)).when(rest).getUriInfo();
     doReturn(mock(MyLinksBm.class)).when(rest).getMyLinksBm();
+    doReturn(mock(OrganizationController.class)).when(rest).getOrganisationController();
 
     rest.getUserDetail().setId(CURRENT_USER_ID);
     when(rest.getUriInfo().getBaseUri()).thenReturn(URI.create(PATH_BASE));
-    ejb = rest.getMyLinksBm();
-    orgaCtrl = rest.organisationController;
+    service = rest.getMyLinksBm();
+    orgaCtrl = rest.getOrganisationController();
   }
 
   @After
@@ -95,7 +101,7 @@ public class MyLinksResourceTest {
   @Test
   public void getMyLinksWithoutPositionAndOneNotVisible() {
     List<LinkDetail> links = initLinkPositions(null, null, null, null, null);
-    when(ejb.getAllLinks(anyString())).thenReturn(links);
+    when(service.getAllLinks(anyString())).thenReturn(links);
 
     assertThat(extractLinkIdPositions(links),
         contains(of(14, 0), of(13, 0), of(12, 0), of(11, 0), of(10, 0)));
@@ -112,7 +118,7 @@ public class MyLinksResourceTest {
   @Test
   public void getMyLinksWithPositionAndOneNotVisible() {
     List<LinkDetail> links = initLinkPositions(4, 0, 2, 3, 1);
-    when(ejb.getAllLinks(anyString())).thenReturn(links);
+    when(service.getAllLinks(anyString())).thenReturn(links);
 
     assertThat(extractLinkIdPositions(links),
         contains(of(11, 0), of(14, 1), of(12, 2), of(13, 3), of(10, 4)));
@@ -127,7 +133,7 @@ public class MyLinksResourceTest {
   @Test
   public void getMyLinkOfCurrentUserWithoutPosition() {
     LinkDetail link = initLinkPositions((Integer) null).get(0);
-    when(ejb.getLink(anyString())).thenReturn(link);
+    when(service.getLink(anyString())).thenReturn(link);
 
     MyLinkEntity linkEntity = rest.getMyLink("");
 
@@ -139,7 +145,7 @@ public class MyLinksResourceTest {
   @Test
   public void getMyLinkOfCurrentUserWithPosition() {
     LinkDetail link = initLinkPositions(4).get(0);
-    when(ejb.getLink(anyString())).thenReturn(link);
+    when(service.getLink(anyString())).thenReturn(link);
 
     MyLinkEntity linkEntity = rest.getMyLink("");
 
@@ -152,7 +158,7 @@ public class MyLinksResourceTest {
   public void getMyLinkThatTheCurrentUserIsNotOwner() {
     LinkDetail link = initLinkPositions(4).get(0);
     link.setUserId(CURRENT_USER_ID + "_OTHER");
-    when(ejb.getLink(anyString())).thenReturn(link);
+    when(service.getLink(anyString())).thenReturn(link);
 
     rest.getMyLink("");
   }
@@ -170,16 +176,16 @@ public class MyLinksResourceTest {
     rest.addLink(linkEntityToAdd);
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(1)).createLink(argumentCaptor.capture());
-    verify(ejb, times(0)).updateLink(any(LinkDetail.class));
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(service, times(1)).createLink(argumentCaptor.capture());
+    verify(service, times(0)).updateLink(any(LinkDetail.class));
+    verify(service, times(0)).deleteLinks(any(String[].class));
     LinkDetail createdLink = argumentCaptor.getValue();
     assertThat(createdLink.getUserId(), is(CURRENT_USER_ID));
   }
 
   @Test
   public void updateLink() throws Exception {
-    when(ejb.getLink(anyString())).thenReturn(getDummyUserLink());
+    when(service.getLink(anyString())).thenReturn(getDummyUserLink());
     doReturn(null).when(rest).getMyLink(anyString());
     MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
     writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
@@ -188,9 +194,9 @@ public class MyLinksResourceTest {
     rest.updateLink(linkEntityToUpdate);
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(0)).createLink(any(LinkDetail.class));
-    verify(ejb, times(1)).updateLink(argumentCaptor.capture());
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(service, times(0)).createLink(any(LinkDetail.class));
+    verify(service, times(1)).updateLink(argumentCaptor.capture());
+    verify(service, times(0)).deleteLinks(any(String[].class));
     LinkDetail updatedLink = argumentCaptor.getValue();
     assertThat(updatedLink.getUserId(), is(CURRENT_USER_ID));
     assertThat(updatedLink.getName(), is("name updated"));
@@ -219,15 +225,15 @@ public class MyLinksResourceTest {
 
   @Test
   public void deleteLink() throws Exception {
-    when(ejb.getLink(anyString())).thenReturn(getDummyUserLink());
+    when(service.getLink(anyString())).thenReturn(getDummyUserLink());
     doReturn(null).when(rest).getMyLink(anyString());
 
     rest.deleteLink("38");
 
     ArgumentCaptor<String[]> argumentCaptor = ArgumentCaptor.forClass(String[].class);
-    verify(ejb, times(0)).createLink(any(LinkDetail.class));
-    verify(ejb, times(0)).updateLink(any(LinkDetail.class));
-    verify(ejb, times(1)).deleteLinks(argumentCaptor.capture());
+    verify(service, times(0)).createLink(any(LinkDetail.class));
+    verify(service, times(0)).updateLink(any(LinkDetail.class));
+    verify(service, times(1)).deleteLinks(argumentCaptor.capture());
     String[] deletedLinkIds = argumentCaptor.getValue();
     assertThat(deletedLinkIds, arrayContaining("38"));
   }
@@ -235,24 +241,24 @@ public class MyLinksResourceTest {
   @Test
   public void addSpaceLink() {
     doReturn(null).when(rest).getMyLink(anyString());
-    when(orgaCtrl.isSpaceAvailable("spaceId_C", CURRENT_USER_ID)).thenReturn(true);
+    when(orgaCtrl.isSpaceAvailable("750", CURRENT_USER_ID)).thenReturn(true);
     when(orgaCtrl.getSpaceInstLightById(anyString())).thenAnswer(new Answer<SpaceInstLight>() {
       @Override
       public SpaceInstLight answer(final InvocationOnMock invocation) throws Throwable {
         SpaceInstLight space = new SpaceInstLight();
-        space.setId((String) invocation.getArguments()[0]);
+        space.setLocalId(Integer.valueOf((String) invocation.getArguments()[0]));
         space.setName("new space name");
         space.setDescription("new space description");
         return space;
       }
     });
-    when(orgaCtrl.getSpacePath("spaceId_C")).thenAnswer(new Answer<List<SpaceInst>>() {
+    when(orgaCtrl.getSpacePath("750")).thenAnswer(new Answer<List<SpaceInst>>() {
       @Override
       public List<SpaceInst> answer(final InvocationOnMock invocation) throws Throwable {
         List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
-        for (String spaceId : new String[]{"spaceId_A", "spaceId_B", "spaceId_C"}) {
+        for (int spaceId : new int[]{260, 380, 750}) {
           SpaceInst spaceInst = new SpaceInst();
-          spaceInst.setId(spaceId);
+          spaceInst.setLocalId(spaceId);
           spaceInst.setName(spaceId + "_name");
           spacePath.add(spaceInst);
         }
@@ -260,17 +266,17 @@ public class MyLinksResourceTest {
       }
     });
 
-    rest.addSpaceLink("spaceId_C");
+    rest.addSpaceLink("750");
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(1)).createLink(argumentCaptor.capture());
-    verify(ejb, times(0)).updateLink(any(LinkDetail.class));
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(service, times(1)).createLink(argumentCaptor.capture());
+    verify(service, times(0)).updateLink(any(LinkDetail.class));
+    verify(service, times(0)).deleteLinks(any(String[].class));
     LinkDetail createdLink = argumentCaptor.getValue();
     assertThat(createdLink.getUserId(), is(CURRENT_USER_ID));
-    assertThat(createdLink.getName(), is("spaceId_A_name > spaceId_B_name > spaceId_C_name"));
+    assertThat(createdLink.getName(), is("260_name > 380_name > 750_name"));
     assertThat(createdLink.getDescription(), is("new space description"));
-    assertThat(createdLink.getUrl(), is("/Space/spaceId_C"));
+    assertThat(createdLink.getUrl(), is("/Space/750"));
     assertThat(createdLink.isVisible(), is(true));
     assertThat(createdLink.isPopup(), is(false));
     assertThat(createdLink.hasPosition(), is(false));
@@ -280,24 +286,24 @@ public class MyLinksResourceTest {
   @Test
   public void addComponentLink() {
     doReturn(null).when(rest).getMyLink(anyString());
-    when(orgaCtrl.isComponentAvailable("componentId", CURRENT_USER_ID)).thenReturn(true);
+    when(orgaCtrl.isComponentAvailable("1050", CURRENT_USER_ID)).thenReturn(true);
     when(orgaCtrl.getComponentInstLight(anyString())).thenAnswer(new Answer<ComponentInstLight>() {
       @Override
       public ComponentInstLight answer(final InvocationOnMock invocation) throws Throwable {
         ComponentInstLight component = new ComponentInstLight();
-        component.setId((String) invocation.getArguments()[0]);
+        component.setLocalId(Integer.valueOf((String) invocation.getArguments()[0]));
         component.setLabel("new component name");
         component.setDescription("new component description");
         return component;
       }
     });
-    when(orgaCtrl.getSpacePathToComponent("componentId")).thenAnswer(new Answer<List<SpaceInst>>() {
+    when(orgaCtrl.getSpacePathToComponent("1050")).thenAnswer(new Answer<List<SpaceInst>>() {
       @Override
       public List<SpaceInst> answer(final InvocationOnMock invocation) throws Throwable {
         List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
-        for (String spaceId : new String[]{"spaceId_A", "spaceId_B", "spaceId_C"}) {
+        for (int spaceId : new int[]{260, 380, 750}) {
           SpaceInst spaceInst = new SpaceInst();
-          spaceInst.setId(spaceId);
+          spaceInst.setLocalId(spaceId);
           spaceInst.setName(spaceId + "_name");
           spacePath.add(spaceInst);
         }
@@ -305,18 +311,18 @@ public class MyLinksResourceTest {
       }
     });
 
-    rest.addAppLink("componentId");
+    rest.addAppLink("1050");
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(1)).createLink(argumentCaptor.capture());
-    verify(ejb, times(0)).updateLink(any(LinkDetail.class));
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(service, times(1)).createLink(argumentCaptor.capture());
+    verify(service, times(0)).updateLink(any(LinkDetail.class));
+    verify(service, times(0)).deleteLinks(any(String[].class));
     LinkDetail createdLink = argumentCaptor.getValue();
     assertThat(createdLink.getUserId(), is(CURRENT_USER_ID));
     assertThat(createdLink.getName(),
-        is("spaceId_A_name > spaceId_B_name > spaceId_C_name > new component name"));
+        is("260_name > 380_name > 750_name > new component name"));
     assertThat(createdLink.getDescription(), is("new component description"));
-    assertThat(createdLink.getUrl(), is("/Component/componentId"));
+    assertThat(createdLink.getUrl(), is("/Component/1050"));
     assertThat(createdLink.isVisible(), is(true));
     assertThat(createdLink.isPopup(), is(false));
     assertThat(createdLink.hasPosition(), is(false));
@@ -507,10 +513,10 @@ public class MyLinksResourceTest {
   private List<LinkDetail> performSortOrderSave(List<Integer> positions,
       List<Pair<Integer, Integer>> initialLinkListOrderToVerifyBeforeSorting,
       MyLinkPosition linkPosition, int nbExpectedUpdateCall) {
-    when(ejb.getLink(anyString())).thenReturn(getDummyUserLink());
+    when(service.getLink(anyString())).thenReturn(getDummyUserLink());
 
     List<LinkDetail> links = initLinkPositions(positions.toArray(new Integer[positions.size()]));
-    when(ejb.getAllLinks(anyString())).thenReturn(links);
+    when(service.getAllLinks(anyString())).thenReturn(links);
 
     assertThat(extractLinkIdPositions(links),
         contains(initialLinkListOrderToVerifyBeforeSorting.toArray()));
@@ -518,9 +524,9 @@ public class MyLinksResourceTest {
     rest.saveUserLinksOrder(linkPosition);
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(0)).createLink(any(LinkDetail.class));
-    verify(ejb, times(nbExpectedUpdateCall)).updateLink(argumentCaptor.capture());
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(service, times(0)).createLink(any(LinkDetail.class));
+    verify(service, times(nbExpectedUpdateCall)).updateLink(argumentCaptor.capture());
+    verify(service, times(0)).deleteLinks(any(String[].class));
     return argumentCaptor.getAllValues();
   }
 
@@ -568,10 +574,6 @@ public class MyLinksResourceTest {
 
   private static class MyLinksResource4Test extends MyLinksResource {
 
-    public MyLinksResource4Test() {
-      organisationController = mock(OrganisationController.class);
-    }
-
     @Override
     protected UserDetail getUserDetail() {
       return super.getUserDetail();
@@ -580,6 +582,11 @@ public class MyLinksResourceTest {
     @Override
     protected UserPreferences getUserPreferences() {
       return super.getUserPreferences();
+    }
+
+    @Override
+    protected OrganizationController getOrganisationController() {
+      return super.getOrganisationController();
     }
   }
 }

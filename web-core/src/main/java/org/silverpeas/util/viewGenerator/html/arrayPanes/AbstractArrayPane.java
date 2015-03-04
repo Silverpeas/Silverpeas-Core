@@ -20,10 +20,10 @@
  */
 package org.silverpeas.util.viewGenerator.html.arrayPanes;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -31,11 +31,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 public class AbstractArrayPane implements ArrayPane {
 
@@ -84,8 +79,8 @@ public class AbstractArrayPane implements ArrayPane {
 
   @Override
   public void init(String name, String url, ServletRequest request, HttpSession session) {
-    columns = new ArrayList<ArrayColumn>();
-    lines = new ArrayList<ArrayLine>();
+    columns = new ArrayList<>();
+    lines = new ArrayList<>();
     this.name = name;
     setRoutingAddress(url);
     this.session = session;

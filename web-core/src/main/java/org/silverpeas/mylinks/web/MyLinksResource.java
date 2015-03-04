@@ -33,11 +33,9 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -53,7 +51,6 @@ import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -164,8 +161,8 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addSpaceLink(@PathParam("id") String spaceId) {
     if (StringUtil.isDefined(spaceId) &&
-        organisationController.isSpaceAvailable(spaceId, getUserDetail().getId())) {
-      SpaceInstLight newFavoriteSpace = organisationController.getSpaceInstLightById(spaceId);
+        getOrganisationController().isSpaceAvailable(spaceId, getUserDetail().getId())) {
+      SpaceInstLight newFavoriteSpace = getOrganisationController().getSpaceInstLightById(spaceId);
       String userLanguage = getUserPreferences().getLanguage();
       LinkDetail linkDetail = new LinkDetail();
       linkDetail.setUrl("/Space/" + spaceId);
@@ -217,7 +214,7 @@ public class MyLinksResource extends RESTWebService {
   }
 
   private StringBuilder buildSpacePathName(String spaceId, String userLanguage) {
-    List<SpaceInst> spaces = organisationController.getSpacePath(spaceId);
+    List<SpaceInst> spaces = getOrganisationController().getSpacePath(spaceId);
     StringBuilder nameBuilder = new StringBuilder();
     for (SpaceInst spaceInst : spaces) {
       if (nameBuilder.length() > 0) {
@@ -234,9 +231,9 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addAppLink(@PathParam("id") String applicationId) {
     if (StringUtil.isDefined(applicationId) &&
-        organisationController.isComponentAvailable(applicationId, getUserDetail().getId())) {
+        getOrganisationController().isComponentAvailable(applicationId, getUserDetail().getId())) {
       ComponentInstLight newFavoriteApp =
-          organisationController.getComponentInstLight(applicationId);
+          getOrganisationController().getComponentInstLight(applicationId);
       String userLanguage = getUserPreferences().getLanguage();
       LinkDetail linkDetail = new LinkDetail();
       linkDetail.setUrl("/Component/" + applicationId);
@@ -274,7 +271,7 @@ public class MyLinksResource extends RESTWebService {
   }
 
   private StringBuilder buildAppPathName(String applicationId, String userLanguage) {
-    List<SpaceInst> spaces = organisationController.getSpacePathToComponent(applicationId);
+    List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(applicationId);
     StringBuilder nameBuilder = new StringBuilder();
     for (SpaceInst spaceInst : spaces) {
       if (nameBuilder.length() > 0) {
@@ -315,8 +312,5 @@ public class MyLinksResource extends RESTWebService {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @Inject
-  protected OrganizationController organisationController;
 
 }

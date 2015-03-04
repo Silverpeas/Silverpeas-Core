@@ -74,17 +74,17 @@ public class CommonAPI4Test implements TestRule {
     return bean;
   }
 
-  public void silverTrace() {
+  private void silverTrace() {
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
         .thenReturn(new TestSilverpeasTrace());
   }
 
-  public void systemWrapper() {
+  private void systemWrapper() {
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SystemWrapper.class))
         .thenReturn(new TestSystemWrapper());
   }
 
-  public void managedThreadFactory() {
+  private void managedThreadFactory() {
     ManagedThreadPool managedThreadPool = new ManagedThreadPool();
     try {
       ManagedThreadFactory managedThreadFactory = Thread::new;
