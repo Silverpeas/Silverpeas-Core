@@ -25,7 +25,8 @@
 
 -->
 
-<migration module="notificationManager" order="2">
+<migration module="notificationManager" order="2"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="005">
     <script name="create_table.sql" type="sql"/>

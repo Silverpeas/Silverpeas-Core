@@ -25,14 +25,15 @@
 
 -->
 
-<migration module="statistic" order="2">
+<migration module="statistic" order="2"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="003">
     <script name="create_table.sql" type="sql"/>
     <script name="create_index.sql" type="sql"/>
   </current>
 
-  <upgrade version="002">
+  <upgrade fromVersion="002">
     <script name="update_table.sql" type="sql"/>
   </upgrade>
 

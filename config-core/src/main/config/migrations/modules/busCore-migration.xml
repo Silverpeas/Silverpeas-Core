@@ -24,8 +24,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<migration module="busCore" order="1">
+<migration module="busCore" order="1"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="033">
     <script name="create_table.sql" type="sql"/>

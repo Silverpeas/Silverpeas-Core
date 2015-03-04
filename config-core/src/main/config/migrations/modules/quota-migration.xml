@@ -25,7 +25,8 @@
 
 -->
 
-<migration module="quota" order="2">
+<migration module="quota" order="2"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="002">
     <script name="create_table.sql" type="sql"/>

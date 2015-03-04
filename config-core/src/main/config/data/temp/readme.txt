@@ -1,0 +1,1 @@
+This the temporary directory into which uploaded files are put.

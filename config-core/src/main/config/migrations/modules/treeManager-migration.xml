@@ -25,7 +25,8 @@
 
 -->
 
-<migration module="treeManager" order="2">
+<migration module="treeManager" order="2"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="004">
     <script name="create_table.sql" type="sql"/>

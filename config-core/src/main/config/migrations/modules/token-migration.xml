@@ -25,7 +25,8 @@
 
 -->
 
-<migration module="token" order="2">
+<migration module="token" order="2"
+           xmlns="http://www.silverpeas.org/schema/migration">
 
   <current version="001">
     <script name="create_table.sql" type="sql"/>
