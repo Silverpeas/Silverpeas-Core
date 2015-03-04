@@ -37,7 +37,7 @@
     <script name="init_production.sql" type="sql" />
   </current>
 
-  <upgrade fromVersion="up032">
+  <upgrade fromVersion="032">
     <script name="alter_table.sql" type="sql"/>
   </upgrade>
 
