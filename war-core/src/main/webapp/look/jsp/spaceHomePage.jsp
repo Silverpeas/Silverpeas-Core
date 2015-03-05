@@ -65,7 +65,7 @@ List<UserDetail> admins = homepage.getAdmins();
 
 GraphicElementFactory gef =
     (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-gef.setSpaceIdForCurrentRequest(homepage.getSpace().getFullId());
+gef.setSpaceIdForCurrentRequest(homepage.getSpace().getId());
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
