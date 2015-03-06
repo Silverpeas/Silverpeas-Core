@@ -20,7 +20,6 @@
  */
 package org.silverpeas.util;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.pool.ConnectionPool;
 
@@ -30,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -111,121 +111,171 @@ public class DBUtil {
   }
 
   /**
-   * Return a new unique Id for a table.
-   * @param tableName the name of the table.
-   * @param idName the name of the column.
+   * Return a new unique identifier value referenced by a name.
+   * @param identifierName a name that does not correspond to something into persistence, but the
+   * caller needs to handle unique identifiers for a resource.
    * @return a unique id.
    * @throws java.sql.SQLException
    */
-  public static synchronized int getNextId(final String tableName, final String idName)
-      throws SQLException {
-    //noinspection RedundantCast
-    final Pair<Integer, SQLException> result =
-        Transaction.performInNew((Transaction.Process<Pair<Integer, SQLException>>) () -> {
-          try (Connection connection = openConnection()) {
-            return Pair.of(getMaxId(connection, tableName, idName), null);
-          } catch (SQLException ex) {
-            return Pair.of(null, ex);
-          }
-        });
-    if (result.getRight() != null) {
-      throw result.getRight();
-    }
-    return result.getLeft();
+  @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+  public static int getNextId(final String identifierName) throws SQLException {
+    return getNextId(identifierName, null);
   }
 
-  private static int getMaxId(Connection connection, String tableName, String idName)
+  /**
+   * Return a new unique identifier value referenced by a name.
+   * @param identifierName a name of an identifier can be the name of an existing table or a name
+   * that does not correspond to something into persistence, but the caller needs to handle
+   * unique identifiers for a resource.
+   * @param tableFieldIdentifierName the field name of the table name represented by
+   * identifierName parameter that permits to initialize the first value of unique identifier for
+   * the table in case of it is not yet referenced into the uniqueId table. If this value is not
+   * defined, the identifierName parameter is not considered as a table name.
+   * @return a unique id.
+   * @throws java.sql.SQLException
+   */
+  @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+  public static int getNextId(final String identifierName, final String tableFieldIdentifierName)
       throws SQLException {
-    // tentative d'update
-    return selectMaxFromTable(connection, tableName, idName);
-  }
+    final String identifierNameLowerCase = identifierName.toLowerCase(Locale.ROOT);
+    while (true) {
 
-  private static int updateMaxFromTable(Connection connection, String tableName, int oldValue)
-      throws SQLException {
-    String table = tableName.toLowerCase(Locale.ROOT);
-    int max = 0;
-    int count = 0;
-    try (PreparedStatement updateStmt = connection.prepareStatement(
-        "UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?" + " AND maxId = ?")) {
-      updateStmt.setString(1, table);
-      updateStmt.setInt(2, oldValue);
-      count = updateStmt.executeUpdate();
-    }
+      // Getting the next unique identifier value from uniqueId table
+      Integer nextUniqueMaxId = nextUniqueIdentifierValue(identifierNameLowerCase);
 
-    if (count == 1) {
-      try (PreparedStatement selectStmt = connection
-          .prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?")) {
-        // update of max identifier has been done successfully, so the value of this new
-        // identifier is retrieved
-        selectStmt.setString(1, table);
-        try (ResultSet rs = selectStmt.executeQuery()) {
-          if (!rs.next()) {
-            throw new RuntimeException("Erreur Interne DBUtil.getNextId()");
-          }
-          max = rs.getInt(1);
-        }
+      if (nextUniqueMaxId == null) {
+
+        // The identifier is not yet registered into uniqueId table
+        registeringIdentifierName(identifierNameLowerCase, tableFieldIdentifierName);
+
+      } else if (nextUniqueMaxId != -1) {
+
+        // The next identifier value has been well computed
+        return nextUniqueMaxId;
       }
-      return max;
     }
-    throw new SQLException("Update impossible : Ligne non existante");
   }
 
-  private static int selectMaxFromTable(Connection connection, String tableName, String idName) {
-    int max = 0;
-    try (PreparedStatement selectStmt = connection
-        .prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?")) {
-      selectStmt.setString(1, tableName.toLowerCase(Locale.ROOT));
-      try (ResultSet rs = selectStmt.executeQuery()) {
-        // Insert or update strategy
-        if (!rs.next()) {
-          return insertMax(connection, tableName, idName);
-        } else {
-          // tableName exists inside UniqueId, we have to increment and return new one
-          max = rs.getInt(1);
-          return updateMaxFromTable(connection, tableName, max);
+  /**
+   * Updates and returns the next identifier value for given table name.
+   * @param identifierNameLowerCase the name of identifier for which the next unique identifier
+   * must be computed.
+   * @return the next unique identifier if the identifier name is already registered into uniqueId
+   * table, -1 if identifier name is already registered into uniqueId table but a concurrent server
+   * process has just performed an update too (so caller has just to retry to call the method),
+   * null if the identifier name is not yet registered into uniqueId table.
+   * @throws SQLException
+   */
+  private static Integer nextUniqueIdentifierValue(String identifierNameLowerCase)
+      throws SQLException {
+
+    return Transaction.performInNew(() -> {
+
+      // First getting the current unique identifier value
+      final Integer currentUniqueValue;
+      try (Connection connection = openConnection();
+           PreparedStatement selectCurrentUniqueValueStmt = connection
+               .prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?")) {
+        selectCurrentUniqueValueStmt.setString(1, identifierNameLowerCase);
+        try (ResultSet rs = selectCurrentUniqueValueStmt.executeQuery()) {
+          if (rs.next()) {
+            currentUniqueValue = rs.getInt(1);
+          } else {
+            currentUniqueValue = null;
+          }
         }
+
+        // If the current identifier value exists, then computing the next one
+        if (currentUniqueValue != null) {
+          final int nextUniqueValue = (currentUniqueValue + 1);
+          // MaxId data is part of the SQL update query clause in order to avoid to perform an
+          // update whereas another server process has updated the value for the same identifier
+          // name (so a typical concurrency case)
+          try (PreparedStatement updateMaxIdStmt = connection.prepareStatement(
+              "UPDATE UniqueId SET maxId = ? WHERE tableName = ? AND maxId = ?")) {
+            updateMaxIdStmt.setInt(1, nextUniqueValue);
+            updateMaxIdStmt.setString(2, identifierNameLowerCase);
+            updateMaxIdStmt.setInt(3, currentUniqueValue);
+            if (updateMaxIdStmt.executeUpdate() != 0) {
+              // The next identifier value has been incremented successfully
+              return nextUniqueValue;
+            } else {
+              // Another server process has just updated the next unique identifier value, so the
+              // returned value indicates to the caller to retry to compute one
+              Logger.getLogger(DBUtil.class.getSimpleName()).info(
+                  "The next unique identifier value '" + nextUniqueValue + "' for identifier '" +
+                      identifierNameLowerCase +
+                      "' has been computed by another server process call at the same time, " +
+                      "trying " +
+                      "again to get a next one");
+              return -1;
+            }
+          }
+        }
+      } catch (SQLException ex) {
+        return null;
       }
-    } catch (SQLException e) {
-      logger.log(Level.WARNING, e.getMessage(), e);
-    }
-    return max;
+
+      // Returning null when the identifier name is not yet registered into uniqueId table
+      return null;
+    });
   }
 
-  private static int insertMax(Connection connection, String tableName, String idName) {
-    int max = getMaxFromTable(connection, tableName, idName);
-    String createStatement = "INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)";
-    try (PreparedStatement createStmt = connection.prepareStatement(createStatement)) {
-      // Persist the max
-      createStmt.setInt(1, max);
-      createStmt.setString(2, tableName.toLowerCase());
-      createStmt.executeUpdate();
-    } catch (Exception e) {
-      // access concurrency
-      logger.log(Level.WARNING, e.getMessage(), e);
-    }
-    return max;
-  }
-
-
-  private static int getMaxFromTable(Connection con, String tableName, String idName) {
-    if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(idName)) {
-      return 1;
-    }
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
+  /**
+   * Registers into uniqueId table the given identifier name. If it represents a table name and
+   * if the identifier field name of this table is given, then the first value of the unique
+   * identifier is the current maximum one of the table, otherwise the first value is 0.
+   * @param identifierNameLowerCase a name of an identifier can be the name of an existing table or
+   * a name that does not correspond to something into persistence, but the caller needs to handle
+   * unique identifiers for a resource.
+   * @param tableFieldIdentifierName the field name of the table name represented by
+   * identifierName parameter that permits to initialize the first value of unique identifier for
+   * the table in case of it is not yet referenced into the uniqueId table. If this value is not
+   * defined, the identifierName parameter is not considered as a table name.
+   * @throws SQLException
+   */
+  private static void registeringIdentifierName(String identifierNameLowerCase,
+      String tableFieldIdentifierName) throws SQLException {
     try {
-      int maxFromTable = 0;
-      String nextPKStatement = "SELECT MAX(" + idName + ") " + "FROM " + tableName;
-      prepStmt = con.prepareStatement(nextPKStatement);
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        maxFromTable = rs.getInt(1);
-      }
-      return maxFromTable + 1;
-    } catch (SQLException ex) {
-      return 1;
-    } finally {
-      close(rs, prepStmt);
+      Transaction.performInNew(() -> {
+
+        int currentUniqueValue = 0;
+        try (Connection connection = openConnection()) {
+
+          if (StringUtil.isDefined(tableFieldIdentifierName)) {
+            if (getAllTableNames(connection).contains(identifierNameLowerCase.toLowerCase())) {
+              // Getting the maximum value of the field identifier of the table
+              try (PreparedStatement selectTableCurrentUniqueValueStmt = connection
+                  .prepareStatement("SELECT MAX(" + tableFieldIdentifierName + ") " + "FROM " +
+                      identifierNameLowerCase)) {
+                try (ResultSet rs = selectTableCurrentUniqueValueStmt.executeQuery()) {
+                  if (rs.next()) {
+                    currentUniqueValue = rs.getInt(1);
+                  }
+                }
+              }
+            }
+          }
+          // Registering the current unique value of the identifier
+          try (PreparedStatement registerIdentifierStmt = connection
+              .prepareStatement("INSERT INTO UniqueId (maxId, tableName) VALUES (?, ?)")) {
+            registerIdentifierStmt.setInt(1, currentUniqueValue);
+            registerIdentifierStmt.setString(2, identifierNameLowerCase);
+            registerIdentifierStmt.executeUpdate();
+          }
+
+          Logger.getLogger(DBUtil.class.getSimpleName())
+              .info("A new entry has been registered into UniqueId table for '" +
+                  identifierNameLowerCase + "' table");
+        }
+        return null;
+      });
+    } catch (Exception e) {
+      Logger.getLogger(DBUtil.class.getSimpleName())
+          .info("The unique identifier '" + identifierNameLowerCase +
+              "' has not been registered because another server process has just done the " +
+              "same " +
+              "operation for the same resource.");
     }
   }
 
@@ -283,26 +333,31 @@ public class DBUtil {
 
   /**
    * Gets all table names.
-   * @return
+   * @param connection a current connection.
+   * @return all the table name of the database.
    */
-  public static Set<String> getAllTableNames() {
-    Connection connection = null;
-    ResultSet tables_rs = null;
-    Set<String> tableNames = new LinkedHashSet<String>();
-    try {
-      connection = openConnection();
-      DatabaseMetaData dbMetaData = connection.getMetaData();
-      tables_rs = dbMetaData.getTables(null, null, null, null);
+  private static Set<String> getAllTableNames(Connection connection) throws SQLException {
+    Set<String> tableNames = new LinkedHashSet<>();
+    DatabaseMetaData dbMetaData = connection.getMetaData();
+    try (ResultSet tables_rs = dbMetaData.getTables(null, null, null, null)) {
       tables_rs.getMetaData();
-
       while (tables_rs.next()) {
-        tableNames.add(tables_rs.getString(TABLE_NAME));
+        tableNames.add(tables_rs.getString(TABLE_NAME).toLowerCase());
       }
-    } catch (Exception e) {
-    } finally {
-      close(tables_rs);
-      close(connection);
     }
     return tableNames;
+  }
+
+  /**
+   * Gets all table names.
+   * @return all the table name of the database.
+   */
+  @SuppressWarnings("unchecked")
+  public static Set<String> getAllTableNames() {
+    try (Connection connection = openConnection()) {
+      return getAllTableNames(connection);
+    } catch (Exception ignore) {
+      return Collections.EMPTY_SET;
+    }
   }
 }

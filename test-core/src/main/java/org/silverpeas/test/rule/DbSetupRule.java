@@ -64,8 +64,8 @@ import static org.junit.Assert.fail;
 public class DbSetupRule implements TestRule {
 
   private static Operation UNIQUE_ID_CREATION = Operations.sql(
-      "CREATE TABLE IF NOT EXISTS UniqueId (maxId BIGINT NOT NULL, tableName varchar(100) NOT " +
-          "NULL)");
+      "CREATE TABLE IF NOT EXISTS UniqueId " +
+          "(maxId BIGINT NOT NULL, tableName varchar(100) PRIMARY KEY)");
 //  private static final Pattern TABLE_NAME_PATTERN =
 //      Pattern.compile("(?i)(create table( if not exists)? )(\\w+)(\\W?.+)*");
 

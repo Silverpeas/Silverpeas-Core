@@ -94,7 +94,56 @@ public class DBUtilIntegrationTest {
   }
 
   @Test
-  public void nextUniqueIdUpdateForAnExistingTableShouldWorkInNewTransaction()
+  public void demonstrateThatUniqueIdIsConsumedEvenIfRollbackIsPerformed() throws SQLException {
+    final String select = "SELECT firstName FROM User WHERE id = 1";
+    final String update = "UPDATE User SET firstName = 'updated first name' WHERE id = 1";
+
+    assertThat(actualMaxIdInUniqueIdFor("User"), is(1));
+    boolean rollbackIsEffective = false;
+    try {
+      Transaction.performInOne(() -> {
+
+        try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread();
+             PreparedStatement statement = connection.prepareStatement(select);
+             ResultSet resultSet = statement.executeQuery()) {
+          assertThat(resultSet.next(), is(true));
+          assertThat(resultSet.getString(1), is("Rohan"));
+        }
+
+        try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread();
+             PreparedStatement statement = connection.prepareStatement(update);) {
+          statement.executeUpdate();
+        }
+
+        try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread();
+             PreparedStatement statement = connection.prepareStatement(select);
+             ResultSet resultSet = statement.executeQuery()) {
+          assertThat(resultSet.next(), is(true));
+          assertThat(resultSet.getString(1), is("updated first name"));
+        }
+
+        if (DBUtil.getNextId("User", "id") != -1) {
+          throw new SQLException("Simulating a rollback !");
+        }
+        return null;
+      });
+    } catch (Exception e) {
+      rollbackIsEffective = true;
+    }
+    assertThat("Rollback must be effective !", rollbackIsEffective, is(true));
+    assertThat("Next identifier value must be computed", actualMaxIdInUniqueIdFor("User"), is(2));
+
+    try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread();
+         PreparedStatement statement = connection.prepareStatement(select);
+         ResultSet resultSet = statement.executeQuery()) {
+      assertThat(resultSet.next(), is(true));
+      assertThat("Rollback must be effective whereas next id is validated...",
+          resultSet.getString(1), is("Rohan"));
+    }
+  }
+
+  @Test
+  public void nextUniqueIdUpdateForAnExistingTableShouldWorkInRequiredTransaction()
       throws Exception {
     assertThat(actualMaxIdInUniqueIdFor("User"), is(1));
     final Thread nextIdThread = new Thread(() -> {
@@ -102,22 +151,19 @@ public class DBUtilIntegrationTest {
         Transaction.performInOne(() -> {
           int nextId = 0;
           nextId = DBUtil.getNextId("User", "id");
-          assertThat(nextId, is(2));
           assertThat(actualMaxIdInUniqueIdFor("User"), is(nextId));
           assertThat(nextId, is(2));
           return null;
         });
-        Thread.sleep(500);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
     });
 
     try {
+      assertThat(actualMaxIdInUniqueIdFor("User"), is(1));
       nextIdThread.start();
-      Thread.sleep(250);
-      assertThat(actualMaxIdInUniqueIdFor("User"), is(2));
-      Thread.sleep(500);
+      nextIdThread.join();
       assertThat(actualMaxIdInUniqueIdFor("User"), is(2));
     } finally {
       nextIdThread.interrupt();
@@ -151,7 +197,7 @@ public class DBUtilIntegrationTest {
         thread.start();
       }
       for (Thread thread : threads) {
-        thread.join(2000);
+        thread.join();
       }
       int expectedNextId = nextIdBeforeTesting + nbThreads;
       Logger.getAnonymousLogger()
@@ -159,7 +205,9 @@ public class DBUtilIntegrationTest {
       assertThat(actualMaxIdInUniqueIdFor("User"), is(expectedNextId));
     } finally {
       for (Thread thread : threads) {
-        thread.interrupt();
+        if (thread.isAlive()) {
+          thread.interrupt();
+        }
       }
     }
   }
@@ -209,44 +257,53 @@ public class DBUtilIntegrationTest {
 
   @Test
   public void nextUniqueIdUpdateForAnExistingTablesShouldWorkAndConcurrency() throws Exception {
-    final int nbSetOfThreads = 150;
-    final List<Object> count = new ArrayList<>();
-    final List<Callable<org.apache.commons.lang3.tuple.Pair<String, Integer>>> listsOfGetNextId =
-        new ArrayList<>(150);
-    for (int i = 0; i < 150; i++) {
-      listsOfGetNextId.add(() -> {
-        String tableName;
-        synchronized (count) {
-          count.add("");
-          tableName = "User_" + count.size() + "_table";
-        }
-        return org.apache.commons.lang3.tuple.Pair.of(tableName,
-            nextUniqueIdUpdateForAnExistingTableShouldWorkAndConcurrency(tableName,
-                nbSetOfThreads));
-      });
-    }
-    ExecutorService executorService = Executors.newFixedThreadPool(10);
-    List<org.apache.commons.lang3.tuple.Pair<String, Integer>> tableNextIdsInError =
-        new ArrayList<>();
+    long startTime = System.currentTimeMillis();
     try {
-      for (Future<org.apache.commons.lang3.tuple.Pair<String, Integer>> aTreatment : executorService
-          .invokeAll(listsOfGetNextId)) {
-        org.apache.commons.lang3.tuple.Pair<String, Integer> tableIdValue = aTreatment.get();
-        if (tableIdValue.getRight() != nbSetOfThreads) {
-          if (tableNextIdsInError.isEmpty()) {
-            Logger.getAnonymousLogger().severe("Some errors...");
+      final int nbProcesses = 150;
+      final int nbSetOfThreadsPerProcess = 15;
+      final List<Object> count = new ArrayList<>();
+      final List<Callable<org.apache.commons.lang3.tuple.Pair<String, Integer>>> listsOfGetNextId =
+          new ArrayList<>(nbProcesses);
+      for (int i = 0; i < nbProcesses; i++) {
+        listsOfGetNextId.add(() -> {
+          String tableName;
+          synchronized (count) {
+            count.add("");
+            tableName = "User_" + count.size() + "_table";
           }
-          tableNextIdsInError.add(tableIdValue);
-          Logger.getAnonymousLogger().severe(
-              "Next id value must be " + nbSetOfThreads + " for table " + tableIdValue.getLeft() +
-                  ", but was " + tableIdValue.getRight());
+          return org.apache.commons.lang3.tuple.Pair.of(tableName,
+              nextUniqueIdUpdateForAnExistingTableShouldWorkAndConcurrency(tableName,
+                  nbSetOfThreadsPerProcess));
+        });
+      }
+      ExecutorService executorService = Executors.newFixedThreadPool(10);
+      List<org.apache.commons.lang3.tuple.Pair<String, Integer>> tableNextIdsInError =
+          new ArrayList<>();
+      try {
+        for (Future<org.apache.commons.lang3.tuple.Pair<String, Integer>> aTreatment :
+            executorService
+            .invokeAll(listsOfGetNextId)) {
+          org.apache.commons.lang3.tuple.Pair<String, Integer> tableIdValue = aTreatment.get();
+          if (tableIdValue.getRight() != nbSetOfThreadsPerProcess) {
+            if (tableNextIdsInError.isEmpty()) {
+              Logger.getAnonymousLogger().severe("Some errors...");
+            }
+            tableNextIdsInError.add(tableIdValue);
+            Logger.getAnonymousLogger()
+                .severe("Next id value must be " + nbSetOfThreadsPerProcess + " for table " +
+                        tableIdValue.getLeft() +
+                        ", but was " + tableIdValue.getRight());
+          }
         }
+      } finally {
+        executorService.shutdown();
+      }
+      if (!tableNextIdsInError.isEmpty()) {
+        fail("The next id of " + tableNextIdsInError.size() + " tables is in error.");
       }
     } finally {
-      executorService.shutdown();
-    }
-    if (!tableNextIdsInError.isEmpty()) {
-      fail("The next id of " + tableNextIdsInError.size() + " tables is in error.");
+      Logger.getAnonymousLogger()
+          .info("Test duration of " + (System.currentTimeMillis() - startTime) + " ms");
     }
   }
 
@@ -271,14 +328,17 @@ public class DBUtilIntegrationTest {
     try {
       for (Thread thread : threads) {
         thread.start();
+        Thread.sleep(5);
       }
       for (Thread thread : threads) {
-        thread.join(60000);
+        thread.join();
       }
       return actualMaxIdInUniqueIdFor(tableName);
     } finally {
       for (Thread thread : threads) {
-        thread.interrupt();
+        if (thread.isAlive()) {
+          thread.interrupt();
+        }
       }
     }
   }
