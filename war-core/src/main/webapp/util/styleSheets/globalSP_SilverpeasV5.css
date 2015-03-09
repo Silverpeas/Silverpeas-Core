@@ -3909,11 +3909,6 @@ caption {
   width:25px;
 }
 
-#newsFeedProfil .txt .decoration-status {
-  background-image:url(../icons/newsFeed_statut.gif);
-  padding-left:20px;
-}
-
 #newsFeedProfil .txt .decoration-publication {
   background-image:url(../icons/newsFeed_publication.gif);
   padding-left:20px;
@@ -3949,6 +3944,15 @@ caption {
   background-image:url(../icons/newsFeed_picture.gif);
   padding-left:20px;
 }
+
+#newsFeedProfil .txt .decoration-commentpublication,
+#newsFeedProfil .txt .decoration-commentpost,
+#newsFeedProfil .txt .decoration-commentnews,
+#newsFeedProfil .txt .decoration-commentmedia {
+  background-image:url(../icons/newsFeed_statut.gif);
+  padding-left:20px;
+}
+
 
 #newsFeedProfil .name {
   color:#26334A;

@@ -24,13 +24,17 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -146,8 +150,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * of the commented publication, the component instance name, and the deleted comment. If no such
    * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication the comments are on.
+   * @param instanceId
    */
   @Override
   public void deleteAllCommentsByComponentInstanceId(String instanceId) {
@@ -429,5 +432,40 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   @Override
   public List<Comment> getLastComments(String resourceType, int count) {
     return getCommentDAO().getLastComments(resourceType, count);
+  }
+
+  /**
+   * get list of SocialInformationComment added by userId in a period
+   * @param listResourceType
+   * @param userId
+   * @param begin date
+   * @param end date
+   * @return List <SocialInformation>
+   * @
+   */
+  @Override
+  public List<SocialInformation> getSocialInformationCommentsListByUserId(
+      List<String> listResourceType, String userId, Date begin, Date end) {
+    return getCommentDAO()
+        .getSocialInformationCommentsListByUserId(listResourceType, userId, begin, end);
+  }
+
+  /**
+   * get list of SocialInformationComment added by myContactsIds in a period
+   * @param listResourceType
+   * @param myContactsIds
+   * @param listInstanceId
+   * @param begin date
+   * @param end date
+   * @return List <SocialInformation>
+   * @
+   */
+  @Override
+  public List<SocialInformation> getSocialInformationCommentsListOfMyContacts(
+      List<String> listResourceType, List<String> myContactsIds, List<String> listInstanceId,
+      Date begin, Date end) {
+    return getCommentDAO()
+        .getSocialInformationCommentsListOfMyContacts(listResourceType, myContactsIds,
+            listInstanceId, begin, end);
   }
 }

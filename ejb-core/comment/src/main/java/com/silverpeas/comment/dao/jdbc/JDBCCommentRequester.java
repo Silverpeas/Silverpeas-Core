@@ -35,13 +35,17 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.comment.socialnetwork.SocialInformationComment;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.lang3.StringUtils;
 import java.sql.Statement;
+
 import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**
@@ -299,7 +303,7 @@ public class JDBCCommentRequester {
 
   public int getCommentsCount(Connection con, String resourceType, WAPrimaryKey foreign_pk)
       throws SQLException {
-    final List<String> params = new ArrayList<String>();
+    final List<Object> params = new ArrayList<Object>();
     final StringBuilder select_query = new StringBuilder(
         "SELECT COUNT(commentId) AS nb_comment FROM sb_comment_comment");
     performQueryAndParams(select_query, params, resourceType, foreign_pk);
@@ -309,8 +313,8 @@ public class JDBCCommentRequester {
     try {
       prep_stmt = con.prepareStatement(select_query.toString());
       int indexParam = 1;
-      for (String param : params) {
-        prep_stmt.setString(indexParam++, param);
+      for (Object param : params) {
+        prep_stmt.setString(indexParam++, (String) param);
       }
       rs = prep_stmt.executeQuery();
       while (rs.next()) {
@@ -328,7 +332,7 @@ public class JDBCCommentRequester {
 
   public List<Comment> getAllComments(Connection con, String resourceType, WAPrimaryKey foreign_pk)
       throws SQLException {
-    final List<String> params = new ArrayList<String>();
+    final List<Object> params = new ArrayList<Object>();
     final StringBuilder select_query = new StringBuilder();
     select_query
         .append("SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, ");
@@ -342,8 +346,8 @@ public class JDBCCommentRequester {
     try {
       prep_stmt = con.prepareStatement(select_query.toString());
       int indexParam = 1;
-      for (String param : params) {
-        prep_stmt.setString(indexParam++, param);
+      for (Object param : params) {
+        prep_stmt.setString(indexParam++, (String) param);
       }
       rs = prep_stmt.executeQuery();
       CommentPK pk;
@@ -372,7 +376,7 @@ public class JDBCCommentRequester {
 
   public int deleteAllComments(Connection con, String resourceType, ForeignPK foreignPK)
       throws SQLException {
-    final List<String> params = new ArrayList<String>();
+    final List<Object> params = new ArrayList<Object>();
     final StringBuilder delete_query = new StringBuilder("DELETE FROM sb_comment_comment");
     performQueryAndParams(delete_query, params, resourceType, foreignPK);
 
@@ -380,8 +384,8 @@ public class JDBCCommentRequester {
     try {
       prep_stmt = con.prepareStatement(delete_query.toString());
       int indexParam = 1;
-      for (String param : params) {
-        prep_stmt.setString(indexParam++, param);
+      for (Object param : params) {
+        prep_stmt.setString(indexParam++, (String) param);
       }
       return prep_stmt.executeUpdate();
     } finally {
@@ -389,13 +393,27 @@ public class JDBCCommentRequester {
     }
   }
 
-  private void performQueryAndParams(StringBuilder query, List<String> params, String resourceType,
+  private void performQueryAndParams(StringBuilder query, List<Object> params, String resourceType,
       WAPrimaryKey foreignPK) {
+    List<String> listResourceType = new ArrayList<String>();
+    listResourceType.add(resourceType);
+    performQueryAndParams(query, params, listResourceType, foreignPK, null, null, null, null);
+  }
+
+  private void performQueryAndParams(StringBuilder query, List<Object> params, List<String> listResourceType,
+      WAPrimaryKey foreignPK, List<String> listUserId, List<String> listInstanceId, Date beginDate,
+      Date endDate) {
     String clause = " WHERE ";
-    if (StringUtil.isDefined(resourceType)) {
-      query.append(clause).append("resourceType = ? ");
+    if (listResourceType != null) {
+      query.append(clause).append("resourceType IN (");
+      clause = "";
+      for(String resourceType : listResourceType) {
+        query.append(clause).append("?");
+        clause = ", ";
+        params.add(resourceType);
+      }
+      query.append(") ");
       clause = "AND ";
-      params.add(resourceType);
     }
     if (foreignPK != null) {
       if (StringUtil.isDefined(foreignPK.getId())) {
@@ -405,8 +423,41 @@ public class JDBCCommentRequester {
       }
       if (StringUtil.isDefined(foreignPK.getInstanceId())) {
         query.append(clause).append("instanceId = ? ");
+        clause = "AND ";
         params.add(foreignPK.getInstanceId());
       }
+    }
+    if (listUserId != null) {
+      query.append(clause).append("commentOwnerId IN (");
+      clause = "";
+      for(String userId : listUserId) {
+        Integer ownerId = new Integer(userId);
+        query.append(clause).append("?");
+        clause = ", ";
+        params.add(ownerId);
+      }
+      query.append(") ");
+      clause = "AND ";
+    }
+    if (listInstanceId != null) {
+      query.append(clause).append("instanceId IN (");
+      clause = "";
+      for(String instanceId : listInstanceId) {
+        query.append(clause).append("?");
+        clause = ", ";
+        params.add(instanceId);
+      }
+      query.append(") ");
+      clause = "AND ";
+    }
+    if (beginDate != null && endDate != null) {
+      query.append(clause).append("((commentCreationDate >= ? AND commentCreationDate <= ? ) ");
+      params.add(DateUtil.date2SQLDate(beginDate));
+      params.add(DateUtil.date2SQLDate(endDate));
+      query.append("OR ");
+      query.append("(commentModificationDate >= ? AND commentModificationDate <= ? )) ");
+      params.add(DateUtil.date2SQLDate(beginDate));
+      params.add(DateUtil.date2SQLDate(endDate));
     }
 
     if (params.isEmpty()) {
@@ -453,5 +504,115 @@ public class JDBCCommentRequester {
     }
 
     return comments;
+  }
+
+  public List<SocialInformation> getSocialInformationCommentsListByUserId(Connection con, List<String> listResourceType,
+      String userId, Date begin, Date end) throws SQLException {
+    final List<Object> params = new ArrayList<Object>();
+    final StringBuilder select_query = new StringBuilder();
+
+    List<String> listUserId = new ArrayList<String>();
+    listUserId.add(userId);
+
+    select_query.append(
+        "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, ");
+    select_query.append("commentComment, resourceType, resourceId, instanceId ");
+    select_query.append("FROM sb_comment_comment ");
+    performQueryAndParams(select_query, params, listResourceType, null, listUserId, null, begin, end);
+    select_query.append("ORDER BY commentModificationDate DESC, commentId DESC");
+
+    PreparedStatement prep_stmt = null;
+    ResultSet rs = null;
+    List<SocialInformation> listSocialInformationComment =
+        new ArrayList<SocialInformation>(INITIAL_CAPACITY);
+    try {
+      prep_stmt = con.prepareStatement(select_query.toString());
+      int indexParam = 1;
+      for (Object param : params) {
+        if(param instanceof String) {
+          prep_stmt.setString(indexParam++, (String) param);
+        } else if(param instanceof Integer) {
+          prep_stmt.setInt(indexParam++, ((Integer) param).intValue());
+        }
+      }
+      rs = prep_stmt.executeQuery();
+      CommentPK pk;
+      Comment comment = null;
+      while (rs.next()) {
+        pk = new CommentPK(String.valueOf(rs.getInt("commentId")));
+        pk.setComponentName(rs.getString("instanceId"));
+        WAPrimaryKey father_id = new CommentPK(rs.getString("resourceId"));
+        try {
+          comment =
+              new Comment(pk, rs.getString("resourceType"), father_id, rs.getInt("commentOwnerId"),
+                  "", rs.getString("commentComment"),
+                  parseDate(rs.getString("commentCreationDate")),
+                  parseDate(rs.getString("commentModificationDate")));
+        } catch (ParseException ex) {
+          throw new SQLException(ex.getMessage(), ex);
+        }
+
+        listSocialInformationComment.add(new SocialInformationComment(comment));
+      }
+    } finally {
+      DBUtil.close(rs, prep_stmt);
+    }
+
+    return listSocialInformationComment;
+
+  }
+
+  public List<SocialInformation> getSocialInformationCommentsListOfMyContacts(Connection con,
+      List<String> listResourceType, List<String> myContactsIds, List<String> listInstanceId,
+      Date begin, Date end) throws SQLException {
+    final List<Object> params = new ArrayList<Object>();
+    final StringBuilder select_query = new StringBuilder();
+
+    select_query.append(
+        "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, ");
+    select_query.append("commentComment, resourceType, resourceId, instanceId ");
+    select_query.append("FROM sb_comment_comment ");
+    performQueryAndParams(select_query, params, listResourceType, null, myContactsIds, listInstanceId, begin, end);
+    select_query.append("ORDER BY commentModificationDate DESC, commentId DESC");
+
+    PreparedStatement prep_stmt = null;
+    ResultSet rs = null;
+    List<SocialInformation> listSocialInformationComment =
+        new ArrayList<SocialInformation>(INITIAL_CAPACITY);
+    try {
+      prep_stmt = con.prepareStatement(select_query.toString());
+      int indexParam = 1;
+      for (Object param : params) {
+        if(param instanceof String) {
+          prep_stmt.setString(indexParam++, (String) param);
+        } else if(param instanceof Integer) {
+          prep_stmt.setInt(indexParam++, ((Integer) param).intValue());
+        }
+      }
+      rs = prep_stmt.executeQuery();
+      CommentPK pk;
+      Comment comment = null;
+      while (rs.next()) {
+        pk = new CommentPK(String.valueOf(rs.getInt("commentId")));
+        pk.setComponentName(rs.getString("instanceId"));
+        WAPrimaryKey father_id = new CommentPK(rs.getString("resourceId"));
+        try {
+          comment =
+              new Comment(pk, rs.getString("resourceType"), father_id, rs.getInt("commentOwnerId"),
+                  "", rs.getString("commentComment"),
+                  parseDate(rs.getString("commentCreationDate")),
+                  parseDate(rs.getString("commentModificationDate")));
+        } catch (ParseException ex) {
+          throw new SQLException(ex.getMessage(), ex);
+        }
+
+        listSocialInformationComment.add(new SocialInformationComment(comment));
+      }
+    } finally {
+      DBUtil.close(rs, prep_stmt);
+    }
+
+    return listSocialInformationComment;
+
   }
 }

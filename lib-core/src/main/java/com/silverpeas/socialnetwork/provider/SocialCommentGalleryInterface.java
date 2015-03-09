@@ -22,11 +22,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.model;
+package com.silverpeas.socialnetwork.provider;
 
-/**
- * @author Bensalem Nabil
- */
-public enum SocialInformationType {
-  ALL, EVENT, PUBLICATION, COMMENTPUBLICATION, MEDIA, COMMENTMEDIA, STATUS, RELATIONSHIP, LASTEVENT, POST, COMMENTPOST, NEWS, COMMENTNEWS, BOOKMARK, SITE, COMMENT;
+import com.silverpeas.calendar.Date;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.List;
+
+public interface SocialCommentGalleryInterface {
+  /**
+   * get list of socialInformation
+   * @param userId
+   * @param begin
+   * @param end
+   * @return List<SocialInformation>
+   * @throws SilverpeasException
+   */
+  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+      throws SilverpeasException;
+
+  /**
+   * get list of socialInformation of my contacts according to ids of my contacts
+   * @param myId
+   * @param myContactsIds
+   * @param begin
+   * @param end
+   * @return List<SocialInformation>
+   * @throws SilverpeasException
+   */
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 }
