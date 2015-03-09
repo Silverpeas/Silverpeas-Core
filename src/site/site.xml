@@ -120,6 +120,7 @@
         <item name="CAS" href="../../configuration/cas.html" collapse="true"/>
       </item>
       <item name="FAQ" href="../../faq.html" collapse="true"/>
+      <item name="Blog" href="http://www.silverpeas.org/blog" collapse="true"/>
     </menu>
     <menu name="Silverpeas Projects" inherit="top">
       <item name="Global information" href="#" collapse="true">
