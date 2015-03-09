@@ -32,17 +32,17 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 
 import static com.stratelia.silverpeas.notificationManager.CurrentUserNotificationContext
     .getCurrentUserNotificationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class CurrentUserNotificationContextTest {
-  private static final String ANONYMOUS_ID = "26598";
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
@@ -55,11 +55,13 @@ public class CurrentUserNotificationContextTest {
 
   @Before
   public void setup() {
-    currentUser = new UserDetail();
+    currentUser = spy(new UserDetail());
     CacheServiceProvider.getRequestCacheService().clear();
     CacheServiceProvider.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+    // By default, a user is not an anonymous one
+    assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(false));
   }
 
   @After
@@ -566,7 +568,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationNotEnabled()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(null);
   }
@@ -575,7 +577,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithNullNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     enableLimitationAt(1);
     getCurrentUserNotificationContext().checkManualUserNotification(null);
@@ -585,7 +587,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAnonymousUserAndLimitationNotEnabled()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
   }
@@ -594,7 +596,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithEmptyNotificationMetaDataAndCurrentAnonymousUserAndLimitationEnabled()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     enableLimitationAt(1);
     getCurrentUserNotificationContext().checkManualUserNotification(new NotificationMetaData());
@@ -603,7 +605,7 @@ public class CurrentUserNotificationContextTest {
   @Test
   public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationNotEnabled()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(1));
   }
@@ -611,7 +613,7 @@ public class CurrentUserNotificationContextTest {
   @Test
   public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabled()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     enableLimitationAt(2);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(2));
@@ -621,7 +623,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimit()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
@@ -631,7 +633,7 @@ public class CurrentUserNotificationContextTest {
   public void
   checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimitAndNotAManualOne()
       throws Exception {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
     enableLimitationAt(3);
     getCurrentUserNotificationContext().checkManualUserNotification(getDefaultUserOne(4));

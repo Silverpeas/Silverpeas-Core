@@ -35,10 +35,11 @@ import org.silverpeas.util.ResourceLocator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class UserManualNotificationUserReceiverLimitUserDetailTest {
-  private static final String ANONYMOUS_ID = "26598";
 
   private static final int NOT_LIMITED = 0;
   private static final int LIMITED = 5;
@@ -56,7 +57,9 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void setup() {
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
-    currentUser = new UserDetail();
+    currentUser = spy(new UserDetail());
+    // By default, a user is not an anonymous one
+    assertThat(currentUser.isAnonymous(), is(false));
   }
 
   @Test
@@ -798,7 +801,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   @Test
   public void
   setUserManualNotificationUserReceiverLimitToNullForAnonymousUserAndLimitationNotEnabled() {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(null);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
@@ -808,7 +811,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void
   setUserManualNotificationUserReceiverLimitToNullForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(null);
     assertThatUserIsLimitedByDefault();
@@ -817,7 +820,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   @Test
   public void
   setUserManualNotificationUserReceiverLimitToNegativeValueForAnonymousUserAndLimitationNotEnabled() {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
@@ -827,7 +830,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void
   setUserManualNotificationUserReceiverLimitToNegativeValueForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(-1);
     assertThatUserIsLimitedByDefault();
@@ -836,7 +839,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   @Test
   public void
   setUserManualNotificationUserReceiverLimitToZeroForAnonymousUserAndLimitationNotEnabled() {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
@@ -846,7 +849,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void
   setUserManualNotificationUserReceiverLimitToZeroForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(NOT_LIMITED);
     assertThatUserIsLimitedByDefault();
@@ -855,7 +858,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   @Test
   public void
   setUserManualNotificationUserReceiverLimitToOneForAnonymousUserAndLimitationNotEnabled() {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
@@ -865,7 +868,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void setUserManualNotificationUserReceiverLimitToOneForAnonymousUserAndLimitationEnabled
       () {
     enableLimitation();
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(1);
     assertThatUserIsLimitedByDefault();
@@ -875,7 +878,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForAnonymousUserAndLimitationNotEnabled
       () {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
     assertThatUserIsNotLimitedAndNoLimitPersisted();
@@ -885,7 +888,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void
   setUserManualNotificationUserReceiverLimitToDefaultLimitForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setUserManualNotificationUserReceiverLimit(LIMITED);
     assertThatUserIsLimitedByDefault();
@@ -894,7 +897,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   @Test
   public void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForAnonymousUserAndLimitationNotEnabled() {
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setNotifManualReceiverLimit(3);
     currentUser.setUserManualNotificationUserReceiverLimit(2);
@@ -905,7 +908,7 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   public void
   setUserManualNotificationUserReceiverLimitWhilePersistedOneExistsForAnonymousUserAndLimitationEnabled() {
     enableLimitation();
-    currentUser.setId(ANONYMOUS_ID);
+    doReturn(true).when(currentUser).isAnonymous();
     assertThat(currentUser.isAnonymous(), is(true));
     currentUser.setNotifManualReceiverLimit(3);
     currentUser.setUserManualNotificationUserReceiverLimit(2);
