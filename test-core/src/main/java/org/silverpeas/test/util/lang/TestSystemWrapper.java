@@ -26,6 +26,7 @@ package org.silverpeas.test.util.lang;
 
 import org.silverpeas.util.lang.SystemWrapper;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
@@ -47,6 +48,18 @@ public class TestSystemWrapper implements SystemWrapper {
 
   private Map<String, String> env = null;
 
+  @PostConstruct
+  public void setupDefaultParameters() {
+
+    // Adding by default this environment parameter
+    env = new HashMap<>();
+    env.putAll(System.getenv());
+    env.put("SILVERPEAS_HOME", "SilverpeasHome4Tests");
+
+    // Adding by default this system parameter
+    setProperty("SILVERPEAS_DATA_HOME", "SilverpeasDataHome4Tests");
+  }
+
   @Override
   public String getenv(final String name) {
     return getenv().get(name);
@@ -54,11 +67,6 @@ public class TestSystemWrapper implements SystemWrapper {
 
   @Override
   public Map<String, String> getenv() {
-    if (env == null) {
-      env = new HashMap<>();
-      env.putAll(System.getenv());
-      env.put("SILVERPEAS_HOME", "");
-    }
     return env;
   }
 

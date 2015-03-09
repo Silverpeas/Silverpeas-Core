@@ -80,8 +80,10 @@ public class CommonAPI4Test implements TestRule {
   }
 
   private void systemWrapper() {
+    TestSystemWrapper testSystemWrapper = new TestSystemWrapper();
+    testSystemWrapper.setupDefaultParameters();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SystemWrapper.class))
-        .thenReturn(new TestSystemWrapper());
+        .thenReturn(testSystemWrapper);
   }
 
   private void managedThreadFactory() {
