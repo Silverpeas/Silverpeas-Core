@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.UUID;
 
 /**
@@ -111,7 +112,8 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t</resources>");
     out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.OfficeOnline\">");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(request.getParameter("documentUrl"), CharEncoding.UTF_8));
+    out.print(URLEncoder.encode(enrichWithToken(request.getParameter("documentUrl"), token),
+        CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"),
@@ -119,9 +121,6 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(login);
-    out.println("</argument>");
-    out.print("\t\t<argument>");
-    out.print(token);
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(resources.getBoolean("disconnectedMode", false));
@@ -171,5 +170,9 @@ public class LaunchWebdavEdition extends HttpServlet {
   private static String generateAuthToken() {
     String[] parts = UUID.randomUUID().toString().split("-");
     return StringUtil.asBase64(parts[parts.length - 1].getBytes());
+  }
+
+  private static String enrichWithToken(String url, String token) {
+    return url.replaceAll("/webdav/", "/webdav/" + token + "/");
   }
 }

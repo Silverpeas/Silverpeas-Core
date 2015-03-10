@@ -31,6 +31,8 @@ import javax.jcr.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** A provider of WebDav credentials for the WebDAV servlet.
  * @author mmoquillon
@@ -39,18 +41,24 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
 
   private static final String USERID_TEMPLATE = "{0}@domain{1}";
   private static final String USERID_TOKEN_ATTRIBUTE = "UserID";
+  private static final Pattern TOKEN_PATTERN = Pattern.compile(".*/([a-zA-Z0-9]{16}+)/.*");
 
   @Override
   public Credentials getCredentials(final HttpServletRequest request)
       throws LoginException, ServletException {
     Credentials credentials;
-    String authToken = request.getParameter("_");
-    UserDetail user =
-        CacheServiceProvider.getApplicationCacheService().get(authToken, UserDetail.class);
-    if (user != null) {
-      String userID = MessageFormat.format(USERID_TEMPLATE, user.getLogin(), user.getDomainId());
-      credentials = new TokenCredentials(authToken);
-      ((TokenCredentials)credentials).setAttribute(USERID_TOKEN_ATTRIBUTE, userID);
+    Matcher matcher = TOKEN_PATTERN.matcher(request.getPathInfo());
+    if (matcher.matches()) {
+      String authToken = matcher.group(1);
+      UserDetail user =
+          CacheServiceProvider.getApplicationCacheService().get(authToken, UserDetail.class);
+      if (user != null) {
+        String userID = MessageFormat.format(USERID_TEMPLATE, user.getLogin(), user.getDomainId());
+        credentials = new TokenCredentials(authToken);
+        ((TokenCredentials) credentials).setAttribute(USERID_TOKEN_ATTRIBUTE, userID);
+      } else {
+        throw new LoginException("No user matching the credentials!");
+      }
     } else {
       throw new LoginException("Bad credentials!");
     }

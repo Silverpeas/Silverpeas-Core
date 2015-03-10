@@ -169,7 +169,8 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
-    return request.getRequestURI().contains("/repository/jackrabbit");
+    return request.getRequestURI().contains("/repository/silverpeas/webdav/") ||
+        request.getRequestURI().contains("/repository2000/silverpeas/webdav");
   }
 
   private boolean isFileDragAndDrop(HttpServletRequest request) {

@@ -26,18 +26,32 @@ import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 
 import javax.inject.Inject;
 import javax.jcr.Repository;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * A servlet taking in charge the access by WebDAV of the content of the JCR repository.
+ * A servlet taking in charge the access of the content in the JCR repository by WebDAV.
  * @author mmoquillon
  */
 public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
+
+  private static Logger logger = Logger.getLogger(SilverpeasJcrWebdavServlet.class.getSimpleName());
 
   @Inject
   private Repository repository;
 
   @Inject
   private WebDavCredentialsProvider credentialsProvider;
+
+  @Override
+  public void init() throws ServletException {
+    super.init();
+    setLocatorFactory(new JcrResourceLocatorFactory(getPathPrefix()));
+  }
 
   @Override
   public Repository getRepository() {
@@ -47,5 +61,16 @@ public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
   @Override
   protected CredentialsProvider getCredentialsProvider() {
     return credentialsProvider;
+  }
+
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    try {
+      super.service(request, response);
+    } catch (Exception ex) {
+      logger.log(Level.SEVERE, ex.getMessage(), ex);
+      throw ex;
+    }
   }
 }
