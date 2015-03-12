@@ -25,8 +25,18 @@
 package com.silverpeas.socialnetwork.model;
 
 /**
- * @author Bensalem Nabil
+ * The declaration order is taken into account for feed news sorting
  */
 public enum SocialInformationType {
-  ALL, EVENT, PUBLICATION, COMMENTPUBLICATION, MEDIA, COMMENTMEDIA, STATUS, RELATIONSHIP, LASTEVENT, POST, COMMENTPOST, NEWS, COMMENTNEWS, BOOKMARK, SITE, COMMENT;
+  ALL, EVENT,
+  PUBLICATION, COMMENTPUBLICATION,
+  MEDIA, COMMENTMEDIA,
+  STATUS,
+  RELATIONSHIP,
+  LASTEVENT,
+  POST, COMMENTPOST,
+  NEWS, COMMENTNEWS,
+  BOOKMARK,
+  SITE,
+  COMMENT;
 }

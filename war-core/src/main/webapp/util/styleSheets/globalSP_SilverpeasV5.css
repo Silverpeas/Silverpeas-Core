@@ -2484,6 +2484,15 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   margin-right:7px;
 }
 
+#portlet-myFeed .commentpublication,
+#portlet-myFeed .commentpost,
+#portlet-myFeed .commentnews,
+#portlet-myFeed .commentmedia {
+  background:transparent url(../icons/newsFeed_statut.gif) right 7px no-repeat;
+  padding-right:20px;
+  margin-right:7px;
+}
+
 
 /*- [ portlet MyFeed END] --------------------------- */
 

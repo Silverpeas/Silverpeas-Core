@@ -367,9 +367,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
 
         case COMMENTMEDIA:
           //Comments on gallery components
-          list =
-              getSocialCommentGalleryInterface().getSocialInformationsListOfMyContacts(myId, myContactsIds, begin,
-                  end);
+          list = getSocialCommentGalleryInterface()
+              .getSocialInformationsListOfMyContacts(myId, myContactsIds, begin, end);
           break;
 
         case PUBLICATION:

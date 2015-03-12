@@ -27,8 +27,10 @@ import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.date.Period;
 
 import java.util.Date;
 import java.util.List;
@@ -77,10 +79,10 @@ public interface CommentService extends SilverpeasComponentService<Comment> {
 
   void unindexAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
-  List<SocialInformation> getSocialInformationCommentsListByUserId(List<String> listResourceType,
-      String userId, Date begin, Date end);
+  List<SocialInformationComment> getSocialInformationCommentsListByUserId(
+      List<String> listResourceType, String userId, Period period);
 
-  List<SocialInformation> getSocialInformationCommentsListOfMyContacts(
+  List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
       List<String> listResourceType, List<String> myContactsIds, List<String> listInstanceId,
-      Date begin, Date end);
+      Period period);
 }

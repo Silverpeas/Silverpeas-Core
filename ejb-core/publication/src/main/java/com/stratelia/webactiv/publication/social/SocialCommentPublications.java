@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.publication.social;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -41,16 +42,18 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class SocialCommentPublications implements SocialCommentPublicationsInterface {
 
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<String>();
-    listResourceType.add(Comment.PUBLICATION_RESOURCETYPE); //kmelia and blog components
+    listResourceType.add(PublicationDetail.getResourceType()); //kmelia and blog components
     return listResourceType;
   }
 
@@ -63,23 +66,22 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
     }
   }
 
-  private List<SocialInformation> fillOtherSocialInformation(
-      List<SocialInformation> listSocialInformation) {
-    for (SocialInformation socialInformation : listSocialInformation) {
-      SocialInformationComment socialCommentPublication =
-          (SocialInformationComment) socialInformation;
-      String resourceId = socialCommentPublication.getResourceId();
-      String instanceId = socialCommentPublication.getInstanceId();
+  @SuppressWarnings("unchecked")
+  private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
+    for (SocialInformationComment socialInformation : listSocialInformation) {
+      String resourceId = socialInformation.getComment().getForeignKey().getId();
+      String instanceId = socialInformation.getComment().getComponentInstanceId();
       PublicationPK pubPk = new PublicationPK(resourceId, instanceId);
       PublicationDetail pubDetail = getEJB().getDetail(pubPk);
 
       //set URL, title and description of the publication
-      socialCommentPublication.setUrl(
-          URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getId(), pubDetail.getComponentInstanceId(), false));
-      socialCommentPublication.setTitle(pubDetail.getTitle());
+      socialInformation.setUrl(URLManager
+          .getSimpleURL(URLManager.URL_PUBLI, pubDetail.getId(), pubDetail.getComponentInstanceId(),
+              false));
+      socialInformation.setTitle(pubDetail.getTitle());
     }
 
-    return listSocialInformation;
+    return (List) listSocialInformation;
   }
 
   /**
@@ -90,18 +92,17 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
    * @return List<SocialInformation>
    * @throws SilverpeasException
    */
+  @SuppressWarnings("unchecked")
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException {
 
-    List<String> listResourceType = getListResourceType();
-
-    List<SocialInformation> listSocialInformation =
+    List<SocialInformationComment> listSocialInformation =
         CommentServiceFactory.getFactory().getCommentService()
-            .getSocialInformationCommentsListByUserId(listResourceType, userId, begin, end);
+            .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
+                Period.from(begin, end));
 
-    listSocialInformation = fillOtherSocialInformation(listSocialInformation);
-    return listSocialInformation;
+    return decorate(listSocialInformation);
   }
 
   /**
@@ -117,20 +118,37 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
 
-    List<String> listResourceType = getListResourceType();
-
-    // getting all components (that manage publications and comments in publications) allowed to me
     OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
-    List<String> options = new ArrayList<String>();
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
-    options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
+    List<String> instanceIds = new ArrayList<String>();
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
 
-    List<SocialInformation> listSocialInformation =
+    List<SocialInformationComment> socialComments =
         CommentServiceFactory.getFactory().getCommentService()
-            .getSocialInformationCommentsListOfMyContacts(listResourceType, myContactsIds, options,
-                begin, end);
+            .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
+                instanceIds, Period.from(begin, end));
 
-    listSocialInformation = fillOtherSocialInformation(listSocialInformation);
-    return listSocialInformation;
+    // Even if the data has been found by filtering on instanceIds that the user can access, it
+    // could exists more precise right rules to apply.
+    Iterator<SocialInformationComment> socialCommentIt = socialComments.iterator();
+    while (socialCommentIt.hasNext()) {
+      SocialInformationComment socialComment = socialCommentIt.next();
+      String instanceId = socialComment.getComment().getComponentInstanceId();
+
+      if (!myId.equals(socialComment.getAuthor()) && instanceId.startsWith("kmelia")) {
+
+        // On Kmelia application, if the user has not right access to the publication, then the
+        // associated comments are removed from the result
+
+        AccessController<PublicationPK> publicationAccessController =
+            AccessControllerProvider.getAccessController("publicationAccessController");
+        if (!publicationAccessController.isUserAuthorized(myId,
+            new PublicationPK(socialComment.getComment().getForeignKey().getId(), instanceId))) {
+          socialCommentIt.remove();
+        }
+      }
+    }
+
+    return decorate(socialComments);
   }
 }

@@ -26,23 +26,29 @@ package com.silverpeas.comment.socialnetwork;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class SocialInformationComment extends AbstractSocialInformation {
 
-  private String resourceId;
-  private String instanceId;
+  private final Comment comment;
 
   /**
    * Constructor with one param
    * @param comment
    */
   public SocialInformationComment(Comment comment) {
+    this.comment = comment;
     setAuthor(comment.getCreator().getId());
-    setDate(comment.getModificationDate());
+    if (comment.getModificationDate() != null) {
+      setDate(comment.getModificationDate());
+      setUpdated(true);
+    } else {
+      setDate(comment.getCreationDate());
+      setUpdated(false);
+    }
     String instanceId = comment.getComponentInstanceId();
-    SocialInformationType type = SocialInformationType.COMMENTPUBLICATION; //instanceId = kmelia
+    SocialInformationType type = SocialInformationType.COMMENTPUBLICATION;
     if (instanceId.startsWith("blog")) {
       type = SocialInformationType.COMMENTPOST;
     } else if (instanceId.startsWith("quickinfo")) {
@@ -51,11 +57,7 @@ public class SocialInformationComment extends AbstractSocialInformation {
       type = SocialInformationType.COMMENTMEDIA;
     }
     setType(type.toString());
-    setUpdated(true); //Always updated = true
     setDescription(comment.getMessage());
-
-    setResourceId(comment.getForeignKey().getId());
-    setInstanceId(instanceId);
   }
 
   /**
@@ -104,19 +106,7 @@ public class SocialInformationComment extends AbstractSocialInformation {
     return hash;
   }
 
-  public String getResourceId() {
-    return this.resourceId;
-  }
-
-  public void setResourceId(String resourceId) {
-    this.resourceId = resourceId;
-  }
-
-  public String getInstanceId() {
-    return this.instanceId;
-  }
-
-  public void setInstanceId(String instanceId) {
-    this.instanceId = instanceId;
+  public Comment getComment() {
+    return comment;
   }
 }

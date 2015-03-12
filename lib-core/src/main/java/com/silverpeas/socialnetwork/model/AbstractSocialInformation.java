@@ -24,6 +24,8 @@
 
 package com.silverpeas.socialnetwork.model;
 
+import com.silverpeas.calendar.DateTime;
+
 import java.util.Date;
 
 /**
@@ -159,11 +161,40 @@ public abstract class AbstractSocialInformation implements SocialInformation {
   
   /**
    *Indicates whether some other SocialInformation date is before the date of this one.
-   * @param obj the reference object with which to compare.
+   * @param o the reference object with which to compare.
    * @return int
    */
   @Override
   public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate()) * -1;
+    DateTime myDate = new DateTime(getDate());
+    DateTime otherDate = new DateTime(o.getDate());
+
+    // First sorting on date (and not the time)
+    int result = otherDate.getBeginOfDay().compareTo(myDate.getBeginOfDay());
+    if (result == 0) {
+
+      // Then sorting on URL
+      result = getUrl().compareTo(o.getUrl());
+
+      if (result == 0) {
+
+        // Then put resource comments before the resource itself
+        boolean myIsComment = getType().contains("COMMENT");
+        boolean otherIsComment = o.getType().contains("COMMENT");
+        if ((!myIsComment && otherIsComment) || (myIsComment && !otherIsComment)) {
+          result = myIsComment ? -1 : 1;
+        }
+      }
+    }
+    if (result == 0) {
+
+      // Then put update before the creation
+      if (isUpdated() && !o.isUpdated()) {
+        result = -1;
+      } else if (!isUpdated() && o.isUpdated()) {
+        result = 1;
+      }
+    }
+    return result;
   }
 }
