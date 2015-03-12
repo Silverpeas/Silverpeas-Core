@@ -50,7 +50,9 @@ import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
+import org.silverpeas.thread.ManagedThreadPool;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 /**
@@ -58,14 +60,11 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class WorkflowEngineImpl implements WorkflowEngine {
-  private static WorkflowEngineManagedThread wfEngineThread = new WorkflowEngineManagedThread();
 
-  /**
-   * default constructor
-   */
-  public WorkflowEngineImpl() {
-    // Start the WorkflowEngine thread
-    wfEngineThread.start();
+  @PostConstruct
+  public void start() {
+    // Use the ManagedThreadPool in order to access container context (JPA and Transaction)
+    ManagedThreadPool.invoke(new WorkflowEngineTask());
   }
 
   /**

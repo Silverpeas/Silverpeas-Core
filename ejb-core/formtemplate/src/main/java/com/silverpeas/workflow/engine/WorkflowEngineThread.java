@@ -67,7 +67,6 @@ import java.util.List;
 /**
  * This Thread is no longer used. We keep it for merge refactoring purpose.
  * @deprecated
- * @see com.silverpeas.workflow.engine.WorkflowEngineManagedThread
  */
 public class WorkflowEngineThread {
   /**
