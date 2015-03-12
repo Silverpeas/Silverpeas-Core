@@ -497,9 +497,7 @@ public class ComponentInstManager {
       int componentLocalId) throws AdminException {
     try {
       // Create the component node
-      ComponentInst componentInst = getComponentInst(ddManager, componentLocalId, spaceLocalId);
       ddManager.getOrganization().instance.moveComponentInstance(spaceLocalId, componentLocalId);
-      notifier.notifyEventOn(DELETION, componentInst);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.moveComponentInst",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",

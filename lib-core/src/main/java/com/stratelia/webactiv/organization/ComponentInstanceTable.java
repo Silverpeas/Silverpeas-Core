@@ -332,6 +332,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     int[] param = new int[2];
     param[0] = spaceId;
     param[1] = componentId;
+    updateRelation(MOVE_COMPONENT_INSTANCE, param);
   }
 
   static final private String MOVE_COMPONENT_INSTANCE =
