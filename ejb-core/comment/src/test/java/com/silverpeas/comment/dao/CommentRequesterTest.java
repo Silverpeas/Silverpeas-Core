@@ -28,27 +28,6 @@
  */
 package com.silverpeas.comment.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.util.Date;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.naming.NamingException;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.silverpeas.comment.dao.jdbc.JDBCCommentRequester;
 import com.silverpeas.comment.mock.OrganizationControllerMocking;
 import com.silverpeas.comment.model.Comment;
@@ -57,23 +36,42 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import org.dbunit.database.IDatabaseConnection;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.date.Period;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import java.sql.Connection;
+import java.util.Date;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-comment-dao.xml")
-public class CommentDAOTest {
+public class CommentRequesterTest {
 
-  private final JDBCCommentRequester commentDAO = new JDBCCommentRequester();
+  private final JDBCCommentRequester commentRequester = new JDBCCommentRequester();
   protected static SilverpeasJndiCase baseTest;
 
   @Inject
   private OrganizationControllerMocking organizationController;
 
-  public CommentDAOTest() {
-  }
+  private Connection con;
 
   private UserDetail aUser() {
     UserDetail user = new UserDetail();
@@ -85,7 +83,7 @@ public class CommentDAOTest {
   }
 
   @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException, Exception {
+  public static void generalSetUp() throws Exception {
     baseTest = new SilverpeasJndiCase("com/silverpeas/comment/dao/comments-dataset.xml",
         "create-database.ddl");
     baseTest.configureJNDIDatasource();
@@ -97,9 +95,20 @@ public class CommentDAOTest {
   @Before
   public void prepareTest() throws Exception {
     baseTest.setUp();
-    UserDetail user = new UserDetail();
-    user.setId("10");
-    organizationController.saveUser(user);
+    for (String userId : new String[]{"10", "12"}) {
+      UserDetail user = new UserDetail();
+      user.setId(userId);
+      organizationController.saveUser(user);
+    }
+
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
+    con = dbConnection.getConnection();
+    DBUtil.getInstanceForTest(con);
+  }
+
+  @After
+  public void tearDown() {
+    DBUtil.close(con);
   }
 
   /**
@@ -108,23 +117,20 @@ public class CommentDAOTest {
    */
   @Test
   public void testCreateComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK(null, null, "kmelia18");
     String resourceType = "RtypeTest";
     ForeignPK foreignKey = new ForeignPK("200", "kmelia18");
     UserDetail author = aUser();
     String message = RandomGenerator.getRandomString();
     Date creationDate = aDate();
-    Comment cmt = new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate,
-        null);
-    CommentPK result = commentDAO.saveComment(con, cmt);
+    Comment cmt =
+        new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate, null);
+    CommentPK result = commentRequester.saveComment(con, cmt);
     assertNotNull(result);
     assertEquals("kmelia18", result.getInstanceId());
     assertNotNull(result.getId());
     assertEquals("11", result.getId());
-    Comment savedComment = commentDAO.getComment(con, result);
+    Comment savedComment = commentRequester.getComment(con, result);
     assertNotNull(savedComment);
     assertEquals(resourceType, savedComment.getResourceType());
     assertEquals(author.getId(), String.valueOf(savedComment.getOwnerId()));
@@ -132,15 +138,11 @@ public class CommentDAOTest {
     assertEquals(message, savedComment.getMessage());
     assertEquals(creationDate, savedComment.getCreationDate());
     assertNull(savedComment.getModificationDate());
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   @Test
   public void testGetLast2Comments() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-    List<Comment> comments = commentDAO.getLastComments(con, "instanceId10", 2);
+    List<Comment> comments = commentRequester.getLastComments(con, "instanceId10", 2);
     assertNotNull(comments);
     assertEquals(2, comments.size());
 
@@ -155,16 +157,11 @@ public class CommentDAOTest {
     assertEquals("500", comments.get(1).getForeignKey().getId());
     assertEquals("my comments are good", comments.get(1).getMessage());
     assertEquals(DateUtil.parseDate("2019/10/18"), comments.get(1).getCreationDate());
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   @Test
   public void testGetLastComments() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-    List<Comment> comments = commentDAO.getLastComments(con, "instanceId10", 0);
+    List<Comment> comments = commentRequester.getLastComments(con, "instanceId10", 0);
     assertNotNull(comments);
     assertEquals(3, comments.size());
 
@@ -185,20 +182,13 @@ public class CommentDAOTest {
     assertEquals("500", comments.get(2).getForeignKey().getId());
     assertEquals("my comments", comments.get(2).getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), comments.get(2).getCreationDate());
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   @Test
   public void testGetNoLastComments() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-    List<Comment> comments = commentDAO.getLastComments(con, "instanceId1000", 0);
+    List<Comment> comments = commentRequester.getLastComments(con, "instanceId1000", 0);
     assertNotNull(comments);
     assertTrue(comments.isEmpty());
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -207,18 +197,14 @@ public class CommentDAOTest {
    */
   @Test
   public void testGetComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment result = commentDAO.getComment(con, pk);
+    Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
     assertNull(result.getModificationDate());
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -227,21 +213,17 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment result = commentDAO.getComment(con, pk);
+    Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
     assertNull(result.getModificationDate());
-    commentDAO.deleteComment(con, pk);
-    result = commentDAO.getComment(con, pk);
+    commentRequester.deleteComment(con, pk);
+    result = commentRequester.getComment(con, pk);
     assertNull(result);
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -250,11 +232,8 @@ public class CommentDAOTest {
    */
   @Test
   public void testUpdateComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment comment = commentDAO.getComment(con, pk);
+    Comment comment = commentRequester.getComment(con, pk);
     assertNotNull(comment);
     assertEquals(10, comment.getOwnerId());
     assertEquals("", comment.getOwner());
@@ -271,8 +250,8 @@ public class CommentDAOTest {
     comment.setCreationDate(modificationDate);
     comment.setForeignKey(foreignKey);
     comment.setResourceType(newResourceType);
-    commentDAO.updateComment(con, comment);
-    Comment result = commentDAO.getComment(con, pk);
+    commentRequester.updateComment(con, comment);
+    Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals("", result.getOwner());
     assertEquals(newMessage, result.getMessage());
@@ -282,7 +261,6 @@ public class CommentDAOTest {
     assertNotNull(result.getForeignKey());
     assertEquals(foreignKey.getId(), result.getForeignKey().getId());
     assertEquals(pk, result.getCommentPK());
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -291,11 +269,8 @@ public class CommentDAOTest {
    */
   @Test
   public void testMoveComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment result = commentDAO.getComment(con, pk);
+    Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -310,9 +285,9 @@ public class CommentDAOTest {
     ForeignPK srcForeignKey = new ForeignPK(result.getForeignKey().getId(), "instanceId10");
     ForeignPK targetForeignKey = new ForeignPK(String.valueOf(RandomGenerator.getRandomInt()),
         "instanceId" + RandomGenerator.getRandomInt());
-    commentDAO.moveComments(con, srcResourceType, srcForeignKey, targetResourceType,
-        targetForeignKey);
-    result = commentDAO.getComment(con, pk);
+    commentRequester
+        .moveComments(con, srcResourceType, srcForeignKey, targetResourceType, targetForeignKey);
+    result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -326,7 +301,7 @@ public class CommentDAOTest {
     assertEquals(targetForeignKey.getComponentName(), result.getCommentPK().getInstanceId());
 
     pk = new CommentPK("1001", null, "instanceId10");
-    result = commentDAO.getComment(con, pk);
+    result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(12, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -338,7 +313,6 @@ public class CommentDAOTest {
     assertNull(result.getForeignKey().getInstanceId());
     assertEquals("1001", result.getCommentPK().getId());
     assertEquals(targetForeignKey.getComponentName(), result.getCommentPK().getInstanceId());
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -347,33 +321,22 @@ public class CommentDAOTest {
    */
   @Test
   public void testGetMostCommentedAllPublications() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
-    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con, null);
+    List<CommentedPublicationInfo> result =
+        commentRequester.getMostCommentedAllPublications(con, null);
     assertNotNull(result);
     assertEquals(6, result.size());
     assertEquals(2, result.get(0).getCommentCount());
     assertEquals(1, result.get(1).getCommentCount());
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   @Test
   public void testGetMostCommentedAllPublicationsForAGivenResourceType() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
-    List<CommentedPublicationInfo> result = commentDAO.getMostCommentedAllPublications(con,
-        "RtypeUniqueTest");
+    List<CommentedPublicationInfo> result =
+        commentRequester.getMostCommentedAllPublications(con, "RtypeUniqueTest");
     assertNotNull(result);
     assertEquals(2, result.size());
     assertEquals(1, result.get(0).getCommentCount());
     assertEquals(1, result.get(1).getCommentCount());
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -382,31 +345,25 @@ public class CommentDAOTest {
    */
   @Test
   public void testGetCommentsCount() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     ForeignPK foreignKey = new ForeignPK("500", "instanceId10");
     String srcResourceType = "RtypeTest";
-    assertEquals(2, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
+    assertEquals(2, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
     srcResourceType = "RtypeTestAutre";
-    assertEquals(1, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
+    assertEquals(1, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
     srcResourceType = "RtypeTestNull";
-    assertEquals(0, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
+    assertEquals(0, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
     foreignKey.setComponentName("instanceId1");
     srcResourceType = "RtypeTestAutre";
-    assertEquals(0, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
+    assertEquals(0, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
     foreignKey = new ForeignPK("50", "instanceId10");
-    assertEquals(0, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
+    assertEquals(0, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
     foreignKey.setId(null);
-    assertEquals(1, commentDAO.getCommentsCount(con, srcResourceType, foreignKey));
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
+    assertEquals(1, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
   }
 
   /**
@@ -415,74 +372,68 @@ public class CommentDAOTest {
    */
   @Test
   public void testGetAllComments() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     ForeignPK foreignKey = new ForeignPK("500", "instanceId10");
     String resourceType = "RtypeTest";
-    List<Comment> comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    List<Comment> comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(2, comments.size());
 
     resourceType = "RtypeTestAutre";
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(1, comments.size());
 
     resourceType = "RtypeTestNull";
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(0, comments.size());
 
     foreignKey.setComponentName("instanceId1");
     resourceType = "RtypeTestAutre";
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(0, comments.size());
 
     foreignKey = new ForeignPK("50", "instanceId10");
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(0, comments.size());
 
     foreignKey.setId(null);
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(1, comments.size());
 
     foreignKey.setComponentName(null);
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(2, comments.size());
 
     resourceType = null;
     foreignKey = new ForeignPK("500", "instanceId10");
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(3, comments.size());
 
     foreignKey.setId(null);
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(3, comments.size());
 
     foreignKey.setId("500");
     foreignKey.setComponentName(null);
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(3, comments.size());
 
     boolean isIllegalArgumentException = false;
     foreignKey.setId(null);
     try {
-      commentDAO.getAllComments(con, resourceType, foreignKey);
+      commentRequester.getAllComments(con, resourceType, foreignKey);
     } catch (IllegalArgumentException e) {
       isIllegalArgumentException = true;
     }
     assertTrue(isIllegalArgumentException);
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -491,24 +442,18 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteAllComments() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     ForeignPK foreignKey = new ForeignPK("500", "instanceId10");
     String resourceType = "RtypeTest";
-    List<Comment> comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    List<Comment> comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(2, comments.size());
 
-    final int nbDeletes = commentDAO.deleteAllComments(con, resourceType, foreignKey);
+    final int nbDeletes = commentRequester.deleteAllComments(con, resourceType, foreignKey);
     assertEquals(2, nbDeletes);
 
-    comments = commentDAO.getAllComments(con, resourceType, foreignKey);
+    comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(0, comments.size());
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -517,19 +462,13 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteAllCommentsOnNullValues() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     boolean isIllegalArgumentException = false;
     try {
-      commentDAO.deleteAllComments(con, null, null);
+      commentRequester.deleteAllComments(con, null, null);
     } catch (IllegalArgumentException e) {
       isIllegalArgumentException = true;
     }
     assertTrue(isIllegalArgumentException);
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -538,18 +477,12 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteAllCommentsOnResourceTypeOnly() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     String resourceType = "RtypeTest";
 
-    int nbDeletes = commentDAO.deleteAllComments(con, resourceType, null);
+    int nbDeletes = commentRequester.deleteAllComments(con, resourceType, null);
     assertEquals(3, nbDeletes);
-    nbDeletes = commentDAO.deleteAllComments(con, resourceType, null);
+    nbDeletes = commentRequester.deleteAllComments(con, resourceType, null);
     assertEquals(0, nbDeletes);
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -558,18 +491,12 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteAllCommentsOnResourceIdOnly() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     ForeignPK foreignKey = new ForeignPK("500");
 
-    int nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    int nbDeletes = commentRequester.deleteAllComments(con, null, foreignKey);
     assertEquals(3, nbDeletes);
-    nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    nbDeletes = commentRequester.deleteAllComments(con, null, foreignKey);
     assertEquals(0, nbDeletes);
-
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
@@ -578,18 +505,193 @@ public class CommentDAOTest {
    */
   @Test
   public void testDeleteAllCommentsOnInstanceIdOnly() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    Connection con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
-
     ForeignPK foreignKey = new ForeignPK(null, "instanceId20");
 
-    int nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    int nbDeletes = commentRequester.deleteAllComments(con, null, foreignKey);
     assertEquals(2, nbDeletes);
-    nbDeletes = commentDAO.deleteAllComments(con, null, foreignKey);
+    nbDeletes = commentRequester.deleteAllComments(con, null, foreignKey);
     assertEquals(0, nbDeletes);
+  }
 
-    baseTest.getDatabaseTester().closeConnection(dbConnection);
+  /**
+   * Test of getSocialInformationCommentsListByUserId method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testGetDataWithNoFiltersShouldNotWork() throws Exception {
+    commentRequester.getSocialInformationComments(con, null, null, null, null);
+  }
+
+  /**
+   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsReturningOneSocialInformationOfCreation()
+      throws Exception {
+    List<String> contactIds = asList("10");
+
+    List<SocialInformation> socialInformationList =
+        commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
+    assertThat(socialInformationList, hasSize(1));
+
+    SocialInformation socialInformationOfCreation = socialInformationList.get(0);
+    assertThat(socialInformationOfCreation.getTitle(), nullValue());
+    assertThat(socialInformationOfCreation.getDescription(), is("my comments"));
+    assertThat(socialInformationOfCreation.getAuthor(), is("10"));
+    assertThat(socialInformationOfCreation.getUrl(), nullValue());
+    assertThat(socialInformationOfCreation.getDate(),
+        is((Date) java.sql.Date.valueOf("2019-10-15")));
+    assertThat(socialInformationOfCreation.getType(),
+        is(SocialInformationType.COMMENTPUBLICATION.name()));
+    assertThat(socialInformationOfCreation.getIcon(), is("COMMENTPUBLICATION_new.gif"));
+    assertThat(socialInformationOfCreation.isUpdated(), is(false));
+  }
+
+  /**
+   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsForOneUser() throws Exception {
+    List<String> contactIds = asList("12");
+
+    List<SocialInformation> socialInformationList =
+        commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
+    assertThat(socialInformationList, hasSize(6));
+
+    SocialInformation socialInformationOfCreation = socialInformationList.get(0);
+    assertThat(socialInformationOfCreation.getTitle(), nullValue());
+    assertThat(socialInformationOfCreation.getDescription(), notNullValue());
+    assertThat(socialInformationOfCreation.getAuthor(), is("12"));
+    assertThat(socialInformationOfCreation.getUrl(), nullValue());
+    assertThat(socialInformationOfCreation.getDate(),
+        is((Date) java.sql.Date.valueOf("2020-06-16")));
+    assertThat(socialInformationOfCreation.getType(),
+        is(SocialInformationType.COMMENTPUBLICATION.name()));
+    assertThat(socialInformationOfCreation.getIcon(), is("COMMENTPUBLICATION_update.gif"));
+    assertThat(socialInformationOfCreation.isUpdated(), is(true));
+  }
+
+  /**
+   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsFilteredOnUserId() throws Exception {
+    List<String> contactIds = asList("12");
+
+    List<SocialInformation> socialInformationList =
+        commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
+    assertThat(socialInformationList, hasSize(6));
+
+    contactIds = asList("10", "12");
+
+    socialInformationList =
+        commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
+    assertThat(socialInformationList, hasSize(7));
+  }
+
+  /**
+   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsFilteredOnResourceTypes() throws Exception {
+
+    List<SocialInformation> socialInformationList =
+        commentRequester.getSocialInformationComments(con, asList("RtypeTest"), null, null, null);
+    assertThat(socialInformationList, hasSize(3));
+
+    socialInformationList = commentRequester
+        .getSocialInformationComments(con, asList("RtypeTest", "RtypeTestAutre"), null, null, null);
+    assertThat(socialInformationList, hasSize(5));
+  }
+
+  /**
+   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsFilteredOnInstanceId() throws Exception {
+
+    List<SocialInformation> socialInformationList = commentRequester
+        .getSocialInformationComments(con, null, null, asList("instanceId10"), null);
+    assertThat(socialInformationList, hasSize(3));
+
+    socialInformationList = commentRequester
+        .getSocialInformationComments(con, null, null, asList("instanceId20"), null);
+    assertThat(socialInformationList, hasSize(2));
+
+    socialInformationList = commentRequester
+        .getSocialInformationComments(con, null, null, asList("instanceId10", "instanceId20"),
+            null);
+    assertThat(socialInformationList, hasSize(5));
+  }
+
+  /**
+   * Test of getSocialInformationComments method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsFilteredOnPeriod() throws Exception {
+
+    // Period which the begin date equals the lowest date of registered comments and the end date
+    // equals the greatest date of registered comments
+    List<SocialInformation> socialInformationList = commentRequester
+        .getSocialInformationComments(con, null, null, null,
+            Period.from(java.sql.Date.valueOf("2019-10-15"), java.sql.Date.valueOf("2020-06-16")));
+    assertThat(socialInformationList, hasSize(7));
+
+    // Period which the begin date and end date are both equal to the lowest date of registered
+    // comments
+    socialInformationList = commentRequester.getSocialInformationComments(con, null, null, null,
+        Period.from(java.sql.Date.valueOf("2019-10-15"), java.sql.Date.valueOf("2019-10-15")));
+    assertThat(socialInformationList, hasSize(1));
+
+    // Period which the begin date and end date are both equal to the common creation date of
+    // registered comments
+    socialInformationList = commentRequester.getSocialInformationComments(con, null, null, null,
+        Period.from(java.sql.Date.valueOf("2019-10-18"), java.sql.Date.valueOf("2019-10-18")));
+    assertThat(socialInformationList, hasSize(6));
+
+    // Period which the begin date and end date are both equal to the greatest date of registered
+    // comments
+    socialInformationList = commentRequester.getSocialInformationComments(con, null, null, null,
+        Period.from(java.sql.Date.valueOf("2020-06-16"), java.sql.Date.valueOf("2020-06-16")));
+    assertThat(socialInformationList, hasSize(6));
+
+    // Period which the begin date and end date are both greater than the greatest date of
+    // registered comments
+    socialInformationList = commentRequester.getSocialInformationComments(con, null, null, null,
+        Period.from(java.sql.Date.valueOf("2020-06-17"), java.sql.Date.valueOf("2020-06-17")));
+    assertThat(socialInformationList, empty());
+  }
+
+  /**
+   * Test of getSocialInformationCommentsListByUserId method, of class JDBCCommentRequester.
+   * @throws Exception
+   */
+  @Test
+  public void testGetSocialInformationCommentsAndApplyingAllFilters() throws Exception {
+    List<String> contactIds = asList("12");
+
+    List<SocialInformation> socialInformationList = commentRequester
+        .getSocialInformationComments(con, asList("RtypeTest"), contactIds, null,
+            Period.from(java.sql.Date.valueOf("2020-06-16"), java.sql.Date.valueOf("2020-06-16")));
+    assertThat(socialInformationList, hasSize(2));
+
+    socialInformationList = commentRequester
+        .getSocialInformationComments(con, asList("RtypeTest", "RtypeTestAutre"), contactIds, null,
+            Period.from(java.sql.Date.valueOf("2020-06-16"), java.sql.Date.valueOf("2020-06-16")));
+    assertThat(socialInformationList, hasSize(4));
+
+    // Period which the begin date and end date are both greater than the greatest date of
+    // registered comments
+    socialInformationList = commentRequester
+        .getSocialInformationComments(con, asList("RtypeTest", "RtypeTestAutre"), contactIds, null,
+            Period.from(java.sql.Date.valueOf("2020-06-17"), java.sql.Date.valueOf("2020-06-17")));
+    assertThat(socialInformationList, empty());
   }
 
   private Date aDate() {

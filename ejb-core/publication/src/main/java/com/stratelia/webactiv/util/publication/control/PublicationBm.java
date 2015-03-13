@@ -27,6 +27,7 @@ import java.util.List;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
 
+import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -430,14 +431,14 @@ public interface PublicationBm {
    * first Index
    *
    * @return: List <SocialInformation>
-   * @param myContactsIds 
-   * @param options 
-   * @param begin 
-   * @param end 
-   * @return  
+   * @param myContactsIds
+   * @param options
+   * @param begin
+   * @param end
+   * @return
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
-      List<String> options, Date begin, Date end);
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, Date begin, Date end);
 
   public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone);
 

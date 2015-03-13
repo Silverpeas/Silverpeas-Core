@@ -788,8 +788,8 @@ public class PublicationDAOTest extends AbstractTestDao {
       List<SocialInformation> list200 = new ArrayList<SocialInformation>();
       list200.add(sp2User200);
       list200.add(sp1User200);
-      List<SocialInformation> list200DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
-          user200, begin, end);
+      List<? extends SocialInformation> list200DOA =
+          PublicationDAO.getAllPublicationsIDbyUserid(con, user200, begin, end);
       assertEquals("Must be equal", list200.get(0), list200DOA.get(0));
       assertEquals("Must be equal", list200.get(1), list200DOA.get(1));
 

@@ -43,6 +43,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -1836,8 +1837,8 @@ public class PublicationBmEJB implements PublicationBm {
    * @
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
-      List<String> options, Date begin, Date end) {
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, Date begin, Date end) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds, options,

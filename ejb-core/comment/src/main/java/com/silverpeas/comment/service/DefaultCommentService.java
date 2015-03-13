@@ -24,18 +24,22 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.comment.socialnetwork.SocialInformationComment;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.date.Period;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.List;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
@@ -146,8 +150,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * of the commented publication, the component instance name, and the deleted comment. If no such
    * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    *
-   * @param resourceType the type of the commented publication.
-   * @param pk the identifier of the publication the comments are on.
+   * @param instanceId
    */
   @Override
   public void deleteAllCommentsByComponentInstanceId(String instanceId) {
@@ -429,5 +432,35 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   @Override
   public List<Comment> getLastComments(String resourceType, int count) {
     return getCommentDAO().getLastComments(resourceType, count);
+  }
+
+  /**
+   * Get the list of SocialInformationComment added by userId in a period
+   * @param resourceTypes the aimed resources types.
+   * @param userId the author of comments.
+   * @param period the period into which the comment has been created or modified.
+   * @return List of {@link SocialInformation}
+   */
+  @Override
+  public List<SocialInformationComment> getSocialInformationCommentsListByUserId(
+      List<String> resourceTypes, String userId, Period period) {
+    return getCommentDAO().getSocialInformationCommentsListByUserId(resourceTypes, userId, period);
+  }
+
+  /**
+   * Gets the list of SocialInformationComment added by myContactsIds in a period
+   * @param resourceTypes the aimed resources types.
+   * @param myContactsIds the aimed user identifiers of contacts.
+   * @param instanceIds the aimed identifiers of component instances.
+   * @param period the period into which the comment has been created or modified.
+   * @return List of {@link SocialInformation}
+   */
+  @Override
+  public List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
+      List<String> resourceTypes, List<String> myContactsIds, List<String> instanceIds,
+      Period period) {
+    return getCommentDAO()
+        .getSocialInformationCommentsListOfMyContacts(resourceTypes, myContactsIds, instanceIds,
+            period);
   }
 }

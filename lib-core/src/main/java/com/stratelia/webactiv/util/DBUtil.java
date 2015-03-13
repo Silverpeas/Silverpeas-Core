@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.calendar.DateTime;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -692,6 +693,9 @@ public class DBUtil {
         preparedStatement.setLong(paramIndex, (Long) parameter);
       } else if (parameter instanceof Timestamp) {
         preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
+      } else if (parameter instanceof DateTime) {
+        preparedStatement
+            .setTimestamp(paramIndex, new java.sql.Timestamp(((Date) parameter).getTime()));
       } else if (parameter instanceof Date) {
         preparedStatement.setDate(paramIndex, new java.sql.Date(((Date) parameter).getTime()));
       } else if (parameter instanceof UserDetail) {
