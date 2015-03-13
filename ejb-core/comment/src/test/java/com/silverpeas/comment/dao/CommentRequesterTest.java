@@ -531,7 +531,7 @@ public class CommentRequesterTest {
       throws Exception {
     List<String> contactIds = asList("10");
 
-    List<SocialInformation> socialInformationList =
+    List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
     assertThat(socialInformationList, hasSize(1));
 
@@ -556,7 +556,7 @@ public class CommentRequesterTest {
   public void testGetSocialInformationCommentsForOneUser() throws Exception {
     List<String> contactIds = asList("12");
 
-    List<SocialInformation> socialInformationList =
+    List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
     assertThat(socialInformationList, hasSize(6));
 
@@ -581,7 +581,7 @@ public class CommentRequesterTest {
   public void testGetSocialInformationCommentsFilteredOnUserId() throws Exception {
     List<String> contactIds = asList("12");
 
-    List<SocialInformation> socialInformationList =
+    List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, null, contactIds, null, null);
     assertThat(socialInformationList, hasSize(6));
 
@@ -599,7 +599,7 @@ public class CommentRequesterTest {
   @Test
   public void testGetSocialInformationCommentsFilteredOnResourceTypes() throws Exception {
 
-    List<SocialInformation> socialInformationList =
+    List<? extends SocialInformation> socialInformationList =
         commentRequester.getSocialInformationComments(con, asList("RtypeTest"), null, null, null);
     assertThat(socialInformationList, hasSize(3));
 
@@ -615,7 +615,7 @@ public class CommentRequesterTest {
   @Test
   public void testGetSocialInformationCommentsFilteredOnInstanceId() throws Exception {
 
-    List<SocialInformation> socialInformationList = commentRequester
+    List<? extends SocialInformation> socialInformationList = commentRequester
         .getSocialInformationComments(con, null, null, asList("instanceId10"), null);
     assertThat(socialInformationList, hasSize(3));
 
@@ -638,7 +638,7 @@ public class CommentRequesterTest {
 
     // Period which the begin date equals the lowest date of registered comments and the end date
     // equals the greatest date of registered comments
-    List<SocialInformation> socialInformationList = commentRequester
+    List<? extends SocialInformation> socialInformationList = commentRequester
         .getSocialInformationComments(con, null, null, null,
             Period.from(java.sql.Date.valueOf("2019-10-15"), java.sql.Date.valueOf("2020-06-16")));
     assertThat(socialInformationList, hasSize(7));
@@ -676,7 +676,7 @@ public class CommentRequesterTest {
   public void testGetSocialInformationCommentsAndApplyingAllFilters() throws Exception {
     List<String> contactIds = asList("12");
 
-    List<SocialInformation> socialInformationList = commentRequester
+    List<? extends SocialInformation> socialInformationList = commentRequester
         .getSocialInformationComments(con, asList("RtypeTest"), contactIds, null,
             Period.from(java.sql.Date.valueOf("2020-06-16"), java.sql.Date.valueOf("2020-06-16")));
     assertThat(socialInformationList, hasSize(2));
