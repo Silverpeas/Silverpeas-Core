@@ -20,10 +20,14 @@
  */
 package com.stratelia.webactiv.publication.social;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
 import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.accesscontrol.PublicationAccessControl;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -32,6 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 @Singleton
@@ -39,10 +44,8 @@ public class SocialPublications implements SocialPublicationsInterface {
 
   @Inject
   private PublicationService publicationService;
-  protected SocialPublications() {
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+  protected SocialPublications() {
   }
 
   /**
@@ -77,7 +80,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     // getting all components allowed to me
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));
@@ -87,7 +90,8 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "bookmark")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "webSites")));
     List<SocialInformationPublication> socialPublications =
-        getEJB().getSocialInformationsListOfMyContacts(myContactsIds, instanceIds, begin, end);
+        publicationService.getSocialInformationsListOfMyContacts(myContactsIds, instanceIds, begin,
+            end);
 
     // Even if the data has been found by filtering on instanceIds that the user can access, it
     // could exists more precise right rules to apply.
@@ -101,8 +105,8 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
         // On Kmelia application, if the user has not right access to the publication, then it is
         // removed from the result
 
-        AccessController<PublicationPK> publicationAccessController =
-            AccessControllerProvider.getAccessController("publicationAccessController");
+        AccessController<PublicationPK> publicationAccessController = AccessControllerProvider
+            .getAccessController(PublicationAccessControl.class);
         if (!publicationAccessController.isUserAuthorized(myId,
             new PublicationPK(socialPublication.getPublication().getId(), instanceId))) {
           socialPublicationIt.remove();

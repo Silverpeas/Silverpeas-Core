@@ -46,7 +46,7 @@ public interface ProviderSwitchInterface {
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
-  public List<SocialInformation> getSocialInformationsList(
+  List<SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId,
       String classification, Date begin, Date end) throws SilverpeasException;
 
@@ -61,7 +61,7 @@ public interface ProviderSwitchInterface {
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(
+  List<SocialInformation> getSocialInformationsListOfMyContacts(
       SocialInformationType socialInformationType,
       String myId, List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 
@@ -69,48 +69,48 @@ public interface ProviderSwitchInterface {
    * return the SocialEvent providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
-  public SocialEventsInterface getSocialEventsInterface();
+  SocialEventsInterface getSocialEventsInterface();
 
   /**
    * return the SocialGallery providor (by using Inversion of Control Containers )
    * @return SocialGalleryInterface
    */
-  public SocialGalleryInterface getSocialGalleryInterface();
+  SocialGalleryInterface getSocialGalleryInterface();
 
   /**
    * return the SocialCommentGallery providor (by using Inversion of Control Containers )
    * @return SocialCommentGalleryInterface
    */
-  public SocialCommentGalleryInterface getSocialCommentGalleryInterface();
+  SocialCommentGalleryInterface getSocialCommentGalleryInterface();
 
   /**
    * return the SocialPublications providor (by using Inversion of Control Containers )
    * @return SocialPublicationsInterface
    */
-  public SocialPublicationsInterface getSocialPublicationsInterface();
+  SocialPublicationsInterface getSocialPublicationsInterface();
 
   /**
    * return the SocialCommentPublications providor (by using Inversion of Control Containers )
    * @return SocialCommentPublicationsInterface
    */
-  public SocialCommentPublicationsInterface getSocialCommentPublicationsInterface();
+  SocialCommentPublicationsInterface getSocialCommentPublicationsInterface();
 
   /**
    * return the SocialCommentQuickInfos providor (by using Inversion of Control Containers )
    * @return SocialCommentQuickInfosInterface
    */
-  public SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface();
+  SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface();
 
   /**
    * return SocialStatus providor (by using Inversion of Control Containers )
    * @return SocialStatusInterface
    */
-  public SocialStatusInterface getSocialStatusInterface();
+  SocialStatusInterface getSocialStatusInterface();
 
   /**
    * return the SocialRelationShips providor (by using Inversion of Control Containers )
    * @return SocialRelationShipsInterface
    */
-  public SocialRelationShipsInterface getSocialRelationShipsInterface();
+  SocialRelationShipsInterface getSocialRelationShipsInterface();
 
 }

@@ -27,11 +27,10 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.WAPrimaryKey;
 
-import java.util.Date;
 import java.util.List;
 
 /**

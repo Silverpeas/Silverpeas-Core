@@ -29,30 +29,27 @@
 package com.silverpeas.comment.dao;
 
 import com.silverpeas.comment.dao.jdbc.JDBCCommentRequester;
-import com.silverpeas.comment.mock.OrganizationControllerMocking;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
-import com.silverpeas.components.model.AbstractJndiCase;
-import com.silverpeas.components.model.SilverpeasJndiCase;
-import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
-import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import org.dbunit.database.IDatabaseConnection;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.date.Period;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ForeignPK;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
@@ -61,49 +58,39 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-comment-dao.xml")
+@RunWith(Arquillian.class)
 public class CommentRequesterTest {
 
   private final JDBCCommentRequester commentRequester = new JDBCCommentRequester();
-  protected static SilverpeasJndiCase baseTest;
 
-  @Inject
-  private OrganizationControllerMocking organizationController;
+  private final String DUMMY_COMMENT_ID = "newCommentId";
+  private final String DUMMY_INSTANCE_ID = "newInstanceId";
+  private final Date DUUMMY_DATE = java.sql.Date.valueOf("2015-01-01");
+
+  @Rule
+  public DbUnitLoadingRule dbUnitLoadingRule =
+      new DbUnitLoadingRule("create-database.sql", "comments-dataset.xml");
 
   private Connection con;
 
-  private UserDetail aUser() {
-    UserDetail user = new UserDetail();
-    user.setFirstName(RandomGenerator.getRandomString());
-    user.setLastName((RandomGenerator.getRandomString()));
-    user.setId(String.valueOf(RandomGenerator.getRandomInt()));
-    organizationController.saveUser(user);
-    return user;
-  }
-
-  @BeforeClass
-  public static void generalSetUp() throws Exception {
-    baseTest = new SilverpeasJndiCase("com/silverpeas/comment/dao/comments-dataset.xml",
-        "create-database.ddl");
-    baseTest.configureJNDIDatasource();
-    IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
-    AbstractJndiCase.executeDDL(databaseConnection, baseTest.getDdlFile());
-    baseTest.getDatabaseTester().closeConnection(databaseConnection);
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(CommentRequesterTest.class)
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .addMavenDependencies("org.apache.tika:tika-core")
+        .addMavenDependencies("org.apache.tika:tika-parsers")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard").testFocusedOn(war -> {
+          war.addPackages(true, "com.silverpeas.comment.dao")
+              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+        }).build();
   }
 
   @Before
   public void prepareTest() throws Exception {
-    baseTest.setUp();
-    for (String userId : new String[]{"10", "12"}) {
-      UserDetail user = new UserDetail();
-      user.setId(userId);
-      organizationController.saveUser(user);
-    }
-
-    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
-    con = dbConnection.getConnection();
-    DBUtil.getInstanceForTest(con);
+    con = DBUtil.openConnection();
   }
 
   @After
@@ -121,7 +108,7 @@ public class CommentRequesterTest {
     String resourceType = "RtypeTest";
     ForeignPK foreignKey = new ForeignPK("200", "kmelia18");
     UserDetail author = aUser();
-    String message = RandomGenerator.getRandomString();
+    String message = "A dummy message";
     Date creationDate = aDate();
     Comment cmt =
         new Comment(pk, resourceType, foreignKey, author.getId(), message, creationDate, null);
@@ -201,7 +188,7 @@ public class CommentRequesterTest {
     Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
-    assertEquals("", result.getOwner());
+    assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
     assertNull(result.getModificationDate());
@@ -217,7 +204,7 @@ public class CommentRequesterTest {
     Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
-    assertEquals("", result.getOwner());
+    assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
     assertNull(result.getModificationDate());
@@ -236,15 +223,14 @@ public class CommentRequesterTest {
     Comment comment = commentRequester.getComment(con, pk);
     assertNotNull(comment);
     assertEquals(10, comment.getOwnerId());
-    assertEquals("", comment.getOwner());
+    assertEquals("user10", comment.getOwner());
     assertEquals("my comments", comment.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), comment.getCreationDate());
     assertNull(comment.getModificationDate());
     String newResourceType = "RtypeTestUpdate";
-    String newMessage = RandomGenerator.getRandomString();
+    String newMessage = "A dummy message";
     Date modificationDate = aDate();
-    ForeignPK foreignKey = new ForeignPK(String.valueOf(RandomGenerator.getRandomInt()),
-        "instanceId" + RandomGenerator.getRandomInt());
+    ForeignPK foreignKey = new ForeignPK(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
     comment.setMessage(newMessage);
     comment.setModificationDate(modificationDate);
     comment.setCreationDate(modificationDate);
@@ -253,7 +239,7 @@ public class CommentRequesterTest {
     commentRequester.updateComment(con, comment);
     Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
-    assertEquals("", result.getOwner());
+    assertEquals("user10", result.getOwner());
     assertEquals(newMessage, result.getMessage());
     assertEquals(newResourceType, result.getResourceType());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
@@ -273,7 +259,7 @@ public class CommentRequesterTest {
     Comment result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
-    assertEquals("", result.getOwner());
+    assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
     assertNull(result.getModificationDate());
@@ -283,14 +269,13 @@ public class CommentRequesterTest {
     String srcResourceType = "RtypeTest";
     String targetResourceType = "RtypeTestTo";
     ForeignPK srcForeignKey = new ForeignPK(result.getForeignKey().getId(), "instanceId10");
-    ForeignPK targetForeignKey = new ForeignPK(String.valueOf(RandomGenerator.getRandomInt()),
-        "instanceId" + RandomGenerator.getRandomInt());
+    ForeignPK targetForeignKey = new ForeignPK(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
     commentRequester
         .moveComments(con, srcResourceType, srcForeignKey, targetResourceType, targetForeignKey);
     result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
-    assertEquals("", result.getOwner());
+    assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(targetResourceType, result.getResourceType());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
@@ -304,7 +289,7 @@ public class CommentRequesterTest {
     result = commentRequester.getComment(con, pk);
     assertNotNull(result);
     assertEquals(12, result.getOwnerId());
-    assertEquals("", result.getOwner());
+    assertEquals("user12", result.getOwner());
     assertEquals("my comments are good", result.getMessage());
     assertEquals(targetResourceType, result.getResourceType());
     assertEquals(DateUtil.parseDate("2019/10/18"), result.getCreationDate());
@@ -694,9 +679,11 @@ public class CommentRequesterTest {
     assertThat(socialInformationList, empty());
   }
 
+  private UserDetail aUser() {
+    return UserDetail.getById("1");
+  }
+
   private Date aDate() {
-    com.silverpeas.calendar.Date date = new com.silverpeas.calendar.Date(RandomGenerator.
-        getRandomCalendar().getTime());
-    return date;
+    return new com.silverpeas.calendar.Date(DUUMMY_DATE);
   }
 }

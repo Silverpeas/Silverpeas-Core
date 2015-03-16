@@ -56,4 +56,8 @@
     commentOwnerId="12" commentCreationDate="2019/10/18"
     commentModificationDate="2020/06/16" commentComment="Comment inside a tool"
     instanceId="NONE" resourceType="RtypeUniqueTest" resourceId="710" />
+
+  <st_user id="1" domainid="0" specificid="1" lastname="aUser" login="auser" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="10" domainid="0" specificid="10" lastname="user10" login="user10" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="12" domainid="0" specificid="12" lastname="user12" login="user12" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 </dataset>

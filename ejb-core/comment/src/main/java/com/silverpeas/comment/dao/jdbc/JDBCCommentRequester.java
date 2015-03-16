@@ -27,16 +27,14 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
-import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,8 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.stratelia.webactiv.util.DateUtil.date2SQLDate;
-import static com.stratelia.webactiv.util.DateUtil.parseDate;
+import static org.silverpeas.util.DateUtil.date2SQLDate;
+import static org.silverpeas.util.DateUtil.parseDate;
 
 /**
  * A specific JDBC requester dedicated on the comments persisted in the underlying data source.
@@ -457,11 +455,11 @@ public class JDBCCommentRequester {
     }
     if (period != null && period.isValid()) {
       query.append(clause).append("((commentModificationDate BETWEEN ? AND ?) ");
-      params.add(DateUtil.date2SQLDate(period.getBeginDate()));
-      params.add(DateUtil.date2SQLDate(period.getEndDate()));
+      params.add(date2SQLDate(period.getBeginDate()));
+      params.add(date2SQLDate(period.getEndDate()));
       query.append("OR (commentCreationDate BETWEEN ? AND ?)) ");
-      params.add(DateUtil.date2SQLDate(period.getBeginDate()));
-      params.add(DateUtil.date2SQLDate(period.getEndDate()));
+      params.add(date2SQLDate(period.getBeginDate()));
+      params.add(date2SQLDate(period.getEndDate()));
     }
 
     if (params.isEmpty()) {

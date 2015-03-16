@@ -165,22 +165,22 @@ public abstract class AbstractSocialInformation implements SocialInformation {
    * @return int
    */
   @Override
-  public int compareTo(SocialInformation o) {
+  public int compareTo(SocialInformation socialInfo) {
     DateTime myDate = new DateTime(getDate());
-    DateTime otherDate = new DateTime(o.getDate());
+    DateTime otherDate = new DateTime(socialInfo.getDate());
 
     // First sorting on date (and not the time)
     int result = otherDate.getBeginOfDay().compareTo(myDate.getBeginOfDay());
     if (result == 0) {
 
       // Then sorting on URL
-      result = getUrl().compareTo(o.getUrl());
+      result = getUrl().compareTo(socialInfo.getUrl());
 
       if (result == 0) {
 
         // Then put resource comments before the resource itself
         boolean myIsComment = getType().contains("COMMENT");
-        boolean otherIsComment = o.getType().contains("COMMENT");
+        boolean otherIsComment = socialInfo.getType().contains("COMMENT");
         if ((!myIsComment && otherIsComment) || (myIsComment && !otherIsComment)) {
           result = myIsComment ? -1 : 1;
         }
@@ -189,9 +189,9 @@ public abstract class AbstractSocialInformation implements SocialInformation {
     if (result == 0) {
 
       // Then put update before the creation
-      if (isUpdated() && !o.isUpdated()) {
+      if (isUpdated() && !socialInfo.isUpdated()) {
         result = -1;
-      } else if (!isUpdated() && o.isUpdated()) {
+      } else if (!isUpdated() && socialInfo.isUpdated()) {
         result = 1;
       }
     }

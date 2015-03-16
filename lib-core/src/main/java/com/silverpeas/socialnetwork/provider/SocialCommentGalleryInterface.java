@@ -26,11 +26,17 @@ package com.silverpeas.socialnetwork.provider;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.List;
 
 public interface SocialCommentGalleryInterface {
+
+  public static SocialCommentGalleryInterface get() {
+    return ServiceProvider.getService(SocialCommentGalleryInterface.class);
+  }
+
   /**
    * get list of socialInformation
    * @param userId

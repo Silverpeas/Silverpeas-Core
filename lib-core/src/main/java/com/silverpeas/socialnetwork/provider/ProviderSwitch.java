@@ -40,13 +40,7 @@ import java.util.List;
 public class ProviderSwitch implements ProviderSwitchInterface {
 
   @Inject
-  private SocialCommentGalleryInterface socialCommentGalleryInterface;
-  @Inject
   private SocialPublicationsInterface socialPublicationsInterface;
-  @Inject
-  private SocialCommentPublicationsInterface socialCommentPublicationsInterface;
-  @Inject
-  private SocialCommentQuickInfosInterface socialCommentQuickInfosInterface;
   @Inject
   private SocialStatusInterface socialStatusInterface;
   @Inject
@@ -76,16 +70,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    */
   @Override
   public SocialCommentGalleryInterface getSocialCommentGalleryInterface() {
-    return socialCommentGalleryInterface;
-  }
-
-  /**
-   * set SocialCommentGallery providor (by using Inversion of Control Containers )
-   * @param socialCommentGalleryInterface
-   */
-  @Override
-  public void setSocialCommentGalleryInterface(SocialCommentGalleryInterface socialCommentGalleryInterface) {
-    this.socialCommentGalleryInterface = socialCommentGalleryInterface;
+    return SocialCommentGalleryInterface.get();
   }
 
   /**
@@ -240,7 +225,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    */
   @Override
   public SocialCommentPublicationsInterface getSocialCommentPublicationsInterface() {
-    return socialCommentPublicationsInterface;
+    return SocialCommentPublicationsInterface.get();
   }
 
   /**
@@ -249,7 +234,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
    */
   @Override
   public SocialCommentQuickInfosInterface getSocialCommentQuickInfosInterface() {
-    return socialCommentQuickInfosInterface;
+    return SocialCommentQuickInfosInterface.get();
   }
 
   /**

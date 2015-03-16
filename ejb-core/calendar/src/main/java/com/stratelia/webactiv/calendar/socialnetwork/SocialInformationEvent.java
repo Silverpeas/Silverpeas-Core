@@ -145,11 +145,11 @@ public class SocialInformationEvent extends AbstractSocialInformation {
    * @return int
    */
   @Override
-  public int compareTo(SocialInformation si) {
+  public int compareTo(SocialInformation socialInfo) {
     if (SocialInformationType.LASTEVENT.toString().equals(getType())) {
       // event in the past
-      return getDate().compareTo(si.getDate()) * -1;
+      return getDate().compareTo(socialInfo.getDate()) * -1;
     }
-    return getDate().compareTo(si.getDate());// future event
+    return getDate().compareTo(socialInfo.getDate());// future event
   }
 }

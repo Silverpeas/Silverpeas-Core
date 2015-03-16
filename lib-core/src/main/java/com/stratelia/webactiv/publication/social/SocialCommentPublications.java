@@ -27,29 +27,32 @@ package com.stratelia.webactiv.publication.social;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.service.CommentServiceProvider;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialCommentPublicationsInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.accesscontrol.PublicationAccessControl;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+@Singleton
 public class SocialCommentPublications implements SocialCommentPublicationsInterface {
+
+  @Inject
+  private PublicationService publicationService;
 
   private List<String> getListResourceType() {
     List<String> listResourceType = new ArrayList<String>();
@@ -57,13 +60,8 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
     return listResourceType;
   }
 
-  private PublicationBm getEJB() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("SocialCommentPublications.getEJB()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  private PublicationService getService() {
+    return publicationService;
   }
 
   @SuppressWarnings("unchecked")
@@ -72,7 +70,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
       String resourceId = socialInformation.getComment().getForeignKey().getId();
       String instanceId = socialInformation.getComment().getComponentInstanceId();
       PublicationPK pubPk = new PublicationPK(resourceId, instanceId);
-      PublicationDetail pubDetail = getEJB().getDetail(pubPk);
+      PublicationDetail pubDetail = getService().getDetail(pubPk);
 
       //set URL, title and description of the publication
       socialInformation.setUrl(URLManager
@@ -98,7 +96,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
       throws SilverpeasException {
 
     List<SocialInformationComment> listSocialInformation =
-        CommentServiceFactory.getFactory().getCommentService()
+        CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
                 Period.from(begin, end));
 
@@ -118,13 +116,13 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
 
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> instanceIds = new ArrayList<String>();
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
 
     List<SocialInformationComment> socialComments =
-        CommentServiceFactory.getFactory().getCommentService()
+        CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
                 instanceIds, Period.from(begin, end));
 
@@ -141,7 +139,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
         // associated comments are removed from the result
 
         AccessController<PublicationPK> publicationAccessController =
-            AccessControllerProvider.getAccessController("publicationAccessController");
+            AccessControllerProvider.getAccessController(PublicationAccessControl.class);
         if (!publicationAccessController.isUserAuthorized(myId,
             new PublicationPK(socialComment.getComment().getForeignKey().getId(), instanceId))) {
           socialCommentIt.remove();

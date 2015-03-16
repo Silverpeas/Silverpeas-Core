@@ -28,9 +28,9 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.List;
 
@@ -150,7 +150,7 @@ public interface CommentDAO {
    * @param count the maximum number of comments to fetch. Lesser or equal to 0 means no limit.
    * @return a list of the last comments.
    */
-  public List<Comment> getLastComments(String instanceId, int count);
+  List<Comment> getLastComments(String instanceId, int count);
 
   /**
    * Get the list of SocialInformationComment added by userId in a period

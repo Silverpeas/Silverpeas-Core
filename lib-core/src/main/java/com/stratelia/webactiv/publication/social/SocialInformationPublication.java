@@ -27,8 +27,8 @@ package com.stratelia.webactiv.publication.social;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationWithStatus;
 
 public class SocialInformationPublication extends AbstractSocialInformation {
 

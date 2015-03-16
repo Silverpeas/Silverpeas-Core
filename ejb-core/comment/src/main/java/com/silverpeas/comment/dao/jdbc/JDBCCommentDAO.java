@@ -29,13 +29,11 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
+import org.silverpeas.date.Period;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.date.Period;
 
 import javax.inject.Named;
 import java.sql.Connection;
@@ -43,31 +41,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.silverpeas.util.DBUtil.openConnection;
+
 @Named("commentDAO")
 public class JDBCCommentDAO implements CommentDAO {
 
   protected static final long serialVersionUID = -4880326368611108874L;
-
-  private Connection openConnection() {
-    try {
-      Connection con = DBUtil.openConnection();
-      return con;
-    } catch (Exception e) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  private void closeConnection(final Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("comment", getClass().getSimpleName() + ".closeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
-    }
-  }
 
   private JDBCCommentRequester getCommentDAO() {
     return new JDBCCommentRequester();
@@ -75,9 +54,8 @@ public class JDBCCommentDAO implements CommentDAO {
 
   @Override
   public CommentPK saveComment(final Comment cmt) {
-    Connection con = openConnection();
     CommentPK commentPK;
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       commentPK = requester.saveComment(con, cmt);
       if (commentPK == null) {
@@ -90,44 +68,35 @@ public class JDBCCommentDAO implements CommentDAO {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".createComment()",
           SilverpeasRuntimeException.ERROR,
           "comment.CREATING_NEW_COMMENT_FAILED", re);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public void removeComment(final CommentPK pk) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.deleteComment(con, pk);
     } catch (Exception re) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".deleteComment()",
           SilverpeasRuntimeException.ERROR, "comment.DELETE_COMMENT_FAILED", re);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public void updateComment(final Comment cmt) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.updateComment(con, cmt);
     } catch (Exception re) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".updateComment()",
           SilverpeasRuntimeException.ERROR, "comment.UPDATE_COMMENT_FAILED", re);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public Comment getComment(final CommentPK pk) {
-    Connection con = openConnection();
     Comment comment;
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       comment = requester.getComment(con, pk);
       if (comment == null) {
@@ -138,15 +107,12 @@ public class JDBCCommentDAO implements CommentDAO {
     } catch (Exception re) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".getComment()",
           SilverpeasRuntimeException.ERROR, "comment.GET_COMMENT_FAILED", re);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<CommentedPublicationInfo> getAllMostCommentedPublications() {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getMostCommentedAllPublications(con, null);
     } catch (Exception e) {
@@ -155,8 +121,6 @@ public class JDBCCommentDAO implements CommentDAO {
           SilverpeasRuntimeException.FATAL,
           "comment.GET_MOST_COMMENTED_ITEMS",
           e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -164,17 +128,14 @@ public class JDBCCommentDAO implements CommentDAO {
   public List<CommentedPublicationInfo> getMostCommentedPublications(final String resourceType,
       final List<? extends WAPrimaryKey> pks) {
     List<CommentedPublicationInfo> commentedPubs = null;
-    Connection con = openConnection();
     JDBCCommentRequester requester = getCommentDAO();
     if (pks != null && !pks.isEmpty()) {
-      try {
+      try (Connection con = openConnection()) {
         commentedPubs = requester.getMostCommentedPublications(con, pks);
       } catch (Exception e) {
         throw new CommentRuntimeException(getClass().getSimpleName()
             + ".getMostCommentedPublications()", SilverpeasRuntimeException.ERROR,
             "comment.GET_MOST_COMMENTED_ITEMS", e);
-      } finally {
-        closeConnection(con);
       }
     }
     return (commentedPubs == null ? new ArrayList<CommentedPublicationInfo>() : commentedPubs);
@@ -182,17 +143,14 @@ public class JDBCCommentDAO implements CommentDAO {
 
   @Override
   public int getCommentsCountByForeignKey(final String resourceType, final ForeignPK foreign_pk) {
-    Connection con = openConnection();
     int publicationCommentsCount = 0;
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       publicationCommentsCount = requester.getCommentsCount(con, resourceType, foreign_pk);
     } catch (Exception re) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".getCommentsCount()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
-    } finally {
-      closeConnection(con);
     }
     return publicationCommentsCount;
   }
@@ -200,9 +158,8 @@ public class JDBCCommentDAO implements CommentDAO {
   @Override
   public List<Comment> getAllCommentsByForeignKey(final String resourceType,
       final ForeignPK foreign_pk) {
-    Connection con = openConnection();
     List<Comment> vRet;
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       vRet = requester.getAllComments(con, resourceType, foreign_pk);
       if (vRet == null) {
@@ -214,23 +171,18 @@ public class JDBCCommentDAO implements CommentDAO {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public void removeAllCommentsByForeignPk(final String resourceType, final ForeignPK foreign_pk) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.deleteAllComments(con, resourceType, foreign_pk);
     } catch (Exception re) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -242,23 +194,19 @@ public class JDBCCommentDAO implements CommentDAO {
   @Override
   public void moveComments(final String fromResourceType, final ForeignPK fromPK,
       final String toResourceType, final ForeignPK toPK) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.moveComments(con, fromResourceType, fromPK, toResourceType, toPK);
     } catch (Exception re) {
       throw new CommentRuntimeException(getClass().getSimpleName() + ".moveComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<CommentedPublicationInfo> getMostCommentedPublications(String resourceType) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getMostCommentedAllPublications(con, resourceType);
     } catch (Exception e) {
@@ -267,15 +215,12 @@ public class JDBCCommentDAO implements CommentDAO {
           SilverpeasRuntimeException.FATAL,
           "comment.GET_COMMENT_FAILED",
           e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<Comment> getLastComments(String instanceId, int count) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getLastComments(con, instanceId, count);
     } catch (Exception e) {
@@ -284,16 +229,13 @@ public class JDBCCommentDAO implements CommentDAO {
           SilverpeasRuntimeException.FATAL,
           "comment.GET_COMMENT_FAILED",
           e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<SocialInformationComment> getSocialInformationCommentsListByUserId(
       List<String> resourceTypes, String userId, Period period) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getSocialInformationComments(con, resourceTypes,
           StringUtil.isDefined(userId) ? Collections.singletonList(userId) : null, null, period);
@@ -301,8 +243,6 @@ public class JDBCCommentDAO implements CommentDAO {
       throw new CommentRuntimeException(
           getClass().getSimpleName() + ".getSocialInformationCommentsListByUserId()",
           SilverpeasRuntimeException.FATAL, "comment.GET_COMMENT_FAILED", e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -310,8 +250,7 @@ public class JDBCCommentDAO implements CommentDAO {
   public List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
       List<String> resourceTypes, List<String> myContactsIds, List<String> instanceIds,
       Period period) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       return requester
           .getSocialInformationComments(con, resourceTypes, myContactsIds, instanceIds, period);
@@ -319,8 +258,6 @@ public class JDBCCommentDAO implements CommentDAO {
       throw new CommentRuntimeException(
           getClass().getSimpleName() + ".getSocialInformationCommentsListOfMyContacts()",
           SilverpeasRuntimeException.FATAL, "comment.GET_COMMENT_FAILED", e);
-    } finally {
-      closeConnection(con);
     }
   }
 }

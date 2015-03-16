@@ -20,14 +20,7 @@
  */
 package com.stratelia.webactiv.publication.control;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import com.silverpeas.socialnetwork.model.SocialInformation;
-import org.silverpeas.util.ForeignPK;
-
-import org.silverpeas.util.WAPrimaryKey;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.Alias;
@@ -36,6 +29,13 @@ import com.stratelia.webactiv.publication.model.NodeTree;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.ValidationStep;
+import com.stratelia.webactiv.publication.social.SocialInformationPublication;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.WAPrimaryKey;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Interface declaration

@@ -24,6 +24,7 @@
 
 package org.silverpeas.persistence.jdbc;
 
+import com.silverpeas.calendar.DateTime;
 import org.silverpeas.util.DBUtil;
 
 import javax.inject.Singleton;
@@ -150,6 +151,9 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
         preparedStatement.setLong(paramIndex, (Long) parameter);
       } else if (parameter instanceof Timestamp) {
         preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
+      } else if (parameter instanceof DateTime) {
+        preparedStatement
+            .setTimestamp(paramIndex, new java.sql.Timestamp(((Date) parameter).getTime()));
       } else if (parameter instanceof Date) {
         preparedStatement.setDate(paramIndex, new java.sql.Date(((Date) parameter).getTime()));
       } else {
