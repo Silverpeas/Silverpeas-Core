@@ -67,8 +67,7 @@ public class ManagedThreadPoolIntegrationTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(ManagedThreadPoolIntegrationTest.class)
-        .addCommonBasicUtilities().addSilverpeasExceptionBases()
-        .testFocusedOn(warBuilder -> warBuilder.addPackages(true, "org.silverpeas.thread")).build();
+        .addCommonBasicUtilities().addSilverpeasExceptionBases().build();
   }
 
   @Before
