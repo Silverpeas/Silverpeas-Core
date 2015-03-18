@@ -621,6 +621,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     } catch (PersistenceException pe) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
           "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", pe);
+
     } finally {
       WorkflowJDOManager.closeDatabase(db);
       DBUtil.close(rs, prepStmt);

@@ -43,7 +43,7 @@ public class WorkflowJDOManager {
    * ResourceLocator object to retrieve messages in a properties file
    */
   private static ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.workflow.engine.castorSettings", "fr");
+      "org.silverpeas.workflow.engine.castorSettings", "fr");
 
   /**
    * JDO object used by Castor persistence mechanism

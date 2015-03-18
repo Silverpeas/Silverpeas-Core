@@ -73,7 +73,7 @@ public class VariableResolver {
             resolution = SystemWrapper.get().getProperty(statement[1]);
         }
         matching = VAR_REPLACEMENT.matcher(value);
-        resolvedValue = matching.replaceAll(resolution);
+        resolvedValue = matching.replaceAll(resolution.replaceAll("\\\\", "/"));
       }
     }
     return resolvedValue;

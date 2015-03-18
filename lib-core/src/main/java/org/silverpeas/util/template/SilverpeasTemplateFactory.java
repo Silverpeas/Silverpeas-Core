@@ -59,7 +59,7 @@ public class SilverpeasTemplateFactory {
   }
 
   private static String computePath(final String pathBase, final String pathSuffix) {
-    final StringBuffer sb = new StringBuffer(pathBase);
+    final StringBuilder sb = new StringBuilder(pathBase);
     if (StringUtils.isNotBlank(pathSuffix)) {
       sb.append(separator);
       sb.append(pathSuffix);
