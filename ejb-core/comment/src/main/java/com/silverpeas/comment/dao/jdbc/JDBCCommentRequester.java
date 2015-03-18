@@ -442,7 +442,7 @@ public class JDBCCommentRequester {
       query.append(") ");
       clause = "AND ";
     }
-    if (listInstanceId != null) {
+    if (CollectionUtil.isNotEmpty(listInstanceId)) {
       query.append(clause).append("instanceId IN (");
       clause = "";
       for (String instanceId : listInstanceId) {
