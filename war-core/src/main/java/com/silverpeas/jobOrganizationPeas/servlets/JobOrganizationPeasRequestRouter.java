@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.servlet.HttpRequest;
 
 /**
@@ -122,6 +123,8 @@ public class JobOrganizationPeasRequestRouter extends
           request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
           request.setAttribute("superGroupName", jobOrganizationSC.getCurrentSuperGroupName());
         }
+        request.setAttribute("isAdmin", UserAccessLevel.ADMINISTRATOR.equals(
+            jobOrganizationSC.getUserAccessLevel()));
         request.setAttribute("spaces", jobOrganizationSC.getCurrentSpaces());
         request.setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());
       }

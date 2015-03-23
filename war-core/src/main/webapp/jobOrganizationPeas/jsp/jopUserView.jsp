@@ -56,6 +56,7 @@
 <c:set var="superGroupName" value="${requestScope.superGroupName}" />
 <c:set var="message" value="${requestScope.message}" />
 <c:set var="isRightCopyReplaceActivated" value="${requestScope.isRightCopyReplaceActivated}" />
+<c:set var="isAdmin" value="${requestScope.isAdmin}" />
 <c:if test="${not empty userInfos}">
 	<c:set var="lastName" value="${userInfos.lastName}" />
 	<c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
@@ -165,7 +166,7 @@
 		return result;
 	}
 
-    <c:if test="${isRightCopyReplaceActivated}">
+    <c:if test="${isRightCopyReplaceActivated && isAdmin}">
       $(function() {
           $("#assignRightsDialog").dialog({
           autoOpen: false,
@@ -244,7 +245,7 @@
  		<c:if test="${silfn:isDefined(userId)}">
  			<view:operation altText="${subscriptionAction}" icon="${subscriptionIcon}" action="javascript:showPDCSubscription()" />
  		</c:if>
-    <c:if test="${isRightCopyReplaceActivated}">
+    <c:if test="${isRightCopyReplaceActivated && isAdmin}">
  	    <view:operation altText="${assignRightsAction}" icon="${selectIcon}" action="javascript:assignSameRights()" />
     </c:if>
  	</view:operationPane>
@@ -551,7 +552,7 @@
     <fmt:message key="JOP.sourceRightsUserPanel" var="sourceRightsUserPanelIcon" bundle="${icons}" />
     <fmt:message key="JOP.mandatory" var="mandatoryIcon" bundle="${icons}" />
 
-<c:if test="${isRightCopyReplaceActivated}">
+<c:if test="${isRightCopyReplaceActivated && isAdmin}">
 	<div id="assignRightsDialog" title="<fmt:message key="JOP.assignRights"/>">
 	  <form accept-charset="UTF-8" enctype="multipart/form-data;charset=utf-8" id="affected-profil" 
 	  	name="rightsForm" action="#" method="post">
