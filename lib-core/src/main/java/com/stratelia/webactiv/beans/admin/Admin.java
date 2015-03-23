@@ -6607,15 +6607,19 @@ class Admin implements Administration {
     //Add space rights (and sub-space and components, by inheritance)
     for (String spaceProfileId : sourceSpaceProfileIds) {
       SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
-      switch (context.getTargetType()) {
-        case USER:
-          currentSourceSpaceProfile.addUser(context.getTargetId());
-          break;
-        case GROUP:
-          currentSourceSpaceProfile.addGroup(context.getTargetId());
-          break;
+      SpaceInstLight spaceInst =
+          getSpaceInstLight(getDriverSpaceId(currentSourceSpaceProfile.getSpaceFatherId()));
+      if (!spaceInst.isPersonalSpace()) {// do not treat the personal space
+        switch (context.getTargetType()) {
+          case USER:
+            currentSourceSpaceProfile.addUser(context.getTargetId());
+            break;
+          case GROUP:
+            currentSourceSpaceProfile.addGroup(context.getTargetId());
+            break;
+        }
+        updateSpaceProfileInst(currentSourceSpaceProfile, context.getAuthor(), false);
       }
-      updateSpaceProfileInst(currentSourceSpaceProfile, context.getAuthor(), false);
     }
 
     //Add component rights
@@ -6673,18 +6677,22 @@ class Admin implements Administration {
     // Delete space rights (and sub-space and components, by inheritance) for target
     for (String spaceProfileId : spaceProfileIdsToDeleteForTarget) {
       SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
-      switch (context.getTargetType()) {
-        case USER:
-          currentTargetSpaceProfile.removeUser(context.getTargetId());
-          break;
-        case GROUP:
-          currentTargetSpaceProfile.removeGroup(context.getTargetId());
-          break;
+      SpaceInstLight spaceInst =
+          getSpaceInstLight(getDriverSpaceId(currentTargetSpaceProfile.getSpaceFatherId()));
+      if (!spaceInst.isPersonalSpace()) {// do not treat the personal space
+        switch (context.getTargetType()) {
+          case USER:
+            currentTargetSpaceProfile.removeUser(context.getTargetId());
+            break;
+          case GROUP:
+            currentTargetSpaceProfile.removeGroup(context.getTargetId());
+            break;
+        }
+        updateSpaceProfileInst(currentTargetSpaceProfile, context.getAuthor(), false);
       }
-      updateSpaceProfileInst(currentTargetSpaceProfile, context.getAuthor(), false);
     }
 
-    // Delete component and node rights for target (it the same Profile manager that handles
+    // Delete component and node rights for target (it is the same Profile manager that handles
     // component and node rights)
     for (String profileId : componentProfileIdsForTarget) {
       ProfileInst currentTargetProfile = getProfileInst(profileId);
