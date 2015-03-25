@@ -24,6 +24,13 @@
 
 package com.silverpeas.wysiwyg.dynamicvalue.dao;
 
+import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
+import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -31,21 +38,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
-
-import org.silverpeas.util.ConfigurationControl;
-import org.silverpeas.util.StringUtil;
-
-import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeException;
-import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * data access object layer, this class allows executing operation on the table which contains the
  * dynamic values
  */
 public class DynamicValueDAO {
+
+  private static final String SETTINGS_PATH =
+      "org.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings";
 
   /**
    * name of the table which contains data
@@ -223,14 +224,12 @@ public class DynamicValueDAO {
    */
   private static void initTableInfos() {
     try {
-      ResourceBundle bundle = ResourceBundle.getBundle(
-          "com.silverpeas.wysiwyg.dynamicvalue.settings.dynamicValueSettings",
-          new ConfigurationControl());
-      DynamicValueDAO.tableName = bundle.getString("tableName").trim();
-      DynamicValueDAO.keyColumnName = bundle.getString("keyColumnName").trim();
-      DynamicValueDAO.valueColumnName = bundle.getString("valueColumnName").trim();
-      DynamicValueDAO.startDateColumnName = bundle.getString("startDateColumnName").trim();
-      DynamicValueDAO.endDateColumnName = bundle.getString("endDateColumnName").trim();
+      ResourceLocator rs = new ResourceLocator(SETTINGS_PATH, "");
+      tableName = rs.getString("tableName").trim();
+      keyColumnName = rs.getString("keyColumnName").trim();
+      valueColumnName = rs.getString("valueColumnName").trim();
+      startDateColumnName = rs.getString("startDateColumnName").trim();
+      endDateColumnName = rs.getString("endDateColumnName").trim();
     } catch (Exception e) {
 
     }
@@ -241,7 +240,6 @@ public class DynamicValueDAO {
    * @throws PropertyNotFoundRuntimeException
    */
   private static void checkTableInfos() throws PropertyNotFoundRuntimeException {
-
     if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(keyColumnName) ||
         !StringUtil.isDefined(valueColumnName) || !StringUtil.isDefined(startDateColumnName)) {
       throw new PropertyNotFoundRuntimeException("DynamicValueDAO", SilverpeasException.ERROR,
