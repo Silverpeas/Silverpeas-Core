@@ -21,11 +21,11 @@
 package org.silverpeas.servlets;
 
 import com.silverpeas.peasUtil.GoTo;
-import com.silverpeas.util.security.ComponentSecurity;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
 import org.apache.commons.codec.CharEncoding;
+import org.silverpeas.accesscontrol.SimpleDocumentAccessController;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -38,7 +38,6 @@ import java.net.URLEncoder;
 public class GoToFile extends GoTo {
 
   private static final long serialVersionUID = 1L;
-  public static final String KMELIA_SECURITY_CLASS = "com.stratelia.webactiv.kmelia.KmeliaSecurity";
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
@@ -51,19 +50,10 @@ public class GoToFile extends GoTo {
     String componentId = attachment.getInstanceId();
     String foreignId = attachment.getForeignId();
 
-    if (isUserLogin(req) && isUserAllowed(req, componentId)) {
-      // L'utilisateur a-t-il le droit de consulter le fichier/la publication
-      boolean isAccessAuthorized = true;
-      if (componentId.startsWith("kmelia")) {
-        try {
-          ComponentSecurity security = (ComponentSecurity) Class.forName(KMELIA_SECURITY_CLASS).newInstance();
-          isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
-        } catch (Exception e) {
-          SilverTrace.error("peasUtil", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
-              "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
-          return null;
-        }
-      }
+    if (isUserLogin(req)) {
+      // L'utilisateur a-t-il le droit de consulter le fichier
+      SimpleDocumentAccessController accessController = new SimpleDocumentAccessController();
+      boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), attachment);
       if (isAccessAuthorized) {
         res.setCharacterEncoding(CharEncoding.UTF_8);
         res.setContentType("text/html; charset=utf-8");
@@ -72,6 +62,11 @@ public class GoToFile extends GoTo {
         return URLManager.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }
     }
+
+    if (StringUtil.isDefined(req.getParameter("ComponentId"))) {
+      componentId = req.getParameter("ComponentId");
+    }
+
     return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="
         + foreignId;
   }

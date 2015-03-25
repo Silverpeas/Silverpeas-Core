@@ -157,7 +157,8 @@
       <c:set var="showIcon" scope="page" value="${true}" />
     </c:otherwise>
   </c:choose>
-  <c:set var="fromAlias" value="${silfn:booleanValue(param.Alias)}" />
+  <c:set var="fromAlias" value="${silfn:isDefined(param.Alias)}" />
+  <c:set var="aliasContext" value="${param.Alias}" />
   <c:set var="useXMLForm" value="${silfn:isDefined(xmlForm)}" />
   <c:set var="indexIt" value="${silfn:booleanValue(param.IndexIt)}" />
   <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
@@ -267,11 +268,15 @@
             </span>
             <span class="lineSize">
               <c:if test="${displayUniversalLinks and canUserDownloadFile}">
-                <a href='<c:out value="${currentAttachment.universalURL}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>"/></a>
-              </c:if>
-                <c:if test="${showFileSize}">
-                  <c:out value="${view:humanReadableSize(currentAttachment.size)}"/>
+                <c:set var="permalink" value="${currentAttachment.universalURL}"/>
+                <c:if test="${fromAlias}">
+                  <c:set var="permalink" value="${currentAttachment.universalURL}&ComponentId=${aliasContext}"/>
                 </c:if>
+                <a href='<c:out value="${permalink}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>"/></a>
+              </c:if>
+              <c:if test="${showFileSize}">
+                <c:out value="${view:humanReadableSize(currentAttachment.size)}"/>
+              </c:if>
                  - <view:formatDateTime value="${currentAttachment.updated}"/>
               <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
                 <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
