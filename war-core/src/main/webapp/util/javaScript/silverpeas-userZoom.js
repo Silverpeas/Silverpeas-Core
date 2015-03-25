@@ -248,7 +248,9 @@
               profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
         User.get(user.id).then(function(theUser) {
           profile = theUser;
-          render($this, profile);
+          if (!profile.deletedState && !profile.deactivatedState) {
+            render($this, profile);
+          }
         });
       }
     });

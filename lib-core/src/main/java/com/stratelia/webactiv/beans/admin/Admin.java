@@ -3428,6 +3428,26 @@ public final class Admin {
   }
 
   /**
+   * Deactivates the user represented by the given identifier.
+   *
+   * @param userId
+   * @throws AdminException
+   */
+  public void deactivateUser(String userId) throws AdminException {
+    updateUserState(userId, UserState.DEACTIVATED);
+  }
+
+  /**
+   * Activate the user represented by the given identifier.
+   *
+   * @param userId
+   * @throws AdminException
+   */
+  public void activateUser(String userId) throws AdminException {
+    updateUserState(userId, UserState.VALID);
+  }
+
+  /**
    * Updates the user state from a user id.
    *
    * @param userId
@@ -6780,6 +6800,9 @@ public final class Admin {
     if (searchCriteria.isCriterionOnAccessLevelsSet()) {
       criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
     }
+    if (searchCriteria.isCriterionOnUserStatesToExcludeSet()) {
+      criteria.and().onUserStatesToExclude(searchCriteria.getCriterionOnUserStatesToExclude());
+    }
     if (searchCriteria.isCriterionOnNameSet()) {
       criteria.and().onName(searchCriteria.getCriterionOnName());
     }
@@ -6836,6 +6859,14 @@ public final class Admin {
 
     if (searchCriteria.isCriterionOnNameSet()) {
       criteria.and().onName(searchCriteria.getCriterionOnName());
+    }
+
+    if (searchCriteria.isCriterionOnAccessLevelsSet()) {
+      criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
+    }
+
+    if (searchCriteria.isCriterionOnUserStatesToExcludeSet()) {
+      criteria.and().onUserStatesToExclude(searchCriteria.getCriterionOnUserStatesToExclude());
     }
 
     if (searchCriteria.isCriterionOnSuperGroupIdSet()) {

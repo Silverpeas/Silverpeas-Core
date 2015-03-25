@@ -30,6 +30,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -109,6 +110,14 @@ public class ComponentAccessController extends AbstractAccessController<String> 
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, String componentId) {
+
+    // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
+    // retrieved.
+    if (!UserDetail.isActivatedStateFor(userId)) {
+      return;
+    }
+
+
     // Personal space or user tool
     if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
       userRoles.add(SilverpeasRole.admin);

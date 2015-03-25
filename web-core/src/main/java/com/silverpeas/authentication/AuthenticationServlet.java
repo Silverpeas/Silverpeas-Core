@@ -24,17 +24,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
@@ -50,6 +39,18 @@ import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -176,7 +177,8 @@ public class AuthenticationServlet extends HttpServlet {
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
-      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
+      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey) ||
+          UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(authenticationKey)) {
         if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
             userCanTryAgainToLoginVerifier.getUser().getId())) {
           // If user can try again to login verifier is activated or if the user has been found

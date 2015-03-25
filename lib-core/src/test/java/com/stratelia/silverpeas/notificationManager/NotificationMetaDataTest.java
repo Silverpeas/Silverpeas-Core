@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,6 +65,7 @@ public class NotificationMetaDataTest {
     final OrganisationController mockedOrganisationController = reflectionRule
         .mockField(OrganisationControllerFactory.class, OrganisationController.class,
             "instance.organisationController");
+    when(mockedOrganisationController.getUserDetail(anyString())).thenReturn(new UserDetail());
     when(mockedOrganisationController.getGroup(anyString())).thenAnswer(new Answer<Group>() {
       @Override
       public Group answer(final InvocationOnMock invocation) throws Throwable {

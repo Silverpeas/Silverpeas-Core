@@ -908,6 +908,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
 
     selection.resetAll();
+    selection.setFilterOnDeactivatedState(false);
 
     String hostSpaceName = getMultilang().getString("JSPP.manageHomePage");
     selection.setHostSpaceName(hostSpaceName);
@@ -1476,6 +1477,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
 
     selection.resetAll();
+    selection.setFilterOnDeactivatedState(false);
 
     String hostSpaceName = getMultilang().getString("JSPP.manageHomePage");
     selection.setHostSpaceName(hostSpaceName);

@@ -51,6 +51,7 @@ import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChang
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
@@ -228,6 +229,8 @@ public class AuthenticationService {
           errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
         } else if (ex instanceof AuthenticationUserAccountBlockedException) {
           errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+        } else if (ex instanceof AuthenticationUserAccountDeactivatedException) {
+          errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
         }
         return errorCause;
       }

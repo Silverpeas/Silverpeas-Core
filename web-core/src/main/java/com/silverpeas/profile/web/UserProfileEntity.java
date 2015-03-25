@@ -29,8 +29,10 @@ import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.owasp.encoder.Encode;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -168,6 +170,18 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     return Encode.forHtml(this.user.geteMail());
   }
 
+  @Override
+  @XmlElement
+  public boolean isDeletedState() {
+    return this.user.isDeletedState();
+  }
+
+  @Override
+  @XmlElement
+  public boolean isDeactivatedState() {
+    return this.user.isDeactivatedState();
+  }
+
   /**
    * Gets the language used by the user.
    *
@@ -203,6 +217,14 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @Override
   public void seteMail(String seMail) {
     this.user.seteMail(seMail);
+  }
+
+  public void setDeletedState(boolean deletedState) {
+    // It is not possible to handle this data from Web Services.
+  }
+
+  public void setDeactivatedState(boolean deactivatedState) {
+    // It is not possible to handle this data from Web Services.
   }
 
   @Override

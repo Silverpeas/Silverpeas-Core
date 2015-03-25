@@ -24,7 +24,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
@@ -45,8 +44,8 @@ public class UserDAO {
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
       + "state,stateSaveDate, notifManualReceiverLimit";
   private static final String SELECT_DOMAINS_BY_LOGIN = "SELECT DISTINCT(domainId) AS domain FROM "
-      + "st_user WHERE state <> 'DELETED' AND state <> 'UNKNOWN' AND state <> 'BLOCKED' "
-      + "AND state <> 'EXPIRED' AND login = ? ORDER BY domainId";
+      + "st_user WHERE state NOT IN ('DELETED', 'UNKNOWN', 'BLOCKED', 'DEACTIVATED', 'EXPIRED') "
+      + "AND login = ? ORDER BY domainId";
 
 
   public UserDAO() {

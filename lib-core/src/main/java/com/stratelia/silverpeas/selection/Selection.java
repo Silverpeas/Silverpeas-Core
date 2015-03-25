@@ -62,6 +62,7 @@ public final class Selection {
   protected PairObject[] hostPath;
   protected SelectionExtraParams extraParams;
   protected int selectedUserLimit;
+  protected boolean filterOnDeactivatedState = true;
 
   public Selection() {
     resetAll();
@@ -92,6 +93,7 @@ public final class Selection {
 
     extraParams = null;
     selectedUserLimit = 0;
+    filterOnDeactivatedState = true;
   }
 
   static public String getSelectionURL(String selectionType) {
@@ -323,5 +325,13 @@ public final class Selection {
           OrganisationControllerFactory.getOrganisationController().getAllDomains());
     }
     return registeredServerDomains;
+  }
+
+  public boolean isFilterOnDeactivatedState() {
+    return filterOnDeactivatedState;
+  }
+
+  public void setFilterOnDeactivatedState(final boolean filterOnDeactivatedState) {
+    this.filterOnDeactivatedState = filterOnDeactivatedState;
   }
 }
