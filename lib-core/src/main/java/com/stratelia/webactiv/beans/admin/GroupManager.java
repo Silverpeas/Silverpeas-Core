@@ -22,7 +22,6 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserDAO;
@@ -32,14 +31,15 @@ import com.stratelia.webactiv.organization.GroupRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.ListSlice;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.silverpeas.util.ListSlice;
 
 public class GroupManager {
 
@@ -81,10 +81,15 @@ public class GroupManager {
         List<String> groupIds = getAllSubGroupIdsRecursively(group.getId());
         groupIds.add(group.getId());
         UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
+        Set<UserState> criterionOnUserStatesToExclude =
+            criteria.getCriterionOnUserStatesToExclude();
         int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
-                onDomainId(domainIdConstraint).
-                and().
-                onGroupIds(groupIds.toArray(new String[groupIds.size()])));
+            onDomainId(domainIdConstraint).
+            and().
+            onGroupIds(groupIds.toArray(new String[groupIds.size()])).
+            and().
+            onUserStatesToExclude(criterionOnUserStatesToExclude
+                .toArray(new UserState[criterionOnUserStatesToExclude.size()])));
         group.setTotalNbUsers(userCount);
       }
       return groups;

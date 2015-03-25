@@ -31,12 +31,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.test.rule.MockByReflectionRule;
 
 import static com.stratelia.silverpeas.notificationManager.CurrentUserNotificationContext
     .getCurrentUserNotificationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class CurrentUserNotificationContextTest {
@@ -54,6 +57,11 @@ public class CurrentUserNotificationContextTest {
     CacheServiceFactory.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+
+    OrganisationController organizationController = reflectionRule
+        .mockField(OrganisationControllerFactory.class, OrganisationController.class,
+            "instance.organisationController");
+    when(organizationController.getUserDetail(anyString())).thenReturn(new UserDetail());
   }
 
   @After

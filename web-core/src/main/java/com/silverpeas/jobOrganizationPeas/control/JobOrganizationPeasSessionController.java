@@ -355,6 +355,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
     Selection sel = getSelection();
     sel.resetAll();
+    sel.setFilterOnDeactivatedState(false);
     sel.setHostSpaceName(hostSpaceName);
     sel.setHostComponentName(hostComponentName);
     sel.setHostPath(null);
@@ -394,6 +395,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
     Selection sel = getSelection();
     sel.resetAll();
+    sel.setFilterOnDeactivatedState(false);
     sel.setHostSpaceName(hostSpaceName);
     sel.setHostComponentName(hostComponentName);
     sel.setHostPath(null);

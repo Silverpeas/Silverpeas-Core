@@ -51,7 +51,10 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
   }
   
   public void add(UserDetail user) {
-    super.add(new UserItem(user));
+    // Directory list does not take into account users fro which the state is deactivated.
+    if (!user.isDeactivatedState()) {
+      super.add(new UserItem(user));
+    }
   }
 
   public void addUsers(List<UserDetail> users) {

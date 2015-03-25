@@ -1320,8 +1320,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().getUserFull(domainId, specificId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull",
-          "admin.EX_ERR_GET_USER_DETAIL", "specificId = " + specificId, e);
+      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
+          "specificId = " + specificId, e);
       return null;
     }
   }
@@ -1361,8 +1361,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().addUser(userDetail);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addUser",
-          "admin.EX_ERR_ADD_USER", e);
+      SilverTrace.error("admin", "AdminController.addUser", "admin.EX_ERR_ADD_USER", e);
       return "";
     }
   }
@@ -1398,6 +1397,32 @@ public class AdminController implements java.io.Serializable {
       getAdminService().unblockUser(userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.unblockUser", "admin.EX_ERR_UNBLOCK_USER", e);
+    }
+  }
+
+  /**
+   * Deactivate the given user
+   */
+  public void deactivateUser(String userId) {
+    SilverTrace.info("admin", "AdminController.deactivateUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().deactivateUser(userId);
+    } catch (Exception e) {
+      SilverTrace
+          .error("admin", "AdminController.deactivateUser", "admin.EX_ERR_DEACTIVATE_USER", e);
+    }
+  }
+
+  /**
+   * Activate the given user
+   */
+  public void activateUser(String userId) {
+    SilverTrace.info("admin", "AdminController.activateUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().activateUser(userId);
+    } catch (Exception e) {
+      SilverTrace
+          .error("admin", "AdminController.activateUser", "admin.EX_ERR_UNDEACTIVATE_USER", e);
     }
   }
 

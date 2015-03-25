@@ -33,6 +33,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountDeactivatedException;
 
 
 /**
@@ -44,6 +45,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
   public static final String ERROR_INCORRECT_LOGIN_PWD = "1";
   public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "6";
   public static final String ERROR_USER_ACCOUNT_BLOCKED = "Error_UserAccountBlocked";
+  public static final String ERROR_USER_ACCOUNT_DEACTIVATED = "Error_UserAccountDeactivated";
 
   /**
    * Default constructor.
@@ -59,7 +61,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
    */
   public String getErrorDestination() {
     String errorDest = "/Login.jsp?ErrorCode=";
-    
+
     Domain[] tabDomains = null;
     try {
       tabDomains = AdminReference.getAdminService().getAllDomains();
@@ -71,12 +73,16 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
 
     if (getUser() == null || StringUtil.isNotDefined(getUser().getId())) {
       if(tabDomains != null && tabDomains.length > 1) {
-        errorDest += ERROR_INCORRECT_LOGIN_PWD_DOMAIN;  
+        errorDest += ERROR_INCORRECT_LOGIN_PWD_DOMAIN;
       } else {
         errorDest += ERROR_INCORRECT_LOGIN_PWD;
       }
     } else if (!isUserStateValid()) {
-      errorDest += ERROR_USER_ACCOUNT_BLOCKED; 
+      if (getUser().isDeactivatedState()) {
+        errorDest += ERROR_USER_ACCOUNT_DEACTIVATED;
+      } else {
+        errorDest += ERROR_USER_ACCOUNT_BLOCKED;
+      }
     }
     return errorDest;
   }
@@ -90,7 +96,13 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
       throw new AuthenticationBadCredentialException("UserCanLoginVerifier.verify()",
           SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN");
     } else if (!isUserStateValid()) {
-      // For now, if user is not valid (BLOCKED, EXPIRED, DELETED, UNKNOWN) he is considered as BLOCKED.
+      // For now, if user is not valid (BLOCKED, DEACTIVATED, EXPIRED, DELETED, UNKNOWN) he is
+      // considered as BLOCKED.
+      if (getUser().isDeactivatedState()) {
+        throw new AuthenticationUserAccountDeactivatedException("UserCanLoginVerifier.verify()",
+            SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
+            "Login=" + getUser().getLogin());
+      }
       throw new AuthenticationUserAccountBlockedException("UserCanLoginVerifier.verify()",
           SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
           "Login=" + getUser().getLogin());

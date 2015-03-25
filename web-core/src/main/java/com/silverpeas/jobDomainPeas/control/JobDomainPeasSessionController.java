@@ -953,6 +953,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     m_AdminCtrl.unblockUser(userId);
   }
 
+  public void deactivateUser(String userId) throws JobDomainPeasException {
+
+    m_AdminCtrl.deactivateUser(userId);
+  }
+
+  public void activateUser(String userId) throws JobDomainPeasException {
+    m_AdminCtrl.activateUser(userId);
+  }
+
   public void deleteUser(String idUser) throws JobDomainPeasException {
 
     SilverTrace.info("jobDomainPeas",
@@ -1869,6 +1878,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     Selection sel = getSelection();
     sel.resetAll();
+    sel.setFilterOnDeactivatedState(false);
     sel.setHostSpaceName(hostSpaceName);
     sel.setHostPath(hostPath);
     sel.setHostComponentName(hostComponentName);
@@ -1916,6 +1926,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     Selection sel = getSelection();
     sel.resetAll();
+    sel.setFilterOnDeactivatedState(false);
     sel.setHostSpaceName(hostSpaceName);
     sel.setHostPath(hostPath);
     sel.setHostComponentName(hostComponentName);

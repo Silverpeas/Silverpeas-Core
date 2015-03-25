@@ -33,6 +33,7 @@ import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.Link;
 
 import java.util.ArrayList;
@@ -441,30 +442,39 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   /**
-   * Add a user recipient to user recipients
-   * @param user recpient that must be added
+   * Add a user recipient to user recipients. User that has not an activated state is not taken
+   * into account.
+   * @param user recipient that must be added
    */
   public void addUserRecipient(UserRecipient user) {
-    userRecipients.add(user);
-  }
-
-  /**
-   * Add a user recipient to user recipients
-   * @param users users to be added
-   */
-  public void addUserRecipients(UserRecipient[] users) {
-    if (users != null) {
-      this.userRecipients.addAll(Arrays.asList(users));
+    if (UserDetail.isActivatedStateFor(user.getUserId())) {
+      userRecipients.add(user);
     }
   }
 
   /**
-   * Add a user recipient to user recipients
+   * Add a user recipient to user recipients. User that has not an activated state is not taken
+   * into account.
+   * @param users users to be added
+   */
+  public void addUserRecipients(UserRecipient[] users) {
+    if (users != null) {
+      for (UserRecipient userRecipient : users) {
+        addUserRecipient(userRecipient);
+      }
+    }
+  }
+
+  /**
+   * Add a user recipient to user recipients. User that has not an activated state is not taken
+   * into account.
    * @param users users to be added
    */
   public void addUserRecipients(Collection<UserRecipient> users) {
     if (users != null) {
-      this.userRecipients.addAll(users);
+      for (UserRecipient userRecipient : users) {
+        addUserRecipient(userRecipient);
+      }
     }
   }
 
@@ -684,8 +694,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * users of groups.<br/>
    * If the sender is identified (as a user), it is removed from the result.<br/>
    * @param updateInternalUserRecipientsToExclude if true, the internal container of user
-   * recipients
-   * to exclude will be updated. This container is provided by {@link
+   * recipients to exclude will be updated. This container is provided by {@link
    * #getUserRecipientsToExclude()}. If false, nothing is done.
    * @return the complete list of users that will receive the notification.
    */
