@@ -550,6 +550,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     node.setCreatorId(getCreatorId());
     node.setName(getName());
     node.setDescription(getDescription());
+    node.setLanguage(getLanguage());
     node.setTranslations(getTranslations());
     node.setRightsDependsOn(getRightsDependsOn());
     node.setCreationDate(getCreationDate());
