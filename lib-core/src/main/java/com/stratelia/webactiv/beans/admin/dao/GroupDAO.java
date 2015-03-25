@@ -295,7 +295,10 @@ public class GroupDAO {
   @SuppressWarnings("empty-statement")
   private static ListSlice<Group> theGroupsFrom(ResultSet rs, int start, int end) throws SQLException {
     ListSlice<Group> groups = new ListSlice<Group>(start, end);
-    rs.relative(start);
+    if(start > 0) {
+      rs.next();
+      rs.relative(start-1);
+    }
     int i;
     for (i = start; rs.next(); i++) {
       if (i < end) {
