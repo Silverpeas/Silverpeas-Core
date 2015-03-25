@@ -26,12 +26,15 @@ package com.stratelia.webactiv.beans.admin.dao;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -44,6 +47,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   private static final String QUERY = "select distinct {0} from {1} {2} order by name";
   private final StringBuilder filter = new StringBuilder();
+  private Set<UserState> userStatesToExclude = new HashSet<UserState>();
   private final Set<String> tables = new HashSet<String>();
   private final List<String> domainIds = new ArrayList<String>();
   private PaginationPage page = null;
@@ -105,19 +109,15 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public GroupSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
-    if (accessLevels != null && accessLevels.length > 0) {
-      tables.add("st_user");
-      StringBuilder accessLevelsAsCodes = new StringBuilder();
-      for (UserAccessLevel accessLevel : accessLevels) {
-        if (accessLevelsAsCodes.length() > 0) {
-          accessLevelsAsCodes.append(",");
-        }
-        accessLevelsAsCodes.append("'");
-        accessLevelsAsCodes.append(accessLevel.getCode());
-        accessLevelsAsCodes.append("'");
-      }
-      getFixedQuery().append("(st_user.accessLevel in (").append(accessLevelsAsCodes.toString())
-          .append("))");
+    // Not handled for now
+    return this;
+  }
+
+  @Override
+  public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
+    if (userStates != null && userStates.length > 0) {
+      Collections.addAll(userStatesToExclude, userStates);
+      // It is only used in order to transport the criterion
     }
     return this;
   }
@@ -136,11 +136,13 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public SearchCriteria onUserIds(String... userIds) {
     if (userIds != ANY) {
-      tables.add("st_user");
+      tables.add("st_group_user_rel");
       StringBuilder[] sqlLists = asSQLList(userIds);
-      StringBuilder theQuery = getFixedQuery().append("(st_user.id in ").append(sqlLists[0]);
+      getFixedQuery().append("st_group.id = st_group_user_rel.groupid");
+      StringBuilder theQuery =
+          getFixedQuery().append(" and (st_group_user_rel.userid in ").append(sqlLists[0]);
       for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or st_user.id in ").append(sqlLists[i]);
+        theQuery.append(" or st_group_user_rel.userid in ").append(sqlLists[i]);
       }
       theQuery.append(")");
     }
@@ -155,7 +157,8 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
       StringBuilder[] sqlLists = asSQLList(roleIds);
       StringBuilder theQuery = getFixedQuery().
           append(
-              "(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId in ").
+              "(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId" +
+                  " in ").
           append(sqlLists[0]);
       for (int i = 1; i < sqlLists.length; i++) {
         theQuery.append(" or ST_UserRole_Group_Rel.userRoleId in ").append(sqlLists[i]);
@@ -199,6 +202,10 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   public List<String> getCriterionOnDomainIds() {
     return domainIds;
+  }
+
+  public Set<UserState> getCriterionOnUserStatesToExclude() {
+    return userStatesToExclude;
   }
 
   private String impliedTables() {

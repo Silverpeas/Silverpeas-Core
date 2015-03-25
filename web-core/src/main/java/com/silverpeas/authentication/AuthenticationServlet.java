@@ -181,7 +181,8 @@ public class AuthenticationServlet extends HttpServlet {
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
-      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
+      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey) ||
+          UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(authenticationKey)) {
         if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
             userCanTryAgainToLoginVerifier.getUser().getId())) {
           // If user can try again to login verifier is activated or if the user has been found

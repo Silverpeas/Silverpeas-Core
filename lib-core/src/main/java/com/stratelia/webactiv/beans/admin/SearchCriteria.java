@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 
 /**
  * Criteria to use in a search of resources managed and exposed in Silverpeas (like user profiles or
@@ -119,6 +120,15 @@ public interface SearchCriteria {
    * @return the criteria enriched with a criterion on the user identifiers.
    */
   SearchCriteria onUserIds(String... userIds);
+
+  /**
+   * Appends a criteria on the user states that must exclude users from the result. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
+   * @param userStates the user states that exclude users from the result.
+   * @return the criteria enriched with a criterion on the user states.
+   */
+  SearchCriteria onUserStatesToExclude(UserState... userStates);
 
   /**
    * Appends a criteria on a resources pagination. The pagination is a mechanism to distribute the

@@ -31,6 +31,8 @@ import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ResourceLocator;
 
@@ -62,6 +64,11 @@ public class CurrentUserNotificationContextTest {
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
     // By default, a user is not an anonymous one
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(false));
+
+    OrganisationController organizationController = reflectionRule
+        .mockField(OrganisationControllerFactory.class, OrganisationController.class,
+            "instance.organisationController");
+    when(organizationController.getUserDetail(anyString())).thenReturn(new UserDetail());
   }
 
   @After

@@ -108,7 +108,8 @@ public class SilverpeasSessionOpener {
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
         // Get and store password change capabilities
         controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
-        if (!controller.getCurrentUserDetail().isDeletedState()) {
+        if (!controller.getCurrentUserDetail().isDeletedState() &&
+            !controller.getCurrentUserDetail().isDeactivatedState()) {
           if (!UserDetail.isAnonymousUser(controller.getUserId())) {
             sessionInfo = sessionManagement.openSession(controller.getCurrentUserDetail(), request);
             registerSuccessfulConnexion(controller);

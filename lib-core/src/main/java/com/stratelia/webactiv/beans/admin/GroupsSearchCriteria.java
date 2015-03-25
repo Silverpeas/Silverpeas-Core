@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
 public class GroupsSearchCriteria implements SearchCriteria {
 
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
+  private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
   private static final String GROUP_ID = "groupId";
   private static final String SUPERGROUP_ID = "parentId";
   private static final String ROLE_NAMES = "roleIds";
@@ -114,6 +116,12 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
+  @Override
+  public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
+    criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    return null;
+  }
+
   /**
    * The groups must belong to either the mixed domain or the specified one.
    * @param domainId the unique identifier of a domain.
@@ -154,6 +162,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnAccessLevelsSet() {
     return criteria.containsKey(USER_ACCESS_LEVELS);
+  }
+
+  public boolean isCriterionOnUserStatesToExcludeSet() {
+    return criteria.containsKey(USER_STATES_TO_EXCLUDE);
   }
 
   public boolean isCriterionOnMixedDomainIdSet() {
@@ -246,6 +258,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   public UserAccessLevel[] getCriterionOnAccessLevels() {
     return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
+  }
+
+  /**
+   * Gets user states to exclude criterion.
+   * @return the access level criterion.
+   */
+  public UserState[] getCriterionOnUserStatesToExclude() {
+    return (UserState[]) criteria.get(USER_STATES_TO_EXCLUDE);
   }
 
   /**

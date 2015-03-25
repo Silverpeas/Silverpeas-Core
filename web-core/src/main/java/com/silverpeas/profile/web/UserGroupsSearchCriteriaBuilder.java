@@ -26,6 +26,7 @@ package com.silverpeas.profile.web;
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import org.silverpeas.admin.user.constant.UserState;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -114,6 +115,13 @@ public class UserGroupsSearchCriteriaBuilder {
   public UserGroupsSearchCriteriaBuilder withUserIds(String[] userIds) {
     if (userIds != null && userIds.length > 0) {
       searchCriteria.onUserIds(userIds);
+    }
+    return this;
+  }
+
+  public UserGroupsSearchCriteriaBuilder withUserStatesToExclude(UserState[] userStates) {
+    if (userStates != null && userStates.length > 0) {
+      searchCriteria.onUserStatesToExclude(userStates);
     }
     return this;
   }

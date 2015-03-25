@@ -34,6 +34,7 @@ public enum UserState {
   UNKNOWN,
   VALID,
   BLOCKED,
+  DEACTIVATED,
   EXPIRED,
   DELETED;
 

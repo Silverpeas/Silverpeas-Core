@@ -36,6 +36,9 @@ import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.ListSlice;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -88,10 +91,15 @@ public class GroupManager {
         List<String> groupIds = getAllSubGroupIdsRecursively(group.getId());
         groupIds.add(group.getId());
         UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
+        Set<UserState> criterionOnUserStatesToExclude =
+            criteria.getCriterionOnUserStatesToExclude();
         int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
-                onDomainId(domainIdConstraint).
-                and().
-                onGroupIds(groupIds.toArray(new String[groupIds.size()])));
+            onDomainId(domainIdConstraint).
+            and().
+            onGroupIds(groupIds.toArray(new String[groupIds.size()])).
+            and().
+            onUserStatesToExclude(criterionOnUserStatesToExclude
+                .toArray(new UserState[criterionOnUserStatesToExclude.size()])));
         group.setTotalNbUsers(userCount);
       }
       return groups;

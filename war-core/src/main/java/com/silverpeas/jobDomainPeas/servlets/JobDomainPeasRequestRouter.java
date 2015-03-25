@@ -183,6 +183,10 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.blockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userUnblock")) {
           jobDomainSC.unblockUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userDeactivate")) {
+          jobDomainSC.deactivateUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userActivate")) {
+          jobDomainSC.activateUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {

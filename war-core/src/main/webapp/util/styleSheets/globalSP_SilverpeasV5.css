@@ -5374,6 +5374,14 @@ input.search:focus {
   height:auto;
 }
 
+.userPanel .state-deactivated .avatar {
+  opacity:0.5;
+}
+
+.userPanel .state-deactivated .name_user {
+  color:#666;
+}
+
 .pageNav_silverpeas {
   text-align:center;
 }

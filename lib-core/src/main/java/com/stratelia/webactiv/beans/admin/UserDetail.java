@@ -112,6 +112,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * @see #isActivatedState()
+   */
+  public static boolean isActivatedStateFor(String userId) {
+    UserDetail userDetail = getById(userId);
+    return userDetail != null && userDetail.isActivatedState();
+  }
+
+  /**
    * Gets the detail about all the users in Silverpeas, whatever their domain.
    * @return a list with all the users in Silverpeas.
    */
@@ -259,11 +267,12 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-   * Please use {@link UserDetail#isValidState()} to retrieve user validity information. Please use
-   * {@link UserDetail#isDeletedState()} to retrieve user deletion information. Please use
-   * {@link UserDetail#isBlockedState()} to retrieve user blocked information. Please use
-   * {@link UserDetail#isExpiredState()} to retrieve user expiration information. This method
-   * returns the stored state information but not the functional information.
+   * Please use {@link UserDetail#isValidState()} to retrieve user validity information.
+   * Please use {@link UserDetail#isDeletedState()} to retrieve user deletion information.
+   * Please use {@link UserDetail#isBlockedState()} to retrieve user blocked information.
+   * Please use {@link UserDetail#isDeactivatedState()} to retrieve user deactivated information.
+   * Please use {@link UserDetail#isExpiredState()} to retrieve user expiration information.
+   * This method returns the stored state information but not the functional information.
    * @return the state of the user (account)
    */
   public UserState getState() {
@@ -541,14 +550,27 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * This method indicates if the user is activated. The returned value is a combination of
+   * following method call result :
+   * <ul>
+   * <li>not {@link #isAnonymous()}</li>
+   * <li>and not {@link #isDeletedState()}</li>
+   * <li>and not {@link #isDeactivatedState()}</li>
+   * </ul>
+   * @return true id the user is an activated one, false otherwise.
+   */
+  public boolean isActivatedState() {
+    return !isAnonymous() && !isDeletedState() && !isDeactivatedState();
+  }
+
+  /**
    * This method is the only one able to indicate the user validity state. Please do not use
    * {@link UserDetail#getState()} to retrieve user validity information.
    * @return
    */
   public boolean isValidState() {
-    return isAnonymous() ||
-        (!UserState.UNKNOWN.equals(state) && !isDeletedState() && !isBlockedState() &&
-            !isExpiredState());
+    return isAnonymous() || (!UserState.UNKNOWN.equals(state) && !isDeletedState()
+        && !isBlockedState() && !isDeactivatedState() && !isExpiredState());
   }
 
   /**
@@ -567,6 +589,16 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public boolean isBlockedState() {
     return UserState.BLOCKED.equals(state);
+  }
+
+  /**
+   * This method is the only one able to indicate the user deactivated state. Please do not use
+   * {@link UserDetail#getState()} to retrieve user deactivated information.
+   *
+   * @return
+   */
+  public boolean isDeactivatedState() {
+    return UserState.DEACTIVATED.equals(state);
   }
 
   /**

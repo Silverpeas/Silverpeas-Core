@@ -32,14 +32,16 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.test.rule.MockByReflectionRule;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,21 +49,28 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Yohann Chastagnier
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-user-notification-builder.xml" })
 public class UserNotificationBuilderTest {
+
+  @Rule
+  public MockByReflectionRule mockByReflectionRule = new MockByReflectionRule();
 
   private static final String TECHNICAL_CONTENT =
       "<!--BEFORE_MESSAGE_FOOTER--><!--AFTER_MESSAGE_FOOTER-->";
 
-  @Inject
-  OrganizationControllerMock organizationController;
+  OrganisationController organizationController;
+
+  @Before
+  public void setup() {
+    organizationController = mockByReflectionRule
+        .mockField(OrganisationControllerFactory.class, OrganisationController.class,
+            "instance.organisationController");
+    when(organizationController.getUserDetail(anyString())).thenReturn(new UserDetail());
+  }
 
   @Test
   public void testBuild_AUNB_1() {
@@ -466,7 +475,6 @@ public class UserNotificationBuilderTest {
   }
 
   protected void mockOrganizationController_isComponentExist() {
-    reset(organizationController.getMock());
     doAnswer(new Answer<Boolean>() {
       @Override
       public Boolean answer(final InvocationOnMock invocation) throws Throwable {
@@ -476,7 +484,7 @@ public class UserNotificationBuilderTest {
         }
         return false;
       }
-    }).when(organizationController.getMock()).isComponentExist(anyString());
+    }).when(organizationController).isComponentExist(anyString());
   }
 
   protected class ATUNBTest extends AbstractTemplateUserNotificationBuilder<ResourceDataTest> {

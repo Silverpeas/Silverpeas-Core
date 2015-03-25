@@ -734,9 +734,8 @@ public class NotificationManager extends AbstractNotification
       // TODO : plusieurs "nd" à créer et à ajouter au "ns"
       nd = createNotificationData(params, Integer.toString(aUserId), schema);
       ns.addNotification(nd);
-      SilverTrace.info("notificationManager",
-          "NotificationManager.testNotifAddress()", "root.MSG_GEN_EXIT_METHOD",
-          "Test Notification Done !!!");
+      SilverTrace.info("notificationManager", "NotificationManager.testNotifAddress()",
+          "root.MSG_GEN_EXIT_METHOD", "Test Notification Done !!!");
     } catch (UtilException e) {
       throw new NotificationManagerException(
           "NotificationManager.testNotifAddress()", SilverpeasException.ERROR,
@@ -862,11 +861,10 @@ public class NotificationManager extends AbstractNotification
   }
 
   /**
-   * Method declaration
-   * @param groupId
-   * @return
+   * Gets the user recipients from a group specified by a given identifier. User that has not an
+   * activated state is not taken into account, so this kind of user is not included into the
+   * returned container.
    * @throws NotificationManagerException
-   * @see
    */
   public Collection<UserRecipient> getUsersFromGroup(String groupId) throws
       NotificationManagerException {
@@ -874,7 +872,9 @@ public class NotificationManager extends AbstractNotification
       UserDetail[] users = AdministrationServiceProvider.getAdminService().getAllUsersOfGroup(groupId);
       List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);
       for (UserDetail user : users) {
-        recipients.add(new UserRecipient(user));
+        if (user.isActivatedState()) {
+          recipients.add(new UserRecipient(user));
+        }
       }
       return recipients;
     } catch (AdminException e) {

@@ -23,22 +23,6 @@
  */
 package com.silverpeas.profile.web;
 
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -53,7 +37,26 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
 import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
 import static org.silverpeas.util.StringUtil.isDefined;
@@ -133,6 +136,7 @@ public class UserProfileResource extends RESTWebService {
    * page).
    * @param domain the unique identifier of the domain the users have to be related.
    * @param accessLevels filters the users by the access level in Silverpeas.
+   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
@@ -142,7 +146,8 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("name") String name,
       @QueryParam("page") String page,
       @QueryParam("domain") String domain,
-      @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels) {
+      @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels,
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -161,6 +166,12 @@ public class UserProfileResource extends RESTWebService {
     if (CollectionUtil.isNotEmpty(accessLevels)) {
       criteriaBuilder
           .withAccessLevels(accessLevels.toArray(new UserAccessLevel[accessLevels.size()]));
+    }
+
+    // Users to exclude by their state
+    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+      criteriaBuilder.withUserStatesToExclude(
+          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
     }
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
@@ -220,6 +231,7 @@ public class UserProfileResource extends RESTWebService {
    * this parameter is computed the part of users to sent back: those between ((page number - 1) *
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
+   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON serialization of the array with the user profiles that can access the
    * Silverpeas component and that matches the query.
    */
@@ -231,7 +243,8 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("roles") String roles,
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
-      @QueryParam("page") String page) {
+      @QueryParam("page") String page,
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
     String domainId = null;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
@@ -241,14 +254,21 @@ public class UserProfileResource extends RESTWebService {
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
     }
-    UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
+    UserProfilesSearchCriteriaBuilder criteriaBuilder = aSearchCriteria().withDomainId(domainId).
         withComponentInstanceId(instanceId).
         withRoles(roleNames).
         withResourceId(resource).
         withGroupId(groupId).
         withName(name).
-        withPaginationPage(fromPage(page)).build();
-    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
+        withPaginationPage(fromPage(page));
+
+    // Users to exclude by their state
+    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+      criteriaBuilder.withUserStatesToExclude(
+          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+    }
+
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
@@ -279,6 +299,7 @@ public class UserProfileResource extends RESTWebService {
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
    * @param domain the unique identifier of the domain the users have to be related.
+   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the profile of the user in a JSON representation.
    */
   @GET
@@ -290,22 +311,30 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
-      @QueryParam("domain") String domain) {
+      @QueryParam("domain") String domain,
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     UserDetail theUser = getUserDetailMatching(userId);
     String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
     String[] contactIds = getContactIds(theUser.getId());
     ListSlice<UserDetail> contacts;
     if (contactIds.length > 0) {
-      UserDetailsSearchCriteria criteria = aSearchCriteria().
+      UserProfilesSearchCriteriaBuilder criteriaBuilder = aSearchCriteria().
           withComponentInstanceId(instanceId).
           withDomainId(domainId).
           withRoles(roleNames).
           withResourceId(resource).
           withUserIds(contactIds).
           withName(name).
-          withPaginationPage(fromPage(page)).build();
-      contacts = getOrganisationController().searchUsers(criteria);
+          withPaginationPage(fromPage(page));
+
+      // Users to exclude by their state
+      if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+        criteriaBuilder.withUserStatesToExclude(
+            userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+      }
+
+      contacts = getOrganisationController().searchUsers(criteriaBuilder.build());
     } else {
       contacts = new ListSlice<UserDetail>(0, 0, 0);
     }

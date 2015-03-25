@@ -106,6 +106,14 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, String componentId) {
+
+    // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
+    // retrieved.
+    if (!UserDetail.isActivatedStateFor(userId)) {
+      return;
+    }
+
+
     // Personal space or user tool
     if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
       userRoles.add(SilverpeasRole.admin);

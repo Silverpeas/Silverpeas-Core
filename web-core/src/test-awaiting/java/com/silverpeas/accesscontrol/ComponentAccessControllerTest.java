@@ -30,6 +30,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -40,6 +41,8 @@ import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.test.rule.MockByReflectionRule;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -78,6 +81,9 @@ public class ComponentAccessControllerTest {
   private ComponentAccessController instance;
   private AccessControlContext accessControlContext;
 
+  @Rule
+  public MockByReflectionRule mockByReflectionRule = new MockByReflectionRule();
+
   @Before
   public void setup() {
     mockStatic(Instanciateur.class);
@@ -101,6 +107,8 @@ public class ComponentAccessControllerTest {
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
 
     controller = mock(OrganizationController.class);
+    mockByReflectionRule.setField(OrganisationControllerFactory.class, controller,
+        "instance.organisationController");
 
     when(controller.getComponentInst(anyString())).thenAnswer(new Answer<ComponentInst>() {
       @Override
@@ -115,6 +123,7 @@ public class ComponentAccessControllerTest {
       }
     });
 
+    when(controller.getUserDetail(anyString())).thenReturn(new UserDetail());
     when(controller.isToolAvailable(toolId)).thenReturn(true);
     when(controller.getComponentParameterValue(publicFilesComponentId, "publicFiles"))
         .thenReturn("true");

@@ -220,6 +220,8 @@ public class AuthenticationService {
           errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
         } else if (ex instanceof AuthenticationUserAccountBlockedException) {
           errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+        } else if (ex instanceof AuthenticationUserAccountDeactivatedException) {
+          errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
         }
         return errorCause;
       }

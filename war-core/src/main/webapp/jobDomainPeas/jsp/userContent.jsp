@@ -92,6 +92,15 @@
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
               "userBlock?Iduser=" + thisUserId);
     }
+    if (userObject.isDeactivatedState()) {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userActivate"), resource.getString("JDP.userActivate"),
+              "userActivate?Iduser=" + thisUserId);
+    } else {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userDeactivate"), resource.getString("JDP.userDeactivate"),
+              "userDeactivate?Iduser=" + thisUserId);
+    }
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:ConfirmAndSend('" + resource.getString("JDP.userDelConfirm") +
             "','" + thisUserId+ "')");
@@ -108,6 +117,15 @@
       operationPane
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
               "userBlock?Iduser=" + thisUserId);
+    }
+    if (userObject.isDeactivatedState()) {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userActivate"), resource.getString("JDP.userActivate"),
+              "userActivate?Iduser=" + thisUserId);
+    } else {
+      operationPane
+          .addOperation(resource.getIcon("JDP.userDeactivate"), resource.getString("JDP.userDeactivate"),
+              "userDeactivate?Iduser=" + thisUserId);
     }
     operationPane
         .addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),

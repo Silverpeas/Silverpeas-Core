@@ -30,11 +30,10 @@ import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
-import java.net.URI;
-import java.util.List;
-import java.util.Set;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.ListSlice;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,7 +42,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.silverpeas.util.ListSlice;
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 import static org.silverpeas.util.StringUtil.isDefined;
@@ -90,13 +91,15 @@ public class UserGroupProfileResource extends RESTWebService {
    * this parameter is computed the part of groups to sent back: those between ((page number - 1)
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
+   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON representation of the array of the groups matching the pattern.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAllRootGroups(@QueryParam("ids") Set<String> groupIds,
       @QueryParam("name") String name, @QueryParam("page") String page,
-      @QueryParam("domain") String domain) {
+      @QueryParam("domain") String domain,
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     UserGroupsSearchCriteriaBuilder criteriaBuilder = UserGroupsSearchCriteriaBuilder.
         aSearchCriteria();
 
@@ -113,6 +116,12 @@ public class UserGroupProfileResource extends RESTWebService {
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
       criteriaBuilder.withMixedDomainId();
+    }
+
+    // Users to exclude by their state
+    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+      criteriaBuilder.withUserStatesToExclude(
+          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
     }
 
     // Common parameters
@@ -146,42 +155,48 @@ public class UserGroupProfileResource extends RESTWebService {
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
    * @param domain the unique identifier of the domain the groups has to be related.
+   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON representation of the array with the parent groups having access the
    * application instance.
    */
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getGroupsInApplication(
-      @PathParam("instanceId") String instanceId,
-      @QueryParam("roles") String roles,
-      @QueryParam("resource") String resource,
-      @QueryParam("name") String name,
-      @QueryParam("page") String page,
-      @QueryParam("domain") String domain) {
+  public Response getGroupsInApplication(@PathParam("instanceId") String instanceId,
+      @QueryParam("roles") String roles, @QueryParam("resource") String resource,
+      @QueryParam("name") String name, @QueryParam("page") String page,
+      @QueryParam("domain") String domain,
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
-    GroupsSearchCriteria criteria;
+    UserGroupsSearchCriteriaBuilder criteriaBuilder;
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
-      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+      criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
           withRoles(roleNames).
           withResourceId(resource).
           withDomainId(domainId).
           withMixedDomainId().
           withName(name).
-          withPaginationPage(fromPage(page)).build();
+          withPaginationPage(fromPage(page));
     } else {
-      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+      criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
           withRoles(roleNames).
           withResourceId(resource).
           withDomainId(domainId).
           withName(name).
-          withPaginationPage(fromPage(page)).build();
+          withPaginationPage(fromPage(page));
     }
-    ListSlice<Group> groups = getOrganisationController().searchGroups(criteria);
+
+    // Users to exclude by their state
+    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+      criteriaBuilder.withUserStatesToExclude(
+          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+    }
+
+    ListSlice<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
         header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).
@@ -215,33 +230,41 @@ public class UserGroupProfileResource extends RESTWebService {
    * this parameter is computed the part of groups to sent back: those between ((page number - 1)
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
+   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return a JSON representation of the array of the direct subgroups.
    */
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getSubGroups(@PathParam("path") String groups,
-      @QueryParam("name") String name,
-      @QueryParam("page") String page) {
+  public Response getSubGroups(@PathParam("path") String groups, @QueryParam("name") String name,
+      @QueryParam("page") String page,
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
     profileService.getGroupAccessibleToUser(groupId, getUserDetail());
-    GroupsSearchCriteria criteria;
+    UserGroupsSearchCriteriaBuilder criteriaBuilder;
     if (getUserDetail().isDomainRestricted()) {
       String domainId = getUserDetail().getDomainId();
-      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+      criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withSuperGroupId(groupId).
           withDomainId(domainId).
           withMixedDomainId().
           withName(name).
-          withPaginationPage(fromPage(page)).build();
+          withPaginationPage(fromPage(page));
     } else {
-      criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
+      criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withSuperGroupId(groupId).
           withName(name).
-          withPaginationPage(fromPage(page)).build();
+          withPaginationPage(fromPage(page));
     }
-    ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteria);
+
+    // Users to exclude by their state
+    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+      criteriaBuilder.withUserStatesToExclude(
+          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+    }
+
+    ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
     return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
         header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, subgroups.getOriginalListSize()).build();

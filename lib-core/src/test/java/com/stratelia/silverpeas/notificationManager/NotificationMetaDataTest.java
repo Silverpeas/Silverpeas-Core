@@ -67,6 +67,7 @@ public class NotificationMetaDataTest {
     // Organization controller
     final OrganizationController mockedOrganizationController =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
+    when(mockedOrganisationController.getUserDetail(anyString())).thenReturn(new UserDetail());
     when(mockedOrganizationController.getGroup(anyString())).thenAnswer(new Answer<Group>() {
       @Override
       public Group answer(final InvocationOnMock invocation) throws Throwable {

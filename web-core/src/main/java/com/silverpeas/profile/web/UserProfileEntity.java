@@ -28,6 +28,7 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang.NotImplementedException;
 import org.owasp.encoder.Encode;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ServiceProvider;
@@ -169,6 +170,18 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     return Encode.forHtml(this.user.geteMail());
   }
 
+  @Override
+  @XmlElement
+  public boolean isDeletedState() {
+    return this.user.isDeletedState();
+  }
+
+  @Override
+  @XmlElement
+  public boolean isDeactivatedState() {
+    return this.user.isDeactivatedState();
+  }
+
   /**
    * Gets the language used by the user.
    *
@@ -204,6 +217,14 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   @Override
   public void seteMail(String seMail) {
     this.user.seteMail(seMail);
+  }
+
+  public void setDeletedState(boolean deletedState) {
+    // It is not possible to handle this data from Web Services.
+  }
+
+  public void setDeactivatedState(boolean deactivatedState) {
+    // It is not possible to handle this data from Web Services.
   }
 
   @Override
