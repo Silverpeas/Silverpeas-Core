@@ -26,8 +26,12 @@ package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
@@ -37,7 +41,10 @@ import org.xml.sax.InputSource;
  */
 public class ConnectionPoolFactory {
 
-  final static String ConfigPoolFilename = "ConnectionSettings.xml";
+  private static final String CONFIG_MAPPING_FILE_NAME =
+      "org/silverpeas/wysiwyg/dynamicvalue/pool/mapping-config";
+  private static final String CONFIG_POOL_FILE_NAME =
+      "org/silverpeas/wysiwyg/dynamicvalue/pool/ConnectionSettings";
   private static ConnectionPoolInformation poolInfo = null;
   private static ConnectionPool pool = null;
 
@@ -63,13 +70,18 @@ public class ConnectionPoolFactory {
           Mapping mapping = new Mapping();
 
           // 1. Load the mapping information from the file
-          mapping.loadMapping(new InputSource(ConnectionPoolFactory.class.getResourceAsStream(
-              "mapping-config.xml")));
+          InputStream inputStream = ResourceLocator.getResourceAsStream(ConnectionPoolFactory.class,
+              null, CONFIG_MAPPING_FILE_NAME, ".xml");
+
+          InputSource inputSource = new InputSource(inputStream);
+          mapping.loadMapping(inputSource);
 
           // 2. Unmarshal the data
           Unmarshaller unmar = new Unmarshaller(mapping);
-          poolInfo = (ConnectionPoolInformation) unmar.unmarshal(new InputSource(
-              ConnectionPoolFactory.class.getResourceAsStream(ConfigPoolFilename)));
+          inputStream = ResourceLocator.getResourceAsStream(ConnectionPoolFactory.class, null,
+              CONFIG_POOL_FILE_NAME, ".xml");
+          inputSource = new InputSource(inputStream);
+          poolInfo = (ConnectionPoolInformation) unmar.unmarshal(inputSource);
 
           SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
               " information about datasource : poolInformation detail :" + poolInfo.toString());
@@ -79,7 +91,7 @@ public class ConnectionPoolFactory {
               "wysiwig.CONNECTION_INIALIZATION_FAILED");
           throw new TechnicalException(
               "The pool  has not been initialized. Error when parsing "
-              + ConfigPoolFilename, exception);
+              + CONFIG_MAPPING_FILE_NAME, exception);
         }
         SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
             " information about datasource : end of loading ...");
