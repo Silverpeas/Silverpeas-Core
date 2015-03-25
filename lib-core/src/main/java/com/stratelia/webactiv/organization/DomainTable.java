@@ -113,7 +113,11 @@ public class DomainTable extends Table<DomainRow> {
     insert.setString(4, truncate(row.propFileName, 100));
     insert.setString(5, truncate(row.className, 100));
     insert.setString(6, truncate(row.authenticationServer, 100));
-    insert.setString(7, truncate(row.theTimeStamp, 100));
+    String valueTimeStamp = truncate(row.theTimeStamp, 100);
+    if(valueTimeStamp == null || valueTimeStamp.length() == 0) {
+      valueTimeStamp = "0";
+    }
+    insert.setString(7, valueTimeStamp);
     insert.setString(8, truncate(row.silverpeasServerURL, 400));
   }
 
@@ -139,7 +143,11 @@ public class DomainTable extends Table<DomainRow> {
     update.setString(3, truncate(row.propFileName, 100));
     update.setString(4, truncate(row.className, 100));
     update.setString(5, truncate(row.authenticationServer, 100));
-    update.setString(6, truncate(row.theTimeStamp, 100));
+    String valueTimeStamp = truncate(row.theTimeStamp, 100);
+    if(valueTimeStamp == null || valueTimeStamp.length() == 0) {
+      valueTimeStamp = "0";
+    }
+    update.setString(6, valueTimeStamp);
     update.setString(7, truncate(row.silverpeasServerURL, 400));
     update.setInt(8, row.id);
   }
