@@ -2492,8 +2492,6 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   padding-right:20px;
   margin-right:7px;
 }
-
-
 /*- [ portlet MyFeed END] --------------------------- */
 
 
@@ -4330,6 +4328,16 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   width: 12px;
 }
 
+#validation.field  {
+  background-color:inherit;
+  border:0;
+  padding-left: 0;
+  margin:inherit;
+  width: 46%;
+  margin:0;
+  line-height:100%;
+}
+
 #admin-component #parameters-header {
   border: 2px solid #CCCCCC;
   background-color: #EDEDED;
@@ -5112,9 +5120,7 @@ li.application  .applicationName {
   overflow:hidden;
 }
 
-#selected_userPanel .inlineMessage {
-  margin: 3%;
-}
+
 
 
 #filter_userPanel {
@@ -6540,8 +6546,8 @@ form .forms .fields > li:nth-child(even) {
 /*******************************/
 
 #identity-main .field {
-  clear: left;
-  width: 96%;
+	clear:left;
+	width: 96%;
 }
 
 #profil-groups-belong #form-row-desc {
@@ -6560,7 +6566,6 @@ form .forms .fields > li:nth-child(even) {
   clear:left;
   width: 96%;
 }
-
 #profil table.tableArrayPane {
 	margin:10px;
 }
