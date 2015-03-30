@@ -5112,16 +5112,21 @@ li.application  .applicationName {
   height:100%;
 }
 
+#results_userPanel, 
+#selected_userPanel, 
+#filter_userPanel {
+	height:100%;
+	overflow:auto;
+}
 
-#results_userPanel, #selected_userPanel, #filter_userPanel {height:100%; overflow:auto;}
+#selected_userPanel .inlineMessage {
+	margin: 3%;
+}
 
 #filter_userPanel {
   height:100%;
   overflow:hidden;
 }
-
-
-
 
 #filter_userPanel {
   width:24%;
