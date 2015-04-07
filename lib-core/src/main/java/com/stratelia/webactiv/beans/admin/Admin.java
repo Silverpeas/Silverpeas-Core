@@ -5909,7 +5909,8 @@ public final class Admin {
       ud.setId(userId);
       ud.setAccessLevel(theUserDetail.getAccessLevel());
       ud.setDomainId(theUserDetail.getDomainId());
-      if (!ud.equals(theUserDetail)) {
+      if (!ud.equals(theUserDetail) ||
+          (ud.getState() != UserState.UNKNOWN && ud.getState() != theUserDetail.getState())) {
         copyDistantUserIntoSilverpeasUser(ud, theUserDetail);
         userManager.updateUser(domainDriverManager, theUserDetail);
         cache.opUpdateUser(userManager.getUserDetail(domainDriverManager, userId));
@@ -6145,6 +6146,15 @@ public final class Admin {
     silverpeasUser.setLastName(distantUser.getLastName());
     silverpeasUser.seteMail(distantUser.geteMail());
     silverpeasUser.setLogin(distantUser.getLogin());
+    if (distantUser.isDeactivatedState()) {
+      // In this case, the user account is deactivated from the LDAP
+      silverpeasUser.setState(distantUser.getState());
+    } else if (distantUser.isValidState() && silverpeasUser.isDeactivatedState()) {
+      // In this case, the user account is activated from the LDAP, so the Silverpeas user
+      // account is again activated only if it was deactivated. Indeed, if it was blocked for
+      // example, it is still blocked after a synchronization
+      silverpeasUser.setState(distantUser.getState());
+    }
   }
 
   /**
