@@ -224,7 +224,10 @@ public class UserDAO {
   private static ListSlice<UserDetail> theUserDetailsFrom(ResultSet rs, int start, int end) throws
       SQLException {
     ListSlice<UserDetail> users = new ListSlice<UserDetail>(start, end);
-    rs.relative(start);
+    if(start > 0) {
+      rs.next();
+      rs.relative(start-1);
+    }
     int i;
     for (i = start; rs.next(); i++) {
       if (i < end) {
