@@ -20,20 +20,17 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import org.silverpeas.util.Charsets;
-import org.silverpeas.util.LdapConfiguration;
-
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPConstraints;
+import com.novell.ldap.LDAPSearchConstraints;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
-
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPConstraints;
-import com.novell.ldap.LDAPSearchConstraints;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.util.LdapConfiguration;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions
@@ -74,6 +71,9 @@ public class LDAPSettings extends DriverSettings {
   protected String usersFirstNameField = null;
   protected String usersLastNameField = null;
   protected String usersEmailField = null;
+  // Account activation
+  protected String usersAccountControl = null;
+  protected String usersDisabledAccountFlag = null;
   // Groups
   protected String groupsType = null;
   protected String groupsClassName = null;
@@ -147,6 +147,8 @@ public class LDAPSettings extends DriverSettings {
     usersFirstNameField = rs.getString("users.FirstNameField", null);
     usersLastNameField = rs.getString("users.LastNameField", null);
     usersEmailField = getSureString(rs, "users.EmailField");
+    usersAccountControl = rs.getString("users.accountControl", "");
+    usersDisabledAccountFlag = rs.getString("users.accountControl.disabledFlags", "");
 
     // Groups Settings
     // ---------------
@@ -324,6 +326,14 @@ public class LDAPSettings extends DriverSettings {
     return usersEmailField;
   }
 
+  public String getUsersAccountControl() {
+    return usersAccountControl;
+  }
+
+  public String getUsersDisabledAccountFlag() {
+    return usersDisabledAccountFlag;
+  }
+
   public String getUsersIdFilter(String value) {
     if (LDAPUtility.isAGuid(getUsersIdField()) && (value != null)) {
       // Replace all "\\" by "\"
@@ -451,12 +461,16 @@ public class LDAPSettings extends DriverSettings {
 
   protected String[] getUserAttributes() {
     if (isLDAPOpAttributesUsed()) {
-      String[] attrs = new String[5];
+      String usersAccountControlAttribute = getUsersAccountControl();
+      String[] attrs = new String[StringUtil.isDefined(usersAccountControlAttribute) ? 6 : 5];
       attrs[0] = getUsersIdField();
       attrs[1] = getUsersEmailField();
       attrs[2] = getUsersFirstNameField();
       attrs[3] = getUsersLastNameField();
       attrs[4] = getUsersLoginField();
+      if (StringUtil.isDefined(usersAccountControlAttribute)) {
+        attrs[5] = usersAccountControlAttribute;
+      }
       return attrs;
     }
     return ArrayUtil.EMPTY_STRING_ARRAY;

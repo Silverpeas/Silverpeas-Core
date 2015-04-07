@@ -20,12 +20,9 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
 import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
@@ -34,9 +31,11 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.admin.user.constant.UserState;
 
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class reads user infos from the LDAP DB and translate it into the UserDetail format
@@ -185,8 +184,61 @@ public class LDAPUser {
   }
 
   /**
-   * Translate a LDAP user entry into a UserDetail structure. NOTE : the DomainID and the ID are
-   * not
+   * Centralizing the translation from LDAP user entry to Silverpeas user data.
+   * @param ldapUser
+   * @param silverpeasDistantUser
+   */
+  private void translateCommonUserData(LDAPEntry ldapUser, UserDetail silverpeasDistantUser) {
+    silverpeasDistantUser.setSpecificId(
+        LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersIdField()));
+    silverpeasDistantUser.setLogin(
+        LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersLoginField()));
+    silverpeasDistantUser.setFirstName(
+        LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersFirstNameField()));
+    silverpeasDistantUser.setLastName(
+        LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersLastNameField()));
+    silverpeasDistantUser.seteMail(
+        LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersEmailField()));
+    silverpeasDistantUser.setAccessLevel(null); // Put the default access level (user)...
+
+    // Trying to get the information of that the user account is disabled or not
+    String userAccountControlAttribute = driverSettings.getUsersAccountControl();
+    String disabledUserAccountFlag = driverSettings.getUsersDisabledAccountFlag();
+    if (StringUtil.isDefined(userAccountControlAttribute) &&
+        StringUtil.isDefined(disabledUserAccountFlag)) {
+      String usersAccountControl =
+          LDAPUtility.getFirstAttributeValue(ldapUser, userAccountControlAttribute);
+      if (!StringUtil.isDefined(usersAccountControl)) {
+        usersAccountControl = StringUtil.EMPTY;
+      }
+      if (StringUtil.isLong(usersAccountControl)) {
+        if (StringUtil.isLong(disabledUserAccountFlag)) {
+          long currentAccountControlFlags = Long.valueOf(usersAccountControl);
+          long disabledUserAccountFlagAsLong = Long.valueOf(disabledUserAccountFlag);
+          if ((currentAccountControlFlags & disabledUserAccountFlagAsLong) ==
+              disabledUserAccountFlagAsLong) {
+            // The account is disabled
+            silverpeasDistantUser.setState(UserState.DEACTIVATED);
+          } else {
+            // The account is enabled
+            silverpeasDistantUser.setState(UserState.VALID);
+          }
+        }
+      } else {
+        if (usersAccountControl
+            .matches("(?i)(.*[ ;,|]+|)" + disabledUserAccountFlag + "([ ;,|]+.*|)")) {
+          // The account is disabled
+          silverpeasDistantUser.setState(UserState.DEACTIVATED);
+        } else {
+          // The account is enabled
+          silverpeasDistantUser.setState(UserState.VALID);
+        }
+      }
+    }
+  }
+
+  /**
+   * Translate a LDAP user entry into a UserDetail structure. NOTE : the DomainID and the ID are not
    * set.
    * @param userEntry the LDAP user object
    * @return the user object
@@ -201,17 +253,7 @@ public class LDAPUser {
     int i;
     DomainProperty curProp;
 
-    userInfos.setSpecificId(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersIdField()));
-    userInfos.setLogin(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersLoginField()));
-    userInfos.setFirstName(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersFirstNameField()));
-    userInfos.setLastName(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersLastNameField()));
-    userInfos.seteMail(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersEmailField()));
-    userInfos.setAccessLevel(null); // Put the default access level (user)...
+    translateCommonUserData(userEntry, userInfos);
 
     for (i = 0; i < keys.length; i++) {
       curProp = driverParent.getProperty(keys[i]);
@@ -278,17 +320,7 @@ public class LDAPUser {
     }
 
     // Set the AdminUser informations
-    userInfos.setSpecificId(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersIdField()));
-    userInfos.setLogin(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersLoginField()));
-    userInfos.setFirstName(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersFirstNameField()));
-    userInfos.setLastName(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersLastNameField()));
-    userInfos.seteMail(
-        LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersEmailField()));
-    userInfos.setAccessLevel(null); // Put the default access level (user)...
+    translateCommonUserData(userEntry, userInfos);
 
     synchroCache.addUser(userEntry);
 
