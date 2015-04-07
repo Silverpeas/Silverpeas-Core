@@ -89,7 +89,7 @@ public class DynamicValueReplacement {
             firstOption = message.getString("DynamicValues");
           }
         } catch (Exception ex) {
-          SilverTrace.error("wysiwiy", DynamicValueReplacement.class.toString(),
+          SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
               "root.EX_CANT_GET_LANGUAGE_RESOURCE ", ex);
         }
 
@@ -111,7 +111,7 @@ public class DynamicValueReplacement {
       }
 
     } catch (Exception e) {
-      SilverTrace.error("wysiwiy", DynamicValueReplacement.class.toString(),
+      SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
           "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(conn);
