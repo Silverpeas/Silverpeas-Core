@@ -49,14 +49,17 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.silverpeas.comment.service.notification.NotificationMatchers.isSetIn;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Mockito.*;
-
-import static com.silverpeas.comment.service.notification.NotificationMatchers.isSetIn;
 
 /**
  * Unit tests notification of the users at comment adding on a given Silverpeas content.
@@ -286,7 +289,12 @@ public class CommentUserNotificationServiceTest {
       @Override
       public UserDetail answer(InvocationOnMock invocation) {
         Object[] args = invocation.getArguments();
-        UserDetail userDetail = new UserDetail();
+        UserDetail userDetail = new UserDetail() {
+          @Override
+          public boolean isAnonymous() {
+            return false;
+          }
+        };
         userDetail.setId((String) args[0]);
         return userDetail;
       }
