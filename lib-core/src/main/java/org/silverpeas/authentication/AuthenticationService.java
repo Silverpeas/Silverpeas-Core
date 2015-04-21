@@ -35,6 +35,7 @@ import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChang
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
@@ -47,7 +48,6 @@ import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,7 +56,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 
 /**

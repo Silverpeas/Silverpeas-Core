@@ -615,6 +615,16 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public void deactivateUser(final String userId) throws AdminException {
+
+  }
+
+  @Override
+  public void activateUser(final String userId) throws AdminException {
+
+  }
+
+  @Override
   public void userAcceptsTermsOfService(final String userId) throws AdminException {
 
   }

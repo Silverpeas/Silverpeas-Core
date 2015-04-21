@@ -1401,7 +1401,7 @@ public class AdminController implements java.io.Serializable {
   public void deactivateUser(String userId) {
     SilverTrace.info("admin", "AdminController.deactivateUser", "root.MSG_GEN_ENTER_METHOD");
     try {
-      getAdminService().deactivateUser(userId);
+      admin.deactivateUser(userId);
     } catch (Exception e) {
       SilverTrace
           .error("admin", "AdminController.deactivateUser", "admin.EX_ERR_DEACTIVATE_USER", e);
@@ -1414,7 +1414,7 @@ public class AdminController implements java.io.Serializable {
   public void activateUser(String userId) {
     SilverTrace.info("admin", "AdminController.activateUser", "root.MSG_GEN_ENTER_METHOD");
     try {
-      getAdminService().activateUser(userId);
+      admin.activateUser(userId);
     } catch (Exception e) {
       SilverTrace
           .error("admin", "AdminController.activateUser", "admin.EX_ERR_UNDEACTIVATE_USER", e);

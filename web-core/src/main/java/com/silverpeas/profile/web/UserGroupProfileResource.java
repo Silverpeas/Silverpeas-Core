@@ -26,12 +26,12 @@ package com.silverpeas.profile.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.util.CollectionUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Inject;

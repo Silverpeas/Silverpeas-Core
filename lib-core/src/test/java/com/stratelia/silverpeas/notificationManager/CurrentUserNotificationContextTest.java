@@ -30,9 +30,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ResourceLocator;
 
@@ -40,9 +39,8 @@ import static com.stratelia.silverpeas.notificationManager.CurrentUserNotificati
     .getCurrentUserNotificationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class CurrentUserNotificationContextTest {
 
@@ -65,10 +63,9 @@ public class CurrentUserNotificationContextTest {
     // By default, a user is not an anonymous one
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(false));
 
-    OrganisationController organizationController = reflectionRule
-        .mockField(OrganisationControllerFactory.class, OrganisationController.class,
-            "instance.organisationController");
-    when(organizationController.getUserDetail(anyString())).thenReturn(new UserDetail());
+    final OrganizationController mockedOrganizationController =
+        commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
+    when(mockedOrganizationController.getUserDetail(anyString())).thenReturn(new UserDetail());
   }
 
   @After

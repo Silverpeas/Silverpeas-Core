@@ -20,13 +20,13 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DBUtil;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ListSlice;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

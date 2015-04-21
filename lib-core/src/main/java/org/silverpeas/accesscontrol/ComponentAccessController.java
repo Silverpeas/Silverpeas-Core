@@ -30,6 +30,7 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ComponentHelper;

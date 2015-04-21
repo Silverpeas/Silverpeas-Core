@@ -51,12 +51,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.util.StringUtil.areStringEquals;
-import static org.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
     .getUserManualNotificationRecipientLimit;
 import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
     .isUserManualNotificationRecipientLimitEnabled;
+import static org.silverpeas.util.StringUtil.areStringEquals;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String CURRENT_REQUESTER_KEY =

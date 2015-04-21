@@ -28,7 +28,6 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.web.WebEntity;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.lang.NotImplementedException;
 import org.owasp.encoder.Encode;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ServiceProvider;

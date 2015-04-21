@@ -3002,6 +3002,7 @@ class Admin implements Administration {
    * @param userId
    * @throws AdminException
    */
+  @Override
   public void deactivateUser(String userId) throws AdminException {
     updateUserState(userId, UserState.DEACTIVATED);
   }
@@ -3012,6 +3013,7 @@ class Admin implements Administration {
    * @param userId
    * @throws AdminException
    */
+  @Override
   public void activateUser(String userId) throws AdminException {
     updateUserState(userId, UserState.VALID);
   }

@@ -690,6 +690,22 @@ public interface Administration {
   void unblockUser(String userId) throws AdminException;
 
   /**
+   * Deactivates the user represented by the given identifier.
+   *
+   * @param userId
+   * @throws AdminException
+   */
+  void deactivateUser(String userId) throws AdminException;
+
+  /**
+   * Activate the user represented by the given identifier.
+   *
+   * @param userId
+   * @throws AdminException
+   */
+  void activateUser(String userId) throws AdminException;
+
+  /**
    * Updates the acceptance date of a user from its id.
    * @param userId
    * @throws com.stratelia.webactiv.beans.admin.AdminException

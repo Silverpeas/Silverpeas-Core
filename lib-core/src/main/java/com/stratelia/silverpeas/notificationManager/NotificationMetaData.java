@@ -29,6 +29,7 @@ import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.Link;
 import org.silverpeas.util.StringUtil;

@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.Arrays;
@@ -61,21 +63,21 @@ public class NotificationMetaDataTest {
     current = new NotificationMetaData();
 
     // Settings
+    reflectionRule
+        .mockField(GeneralPropertiesManager.class, ResourceLocator.class, "generalProperties");
     mockedSettings = reflectionRule
         .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
 
     // Organization controller
     final OrganizationController mockedOrganizationController =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
-    when(mockedOrganisationController.getUserDetail(anyString())).thenReturn(new UserDetail());
-    when(mockedOrganizationController.getGroup(anyString())).thenAnswer(new Answer<Group>() {
-      @Override
-      public Group answer(final InvocationOnMock invocation) throws Throwable {
-        Group group = new Group();
-        group.setId((String) invocation.getArguments()[0]);
-        group.setNbUsers(5);
-        return group;
-      }
+    when(mockedOrganizationController.getUserDetail(anyString())).thenAnswer(
+        invocation -> new UserDetail());
+    when(mockedOrganizationController.getGroup(anyString())).thenAnswer(invocation -> {
+      Group group = new Group();
+      group.setId((String) invocation.getArguments()[0]);
+      group.setNbUsers(5);
+      return group;
     });
 
     // Notification Manager

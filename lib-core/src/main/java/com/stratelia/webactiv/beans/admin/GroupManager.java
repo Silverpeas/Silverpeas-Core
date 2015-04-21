@@ -26,6 +26,7 @@ import com.stratelia.webactiv.beans.admin.dao.UserDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.GroupRow;
+import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
@@ -36,9 +37,6 @@ import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.util.ListSlice;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
