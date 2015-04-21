@@ -322,7 +322,11 @@
       __markRenderingInProgress(target);
       __animate(target);
       setTimeout(function() {
-        if (!__isRenderingInProgress(target) || currentTarget !== target[0] ||
+        var $currentTarget = $(currentTarget);
+        if (!$(currentTarget).hasClass('userToZoom')) {
+         $currentTarget = $(currentTarget).parents("span.userToZoom");
+        }
+        if (!__isRenderingInProgress(target) || $currentTarget[0] !== target[0] ||
             ($.userZoom.target && $.userZoom.target === target)) {
           __markRenderingDone(target);
           return;
