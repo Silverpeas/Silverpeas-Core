@@ -23,9 +23,11 @@
  */
 package org.silverpeas.web.filter;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import com.silverpeas.web.UserPrivilegeValidation;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.util.HttpMethod;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,12 +37,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.util.HttpMethod;
-import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.UserPrivilegeValidation;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourceLocator;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This filter provide the right behaviour to handle Cross-Origin Resource Sharing (CORS).
@@ -73,7 +72,8 @@ public class WebCORSFilter implements Filter {
     if (HttpMethod.OPTIONS.name().equals(httpRequest.getMethod())) {
       httpResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
       httpResponse.addHeader("Access-Control-Allow-Headers", "Content-Type, " +
-          UserPrivilegeValidation.HTTP_SESSIONKEY);
+          UserPrivilegeValidation.HTTP_SESSIONKEY + ", " +
+          UserPrivilegeValidation.HTTP_AUTHORIZATION);
     }
 
     // The request treatment continue.
