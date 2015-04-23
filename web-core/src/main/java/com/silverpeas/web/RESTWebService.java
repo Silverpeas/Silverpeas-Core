@@ -94,6 +94,8 @@ public abstract class RESTWebService implements WebResource {
     if (StringUtil.isDefined(session.getSessionId()) && session.getLastAccessTimestamp() == session.
         getOpeningTimestamp()) {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+      getHttpServletResponse().addHeader("Access-Control-Expose-Headers",
+          UserPrivilegeValidation.HTTP_SESSIONKEY);
       if (request.getHeader(HTTP_AUTHORIZATION) != null
           && session.getLastAccessTimestamp() == session.getOpeningTimestamp()) {
         tokenService.setUpSessionTokens(session);

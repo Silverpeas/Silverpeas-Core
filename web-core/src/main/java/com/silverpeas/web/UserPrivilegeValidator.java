@@ -28,6 +28,8 @@ import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionValidationContext;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
@@ -53,6 +55,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import static org.silverpeas.util.StringUtil.isDefined;
+import static org.silverpeas.util.StringUtil.isInteger;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -252,22 +255,30 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
     SessionInfo session = SessionInfo.NoneSession;
     String userCredentials = request.getHeader(HTTP_AUTHORIZATION);
     if (isDefined(userCredentials)) {
-      String decoded = new String(Base64.decodeBase64(userCredentials), Charsets.UTF_8);
-      // the first ':' character is the separator according to the RFC 2617 in basic digest
-      int loginPasswordSeparatorIndex = decoded.indexOf(':');
-      if (loginPasswordSeparatorIndex > 0) {
-        String userId = decoded.substring(0, loginPasswordSeparatorIndex);
-        String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-        UserFull user = organisationController.getUserFull(userId);
-        if (user != null) {
-          AuthenticationCredential credential = AuthenticationCredential
-              .newWithAsLogin(user.getLogin())
-              .withAsPassword(password)
-              .withAsDomainId(user.getDomainId());
-          AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-          String key = authenticator.authenticate(credential);
-          if (!authenticator.isInError(key)) {
-            session = sessionManagement.openSession(user);
+      String[] auth = userCredentials.split(" ");
+      if (auth.length == 2 && auth[0].equalsIgnoreCase("Basic")) {
+        String decoded = new String(Base64.decodeBase64(auth[1]), Charsets.UTF_8);
+        // the first ':' character is the separator according to the RFC 2617 in basic digest
+        int loginPasswordSeparatorIndex = decoded.indexOf(':');
+        if (loginPasswordSeparatorIndex > 0) {
+          String[] login = decoded.substring(0, loginPasswordSeparatorIndex).split("@domain");
+          String password = decoded.substring(loginPasswordSeparatorIndex + 1);
+          if (login.length == 2 && isDefined(login[0]) && isInteger(login[1])) {
+            AuthenticationCredential credential =
+                AuthenticationCredential.newWithAsLogin(login[0])
+                    .withAsPassword(password)
+                    .withAsDomainId(login[1]);
+            AuthenticationService authenticator = AuthenticationServiceProvider.getService();
+            String key = authenticator.authenticate(credential);
+            if (!authenticator.isInError(key)) {
+              HttpSession httpSession = request.getSession(true);
+              try {
+                String userId = Administration.get().identify(key, httpSession.getId(), false);
+                session = sessionManagement.openSession(UserDetail.getById(userId), request);
+              } catch (AdminException e) {
+                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+              }
+            }
           }
         }
       }
