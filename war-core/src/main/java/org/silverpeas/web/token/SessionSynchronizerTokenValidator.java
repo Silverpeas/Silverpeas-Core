@@ -157,7 +157,8 @@ public class SessionSynchronizerTokenValidator implements Filter {
   private boolean isCredentialManagement(HttpServletRequest request) {
     String uri = request.getRequestURI();
     return uri.endsWith("/Qaptcha") || uri.contains("/CredentialsServlet/") ||
-        uri.contains("/services/password/") || uri.contains("/AuthenticationServlet") ||
+        uri.contains("/services/password/") || uri.contains("/services/authentication") ||
+        uri.contains("/AuthenticationServlet") ||
         (isWebServiceRequested(request) &&
             StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION)));
   }

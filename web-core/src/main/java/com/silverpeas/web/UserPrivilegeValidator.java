@@ -39,6 +39,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.AuthenticationServiceProvider;
+import org.silverpeas.authentication.UserSessionReference;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.admin.OrganizationController;
@@ -313,12 +314,21 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
     String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = sessionManagement.validateSession(context);
     if (!sessionInfo.isDefined()) {
-      // the key isn't a session identifier; is it then a user token?
-      final PersistentResourceToken userToken = PersistentResourceToken.getToken(sessionKey);
-      UserReference userRef = userToken.getResource(UserReference.class);
+      // the key isn't a session identifier; is it then a user auth token?
       UserDetail user = null;
-      if (userRef != null) {
-        user = userRef.getEntity();
+      final PersistentResourceToken userToken = PersistentResourceToken.getToken(sessionKey);
+      UserSessionReference userSessionRef = userToken.getResource(UserSessionReference.class);
+      if (userSessionRef != null) {
+        user = userSessionRef.getEntity().getUser();
+        if (!user.isValidState()) {
+          user = null;
+        }
+      } else {
+        // the key isn't a user auth token; is it then a user token?
+        UserReference userRef = userToken.getResource(UserReference.class);
+        if (userRef != null) {
+          user = userRef.getEntity();
+        }
       }
       if (user != null) {
         // the session key is a token and this token is bound to an existing user
