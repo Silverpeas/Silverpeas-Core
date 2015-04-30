@@ -514,8 +514,7 @@
             $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $worker.css({'visibility':'visible'});
             if (edit) {
-              var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
-              window.open(url, '_self');
+              // nothing to do, attachment url is copied in clipbloard
             } else if (download) {
               var url = $('#url_' + oldId).attr('href');
               window.open(url);
@@ -1220,3 +1219,18 @@
 </div>
 
 <view:progressMessage/>
+
+<script type="text/javascript" src="<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/javaScript/zeroClipboard/ZeroClipboard.min.js"></script>
+<script type="text/javascript">
+	$('button[id^="editing_"]').each(function() {
+		var bt = document.getElementById($(this).attr('id'));
+		var oldId = bt.getAttribute('oldId');
+		var newId = bt.getAttribute('newId');
+		var clip = new ZeroClipboard(bt);
+		clip.on('copy', function(client, args) {
+			checkoutAndEdit(newId, oldId);			
+		});
+		var url = decodeURIComponent(eval("webDav".concat(oldId)));
+		bt.setAttribute("data-clipboard-text", url);
+	});
+</script>

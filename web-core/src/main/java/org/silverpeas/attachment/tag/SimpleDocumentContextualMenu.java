@@ -83,6 +83,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   private static final String menuItemTemplate = "<li class=\"yuimenuitem\">"
       + "<a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></li>%n";
+
+  private static final String menuItemEditTemplate = "<li class=\"yuimenuitem\"><button id='editing_%3$s' oldId='%3$s' newId='%4$s'>"
+      + "<a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></button></li>%n";
+
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -136,8 +140,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + webDavOK + ");", resources.getString("checkOut"));
     prepareMenuItem(builder, "checkoutAndDownload('" + attachment.getId() + "'," + attachmentId
         + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
-    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId
-        + ");", resources.getString("attachment.checkOutAndEditOnline"));
+    prepareEditMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ");",
+        resources.getString("attachment.checkOutAndEditOnline"), attachmentId, attachment.getId());
     prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + ','
         + attachment.isOpenOfficeCompatible() + ", false ," + attachment.isVersioned() + ");",
         resources.getString("checkIn"));
@@ -238,6 +242,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   StringBuilder prepareMenuItem(StringBuilder buffer, String javascript, String label) {
     return buffer.append(String.format(menuItemTemplate, javascript, label));
+  }
+
+  StringBuilder prepareEditMenuItem(StringBuilder buffer, String javascript, String label, String attachmentId, String id) {
+    return buffer.append(String.format(menuItemEditTemplate, javascript, label, attachmentId, id));
   }
 
   StringBuilder configureCheckout(StringBuilder buffer, String attachmentId, boolean disable) {
