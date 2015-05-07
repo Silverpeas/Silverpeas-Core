@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import java.util.concurrent.ConcurrentHashMap;
@@ -165,7 +166,8 @@ public class TreeCache {
 
   public static List<SpaceInstLight> getSpacePath(int spaceId) {
     List<SpaceInstLight> path = new ArrayList<SpaceInstLight>();
-    SpaceInstLight space = getSpaceInstLight(spaceId);
+    String shortSpaceId = getShortSpaceId(spaceId);
+    SpaceInstLight space = getSpaceInstLight(shortSpaceId);
     if (space != null) {
       path.add(0, space);
       while (!space.isRoot()) {
@@ -233,5 +235,12 @@ public class TreeCache {
     if (space != null) {
       space.getSubspaces().add(subSpace);
     }
+  }
+
+  private static String getShortSpaceId(String id) {
+    if (id != null && id.startsWith(Admin.SPACE_KEY_PREFIX)) {
+      return id.substring(Admin.SPACE_KEY_PREFIX.length());
+    }
+    return id;
   }
 }
