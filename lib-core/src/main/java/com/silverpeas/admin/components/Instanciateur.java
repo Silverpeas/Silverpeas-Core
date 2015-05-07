@@ -44,6 +44,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import com.silverpeas.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -308,23 +309,39 @@ public class Instanciateur {
     return loadComponent(file);
   }
 
-  public static void saveComponent(WAComponent waComponent, String fileName) throws JAXBException {
+  public static void saveComponent(WAComponent waComponent, String fileName)
+      throws JAXBException, InstanciationException {
     saveComponent(waComponent, fileName, false);
   }
 
   public static void saveComponent(WAComponent waComponent, String fileName, boolean workflow)
-      throws JAXBException {
+      throws JAXBException, InstanciationException {
     JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
     Marshaller marshaller = context.createMarshaller();
     marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,
         "http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd");
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    File file = getFile(fileName, workflow);
+    marshaller.marshal(objectFactory.createWAComponent(waComponent), file);
+
+    // Clear the descriptors cache and load it again
+    rebuildWAComponentCache();
+  }
+
+  public static void removeWorkflow(String fileName) throws IOException, InstanciationException {
+    File file = getFile(fileName, true);
+    FileUtil.forceDeletion(file);
+
+    // Clear the descriptors cache and load it again
+    rebuildWAComponentCache();
+  }
+
+  private static File getFile(String fileName, boolean workflow) {
     String path = getXMLPackage() + File.separatorChar;
     if (workflow) {
       path += "workflows" + File.separatorChar;
     }
-    File file = new File(path + fileName);
-    marshaller.marshal(objectFactory.createWAComponent(waComponent), file);
+    return new File(path + fileName);
   }
 
   /**

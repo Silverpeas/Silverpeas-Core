@@ -286,11 +286,21 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   public void deleteProcessModelDescriptor(String strProcessModelFileName)
       throws WorkflowException {
     try {
-      FileFolderManager.deleteFile(getProcessModelDir() + strProcessModelFileName);
+      File workflowsDirectory = new File(getProcessModelDir());
+      File file = new File(workflowsDirectory, strProcessModelFileName);
+      File directory = file.getParentFile();
+
+      if (directory.equals(workflowsDirectory)) {
+        // remove file only
+        FileFolderManager.deleteFile(getProcessModelDir() + strProcessModelFileName);
+      } else {
+        // remove subdirectory and all its content
+        FileUtil.forceDeletion(directory);
+      }
 
       // Clear process model cache
       clearProcessModelCache();
-    } catch (UtilException e) {
+    } catch (Exception e) {
       throw new WorkflowException("WorkflowManager.getProcessModels",
           "WorkflowEngine.EX_GETTING_RPOCES_MODELS_FAILED", "Process Model File name : " +
           (strProcessModelFileName == null ? "<null>" : strProcessModelFileName), e);
@@ -384,14 +394,16 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       }
       mapping.loadMapping(mappingFileName);
       File file = new File(processPath);
-      Marshaller mar = new Marshaller(
-          new OutputStreamWriter(FileUtils.openOutputStream(file), strProcessModelFileEncoding));
+      OutputStreamWriter writer = new OutputStreamWriter(FileUtils.openOutputStream(file),
+          strProcessModelFileEncoding);
+      Marshaller mar = new Marshaller(writer);
       mar.setMapping(mapping);
       mar.setNoNamespaceSchemaLocation(schemaFileName);
       mar.setSuppressXSIType(true);
       mar.setValidation(false);
       mar.setEncoding(strProcessModelFileEncoding);
       mar.marshal(process);
+      writer.close();
       clearProcessModelCache();
     } catch (MappingException me) {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",

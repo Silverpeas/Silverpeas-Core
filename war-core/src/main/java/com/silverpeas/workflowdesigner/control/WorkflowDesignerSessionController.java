@@ -59,6 +59,7 @@ import com.silverpeas.workflow.api.model.States;
 import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.model.ProcessModelManagerImpl;
+import com.silverpeas.workflow.engine.model.SpecificLabel;
 import com.silverpeas.workflowdesigner.model.WorkflowDesignerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -66,6 +67,9 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -201,10 +205,13 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     try {
       // Is this the first save of a process model?
       //
-      if (strProcessModelFileName != null && NEW_ELEMENT_NAME.equals(processModelFileName)) {
+      if (NEW_ELEMENT_NAME.equals(processModelFileName)) {
         // Make sure that you are not overwriting sth.
         //
         List<String> processList = Workflow.getProcessModelManager().listProcessModels();
+        strProcessModelFileName = StringUtil.toAcceptableFilename(processModel.getName());
+        strProcessModelFileName = strProcessModelFileName.replace(' ', '_');
+        strProcessModelFileName = strProcessModelFileName+'/'+strProcessModelFileName+".xml";
         strProcessModelFileName = FileUtil.convertPathToServerOS(strProcessModelFileName);
 
         if (processList.contains(strProcessModelFileName)) {
@@ -230,8 +237,15 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public void removeProcessModel(String strProcessModelFileName)
       throws WorkflowDesignerException {
     try {
+      // remove model
       Workflow.getProcessModelManager().deleteProcessModelDescriptor(strProcessModelFileName);
-    } catch (WorkflowException e) {
+
+      // remove xmlcomponent
+      String componentName = findComponentDescriptor(strProcessModelFileName);
+      if (componentName != null) {
+        Instanciateur.removeWorkflow(componentName + ".xml");
+      }
+    } catch (Exception e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeProcesModel",
           SilverpeasException.ERROR, "workflowDesigner.EX_REMOVING_PROCESS_DESCRIPTIOR_FAILED", e);
     }
@@ -383,6 +397,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // add it to the collection
       //
       if (check == null) {
+        ContextualDesignation defaultLabel = new SpecificLabel();
+        defaultLabel.setContent(source.getName());
+        source.addLabel(defaultLabel);
         processModel.getRolesEx().addRole(source);
       } else {
         // If a 'role' element with the same name as the new element
@@ -2817,11 +2834,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   }
 
   /**
-* Generates component descriptor file in the appropriate directory, reloads the cache to take the
-* new file into account, stores the new descriptor's name to be able to access it later
-*
-* @throws WorkflowDesignerException when something goes wrong
-*/
+   * Generates component descriptor file in the appropriate directory, stores the new descriptor's
+   * name to be able to access it later
+   * @throws WorkflowDesignerException when something goes wrong
+   */
   public void generateComponentDescriptor()
       throws WorkflowDesignerException {
     List<Profile> listSPProfile = new ArrayList<Profile>();
@@ -2897,15 +2913,12 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     try {
       Instanciateur.saveComponent(waComponent, waComponent.getName() + ".xml", true);
       referencedInComponent = processModel.getName();
-    } catch (JAXBException e) {
+    } catch (Exception e) {
       throw new WorkflowDesignerException(
           "WorkflowDesignerSessionController.generateComponentDescriptor()",
           SilverpeasException.FATAL,
           "workflowDesigner.EX_ERR_WRITE_WA_COMPONENTS", e);
     }
-
-    // Clear the descriptor cache and load it again
-    rebuildComponentDescriptorCache();
   }
 
   private String getSureLanguage(String language) {
@@ -2954,22 +2967,6 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       }
     }
     return null;
-  }
-
-  /**
-* Clear the Component Descriptor cache and load it again
-*
-* @throws WorkflowDesignerException when something goes wrong
-*/
-  private void rebuildComponentDescriptorCache() throws WorkflowDesignerException {
-    try {
-      Instanciateur.rebuildWAComponentCache();
-    } catch (InstanciationException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.rebuildComponentDescriptorCache()",
-          SilverpeasException.FATAL,
-          "workflowDesigner.EX_ERR_READ_WA_COMPONENTS", e);
-    }
   }
 
   /**
