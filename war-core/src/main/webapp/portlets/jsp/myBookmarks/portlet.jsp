@@ -51,15 +51,14 @@ if (!links.hasNext()) {
 	while (links.hasNext()) {
 	  	LinkDetail link = (LinkDetail) links.next();
 		if (link.isVisible()) {
-			// afficher que les liens que l'utilisateur a top� "visible en page d'accueil"
 			String lien = link.getUrl();
 			String name = EncodeHelper.convertHTMLEntities(link.getName());
 			if (!StringUtil.isDefined(name)) {
 				name = lien;
 			}
-			
-			// ajouter le context devant le lien si n�c�ssaire
-			if (lien.indexOf("://") == -1) {
+
+      // Add context before link if needed
+			if (lien.indexOf("://") == -1 && !lien.startsWith("/website")) {
 				lien = URLManager.getApplicationURL() + lien;
 			}
 
