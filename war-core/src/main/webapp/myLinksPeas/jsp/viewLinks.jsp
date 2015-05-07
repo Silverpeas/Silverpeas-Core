@@ -242,20 +242,20 @@ function submitLink() {
      String name = link.getName();
      String desc = link.getDescription();
 
-     if (!StringUtil.isDefined(name)) {
-       name = lien;
-     }
-     if (!StringUtil.isDefined(desc)) {
-       desc = "";
-     }
-     // Add context before link if needed
-     if (lien.indexOf("://") == -1) {
-       lien = m_context + lien;
-     }
-     ArrayCellLink monLien = line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(name), lien);
-     if (link.isPopup()) {
-       monLien.setTarget("_blank");
-     }
+       if (!StringUtil.isDefined(name)) {
+         name = lien;
+       }
+       if (!StringUtil.isDefined(desc)) {
+         desc = "";
+       }
+       // Add context before link if needed
+       if (lien.indexOf("://") == -1 && !lien.startsWith("/website")) {
+         lien = m_context + lien;
+       }
+       ArrayCellLink monLien = line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(name), lien);
+       if (link.isPopup()) {
+         monLien.setTarget("_blank");
+       }
 
      line.addArrayCellText(EncodeHelper.javaStringToHtmlString(desc));
 
