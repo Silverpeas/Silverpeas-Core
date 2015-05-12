@@ -4318,6 +4318,12 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   color: #666;
 }
 
+#update-attachment-form #translationWarning {
+  background: url("/silverpeas/util/icons/alert.gif") 0px 0px no-repeat;
+  text-indent: 21px;
+  font-weight: bold;
+}
+
 /*- [ attachments END ] ------------------------- */
 
 #admin-component .componentIcon {
