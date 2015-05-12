@@ -36,6 +36,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.collections.CollectionUtils;
@@ -73,11 +74,13 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   public boolean isUserAuthorized(String userId, SimpleDocument object,
       final AccessControlContext context) {
 
+    boolean authorized = true;
+
     // Component access control
     final Set<SilverpeasRole> componentUserRoles =
         getComponentAccessController().getUserRoles(context, userId, object.getInstanceId());
     if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
-      return false;
+      authorized = false;
     }
 
     // Node access control
@@ -91,6 +94,25 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
           SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
               "root.NO_EX_MESSAGE", e);
           return false;
+        }
+
+        // Check if an alias of publication is authorized
+        if (!authorized) {
+          try {
+            Collection<Alias> aliases = getPublicationBm().getAlias(pubDetail.getPK());
+            for (Alias alias : aliases) {
+              authorized = getNodeAccessController()
+                  .isUserAuthorized(userId, new NodePK(alias.getId(), alias.getInstanceId()),
+                      context);
+              if (authorized) {
+                return authorized;
+              }
+            }
+          } catch (Exception e) {
+            SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+                "root.NO_EX_MESSAGE", e);
+            return false;
+          }
         }
 
         // If rights are not handled on directories, directory rights are not checked !
@@ -125,6 +147,10 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         return getNodeAccessController().isUserAuthorized(nodeUserRoles) &&
             isUserAuthorizedByContext(true, userId, object, context, nodeUserRoles, "unknown");
       }
+    }
+
+    if (!authorized) {
+      return false;
     }
 
     return isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);

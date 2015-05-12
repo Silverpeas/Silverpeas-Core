@@ -67,10 +67,6 @@
         errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
         errorNb++;
       }
-      if (isWhitespace(document.workflowHeaderForm.ProcessFileName.value)) {
-        errorMsg += "  - '<%=resource.getString("GML.path")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-        errorNb++;
-      }
 
       switch (errorNb) {
         case 0 :
@@ -112,7 +108,7 @@
   processPane.setTitle(resource.getString("workflowDesigner.workflowHeader"));
 
   // add an operation:  Generate the Component descriptor xml file.
-  // Only if the description has not yet been defined but the workflow has aleready been saved
+  // Only if the description has not yet been defined but the workflow has already been saved
   //
   if (fExistingProcess) {
     operationPane.addOperation(resource.getIcon("workflowDesigner.generate.componentDescriptor"),
@@ -131,12 +127,12 @@
   cellInput = row.addArrayCellInputText("name", processModel.getName());
   cellInput.setSize("50");
 
-  row = processPane.addArrayLine();
-  cellText = row.addArrayCellText(resource.getString("GML.path"));
-  cellText.setStyleSheet("txtlibform");
-  cellInput = row.addArrayCellInputText("ProcessFileName", strProcessFileName);
-  cellInput.setReadOnly(fExistingProcess);
-  cellInput.setSize("80");
+  if (fExistingProcess) {
+    row = processPane.addArrayLine();
+    cellText = row.addArrayCellText(resource.getString("GML.path"));
+    cellText.setStyleSheet("txtlibform");
+    row.addArrayCellText(strProcessFileName);
+  }
 
   out.println(window.printBefore());
 %>
