@@ -225,7 +225,7 @@
             <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
           <c:if test="${contextualMenuEnabled}">
-            <menu:simpleDocument attachment="${currentAttachment}" contentLanguage="${contentLanguage}"
+            <menu:simpleDocument attachment="${currentAttachment}"
                                  showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
                                  useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           </c:if>
@@ -235,6 +235,9 @@
               </c:if>
               <c:if test="${showIcon}">
                 <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
+              </c:if>
+              <c:if test="${silfn:isI18n()}">
+                <span class="">[${currentAttachment.language}]</span>
               </c:if>
               <c:choose>
                 <c:when test="${! silfn:isDefined(currentAttachment.title) || ! showTitle}">
@@ -1075,6 +1078,7 @@
   </c:if>
 
   function displayAttachment(attachment) {
+    $("#fileLang").val(attachment.lang);
     $('#fileName').text(attachment.fileName);
     $('#fileTitle').val(attachment.title);
     $('#fileDescription').val(attachment.description);
@@ -1096,6 +1100,21 @@
     $('#versioned_fields_attachment-update').hide();
   }
 
+  function displayWarningOnTranslations(nbTranslations) {
+    try {
+      if (nbTranslations === 1) {
+        $('#translationWarningLabel').hide();
+        $('#translationWarning').hide();
+      } else {
+        $('#translationWarningLabel').show();
+        $('#translationWarning').show();
+      }
+    } catch (e) {
+      // in case elements are not in DOM
+    }
+
+  }
+
   function clearCheckin() {
     $('#checkin_oldId').val('');
     $('#force').val('false');
@@ -1114,6 +1133,7 @@
       success: function(data) {
         $('#attachmentId').val(id);
         clearAttachment();
+        displayWarningOnTranslations(data.length);
         $.each(data, function(index, attachment) {
           if (attachment.lang == lang) {
             displayAttachment(attachment);
@@ -1149,6 +1169,8 @@
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
         <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
+          <label class="label-ui-dialog" id="translationWarningLabel" for="translationWarning"><fmt:message key="attachment.warning.translations.label"/></label>
+          <span class="champ-ui-dialog warning" id="translationWarning"><fmt:message key="attachment.warning.translations"/></span>
           <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
           <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
         </c:if>

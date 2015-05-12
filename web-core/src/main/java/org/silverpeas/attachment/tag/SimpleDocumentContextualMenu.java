@@ -49,7 +49,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   private SimpleDocument attachment;
   private boolean useXMLForm;
   private boolean useWebDAV;
-  private String contentLanguage;
   private boolean showMenuNotif;
   private boolean useContextualMenu;
 
@@ -63,10 +62,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   public void setUseWebDAV(boolean useWebDAV) {
     this.useWebDAV = useWebDAV;
-  }
-
-  public void setContentLanguage(String lang) {
-    this.contentLanguage = lang;
   }
 
   public void setShowMenuNotif(boolean showMenuNotif) {
@@ -94,7 +89,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       String httpServerBase =
           URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
       pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
-          mainSessionController.getUserId(), contentLanguage, favoriteLanguage, messages,
+          mainSessionController.getUserId(), favoriteLanguage, messages,
           httpServerBase, showMenuNotif, useContextualMenu));
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
@@ -122,10 +117,9 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
-      String userId, String contentLanguage, final String userLanguage, ResourceLocator resources,
+      String userId, final String userLanguage, ResourceLocator resources,
       String httpServerBase, boolean showMenuNotif, boolean useContextualMenu)
       throws UnsupportedEncodingException {
-    String language = I18NHelper.checkLanguage(contentLanguage);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(2048);
@@ -152,9 +146,11 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
-    prepareMenuItem(builder, "updateAttachment('" + attachment.getId() + "','" + language + "');",
+    prepareMenuItem(builder,
+        "updateAttachment('" + attachment.getId() + "','" + attachment.getLanguage() + "');",
         resources.getString("GML.modify"));
-    prepareMenuItem(builder, "EditXmlForm('" + attachment.getId() + "','" + language + "');",
+    prepareMenuItem(builder,
+        "EditXmlForm('" + attachment.getId() + "','" + attachment.getLanguage() + "');",
         resources.getString("attachment.xmlForm.Edit"));
     String message = resources.getString("attachment.switchState.toVersioned");
     if (attachment.isVersioned()) {
