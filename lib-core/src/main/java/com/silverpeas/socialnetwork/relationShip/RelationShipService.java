@@ -145,7 +145,7 @@ public class RelationShipService {
       myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialnetwork.relationShip",
-          "RelationShipService.getAllMyRelationShips", "",
+          "RelationShipService.getMyContactsIds", "",
           ex);
     } finally {
       DBUtil.close(connection);
@@ -168,7 +168,7 @@ public class RelationShipService {
       myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialnetwork.relationShip",
-          "RelationShipService.getAllMyRelationShips", "",
+          "RelationShipService.getAllCommonContactsIds", "",
           ex);
     } finally {
       DBUtil.close(connection);

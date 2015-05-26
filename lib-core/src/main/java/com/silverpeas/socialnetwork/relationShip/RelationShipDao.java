@@ -162,7 +162,7 @@ public class RelationShipDao {
   }
 
   /**
-   * rturn the list of all my RelationShips
+   * return the list of all my RelationShips
    * @param connection
    * @param myId
    * @return List<RelationShip>
@@ -245,7 +245,7 @@ public class RelationShipDao {
             +
             "FROM sb_sn_RelationShip WHERE user1Id in(" +
             toSqlString(myContactsIds) +
-            ")and inviterid=user1Id and acceptanceDate >= ? and acceptanceDate <= ? order by acceptanceDate desc ";
+            ") and inviterid=user1Id and acceptanceDate >= ? and acceptanceDate <= ? order by acceptanceDate desc ";
     try {
       pstmt = con.prepareStatement(query);
       pstmt.setTimestamp(1, new Timestamp(begin.getTime()));
@@ -306,7 +306,11 @@ public class RelationShipDao {
     PreparedStatement pstmt = null;
     List<String> myContactsIds = new ArrayList<String>();
     try {
-      String query = "SELECT user2Id FROM sb_sn_RelationShip WHERE user1Id = ?";
+      String query = "SELECT user2Id "+
+          "FROM sb_sn_RelationShip, st_user "+
+          "WHERE user1Id = ? "+
+          "and user2Id = st_user.id " +
+          "and st_user.state <> 'DELETED'";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, myId);
       rs = pstmt.executeQuery();
@@ -321,7 +325,7 @@ public class RelationShipDao {
   }
 
   /**
-   * get all common contacts Ids of usre1 and user2
+   * get all common contacts Ids of user1 and user2
    * @param connection
    * @param user1Id
    * @param user2Id
@@ -334,8 +338,13 @@ public class RelationShipDao {
     PreparedStatement pstmt = null;
     List<String> myContactsIds = new ArrayList<String>();
     try {
-      String query = "SELECT  user2Id FROM sb_sn_RelationShip  WHERE user1Id = ? and "
-          + " user2id in(SELECT  user2Id FROM sb_sn_RelationShip  WHERE user1Id = ? )";
+      String query = "SELECT user2Id "+
+                    "FROM sb_sn_RelationShip, st_user "+
+                    "WHERE user1Id = ? "+
+                    "and user2id in (SELECT user2Id "+
+                                    "FROM sb_sn_RelationShip WHERE user1Id = ?) "+
+                    "and user2Id = st_user.id "+
+                    "and st_user.state <> 'DELETED'";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, user1Id);
       pstmt.setInt(2, user2Id);
