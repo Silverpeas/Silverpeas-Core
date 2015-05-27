@@ -78,7 +78,8 @@ public class PdcBmEJB implements PdcBm {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
 
-    return getSilverContentsByIds(silverContentIds);
+    SearchContext searchContext = (SearchContext) containerPosition;
+    return getSilverContentsByIds(silverContentIds, searchContext.getUserId());
   }
 
   @Override
@@ -97,7 +98,8 @@ public class PdcBmEJB implements PdcBm {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
 
-    return getSilverContentsByIds(silverContentIds);
+    SearchContext searchContext = (SearchContext) containerPosition;
+    return getSilverContentsByIds(silverContentIds, searchContext.getUserId());
   }
 
   @Override
@@ -234,9 +236,9 @@ public class PdcBmEJB implements PdcBm {
     }
   }
 
-  private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds) {
+  private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds, String userId) {
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds", "root.MSG_GEN_PARAM_VALUE",
-        "silverContentIds = " + silverContentIds);
+        "silverContentIds = " + silverContentIds+", userId = "+userId);
     // recherche des componentId a partir de silverContentId
     ContentPeas contentP = null;
     List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
@@ -279,7 +281,7 @@ public class PdcBmEJB implements PdcBm {
           // we are going to search only SilverContent of this instanceId
           ContentInterface contentInterface = contentP.getContentInterface();
           silverContentTempo = contentInterface.getSilverContentById(
-              allSilverContentIds, instanceId, null, new ArrayList<String>());
+              allSilverContentIds, instanceId, userId, new ArrayList<String>());
         } catch (ContentManagerException c) {
           throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentsByIds",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);

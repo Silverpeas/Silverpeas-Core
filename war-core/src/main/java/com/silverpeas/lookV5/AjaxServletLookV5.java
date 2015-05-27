@@ -567,7 +567,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           String userId, MainSessionController mainSC, Writer out)
           throws PdcException, IOException {
     List<SearchAxis> primaryAxis = null;
-    SearchContext searchContext = new SearchContext();
+    SearchContext searchContext = new SearchContext(userId);
 
     PdcBm pdc = new PdcBmImpl();
 
@@ -634,8 +634,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       throws IOException,
           PdcException {
     List<Value> daughters = null;
-    SearchContext searchContext = new SearchContext();
-    searchContext.setUserId(userId);
+    SearchContext searchContext = new SearchContext(userId);
 
     if (StringUtil.isDefined(axisId)) {
       PdcBm pdc = new PdcBmImpl();
