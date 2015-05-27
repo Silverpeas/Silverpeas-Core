@@ -478,10 +478,13 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   public Value getValue(String axisId, String valueId) throws PdcException {
-    Value value = null;
+
+    SearchContext searchContext = new SearchContext(this.getUserId());
 
     List<Value> values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
-        new SearchContext(), axisId, valueId, getComponentList());
+        searchContext, axisId, valueId, getComponentList());
+
+    Value value = null;
     if (values != null) {
       Iterator<Value> i = values.iterator();
       Value theValue = null;

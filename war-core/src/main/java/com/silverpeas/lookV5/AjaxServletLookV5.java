@@ -563,7 +563,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           String userId, MainSessionController mainSC, Writer out)
           throws PdcException, IOException {
     List<SearchAxis> primaryAxis = null;
-    SearchContext searchContext = new SearchContext();
+    SearchContext searchContext = new SearchContext(userId);
 
     PdcManager pdc = new GlobalPdcManager();
 
@@ -629,8 +629,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       throws IOException,
           PdcException {
     List<Value> daughters = null;
-    SearchContext searchContext = new SearchContext();
-    searchContext.setUserId(userId);
+    SearchContext searchContext = new SearchContext(userId);
 
     if (StringUtil.isDefined(axisId)) {
       PdcManager pdc = new GlobalPdcManager();

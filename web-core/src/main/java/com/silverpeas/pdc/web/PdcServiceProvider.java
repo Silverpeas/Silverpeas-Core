@@ -335,7 +335,7 @@ public class PdcServiceProvider {
   }
 
   private SearchContext setUpSearchContextFromCriteria(final PdcFilterCriteria criteria) {
-    SearchContext context = new SearchContext();
+    SearchContext context = new SearchContext(null);
     if (criteria.hasCriterionOnUser()) {
       context.setUserId(criteria.getUser().getId());
     }

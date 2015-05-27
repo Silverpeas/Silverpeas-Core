@@ -2470,7 +2470,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
       List alPositions = pdcClassifyManager.getPositions(nSilverContentId, sComponentId);
 
       // Convert the first position in SearchContext
-      SearchContext searchContext = new SearchContext();
+      SearchContext searchContext = new SearchContext(null);
       if (alPositions != null && alPositions.size() > 0) {
         Position pos = (Position) alPositions.get(0);
         List alValues = pos.getValues();
