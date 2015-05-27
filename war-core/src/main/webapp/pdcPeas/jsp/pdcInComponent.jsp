@@ -55,20 +55,21 @@ String getValueIdFromPdcSearchContext(int axisId, SearchContext searchContext)
 		return null;
 }
 
-void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws IOException {
-	SearchAxis	searchAxis			= null;
-	int			axisId				= -1;
-	String		axisName			= null;
-	int			nbPositions			= -1;
-	String		valueInContext		= null;
-	Value		value				= null;
-	String		increment			= "";
-	String		selected			= "";
-	String		sNbObjects			= "";
-	String		language			= resource.getLanguage();
-	
-	if (searchContext == null)
-		searchContext = new SearchContext();
+void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, String userId, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws IOException {
+  SearchAxis searchAxis = null;
+  int axisId = -1;
+  String axisName = null;
+  int nbPositions = -1;
+  String valueInContext = null;
+  Value value = null;
+  String increment = "";
+  String selected = "";
+  String sNbObjects = "";
+  String language = resource.getLanguage();
+
+  if (searchContext == null) {
+    searchContext = new SearchContext(userId);
+  }
 	
     out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
 		// il peut y avoir aucun axe primaire dans un 1er temps
@@ -160,7 +161,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
     }
 	if (!pertinentAxis.isEmpty()) {
     	String axisIcon = resource.getIcon("pdcPeas.icoPrimaryAxis");
-		displayAxisByType(false, "", pertinentAxis, searchContext, Boolean.FALSE, null, resource, axisIcon, out);
+		  displayAxisByType(false, "", pertinentAxis, pdcSC.getUserId(), searchContext, Boolean.FALSE, null, resource, axisIcon, out);
 	}
 	
 	searchAxis	= pdcSC.getAxis("S");
@@ -174,6 +175,6 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 	}
 	if (!pertinentAxis.isEmpty()) {
     	String axisIcon = resource.getIcon("pdcPeas.icoSecondaryAxis");
-    	displayAxisByType(false, "", pertinentAxis, searchContext, Boolean.FALSE, null, resource, axisIcon, out);
+    	displayAxisByType(false, "", pertinentAxis, pdcSC.getUserId(), searchContext, Boolean.FALSE, null, resource, axisIcon, out);
     }
 %>

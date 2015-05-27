@@ -98,21 +98,21 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     try {
       yearsConnection = SilverStatisticsPeasDAOConnexion.getYears();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getYears",
+      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.initYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
 
     try {
       yearsAccess = SilverStatisticsPeasDAOAccesVolume.getAccessYears();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAOAccesVolume.getYears",
+      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.initYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
 
     try {
       yearsVolume = SilverStatisticsPeasDAOAccesVolume.getVolumeYears();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasDAOAccesVolume.getYears",
+      SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.initYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
   }
@@ -336,7 +336,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser",
+          "SilverStatisticsPeasSessionController.getStatsConnexionAllUser",
           "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
@@ -495,7 +495,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           dateEnd);
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
+          "SilverStatisticsPeasSessionController.getStatsConnexionGroupAll",
           "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
@@ -512,7 +512,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           dateBegin, dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser",
+          "SilverStatisticsPeasSessionController.getStatsConnexionGroupUser",
           "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
@@ -527,7 +527,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           dateEnd);
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll",
+          "SilverStatisticsPeasSessionController.getStatsConnexionUserAll",
           "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
@@ -543,7 +543,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser",
+          "SilverStatisticsPeasSessionController.getStatsConnexionUserUser",
           "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
@@ -805,7 +805,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
+        "SilverStatisticsPeasSessionController.retourVolumeUserPanelGroup()",
         "accessFilterIdGroup=" + accessFilterIdGroup);
   }
 
@@ -828,7 +828,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
+        "SilverStatisticsPeasSessionController.retourVolumeUserPanelUser()",
         "accessFilterIdUser=" + accessFilterIdUser);
   }
 
@@ -1484,11 +1484,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         }
       }
     } catch (PdcException e) {
-      SilverTrace.error("SilverStatisticsPeas",
+      SilverTrace.error("silverStatisticsPeas",
           SilverStatisticsPeasSessionController.class.getName() + ".getAxisStats",
           "Problem to access the PDC");
     } catch (SQLException sqlEx) {
-      SilverTrace.error("SilverStatisticsPeas",
+      SilverTrace.error("silverStatisticsPeas",
           SilverStatisticsPeasSessionController.class.getName() + ".getAxisStats",
           "Problem to retrieve statistics on axis.");
     }
@@ -1506,7 +1506,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private List<GlobalSilverContent> getPdCPublications(String axisId, String valueId,
       List<String> componentIds) {
     // Create search context with a new search criteria
-    SearchContext context = new SearchContext();
+    SearchContext context = new SearchContext(this.getUserId());
     SearchCriteria criteria = new SearchCriteria(Integer.parseInt(axisId), valueId);
     context.addCriteria(criteria);
 
@@ -1518,7 +1518,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         try {
           silverContentsMetier = pdcBm.findGlobalSilverContents(context, componentIds, true, true);
         } catch (Exception e) {
-          SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
+          SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getPdCPublications", "getPdCPublications exception", e);
         }
       }
     }
@@ -1543,7 +1543,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           silverContentsMetier = pdcBm.findGlobalSilverContents(searchContext, componentIds, true,
               true);
         } catch (Exception e) {
-          SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
+          SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getPdCPublications", "getPdCPublications exception", e);
         }
       }
     }
@@ -1637,7 +1637,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           // String sValueName = secondValue.getName();
 
           // Build PDC search context
-          SearchContext searchCtx = new SearchContext();
+          SearchContext searchCtx = new SearchContext(this.getUserId());
           searchCtx.addCriteria(firstSC);
           searchCtx.addCriteria(new SearchCriteria(secondAxisId, sValue));
           // Retrieve publication on current cross axis
@@ -1652,11 +1652,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       }
       crossStat = new CrossStatisticVO(headerColumn, firstRow, stats);
     } catch (PdcException e) {
-      SilverTrace.error("SilverStatisticsPeas",
+      SilverTrace.error("silverStatisticsPeas",
           SilverStatisticsPeasSessionController.class.getName() + ".getCrossAxisStats",
           "Problem to access the PDC", e);
     } catch (SQLException sqlEx) {
-      SilverTrace.error("SilverStatisticsPeas",
+      SilverTrace.error("silverStatisticsPeas",
           SilverStatisticsPeasSessionController.class.getName() + ".getCrossAxisStats",
           "Problem to access statistics table", sqlEx);
     }
