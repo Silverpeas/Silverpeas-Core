@@ -121,7 +121,7 @@ function deleteSelectLinksConfirm() {
          desc = "";
        }
        // Add context before link if needed
-       if (lien.indexOf("://") == -1) {
+       if (lien.indexOf("://") == -1 && !lien.startsWith("/website")) {
          lien = m_context + lien;
        }
        ArrayCellLink monLien = line.addArrayCellLink(name, lien);
