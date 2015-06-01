@@ -74,13 +74,14 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   public boolean isUserAuthorized(String userId, SimpleDocument object,
       final AccessControlContext context) {
 
-    boolean authorized = true;
+    // Saving the result of component access control in order to verify the alias right accesses.
+    boolean componentAccessAuthorized = true;
 
     // Component access control
     final Set<SilverpeasRole> componentUserRoles =
         getComponentAccessController().getUserRoles(context, userId, object.getInstanceId());
     if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
-      authorized = false;
+      componentAccessAuthorized = false;
     }
 
     // Node access control
@@ -97,17 +98,18 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         }
 
         // Check if an alias of publication is authorized
-        if (!authorized) {
+        // (special treatment in case of the user has no access right on component instance)
+        if (!componentAccessAuthorized) {
           try {
             Collection<Alias> aliases = getPublicationBm().getAlias(pubDetail.getPK());
             for (Alias alias : aliases) {
-              authorized = getNodeAccessController()
+              if (getNodeAccessController()
                   .isUserAuthorized(userId, new NodePK(alias.getId(), alias.getInstanceId()),
-                      context);
-              if (authorized) {
-                return authorized;
+                      context)) {
+                return true;
               }
             }
+            return false;
           } catch (Exception e) {
             SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
                 "root.NO_EX_MESSAGE", e);
@@ -116,7 +118,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         }
 
         // If rights are not handled on directories, directory rights are not checked !
-        if (getComponentAccessController().isRightOnTopicsEnabled(object.getInstanceId())) {
+        else if (getComponentAccessController().isRightOnTopicsEnabled(object.getInstanceId())) {
           try {
             Collection<NodePK> nodes = getPublicationBm()
                 .getAllFatherPK(new PublicationPK(pubDetail.getId(), object.getInstanceId()));
@@ -149,11 +151,8 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
       }
     }
 
-    if (!authorized) {
-      return false;
-    }
-
-    return isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);
+    return componentAccessAuthorized &&
+        isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);
   }
 
   /**
