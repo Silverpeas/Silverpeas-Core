@@ -138,7 +138,7 @@ public class RelationShipService {
       myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialnetwork.relationShip",
-          "RelationShipService.getAllMyRelationShips", "",
+          "RelationShipService.getMyContactsIds", "",
           ex);
     } finally {
       DBUtil.close(connection);
@@ -161,7 +161,7 @@ public class RelationShipService {
       myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialnetwork.relationShip",
-          "RelationShipService.getAllMyRelationShips", "",
+          "RelationShipService.getAllCommonContactsIds", "",
           ex);
     } finally {
       DBUtil.close(connection);
@@ -173,8 +173,8 @@ public class RelationShipService {
    * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
    * the first Index
    * @param userId
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
@@ -199,8 +199,8 @@ public class RelationShipService {
    * Item and the first Index
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin
+   * @param end
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
