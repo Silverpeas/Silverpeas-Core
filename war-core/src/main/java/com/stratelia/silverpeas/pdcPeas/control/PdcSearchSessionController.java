@@ -130,7 +130,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ContainerWorkspace containerWorkspace = null;
   private ContainerPeas containerPeasPDC = null;
   private ContentPeas contentPeasPDC = null;
-  private SearchContext searchContext = new SearchContext(); // Current position
+  private SearchContext searchContext = null; // Current position
   // in PDC
   private QueryParameters queryParameters = null; // Current parameters for
   // plain search
@@ -211,7 +211,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       isThesaurusEnableByUser = false;
     }
 
-    searchContext.setUserId(getUserId());
+    this.searchContext = new SearchContext(this.getUserId());
 
     // Initialize external search
     isEnableExternalSearch = getSettings().getBoolean("external.search.enable", false);
