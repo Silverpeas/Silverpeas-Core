@@ -24,14 +24,14 @@
 
 package com.stratelia.webactiv.beans.admin.cache;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -166,8 +166,7 @@ public class TreeCache {
 
   public static List<SpaceInstLight> getSpacePath(int spaceId) {
     List<SpaceInstLight> path = new ArrayList<SpaceInstLight>();
-    String shortSpaceId = getShortSpaceId(spaceId);
-    SpaceInstLight space = getSpaceInstLight(shortSpaceId);
+    SpaceInstLight space = getSpaceInstLight(spaceId);
     if (space != null) {
       path.add(0, space);
       while (!space.isRoot()) {
@@ -203,7 +202,8 @@ public class TreeCache {
   public static List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);
     if (component != null) {
-      return getSpacePath(Integer.parseInt(component.getDomainFatherId()));
+      return getSpacePath(Integer.parseInt(component.getDomainFatherId().substring(
+          SpaceInst.SPACE_KEY_PREFIX.length())));
     }
     return new ArrayList<SpaceInstLight>();
   }
@@ -235,12 +235,5 @@ public class TreeCache {
     if (space != null) {
       space.getSubspaces().add(subSpace);
     }
-  }
-
-  private static String getShortSpaceId(String id) {
-    if (id != null && id.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      return id.substring(Admin.SPACE_KEY_PREFIX.length());
-    }
-    return id;
   }
 }
