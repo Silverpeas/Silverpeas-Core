@@ -138,7 +138,8 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
 
-    return getSilverContentsByIds(silverContentIds);
+    SearchContext searchContext = (SearchContext) containerPosition;
+    return getSilverContentsByIds(silverContentIds, searchContext.getUserId());
   }
 
   /**
@@ -2540,9 +2541,10 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     return allChildren;
   }
 
-  private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds) {
+  private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds,
+      String userId) {
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds", "root.MSG_GEN_PARAM_VALUE",
-        "silverContentIds = " + silverContentIds);
+        "silverContentIds = " + silverContentIds + ", userId = "+userId);
     // recherche des componentId a partir de silverContentId
     ContentPeas contentP;
     List<GlobalSilverContent> alSilverContents = new ArrayList<>();
@@ -2585,7 +2587,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
           // we are going to search only SilverContent of this instanceId
           ContentInterface contentInterface = contentP.getContentInterface();
           silverContentTempo = contentInterface
-              .getSilverContentById(allSilverContentIds, instanceId, null, new ArrayList<>());
+              .getSilverContentById(allSilverContentIds, instanceId, userId, new ArrayList<>());
         } catch (Exception e) {
           throw new PdcRuntimeException("PdcBmEJB.getSilverContentsByIds",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
