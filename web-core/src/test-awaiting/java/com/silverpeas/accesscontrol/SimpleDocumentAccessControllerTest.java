@@ -443,7 +443,8 @@ public class SimpleDocumentAccessControllerTest {
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToPublication();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
-        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -593,7 +594,8 @@ public class SimpleDocumentAccessControllerTest {
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToPublication().userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
-        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -723,7 +725,8 @@ public class SimpleDocumentAccessControllerTest {
     testContext.onGEDComponent().documentAttachedToPublication().publicationOnRootDirectory()
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
-        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -871,7 +874,8 @@ public class SimpleDocumentAccessControllerTest {
     testContext.clear();
     testContext.onGEDComponent().documentAttachedToPublication().withRightsActivatedOnDirectory();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
-        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1070,7 +1074,8 @@ public class SimpleDocumentAccessControllerTest {
     testContext.onGEDComponent().documentAttachedToPublication().withRightsActivatedOnDirectory()
         .userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
-        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1396,6 +1401,7 @@ public class SimpleDocumentAccessControllerTest {
     private int nbCallOfNodeAccessControllerGetUserRoles = 0;
     private int nbCallOfNodeAccessControllerIsUserAuthorized = 0;
     private int nbCallOfPublicationBmGetDetail = 0;
+    private int nbCallOfPublicationBmGetAlias = 0;
     private int nbCallOfPublicationBmGetAllFatherPK = 0;
 
 
@@ -1434,6 +1440,12 @@ public class SimpleDocumentAccessControllerTest {
       return this;
     }
 
+    public TestVerifyResults verifyCallOfPublicationBmGetDetailAndGetAlias() {
+      verifyCallOfPublicationBmGetDetail();
+      nbCallOfPublicationBmGetAlias = 1;
+      return this;
+    }
+
     public void verifyMethodCalls() {
       verify(componentAccessController, times(nbCallOfComponentAccessControllerGetUserRoles))
           .getUserRoles(any(AccessControlContext.class), anyString(), anyString());
@@ -1452,6 +1464,8 @@ public class SimpleDocumentAccessControllerTest {
           .getDetail(any(PublicationPK.class));
       verify(publicationService, times(nbCallOfPublicationBmGetAllFatherPK))
           .getAllFatherPK(any(PublicationPK.class));
+      verify(publicationBm, times(nbCallOfPublicationBmGetAlias))
+          .getAlias(any(PublicationPK.class));
     }
   }
 

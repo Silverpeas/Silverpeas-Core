@@ -134,7 +134,8 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         }
         return isUserAuthorizedByContext(false, userId, object, context, componentUserRoles,
             pubDetail.getCreatorId());
-      } else if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
+
+      } else if (componentAccessAuthorized && isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
         String nodeId = foreignId.substring("Node_".length());
         final Set<SilverpeasRole> nodeUserRoles =
             getNodeAccessController().getUserRoles(context, userId, new NodePK(nodeId, object.
