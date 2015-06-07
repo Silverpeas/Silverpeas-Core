@@ -1062,7 +1062,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     for (int r = 0; r < results.size(); r++) {
       GlobalSilverResult result = results.get(r);
-      result.setResultId(r);
       MatchingIndexEntry indexEntry = result.getIndexEntry();
       if (indexEntry != null) {
         resultType = indexEntry.getObjectType();
@@ -1074,7 +1073,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       downloadLink = null;
       // create the url part to activate the mark as read functionality
       if (isEnableMarkAsRead) {
-        markAsReadJS = "markAsRead('" + r + "');";
+        markAsReadJS = "markAsRead('" + result.getResultId() + "');";
       }
       if ("Versioning".equals(resultType)) {
         // Added to be compliant with old indexing method
@@ -1328,7 +1327,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       wysiwygSuffixes.add(WysiwygController.WYSIWYG_CONTEXT + "_" + language + ".txt");
     }
 
-    for (MatchingIndexEntry result : matchingIndexEntries) {
+    for (int i = 0; i < matchingIndexEntries.size(); i++) {
+      MatchingIndexEntry result = matchingIndexEntries.get(i);
       boolean processThisResult = processResult(result, objectTypeFilter);
 
       if (processThisResult) {
@@ -1337,6 +1337,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String componentId = result.getComponent();
 
         GlobalSilverResult gsr = new GlobalSilverResult(result);
+        gsr.setResultId(i);
 
         SilverTrace.info("pdcPeas",
             "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
@@ -1544,7 +1545,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       GlobalSilverResult gsr = new GlobalSilverResult(gsc);
       String userId = gsc.getUserId();
       gsr.setCreatorName(getCompleteUserName(userId));
-
+      gsr.setResultId(i);
       if (isExportEnabled()) {
         gsr.setExportable(isCompliantResult(gsr));
       }
