@@ -288,7 +288,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // If a 'columns' element with the same name as the new element
       // already exists we have a problem...
       //
-      if (check != null) {
+      if (check != null  && check.getRoleName().equals(strRoleOriginal)) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
             SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
       }

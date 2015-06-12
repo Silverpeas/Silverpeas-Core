@@ -113,6 +113,7 @@ public class WorkflowDesignerRequestRouter extends
         destination = root + "redirect.jsp";
       }
 
+
     } catch (WorkflowDesignerException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = root + "errorpageMain.jsp";
@@ -462,19 +463,32 @@ public class WorkflowDesignerRequestRouter extends
    * Handles the "UpdateColumns" function
    */
   private static FunctionHandler hndlUpdateColumns = (function, workflowDesignerSC, request) -> {
-    Columns columns = workflowDesignerSC.getProcessModel().getPresentation().createColumns();
-    Column column;
-    String[] astrColumnNames = request.getParameterValues("column");
+      String role = null;
+      if (StringUtil.isDefined(request.getParameter("role")))
+          role = request.getParameter("role");
 
-    columns.setRoleName(request.getParameter("role"));
+      String elements = workflowDesignerSC.getSelection().getHtmlFormElementId();
 
-    for (int i = 0; astrColumnNames != null && i < astrColumnNames.length; i++) {
-      column = columns.createColumn();
-      column.setItem(
-          workflowDesignerSC.getProcessModel().getDataFolder().getItem(astrColumnNames[i]));
-      columns.addColumn(column);
-    }
+      //Get previously columns defined for this role
+      Columns columns = workflowDesignerSC.getProcessModel().getPresentation().getColumnsByRole(role);
+//      Columns columns = workflowDesignerSC.getProcessModel().getPresentation().createColumns();
+      Column column;
 
+      //Get columns checked in the page
+      String[] astrColumnNames = request.getParameterValues("column");
+
+      columns.setRoleName(request.getParameter("role"));
+
+      for (int i = 0; astrColumnNames != null && i < astrColumnNames.length; i++) {
+        //Add column only if it does not already exists in role's columns
+        if (columns.getColumn(astrColumnNames[i]) == null)
+        {
+          column = columns.createColumn();
+          column.setItem(workflowDesignerSC.getProcessModel().getDataFolder()
+              .getItem(astrColumnNames[i]));
+          columns.addColumn(column);
+        }
+      }
     // The 'Columns' original name has been stored in a hidden field,
     // to be able to identify the object later in the case the name changed...
     //
