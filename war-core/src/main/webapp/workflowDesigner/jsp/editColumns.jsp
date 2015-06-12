@@ -30,9 +30,10 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 <%
-ArrayPane       columnPane = gef.getArrayPane( "columnList", "ModifyColumns", request, session),
-                rolePane = gef.getArrayPane( "roleName", "ModifyColumns", request, session );
 Columns         columns = (Columns)request.getAttribute( "Columns" );
+ArrayPane       columnPane = gef.getArrayPane( "columnList", "ModifyColumns?columns="+columns.getRoleName(), request, session),
+                rolePane = gef.getArrayPane( "roleName", "ModifyColumns", request, session );
+columnPane.setVisibleLineNumber(wfdsc.getSettings().getInteger("NbElementsParPage",20));
 String[]        astrFolderItemNames = (String[])request.getAttribute( "FolderItemNames" ),
                 astrRoleNames = (String[])request.getAttribute( "RoleNames" ),
                 astrRoleValues = (String[])astrRoleNames.clone();
@@ -57,9 +58,24 @@ String          strCancelAction = "ViewPresentation";
         var fChecked = false;
         var i = 0;
 
-        if ( document.columnsForm.column != null )
+            /*
             for ( i = 0; i < document.columnsForm.column.length; i++ ) 
                 fChecked = fChecked || document.columnsForm.column[i].checked;
+                alert("fChecked="+fChecked+" chkColumns="+chkColumns.checked());
+    */
+        var totalElementsChecked = <%=columns.getColumnList().size()%>;
+        if ( document.columnsForm.column != null )
+        {
+          for ( i = 0 ; i < document.columnsForm.elements.length ; i++ ) {
+            oElement = document.columnsForm.elements[i] ;
+            if ( oElement.tagName.toLowerCase( ) == "input" ) {
+              if ( oElement.type.toLowerCase( ) == "checkbox" )
+                   fChecked = fChecked || oElement.checked;
+            }
+          }
+          if (totalElementsChecked>i && !fChecked)
+            fChecked = true;
+        }
 
         if ( !fChecked )
         {
