@@ -49,7 +49,7 @@
 function goTo(cUrl, componentId)
 {
 	jumpToComponent(componentId);
-	location.href=stampURL(cUrl);
+	location.href=cUrl;
 }
 
 function jumpToComponent(componentId) {

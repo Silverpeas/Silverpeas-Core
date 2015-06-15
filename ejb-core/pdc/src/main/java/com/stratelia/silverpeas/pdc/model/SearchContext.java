@@ -39,11 +39,8 @@ public class SearchContext implements ContainerPositionInterface, java.io.Serial
   private ArrayList<SearchCriteria> criterias = new ArrayList<SearchCriteria>();
   private String userId = null; // user who search
 
-  public SearchContext() {
-  }
-
-  public SearchContext(ArrayList<SearchCriteria> criterias) {
-    this.criterias = criterias;
+  public SearchContext(String userId) {
+    this.userId = userId;
   }
 
   public List<SearchCriteria> getCriterias() {
