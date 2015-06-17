@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.lucene.search.suggest.fst.WFSTCompletionLookup;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.Workflow;
@@ -527,6 +528,7 @@ public class WorkflowDesignerRequestRouter extends
       } else // ModifyColumns
       {
         String strColumnsName = request.getParameter("columns");
+        //Get columns checked in the page
 
         columns = workflowDesignerSC.getProcessModel().getPresentation()
             .getColumnsByRole(strColumnsName);
@@ -557,27 +559,17 @@ public class WorkflowDesignerRequestRouter extends
       if (StringUtil.isDefined(request.getParameter("role")))
           role = request.getParameter("role");
 
-      String elements = workflowDesignerSC.getSelection().getHtmlFormElementId();
-
-      //Get previously columns defined for this role
-      Columns columns = workflowDesignerSC.getProcessModel().getPresentation().getColumnsByRole(role);
-//      Columns columns = workflowDesignerSC.getProcessModel().getPresentation().createColumns();
-      Column column;
-
       //Get columns checked in the page
       String[] astrColumnNames = request.getParameterValues("column");
-
-      columns.setRoleName(request.getParameter("role"));
+      Column column;
+      Columns columns = workflowDesignerSC.getProcessModel().getPresentation().createColumns();
+      columns.setRoleName(role);
 
       for (int i = 0; astrColumnNames != null && i < astrColumnNames.length; i++) {
-        //Add column only if it does not already exists in role's columns
-        if (columns.getColumn(astrColumnNames[i]) == null)
-        {
           column = columns.createColumn();
           column.setItem(workflowDesignerSC.getProcessModel().getDataFolder()
               .getItem(astrColumnNames[i]));
           columns.addColumn(column);
-        }
       }
 
       // The 'Columns' original name has been stored in a hidden field,

@@ -329,13 +329,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
             SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
       }
-
-      try {
-        processModel.getPresentation().deleteColumns(strRoleOriginal);
-      } catch (WorkflowException e) {
-        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
-            SilverpeasException.ERROR, "workflowDesigner.EX_UPDATING_COLUMNS_FAILED", e);
-      }
+      deleteColumns(strRoleOriginal);
     }
 
     processModel.getPresentation().addColumns(source);
