@@ -37,6 +37,7 @@ String spaceId = (String) request.getAttribute("SpaceId");
 Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
 Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
 UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+ChartVO chart = (ChartVO) request.getAttribute("Chart");
 
 int totalNumberOfAttachments = 0;
 
@@ -75,6 +76,7 @@ if (vStatsData != null) {
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
+<view:includePlugin name="chart"/>
 <script type="text/javascript">
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
@@ -90,6 +92,38 @@ if (vStatsData != null) {
       newPage.close();
     });
   }
+
+  $(function() {
+
+    var data = [
+      <% if (chart != null) {
+        List<String> x = chart.getX();
+        List<Long> y = chart.getY();
+        for (int i = 0; i<x.size(); i++) {
+          out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
+          if (i < x.size()) {
+            out.println(",");
+          }
+        }
+      } %>
+    ];
+
+    $.plot(".chart", data, {
+      series: {
+        pie: {
+          show: true,
+          combine: {
+            color: '#999',
+            threshold: 0.03
+          }
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
+
+  });
 </script>
 </head>
 <body class="admin stats volume attachments">
@@ -131,12 +165,18 @@ if (vStatsData != null) {
 	</div>
 
 <% if (vStatsData != null) { %>
-	<div align="center" id="chart">
-		<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
-	</div>
-	<div align="center" id="total">
-		<span><span class="number"><%=totalNumberOfAttachments %></span> <%=resources.getString("silverStatisticsPeas.sums.attachments.number") %></span>
-	</div>
+   <div class="flex-container">
+     <% if (chart != null) { %>
+     <div class="chart-area">
+       <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
+       <div class="chart"></div>
+     </div>
+     <% } %>
+     <div align="center" id="total">
+        <span><span class="number"><%=totalNumberOfAttachments %></span> <%=resources.getString(
+            "silverStatisticsPeas.sums.attachments.number") %></span>
+     </div>
+   </div>
 <% } %>
 <br/>
 <%

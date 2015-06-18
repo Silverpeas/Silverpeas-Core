@@ -130,6 +130,10 @@ public class JavascriptPluginInclusion {
   private static final String TICKER_JS = "ticker/jquery.ticker.js";
   private static final String TICKER_CSS = "ticker/ticker-style.css";
 
+  private static final String CHART_JS = "flot/jquery.flot.min.js";
+  private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";
+  private static final String CHART_TIME_JS = "flot/jquery.flot.time.min.js";
+
   static {
     ResourceLocator wysiwygSettings =
         new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
@@ -466,6 +470,13 @@ public class JavascriptPluginInclusion {
 
   public static ElementContainer includeLang(final ElementContainer xhtml) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_LANG));
+    return xhtml;
+  }
+
+  public static ElementContainer includeChart(final ElementContainer xhtml) {
+    xhtml.addElement(script(jqueryPath + CHART_JS));
+    xhtml.addElement(script(jqueryPath + CHART_PIE_JS));
+    xhtml.addElement(script(jqueryPath + CHART_TIME_JS));
     return xhtml;
   }
 

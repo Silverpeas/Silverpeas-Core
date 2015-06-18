@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="com.silverpeas.util.StringUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -55,13 +56,14 @@
 	Vector vPath = (Vector) request.getAttribute("Path");
   Vector vStatsData = (Vector)request.getAttribute("StatsData");
   UserAccessLevel userProfile = (UserAccessLevel) request.getAttribute("UserProfile");
+  ChartVO chart = (ChartVO) request.getAttribute("Chart");
 %>
 
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
-<view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="chart"/>
 <script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -93,9 +95,37 @@
 		document.accessFormulaire.submit();
 	}
 
+  $(function() {
+
+    var data = [
+    <% if (chart != null) {
+      List<String> x = chart.getX();
+      List<Long> y = chart.getY();
+      for (int i = 0; i<x.size(); i++) {
+        out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
+        if (i < x.size()) {
+          out.println(",");
+        }
+      }
+    } %>
+    ];
+
+    $.plot(".chart", data, {
+      series: {
+        pie: {
+          show: true
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
+
+  });
+
 </script>
 </head>
-<body>
+<body class="admin stats">
 <c:forEach items="${requestScope['MonthBegin']}" var="mBegin" varStatus="status">
 	<c:set var="curValue" value="${mBegin[0]}" />
 	<c:if test="${fn:contains(curValue, 'selected')}">
@@ -204,27 +234,23 @@
 	out.println(board.printAfter());
   %>
   <div id="stats_viewConnectionButton">
-	  <center>
 	  	<view:buttonPane>
 		  	<fmt:message key="GML.validate" var="labelValidate" />
 		  	<fmt:message key="GML.cancel" var="labelCancel" />
 		    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
 		    <view:button label="${labelCancel}" action="javascript:document.cancelAccessForm.submit()"></view:button>
 	  	</view:buttonPane>
-	  </center>
   </div>
-  <%
-  
-   //Graphiques
-   if (vStatsData != null)
-   {
-  %>
-		   	<div align="center">
-				<img src="<%=m_context%>/ChartServlet/?chart=USER_VENTIL_CHART&random=<%=(new Date()).getTime()%>">
-			</div>
-  <%
-  }
-  %>
+
+  <% if (chart != null) { %>
+  <div class="flex-container">
+    <div class="chart-area">
+      <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
+      <div class="chart"></div>
+    </div>
+  </div>
+  <% } %>
+
   <br>
   
   <%
@@ -252,7 +278,7 @@
         {
         	iter1 = vStatsData.iterator();
         	String title;
-        	        	
+
         	while (iter1.hasNext())
         	{
 				arrayLine = arrayPane.addArrayLine();

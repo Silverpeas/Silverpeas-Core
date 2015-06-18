@@ -32,7 +32,7 @@
 
 <%
 //Recuperation des parametres
-  Vector<String[]> vStatsData = (Vector<String[]>) request.getAttribute("StatsData");
+  ChartVO chart = (ChartVO) request.getAttribute("Chart");
 
   int totalNumberOfInstances = 0;
 
@@ -49,6 +49,7 @@
   <head>
     <title><%=resources.getString("GML.popupTitle")%></title>
     <view:looknfeel />
+    <view:includePlugin name="chart"/>
     <script type="text/javascript">
       function displayVolumes() {
         $.progressMessage();
@@ -58,6 +59,54 @@
           newPage.close();
         });
       }
+
+      // A custom label formatter used by several of the plots
+      function labelFormatter(label, series) {
+        return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + Math.round(series.percent) + "%</div>";
+      }
+
+      $(function() {
+
+        var data = [
+          <% if (chart != null) {
+            List<String> x = chart.getX();
+            List<Long> y = chart.getY();
+            for (int i = 0; i<x.size(); i++) {
+              out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
+              if (i < x.size()) {
+                out.println(",");
+              }
+            }
+          } %>
+        ];
+
+        $.plot(".chart", data, {
+          series: {
+            pie: {
+              show: true,
+              combine: {
+                color: '#999',
+                threshold: 0.03
+              },
+              radius: 1,
+              label: {
+                show: true,
+                radius: 3/4,
+                formatter: labelFormatter,
+                background: {
+                  opacity: 0.5
+                }
+              }
+            }
+          },
+          legend: {
+            show: true
+          },
+          colors: ["#1c94d4", "#7eb73b", "#ec9c01", "#f7d723", "#11c3d8", "#e03183", "#639784",
+            "#88376", "#8d5788", "#f79992", "#ce6f6f", "#f63333"]
+        });
+
+      });
     </script>
   </head>
   <body class="admin stats volume applications">
@@ -76,27 +125,37 @@
       arrayPane.addArrayColumn(resources.getString("GML.jobPeas"));
         arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
 
-  if (vStatsData != null) {
-      for (String[] item : vStatsData) {
-        ArrayLine arrayLine = arrayPane.addArrayLine();
-        arrayLine.addArrayCellText(item[0]);
-        ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[1]);
-        Integer nbInstances = new Integer(item[1]);
-        totalNumberOfInstances += nbInstances;
-        cellTextCount.setCompareOn(nbInstances);
-      }
+  if (chart != null) {
+    List<String> x = chart.getX();
+    List<Long> y = chart.getY();
+    for (int i=0; i<x.size(); i++) {
+      ArrayLine arrayLine = arrayPane.addArrayLine();
+      arrayLine.addArrayCellText(x.get(i));
+
+      String nb = String.valueOf(y.get(i));
+      ArrayCellText cellText = arrayLine.addArrayCellText(nb);
+      cellText.setCompareOn(Integer.parseInt(nb));
+      totalNumberOfInstances += Integer.parseInt(nb);
     }
+  }
     %>
 
-    <div align="center" id="chart">
-      <img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=new Date().getTime()%>"/>
-    </div>
-    <div align="center" id="total">
-      <span><span class="number"><%=totalNumberOfInstances%></span> <%=resources.getString("silverStatisticsPeas.sums.applications")%></span>
+    <div class="flex-container">
+      <% if (chart != null) { %>
+      <div class="chart-area">
+        <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
+        <div class="chart"></div>
+      </div>
+      <% } %>
+      <div align="center" id="total">
+        <span><span class="number"><%=totalNumberOfInstances%></span> <%=resources.getString(
+            "silverStatisticsPeas.sums.applications")%></span>
+      </div>
     </div>
 
+
       <%
-      if (vStatsData != null) {
+      if (chart != null) {
         out.println(arrayPane.print());
       }
 

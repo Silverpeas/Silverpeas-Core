@@ -73,8 +73,9 @@
 %>
 
 <%
-    Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
-    UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+  Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+  UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+  ChartVO chart = (ChartVO) request.getAttribute("Chart");
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
@@ -88,6 +89,7 @@
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
+<view:includePlugin name="chart"/>
 <script type="text/javascript">
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
@@ -98,9 +100,33 @@
     $.progressMessage();
     location.href = '<c:url value="/RsilverStatisticsPeas/jsp/ViewVolumeServer" />';
   }
+
+  $(function() {
+
+    var data = [
+      <% if (chart != null) {
+        List<String> x = chart.getX();
+        List<Long> y = chart.getY();
+        for (int i = 0; i<x.size(); i++) {
+          out.print("["+DateUtil.parse(x.get(i).replace('-', '/')).getTime()+", "+y.get(i)/1000+"]");
+          if (i < x.size()) {
+            out.println(",");
+          }
+        }
+      } %>
+    ];
+
+    $.plot(".chart", [data], {
+      xaxis: {
+        mode: "time",
+        minTickSize: [1, "month"]
+      }
+    });
+
+  });
 </script>
 </head>
-<body>
+<body class="admin stats">
 <form name="volumeServerFormulaire" action="ViewEvolutionVolumeSizeServer" method="post">
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes"));
@@ -125,9 +151,14 @@
 		</select>
 	</div>
 <% if (vStatsData != null) { %>
-<div align="center" id="chart">
-	<img src="<%=m_context%>/ChartServlet/?chart=EVOLUTION_DOCSIZE_CHART&random=<%=new Date().getTime()%>"/>
-</div>
+  <div class="flex-container">
+    <% if (chart != null) { %>
+    <div class="chart-area">
+      <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
+      <div class="chart"></div>
+    </div>
+    <% } %>
+  </div>
 <% } %>
 <br/>
 <%

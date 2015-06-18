@@ -44,11 +44,13 @@
     if (!StringUtil.isDefined(filterLibUser)) {
       filterLibUser = "";
   	}
-	String filterIdUser = (String) request.getAttribute("FilterIdUser");
-	String spaceId = (String) request.getAttribute("SpaceId");
-	Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
+	  String filterIdUser = (String) request.getAttribute("FilterIdUser");
+	  String spaceId = (String) request.getAttribute("SpaceId");
+	  Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
     Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
     UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+    ChartVO chart = (ChartVO) request.getAttribute("Chart");
+
     int totalNumberOfContributions = 0;
     int totalNumberOfContributionsByGroup = 0;
     int totalNumberOfContributionsByUser = 0;
@@ -131,7 +133,7 @@
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:includePlugin name="chart"/>
 <script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -168,6 +170,38 @@
       newPage.close();
     });
   }
+
+  $(function() {
+
+    var data = [
+      <% if (chart != null) {
+        List<String> x = chart.getX();
+        List<Long> y = chart.getY();
+        for (int i = 0; i<x.size(); i++) {
+          out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
+          if (i < x.size()) {
+            out.println(",");
+          }
+        }
+      } %>
+    ];
+
+    $.plot(".chart", data, {
+      series: {
+        pie: {
+          show: true,
+          combine: {
+            color: '#999',
+            threshold: 0.03
+          }
+        }
+      },
+      legend: {
+        show: false
+      }
+    });
+
+  });
 
 </script>
 </head>
@@ -248,21 +282,27 @@
 	//Graphiques
    	if (vStatsData != null) {
   %>
-  		<center>
-  		<div align="center" id="chart">
-			<img src="<%=m_context%>/ChartServlet/?chart=PUBLI_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
-		</div>
-		<div align="center" id="total">
-			<span><span class="number">
-			<% if(StringUtil.isDefined(filterIdGroup)) { %>
-				<%=totalNumberOfContributionsByGroup %>
-			<% } else if (StringUtil.isDefined(filterIdUser)) { %>
-				<%=totalNumberOfContributionsByUser %>
-			<% } else { %>
-				<%=totalNumberOfContributions %>
-			<% } %>
-			</span> <%=resources.getString("silverStatisticsPeas.sums.contributions") %></span>
-		</div>
+
+    <div class="flex-container">
+      <% if (chart != null) { %>
+      <div class="chart-area">
+        <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
+        <div class="chart"></div>
+      </div>
+      <% } %>
+      <div align="center" id="total">
+         <span><span class="number">
+          <% if(StringUtil.isDefined(filterIdGroup)) { %>
+            <%=totalNumberOfContributionsByGroup %>
+          <% } else if (StringUtil.isDefined(filterIdUser)) { %>
+            <%=totalNumberOfContributionsByUser %>
+          <% } else { %>
+            <%=totalNumberOfContributions %>
+          <% } %>
+          </span> <%=resources.getString("silverStatisticsPeas.sums.contributions") %></span>
+      </div>
+    </div>
+
   <% } %>
   <br/>
   <%
@@ -270,7 +310,6 @@
 		out.println(arrayPane.print());
     }
   %>
-</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());

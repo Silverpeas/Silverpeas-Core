@@ -249,10 +249,6 @@
       <artifactId>cas-client-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>jcharts</groupId>
-      <artifactId>jcharts</artifactId>
-    </dependency>
-    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>

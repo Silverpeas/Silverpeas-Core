@@ -55,7 +55,11 @@
 	String filterId = (String)request.getAttribute("FilterId");
   Collection cResultData = (Collection)request.getAttribute("ResultData");
   UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
-  
+
+  ChartVO connectionsChart = (ChartVO) request.getAttribute("ConnectionsChart");
+  ChartVO distinctUsersChart = (ChartVO) request.getAttribute("DistinctUsersChart");
+  boolean showDistinctUsersChart = distinctUsersChart != null;
+
   String[] item = null;
   String theValue = null;
   int indexOfSelected;
@@ -69,11 +73,12 @@
 
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><fmt:message key="GML.popupTitle" /></title>
+<title><fmt:message key="silverStatisticsPeas.LoginNumber" /></title>
 <view:looknfeel />
-<script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/checkForm.js"></script>
+<view:includePlugin name="chart"/>
 <script type="text/javascript">
 
 	// This function open a silverpeas window
@@ -106,9 +111,64 @@
 		$.progressMessage();
 		document.connexionFormulaire.submit();
 	}
+
+  $(function() {
+
+    <% if (distinctUsersChart != null) { %>
+    var dataDistinct = [
+      <%
+        List<String> x = distinctUsersChart.getX();
+        List<Long> y = distinctUsersChart.getY();
+        for (int i = 0; i<x.size(); i++) {
+          out.print("["+DateUtil.parse(x.get(i).replace('-', '/')).getTime()+", "+y.get(i)+"]");
+          if (i < x.size()) {
+            out.println(",");
+          }
+        }
+      %>
+    ];
+
+    $.plot("#distinctUsersChart", [dataDistinct], {
+      bars: {
+        show: true,
+        barWidth: 24 * 60 * 60 * 1000 * 30
+      },
+      xaxis: {
+        mode: "time",
+        minTickSize: [1, "month"]
+      },
+      colors: ["#1c94d4"]
+    });
+    <% } %>
+
+    var data = [
+      <% if (connectionsChart != null) {
+        List<String> x = connectionsChart.getX();
+        List<Long> y = connectionsChart.getY();
+        for (int i = 0; i<x.size(); i++) {
+          out.print("["+DateUtil.parse(x.get(i).replace('-', '/')).getTime()+", "+y.get(i)+"]");
+          if (i < x.size()) {
+            out.println(",");
+          }
+        }
+      } %>
+    ];
+
+    $.plot("#connectionsChart", [data], {
+      bars: {
+        show: true,
+        barWidth: 24 * 60 * 60 * 1000 * 30
+      },
+      xaxis: {
+        mode: "time",
+        minTickSize: [1, "month"]
+      }
+    });
+
+  });
 </script>
 </head>
-<body>
+<body class="admin stats">
 <view:window>
 <%
           if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
@@ -230,18 +290,15 @@
 </form>
 </view:board>
 
-  <br>
   <div id="stats_viewConnectionButton">
-  <center>
   	<view:buttonPane>
 	  	<fmt:message key="GML.validate" var="labelValidate" />
 	  	<fmt:message key="GML.cancel" var="labelCancel" />
 	    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
 	    <view:button label="${labelCancel}" action="javascript:document.cancelConnectionForm.submit()"></view:button>
   	</view:buttonPane>
-  </center>
   </div>
-  <br> 
+  <br/>
   
 
   <% 
@@ -268,19 +325,21 @@
         if (cResultData != null)
         {
       %>
-      
-      <div align=center>
-      
-      <%
-        	if(request.getAttribute("GraphicDistinctUser") != null && Boolean.TRUE.equals(request.getAttribute("GraphicDistinctUser"))) 
-        	{
-      %>
-		<img src="<c:out value="${ctxPath}"/>/ChartServlet/?chart=LOGIN_CHART&random=<%=(new Date()).getTime()%>">
-	  <%
-			}
-	  %>
-		<img src="<c:out value="${ctxPath}"/>/ChartServlet/?chart=USER_CHART&random=<%=(new Date()).getTime()%>">
+
+    <div class="flex-container">
+      <% if (showDistinctUsersChart) { %>
+        <div class="chart-area">
+          <h3 class="txttitrecol"><%=distinctUsersChart.getTitle()%></h3>
+          <div id="distinctUsersChart" class="chart"></div>
+        </div>
+	    <% } %>
+      <div class="chart-area">
+        <h3 class="txttitrecol"><%=connectionsChart.getTitle()%></h3>
+        <div id="connectionsChart" class="chart"></div>
+      </div>
 	  </div>
+    <br/>
+
       <%
         	iter = cResultData.iterator();
         	if(iter.hasNext()) {

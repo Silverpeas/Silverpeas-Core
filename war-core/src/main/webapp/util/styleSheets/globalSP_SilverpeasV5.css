@@ -4726,6 +4726,19 @@ li.application  .applicationName {
   color: #F1790F;
 }
 
+.admin.stats .chart,
+.admin.stats #distinctUsersChart,
+.admin.stats #connectionsChart {
+  width: 700px;
+  height: 350px;
+}
+
+.admin.stats .chart-area .txttitrecol {
+  text-align:center;
+  margin:1em 0 0.25em;
+  padding:0;
+}
+
 /********************************/
 /** BackEnd domain content **/
 /*******************************/
@@ -6804,26 +6817,34 @@ a.navigation-button {
 	}
 }
 
-@media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
+@media only screen and (max-width: 600px), only screen and (max-device-width: 600px) {
   .rightContent {
     clear: inherit;
     float: none;
     margin-top: 10px;
     width: auto;
   }
+
   .rightContent .attachments {
-    min-width:auto;
+    min-width: auto;
   }
+
   .principalContent {
     margin-right: 0;
     margin-top: 10px;
   }
+
   .header h4 {
     min-width: auto;
   }
-   #directory .aff_colonnes li {
-	float:none;
-	width:auto;
-  }  
-	
+
+  #directory .aff_colonnes li {
+    float: none;
+    width: auto;
+  }
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
 }

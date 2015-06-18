@@ -25,16 +25,15 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.ChartVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.jCharts.nonAxisChart.PieChart2D;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -133,8 +132,8 @@ public abstract class AbstractPieChartBuilder {
    * @param currentStats list of current statistics
    * @return a PieChart in 2D
    */
-  public PieChart2D getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
-    PieChart2D pieChart = null;
+  public ChartVO getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
+    ChartVO pieChart = null;
     try {
       // Get statistics
       if (statsByInstance == null) {
@@ -247,29 +246,14 @@ public abstract class AbstractPieChartBuilder {
         }
       }
 
-      pieChart = ChartUtil.buildPieChart(getChartTitle(),
-          buildDoubleArrayFromStringCollection(counts),
-          legend.toArray(new String[legend.size()]));
+      pieChart = new ChartVO(getChartTitle(), legend);
+      pieChart.setYAsStrings(counts);
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
           "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);
     }
 
     return pieChart;
-  }
-
-  /**
-   * @param collection
-   * @return
-   */
-  private double[] buildDoubleArrayFromStringCollection(Collection<String> collection) {
-    double[] result = new double[collection.size()];
-    int i = 0;
-    for (String value : collection) {
-      result[i++] = Double.parseDouble(value);
-    }
-
-    return result;
   }
   
   protected void setScope(String scope) {

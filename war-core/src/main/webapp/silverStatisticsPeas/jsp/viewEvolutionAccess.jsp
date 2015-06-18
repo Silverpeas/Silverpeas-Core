@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.apache.commons.lang.time.DateUtils" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -85,7 +86,7 @@
 	String filterIdUser = (String) request.getAttribute("FilterIdUser");
     String spaceId = (String) request.getAttribute("SpaceId");
 	Vector vPath = (Vector) request.getAttribute("Path");
-	Vector vStatsData = (Vector)request.getAttribute("StatsData");
+	ChartVO chart = (ChartVO) request.getAttribute("Chart");
 	UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 %>
 
@@ -93,8 +94,36 @@
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
+<view:includePlugin name="chart"/>
+  <script type="text/javascript">
+    $(function() {
+    var data = [
+        <% if (chart != null) {
+        List<String> x = chart.getX();
+        List<Long> y = chart.getY();
+        for (int i = 0; i<x.size(); i++) {
+          out.print("["+DateUtil.parse(x.get(i).replace('-', '/')).getTime()+", "+y.get(i)+"]");
+          if (i < x.size()) {
+            out.println(",");
+          }
+        }
+      } %>
+      ];
+
+      if (data.length !== 0) {
+        $.plot(".chart", [data], {
+          xaxis : {
+            mode : "time", minTickSize : [1, "month"]
+          }
+        });
+      } else {
+        $(".chart-area").hide();
+      }
+
+    });
+  </script>
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
+<BODY class="admin stats">
 <%
 
 	Iterator iter1 = cMonthBegin.iterator();
@@ -148,17 +177,15 @@
 
 <BR>
 	
-<%
-	if (vStatsData != null && vStatsData.size() > 0) {
-%>
+<% if (chart != null) { %>
 <!-- Graphique -->
-<div align="center">
-	<img src="<%=m_context%>/ChartServlet/?chart=EVOLUTION_USER_CHART&random=<%=(new Date()).getTime()%>">
+<div class="flex-container">
+  <div class="chart-area">
+    <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
+    <div class="chart"></div>
+  </div>
 </div>
-
-<%
-	}
-%>
+<% } %>
 
 <br>
 
@@ -166,37 +193,26 @@
 
 		// Tableau
       	ArrayPane arrayPane = gef.getArrayPane("List", "ViewEvolutionAccess?Entite="+entite+"&Id="+entiteId, request,session);
-		arrayPane.setVisibleLineNumber(50);
+		    arrayPane.setVisibleLineNumber(50);
       	if (arrayPane.getColumnToSort()==0)
       		arrayPane.setColumnToSort(1);
       	
       	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.date"));
         ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.Access"));
       	
-      	if (vStatsData != null)
-        {
-        	iter1 = vStatsData.iterator();
-        	ArrayLine arrayLine;
-        	String[] item;
-        	ArrayCellText cellText;
-        	
-        	while (iter1.hasNext())
-        	{
-				arrayLine = arrayPane.addArrayLine();
-				
-            	item = (String[]) iter1.next();
+      	if (chart != null) {
+          List<String> x = chart.getX();
+          List<Long> y = chart.getY();
+        	for (int i=0; i<x.size(); i++) {
+            ArrayLine arrayLine = arrayPane.addArrayLine();
+            ArrayCellText cellText = arrayLine.addArrayCellText(formatDate(resources, x.get(i)));
+            cellText.setCompareOn(x.get(i));
 
-          		//transformation de la date 2007-02-01 -> F�v. 2007            	
-				cellText = arrayLine.addArrayCellText(formatDate(resources, item[0]));
-          		cellText.setCompareOn(item[0]);
-
-				cellText = arrayLine.addArrayCellText(item[1]);
-          		cellText.setCompareOn(new Integer(item[1]));
-        	}
-		
-			out.println(arrayPane.print());
-	        out.println("");
-    }
+            cellText = arrayLine.addArrayCellText(String.valueOf(y.get(i)));
+            cellText.setCompareOn(y.get(i));
+          }
+			    out.println(arrayPane.print());
+        }
 	    
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
