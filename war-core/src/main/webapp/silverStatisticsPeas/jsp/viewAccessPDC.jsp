@@ -44,10 +44,6 @@
 ArrayLine arrayLine = null;
 Iterator   iter1 = null;
 
-String monthBegin = "";
-String yearBegin = "";
-String monthEnd = "";
-String yearEnd = "";
 String spaceId = (String) request.getAttribute("SpaceId");
 String axisId = (String) request.getAttribute("AxisId");
 String axisValue = (String) request.getAttribute("AxisValue");
@@ -175,9 +171,9 @@ List vStatsData = (List)request.getAttribute("StatsData");
 	  <center>
 	  	<view:buttonPane>
 		  	<fmt:message key="GML.validate" var="labelValidate" />
-		  	<fmt:message key="GML.cancel" var="labelCancel" />
+		  	<fmt:message key="GML.reset" var="labelReset" />
 		    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
-		    <view:button label="${labelCancel}" action="javascript:document.cancelAccessForm.submit()"></view:button>
+		    <view:button label="${labelReset}" action="javascript:document.resetlAccessForm.submit()"></view:button>
 	  	</view:buttonPane>
 	  </center>
   </div>
@@ -221,7 +217,7 @@ List vStatsData = (List)request.getAttribute("StatsData");
 </center>
   </view:frame>
 </view:window>
-<form name="cancelAccessForm" action="ViewPDCAccess" method="post">
+<form name="resetlAccessForm" action="ViewPDCAccess" method="post">
 </form>
 <view:progressMessage/>
 </body>

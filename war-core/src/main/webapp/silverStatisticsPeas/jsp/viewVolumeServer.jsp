@@ -1,4 +1,6 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
+<%@ page import="org.silverpeas.chart.pie.PieChart" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,6 +31,7 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
@@ -37,6 +40,7 @@ String spaceId = (String) request.getAttribute("SpaceId");
 Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
 Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
 UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+PieChart chart = (PieChart) request.getAttribute("Chart");
 
 int totalNumberOfAttachments = 0;
 
@@ -53,22 +57,28 @@ arrayPane.setVisibleLineNumber(50);
 ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
 ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsNumber"));
 
-if (vStatsData != null) {
-   	for (String[] item : vStatsData) {
-   	  	ArrayLine arrayLine = arrayPane.addArrayLine();
-       	if ("SPACE".equals(item[0])) {
-    		arrayLine.addArrayCellLink("<b>"+item[2]+"</b>", "ViewVolumeServer?SpaceId="+item[1]);
-       	} else {
-    		arrayLine.addArrayCellText(item[2]);
-       	}
+  if (vStatsData != null) {
+    Iterator<PieChartItem> itChartItems = chart.getItems().iterator();
+    for (String[] item : vStatsData) {
+      ArrayLine arrayLine = arrayPane.addArrayLine();
+      if ("SPACE".equals(item[0])) {
+        String url = "ViewVolumeServer?SpaceId=" + item[1];
+        itChartItems.next().addExtra("spaceStatisticUrl", url);
+        arrayLine.addArrayCellLink("<b>" + item[2] + "</b>",
+            "javascript:displaySubSpaceStatistics('" + url + "')");
+      } else {
+        arrayLine.addArrayCellText(item[2]);
+      }
 
-   		ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[3]);
-   		Integer nb = new Integer(item[3]);
-   		totalNumberOfAttachments += nb;
-   		cellTextCount.setCompareOn(nb);
-  	}
- }
+      ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[3]);
+      Integer nb = new Integer(item[3]);
+      totalNumberOfAttachments += nb;
+      cellTextCount.setCompareOn(nb);
+    }
+  }
 %>
+
+<c:set var="pieChart" value="${requestScope.Chart}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -89,6 +99,21 @@ if (vStatsData != null) {
       newPage.write(newContent);
       newPage.close();
     });
+  }
+
+  function onItemClickHelp(item) {
+    return item.srcData && item.srcData.extra;
+  }
+
+  function onItemClick(item) {
+    if (item.srcData && item.srcData.extra) {
+      displaySubSpaceStatistics(item.srcData.extra.spaceStatisticUrl);
+    }
+  }
+
+  function displaySubSpaceStatistics(url) {
+    $.progressMessage();
+    document.location.href = url;
   }
 </script>
 </head>
@@ -131,12 +156,13 @@ if (vStatsData != null) {
 	</div>
 
 <% if (vStatsData != null) { %>
-	<div align="center" id="chart">
-		<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>
-	</div>
-	<div align="center" id="total">
-		<span><span class="number"><%=totalNumberOfAttachments %></span> <%=resources.getString("silverStatisticsPeas.sums.attachments.number") %></span>
-	</div>
+   <div class="flex-container">
+     <viewTags:displayChart chart="${pieChart}" onItemClick="onItemClick" onItemClickHelp="onItemClickHelp"/>
+     <div align="center" id="total">
+        <span><span class="number"><%=totalNumberOfAttachments %></span> <%=resources.getString(
+            "silverStatisticsPeas.sums.attachments.number") %></span>
+     </div>
+   </div>
 <% } %>
 <br/>
 <%

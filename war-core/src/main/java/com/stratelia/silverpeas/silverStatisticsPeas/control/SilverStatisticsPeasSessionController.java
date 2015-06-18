@@ -55,8 +55,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.StringUtils;
-import org.jCharts.axisChart.AxisChart;
-import org.jCharts.nonAxisChart.PieChart2D;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
@@ -65,12 +63,17 @@ import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Vector;
+
+import static com.stratelia.webactiv.util.GeneralPropertiesManager.getGeneralMultilang;
 
 /**
  * Class declaration
@@ -111,25 +114,41 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   // init attributes
   private void initYears() {
     try {
-      yearsConnection = SilverStatisticsPeasDAOConnexion.getYears();
+      yearsConnection = initYears(SilverStatisticsPeasDAOConnexion.getYears());
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.initYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
 
     try {
-      yearsAccess = SilverStatisticsPeasDAOAccesVolume.getAccessYears();
+      yearsAccess = initYears(SilverStatisticsPeasDAOAccesVolume.getAccessYears());
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.initYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
 
     try {
-      yearsVolume = SilverStatisticsPeasDAOAccesVolume.getVolumeYears();
+      yearsVolume = initYears(SilverStatisticsPeasDAOAccesVolume.getVolumeYears());
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.initYears",
           "root.EX_SQL_QUERY_FAILED", e);
     }
+  }
+
+  /**
+   * Initializes a new collection of years from the one given as parameter.
+   * If the given one does not exist or is empty, then the returned collection is filled with the
+   * year of the current date.
+   * @param yearsFromStatistics
+   * @return a never null collection of years as string.
+   */
+  private Collection<String> initYears(Collection<String> yearsFromStatistics) {
+    Collection<String> result = new LinkedHashSet<String>();
+    if (yearsFromStatistics != null) {
+      result.addAll(yearsFromStatistics);
+    }
+    result.add(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+    return result;
   }
 
   /**
@@ -182,20 +201,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   /**
-   * @param collection
-   * @return
-   */
-  private double[] buildDoubleArrayFromStringCollection(Collection<String> collection) {
-    double[] result = new double[collection.size()];
-    int i = 0;
-    for (String value : collection) {
-      result[i++] = Double.parseDouble(value);
-    }
-
-    return result;
-  }
-
-  /**
    * @return
    */
   private String formatDate(String date) {// date au format AAAA-MM-JJ -> Mois
@@ -231,35 +236,21 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       dateFormate += this.getString("silverStatisticsPeas.December");
     }
 
-    return dateFormate += " " + annee;
+    return dateFormate + " " + annee;
   }
 
   /**
    * @return
    */
-  public AxisChart getDistinctUserConnectionsChart(String dateBegin, String dateEnd) {
-    AxisChart axisChart = null;
+  public PeriodChart getDistinctUserConnectionsChart(String dateBegin, String dateEnd) {
+    PeriodChart axisChart = null;
     try {
       // new Collection[]{dates, counts};
       Collection[] statsUsers = SilverStatisticsPeasDAOConnexion.getStatsUser(dateBegin, dateEnd);
-      Collection<String> listDate = statsUsers[0];
-      Iterator<String> itDates = listDate.iterator();
-      String[] dates = new String[statsUsers[0].size()]; // au format MM-AAAA
-      String date;
-      String annee;
-      String mois;
-      int i = 0;
-      while (itDates.hasNext()) {
-        date = itDates.next();
-        annee = date.substring(0, 4);
-        mois = date.substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        i++;
-      }
 
       // title
       String title = this.getString("silverStatisticsPeas.ConnectionNumberOfDistinctUsers") + " ";
-      mois = dateBegin.substring(5, 7);
+      String mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
         // Octobre
@@ -273,10 +264,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += this.getString("silverStatisticsPeas.To") + " ";
       title += formatDate(dateEnd);
 
-      axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), generalMessage.
-              getString("GML.users"), title, dates,
-          buildDoubleArrayFromStringCollection(statsUsers[1]));
-
+      axisChart = getMonthPeriodChartFrom((List<String>) statsUsers[0], (List) statsUsers[1])
+          .withTitle(title);
+      axisChart.getAxisY().setTitle(getGeneralMultilang(getLanguage()).getString("GML.users"));
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
           "SilverStatisticsPeasSessionController.getDistinctUserConnectionsChart()",
@@ -289,31 +279,16 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public AxisChart getUserConnectionsChart(String dateBegin, String dateEnd) {
-    AxisChart axisChart = null;
+  public PeriodChart getUserConnectionsChart(String dateBegin, String dateEnd) {
+    PeriodChart axisChart = null;
     try {
       Collection[] statsConnection =
           SilverStatisticsPeasDAOConnexion.getStatsConnexion(dateBegin, dateEnd);
-      Collection<String> listDate = statsConnection[0];
-      Iterator<String> itDates = listDate.iterator();
-      String[] dates = new String[statsConnection[0].size()]; // au format
-      // MM-AAAA
-      String date;
-      String annee;
-      String mois;
-      int i = 0;
-      while (itDates.hasNext()) {
-        date = itDates.next();
-        annee = date.substring(0, 4);
-        mois = date.substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        i++;
-      }
 
       // title
       StringBuilder title = new StringBuilder();
       title.append(this.getString("silverStatisticsPeas.LoginNumber")).append(" ");
-      mois = dateBegin.substring(5, 7);
+      String mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout, Octobre
         title.append(this.getString("silverStatisticsPeas.FromAprilAugustOctober"));
@@ -325,10 +300,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title.append(this.getString("silverStatisticsPeas.To")).append(" ");
       title.append(formatDate(dateEnd));
 
-      axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"),
-          this.getString("silverStatisticsPeas.Connections"), title.toString(), dates,
-          buildDoubleArrayFromStringCollection(statsConnection[1]));
-
+      axisChart =
+          getMonthPeriodChartFrom((List<String>) statsConnection[0], (List) statsConnection[1])
+              .withTitle(title.toString());
+      axisChart.getAxisY().setTitle(this.getString("silverStatisticsPeas.Connections"));
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
           "SilverStatisticsPeasSessionController.getUserConnectionsChart()",
@@ -355,41 +330,25 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public AxisChart getUserConnectionsUserChart(String dateBegin, String dateEnd, String idUser) {
-    AxisChart axisChart = null;
+  public PeriodChart getUserConnectionsUserChart(String dateBegin, String dateEnd, String idUser) {
+    PeriodChart axisChart = null;
     try {
-      UserDetail userDetail = AdministrationServiceProvider.getAdminService().getUserDetail(idUser);
+      UserDetail userDetail = UserDetail.getById(idUser);
       String lastName = "";
       if (userDetail != null) {
         lastName = userDetail.getLastName();
       }
       Collection[] statsConnection =
           SilverStatisticsPeasDAOConnexion.getStatsUserConnexion(dateBegin, dateEnd, idUser);
-      Collection<String> listDate = statsConnection[0];
-      Iterator<String> itDates = listDate.iterator();
-      String[] dates = new String[statsConnection[0].size()]; // au format
-      // MM-AAAA
-      String date;
-      String annee;
-      String mois;
-      int i = 0;
-      while (itDates.hasNext()) {
-        date = itDates.next();
-        annee = date.substring(0, 4);
-        mois = date.substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        i++;
-      }
 
       // title
       String title = this.getString("silverStatisticsPeas.LoginNumber") + " " +
           this.getString("silverStatisticsPeas.OfUser") + " " + lastName + " ";
-      mois = dateBegin.substring(5, 7);
+      String mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
         // Octobre
         title += this.getString("silverStatisticsPeas.FromAprilAugustOctober");
-
       } else {
         title += this.getString("silverStatisticsPeas.From") + " ";
       }
@@ -398,9 +357,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += this.getString("silverStatisticsPeas.To") + " ";
       title += formatDate(dateEnd);
 
-      axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"),
-          this.getString("silverStatisticsPeas.Connections"), title, dates,
-          buildDoubleArrayFromStringCollection(statsConnection[1]));
+      axisChart =
+          getMonthPeriodChartFrom((List<String>) statsConnection[0], (List) statsConnection[1])
+              .withTitle(title);
+      axisChart.getAxisY().setTitle(this.getString("silverStatisticsPeas.Connections"));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -437,39 +397,24 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @param dateBegin a begin date string representation yyyy/MM/dd
    * @param dateEnd an end date string representation yyyy/MM/dd
    * @param idGroup a user group identifier
-   * @return an AxisChart statistics
+   * @return an {@link PeriodChart} that represents the statistic data.
    */
-  public AxisChart getUserConnectionsGroupChart(String dateBegin, String dateEnd, String idGroup) {
-    AxisChart axisChart = null;
+  public PeriodChart getUserConnectionsGroupChart(String dateBegin, String dateEnd,
+      String idGroup) {
+    PeriodChart axisChart = null;
     try {
       Collection[] statsConnection =
           SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(dateBegin, dateEnd, idGroup);
-      Collection<String> listDate = statsConnection[0];
-      Iterator<String> itDates = listDate.iterator();
-      String[] dates = new String[statsConnection[0].size()]; // au format
-      // MM-AAAA
-      String date;
-      String annee;
-      String mois;
-      int i = 0;
-      while (itDates.hasNext()) {
-        date = itDates.next();
-        annee = date.substring(0, 4);
-        mois = date.substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        i++;
-      }
 
       // title
       String title = this.getString("silverStatisticsPeas.LoginNumber") + " " +
           this.getString("silverStatisticsPeas.OfGroup") + " " +
           AdministrationServiceProvider.getAdminService().getGroupName(idGroup) + " ";
-      mois = dateBegin.substring(5, 7);
+      String mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
         // Octobre
         title += this.getString("silverStatisticsPeas.FromAprilAugustOctober");
-
       } else {
         title += this.getString("silverStatisticsPeas.From") + " ";
       }
@@ -478,9 +423,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += this.getString("silverStatisticsPeas.To") + " ";
       title += formatDate(dateEnd);
 
-      axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"),
-          this.getString("silverStatisticsPeas.Connections"), title, dates,
-          buildDoubleArrayFromStringCollection(statsConnection[1]));
+      axisChart =
+          getMonthPeriodChartFrom((List<String>) statsConnection[0], (List) statsConnection[1])
+              .withTitle(title.toString());
+      axisChart.getAxisY().setTitle(this.getString("silverStatisticsPeas.Connections"));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -661,8 +607,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public AxisChart getUserConnectionsFqChart(String dateBegin, String dateEnd, String statDetail) {
-    AxisChart axisChart = null;
+  public PeriodChart getUserConnectionsFqChart(String dateBegin, String dateEnd,
+      String statDetail) {
+    PeriodChart axisChart = null;
     try {
       int minFreq = 0;
       int maxFreq = 0;
@@ -688,20 +635,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       Collection[] statsUsersFq =
           SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd, minFreq, maxFreq);
-      Collection<String> listDate = statsUsersFq[0];
-      Iterator<String> itDates = listDate.iterator();
-      String[] dates = new String[statsUsersFq[0].size()]; // au format MM-AAAA
-      String date;
-      String annee;
-      String mois;
-      int i = 0;
-      while (itDates.hasNext()) {
-        date = itDates.next();
-        annee = date.substring(0, 4);
-        mois = date.substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        i++;
-      }
 
       // title
       String title = this.getString("silverStatisticsPeas.ConnectionNumberOfDistinctUsers") + " ";
@@ -709,12 +642,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           this.getString("silverStatisticsPeas.To") + " " + maxFreq + " " +
           this.getString("silverStatisticsPeas.Times") + " ";
 
-      mois = dateBegin.substring(5, 7);
+      String mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
         // Octobre
         title += this.getString("silverStatisticsPeas.FromAprilAugustOctober");
-
       } else {
         title += this.getString("silverStatisticsPeas.From") + " ";
       }
@@ -723,9 +655,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += this.getString("silverStatisticsPeas.To") + " ";
       title += formatDate(dateEnd);
 
-      axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), generalMessage.
-              getString("GML.users"), title, dates,
-          buildDoubleArrayFromStringCollection(statsUsersFq[1]));
+      axisChart = getMonthPeriodChartFrom((List<String>) statsUsersFq[0], (List) statsUsersFq[1])
+          .withTitle(title);
+      axisChart.getAxisY().setTitle(getGeneralMultilang(getLanguage()).getString("GML.users"));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -828,14 +760,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         "accessFilterIdUser=" + accessFilterIdUser);
   }
 
-  /**
-   * @return
-   */
-  public PieChart2D getUserVentilChart(String dateStat, String filterIdGroup, String filterIdUser,
-      String spaceId) {
-    UserPieChartBuilder userBuilder =
-        new UserPieChartBuilder(dateStat, formatDate(dateStat), filterIdGroup, filterIdUser,
-            spaceId, this.getMultilang());
+  public PieChart getUserVentilChart(String dateStat, String filterIdGroup,
+      String filterIdUser, String spaceId) {
+    UserPieChartBuilder userBuilder = new UserPieChartBuilder(dateStat,
+        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
+        spaceId, this.getMultilang(), getOrganisationController());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, currentStats);
   }
@@ -843,35 +772,27 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public AxisChart getEvolutionUserChart(String entite, String entiteId, String filterLibGroup,
-      String filterIdGroup, String filterLibUser, String filterIdUser) {
-    AxisChart axisChart = null;
+  public PeriodChart getEvolutionUserChart(String entite, String entiteId,
+      String filterLibGroup, String filterIdGroup, String filterLibUser,
+      String filterIdUser) {
+    PeriodChart axisChart = null;
     try {
       currentStats.clear();
       Collection<String[]> statsUserAccess = SilverStatisticsPeasDAOAccesVolume.
           getStatsUserEvolution(entite, entiteId, filterIdGroup, filterIdUser);
       Iterator<String[]> itStats = statsUserAccess.iterator();
-      String[] values;
-      String[] dates = new String[statsUserAccess.size()]; // au format MM-AAAA
-      String annee;
-      String mois;
-      double[] nbAccess = new double[statsUserAccess.size()];
-      int i = 0;
+      List<String> x = new ArrayList<String>();
+      List<Long> y = new ArrayList<Long>();
       while (itStats.hasNext()) {
-        values = (String[]) itStats.next();
-        annee = values[0].substring(0, 4);
-        mois = values[0].substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        nbAccess[i] = Double.parseDouble(values[1]);
+        String[] values = itStats.next();
+        x.add(values[0]);
+        y.add(Long.valueOf(values[1]));
         currentStats.add(new String[]{values[0], values[1]});
-
-        i++;
       }
 
-      String title = this.getString("silverStatisticsPeas.EvolutionAccessDeb");
+      String title = getString("silverStatisticsPeas.EvolutionAccessDeb");
       if ("SPACE".equals(entite)) {
-        SpaceInstLight space =
-            AdministrationServiceProvider.getAdminService().getSpaceInstLightById(entiteId);
+        SpaceInstLight space = getOrganisationController().getSpaceInstLightById(entiteId);
         if (!filterIdGroup.equals("") && filterIdUser.equals("")) {
           title += " " + this.getString("silverStatisticsPeas.EvolutionAccessGroup") + " " +
               filterLibGroup;
@@ -883,8 +804,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         title += " " + this.getString("silverStatisticsPeas.EvolutionAccessSpace") + " [" +
             space.getName() + "]";
       } else {// CMP
-        ComponentInstLight cmp =
-            AdministrationServiceProvider.getAdminService().getComponentInstLight(entiteId);
+        ComponentInstLight cmp = getOrganisationController().getComponentInstLight(entiteId);
         if (!filterIdGroup.equals("") && filterIdUser.equals("")) {
           title += " " + this.getString("silverStatisticsPeas.EvolutionAccessGroup") + " " +
               filterLibGroup;
@@ -897,8 +817,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
             cmp.getLabel();
       }
 
-      axisChart = ChartUtil.buildLineAxisChart(generalMessage.getString("GML.date"),
-          this.getString("silverStatisticsPeas.Access"), title, dates, nbAccess);
+      axisChart = getMonthPeriodChartFrom(x, y).withTitle(title);
+      axisChart.getAxisY().setTitle(this.getString("silverStatisticsPeas.Access"));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -938,8 +858,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public PieChart2D getVolumeServicesChart() {
-    PieChart2D pieChart = null;
+  public PieChart getVolumeServicesChart() {
+    PieChart pieChart = null;
     try {
       Collection[] statsKMsInstances = SilverStatisticsPeasDAOVolumeServices.
           getStatsInstancesServices();
@@ -954,9 +874,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         currentStats.add(new String[]{kms[i], counts[i]});
       }
 
-      pieChart = ChartUtil.buildPieChart(getString("silverStatisticsPeas.ServicesNumber"),
-          buildDoubleArrayFromStringCollection(statsKMsInstances[1]),
-          (String[]) statsKMsInstances[0].toArray(new String[statsKMsInstances[0].size()]));
+      pieChart =
+          getPieChartFrom((List<String>) statsKMsInstances[0], (List) statsKMsInstances[1])
+              .withTitle(getString("silverStatisticsPeas.ServicesNumber"));
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
           "SilverStatisticsPeasSessionController.getVolumeServicesChart()",
@@ -969,11 +889,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public PieChart2D getPubliVentilChart(String dateStat, String filterIdGroup, String filterIdUser,
-      String spaceId) {
-    PubliPieChartBuilder publiBuilder =
-        new PubliPieChartBuilder(dateStat, formatDate(dateStat), filterIdGroup, filterIdUser,
-            spaceId, this.getMultilang());
+  public PieChart getPubliVentilChart(String dateStat, String filterIdGroup,
+      String filterIdUser, String spaceId) {
+    PubliPieChartBuilder publiBuilder = new PubliPieChartBuilder(dateStat,
+        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
+        spaceId, getOrganisationController(), this.getMultilang());
     resetPath(spaceId);
     return publiBuilder.getChart(spaceId, currentStats);
   }
@@ -981,7 +901,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public PieChart2D getDocsVentilChart(String spaceId) {
+  public PieChart getDocsVentilChart(String spaceId) {
     DocPieChartBuilder userBuilder = new DocPieChartBuilder(spaceId, this.getMultilang());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, currentStats);
@@ -991,7 +911,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @param spaceId
    * @return
    */
-  public PieChart2D getDocsSizeVentilChart(String spaceId) {
+  public PieChart getDocsSizeVentilChart(String spaceId) {
     DocSizePieChartBuilder userBuilder = new DocSizePieChartBuilder(spaceId, this.getMultilang());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, currentStats);
@@ -1000,33 +920,29 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return
    */
-  public AxisChart getEvolutionDocsSizeChart() {
-    AxisChart axisChart = null;
+  public PeriodChart getEvolutionDocsSizeChart() {
+    PeriodChart axisChart = null;
     try {
       currentStats.clear();
       Collection<String[]> statsDocsSize =
           SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer();
       Iterator<String[]> itStats = statsDocsSize.iterator();
       String[] values;
-      String annee;
-      String mois;
-      String[] dates = new String[statsDocsSize.size()];
-      double[] size = new double[statsDocsSize.size()];
-      int i = 0;
+      List<String> dates = new ArrayList<String>(statsDocsSize.size());
+      List<BigDecimal> size = new ArrayList<BigDecimal>(statsDocsSize.size());
       while (itStats.hasNext()) {
         values = itStats.next();
-        annee = values[0].substring(0, 4);
-        mois = values[0].substring(5, 7);
-        dates[i] = mois + "-" + annee;
-        size[i] = Double.parseDouble(values[2]) / 1024; // size en Mo
+        dates.add(values[0]);
+        size.add(UnitUtil.convertTo(new BigDecimal(values[2]), MemoryUnit.KB, MemoryUnit.MB)
+            .setScale(2, BigDecimal.ROUND_DOWN)); // size en Mo
 
         currentStats.add(new String[]{values[0], values[1], values[2]});
-        i++;
       }
 
-      axisChart = ChartUtil.buildLineAxisChart(generalMessage.getString("GML.date"), generalMessage.
-              getString("GML.size") + " (Mo)",
-          this.getString("silverStatisticsPeas.EvolutionAttachmentsTotalSize"), dates, size);
+      axisChart = getMonthPeriodChartFrom(dates, size)
+          .withTitle(getString("silverStatisticsPeas.EvolutionAttachmentsTotalSize"));
+      axisChart.getAxisY().setTitle(getGeneralMultilang(getLanguage()).getString("GML.size") +
+          "(" + MemoryUnit.MB.getLabel() + ")");
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -1037,19 +953,35 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     return axisChart;
   }
 
-  public Collection<String[]> getYearConnection(String yearValue) {
-    return getYear(yearValue, yearsConnection);
+  public String checkYearConnection(String yearValue) {
+    return checkYear(yearValue, yearsConnection);
   }
 
-  public Collection<String[]> getYearAccess(String yearValue) {
-    return getYear(yearValue, yearsAccess);
+  public String checkYearAccess(String yearValue) {
+    return checkYear(yearValue, yearsAccess);
   }
 
-  public Collection<String[]> getYearVolume(String yearValue) {
-    return getYear(yearValue, yearsVolume);
+  public String checkYearVolume(String yearValue) {
+    return checkYear(yearValue, yearsVolume);
   }
 
-  private Collection<String[]> getYear(String yearValue, Collection<String> years) {
+  private String checkYear(String yearValue, Collection<String> years) {
+    return years.contains(yearValue) ? yearValue : years.iterator().next();
+  }
+
+  public Collection<String[]> getFormYearConnection(String yearValue) {
+    return getFormYear(yearValue, yearsConnection);
+  }
+
+  public Collection<String[]> getFormYearAccess(String yearValue) {
+    return getFormYear(yearValue, yearsAccess);
+  }
+
+  public Collection<String[]> getFormYearVolume(String yearValue) {
+    return getFormYear(yearValue, yearsVolume);
+  }
+
+  private Collection<String[]> getFormYear(String yearValue, Collection<String> years) {
     List<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
 
@@ -1072,7 +1004,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     return myList;
   }
 
-  public Collection<String[]> getMonth(String monthValue) {
+  public Collection<String[]> getFormMonth(String monthValue) {
     ArrayList<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
 
@@ -1658,5 +1590,34 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       }
     }
     return nbAxisAccess;
+  }
+
+  @SuppressWarnings("unchecked")
+  private PeriodChart getMonthPeriodChartFrom(List<String> dates, List values) {
+    PeriodChart chart = PeriodChart.withoutTitle();
+    Iterator<String> itDates = dates.iterator();
+    Iterator<Object> itValues = values.iterator();
+    while (itDates.hasNext()) {
+      final Object value = itValues.next();
+      final Number chartValue;
+      if (value instanceof Number) {
+        chartValue = (Number) value;
+      } else {
+        chartValue = Long.valueOf(String.valueOf(value));
+      }
+      chart.forX(java.sql.Date.valueOf(itDates.next()), PeriodType.month).add(chartValue);
+    }
+    return chart;
+  }
+
+  @SuppressWarnings("unchecked")
+  private PieChart getPieChartFrom(List<String> labels, List values) {
+    PieChart chart = PieChart.withoutTitle();
+    Iterator<String> itLabels = labels.iterator();
+    Iterator<Long> itValues = values.iterator();
+    while (itLabels.hasNext()) {
+      chart.add(itLabels.next(), Long.valueOf(String.valueOf(itValues.next())));
+    }
+    return chart;
   }
 }

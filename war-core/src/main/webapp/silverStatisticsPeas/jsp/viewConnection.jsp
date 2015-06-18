@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -56,12 +57,15 @@
 	String filterId = (String)request.getAttribute("FilterId");
   Collection cResultData = (Collection)request.getAttribute("ResultData");
   UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
-  
+
   String[] item = null;
   String theValue = null;
   int indexOfSelected;
 
 %>
+
+<c:set var="distincUsersPeriodChart" value="${requestScope.DistinctUsersChart}"/>
+<c:set var="connectionsPeriodChart" value="${requestScope.ConnectionsChart}"/>
 
 <%
   browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
@@ -70,11 +74,11 @@
 
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><fmt:message key="GML.popupTitle" /></title>
+<title><fmt:message key="silverStatisticsPeas.LoginNumber" /></title>
 <view:looknfeel />
-<script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 
 	// This function open a silverpeas window
@@ -89,7 +93,7 @@
 		fonction = fonction + "&FilterId=" + connexionFormulaire.FilterId.value;		
 		SP_openWindow(fonction, windowName, '750', '550','scrollbars=yes, resizable, alwaysRaised');
 	}
-	
+
 	function changeDetail() {
 		if(connexionFormulaire.ActorDetail.value == "0") {
 			clearFilter();
@@ -102,14 +106,14 @@
 		connexionFormulaire.FilterId.value = "";
 	}
 	
-	function validerForm(){
+	function validateForm(){
 		connexionFormulaire.FilterLib.disabled = false;
 		$.progressMessage();
 		document.connexionFormulaire.submit();
 	}
 </script>
 </head>
-<body>
+<body class="admin stats">
 <view:window>
 <%
           if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
@@ -224,25 +228,22 @@
 		  <input type="hidden" name="FilterType" value="<%=filterType%>">
 		  <input type="hidden" name="FilterId" value="<%=filterId%>">
           <a href="javascript:openSPWindow('CallUserPanel','')"><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessGroupPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border="0" title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a> 
-          <a href="javascript:clearFilter()"><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border="0" title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
+          <a href="javascript:clearFilter()"><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border="0" title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a>
         </td>
       </tr>
   </table>
 </form>
 </view:board>
 
-  <br>
   <div id="stats_viewConnectionButton">
-  <center>
-  	<view:buttonPane>
-	  	<fmt:message key="GML.validate" var="labelValidate" />
-	  	<fmt:message key="GML.cancel" var="labelCancel" />
-	    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
-	    <view:button label="${labelCancel}" action="javascript:document.cancelConnectionForm.submit()"></view:button>
-  	</view:buttonPane>
-  </center>
+    <view:buttonPane>
+      <fmt:message key="GML.validate" var="labelValidate" />
+      <fmt:message key="GML.reset" var="labelReset" />
+      <view:button label="${labelValidate}" action="javascript:validateForm()" ></view:button>
+      <view:button label="${labelReset}" action="javascript:document.resetConnectionForm.submit()"></view:button>
+    </view:buttonPane>
   </div>
-  <br> 
+  <br/>
   
 
   <% 
@@ -269,19 +270,13 @@
         if (cResultData != null)
         {
       %>
-      
-      <div align=center>
-      
-      <%
-        	if(request.getAttribute("GraphicDistinctUser") != null && Boolean.TRUE.equals(request.getAttribute("GraphicDistinctUser"))) 
-        	{
-      %>
-		<img src="<c:out value="${ctxPath}"/>/ChartServlet/?chart=LOGIN_CHART&random=<%=(new Date()).getTime()%>">
-	  <%
-			}
-	  %>
-		<img src="<c:out value="${ctxPath}"/>/ChartServlet/?chart=USER_CHART&random=<%=(new Date()).getTime()%>">
+
+    <div class="flex-container">
+      <viewTags:displayChart chart="${distincUsersPeriodChart}" colors="#1c94d4" displayAsBars="true"/>
+      <viewTags:displayChart chart="${connectionsPeriodChart}" displayAsBars="true"/>
 	  </div>
+    <br/>
+
       <%
         	iter = cResultData.iterator();
         	if(iter.hasNext()) {
@@ -358,7 +353,7 @@
 </center>
   </view:frame>
 </view:window>
-<form name="cancelConnectionForm" action="ViewConnections" method="post">
+<form name="resetConnectionForm" action="ViewConnections" method="post">
 </form>
 <view:progressMessage/>
 </body>

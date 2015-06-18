@@ -312,7 +312,11 @@ if (typeof extendsObject === 'undefined') {
     object = arguments[1];
     for (key in object) {
       val = object[key];
-      target[key] = val;
+      if (typeof target[key] === 'object' && typeof val === 'object') {
+        extendsObject(target[key], val);
+      } else {
+        target[key] = val;
+      }
     }
     return target;
   }

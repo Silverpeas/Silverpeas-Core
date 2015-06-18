@@ -25,6 +25,7 @@ package org.silverpeas.util.viewGenerator.html;
 
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
@@ -40,6 +41,10 @@ import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 
 import java.text.MessageFormat;
+
+import static org.silverpeas.cache.service.CacheServiceFactory.getRequestCacheService;
+import static org.silverpeas.chart.ChartSettings.getDefaultPieChartColorsAsJson;
+import static org.silverpeas.chart.ChartSettings.getThresholdOfPieCombination;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -70,6 +75,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_VIDEO_PLAYER = "silverpeas-player-video.js";
   private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.13.min.js";
   private static final String JQUERY_QTIP = "jquery.qtip";
+  private static final String SILVERPEAS_TIP = "silverpeas-tip.js";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
@@ -129,6 +135,17 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
   private static final String TICKER_JS = "ticker/jquery.ticker.js";
   private static final String TICKER_CSS = "ticker/ticker-style.css";
+  private static final String HTML2CANVAS_JS = "html2canvas.js";
+  private static final String DOWNLOAD_JS = "download.js";
+
+  private static final String CHART_JS = "flot/jquery.flot.min.js";
+  private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";
+  private static final String CHART_TIME_JS = "flot/jquery.flot.time.min.js";
+  private static final String CHART_CATEGORIES_JS = "flot/jquery.flot.categories.min.js";
+  private static final String CHART_AXISLABEL_JS = "flot/jquery.flot.axislabels.js";
+  private static final String CHART_TOOLTIP_JS = "flot/jquery.flot.tooltip.min.js";
+  private static final String SILVERPEAS_CHART_JS = "silverpeas-chart.js";
+  private static final String SILVERPEAS_CHART_I18N_ST = "chartBundle_";
 
   static {
     SettingBundle wysiwygSettings =
@@ -141,8 +158,14 @@ public class JavascriptPluginInclusion {
    * @param src
    * @return
    */
-  private static script script(String src) {
-    return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
+  private static Element script(String src) {
+    String key = "$jsPlugin$script$" + src;
+    if (getRequestCacheService().get(key) == null) {
+      getRequestCacheService().put(key, true);
+      return new script().setType(JAVASCRIPT_TYPE).setSrc(appendVersion(src));
+    } else {
+      return new ElementContainer();
+    }
   }
 
   /**
@@ -160,25 +183,31 @@ public class JavascriptPluginInclusion {
   @SuppressWarnings("StringBufferReplaceableByString")
   private static String generateDynamicPluginLoading(String src, String jqPluginName,
       String jsCallbackContentOnSuccessfulLoad, String jsCallback) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("jQuery(document).ready(function() {");
-    sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
-    sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
-    sb.append("    jQuery.getScript('").append(appendVersion(src)).append("', function() {");
-    if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
-      sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
+    String key = "$jsDynamicPlugin$script$" + src;
+    if (getRequestCacheService().get(key) == null) {
+      getRequestCacheService().put(key, true);
+      StringBuilder sb = new StringBuilder();
+      sb.append("jQuery(document).ready(function() {");
+      sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
+      sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
+      sb.append("    jQuery.getScript('").append(appendVersion(src)).append("', function() {");
+      if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
+        sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
+      }
+      if (StringUtil.isDefined(jsCallback)) {
+        sb.append("    ").append(jsCallback);
+      }
+      sb.append("    })");
+      sb.append("  } else {");
+      if (StringUtil.isDefined(jsCallback)) {
+        sb.append("    ").append(jsCallback);
+      }
+      sb.append("  }");
+      sb.append("});");
+      return sb.toString();
+    } else {
+      return "";
     }
-    if (StringUtil.isDefined(jsCallback)) {
-      sb.append("    ").append(jsCallback);
-    }
-    sb.append("    })");
-    sb.append("  } else {");
-    if (StringUtil.isDefined(jsCallback)) {
-      sb.append("    ").append(jsCallback);
-    }
-    sb.append("  }");
-    sb.append("});");
-    return sb.toString();
   }
 
   /**
@@ -186,8 +215,14 @@ public class JavascriptPluginInclusion {
    * @param content
    * @return
    */
-  private static script scriptContent(String content) {
-    return new script().setType(JAVASCRIPT_TYPE).addElement(content);
+  private static Element scriptContent(String content) {
+    String key = "$jsPlugin$scriptContent$" + StringUtil.truncate(content, 150);
+    if (getRequestCacheService().get(key) == null) {
+      getRequestCacheService().put(key, true);
+      return new script().setType(JAVASCRIPT_TYPE).addElement(content);
+    } else {
+      return new ElementContainer();
+    }
   }
 
   /**
@@ -195,8 +230,15 @@ public class JavascriptPluginInclusion {
    * @param href
    * @return
    */
-  private static link link(String href) {
-    return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(appendVersion(href));
+  private static Element link(String href) {
+    String key = "$jsPlugin$css$" + href;
+    if (getRequestCacheService().get(key) == null) {
+      getRequestCacheService().put(key, true);
+      return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
+          .setHref(appendVersion(href));
+    } else {
+      return new ElementContainer();
+    }
   }
 
   public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml,
@@ -233,13 +275,10 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    Object includeQTipDone = CacheServiceProvider.getRequestCacheService().get("@includeQTipDone@");
-    if (includeQTipDone == null) {
-      xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
-      xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
-      xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
-      CacheServiceProvider.getRequestCacheService().put("@includeQTipDone@", true);
-    }
+    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
+    xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
+    xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_TIP));
     return xhtml;
   }
 
@@ -250,25 +289,15 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeRating(final ElementContainer xhtml) {
-    Object includeRatingDone =
-        CacheServiceProvider.getRequestCacheService().get("@includeRatingDone@");
-    if (includeRatingDone == null) {
-      xhtml.addElement(link(jqueryPath + RATEIT_CSS));
-      xhtml.addElement(script(jqueryPath + RATEIT_JS));
-      xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-rating.js"));
-      xhtml.addElement(script(angularjsServicesPath + "silverpeas-rating.js"));
-      CacheServiceProvider.getRequestCacheService().put("@includeRatingDone@", true);
-    }
+    xhtml.addElement(link(jqueryPath + RATEIT_CSS));
+    xhtml.addElement(script(jqueryPath + RATEIT_JS));
+    xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-rating.js"));
+    xhtml.addElement(script(angularjsServicesPath + "silverpeas-rating.js"));
     return xhtml;
   }
 
   public static ElementContainer includeToggle(final ElementContainer xhtml) {
-    Object includeRatingDone =
-        CacheServiceProvider.getRequestCacheService().get("@includeToggleDone@");
-    if (includeRatingDone == null) {
-      xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-toggle.js"));
-      CacheServiceProvider.getRequestCacheService().put("@includeToggleDone@", true);
-    }
+    xhtml.addElement(script(angularjsDirectivesPath + "silverpeas-toggle.js"));
     return xhtml;
   }
 
@@ -469,6 +498,32 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  public static ElementContainer includeHtml2CanvasAndDownload(final ElementContainer xhtml) {
+    xhtml.addElement(script(javascriptPath + HTML2CANVAS_JS));
+    xhtml.addElement(script(javascriptPath + DOWNLOAD_JS));
+    return xhtml;
+  }
+
+  public static ElementContainer includeChart(final ElementContainer xhtml, final String language) {
+    includeHtml2CanvasAndDownload(xhtml);
+    includeDatePicker(xhtml, language);
+    includeQTip(xhtml);
+    xhtml.addElement(script(jqueryPath + CHART_JS));
+    xhtml.addElement(script(jqueryPath + CHART_PIE_JS));
+    xhtml.addElement(script(jqueryPath + CHART_TIME_JS));
+    xhtml.addElement(script(jqueryPath + CHART_CATEGORIES_JS));
+    xhtml.addElement(script(jqueryPath + CHART_AXISLABEL_JS));
+    xhtml.addElement(script(jqueryPath + CHART_TOOLTIP_JS));
+    xhtml.addElement(scriptContent("var defaultChartColors = " + getDefaultPieChartColorsAsJson() +
+        "; var chartPieCombinationThreshold = " + getThresholdOfPieCombination() +
+        ";"));
+    SilverpeasTemplate bundle = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("chart");
+    xhtml.addElement(scriptContent(bundle
+        .applyFileTemplate(SILVERPEAS_CHART_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_CHART_JS));
+    return xhtml;
+  }
+
   /**
    * Includes a dynamic loading of Silverpeas subscription JQuery Plugin.
    * @param xhtml the container into which the plugin loading code will be added.
@@ -505,16 +560,12 @@ public class JavascriptPluginInclusion {
    */
   public static ElementContainer includeDragAndDropUpload(final ElementContainer xhtml,
       final String language) {
-    Object ddUploadDone = CacheServiceProvider.getRequestCacheService().get("@ddUploadDone@");
-    if (ddUploadDone == null) {
-      includeQTip(xhtml);
-      SilverpeasTemplate bundle =
-          SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("ddUpload");
-      xhtml.addElement(scriptContent(bundle.applyFileTemplate(
-          SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
-      xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
-      CacheServiceProvider.getRequestCacheService().put("@ddUploadDone@", true);
-    }
+    includeQTip(xhtml);
+    SilverpeasTemplate bundle =
+        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("ddUpload");
+    xhtml.addElement(scriptContent(bundle.applyFileTemplate(
+        SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
     return xhtml;
   }
 

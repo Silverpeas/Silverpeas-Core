@@ -28,7 +28,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.chart.pie.PieChart;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
@@ -117,7 +117,7 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
   }
   
   @Override
-  public PieChart2D getChart(String spaceId, Vector<String[]> currentStats) {
+  public PieChart getChart(String spaceId, Vector<String[]> currentStats) {
     setScope(AbstractPieChartBuilder.FINESSE_TOUS);
     if (StringUtil.isDefined(filterIdGroup)) {
       setScope(AbstractPieChartBuilder.FINESSE_GROUPE);
