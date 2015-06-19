@@ -36,7 +36,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.lucene.search.suggest.fst.WFSTCompletionLookup;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.Workflow;
