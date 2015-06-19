@@ -25,7 +25,6 @@ package com.silverpeas.workflowdesigner.control;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.FileUtil;
@@ -68,11 +67,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
