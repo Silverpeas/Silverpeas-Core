@@ -285,24 +285,16 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // Is it a new object or an existing one?
     //
     if (NEW_ELEMENT_NAME.equals(strRoleOriginal)) {
-      // If a 'columns' element with the same name as the new element
+      // Creation: If a 'columns' element with the same name as the new element
       // already exists we have a problem...
       //
-      if (check != null  && check.getRoleName().equals(strRoleOriginal)) {
+      if (check != null) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
             SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
       }
-    } else // Existing object
-    {
-      // If a 'columns' element with the same name as the element's new name
-      // already exists we have a problem...
-      //
-      if (check != null && !strRoleOriginal.equals(source.getRoleName())) {
-        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
-            SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
-      }
-      deleteColumns(strRoleOriginal);
     }
+    else
+      deleteColumns(strRoleOriginal);
 
     processModel.getPresentation().addColumns(source);
   }
