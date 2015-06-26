@@ -197,6 +197,12 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
     return cell;
   }
 
+  public ArrayCellSelect addArrayCellSelect(String name, List<String> values) {
+    ArrayCellSelect cell = new ArrayCellSelect(name, values, this);
+    cells.add(cell);
+    return cell;
+  }
+
   /**
    * This method permit to add a button in the arrayPane. Button parameters are name, value, and if
    * the button is disabled or not.
