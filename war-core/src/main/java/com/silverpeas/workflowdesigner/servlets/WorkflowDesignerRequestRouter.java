@@ -1344,7 +1344,6 @@ public class WorkflowDesignerRequestRouter extends
       }
       if ("AddInput".equals(function)) {
         input = form.createInput();
-        input.setValue(WorkflowDesignerSessionController.NEW_ELEMENT_NAME);
         iInput = form.getInputs().length;
         strContext = strContext + "/inputs[" + Integer.toString(iInput) + "]";
         request.setAttribute("IsExisitingInput", Boolean.FALSE);
@@ -1363,10 +1362,8 @@ public class WorkflowDesignerRequestRouter extends
       request.setAttribute("context", strContext);
       request.setAttribute("parentScreen", calculateParentScreen(
           workflowDesignerSC, strContext));
-      request.setAttribute("DisplayerNames", workflowDesignerSC
-          .retrieveDisplayerNames());
-      request.setAttribute("FolderItemNames", workflowDesignerSC
-          .retrieveFolderItemNames(true, false));
+      request.setAttribute("TypesAndDisplayers", workflowDesignerSC.retrieveTypesAndDisplayers());
+      request.setAttribute("FolderItems", workflowDesignerSC.retrieveFolderItems());
 
       return root + "editInput.jsp";
     }
