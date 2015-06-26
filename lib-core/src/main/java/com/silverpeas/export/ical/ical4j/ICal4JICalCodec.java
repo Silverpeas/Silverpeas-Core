@@ -25,6 +25,9 @@ import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.EncodingException;
 import com.silverpeas.export.ical.ICalCodec;
+
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.html.HtmlCleaner;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
@@ -92,8 +95,20 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent.getProperties().add(new RRule(recur));
         iCalEvent.getProperties().add(exceptionDatesFrom(eventRecurrence));
       }
-      // Add Description
-      iCalEvent.getProperties().add(new Description(event.getDescription()));
+
+      // Add Description if any
+      if (StringUtil.isDefined(event.getDescription())) {
+        HtmlCleaner cleaner = new HtmlCleaner();
+        String plainText = "";
+        try {
+          plainText = cleaner.cleanHtmlFragment(event.getDescription());
+        } catch (Exception e) {
+          // do nothing
+        }
+        iCalEvent.getProperties().add(new Description(plainText));
+        iCalEvent.getProperties().add(new Html(event.getDescription()));
+      }
+
       // Add Classification
       iCalEvent.getProperties().add(new Clazz(event.getAccessLevel()));
       // Add Priority
