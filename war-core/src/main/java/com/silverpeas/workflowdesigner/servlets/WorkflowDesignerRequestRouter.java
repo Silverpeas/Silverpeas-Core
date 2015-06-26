@@ -1090,15 +1090,15 @@ public class WorkflowDesignerRequestRouter extends
       throw new WorkflowDesignerException("WorkflowDesignerRequestRouter.hndlEditInput",
           //$NON-NLS-1$
           SilverpeasException.ERROR, "workflowDesigner.EX_INPUT_NOT_FOUND"); //$NON-NLS-1$
-    }
-    request.setAttribute("Input", input);
-    request.setAttribute("context", strContext);
-    request.setAttribute("parentScreen", calculateParentScreen(workflowDesignerSC, strContext));
-    request.setAttribute("DisplayerNames", workflowDesignerSC.retrieveDisplayerNames());
-    request.setAttribute("FolderItemNames",
-        workflowDesignerSC.retrieveFolderItemNames(true, false));
+      }
+      request.setAttribute("Input", input);
+      request.setAttribute("context", strContext);
+      request.setAttribute("parentScreen", calculateParentScreen(
+          workflowDesignerSC, strContext));
+      request.setAttribute("TypesAndDisplayers", workflowDesignerSC.retrieveTypesAndDisplayers());
+      request.setAttribute("FolderItems", workflowDesignerSC.retrieveFolderItems());
 
-    return root + "editInput.jsp";
+      return root + "editInput.jsp";
   };
   /**
    * Handles the "UpdateInput" function

@@ -165,6 +165,9 @@ public class TypeManager {
     displayerId2displayerClass.put(displayerId, displayerClass);
   }
 
+  public Map<String, List<String>> getTypesAndDisplayers() {
+    return typeName2displayerNames;
+  }
   /**
    * Builds a displayer id from a type name and a displayer name.
    */

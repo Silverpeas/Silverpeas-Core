@@ -27,6 +27,8 @@ import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.form.TypeManager;
+import org.silverpeas.util.ArrayUtil;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
@@ -46,15 +48,7 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
 
@@ -2570,15 +2564,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 * @return an array of codes
 */
   public String[] retrieveItemTypeCodes(boolean fNone) {
-    StringTokenizer strtok = new StringTokenizer(getSettings().getString("itemTypes"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
+    String[] types = TypeManager.getInstance().getTypeNames();
     if (fNone) {
-      list.add("");
+      return ArrayUtil.add(types, 0, "");
     }
-    while (strtok.hasMoreTokens()) {
-      list.add(strtok.nextToken());
-    }
-    return list.toArray(new String[list.size()]);
+    return types;
   }
 
   /**
@@ -2617,19 +2607,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     return list.toArray(new String[list.size()]);
   }
 
-  /**
-* Returns the input displayer type codes as configured in the properties
-*
-* @return an array of codes
-*/
-  public String[] retrieveDisplayerNames() {
-    StringTokenizer strtok = new StringTokenizer(getSettings().getString("displayerNames"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
-    list.add("");
-    while (strtok.hasMoreTokens()) {
-      list.add(strtok.nextToken());
-    }
-    return list.toArray(new String[list.size()]);
+  public Map<String, List<String>> retrieveTypesAndDisplayers() {
+    return TypeManager.getInstance().getTypesAndDisplayers();
   }
 
   /**
@@ -2777,6 +2756,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     return list.toArray(new String[list.size()]);
+  }
+
+  public List<Item> retrieveFolderItems() {
+    DataFolder dataFolder = getProcessModel().getDataFolder();
+    return Arrays.asList(dataFolder.getItems());
   }
 
   /**
