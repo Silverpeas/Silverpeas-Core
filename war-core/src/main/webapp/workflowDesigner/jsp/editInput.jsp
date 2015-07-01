@@ -1,3 +1,4 @@
+<%@ page import="java.util.Map" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -36,11 +37,14 @@
                     strCurrentScreen = "ModifyInput?context=" + URLEncoder.encode( strContext, UTF8 ),
                     strLabelContext = strContext + "/labels";
     ArrayPane       inputPane = gef.getArrayPane( "inputPane", strCurrentScreen, request, session );
-    String[]        astrFolderItemNames = (String[])request.getAttribute( "FolderItemNames" ),
-                    astrFolderItemValues = (String[])astrFolderItemNames.clone(),
-                    astrTypeValues = (String[])request.getAttribute( "DisplayerNames" ), 
-                    astrTypeNames = (String[])astrTypeValues.clone();
     boolean         fExistingInput = ( (Boolean)request.getAttribute( "IsExisitingInput" ) ).booleanValue();
+    List<Item>      folderItems = (List<Item>) request.getAttribute("FolderItems");
+    List<String>    folderItemNames = new ArrayList<String>();
+    folderItemNames.add(resource.getString("GML.none"));
+    for (Item folderItem : folderItems) {
+      folderItemNames.add(folderItem.getName());
+    }
+    Map<String, List<String>> typesAndDisplayers = (Map<String, List<String>>) request.getAttribute("TypesAndDisplayers");
 %>
 <HTML>
 <HEAD>
@@ -60,7 +64,7 @@
         var errorNb = 0;
 
         if ( document.inputForm.item.options.selectedIndex == 0
-             && isWhitespace(document.inputForm.value.value) ) 
+             && isWhitespace(document.inputForm.value.value) )
         {
             errorMsg+="  - '<%=resource.getString("workflowDesigner.folderItem")%>'"
                       + " <%=resource.getString("workflowDesigner.or")%>"
@@ -87,9 +91,57 @@
         } 
         return result;
     }
+
+    var items = [];
+    <% for (Item item : folderItems) {%>
+    items["<%=item.getName()%>"] = "<%=item.getType()%>";
+    <% } %>
+
+    var displayers = [];
+    <% for (String type : typesAndDisplayers.keySet()) {
+       String displayers = "";
+       for (String displayer : typesAndDisplayers.get(type)) {
+        if (!displayers.isEmpty()) {
+          displayers += ",";
+        }
+        displayers += "\""+displayer+"\"";
+       }
+       %>
+      displayers["<%=type%>"] = [<%=displayers%>];
+    <% } %>
+
+    function changeDisplayersList() {
+      var itemName = $("select[name='item']").val();
+      var itemType = items[itemName];
+      var itemDisplayers = displayers[itemType];
+
+      var displayerSelect = $("select[name='displayerName']");
+      displayerSelect.empty();
+      var options = '';
+      for (var j = 0; j < itemDisplayers.length; j++){
+        options += "<option value='" +itemDisplayers[j]+ "'>" +itemDisplayers[j]+ "</option>";
+      }
+      displayerSelect.html(options);
+    }
+
+    $(function() {
+
+      // change displayers list according to selected type
+      $("select[name='item']").change(function() {
+        changeDisplayersList();
+      });
+
+      // load displayers list for current input
+      changeDisplayersList();
+      <% if (fExistingInput) { %>
+        $("select[name='displayerName']").val("<%=input.getDisplayerName()%>");
+      <% } %>
+
+    });
+
 </script>
 </HEAD>
-<BODY leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+<BODY>
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.editor.form"), strCancelAction );
@@ -105,8 +157,7 @@
     row = inputPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.folderItem") );
     cellText.setStyleSheet( "txtlibform" );
-    astrFolderItemNames[0] = resource.getString( "GML.none" );
-    cellSelect = row.addArrayCellSelect( "item", astrFolderItemNames, astrFolderItemValues );
+    cellSelect = row.addArrayCellSelect( "item", folderItemNames);
     cellSelect.setSize( "1" );
     cellSelect.setSelectedValues( new String[] { input.getItem() == null ? "" : input.getItem().getName() } );
     
@@ -123,8 +174,8 @@
     row = inputPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.displayerName") );
     cellText.setStyleSheet( "txtlibform" );
-    astrTypeNames[0] = resource.getString( "GML.none" );
-    cellSelect = row.addArrayCellSelect( "displayerName", astrTypeNames, astrTypeValues );
+    //astrTypeNames[0] = resource.getString( "GML.none" );
+    cellSelect = row.addArrayCellSelect( "displayerName", new ArrayList<String>());
     cellSelect.setSize( "1" );
     cellSelect.setSelectedValues( new String[] { input.getDisplayerName() == null ? "" : input.getDisplayerName() } );
     

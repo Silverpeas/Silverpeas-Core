@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import org.apache.commons.io.output.WriterOutputStream;
+import org.silverpeas.util.Charsets;
 
 /**
  * It represents a descriptor about the export of resources into a writer or an output stream. As
@@ -52,7 +53,7 @@ public class ExportDescriptor extends ImportExportDescriptor {
       throw new IllegalArgumentException("The writer cannot be null!");
     }
     descriptor.setWriter(writer);
-    descriptor.setOutputStream(new WriterOutputStream(writer));
+    descriptor.setOutputStream(new WriterOutputStream(writer, Charsets.UTF_8));
     return descriptor;
   }
 
