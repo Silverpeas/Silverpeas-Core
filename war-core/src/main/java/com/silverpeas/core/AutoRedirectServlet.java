@@ -30,18 +30,19 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import java.io.IOException;
-import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import static com.silverpeas.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
-import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
+import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 
 /**
  * @author ehugonnet
@@ -132,8 +133,8 @@ public class AutoRedirectServlet extends HttpServlet {
         out.println("\";");
         out.println("</script>");
       } else {
-        if (isAccessibleComponent(componentId, mainController) || isAccessibleSpace(spaceId,
-            mainController)) {
+        if (isAccessComponentForbidden(componentId, mainController) || isAccessSpaceForbidden(
+            spaceId, mainController)) {
           response.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
         } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
             isAccessAdmin()) {
@@ -169,12 +170,13 @@ public class AutoRedirectServlet extends HttpServlet {
     response.setStatus(SC_CREATED);
   }
 
-  private boolean isAccessibleSpace(String spaceId, MainSessionController mainController) {
+  private boolean isAccessSpaceForbidden(String spaceId, MainSessionController mainController) {
     return StringUtil.isDefined(spaceId) && !mainController.getOrganisationController().
         isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
-  private boolean isAccessibleComponent(String componentId, MainSessionController mainController) {
+  private boolean isAccessComponentForbidden(String componentId,
+      MainSessionController mainController) {
     return StringUtil.isDefined(componentId) &&
         !StringUtil.isAlpha(componentId) &&
         !mainController.
