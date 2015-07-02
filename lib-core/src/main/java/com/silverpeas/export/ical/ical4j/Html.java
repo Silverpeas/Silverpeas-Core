@@ -1,6 +1,6 @@
 package com.silverpeas.export.ical.ical4j;
 
-import com.silverpeas.util.html.HtmlCleaner;
+import org.silverpeas.util.html.HtmlCleaner;
 import net.fortuna.ical4j.model.Escapable;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
