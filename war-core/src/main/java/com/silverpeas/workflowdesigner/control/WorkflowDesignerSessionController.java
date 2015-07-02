@@ -25,7 +25,6 @@ package com.silverpeas.workflowdesigner.control;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.form.TypeManager;
@@ -70,11 +69,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.*;
 
@@ -313,30 +308,16 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // Is it a new object or an existing one?
     //
     if (NEW_ELEMENT_NAME.equals(strRoleOriginal)) {
-      // If a 'columns' element with the same name as the new element
+      // Creation: If a 'columns' element with the same name as the new element
       // already exists we have a problem...
       //
       if (check != null) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
             SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
       }
-    } else // Existing object
-    {
-      // If a 'columns' element with the same name as the element's new name
-      // already exists we have a problem...
-      //
-      if (check != null && !strRoleOriginal.equals(source.getRoleName())) {
-        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
-            SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
-      }
-
-      try {
-        processModel.getPresentation().deleteColumns(strRoleOriginal);
-      } catch (WorkflowException e) {
-        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
-            SilverpeasException.ERROR, "workflowDesigner.EX_UPDATING_COLUMNS_FAILED", e);
-      }
     }
+    else
+      deleteColumns(strRoleOriginal);
 
     processModel.getPresentation().addColumns(source);
   }
