@@ -108,6 +108,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+WorkflowDesignerSessionController   wfdsc       = (WorkflowDesignerSessionController) request.getAttribute("WorkflowDesigner");
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 Window window = gef.getWindow();
