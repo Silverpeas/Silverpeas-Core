@@ -138,8 +138,8 @@ public class AutoRedirectServlet extends HttpServlet {
         out.println("\";");
         out.println("</script>");
       } else {
-        if (isAccessibleComponent(componentId, mainController) || isAccessibleSpace(spaceId,
-            mainController)) {
+        if (isAccessComponentForbidden(componentId, mainController) ||
+            isAccessSpaceForbidden(spaceId, mainController)) {
           response.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
         } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
             isAccessAdmin()) {
@@ -175,12 +175,13 @@ public class AutoRedirectServlet extends HttpServlet {
     response.setStatus(SC_CREATED);
   }
 
-  private boolean isAccessibleSpace(String spaceId, MainSessionController mainController) {
+  private boolean isAccessSpaceForbidden(String spaceId, MainSessionController mainController) {
     return StringUtil.isDefined(spaceId) &&
         !organizationController.isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
-  private boolean isAccessibleComponent(String componentId, MainSessionController mainController) {
+  private boolean isAccessComponentForbidden(String componentId,
+      MainSessionController mainController) {
     return StringUtil.isDefined(componentId) &&
         !StringUtil.isAlpha(componentId) &&
         !organizationController.isComponentAvailable(componentId, mainController.getUserId());

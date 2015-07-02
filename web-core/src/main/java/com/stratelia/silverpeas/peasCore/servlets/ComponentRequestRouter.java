@@ -1,21 +1,24 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * <p>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
+ * <p>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.peasCore.servlets;
@@ -91,6 +94,19 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    */
   public abstract String getDestination(String function, T componentSC, HttpRequest request);
 
+  /**
+   * Check that user can access the component session controller function. Default behavior return
+   * true in order to limit impact for each component session controller.
+   * Each session controller must override this method in order to add access control.
+   * @param function the current function action
+   * @param componentSC the component session controller
+   * @return true if user can process function, false else if.
+   */
+  protected boolean checkUserAuthorization(String function, T componentSC) {
+    return true;
+  }
+
+
   public abstract T createComponentSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext);
 
@@ -99,7 +115,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    * The answer depends first on the <code>security.web.protection.sessiontoken.renew</code>
    * parameter defined in <code>org/silverpeas/util/security.properties</code> and secondly on the
    * choice made by some of the component request router.
-   * @return true if the the token has to be renewed
+   * @return true if the token has to be renewed
    */
   protected final boolean hasTheSessionSecurityTokenToBeRenewed(String function) {
     boolean hasToBeRenewed = SecuritySettings.isSessionTokenRenewEnabled();
@@ -174,7 +190,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     T component = this.getComponentSessionController(session, componentId);
     if (component == null) {
-      // isUserStateValid that the user has an acces to this component instance
+      // isUserStateValid that the user has an access to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
@@ -230,7 +246,11 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
-    destination = getDestination(function, component, httpRequest);
+    if (checkUserAuthorization(function, component)) {
+      destination = getDestination(function, component, httpRequest);
+    } else {
+      destination = "/admin/jsp/accessForbidden.jsp";
+    }
 
     // Session security token management
     if (StringUtil.isDefined(componentId) && hasTheSessionSecurityTokenToBeRenewed(function)) {
