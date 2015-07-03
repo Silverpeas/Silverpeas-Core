@@ -4335,6 +4335,17 @@ button {
   color: #FFFFFF;
 }
 
+.simple-button {
+  background-color: #F4F4F4;
+  border-radius: 5px;
+  border: 1px solid #CCC;
+  color: #4C4C4C;
+  font-size: 100%;
+  padding: 7px 10px;
+  background-image: url("../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  display:inline-block;
+}
+
 /** Css pour pr�sentation pdc dans formsOnline **/
 .pdc_position {
   display:block;
