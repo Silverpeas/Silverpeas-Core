@@ -90,11 +90,13 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       String favoriteLanguage = mainSessionController.getFavoriteLanguage();
       ResourceLocator messages = new ResourceLocator(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
+      ResourceLocator settings =
+          new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
       String httpServerBase =
           URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
       pageContext.getOut().print(prepareActions(attachment, useXMLForm, useFileSharing, useWebDAV,
           mainSessionController.getUserId(), favoriteLanguage, messages,
-          httpServerBase, showMenuNotif, useContextualMenu));
+          httpServerBase, showMenuNotif, useContextualMenu, settings));
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
       throw new JspException(ioex);
@@ -123,7 +125,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useFileSharing,
       boolean useWebDAV, String userId, final String userLanguage,
       ResourceLocator resources, String httpServerBase, boolean showMenuNotif,
-      boolean useContextualMenu) throws UnsupportedEncodingException {
+      boolean useContextualMenu, ResourceLocator settings) throws UnsupportedEncodingException {
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(2048);
@@ -188,8 +190,15 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
     builder.append("var ").append(oMenuId).append(";");
     builder.append("var webDav").append(attachmentId).append(" = \"");
-    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(),
-        CharEncoding.UTF_8)).append("\";");
+    String webDavURL = httpServerBase + attachment.getWebdavUrl();
+    if (settings.getBoolean("attachment.onlineEditing.customProtocol", false)) {
+      webDavURL = webDavURL.replaceFirst("http://", "spwebdav://");
+      webDavURL = webDavURL.replaceFirst("https://", "spwebdavs://");
+    } else {
+      webDavURL = URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(), CharEncoding.UTF_8);
+    }
+
+    builder.append(webDavURL).append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
     if (useContextualMenu) {
