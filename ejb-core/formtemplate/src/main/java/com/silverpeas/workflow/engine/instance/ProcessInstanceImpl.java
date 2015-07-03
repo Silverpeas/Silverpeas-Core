@@ -1592,6 +1592,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     } else {
       this.unLock(state.getName(), user);
     }
+    this.setLockedByAdmin(false);
   }
 
   /**
