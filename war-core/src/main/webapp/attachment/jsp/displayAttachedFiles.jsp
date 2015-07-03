@@ -76,6 +76,7 @@
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/javaScript/jquery/jquery.cookie.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
   <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
@@ -83,6 +84,8 @@
   <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
   <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
   <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
+  <view:settings var="onlineEditingWithCustomProtocol" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="attachment.onlineEditing.customProtocol" />
+  <view:settings var="onlineEditingWithCustomProtocolAlert" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${true}" key="attachment.onlineEditing.customProtocol.alert" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
   <c:set var="dndDisabledLocally" value="${'false' eq fn:toLowerCase(param.dnd)}" scope="page"/>
   <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable && not dndDisabledLocally}" />
@@ -524,8 +527,15 @@
             $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $worker.css({'visibility':'visible'});
             if (edit) {
-              var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
-              window.open(url, '_self');
+              <c:if test="${onlineEditingWithCustomProtocol}">
+                var webDavURL = eval("webDav".concat(oldId));
+                // display alert popin
+                showInformationAboutOnlineEditingWithCustomProtocol(webDavURL);
+              </c:if>
+              <c:if test="${not onlineEditingWithCustomProtocol}">
+                var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
+                window.open(url, '_self');
+              </c:if>
             } else if (download) {
               var url = $('#url_' + oldId).attr('href');
               window.open(url);
@@ -1032,6 +1042,24 @@
           }
         });
 
+      $("#dialog-attachment-onlineEditing-customProtocol").dialog({
+        autoOpen: false,
+        title: "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.title"/>",
+        height: 'auto',
+        width: 550,
+        dialogClass: 'help-modal-message',
+        modal: true,
+        buttons: {
+          "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.edit"/>": function() {
+            $.cookie(customProtocolCookieName, "IKnowIt", { expires: 3650, path: '/' });
+            window.location.href = $(this).data('webDavURL');
+            $(this).dialog("close");
+          },
+          "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.cancel"/>": function() {
+            $(this).dialog("close");
+          }
+        }
+      });
 
       $('#attachmentList').bind('sortupdate', function(event, ui) {
         var reg = new RegExp("attachment", "g");
@@ -1158,6 +1186,16 @@
     });
     return false;
   }
+
+  var customProtocolCookieName = "Silverpeas_OnlineEditing_CustomProtocol";
+  function showInformationAboutOnlineEditingWithCustomProtocol(webDavURL) {
+    var customProtocolCookieValue = $.cookie(customProtocolCookieName);
+    if (${onlineEditingWithCustomProtocolAlert} && ("IKnowIt" != customProtocolCookieValue)) {
+      $("#dialog-attachment-onlineEditing-customProtocol").data('webDavURL', webDavURL).dialog("open");
+    } else {
+      window.location.href = webDavURL;
+    }
+  }
 </script>
 
 <div id="dialog-attachment-update" style="display:none">
@@ -1274,6 +1312,10 @@
     <div id="simple_fields_attachment-checkin" style="display:none; text-wrap: none"><fmt:message key="confirm.checkin.message" /></div>
     <input type="submit" value="Submit" style="display:none" />
   </form>
+</div>
+
+<div id="dialog-attachment-onlineEditing-customProtocol" style="display: none">
+  <fmt:message key="attachment.dialog.onlineEditing.customProtocol.content"/>
 </div>
 
 <view:progressMessage/>
