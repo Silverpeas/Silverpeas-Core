@@ -24,22 +24,23 @@
 
 package com.silverpeas.directory.control;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.silverpeas.directory.model.DirectoryItemList;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.junit.Test;
 import org.silverpeas.core.admin.OrganisationController;
 
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,45 +70,48 @@ public class DirectorySessionControllerTest {
     users.add(user1);
     users.add(user2);
     users.add(user3);
+    DirectoryItemList userExpectedItems = new DirectoryItemList(users);
 
     MainSessionController controller = mock(MainSessionController.class);
     final OrganisationController organisation = mock(OrganizationController.class);
     when(organisation.getAllUsers()).thenReturn(users.toArray(new UserDetail[3]));
+    when(organisation.getComponentIdsForUser(anyString(), anyString())).thenReturn(new String[0]);
     when(controller.getOrganisationController()).thenReturn(organisation);
+    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
     // All users
-    List<UserDetail> userscalled = directoryDSC.getAllUsers();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(users.get(0), userscalled.get(0));
-    assertEquals(users.get(1), userscalled.get(1));
-    assertEquals(users.get(2), userscalled.get(2));
+    DirectoryItemList userCalledItems = directoryDSC.getAllUsers();
+    assertNotNull(userCalledItems);
+    assertEquals(3, userCalledItems.size());
+    assertEquals(userExpectedItems.get(0), userCalledItems.get(0));
+    assertEquals(userExpectedItems.get(1), userCalledItems.get(1));
+    assertEquals(userExpectedItems.get(2), userCalledItems.get(2));
     // index: B
-    userscalled = directoryDSC.getUsersByIndex("B");
-    assertNotNull(userscalled);
-    assertEquals(2, userscalled.size());
-    assertEquals(users.get(0), userscalled.get(0));
-    assertEquals(users.get(1), userscalled.get(1));
+    userCalledItems = directoryDSC.getUsersByIndex("B");
+    assertNotNull(userCalledItems);
+    assertEquals(2, userCalledItems.size());
+    assertEquals(userExpectedItems.get(0), userCalledItems.get(0));
+    assertEquals(userExpectedItems.get(1), userCalledItems.get(1));
     // index: tous
-    userscalled = directoryDSC.getLastListOfAllUsers();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(users.get(0), userscalled.get(0));
-    assertEquals(users.get(1), userscalled.get(1));
-    assertEquals(users.get(2), userscalled.get(2));
+    userCalledItems = directoryDSC.getLastListOfAllUsers();
+    assertNotNull(userCalledItems);
+    assertEquals(3, userCalledItems.size());
+    assertEquals(userExpectedItems.get(0), userCalledItems.get(0));
+    assertEquals(userExpectedItems.get(1), userCalledItems.get(1));
+    assertEquals(userExpectedItems.get(2), userCalledItems.get(2));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCalled();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(users.get(0), userscalled.get(0));
+    userCalledItems = directoryDSC.getLastListOfUsersCalled();
+    assertNotNull(userCalledItems);
+    assertEquals(3, userCalledItems.size());
+    assertEquals(userExpectedItems.get(0), userCalledItems.get(0));
 
   }
 
   @Test
   public void testGetAllUsersByGroup() throws Exception {
-    List<UserDetail> usersGroup = new ArrayList<UserDetail>();
+    List<UserDetail> groupOfUsers = new ArrayList<UserDetail>();
     UserDetail user2 = new UserDetail();
     user2.setId("2");
     user2.setLastName("bensalem");
@@ -120,50 +124,52 @@ public class DirectorySessionControllerTest {
     user3.setFirstName("nabil");
     user3.seteMail("nabil@gmail.com");
     user3.setLogin("nabil");
-    usersGroup.add(user2);
-    usersGroup.add(user3);
+    groupOfUsers.add(user2);
+    groupOfUsers.add(user3);
+    DirectoryItemList usersOfGroupExpectedItems = new DirectoryItemList(groupOfUsers);
 
     MainSessionController controller = mock(MainSessionController.class);
     final OrganisationController organisation = mock(OrganizationController.class);
-    when(organisation.getAllUsersOfGroup("2")).thenReturn(usersGroup.toArray(new UserDetail[2]));
+    when(organisation.getAllUsersOfGroup("2")).thenReturn(groupOfUsers.toArray(new UserDetail[2]));
+    when(organisation.getComponentIdsForUser(anyString(), anyString())).thenReturn(new String[0]);
     when(controller.getOrganisationController()).thenReturn(organisation);
+    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> userscalled;
-    userscalled = directoryDSC.getAllUsersByGroup("2");
+    DirectoryItemList usersOfGroupCalledItems = directoryDSC.getAllUsersByGroup("2");
     // All users By group
-    assertNotNull(userscalled);
-    assertEquals(2, userscalled.size());
-    assertEquals(usersGroup.get(0), userscalled.get(0));
-    assertEquals(usersGroup.get(1), userscalled.get(1));
+    assertNotNull(usersOfGroupCalledItems);
+    assertEquals(2, usersOfGroupCalledItems.size());
+    assertEquals(usersOfGroupExpectedItems.get(0), usersOfGroupCalledItems.get(0));
+    assertEquals(usersOfGroupExpectedItems.get(1), usersOfGroupCalledItems.get(1));
     // index: S
-    userscalled = directoryDSC.getUsersByIndex("S");
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersGroup.get(1), userscalled.get(0));
+    usersOfGroupCalledItems = directoryDSC.getUsersByIndex("S");
+    assertNotNull(usersOfGroupCalledItems);
+    assertEquals(1, usersOfGroupCalledItems.size());
+    assertEquals(usersOfGroupExpectedItems.get(1), usersOfGroupCalledItems.get(0));
     // index: B
-    userscalled = directoryDSC.getUsersByIndex("B");
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersGroup.get(0), userscalled.get(0));
+    usersOfGroupCalledItems = directoryDSC.getUsersByIndex("B");
+    assertNotNull(usersOfGroupCalledItems);
+    assertEquals(1, usersOfGroupCalledItems.size());
+    assertEquals(usersOfGroupExpectedItems.get(0), usersOfGroupCalledItems.get(0));
     // index: tous
-    userscalled = directoryDSC.getLastListOfAllUsers();
-    assertNotNull(userscalled);
-    assertEquals(2, userscalled.size());
-    assertEquals(usersGroup.get(0), userscalled.get(0));
-    assertEquals(usersGroup.get(1), userscalled.get(1));
+    usersOfGroupCalledItems = directoryDSC.getLastListOfAllUsers();
+    assertNotNull(usersOfGroupCalledItems);
+    assertEquals(2, usersOfGroupCalledItems.size());
+    assertEquals(usersOfGroupExpectedItems.get(0), usersOfGroupCalledItems.get(0));
+    assertEquals(usersOfGroupExpectedItems.get(1), usersOfGroupCalledItems.get(1));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCalled();
-    assertNotNull(userscalled);
-    assertEquals(2, userscalled.size());
-    assertEquals(usersGroup.get(0), userscalled.get(0));
-    assertEquals(usersGroup.get(1), userscalled.get(1));
+    usersOfGroupCalledItems = directoryDSC.getLastListOfUsersCalled();
+    assertNotNull(usersOfGroupCalledItems);
+    assertEquals(2, usersOfGroupCalledItems.size());
+    assertEquals(usersOfGroupExpectedItems.get(0), usersOfGroupCalledItems.get(0));
+    assertEquals(usersOfGroupExpectedItems.get(1), usersOfGroupCalledItems.get(1));
   }
 
   @Test
   public void testGetAllUsersByDomain() throws Exception {
-    List<UserDetail> usersDomain = new ArrayList<UserDetail>();
+    List<UserDetail> usersOfDomain = new ArrayList<UserDetail>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
     user1.setLastName("durand");
@@ -185,57 +191,61 @@ public class DirectorySessionControllerTest {
     user3.seteMail("nabil@gmail.com");
     user3.setLogin("nabil");
     user3.setDomainId("3");
-    usersDomain.add(user1);
-    usersDomain.add(user2);
-    usersDomain.add(user3);
+    usersOfDomain.add(user1);
+    usersOfDomain.add(user2);
+    usersOfDomain.add(user3);
+    DirectoryItemList usersOfDomainExpectedItems = new DirectoryItemList(usersOfDomain);
+
     Domain domain = new Domain();
     domain.setId("3");
     MainSessionController controller = mock(MainSessionController.class);
     final OrganisationController organisation = mock(OrganizationController.class);
     List<String> domainIds = new ArrayList<String>();
     domainIds.add("3");
-    when(organisation.getUsersOfDomains(domainIds)).thenReturn(usersDomain);
+    when(organisation.getUsersOfDomains(domainIds)).thenReturn(usersOfDomain);
     when(organisation.getDomain("3")).thenReturn(domain);
+    when(organisation.getComponentIdsForUser(anyString(), anyString())).thenReturn(new String[0]);
     when(controller.getOrganisationController()).thenReturn(organisation);
+    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> userscalled = directoryDSC.getAllUsersByDomain("3");
+    DirectoryItemList usersOfDomainCalledItems = directoryDSC.getAllUsersByDomain("3");
     // All users By domain
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(usersDomain.get(0), userscalled.get(0));
-    assertEquals(usersDomain.get(1), userscalled.get(1));
-    assertEquals(usersDomain.get(2), userscalled.get(2));
+    assertNotNull(usersOfDomainCalledItems);
+    assertEquals(3, usersOfDomainCalledItems.size());
+    assertEquals(usersOfDomainExpectedItems.get(0), usersOfDomainCalledItems.get(0));
+    assertEquals(usersOfDomainExpectedItems.get(1), usersOfDomainCalledItems.get(1));
+    assertEquals(usersOfDomainExpectedItems.get(2), usersOfDomainCalledItems.get(2));
     // index: G
-    userscalled = directoryDSC.getUsersByIndex("G");
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersDomain.get(1), userscalled.get(0));
+    usersOfDomainCalledItems = directoryDSC.getUsersByIndex("G");
+    assertNotNull(usersOfDomainCalledItems);
+    assertEquals(1, usersOfDomainCalledItems.size());
+    assertEquals(usersOfDomainExpectedItems.get(1), usersOfDomainCalledItems.get(0));
     // index: D
-    userscalled = directoryDSC.getUsersByIndex("D");
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersDomain.get(0), userscalled.get(0));
+    usersOfDomainCalledItems = directoryDSC.getUsersByIndex("D");
+    assertNotNull(usersOfDomainCalledItems);
+    assertEquals(1, usersOfDomainCalledItems.size());
+    assertEquals(usersOfDomainExpectedItems.get(0), usersOfDomainCalledItems.get(0));
     // index: tous
-    userscalled = directoryDSC.getLastListOfAllUsers();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(usersDomain.get(0), userscalled.get(0));
-    assertEquals(usersDomain.get(1), userscalled.get(1));
-    assertEquals(usersDomain.get(2), userscalled.get(2));
+    usersOfDomainCalledItems = directoryDSC.getLastListOfAllUsers();
+    assertNotNull(usersOfDomainCalledItems);
+    assertEquals(3, usersOfDomainCalledItems.size());
+    assertEquals(usersOfDomainExpectedItems.get(0), usersOfDomainCalledItems.get(0));
+    assertEquals(usersOfDomainExpectedItems.get(1), usersOfDomainCalledItems.get(1));
+    assertEquals(usersOfDomainExpectedItems.get(2), usersOfDomainCalledItems.get(2));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCalled();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(usersDomain.get(0), userscalled.get(0));
-    assertEquals(usersDomain.get(1), userscalled.get(1));
-    assertEquals(usersDomain.get(2), userscalled.get(2));
+    usersOfDomainCalledItems = directoryDSC.getLastListOfUsersCalled();
+    assertNotNull(usersOfDomainCalledItems);
+    assertEquals(3, usersOfDomainCalledItems.size());
+    assertEquals(usersOfDomainExpectedItems.get(0), usersOfDomainCalledItems.get(0));
+    assertEquals(usersOfDomainExpectedItems.get(1), usersOfDomainCalledItems.get(1));
+    assertEquals(usersOfDomainExpectedItems.get(2), usersOfDomainCalledItems.get(2));
   }
 
   @Test
   public void testGetAllUsersBySpace() throws Exception {
-    List<UserDetail> usersSpace = new ArrayList<UserDetail>();
+    List<UserDetail> usersOfSpace = new ArrayList<UserDetail>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
     user1.setLastName("durand");
@@ -254,9 +264,10 @@ public class DirectorySessionControllerTest {
     user3.setFirstName("nabil");
     user3.seteMail("nabil@gmail.com");
     user3.setLogin("nabil");
-    usersSpace.add(user1);
-    usersSpace.add(user2);
-    usersSpace.add(user3);
+    usersOfSpace.add(user1);
+    usersOfSpace.add(user2);
+    usersOfSpace.add(user3);
+    DirectoryItemList usersOfSpaceExpectedItems = new DirectoryItemList(usersOfSpace);
     
     MainSessionController controller = mock(MainSessionController.class);
     final OrganisationController organisation = mock(OrganizationController.class);
@@ -272,45 +283,48 @@ public class DirectorySessionControllerTest {
     components.put("webPages245", component2);
     when(organisation.getAllUsers("kmelia12")).thenReturn(components.get("kmelia12"));
     when(organisation.getAllUsers("webPages245")).thenReturn(components.get("webPages245"));
-    
+    when(organisation.getComponentIdsForUser(anyString(), anyString())).thenReturn(new String[0]);
+
+    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
+
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<UserDetail> userscalled = directoryDSC.getAllUsersBySpace("0");
+    DirectoryItemList usersOfSpaceCalledItems = directoryDSC.getAllUsersBySpace("0");
     // All users By domain
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(usersSpace.get(0), userscalled.get(0));
-    assertEquals(usersSpace.get(1), userscalled.get(1));
-    assertEquals(usersSpace.get(2), userscalled.get(2));
+    assertNotNull(usersOfSpaceCalledItems);
+    assertEquals(3, usersOfSpaceCalledItems.size());
+    assertEquals(usersOfSpaceExpectedItems.get(0), usersOfSpaceCalledItems.get(0));
+    assertEquals(usersOfSpaceExpectedItems.get(1), usersOfSpaceCalledItems.get(1));
+    assertEquals(usersOfSpaceExpectedItems.get(2), usersOfSpaceCalledItems.get(2));
     // index: G
-    userscalled = directoryDSC.getUsersByIndex("G");
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersSpace.get(1), userscalled.get(0));
+    usersOfSpaceCalledItems = directoryDSC.getUsersByIndex("G");
+    assertNotNull(usersOfSpaceCalledItems);
+    assertEquals(1, usersOfSpaceCalledItems.size());
+    assertEquals(usersOfSpaceExpectedItems.get(1), usersOfSpaceCalledItems.get(0));
     // index: D
-    userscalled = directoryDSC.getUsersByIndex("D");
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersSpace.get(0), userscalled.get(0));
+    usersOfSpaceCalledItems = directoryDSC.getUsersByIndex("D");
+    assertNotNull(usersOfSpaceCalledItems);
+    assertEquals(1, usersOfSpaceCalledItems.size());
+    assertEquals(usersOfSpaceExpectedItems.get(0), usersOfSpaceCalledItems.get(0));
     // index: tous
-    userscalled = directoryDSC.getLastListOfAllUsers();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(usersSpace.get(0), userscalled.get(0));
-    assertEquals(usersSpace.get(1), userscalled.get(1));
-    assertEquals(usersSpace.get(2), userscalled.get(2));
+    usersOfSpaceCalledItems = directoryDSC.getLastListOfAllUsers();
+    assertNotNull(usersOfSpaceCalledItems);
+    assertEquals(3, usersOfSpaceCalledItems.size());
+    assertEquals(usersOfSpaceExpectedItems.get(0), usersOfSpaceCalledItems.get(0));
+    assertEquals(usersOfSpaceExpectedItems.get(1), usersOfSpaceCalledItems.get(1));
+    assertEquals(usersOfSpaceExpectedItems.get(2), usersOfSpaceCalledItems.get(2));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCalled();
-    assertNotNull(userscalled);
-    assertEquals(3, userscalled.size());
-    assertEquals(usersSpace.get(0), userscalled.get(0));
-    assertEquals(usersSpace.get(1), userscalled.get(1));
-    assertEquals(usersSpace.get(2), userscalled.get(2));
+    usersOfSpaceCalledItems = directoryDSC.getLastListOfUsersCalled();
+    assertNotNull(usersOfSpaceCalledItems);
+    assertEquals(3, usersOfSpaceCalledItems.size());
+    assertEquals(usersOfSpaceExpectedItems.get(0), usersOfSpaceCalledItems.get(0));
+    assertEquals(usersOfSpaceExpectedItems.get(1), usersOfSpaceCalledItems.get(1));
+    assertEquals(usersOfSpaceExpectedItems.get(2), usersOfSpaceCalledItems.get(2));
   }
 
   @Test
-  public void testFillList(){
+  public void testMergeList(){
     MainSessionController controller = mock(MainSessionController.class);
     final OrganisationController organisation = mock(OrganizationController.class);
     when(controller.getOrganisationController()).thenReturn(organisation);
@@ -334,13 +348,16 @@ public class DirectorySessionControllerTest {
     nl[1].setId("3");
     nl[2] = new UserDetail();
     nl[2].setId("4");
-    directoryDSC.fillList(ol, nl);
+    DirectoryItemList userItemsAtStart = new DirectoryItemList(ol);
+    DirectoryItemList userItemsToMerge = new DirectoryItemList(nl);
+    DirectoryItemList userItemsAfterMerge = new DirectoryItemList(ol);
+    directoryDSC.mergeUsersIntoDirectoryItemList(nl, userItemsAfterMerge);
     assertNotNull(ol);
-    assertEquals("size 5", ol.size(), 5);
-    assertEquals(ol.get(0), ol.get(0));
-    assertEquals(ol.get(1), ol.get(1));
-    assertEquals(ol.get(2), ol.get(2));
-    assertEquals(ol.get(3), nl[1]);
-    assertEquals(ol.get(4), nl[2]);
+    assertEquals("size 5", 5, userItemsAfterMerge.size());
+    assertEquals(userItemsAtStart.get(0), userItemsAfterMerge.get(0));
+    assertEquals(userItemsAtStart.get(1), userItemsAfterMerge.get(1));
+    assertEquals(userItemsAtStart.get(2), userItemsAfterMerge.get(2));
+    assertEquals(userItemsToMerge.get(1), userItemsAfterMerge.get(3));
+    assertEquals(userItemsToMerge.get(2), userItemsAfterMerge.get(4));
   }
 }

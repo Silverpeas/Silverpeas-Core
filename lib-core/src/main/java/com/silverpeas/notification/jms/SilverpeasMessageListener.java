@@ -29,6 +29,8 @@ import com.silverpeas.notification.NotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
 
 /**
  * Listener of messages droven in JMS. A JMS message wrap the silverpeas notification that was
@@ -57,6 +59,7 @@ public class SilverpeasMessageListener implements MessageListener {
       Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
       ObjectMessage message = (ObjectMessage) msg;
       SilverpeasNotification notification = (SilverpeasNotification) message.getObject();
+      UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
       this.subscriber.onNotification(notification, NotificationTopic.onTopic(topic));
     } catch (JMSException ex) {
       throw new PublishingException(ex);

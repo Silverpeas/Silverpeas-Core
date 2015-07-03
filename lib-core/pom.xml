@@ -386,6 +386,11 @@
       <artifactId>encoder</artifactId>
       <version>1.1</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.jvnet.mock-javamail</groupId>
+      <artifactId>mock-javamail</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

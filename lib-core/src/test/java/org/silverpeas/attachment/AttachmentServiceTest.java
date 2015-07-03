@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
@@ -39,6 +38,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.commons.cnd.ParseException;
@@ -47,6 +47,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -77,6 +78,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -142,20 +144,47 @@ public class AttachmentServiceTest {
     instance = AttachmentServiceFactory.getAttachmentService();
   }
 
-  private Node getComponentRootJcrNode() {
-    Node node = null;
+  private NodeResult getComponentJcrNode(String... pathes) {
+    List<String> pathParts = new ArrayList<String>();
+    pathParts.add(instanceId);
+    Collections.addAll(pathParts, pathes);
+    return getJcrNode(pathParts.toArray(new String[pathParts.size()]));
+  }
+
+  private NodeResult getJcrNode(String... pathes) {
+    Node node;
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      node = session.getNode('/' + instanceId);
+      node = session.getNode('/' + StringUtils.join(pathes, '/'));
+      return new NodeResult(node.getPath(), node.getNodes().getSize());
     } catch (PathNotFoundException e) {
       // Nothing to do, the root node doesn't exist. That is all.
+      return null;
     } catch (RepositoryException e) {
       throw new RuntimeException(e);
     } finally {
       BasicDaoFactory.logout(session);
     }
-    return node;
+  }
+
+  private static class NodeResult {
+    private final String path;
+
+    private final long nbChildren;
+
+    private NodeResult(final String path, final long nbChildren) {
+      this.path = path;
+      this.nbChildren = nbChildren;
+    }
+
+    public long getNbChildren() {
+      return nbChildren;
+    }
+
+    public String getPath() {
+      return path;
+    }
   }
 
   @BeforeClass
@@ -562,7 +591,7 @@ public class AttachmentServiceTest {
    */
   @Test
   public void testDeleteAllDocuments() {
-    assertThat(getComponentRootJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(), notNullValue());
     SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
     SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
     assertThat(documentFr, notNullValue());
@@ -572,7 +601,239 @@ public class AttachmentServiceTest {
     documentEn = instance.searchDocumentById(existingEnDoc, null);
     assertThat(documentFr, nullValue());
     assertThat(documentEn, nullValue());
-    assertThat(getComponentRootJcrNode(), nullValue());
+    assertThat(getComponentJcrNode(), nullValue());
+  }
+
+  /**
+   * Test of deleteAllAttachments method, of class AttachmentService.
+   */
+  @Test
+  public void testDeleteAllAttachments() throws Exception {
+    File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s"), nullValue());
+    SimpleDocument newDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(existingFrDoc, null);
+    newDocumentSameResourceDocumentFr.setNodeName(null);
+    newDocumentSameResourceDocumentFr.setOldSilverpeasId(0);
+    newDocumentSameResourceDocumentFr.setDocumentType(DocumentType.form);
+    newDocumentSameResourceDocumentFr.setTitle("DELETE_ALL_TEST");
+    SimpleDocument otherDocumentSameResourceDocumentFr =
+        instance.createAttachment(newDocumentSameResourceDocumentFr, file);
+    SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
+    SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr,
+        not(sameInstance(newDocumentSameResourceDocumentFr)));
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
+
+    instance.deleteAllAttachments(documentFr.getForeignId(), documentFr.getInstanceId());
+
+    documentFr = instance.searchDocumentById(existingFrDoc, null);
+    documentEn = instance.searchDocumentById(existingEnDoc, null);
+    otherDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(otherDocumentSameResourceDocumentFr.getPk(), null);
+    assertThat(documentFr, nullValue());
+    assertThat(otherDocumentSameResourceDocumentFr, nullValue());
+    assertThat(documentEn, notNullValue());
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(1L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(0L));
+  }
+
+  /**
+   * Test of copyAllAttachments method, of class AttachmentService.
+   */
+  @Test
+  public void testCopyAllAttachments() throws Exception {
+    File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s"), nullValue());
+    SimpleDocument newDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(existingFrDoc, null);
+    newDocumentSameResourceDocumentFr.setId(null);
+    newDocumentSameResourceDocumentFr.setNodeName(null);
+    newDocumentSameResourceDocumentFr.setOldSilverpeasId(0);
+    newDocumentSameResourceDocumentFr.setDocumentType(DocumentType.form);
+    newDocumentSameResourceDocumentFr.setTitle("DELETE_ALL_TEST");
+    SimpleDocument otherDocumentSameResourceDocumentFr =
+        instance.createAttachment(newDocumentSameResourceDocumentFr, file);
+    SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
+    SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr,
+        not(sameInstance(newDocumentSameResourceDocumentFr)));
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
+    assertThat(getJcrNode(foreignInstanceId), nullValue());
+
+    ForeignPK newResourcePK = new ForeignPK("newResourcePK", foreignInstanceId);
+    List<SimpleDocumentPK> copiedDocumentPks = instance
+        .copyAllDocuments(new ForeignPK(documentFr.getForeignId(), documentFr.getInstanceId()),
+            newResourcePK);
+
+    assertThat(copiedDocumentPks, hasSize(2));
+    for (SimpleDocumentPK copiedDocumentPK : copiedDocumentPks) {
+      SimpleDocument copiedDocument = instance.searchDocumentById(copiedDocumentPK, "de");
+      assertThat(copiedDocument, notNullValue());
+      assertThat(copiedDocument.getInstanceId(), is(foreignInstanceId));
+      assertThat(copiedDocument.getForeignId(), is("newResourcePK"));
+      assertThat(copiedDocument.getId(), not(isOneOf(documentEn.getId(), documentEn.getId(),
+          otherDocumentSameResourceDocumentFr.getId())));
+      assertThat(copiedDocument.getOldSilverpeasId(),
+          greaterThan(otherDocumentSameResourceDocumentFr.getOldSilverpeasId()));
+    }
+    documentFr = instance.searchDocumentById(existingFrDoc, null);
+    documentEn = instance.searchDocumentById(existingEnDoc, null);
+    otherDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(otherDocumentSameResourceDocumentFr.getPk(), null);
+    assertThat(documentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
+    assertThat(getJcrNode(foreignInstanceId), notNullValue());
+    assertThat(getJcrNode(foreignInstanceId, DocumentType.attachment.name() + "s").getNbChildren(),
+        is(1L));
+    assertThat(getJcrNode(foreignInstanceId, DocumentType.form.name() + "s").getNbChildren(),
+        is(1L));
+  }
+
+  /**
+   * Test of moveAllAttachments method, of class AttachmentService.
+   */
+  @Test
+  public void testMoveAllAttachments() throws Exception {
+    File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s"), nullValue());
+    SimpleDocument newDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(existingFrDoc, null);
+    newDocumentSameResourceDocumentFr.setId(null);
+    newDocumentSameResourceDocumentFr.setNodeName(null);
+    newDocumentSameResourceDocumentFr.setOldSilverpeasId(0);
+    newDocumentSameResourceDocumentFr.setDocumentType(DocumentType.form);
+    newDocumentSameResourceDocumentFr.setTitle("DELETE_ALL_TEST");
+    SimpleDocument otherDocumentSameResourceDocumentFr =
+        instance.createAttachment(newDocumentSameResourceDocumentFr, file);
+    SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
+    SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr,
+        not(sameInstance(newDocumentSameResourceDocumentFr)));
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
+    assertThat(getJcrNode(foreignInstanceId), nullValue());
+
+    ForeignPK newResourcePK = new ForeignPK("newResourcePK", instanceId);
+    List<SimpleDocumentPK> movedDocumentPks = instance
+        .moveAllDocuments(new ForeignPK(documentFr.getForeignId(), documentFr.getInstanceId()),
+            newResourcePK);
+
+    assertThat(movedDocumentPks, hasSize(2));
+    for (SimpleDocumentPK movedDocumentPK : movedDocumentPks) {
+      SimpleDocument movedDocument = instance.searchDocumentById(movedDocumentPK, "de");
+      assertThat(movedDocument, notNullValue());
+      assertThat(movedDocument.getInstanceId(), is(instanceId));
+      assertThat(movedDocument.getForeignId(), is("newResourcePK"));
+      assertThat(movedDocument.getId(),
+          isOneOf(documentFr.getId(), otherDocumentSameResourceDocumentFr.getId()));
+      assertThat(movedDocument.getOldSilverpeasId(),
+          lessThanOrEqualTo(otherDocumentSameResourceDocumentFr.getOldSilverpeasId()));
+    }
+    documentFr = instance.searchDocumentById(existingFrDoc, null);
+    documentEn = instance.searchDocumentById(existingEnDoc, null);
+    otherDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(otherDocumentSameResourceDocumentFr.getPk(), null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentFr.getForeignId(), is("newResourcePK"));
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr.getForeignId(), is("newResourcePK"));
+    assertThat(documentEn, notNullValue());
+    assertThat(documentEn.getForeignId(), not(is("newResourcePK")));
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
+    assertThat(getJcrNode(foreignInstanceId), nullValue());
+  }
+
+  /**
+   * Test of moveAllAttachments method, of class AttachmentService.
+   */
+  @Test
+  public void testMoveAllAttachmentsIntoAnotherComponentId() throws Exception {
+    File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s"), nullValue());
+    SimpleDocument newDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(existingFrDoc, null);
+    newDocumentSameResourceDocumentFr.setId(null);
+    newDocumentSameResourceDocumentFr.setNodeName(null);
+    newDocumentSameResourceDocumentFr.setOldSilverpeasId(0);
+    newDocumentSameResourceDocumentFr.setDocumentType(DocumentType.form);
+    newDocumentSameResourceDocumentFr.setTitle("DELETE_ALL_TEST");
+    SimpleDocument otherDocumentSameResourceDocumentFr =
+        instance.createAttachment(newDocumentSameResourceDocumentFr, file);
+    SimpleDocument documentEn = instance.searchDocumentById(existingEnDoc, null);
+    SimpleDocument documentFr = instance.searchDocumentById(existingFrDoc, null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentEn, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr,
+        not(sameInstance(newDocumentSameResourceDocumentFr)));
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(2L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
+    assertThat(getJcrNode(foreignInstanceId), nullValue());
+
+    ForeignPK newResourcePK = new ForeignPK("newResourcePK", foreignInstanceId);
+    List<SimpleDocumentPK> movedDocumentPks = instance
+        .moveAllDocuments(new ForeignPK(documentFr.getForeignId(), documentFr.getInstanceId()),
+            newResourcePK);
+
+    assertThat(movedDocumentPks, hasSize(2));
+    for (SimpleDocumentPK movedDocumentPK : movedDocumentPks) {
+      SimpleDocument movedDocument = instance.searchDocumentById(movedDocumentPK, "de");
+      assertThat(movedDocument, notNullValue());
+      assertThat(movedDocument.getInstanceId(), is(foreignInstanceId));
+      assertThat(movedDocument.getForeignId(), is("newResourcePK"));
+      assertThat(movedDocument.getId(),
+          isOneOf(documentFr.getId(), otherDocumentSameResourceDocumentFr.getId()));
+      assertThat(movedDocument.getOldSilverpeasId(),
+          lessThanOrEqualTo(otherDocumentSameResourceDocumentFr.getOldSilverpeasId()));
+    }
+    documentFr = instance.searchDocumentById(existingFrDoc, null);
+    documentEn = instance.searchDocumentById(existingEnDoc, null);
+    otherDocumentSameResourceDocumentFr =
+        instance.searchDocumentById(otherDocumentSameResourceDocumentFr.getPk(), null);
+    assertThat(documentFr, notNullValue());
+    assertThat(documentFr.getForeignId(), is("newResourcePK"));
+    assertThat(documentFr.getInstanceId(), is(foreignInstanceId));
+    assertThat(otherDocumentSameResourceDocumentFr, notNullValue());
+    assertThat(otherDocumentSameResourceDocumentFr.getForeignId(), is("newResourcePK"));
+    assertThat(otherDocumentSameResourceDocumentFr.getInstanceId(), is(foreignInstanceId));
+    assertThat(documentEn, notNullValue());
+    assertThat(documentEn.getForeignId(), not(is("newResourcePK")));
+    assertThat(documentEn.getInstanceId(), is(instanceId));
+    assertThat(getComponentJcrNode(), notNullValue());
+    assertThat(getComponentJcrNode(DocumentType.attachment.name() + "s").getNbChildren(), is(1L));
+    assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(0L));
+    assertThat(getJcrNode(foreignInstanceId), notNullValue());
+    assertThat(getJcrNode(foreignInstanceId, DocumentType.attachment.name() + "s").getNbChildren(),
+        is(1L));
+    assertThat(getJcrNode(foreignInstanceId, DocumentType.form.name() + "s").getNbChildren(),
+        is(1L));
   }
 
   /**

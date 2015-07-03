@@ -24,13 +24,6 @@
       <type>org.silverpeas.attachment.model.SimpleDocument</type>
     </attribute>
     <attribute>
-      <description>The language used to display the menu.</description>
-      <name>contentLanguage</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
       <description>To indicate if there is a xml form attached to the attachment.</description>
       <name>useXMLForm</name>
       <required>true</required>

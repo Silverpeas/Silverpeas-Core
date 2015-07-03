@@ -22,7 +22,13 @@ package com.stratelia.silverpeas.selection;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.Collection;
+import java.util.List;
+
+import static com.silverpeas.util.CollectionUtil.asList;
 
 public final class Selection {
 
@@ -34,12 +40,16 @@ public final class Selection {
   final public static String FIRST_PAGE_SEARCH_ELEMENT = "DisplaySearchElement";
   final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
-  public static final String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
+  final public static String USER_SELECTION_PANEL_PATH = "/selection/jsp/userpanel.jsp";
+  final public static String TYPE_SELECTED_SET = "Set"; //group selected
+  final public static String TYPE_SELECTED_ELEMENT = "Element"; //user selected
+  protected List<Domain> registeredServerDomains;
   protected String goBackURL;
   protected String cancelURL;
   protected String htmlFormName;
   protected String htmlFormElementName;
   protected String htmlFormElementId;
+  protected String htmlFormElementType; //TYPE_SELECTED_SET or TYPE_SELECTED_ELEMENT
   protected String firstPage;
   protected String[] selectedSets;
   protected String[] selectedElements;
@@ -51,12 +61,15 @@ public final class Selection {
   protected PairObject hostComponentName;
   protected PairObject[] hostPath;
   protected SelectionExtraParams extraParams;
+  protected int selectedUserLimit;
+  protected boolean filterOnDeactivatedState = true;
 
   public Selection() {
     resetAll();
   }
 
   public void resetAll() {
+    registeredServerDomains = null;
     goBackURL = "";
     cancelURL = "";
 
@@ -79,6 +92,8 @@ public final class Selection {
     hostPath = new PairObject[0];
 
     extraParams = null;
+    selectedUserLimit = 0;
+    filterOnDeactivatedState = true;
   }
 
   static public String getSelectionURL(String selectionType) {
@@ -161,9 +176,11 @@ public final class Selection {
   }
 
   /**
-   * Is the set of fields with the selection could be done directly from the user panel? This is can
-   * be done only if the user panel is opened within a window popup and the information about HTML
-   * form of the opener is provided (see the setHtmlForm kind methods).
+   * Is the set of fields with the selection could be done directly from the user panel ? 
+   * This can be done only if : 
+   * - the user panel is opened within a window popup (PopupMode = true), 
+   * - not with multi selection (MultiSelect = false) and 
+   * - the information about HTML form of the opener is provided (see the setHtmlForm kind methods).
    *
    * @return true if the user panel should modify directly the opener with the result of the
    * selection, false otherwise.
@@ -281,5 +298,40 @@ public final class Selection {
 
   public void setHtmlFormName(String formName) {
     htmlFormName = formName;
+  }
+  
+  public String getHtmlFormElementType() { //TYPE_SELECTED_SET or TYPE_SELECTED_ELEMENT
+    return htmlFormElementType;
+  }
+
+  public void setHtmlFormElementType(String formElementType) {
+    htmlFormElementType = formElementType;
+  }
+
+  public int getSelectedUserLimit() {
+    return selectedUserLimit;
+  }
+
+  public void setSelectedUserLimit(final int selectedUserLimit) {
+    this.selectedUserLimit = selectedUserLimit;
+  }
+
+  /**
+   * Gets all the domains registered on the server.
+   */
+  public List<Domain> getRegisteredServerDomains() {
+    if (registeredServerDomains == null) {
+      registeredServerDomains = asList(
+          OrganisationControllerFactory.getOrganisationController().getAllDomains());
+    }
+    return registeredServerDomains;
+  }
+
+  public boolean isFilterOnDeactivatedState() {
+    return filterOnDeactivatedState;
+  }
+
+  public void setFilterOnDeactivatedState(final boolean filterOnDeactivatedState) {
+    this.filterOnDeactivatedState = filterOnDeactivatedState;
   }
 }

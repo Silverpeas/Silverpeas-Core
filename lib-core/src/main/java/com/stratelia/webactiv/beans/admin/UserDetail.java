@@ -24,6 +24,8 @@ import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.socialnetwork.invitation.InvitationService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -49,6 +51,10 @@ import java.util.List;
 
 import static com.silverpeas.util.StringUtil.areStringEquals;
 import static com.silverpeas.util.StringUtil.isDefined;
+import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+    .getUserManualNotificationRecipientLimit;
+import static com.stratelia.silverpeas.notificationManager.NotificationManagerSettings
+    .isUserManualNotificationRecipientLimitEnabled;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String CURRENT_REQUESTER_KEY =
@@ -83,6 +89,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private Date expirationDate = null;
   private UserState state = UserState.from(null);
   private Date stateSaveDate = null;
+  private Integer notifManualReceiverLimit;
 
   /**
    * Gets the detail about the specified user.
@@ -101,6 +108,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static UserDetail getCurrentRequester() {
     return CacheServiceFactory.getSessionCacheService()
         .get(CURRENT_REQUESTER_KEY, UserDetail.class);
+  }
+
+  /**
+   * @see #isActivatedState()
+   */
+  public static boolean isActivatedStateFor(String userId) {
+    UserDetail userDetail = getById(userId);
+    return userDetail != null && userDetail.isActivatedState();
   }
 
   /**
@@ -255,11 +270,12 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-   * Please use {@link UserDetail#isValidState()} to retrieve user validity information. Please use
-   * {@link UserDetail#isDeletedState()} to retrieve user deletion information. Please use
-   * {@link UserDetail#isBlockedState()} to retrieve user blocked information. Please use
-   * {@link UserDetail#isExpiredState()} to retrieve user expiration information. This method
-   * returns the stored state information but not the functional information.
+   * Please use {@link UserDetail#isValidState()} to retrieve user validity information.
+   * Please use {@link UserDetail#isDeletedState()} to retrieve user deletion information.
+   * Please use {@link UserDetail#isBlockedState()} to retrieve user blocked information.
+   * Please use {@link UserDetail#isDeactivatedState()} to retrieve user deactivated information.
+   * Please use {@link UserDetail#isExpiredState()} to retrieve user expiration information.
+   * This method returns the stored state information but not the functional information.
    *
    * @return the state of the user (account)
    */
@@ -552,6 +568,24 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return UserAccessLevel.GUEST.equals(accessLevel);
   }
 
+  public boolean isAccessUnknown() {
+    return UserAccessLevel.UNKNOWN.equals(accessLevel);
+  }
+
+  /**
+   * This method indicates if the user is activated. The returned value is a combination of
+   * following method call result :
+   * <ul>
+   * <li>not {@link #isAnonymous()}</li>
+   * <li>and not {@link #isDeletedState()}</li>
+   * <li>and not {@link #isDeactivatedState()}</li>
+   * </ul>
+   * @return true id the user is an activated one, false otherwise.
+   */
+  public boolean isActivatedState() {
+    return !isAnonymous() && !isDeletedState() && !isDeactivatedState();
+  }
+
   /**
    * This method is the only one able to indicate the user validity state. Please do not use
    * {@link UserDetail#getState()} to retrieve user validity information.
@@ -560,7 +594,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    */
   public boolean isValidState() {
     return isAnonymous() || (!UserState.UNKNOWN.equals(state) && !isDeletedState()
-        && !isBlockedState() && !isExpiredState());
+        && !isBlockedState() && !isDeactivatedState() && !isExpiredState());
   }
 
   /**
@@ -584,6 +618,16 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * This method is the only one able to indicate the user deactivated state. Please do not use
+   * {@link UserDetail#getState()} to retrieve user deactivated information.
+   *
+   * @return
+   */
+  public boolean isDeactivatedState() {
+    return UserState.DEACTIVATED.equals(state);
+  }
+
+  /**
    * This method is the only one able to indicate the user expiration state. Please do not use
    * {@link UserDetail#getState()} to retrieve user expiration information.
    *
@@ -600,7 +644,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if he's the anonymous user.
    */
   public boolean isAnonymous() {
-    return getId().equals(getAnonymousUserId());
+    return getId() != null && getId().equals(getAnonymousUserId());
   }
 
   /**
@@ -765,6 +809,105 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * Gets the duration of the current user session since its last registered login date.
+   * @return the formatted duration of the current user session, or empty string if the user is not
+   * connected.
+   */
+  public String getDurationOfCurrentSession() {
+    if (isConnected()) {
+      return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
+    }
+    return "";
+  }
+
+  /**
+   * Indicates if the current user is in relation with, or invited by, a user represented by the
+   * given identifier.
+   * @param userId the identifier of the user which the current user is potentially in relation
+   * with or invited by.
+   * @return true if the current user is in relation with, or invited by, the user represented by
+   * the given identifier, false otherwise.
+   */
+  public boolean isInRelationWithOrInvitedBy(String userId) {
+    RelationShipService relation = new RelationShipService();
+    InvitationService invitation = new InvitationService();
+    try {
+      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId())) ||
+          (invitation.getInvitation(Integer.parseInt(userId), Integer.parseInt(getId())) != null);
+    } catch (Exception e) {
+      SilverTrace.warn("admin", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
+    }
+    return false;
+  }
+
+  /**
+   * Indicates if a limitation exists about the number of receivers the user can notify manually.
+   * @return true if the limitation exists, false otherwise.
+   */
+  public boolean isUserManualNotificationUserReceiverLimit() {
+    return getUserManualNotificationUserReceiverLimitValue() > 0;
+  }
+
+  /**
+   * Gets the maximum user receivers the user can notify manually.
+   * @return the maximum user receivers the user can notify manually. If the value is not greater
+   * than 0, the user is not limited.
+   */
+  public int getUserManualNotificationUserReceiverLimitValue() {
+    int limit = 0;
+    if (isUserManualNotificationRecipientLimitEnabled() && (isAccessUser() || isAccessGuest() ||
+        isAnonymous() || isAccessUnknown())) {
+      if (!isAnonymous() && !isAccessUnknown() && getNotifManualReceiverLimit() != null) {
+        limit = getNotifManualReceiverLimit();
+      } else {
+        limit = getUserManualNotificationRecipientLimit();
+      }
+    }
+    return limit;
+  }
+
+  /**
+   * Sets the maximum user receivers the user can notify manually.
+   * If the given value is:
+   * <ul>
+   * <li>null or less than/equal to -1 or equal to the default server limitation value, then it is
+   * considered that the default server value will be taken into account</li>
+   * <li>greater than or equal to 0, then the user has a specific limitation set</li>
+   * </ul>
+   * The value is persisted only if the user has USER or GUEST access right and if the limitation
+   * is enabled at server level.
+   * @param limit the maximum user receivers the user can notify manually.
+   */
+  public void setUserManualNotificationUserReceiverLimit(Integer limit) {
+    if (isUserManualNotificationRecipientLimitEnabled() && (isAccessUser() || isAccessGuest())) {
+      if (limit != null && (limit <= -1 || limit == getUserManualNotificationRecipientLimit())) {
+        limit = null;
+      }
+      setNotifManualReceiverLimit(limit);
+    }
+  }
+
+  /**
+   * Sets the maximum user receivers the user can notify manually from the persistence
+   * context.<br/>
+   * This method must only be used be the administration persistence services.
+   * @param notifManualReceiverLimit the maximum user receivers the user can notify manually from
+   * the persistence context.
+   */
+  public void setNotifManualReceiverLimit(final Integer notifManualReceiverLimit) {
+    this.notifManualReceiverLimit = notifManualReceiverLimit;
+  }
+
+  /*
+   * Gets the maximum user receivers the user can notify manually from the persistence context.<br/>
+   * This method must only be used be the administration persistence services.
+   * @return the maximum user receivers the user can notify manually from the persistence context.
+   */
+  public Integer getNotifManualReceiverLimit() {
+    return notifManualReceiverLimit;
+  }
+
+  /**
    * Gets the unique identifier of the anonymous user as set in the general look properties.
    *
    * @return the anonymous user identifier.
@@ -774,6 +917,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   protected static OrganisationController getOrganisationController() {
-    return OrganisationControllerFactory.getFactory().getOrganisationController();
+    return OrganisationControllerFactory.getOrganisationController();
   }
 }

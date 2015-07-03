@@ -23,19 +23,7 @@ package com.silverpeas.authentication;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
@@ -51,6 +39,18 @@ import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -69,6 +69,7 @@ public class AuthenticationServlet extends HttpServlet {
   private static final String SSO_UNEXISTANT_USER_ACCOUNT = "Error_SsoOnUnexistantUserAccount";
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
+  private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
@@ -105,7 +106,7 @@ public class AuthenticationServlet extends HttpServlet {
         .withAsDomainId(domainId);
 
     String authenticationKey = authenticate(request, authenticationParameters, domainId);
-    String url;
+    String url = "";
 
     // Verify if the user can try again to login.
     UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier
@@ -158,17 +159,42 @@ public class AuthenticationServlet extends HttpServlet {
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
-      if ("Error_1".equals(authenticationKey)) {
+      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey) || 
+          AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
         try {
           if (userCanTryAgainToLoginVerifier.isActivated()) {
             storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
                 securedAccess);
             storeDomain(servletResponse, domainId, securedAccess);
           }
-          url = userCanTryAgainToLoginVerifier.verify()
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
+            url = userCanTryAgainToLoginVerifier.verify()
               .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+            url = userCanTryAgainToLoginVerifier.verify()
+                .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN);
+          }
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
           url = userCanTryAgainToLoginVerifier.getErrorDestination();
+        }
+      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey) ||
+          UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(authenticationKey)) {
+        if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
+            userCanTryAgainToLoginVerifier.getUser().getId())) {
+          // If user can try again to login verifier is activated or if the user has been found
+          // from credential, the login and the domain are stored
+          storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
+              securedAccess);
+          storeDomain(servletResponse, domainId, securedAccess);
+          url = AuthenticationUserVerifierFactory
+              .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
+              .getErrorDestination();
+        } else {
+          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(authenticationKey)) {
+            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(authenticationKey)) {
+            url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD_DOMAIN;
+          }
         }
       } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)) {
         String allowPasswordChange = (String) session.getAttribute(
@@ -203,19 +229,6 @@ public class AuthenticationServlet extends HttpServlet {
             .getDestinationOnFirstLogin(request);
         forward(request, servletResponse, url);
         return;
-      } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)) {
-        if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
-            userCanTryAgainToLoginVerifier.getUser().getId())) {
-          // If user can try again to login verifier is activated or if the user has been found
-          // from credential, the login and the domain are stored
-          storeLogin(servletResponse, isNewEncryptMode, authenticationParameters.getLogin(),
-              securedAccess);
-          storeDomain(servletResponse, domainId, securedAccess);
-          url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
-              .getErrorDestination();
-        } else {
-          url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
-        }
       } else if (authenticationParameters.isSsoMode()) {
         // User has been successfully authenticated on AD, but he has no user account on Silverpeas
         // -> login / domain id can be stored
@@ -227,9 +240,8 @@ public class AuthenticationServlet extends HttpServlet {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
       }
     }
-    servletResponse.sendRedirect(servletResponse.encodeRedirectURL(URLManager.getFullApplicationURL(
-        request)
-        + url));
+    servletResponse.sendRedirect(
+        servletResponse.encodeRedirectURL(URLManager.getFullApplicationURL(request) + url));
   }
 
   /**

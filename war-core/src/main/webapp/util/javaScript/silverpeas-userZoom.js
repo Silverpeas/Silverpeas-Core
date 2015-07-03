@@ -103,6 +103,7 @@
   };
 
   var currentTarget = null;
+  var settingHandlersDone = false;
 
   /**
    * Open a new WEB page into another browser window.
@@ -167,12 +168,56 @@
   }
 
   /**
-   * Computes the relative position of the tooltip with the specified target.
+   * Adjusts the position of the given tooltip associated to the specified target.
    */
-  function positionBetween(tooltip, target) {
+  function __adjustingPositions(tooltip, target) {
+    var picto = $('.userzoom-infoConnection img', target);
+    var tooltipEdgeXOffset = __getCachedArrowCss("right") + picto.width();
+    var tooltipEdgeYOffset = __getCachedArrowCss("height");
+    tooltip.position({
+      of : target,
+      at : 'right-' + tooltipEdgeXOffset + ' bottom+' + tooltipEdgeYOffset,
+      my : 'left top',
+      collision : 'flip'
+    });
     var targetPosition = target.offset(), tooltipPosition = tooltip.offset();
     var position = (targetPosition.top > tooltipPosition.top ? 'above' : 'below');
-    return position + (targetPosition.left > tooltipPosition.left ? ' right' : ' left');
+    var isTooltipArrowOnRight = targetPosition.left > tooltipPosition.left;
+    var toolTipClass = position + (isTooltipArrowOnRight ? ' right' : ' left');
+    if (isTooltipArrowOnRight) {
+      var paddingAndMarginLeftOffset = eval(target.css('padding-left').replace(/[^0-9]/g, '')) +
+          eval(target.css('margin-left').replace(/[^0-9]/g, ''));
+      tooltip.position({
+        of : target,
+        at : 'left bottom+' + tooltipEdgeYOffset,
+        my : 'right+' + (tooltipEdgeXOffset + paddingAndMarginLeftOffset) + ' top',
+        collision : 'flip'
+      });
+    }
+    tooltip.addClass(toolTipClass);
+  }
+
+  /**
+   * Gets the arrow X offset (so css value can be changed... awesome)
+   * @return {*}
+   * @private
+   */
+  function __getCachedArrowCss(css) {
+    var $dataContainer = $(document);
+    var dataCssKey = 'tooltip-arrow-' + css + '-value';
+    var cachedArrowCssValue = $dataContainer.data(dataCssKey);
+    if (typeof cachedArrowCssValue === 'undefined') {
+      try {
+        var $arrow = $('<div>', {"class" : "userzoom-tooltip-arrow", "style" : "display:none"});
+        var $hiddenForComputing = $('<div>', {"class" : "above"}).append($arrow);
+        $(document.body).append($hiddenForComputing);
+        cachedArrowCssValue = $arrow.css(css).replace(/[^0-9]/g, '');
+      } catch (e) {
+        cachedArrowCssValue = css === 'right' ? 30 : 7;
+      }
+      $dataContainer.data(dataCssKey, cachedArrowCssValue);
+    }
+    return eval(cachedArrowCssValue);
   }
 
   /**
@@ -203,11 +248,64 @@
               profile.status !== undefined && profile.connected !== null && profile.connected !== undefined)) {
         User.get(user.id).then(function(theUser) {
           profile = theUser;
-          render($this, profile);
+          if (!profile.deletedState && !profile.deactivatedState) {
+            render($this, profile);
+          }
         });
       }
     });
   };
+
+  /**
+   * Animation of the target that is hovered.
+   * @param target
+   * @param isIn
+   * @private
+   */
+  function __animate(target, isIn) {
+    if (typeof isIn === 'undefined') {
+      isIn = true;
+    }
+    var nextState = isIn ? {opacity : "-=0.5"} : {opacity : "+=0.5"};
+    var currentDisplayed = ($.userZoom.target && $.userZoom.target === target);
+    if (currentDisplayed && isIn) {
+      return;
+    }
+    target.animate(nextState, 250, function() {
+      if (__isRenderingInProgress(target) || isIn) {
+        __animate(target, !isIn);
+      }
+    });
+  }
+
+  /**
+   * Marking that the rendering of the popin associated to the given target is in progress.
+   * @param target the aimed target.
+   * @private
+   */
+  function __markRenderingInProgress(target) {
+    target.data('rendering_in_progress', true);
+  }
+
+  /**
+   * Marking that the rendering of the popin associated to the given target is done (diplayed or not).
+   * @param target the aimed target.
+   * @private
+   */
+  function __markRenderingDone(target) {
+    target.data('rendering_in_progress', false);
+  }
+
+  /**
+   * Indicates id the rendering of the popin associated to the given target is in progress.
+   * @param target the aimed target.
+   * @return {boolean|*}
+   * @private
+   */
+  function __isRenderingInProgress(target) {
+    var isRenderInProgress = target.data('rendering_in_progress');
+    return (typeof isRenderInProgress !== 'undefined' && isRenderInProgress);
+  }
 
   /**
    * Renders into the specified target a userZoom tooltip for the specified user.
@@ -218,28 +316,47 @@
   function render(target, user) {
     var status = connectionStatus(user);
     target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).hover(function() {
+      if (__isRenderingInProgress(target)) {
+        return;
+      }
+      __markRenderingInProgress(target);
+      __animate(target);
       setTimeout(function() {
-        if (currentTarget !== target[0] || ($.userZoom.target && $.userZoom.target === target))
+        var $currentTarget = $(currentTarget);
+        if (!$(currentTarget).hasClass('userToZoom')) {
+         $currentTarget = $(currentTarget).parents("span.userToZoom");
+        }
+        if (!__isRenderingInProgress(target) || $currentTarget[0] !== target[0] ||
+            ($.userZoom.target && $.userZoom.target === target)) {
+          __markRenderingDone(target);
           return;
+        }
         user.relationships({name: $.userZoom.currentUser.lastName}).then(function(contacts) {
           $.userZoom.currentUser.onMySentInvitations(function() {
             var element = tooltip(target, user);
             $.userZoom.set(target, element);
+            __markRenderingDone(target);
           });
         });
-      }, 1500);
+      }, 750);
+    }, function(){
+      __markRenderingDone(target);
     });
-    $(document).mousedown(function(event) {
-      if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
-        var target = $(event.target);
-        if (!target.hasClass('userzoom-tooltip') && target.parents('.userzoom-tooltip').length === 0) {
-          $.userZoom.clear();
+    if (!settingHandlersDone) {
+      $(document).mousedown(function(event) {
+        if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
+          var target = $(event.target);
+          if (!target.hasClass('userzoom-tooltip') &&
+              target.parents('.userzoom-tooltip').length === 0) {
+            $.userZoom.clear();
+          }
         }
-      }
-    });
-    $(document).mousemove(function(event) {
-      currentTarget = event.target;
-    });
+      });
+      $(document).mousemove(function(event) {
+        currentTarget = event.target;
+      });
+      settingHandlersDone = true;
+    }
   }
 
   /**
@@ -262,32 +379,28 @@
                     append($('<div>').addClass('userzoom-tooltip-info-infoConnection').append(connectionStatus(user))).
                     append($('<div>').addClass('userzoom-tooltip-info-status').append(user.status))).
             append(interactionWith(user)).
-            appendTo($(document.body)).
-            position({
-              of: target,
-              at: 'right bottom',
-              my: 'left top',
-              offset: '-50 7',
-              collision: 'flip'
-            });
-    userinfo.addClass(positionBetween(userinfo, target));
+            appendTo($(document.body));
+    __adjustingPositions(userinfo, target);
     return userinfo;
   }
 
 })(jQuery);
 
+function activateUserZoom() {
+  jQuery(document).ready(function() {
+    jQuery('.userToZoom').each(function() {
+      var $this = jQuery(this);
+      if (!$this.data('userZoom')) {
+        $this.userZoom({
+          id : $this.attr('rel')
+        });
+      }
+    });
+  });
+}
 
 /**
  * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
  * javascript plugin.
  */
-jQuery(document).ready(function() {
-  jQuery('.userToZoom').each(function() {
-    var $this = jQuery(this);
-    if (!$this.data('userZoom')) {
-      $this.userZoom({
-        id: $this.attr('rel')
-      });
-    }
-  });
-});
+activateUserZoom();

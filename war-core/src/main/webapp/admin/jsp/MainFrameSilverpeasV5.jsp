@@ -52,7 +52,7 @@ String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId
 ResourceLocator generalMessage			= new ResourceLocator("org.silverpeas.multilang.generalMultilang", language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
-boolean			login					= false;
+boolean			login					= StringUtil.getBooleanValue(request.getParameter("Login"));
 
 if (m_MainSessionCtrl == null) {
 %>
@@ -63,7 +63,7 @@ if (m_MainSessionCtrl == null) {
 } else {
 	LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
 	if (helper == null) {
-		helper = new LookSilverpeasV5Helper(m_MainSessionCtrl, gef.getFavoriteLookSettings());
+		helper = new LookSilverpeasV5Helper(session);
 		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
 
 		session.setAttribute("Silverpeas_LookHelper", helper);

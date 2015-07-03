@@ -24,47 +24,21 @@
 
 package com.silverpeas.directory.model;
 
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 
-import java.util.Collection;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * A user as a member of something (silverpeas?).
+ * @deprecated use directly UserDetail.
  */
 public class Member {
 
   private UserDetail userDetail = null;
-  private boolean connected = false;
-  private String duration;
-
-  private void refreshStatus() {
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
-    Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
-    for (SessionInfo varSi : sessionInfos) {
-      if (varSi.getUserDetail().equals(userDetail)) {
-
-        this.duration =
-            DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getOpeningTimestamp());
-        this.connected = true;
-        return;
-      }
-    }
-    this.duration = "";
-    this.connected = false;
-  }
 
   public boolean isConnected() {
-    return connected;
+    return userDetail.isConnected();
   }
 
   public UserDetail getUserDetail() {
@@ -73,7 +47,6 @@ public class Member {
 
   public Member(UserDetail ud) {
     userDetail = ud;
-    refreshStatus();
   }
 
   public UserAccessLevel getAccessLevel() {
@@ -97,19 +70,7 @@ public class Member {
   }
 
   public String getDuration() {
-    return duration;
-  }
-
-  public boolean isRelationOrInvitation(String myId) {
-    RelationShipService relation = new RelationShipService();
-    InvitationService invitation = new InvitationService();
-    try {
-      return relation.isInRelationShip(Integer.parseInt(myId), Integer.parseInt(getId())) ||
-          (invitation.getInvitation(Integer.parseInt(myId), Integer.parseInt(getId())) != null);
-    } catch (Exception e) {
-      SilverTrace.warn("directory", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
-    }
-    return false;
+    return getUserDetail().getDurationOfCurrentSession();
   }
 
   public String getStatus() {

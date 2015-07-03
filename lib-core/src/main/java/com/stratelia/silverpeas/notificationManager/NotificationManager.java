@@ -29,10 +29,10 @@ package com.stratelia.silverpeas.notificationManager;
  * @author Eric BURGEL
  * @version 1.0
  */
+
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.notificationManager.model.NotifAddressRow;
@@ -57,6 +57,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.lang.StringUtils;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,9 +66,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration
@@ -735,9 +734,8 @@ public class NotificationManager extends AbstractNotification
       // TODO : plusieurs "nd" à créer et à ajouter au "ns"
       nd = createNotificationData(params, Integer.toString(aUserId), schema);
       ns.addNotification(nd);
-      SilverTrace.info("notificationManager",
-          "NotificationManager.testNotifAddress()", "root.MSG_GEN_EXIT_METHOD",
-          "Test Notification Done !!!");
+      SilverTrace.info("notificationManager", "NotificationManager.testNotifAddress()",
+          "root.MSG_GEN_EXIT_METHOD", "Test Notification Done !!!");
     } catch (UtilException e) {
       throw new NotificationManagerException(
           "NotificationManager.testNotifAddress()", SilverpeasException.ERROR,
@@ -758,7 +756,6 @@ public class NotificationManager extends AbstractNotification
   /**
    * Method declaration
    * @param params
-   * @param notifRecips
    * @throws NotificationManagerException
    * @see
    */
@@ -768,8 +765,8 @@ public class NotificationManager extends AbstractNotification
     // First Tests if the user is a guest
     // Then notify himself that he cant notify anyone
     if (UserAccessLevel.GUEST.equals(getUserAccessLevel(params.iFromUserId))) {
-      params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "\n"
-          + params.sTitle + "\n\n"
+      params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "<br/>"
+          + params.sTitle + "<br/><br/>"
           + m_Multilang.getString("guestNotAllowedBody2");
       params.sTitle = m_Multilang.getString("guestNotAllowedTitle");
       params.iMessagePriority = NotificationParameters.NORMAL;
@@ -864,11 +861,10 @@ public class NotificationManager extends AbstractNotification
   }
 
   /**
-   * Method declaration
-   * @param groupId
-   * @return
+   * Gets the user recipients from a group specified by a given identifier. User that has not an
+   * activated state is not taken into account, so this kind of user is not included into the
+   * returned container.
    * @throws NotificationManagerException
-   * @see
    */
   public Collection<UserRecipient> getUsersFromGroup(String groupId) throws
       NotificationManagerException {
@@ -876,7 +872,9 @@ public class NotificationManager extends AbstractNotification
       UserDetail[] users = AdminReference.getAdminService().getAllUsersOfGroup(groupId);
       List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);
       for (UserDetail user : users) {
-        recipients.add(new UserRecipient(user));
+        if (user.isActivatedState()) {
+          recipients.add(new UserRecipient(user));
+        }
       }
       return recipients;
     } catch (AdminException e) {
@@ -1346,7 +1344,7 @@ public class NotificationManager extends AbstractNotification
       theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
-          .append("\n\n");
+          .append("<br/><br/>");
     }
 
     String senderName;
@@ -1380,18 +1378,18 @@ public class NotificationManager extends AbstractNotification
       theExtraParams.put(NotificationParameterNames.FROM, senderName);
     } else {
       theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append(
-          "\n\n");
+          "<br/><br/>");
     }
 
     // Set Url parameter
-    if (params.sURL != null && params.sURL.length() > 0) {
+    if (StringUtil.isDefined(params.sURL)) {
       theExtraParams.put(NotificationParameterNames.URL, (params.sURL.startsWith("http")
           ? params.sURL : getUserAutoRedirectURL(aUserId,
               params.sURL)));
     }
 
     // Set Source parameter
-    if (params.sSource != null && params.sSource.length() > 0) {
+    if (StringUtil.isDefined(params.sSource)) {
       theExtraParams.put(NotificationParameterNames.SOURCE, params.sSource);
     } else {
       if (params.iComponentInstance != -1) {
@@ -1409,7 +1407,7 @@ public class NotificationManager extends AbstractNotification
     }
 
     // Set sessionId parameter
-    if (params.sSessionId != null && params.sSessionId.length() > 0) {
+    if (StringUtil.isDefined(params.sSessionId)) {
       theExtraParams.put(NotificationParameterNames.SESSIONID,
           params.sSessionId);
     }
@@ -1449,7 +1447,6 @@ public class NotificationManager extends AbstractNotification
   /**
    * Method declaration
    * @param params
-   * @param aUserId
    * @param schema
    * @return
    * @throws UtilException
@@ -1480,7 +1477,7 @@ public class NotificationManager extends AbstractNotification
       theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
-          .append("\n\n");
+          .append("<br/><br/>");
     }
 
     String senderName;
@@ -1504,6 +1501,11 @@ public class NotificationManager extends AbstractNotification
     SilverTrace.info("notificationManager", "NotificationManager.createNotificationData()",
         "root.MSG_GEN_PARAM_VALUE", "nd.getUserEmail(params.iFromUserId) ="
             + getUserEmail(params.iFromUserId));
+
+    if (StringUtil.isDefined(params.sURL)) {
+      theExtraParams.put(NotificationParameterNames.URL, params.sURL);
+      theExtraParams.put(NotificationParameterNames.LINKLABEL, params.sLinkLabel);
+    }
 
     // Set Source parameter
     if (params.sSource != null && params.sSource.length() > 0) {
@@ -1595,7 +1597,7 @@ public class NotificationManager extends AbstractNotification
         theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
       } else if (params.iFromUserId < 0) {
         theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle).
-            append("\n\n");
+            append("<br/><br/>");
       }
 
       String senderName;
@@ -1629,16 +1631,18 @@ public class NotificationManager extends AbstractNotification
         theExtraParams.put(NotificationParameterNames.FROM, senderName);
       } else {
         theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append(
-            "\n\n");
+            "<br/><br/>");
       }
 
       // Set Url parameter
-      if (params.sURL != null && params.sURL.length() > 0) {
+      theExtraParams.put(NotificationParameterNames.SERVERURL, getUserAutoRedirectSilverpeasServerURL(aUserId));
+      if (StringUtil.isDefined(params.sURL)) {
         theExtraParams.put(NotificationParameterNames.URL, computeURL(aUserId, params.sURL));
+        theExtraParams.put(NotificationParameterNames.LINKLABEL, params.sLinkLabel);
       }
 
       // Set Source parameter
-      if (params.sSource != null && params.sSource.length() > 0) {
+      if (StringUtil.isDefined(params.sSource)) {
         theExtraParams.put(NotificationParameterNames.SOURCE, params.sSource);
       } else {
         if (params.iComponentInstance != -1) {
@@ -1662,7 +1666,7 @@ public class NotificationManager extends AbstractNotification
       }
 
       // Set sessionId parameter
-      if (params.sSessionId != null && params.sSessionId.length() > 0) {
+      if (StringUtil.isDefined(params.sSessionId)) {
         theExtraParams.put(NotificationParameterNames.SESSIONID,
             params.sSessionId);
       }
@@ -1675,7 +1679,7 @@ public class NotificationManager extends AbstractNotification
       if (params.sLanguage != null) {
         theExtraParams.put(NotificationParameterNames.LANGUAGE, params.sLanguage);
       }
-
+    
       notificationData.setSenderName(senderName);
 
       if (theExtraParams.size() > 0) {
@@ -1750,52 +1754,16 @@ public class NotificationManager extends AbstractNotification
   }
 
   /**
-   * Is the multichannel notification supported?
-   * @return true if notifications can be done through several channels, false otherwise.
+   * @see NotificationManagerSettings#isMultiChannelNotificationEnabled()
    */
   public boolean isMultiChannelNotification() {
-    return "true"
-        .equalsIgnoreCase(getNotificationResources().getString("multiChannelNotification"));
+    return NotificationManagerSettings.isMultiChannelNotificationEnabled();
   }
 
   /**
-   * Gets the addresses as default notification channels. If the multi channel isn't supported, then
-   * returns only one among the channels set up as default. In the case no default channels are set
-   * up, then the previous behaviour is used; the SMTP is used as default channel.
-   * @return a set of default notification channels.
+   * @see NotificationManagerSettings#getDefaultChannels()
    */
   protected List<Integer> getDefaultNotificationAddresses() {
-    String defaultChannels = getNotificationResources().getString("notif.defaultChannels");
-    boolean isMultiChannelSupported = isMultiChannelNotification();
-    String[] channels = (defaultChannels == null ? new String[0] : defaultChannels.split("[ ]+"));
-    List<Integer> mediaIds = new ArrayList<Integer>(channels.length + 1);
-    for (String channel : channels) {
-      if ("BASIC_POPUP".equalsIgnoreCase(channel) && !mediaIds.contains(
-          NotificationParameters.ADDRESS_BASIC_POPUP)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_POPUP);
-      } else if ("BASIC_REMOVE".equalsIgnoreCase(channel) && !mediaIds.contains(
-          NotificationParameters.ADDRESS_BASIC_REMOVE)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_REMOVE);
-      } else if ("BASIC_SILVERMAIL".equalsIgnoreCase(channel) && !mediaIds.contains(
-          NotificationParameters.ADDRESS_BASIC_SILVERMAIL)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_SILVERMAIL);
-      } else if ("BASIC_SMTP_MAIL".equalsIgnoreCase(channel) && !mediaIds.contains(
-          NotificationParameters.ADDRESS_BASIC_SMTP_MAIL)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL);
-      } else if ("BASIC_SERVER".equalsIgnoreCase(channel) && !mediaIds.contains(
-          NotificationParameters.ADDRESS_BASIC_SERVER)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_SERVER);
-      } else if ("BASIC_COMMUNICATION_USER".equalsIgnoreCase(channel) && !mediaIds.contains(
-          NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER);
-      }
-      if (!(isMultiChannelSupported || mediaIds.isEmpty())) {
-        break;
-      }
-    }
-    if (mediaIds.isEmpty()) {
-      mediaIds.add(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL);
-    }
-    return mediaIds;
+    return NotificationManagerSettings.getDefaultChannels();
   }
 }

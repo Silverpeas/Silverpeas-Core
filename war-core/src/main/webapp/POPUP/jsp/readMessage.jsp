@@ -55,8 +55,10 @@
     <c:set var="popupMsgDate" value="${popupMsg.date}"/>
     <c:set var="popupMsgTime" value="${popupMsg.time}"/>
     <c:set var="popupMsgBody" value="${popupMsg.body}"/>
+    <c:set var="popupMsgUrl" value="${popupMsg.url}"/>
     <c:set var="senderId" value="${popupMsg.senderId}"/>
-    <c:set var="senderName" value="${popupMsg.senderName}"/>
+    <c:set var="senderName" value="${silfn:defaultEmptyString(popupMsg.senderName)}"/>
+    <c:set var="popupMsgSource" value="${(popupMsg.source eq popupMsg.senderName) ? '' : popupMsg.source}"/>
     <c:set var="answerAllowed" value="${popupMsg.answerAllowed}"/>
 
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -65,11 +67,19 @@
       <title><fmt:message key="GML.popupTitle"/></title>
       <view:looknfeel/>
       <script type="text/javascript">
+        var actionWindow = window.opener.top;
         window.opener.location =
             "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID=${popupMsgId}";
         function closeWindow() {
           window.close();
         }
+
+        <c:if test="${!empty popupMsgUrl}">
+        function goTo() {
+          actionWindow.location = "<c:url value="${popupMsgUrl}" />";
+          window.close();
+        }
+        </c:if>
 
         function answerMessage() {
           document.popupForm.submit();
@@ -82,14 +92,23 @@
     </head>
     <body>
     <view:browseBar path="<fmt:message key='message' />"/>
-    <view:window>
+    <view:window popup="true" browseBarVisible="false">
     <div class="popup-read-notification">
     <div class="entete">
-        <div class="from">
-          <span class="label"><fmt:message key="from" /> : </span>
-          <c:out value="${senderName}" /></div>
-        <div class="date">${silfn:formatStringDate(popupMsgDate, language)} ${popupMsgTime}</div>
+      <div class="from">
+        <c:if test="${!empty senderName}">
+        <span class="label"><fmt:message key="from" /> : </span>
+        </c:if>
+        <c:out value="${senderName}" />${silfn:isDefined(senderName) ? '' : '&#160;'}
       </div>
+      <div class="date">${silfn:formatStringDate(popupMsgDate, language)} ${popupMsgTime}</div>
+      </div>
+      <c:if test="${!empty popupMsgSource}">
+        <div class="source"> <span class="label"><fmt:message key="source" /> :</span> <c:out value="${popupMsgSource}" /> </div>
+      </c:if>
+      <c:if test="${!empty popupMsgUrl}">
+        <div class="link"> <a href="javaScript:goTo();"><fmt:message key="popup.link.text" /></a> </div>
+      </c:if>
       <div class="content-notification">
         ${popupMsgBody}
       </div>

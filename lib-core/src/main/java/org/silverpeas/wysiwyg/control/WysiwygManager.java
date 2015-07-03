@@ -656,7 +656,7 @@ public class WysiwygManager {
    */
   public String load(String componentId, String objectId, String language) {
     String content = internalLoad(componentId, objectId, language);
-    if (I18NHelper.isI18nActivated() && content != null && StringUtil.isNotDefined(content)) {
+    if (I18NHelper.isI18nContentEnabled() && content != null && StringUtil.isNotDefined(content)) {
       List<String> languages = new ArrayList<String>(I18NHelper.getAllSupportedLanguages());
       languages.remove(language);
       for (String lang : languages) {

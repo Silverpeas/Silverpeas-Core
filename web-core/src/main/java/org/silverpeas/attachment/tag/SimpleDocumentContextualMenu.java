@@ -38,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import static com.silverpeas.util.StringUtil.newline;
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 /**
@@ -48,7 +49,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   private SimpleDocument attachment;
   private boolean useXMLForm;
   private boolean useWebDAV;
-  private String contentLanguage;
   private boolean showMenuNotif;
   private boolean useContextualMenu;
 
@@ -62,10 +62,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   public void setUseWebDAV(boolean useWebDAV) {
     this.useWebDAV = useWebDAV;
-  }
-
-  public void setContentLanguage(String lang) {
-    this.contentLanguage = lang;
   }
 
   public void setShowMenuNotif(boolean showMenuNotif) {
@@ -93,7 +89,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       String httpServerBase =
           URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
       pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
-          mainSessionController.getUserId(), contentLanguage, favoriteLanguage, messages,
+          mainSessionController.getUserId(), favoriteLanguage, messages,
           httpServerBase, showMenuNotif, useContextualMenu));
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
@@ -121,10 +117,9 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
-      String userId, String contentLanguage, final String userLanguage, ResourceLocator resources,
+      String userId, final String userLanguage, ResourceLocator resources,
       String httpServerBase, boolean showMenuNotif, boolean useContextualMenu)
       throws UnsupportedEncodingException {
-    String language = I18NHelper.checkLanguage(contentLanguage);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(2048);
@@ -138,7 +133,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
     String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
     String webdavContentEditionLanguageLabel = "";
-    if (I18NHelper.isI18nActivated()) {
+    if (I18NHelper.isI18nContentEnabled()) {
       webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
           .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
               attachment.getLanguage()), userLanguage);
@@ -151,9 +146,11 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
-    prepareMenuItem(builder, "updateAttachment('" + attachment.getId() + "','" + language + "');",
+    prepareMenuItem(builder,
+        "updateAttachment('" + attachment.getId() + "','" + attachment.getLanguage() + "');",
         resources.getString("GML.modify"));
-    prepareMenuItem(builder, "EditXmlForm('" + attachment.getId() + "','" + language + "');",
+    prepareMenuItem(builder,
+        "EditXmlForm('" + attachment.getId() + "','" + attachment.getLanguage() + "');",
         resources.getString("attachment.xmlForm.Edit"));
     String message = resources.getString("attachment.switchState.toVersioned");
     if (attachment.isVersioned()) {
@@ -223,7 +220,9 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     }
     builder.append(configureFileSharing(attachmentId,
         !attachment.isSharingAllowedForRolesFrom(UserDetail.getById(userId))));
-    builder.append(configureSwitchState(attachmentId, attachment.isReadOnly()));
+    builder.append(configureSwitchState(attachmentId, (!attachment.isVersioned() &&
+        isComponentPublicationAlwaysVisible(attachment.getInstanceId())) ||
+        attachment.isReadOnly()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
     builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
@@ -243,6 +242,18 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("});");
     builder.append("</script>");
     return builder.toString();
+  }
+
+  /**
+   * Indicates if the publication are always visible for the component instance represented by the
+   * given identifier.
+   * @param componentInstanceId the component instance identifier that must be verified.
+   * @return true if publication are always visible.
+   */
+  public boolean isComponentPublicationAlwaysVisible(String componentInstanceId) {
+    return StringUtil.getBooleanValue(
+        getAdminService().getComponentParameterValue(componentInstanceId,
+            "publicationAlwaysVisible"));
   }
 
   StringBuilder prepareMenuItem(StringBuilder buffer, String javascript, String label) {

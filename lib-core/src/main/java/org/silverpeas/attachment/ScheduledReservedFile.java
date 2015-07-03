@@ -25,6 +25,7 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -36,6 +37,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.Link;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -74,12 +76,10 @@ public class ScheduledReservedFile implements SchedulerEventListener {
 
     try {
       ResourceLocator message =
-          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment", "fr");
-      ResourceLocator message_en =
-          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment", "en");
+          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment",
+              DisplayI18NHelper.getDefaultLanguage());
 
       StringBuilder messageBody = new StringBuilder();
-      StringBuilder messageBody_en = new StringBuilder();
 
       // 1. Looking for expired documents
       Date expiryDate;
@@ -93,18 +93,22 @@ public class ScheduledReservedFile implements SchedulerEventListener {
       Collection<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
           listExpiringDocuments(expiryDate, null);
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
+          "root.MSG_GEN_PARAM_VALUE", "Attachments = " + documents.size());
 
       for (SimpleDocument document : documents) {
-        messageBody.append(message.getString("attachment.notifName")).append(" '").append(document.
-            getFilename()).append("'");
-        messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").
-            append(document.getFilename()).append("'");
+        String date = getExpiryDate(document);
+        String subject = createMessageSubject(message, false, false);
+        messageBody.append(message.getString("attachment.notifName")).append(" '")
+            .append(document.
+                getFilename()).append("'");
         SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        createMessage(message, messageBody, message_en, messageBody_en, document, false, false);
+        String body = createMessageBody(message, messageBody, date, false, false);
+        NotificationMetaData notifMetaData =
+            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+
+        createMessage(date, notifMetaData, document, false, false);
         messageBody = new StringBuilder();
-        messageBody_en = new StringBuilder();
       }
 
       // 2. Looking for the documents that will be soon expired
@@ -121,18 +125,21 @@ public class ScheduledReservedFile implements SchedulerEventListener {
           "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
 
       messageBody = new StringBuilder();
-      messageBody_en = new StringBuilder();
 
       for (SimpleDocument document : documents) {
-        messageBody.append(message.getString("attachment.notifName")).append(" '").append(document.
-            getFilename()).append("' ");
-        messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").
-            append(document.getFilename()).append("' ");
+        String date = getExpiryDate(document);
+        String subject = createMessageSubject(message, true, false);
+        messageBody.append(message.getString("attachment.notifName")).append(" '")
+            .append(document.
+                getFilename()).append("'");
         SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        createMessage(message, messageBody, message_en, messageBody_en, document, true, false);
+        String body = createMessageBody(message, messageBody, date, true, false);
+        NotificationMetaData notifMetaData =
+            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+
+        createMessage(date, notifMetaData, document, true, false);
         messageBody = new StringBuilder();
-        messageBody_en = new StringBuilder();
       }
 
       // 3. Looking for the documents to unlock
@@ -150,18 +157,21 @@ public class ScheduledReservedFile implements SchedulerEventListener {
 
 
       messageBody = new StringBuilder();
-      messageBody_en = new StringBuilder();
 
       for (SimpleDocument document : documents) {
-        messageBody.append(message.getString("attachment.notifName")).append(" '").append(document.
-            getFilename()).append("'");
-        messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").
-            append(document.getFilename()).append("'");
+        String date = getExpiryDate(document);
+        String subject = createMessageSubject(message, false, true);
+        messageBody.append(message.getString("attachment.notifName")).append(" '")
+            .append(document.
+                getFilename()).append("'");
         SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
-        createMessage(message, messageBody, message_en, messageBody_en, document, false, true);
+        String body = createMessageBody(message, messageBody, date, false, true);
+        NotificationMetaData notifMetaData =
+            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+
+        createMessage(date, notifMetaData, document, false, true);
         messageBody = new StringBuilder();
-        messageBody_en = new StringBuilder();
 
         document.unlock();
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, false, false);
@@ -175,33 +185,47 @@ public class ScheduledReservedFile implements SchedulerEventListener {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void createMessage(ResourceLocator message, StringBuilder messageBody,
-      ResourceLocator message_en, StringBuilder messageBody_en, SimpleDocument document,
-      boolean alert, boolean lib) throws AttachmentException {
+  private String getExpiryDate(SimpleDocument document) {
     Calendar atDate = Calendar.getInstance();
     atDate.setTime(document.getExpiry());
     String day = "GML.jour" + atDate.get(Calendar.DAY_OF_WEEK);
     String month = "GML.mois" + atDate.get(Calendar.MONTH);
     String date = generalMessage.getString(day) + " " + atDate.get(Calendar.DATE) + " " +
         generalMessage.getString(month) + " " + atDate.get(Calendar.YEAR);
+    return date;
+  }
+
+  private void createMessageByLanguage(String date, String url, SimpleDocument document,
+      NotificationMetaData notifMetaData, boolean alert, boolean lib) throws AttachmentException {
+    for (String language : DisplayI18NHelper.getLanguages()) {
+      ResourceLocator message =
+          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment", language);
+      String subject = createMessageSubject(message, alert, lib);
+      StringBuilder messageBody = new StringBuilder();
+      messageBody.append(message.getString("attachment.notifName")).append(" '")
+          .append(document.
+              getFilename()).append("'");
+      String body = createMessageBody(message, messageBody, date, alert, lib);
+      notifMetaData.addLanguage(language, subject, body);
+      Link link = new Link(url, message.getString("attachment.notifLinkLabel"));
+      notifMetaData.setLink(link, language);
+    }
+  }
+
+  private void createMessage(String date,
+      NotificationMetaData notifMetaData, SimpleDocument document,
+      boolean alert, boolean lib) throws AttachmentException {
     SilverTrace
         .info("attachment", "ScheduledReservedFile.createMessage()", "root.MSG_GEN_EXIT_METHOD");
-    // french notifications
-    String subject = createMessageSubject(message, alert, lib);
-    String body = createMessageBody(message, messageBody, date, alert, lib);
 
-    // english notifications
-    String subject_en = createMessageSubject(message_en, alert, lib);
-    String body_en = createMessageBody(message_en, messageBody_en, date, alert, lib);
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-    notifMetaData.addLanguage("en", subject_en, body_en);
-    notifMetaData.addUserRecipient(new UserRecipient(document.getEditedBy()));
     String url = URLManager.getURL(null, null, document.getInstanceId()) + "GoToFilesTab?Id=" +
         document.getForeignId();
-    notifMetaData.setLink(url);
+
+    createMessageByLanguage(date, url, document, notifMetaData, alert, lib);
+
+    notifMetaData.addUserRecipient(new UserRecipient(document.getEditedBy()));
     notifMetaData.setComponentId(document.getInstanceId());
-    notifyUser(notifMetaData, document.getEditedBy(), document.getInstanceId());
+    notifyUser(notifMetaData, "-1", document.getInstanceId());
   }
 
   private String createMessageBody(ResourceLocator message, StringBuilder body, String date,

@@ -119,15 +119,13 @@ function logout()
 {
 	window.close();
 }
-setInterval("checkMessage();", 1000);
+setInterval(checkMessage, 1000);
 
 </script>
 
 </head>
-<body bgcolor="#FFFFFF" leftmargin="1" topmargin="1" marginwidth="1" marginheight="1" onLoad="init()">
-<%
-	out.println(window.printBefore());
-%>
+<body onLoad="init()">
+<view:window popup="true">
 <form method="get" action="javascript:sendMessage()" name="discussion" target="content">
 <table width="100%" height="100%" border="0" cellspacing="1" cellpadding="0">
 <tr>
@@ -144,7 +142,7 @@ setInterval("checkMessage();", 1000);
 <table width="100%" border="0" cellspacing="1" cellpadding="1" align="center">
 	<tr>
     	<td>
-  			<textarea rows="6" name="msg" id="txtMsg" cols="60" onkeydown="javascript:return checkSubmit(event);"></textarea>
+  			<textarea rows="6" name="msg" id="txtMsg" cols="60" onkeydown="checkSubmit(event);"></textarea>
         </td>
 		<td align="left">
 			<a href="javascript:onClick=sendMessage();"><img src="<%=resources.getIcon("communicationUser.chatroomSendMessage")%>" alt="<%=resources.getString("GML.validate")%>" title="<%=resources.getString("GML.validate")%>" border="0"></a>
@@ -153,8 +151,6 @@ setInterval("checkMessage();", 1000);
 	</tr>
 </table>
 </form>
-<%
- out.println(window.printAfter());
-%>
+</view:window>
 </body>
 </html>

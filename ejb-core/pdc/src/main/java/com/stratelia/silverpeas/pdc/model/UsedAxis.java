@@ -167,7 +167,7 @@ public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
   }
 
   public String _getAxisName(String language) {
-    if (!I18NHelper.isI18N || _axisHeader == null)
+    if (!I18NHelper.isI18nContentActivated || _axisHeader == null)
       return _getAxisName();
 
     return _axisHeader.getName(language);

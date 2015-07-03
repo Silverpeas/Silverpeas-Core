@@ -36,7 +36,7 @@ form {
 
 fieldset.skinFieldset {
 	position:relative;
-	margin:10px;
+	margin:0 10px  1%;
 	padding-bottom:15px;
 	background-color :#CCC;
 	border:1px solid #CCC;
@@ -60,8 +60,9 @@ fieldset.skinFieldset {
 	}
 
  :root *> .table {
-	height:10%;
-	}
+	height:8%; 
+	margin-bottom:1%;
+	}	
 
 .cell {
 	display:inline !ie;
@@ -78,8 +79,9 @@ fieldset.skinFieldset {
 * html .cell { width:49.4%; }
 
 .cell fieldset.skinFieldset{
-	height:80%;
-	}
+	height:99%;
+	padding: 0;
+}
 
 .skinFieldset label {
 	color:#444;
@@ -118,6 +120,11 @@ fieldset.skinFieldset {
 	padding:5px 3% 5px 0px;
 }
 
+.field.entireWidth {
+	width:97%;
+}
+
+
 label.txtlibform {
 padding-right:0;
 }
@@ -130,13 +137,14 @@ padding-right:0;
 	clear:both ;
 }
 
-.champs input, .champs select {
+.champs input, .champs select, .champs textarea {
 	width:90%;
 	margin:0;
 }
 
 .champs input[type="checkbox"] {
 	width: auto;
+	background-color:transparent;
 }
 
 #languageArea .champs select {
@@ -160,14 +168,16 @@ input.inputHour{
 	margin:0;
 }
 
-.champs input.checkbox, .champs input.radio {
+.champs input.checkbox, .champs input.radio,  .champs input[type="radio"]{
 	width:13px;
 	vertical-align:middle;
 	margin:0 5px 0 15px;
 	border:0;
+	background-color:transparent;
 }
 
-.champs input.checkbox:first-child, .champs input.radio:first-child {
+.champs input.checkbox:first-child, .champs input.radio:first-child,
+ .champs input.radio.newline{
 	margin-left:0;
 	border:0;
 }
@@ -233,3 +243,48 @@ input.inputHour{
 #send-notification #messageArea textarea {
   width:95%;
 }
+
+/**** notion de groupe de champs *****/
+.group-field {
+	clear:both;
+	list-style-type:none;
+	padding-top:0.5em
+}
+.group-field ul {
+	padding:0;
+	margin:0 0 0 5em;
+}
+.group-field  .group-field-name{
+	border-bottom:1px solid #ccc;
+	display:block;
+	text-align:left;
+	padding:0.5em 0;
+	margin-bottom:0.5em;
+	color:#1C94D4;
+}
+
+.group-field ul li:nth-child(odd){
+	clear:left;
+}
+
+fieldset.parameters {
+  clear:right;
+  margin-right:0;
+}
+
+.parameters legend {
+  background:transparent url('../icons/cog.png') 11px 0px no-repeat;
+}
+
+.parameters  .parameterInfo {
+    left: -17px;
+    position: absolute;
+    top: 7px;
+    width: 12px;
+}
+
+.group-field-description {
+	padding:0;
+	margin:0 0 0.5em;
+}
+

@@ -20,20 +20,17 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
-
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AbstractArrayPane implements ArrayPane {
 
@@ -45,7 +42,7 @@ public class AbstractArrayPane implements ArrayPane {
   private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
-  // private PageContext pageContext = null;
+  private String updateSortJavascriptCallback = null;
   private ServletRequest request = null;
   private HttpSession session = null;
   private int m_SortMode = 0;
@@ -58,7 +55,7 @@ public class AbstractArrayPane implements ArrayPane {
   /**
    * In some cases, it may be preferable to specify the routing address
    *
-   * @see ArrayColum.setRoutingAddress(String address)
+   * @see ArrayColumn#setRoutingAddress(String)
    */
   private String m_RoutingAddress = null;
   private String paginationJavaScriptCallback = null;
@@ -410,7 +407,10 @@ public class AbstractArrayPane implements ArrayPane {
     sb.append("placeholder: \"arraypane-sortable-placeholder\",");
     sb.append("cursor: \"move\",");
     sb.append("forcePlaceholderSize: true,");
-    sb.append("helper: fixArrayPaneWidthHelper");
+    sb.append("helper: fixArrayPaneWidthHelper,");
+    if (StringUtil.isDefined(getUpdateSortJavascriptCallback())) {
+      sb.append("update: function(e, ui){").append(getUpdateSortJavascriptCallback()).append(";}");
+    }
     sb.append("}).disableSelection();");
     sb.append("</script>");
     return sb.toString();
@@ -418,10 +418,17 @@ public class AbstractArrayPane implements ArrayPane {
 
   /**
    * standard method that returns the CVS-managed version string
-   *
    * @deprecated
    */
   public static String getVersion() {
     return "Deprecated";
+  }
+
+  public String getUpdateSortJavascriptCallback() {
+    return updateSortJavascriptCallback;
+  }
+
+  public void setUpdateSortJavascriptCallback(String callback) {
+    this.updateSortJavascriptCallback = callback;
   }
 }

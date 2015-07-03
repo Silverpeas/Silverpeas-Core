@@ -86,18 +86,11 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
       if (function.equals("Main")) {
         scc.init();
         destination = getDestination("ToSelection", scc, request);
-      } else if (function.startsWith("ToSelection")) // nav vers selectionPeas
-      // pour choix users et
-      // groupes
-      {
+      } else if (function.startsWith("ToSelection")) {
+        // Navigating to the user/group selection
         destination = scc.initSelection();
-      } else if (function.startsWith("FromSelection")) // récupère les users
-      // et
-      // groupes selectionnés
-      // au travers de
-      // selectionPeas et les
-      // place en session
-      {
+      } else if (function.startsWith("FromSelection")) {
+        // Retrieving the selected user/group
         scc.computeSelection();
         UserDetail[] userDetails = scc.getUserRecipients();
         Group[] groups = scc.getGroupRecipients();
@@ -111,8 +104,8 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
           // No users or groups => clsoing the popup
           destination = getDestination("Close", scc, request);
         }
-      } else if (function.startsWith("Close")) // fermeture de la fenêtre
-      {
+      } else if (function.startsWith("Close")) {
+        // Closing the popup
         destination = "/alertUserPeas/jsp/close.jsp";
       } else if (function.startsWith("ToAlert")) {
         request.setAttribute("HostComponentName", scc.getHostComponentName());
@@ -120,8 +113,8 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
         String message = request.getParameter("messageAux");
         scc.prepareNotification(message);
         destination = "/alertUserPeas/jsp/sendMessage.jsp";
-      } else if (function.startsWith("Notify")) // Notification
-      {
+      } else if (function.startsWith("Notify")) {
+        // Sending the notification
         request.setAttribute("HostComponentName", scc.getHostComponentName());
         request.setAttribute("HostSpaceName", scc.getHostSpaceName());
         scc.sendNotification();

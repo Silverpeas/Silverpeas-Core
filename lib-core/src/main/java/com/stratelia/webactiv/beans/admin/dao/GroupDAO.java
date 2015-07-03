@@ -162,7 +162,29 @@ public class GroupDAO {
     } finally {
       DBUtil.close(rs, stmt);
     }
+  }
+  
+  static final private String queryGetUsersDirectlyInGroup = "select userid"
+      + " from st_group_user_rel where groupid = ?";
 
+  public List<String> getUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      List<String> userIds = new ArrayList<String>();
+      stmt = con.prepareStatement(queryGetUsersDirectlyInGroup);
+      stmt.setInt(1, Integer.parseInt(groupId));
+
+      rs = stmt.executeQuery();
+
+      while (rs.next()) {
+        userIds.add(Integer.toString(rs.getInt(1)));
+      }
+      return userIds;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
   }
 
   public List<String> getManageableGroupIds(Connection con, String userId,
@@ -273,15 +295,16 @@ public class GroupDAO {
   @SuppressWarnings("empty-statement")
   private static ListSlice<Group> theGroupsFrom(ResultSet rs, int start, int end) throws SQLException {
     ListSlice<Group> groups = new ListSlice<Group>(start, end);
-    rs.relative(start);
+    if(start > 0) {
+      rs.next();
+      rs.relative(start-1);
+    }
     int i;
-    for (i = start; rs.next() && i < end; i++) {
-      groups.add(fetchGroup(rs));
+    for (i = start; rs.next(); i++) {
+      if (i < end) {
+        groups.add(fetchGroup(rs));
+      }
     }
-    if (i == end) {
-      i++;
-    }
-    for(;rs.next();i++);
     groups.setOriginalListSize(i);
     return groups;
   }

@@ -20,8 +20,8 @@
  */
 package com.stratelia.silverpeas.alertUserPeas.control;
 
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -34,12 +34,12 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.Arrays;
 import org.owasp.encoder.Encode;
+
+import java.util.Arrays;
 
 /**
  * Class declaration
@@ -133,6 +133,12 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     sug.setComponentId(getHostComponentId());
     m_Selection.setExtraParams(sug);
 
+    // Limitations
+    if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
+      m_Selection
+          .setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
+    }
+
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
@@ -158,24 +164,17 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     if (StringUtil.isDefined(message) && (getUserRecipients().length > 0
         || getGroupRecipients().length > 0)) {
       String safeMessage = Encode.forHtml(message);
-      for (String language : I18NHelper.getAllSupportedLanguages()) {
+      for (String language : DisplayI18NHelper.getLanguages()) {
         setNotificationContent(safeMessage, language);
       }
     }
   }
 
   private void setNotificationContent(String message, String language) {
-    getNotificationMetaData().addExtraMessage(message, getString("AuthorMessage"), language);
+    getNotificationMetaData().addExtraMessage(message, language);
   }
 
-  public void sendNotification() {
-    try {
-      SilverTrace.info("alertUserPeas", "AlertUserPeasSessionController.sendNotification()",
-          "root.MSG_GEN_PARAM_VALUE", "content_en = " + getNotificationMetaData().getContent("en"));
-      notificationSender.notifyUser(getNotificationMetaData());
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("alertUserPeas", "AlertUserPeasSessionController.sendNotification()",
-          "root.EX_NOTIFY_USERS_FAILED", e);
-    }
+  public void sendNotification() throws NotificationManagerException  {
+    notificationSender.notifyUser(getNotificationMetaData().manualUserNotification());
   }
 }

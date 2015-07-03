@@ -22,6 +22,7 @@ package com.silverpeas.jobDomainPeas.servlets;
 
 import com.silverpeas.jobDomainPeas.JobDomainPeasException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
+import com.silverpeas.jobDomainPeas.UserRequestData;
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -43,6 +44,13 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.servlet.RequestParameterDecoder;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -51,12 +59,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.servlet.HttpRequest;
 
 /**
  * Class declaration
@@ -148,83 +150,56 @@ public class JobDomainPeasRequestRouter extends
           String userId = request.getParameter("Iduser");
           jobDomainSC.getP12(userId);
         } else if (function.startsWith("userCreate")) {
-          boolean userPasswordValid = false;
-          if ((request.getParameter("userPasswordValid") != null)
-              && (request.getParameter("userPasswordValid").equals("true"))) {
-            userPasswordValid = true;
-          }
+          UserRequestData userRequestData =
+              RequestParameterDecoder.decode(request, UserRequestData.class);
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          String sendEmailParam = request.getParameter("sendEmail");
-          boolean sendEmail
-              = (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
-
-          jobDomainSC.createUser(
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userLogin")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              UserAccessLevel.from(request.getParameter("userAccessLevel")),
-              userPasswordValid,
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
-              properties, request.getParameter("GroupId"), request, sendEmail);
+          jobDomainSC.createUser(userRequestData, properties, request);
 
         } else if (function.startsWith("usersCsvImport")) {
           List<FileItem> fileItems = request.getFileItems();
+          UserRequestData userRequestData =
+              RequestParameterDecoder.decode(request, UserRequestData.class);
 
           FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
-          String sendEmailParam = FileUploadUtil.getParameter(fileItems, "sendEmail");
-          boolean sendEmail
-              = (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
 
           if (fileItem != null) {
-            jobDomainSC.importCsvUsers(fileItem, sendEmail, request);
+            jobDomainSC.importCsvUsers(fileItem, userRequestData.isSendEmail(), request);
           }
 
           destination = "domainContent.jsp";
         } else if (function.startsWith("userModify")) {
-          boolean userPasswordValid = false;
-          if ((request.getParameter("userPasswordValid") != null)
-              && (request.getParameter("userPasswordValid").equals("true"))) {
-            userPasswordValid = true;
-          }
+          UserRequestData userRequestData =
+              RequestParameterDecoder.decode(request, UserRequestData.class);
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          String sendEmailParam = request.getParameter("sendEmail");
-          boolean sendEmail
-              = (StringUtil.isDefined(sendEmailParam) && "true".equals(sendEmailParam));
-
-          jobDomainSC.modifyUser(request.getParameter("Iduser"),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              UserAccessLevel.from(request.getParameter("userAccessLevel")),
-              userPasswordValid,
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
-              properties, request, sendEmail);
+          jobDomainSC.modifyUser(userRequestData, properties, request);
         } else if (function.startsWith("userBlock")) {
           jobDomainSC.blockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userUnblock")) {
           jobDomainSC.unblockUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userDeactivate")) {
+          jobDomainSC.deactivateUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userActivate")) {
+          jobDomainSC.activateUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
-          String userId = request.getParameter("Iduser");
-          UserAccessLevel accessLevel = UserAccessLevel.
-              from(request.getParameter("userAccessLevel"));
+          UserRequestData userRequestData =
+              RequestParameterDecoder.decode(request, UserRequestData.class);
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
           if (properties.isEmpty()) {
-            jobDomainSC.modifySynchronizedUser(userId, accessLevel);
+            jobDomainSC.modifySynchronizedUser(userRequestData);
           } else {
             // extra properties have been set, modify user full
-            jobDomainSC.modifyUserFull(userId, accessLevel, properties);
+            jobDomainSC.modifyUserFull(userRequestData, properties);
           }
         } else if (function.startsWith("userSearchToImport")) {
           Hashtable<String, String> query;
@@ -385,13 +360,12 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupDelete")) {
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupSynchro")) {
-          bHaveToRefreshDomain = jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
+          jobDomainSC.synchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
           bHaveToRefreshDomain = jobDomainSC.importGroup(EncodeHelper.htmlStringToJavaString(
-              request.
-              getParameter("groupName")));
+              request.getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 

@@ -73,6 +73,6 @@ public class SubscriptionCallBack implements CallBack {
   }
 
   public SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService();
+    return SubscriptionServiceProvider.getSubscribeService();
   }
 }

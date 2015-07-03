@@ -64,9 +64,9 @@ $(function () {
 		$.getJSON(url,
           function(publication) {
             try {
-              $(".publiName").text(publication.name);
+              $(".publiName").html(publication.name);
               if (publication.description) {
-              	$(".publiDesc").text(publication.description.replace("\n", "<br/>"));
+              	$(".publiDesc").html(publication.description.replace("\n", "<br/>"));
               } else {
                 $(".publiDesc").remove();
               }

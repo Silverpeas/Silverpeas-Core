@@ -25,8 +25,29 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
+
+<c:set var="userInfos" value="${requestScope.UserFull}" />
+
+<c:set var="lastName" value="${userInfos.lastName}" />
+<c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
+<c:set var="firstName" value="${userInfos.firstName}" />
+<c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
+<c:set var="firstName" value="${userInfos.firstName}" />
+<c:set var="displayedFirstName"><view:encodeHtml string="${firstName}" /></c:set>
+<c:set var="email" value="${userInfos.eMail}" />
+<c:set var="displayedEmail"><view:encodeHtml string="${email}" /></c:set>
+<c:set var="login" value="${userInfos.login}" />
+<c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>
+
 <%
     Board board = gef.getBoard();
 
@@ -37,11 +58,13 @@
     browseBar.setComponentName(getDomainLabel(domObject, resource));
   }
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel/>
+<view:looknfeel />
 <title><%=userObject.getDisplayedName()%></title>
-<script language="JavaScript">
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
+<script type="text/javascript">
 function ConfirmAndSend(textToDisplay,targetURL)
 {
     if (window.confirm(textToDisplay))
@@ -63,69 +86,86 @@ function resizeMe() {
 }
 </script>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onLoad="resizeMe();">
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onLoad="resizeMe();" id="profil">
 <%
 out.println(window.printBefore());
-out.println(frame.printBefore());
 %>
-<center>
+<view:frame>
 <%
 out.println(board.printBefore());
 %>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
-	<tr>
-		<td class="textePetitBold"><%=resource.getString("GML.lastName") %> :</td>
-		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%></td>
-	</tr>
-	<tr>
-		<td class="textePetitBold"><%=resource.getString("GML.surname") %> :</td>
-		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%></td>
-	</tr>
-	<tr>
-		<td class="textePetitBold"><%=resource.getString("GML.eMail") %> :</td>
-		<td><%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%></td>
-	</tr>
-	<tr>
-		<td class="textePetitBold"><%=resource.getString("GML.login") %> :</td>
-		<td><%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%></td>
-	</tr>
-
-  <%
-    String[] properties = userObject.getPropertiesNames();
-    for (final String property : properties) {
-      if (!property.startsWith("password")) {
-  %>
-  <tr>
-    <td class="textePetitBold">
-      <%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
-    </td>
-
-    <td>
-      <%
-        if ("STRING".equals(userObject.getPropertyType(property)) ||
-            "USERID".equals(userObject.getPropertyType(property))) {
-
-          out.print(EncodeHelper.javaStringToHtmlString(userObject.getValue(property)));
-
-        } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-
-          if (userObject.getValue(property) != null && "1".equals(userObject.getValue(property))) {
-            out.print(resource.getString("GML.yes"));
-          } else if (userObject.getValue(property) == null ||
-              "".equals(userObject.getValue(property)) ||
-              "0".equals(userObject.getValue(property))) {
-            out.print(resource.getString("GML.no"));
-          }
-        }
-      %>
-    </td>
-  </tr>
-  <%
-      }
-    }
-  %>
-
-</table>
+	<fieldset class="skinFieldset" id="identity-main">
+		<legend><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
+		<ul class="fields">
+			<!--Last name-->
+			<li id="form-row-lastname" class="field">
+       			<label class="txtlibform"><fmt:message key="GML.lastName"/></label>
+       			<div class="champs">${displayedLastName}</div>
+     		</li>
+     		<!--Surname-->
+			<li id="form-row-surname" class="field">
+       			<label class="txtlibform"><fmt:message key="GML.surname"/></label>
+       			<div class="champs">${displayedFirstName}</div>
+     		</li>
+     		<!---Email-->
+			<li id="form-row-email" class="field">
+       			<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
+       			<div class="champs">${displayedEmail}</div>
+     		</li>
+			<!--Login-->
+			<li id="form-row-login" class="field">
+       			<label class="txtlibform"><fmt:message key="GML.login"/></label>
+       			<div class="champs">${displayedLogin}</div>
+     		</li>     	
+		</ul>
+	</fieldset>
+    
+    <fieldset class="skinFieldset" id="identity-extra">
+		<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+		<ul class="fields">       	
+		  <%
+		    String[] properties = userObject.getPropertiesNames();
+		    for (final String property : properties) {
+			  	// Not display the password !
+		      	if (!property.startsWith("password")) {
+		  %>
+		  	<li id="form-row-<%=property%>" class="field">
+				<label class="txtlibform">
+					<%=EncodeHelper.javaStringToHtmlString(userObject.
+		               		    getSpecificLabel(resource.getLanguage(),
+		               		       property))%>
+				</label>
+				<div class="champs">
+					<%
+		            if ("STRING".equals(userObject.getPropertyType(property)) ||
+		                "USERID".equals(userObject.getPropertyType(property))) {
+					%>
+					<%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
+					<%
+		            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
+		
+		              if (userObject.getValue(property) != null &&
+		                  "1".equals(userObject.getValue(property))) {
+		            %>
+		            	<fmt:message key="GML.yes"/>
+		            <%
+		              } else if (userObject.getValue(property) == null ||
+		                  "".equals(userObject.getValue(property)) ||
+		                  "0".equals(userObject.getValue(property))) {
+		            %>
+		            	<fmt:message key="GML.no"/>
+		           <%
+		              }
+		            }
+		           %>
+				</div>
+			</li>
+   			<%
+       			}
+     		}
+   			%>
+		</ul>
+	</fieldset>
 <%
 out.println(board.printAfter());
 ButtonPane bouton = gef.getButtonPane();
@@ -134,9 +174,8 @@ out.print("<BR/>");
 out.print(bouton.print());
 %>
 <br/>
-</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.print(window.printAfter());
 %>
 </body>

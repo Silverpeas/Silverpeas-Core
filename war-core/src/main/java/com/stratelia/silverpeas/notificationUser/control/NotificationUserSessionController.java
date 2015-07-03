@@ -20,9 +20,6 @@
  */
 package com.stratelia.silverpeas.notificationUser.control;
 
-import java.util.ArrayList;
-import java.util.Properties;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -37,6 +34,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * @author tleroi
@@ -66,6 +66,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   public Notification resetNotification() {
     notification = new Notification();
+    sel.resetAll();
     return notification;
   }
 
@@ -100,6 +101,14 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     NotificationMetaData notifMetaData = notification.toNotificationMetaData();
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
+    if (sel.getSelectedUserLimit() > 0) {
+      // A limitation has been set when the selection screen has been initialized.
+      notifMetaData.manualUserNotification();
+    } else {
+      // The user panel has not been displayed, so the notification is not tagged as a manual one
+      // in order to skip centralized verifications.
+    }
+
     notifSender.notifyUser(notification.getChannel(), notifMetaData);
   }
 
@@ -139,6 +148,12 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     // Contraintes
     sel.setMultiSelect(true);
     sel.setPopupMode(true);
+
+    // Limitations
+    if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
+      sel.setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
+    }
+
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
   

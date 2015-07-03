@@ -157,7 +157,9 @@ public class HistoryObjectDAO {
     SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
         "root.MSG_GEN_ENTER_METHOD");
     String componentName = foreignPK.getComponentName();
-    String selectStatement = "select * from " + historyTableName
+    String selectStatement =
+        "select dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType " +
+        "from " + historyTableName
         + " where resourceId=? and componentId=? and resourceType=?"
         + " order by datestat desc, heurestat desc";
 

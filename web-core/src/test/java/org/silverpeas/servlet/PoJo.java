@@ -24,7 +24,8 @@
 package org.silverpeas.servlet;
 
 import javax.ws.rs.FormParam;
-import java.io.InputStream;
+import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
 import java.util.Date;
 
 /**
@@ -43,13 +44,24 @@ public class PoJo {
   @FormParam("")
   private String aString;
 
+  @FormParam("")
+  @UnescapeHtml
+  private String aStringNotInParameterToUnescape;
+
+  @FormParam("")
+  @UnescapeHtml
+  private String aStringToUnescape;
+
   @FormParam("anIntegerNotInParameter")
   private Integer anIntegerNotInParameter;
 
   @FormParam("")
   private Integer anInteger;
 
-  @FormParam("anIntegerFromAnnotation")
+  @FormParam("")
+  private int aPrimitiveIntegerNotInParameter = -1;
+
+  @XmlElement(name = "anIntegerFromAnnotation")
   private int aPrimitiveInteger;
 
   @FormParam("")
@@ -64,7 +76,7 @@ public class PoJo {
   @FormParam("")
   private Boolean aBooleanNotInParameter;
 
-  @FormParam("")
+  @XmlElement
   private Boolean aBoolean;
 
   @FormParam("aBooleanFromAnnotation")
@@ -76,7 +88,19 @@ public class PoJo {
   @FormParam("")
   private Date aDate;
 
-  public PoJo() {
+  @FormParam("")
+  private EnumWithoutCreationAnnotation anEnumNotInParameter;
+
+  @FormParam("")
+  private EnumWithoutCreationAnnotation anEnum;
+
+  @FormParam("")
+  private URI anUriNotInParameter;
+
+  @FormParam("")
+  private URI anUri;
+
+  private PoJo() {
     // To be instantiated
   }
 
@@ -96,12 +120,24 @@ public class PoJo {
     return aString;
   }
 
+  public String getaStringNotInParameterToUnescape() {
+    return aStringNotInParameterToUnescape;
+  }
+
+  public String getaStringToUnescape() {
+    return aStringToUnescape;
+  }
+
   public Integer getAnIntegerNotInParameter() {
     return anIntegerNotInParameter;
   }
 
   public Integer getAnInteger() {
     return anInteger;
+  }
+
+  public int getaPrimitiveIntegerNotInParameter() {
+    return aPrimitiveIntegerNotInParameter;
   }
 
   public int getaPrimitiveInteger() {
@@ -138,5 +174,21 @@ public class PoJo {
 
   public Date getaDate() {
     return aDate;
+  }
+
+  public EnumWithoutCreationAnnotation getAnEnumNotInParameter() {
+    return anEnumNotInParameter;
+  }
+
+  public EnumWithoutCreationAnnotation getAnEnum() {
+    return anEnum;
+  }
+
+  public URI getAnUri() {
+    return anUri;
+  }
+
+  public URI getAnUriNotInParameter() {
+    return anUriNotInParameter;
   }
 }

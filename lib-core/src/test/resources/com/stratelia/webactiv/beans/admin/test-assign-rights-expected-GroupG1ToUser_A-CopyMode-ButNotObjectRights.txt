@@ -1,0 +1,23 @@
+0	(G) - G1-2_D0            	* SPACE            - admin@Space-B_Level-1
+0	(G) - G1-2_D0            	^ COMPONENT        - admin@almanach-Space-B_Level-1
+0	(G) - G1_D0              	* COMPONENT-OBJECT - writer@kmelia-Space-A_Level-1#Folder-1-1
+0	(G) - G1_D0              	* SPACE            - admin@Space-A_Level-1
+0	(G) - G1_D0              	^ COMPONENT        - admin@blog-Space-A_Level-2
+0	(G) - G1_D0              	^ COMPONENT        - admin@kmelia-Space-A_Level-1
+0	(G) - G1_D0              	^ SPACE            - admin@Space-A_Level-2
+1	(G) - G2_D1              	* COMPONENT        - admin@almanach-Space-B_Level-1
+0	(U) - user_a             	* COMPONENT        - writer@kmelia-Space-A_Level-1
+[ADDED FROM G1_D0 - BEGIN]
+0	(U) - user_a             	* SPACE            - admin@Space-A_Level-1
+0	(U) - user_a             	^ COMPONENT        - admin@blog-Space-A_Level-2
+0	(U) - user_a             	^ COMPONENT        - admin@kmelia-Space-A_Level-1
+0	(U) - user_a             	^ SPACE            - admin@Space-A_Level-2
+[ADDED FROM G1_D0 - END]
+0	(U) - user_b             	* COMPONENT        - admin@kmelia-Space-A_Level-1
+0	(U) - user_b             	* COMPONENT-OBJECT - writer@kmelia-Space-A_Level-1#Folder-1-1
+0	(U) - user_b             	* SPACE            - publisher@Space-B_Level-1
+0	(U) - user_b             	^ COMPONENT        - publisher@almanach-Space-B_Level-1
+1	(U) - user_c             	* SPACE            - admin@Space-A_Level-1
+1	(U) - user_c             	^ COMPONENT        - admin@blog-Space-A_Level-2
+1	(U) - user_c             	^ COMPONENT        - admin@kmelia-Space-A_Level-1
+1	(U) - user_c             	^ SPACE            - admin@Space-A_Level-2

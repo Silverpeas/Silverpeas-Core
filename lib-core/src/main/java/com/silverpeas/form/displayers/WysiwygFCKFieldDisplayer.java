@@ -20,7 +20,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import au.id.jericho.lib.html.Source;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -42,6 +41,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -50,6 +50,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.wysiwyg.control.WysiwygContentTransformer;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.File;
@@ -170,6 +171,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
+      code = WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective()
+          .transform();
+
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         DynamicValueReplacement replacement = new DynamicValueReplacement();

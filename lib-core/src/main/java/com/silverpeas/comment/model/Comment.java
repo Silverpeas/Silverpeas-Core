@@ -40,7 +40,16 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
-  public static final String TYPE = "Comment";
+  public static final String CONTRIBUTION_TYPE = "Comment";
+  public static final String PUBLICATION_RESOURCETYPE = "Publication";
+  public static final String NEWS_RESOURCETYPE = "News";
+  public static final String CLASSIFIED_RESOURCETYPE = "Classified";
+  public static final String SCHEDULEEVENT_RESOURCETYPE = "ScheduleEvent";
+  public static final String SUGGESTION_RESOURCETYPE = "Suggestion";
+  public static final String PHOTO_RESOURCETYPE = "Photo";
+  public static final String VIDEO_RESOURCETYPE = "Video";
+  public static final String SOUND_RESOURCETYPE = "Sound";
+  public static final String STREAMING_RESOURCETYPE = "Streaming";
   private CommentPK pk;
   private String resourceType;
   private WAPrimaryKey foreign_key;
@@ -197,7 +206,7 @@ public class Comment implements SilverpeasContent {
 
   @Override
   public String getContributionType() {
-    return TYPE;
+    return CONTRIBUTION_TYPE;
   }
 
   /**

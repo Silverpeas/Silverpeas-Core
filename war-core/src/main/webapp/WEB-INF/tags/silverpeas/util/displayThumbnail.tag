@@ -71,8 +71,6 @@ display: none;
 </c:if>
 -->
 </style>
-<c:url value="/util/javaScript/animation.js" var="jsAnimation"/>
-<script type="text/javascript" src="${jsAnimation}"></script>
 <script type="text/javascript">
 function updateThumbnail() {
   	$("#thumbnailInputs").css("display", "block");
@@ -121,8 +119,8 @@ function updateThumbnail() {
   
   function checkThumbnail(error) {
     <c:if test="${mandatory}">
-      if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == '') {
-        error.msg += " - '<fmt:message key="GML.thumbnail"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+      if ($('#thumbnailFile').val() == '' && $('#thumbnail').is('img') == false) {
+        error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.MustBeFilled" bundle="${generalBundle}"/>\n";
         error.nb++;
       }
     </c:if>
@@ -131,7 +129,7 @@ function updateThumbnail() {
       var logicalName = $('#thumbnailFile').val();
       var extension = getExtension(logicalName);
       if (extension == null || (extension != "gif" && extension != "jpeg" && extension != "jpg" && extension != "png")) {
-        error.msg += " - '<fmt:message key="GML.thumbnail"/>' <fmt:message key="GML.thumbnail.badformat"/>\n";
+        error.msg += " - '<fmt:message key="GML.thumbnail" bundle="${generalBundle}"/>' <fmt:message key="GML.thumbnail.badformat" bundle="${generalBundle}"/>\n";
         error.nb++;
       }
     }
@@ -140,11 +138,11 @@ function updateThumbnail() {
   
   var galleryWindow = window;
 
-  function choixGallery(liste) {
+  function openGallery(liste) {
     index = liste.selectedIndex;
     var componentId = liste.options[index].value;
 	if (index != 0) {
-      url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}";
+      url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}&FieldName=Thumbnail";
       windowName = "galleryWindow";
       larg = "820";
       haut = "600";
@@ -156,7 +154,7 @@ function updateThumbnail() {
     }
   }
 
-  function choixImageInGallery(url) {
+  function choixImageInGalleryThumbnail(url) {
     $("#thumbnailPreviewAndActions").css("display", "block");
     $("#thumbnailActions").css("display", "none");
     $("#thumbnail").attr("src", url);
@@ -177,7 +175,9 @@ function updateThumbnail() {
 	<div class="field" id="thumb">
 		<div id="thumbnailPreviewAndActions">
 			<div id="thumbnailPreview">
-				<view:image src="${thumbnail.URL}" type="vignette.thumbnail" id="thumbnail" alt=""/>
+				<c:if test="${thumbnail != null}">
+					<view:image src="${thumbnail.URL}" type="vignette.thumbnail" id="thumbnail" alt=""/>
+				</c:if>
 			</div>
 			<div id="thumbnailActions">
 				<c:if test="${thumbnail != null && thumbnail.cropable}">
@@ -193,7 +193,7 @@ function updateThumbnail() {
 			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
 			<c:if test="${not empty galleries}">
 				<span class="txtsublibform"> <fmt:message key="GML.or" bundle="${generalBundle}"/> </span><input type="hidden" id="valueImageGallery" name="valueImageGallery"/>
-				<select id="galleries" name="galleries" onchange="choixGallery(this);this.selectedIndex=0;">
+				<select id="galleries" name="galleries" onchange="openGallery(this);this.selectedIndex=0;">
 					<option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
 				    <c:forEach items="${galleries}" var="gallery">
 				    	<option value="${gallery.id()}">${gallery.label}</option>

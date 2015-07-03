@@ -73,7 +73,7 @@
   </c:otherwise>
 </c:choose>
 <c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
-<c:set var="i18n"><%=com.silverpeas.util.i18n.I18NHelper.isI18N%></c:set>
+<c:set var="i18n"><%=com.silverpeas.util.i18n.I18NHelper.isI18nContentActivated%></c:set>
 <c:set var="i18n" value="${view:booleanValue(i18n) && !view:booleanValue(param.notI18n)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
@@ -503,7 +503,7 @@
                 <td class="odd ${forbiddenDownloadClass}" align="left">
                   <c:choose>
                     <c:when test="${originWysiwyg}">
-                      <a href="javascript:selectFile('<c:out value="${currentAttachmentUrl}" />');"><c:out value="${varAttachment.filename}" /></a>
+                      <a href="javascript:selectFile('<c:out value="${silfn:escapeJs(currentAttachmentUrl)}" />');"><c:out value="${varAttachment.filename}" /></a>
                     </c:when>
                     <c:otherwise>
                       <c:choose>

@@ -28,7 +28,6 @@ import java.util.Map;
 
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.dao.SpaceDAO;
@@ -460,7 +459,7 @@ public class SpaceInstManager {
       SpaceI18N translation = new SpaceI18N(row.lang, row.name, row.description);
       space.addTranslation(translation);
 
-      if (I18NHelper.isI18N) {
+      if (I18NHelper.isI18nContentActivated) {
         List<SpaceI18NRow> translations =
             ddManager.getOrganization().spaceI18N.getTranslations(row.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {

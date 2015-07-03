@@ -25,10 +25,12 @@ package com.silverpeas.workflowdesigner.control;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.form.TypeManager;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -59,6 +61,7 @@ import com.silverpeas.workflow.api.model.States;
 import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.model.ProcessModelManagerImpl;
+import com.silverpeas.workflow.engine.model.SpecificLabel;
 import com.silverpeas.workflowdesigner.model.WorkflowDesignerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -67,17 +70,8 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.fileupload.FileItem;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
 
@@ -201,10 +195,13 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     try {
       // Is this the first save of a process model?
       //
-      if (strProcessModelFileName != null && NEW_ELEMENT_NAME.equals(processModelFileName)) {
+      if (NEW_ELEMENT_NAME.equals(processModelFileName)) {
         // Make sure that you are not overwriting sth.
         //
         List<String> processList = Workflow.getProcessModelManager().listProcessModels();
+        strProcessModelFileName = StringUtil.toAcceptableFilename(processModel.getName());
+        strProcessModelFileName = strProcessModelFileName.replace(' ', '_');
+        strProcessModelFileName = strProcessModelFileName+'/'+strProcessModelFileName+".xml";
         strProcessModelFileName = FileUtil.convertPathToServerOS(strProcessModelFileName);
 
         if (processList.contains(strProcessModelFileName)) {
@@ -230,8 +227,15 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public void removeProcessModel(String strProcessModelFileName)
       throws WorkflowDesignerException {
     try {
+      // remove model
       Workflow.getProcessModelManager().deleteProcessModelDescriptor(strProcessModelFileName);
-    } catch (WorkflowException e) {
+
+      // remove xmlcomponent
+      String componentName = findComponentDescriptor(strProcessModelFileName);
+      if (componentName != null) {
+        Instanciateur.removeWorkflow(componentName + ".xml");
+      }
+    } catch (Exception e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeProcesModel",
           SilverpeasException.ERROR, "workflowDesigner.EX_REMOVING_PROCESS_DESCRIPTIOR_FAILED", e);
     }
@@ -304,30 +308,16 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // Is it a new object or an existing one?
     //
     if (NEW_ELEMENT_NAME.equals(strRoleOriginal)) {
-      // If a 'columns' element with the same name as the new element
+      // Creation: If a 'columns' element with the same name as the new element
       // already exists we have a problem...
       //
       if (check != null) {
         throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
             SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
       }
-    } else // Existing object
-    {
-      // If a 'columns' element with the same name as the element's new name
-      // already exists we have a problem...
-      //
-      if (check != null && !strRoleOriginal.equals(source.getRoleName())) {
-        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
-            SilverpeasException.ERROR, "workflowDesigner.EX_COLUMNS_ALREADY_EXISTS");
-      }
-
-      try {
-        processModel.getPresentation().deleteColumns(strRoleOriginal);
-      } catch (WorkflowException e) {
-        throw new WorkflowDesignerException("WorkflowDesignerSessionController.updateColumns",
-            SilverpeasException.ERROR, "workflowDesigner.EX_UPDATING_COLUMNS_FAILED", e);
-      }
     }
+    else
+      deleteColumns(strRoleOriginal);
 
     processModel.getPresentation().addColumns(source);
   }
@@ -383,6 +373,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // add it to the collection
       //
       if (check == null) {
+        ContextualDesignation defaultLabel = new SpecificLabel();
+        defaultLabel.setContent(source.getName());
+        source.addLabel(defaultLabel);
         processModel.getRolesEx().addRole(source);
       } else {
         // If a 'role' element with the same name as the new element
@@ -2580,15 +2573,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 * @return an array of codes
 */
   public String[] retrieveItemTypeCodes(boolean fNone) {
-    StringTokenizer strtok = new StringTokenizer(getSettings().getString("itemTypes"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
+    String[] types = TypeManager.getInstance().getTypeNames();
     if (fNone) {
-      list.add("");
+      return ArrayUtil.add(types, 0, "");
     }
-    while (strtok.hasMoreTokens()) {
-      list.add(strtok.nextToken());
-    }
-    return list.toArray(new String[list.size()]);
+    return types;
   }
 
   /**
@@ -2627,19 +2616,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     return list.toArray(new String[list.size()]);
   }
 
-  /**
-* Returns the input displayer type codes as configured in the properties
-*
-* @return an array of codes
-*/
-  public String[] retrieveDisplayerNames() {
-    StringTokenizer strtok = new StringTokenizer(getSettings().getString("displayerNames"), ",");
-    List<String> list = new ArrayList<String>(strtok.countTokens() + 1);
-    list.add("");
-    while (strtok.hasMoreTokens()) {
-      list.add(strtok.nextToken());
-    }
-    return list.toArray(new String[list.size()]);
+  public Map<String, List<String>> retrieveTypesAndDisplayers() {
+    return TypeManager.getInstance().getTypesAndDisplayers();
   }
 
   /**
@@ -2789,6 +2767,11 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     return list.toArray(new String[list.size()]);
   }
 
+  public List<Item> retrieveFolderItems() {
+    DataFolder dataFolder = getProcessModel().getDataFolder();
+    return Arrays.asList(dataFolder.getItems());
+  }
+
   /**
 * Produce a list of form names, only forms other than 'presentationForm' and 'printForm'
 *
@@ -2817,11 +2800,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   }
 
   /**
-* Generates component descriptor file in the appropriate directory, reloads the cache to take the
-* new file into account, stores the new descriptor's name to be able to access it later
-*
-* @throws WorkflowDesignerException when something goes wrong
-*/
+   * Generates component descriptor file in the appropriate directory, stores the new descriptor's
+   * name to be able to access it later
+   * @throws WorkflowDesignerException when something goes wrong
+   */
   public void generateComponentDescriptor()
       throws WorkflowDesignerException {
     List<Profile> listSPProfile = new ArrayList<Profile>();
@@ -2897,15 +2879,12 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     try {
       Instanciateur.saveComponent(waComponent, waComponent.getName() + ".xml", true);
       referencedInComponent = processModel.getName();
-    } catch (JAXBException e) {
+    } catch (Exception e) {
       throw new WorkflowDesignerException(
           "WorkflowDesignerSessionController.generateComponentDescriptor()",
           SilverpeasException.FATAL,
           "workflowDesigner.EX_ERR_WRITE_WA_COMPONENTS", e);
     }
-
-    // Clear the descriptor cache and load it again
-    rebuildComponentDescriptorCache();
   }
 
   private String getSureLanguage(String language) {
@@ -2954,22 +2933,6 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       }
     }
     return null;
-  }
-
-  /**
-* Clear the Component Descriptor cache and load it again
-*
-* @throws WorkflowDesignerException when something goes wrong
-*/
-  private void rebuildComponentDescriptorCache() throws WorkflowDesignerException {
-    try {
-      Instanciateur.rebuildWAComponentCache();
-    } catch (InstanciationException e) {
-      throw new WorkflowDesignerException(
-          "WorkflowDesignerSessionController.rebuildComponentDescriptorCache()",
-          SilverpeasException.FATAL,
-          "workflowDesigner.EX_ERR_READ_WA_COMPONENTS", e);
-    }
   }
 
   /**

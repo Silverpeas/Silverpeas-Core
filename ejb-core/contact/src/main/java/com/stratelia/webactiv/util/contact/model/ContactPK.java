@@ -50,8 +50,8 @@ public class ContactPK extends WAPrimaryKey implements Serializable {
    * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    */
-  public ContactPK(String id, String space, String componentName) {
-    super(id, space, componentName);
+  public ContactPK(String id, String componentName) {
+    super(id, componentName);
   }
 
   /**

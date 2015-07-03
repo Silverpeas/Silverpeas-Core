@@ -43,9 +43,9 @@
     ArrayPane       itemPane = gef.getArrayPane( "itemPane", strCurrentScreen, request, session ),
                     parametersPane = gef.getArrayPane( "parametersPane", strCurrentScreen, request, session );
     String[]        astrUserInfosNames = (String[])request.getAttribute( "UserInfosNames" ),
-                    astrUserInfosValues = (String[])astrUserInfosNames.clone(),
+                    astrUserInfosValues = astrUserInfosNames.clone(),
                     astrTypeValues = (String[])request.getAttribute( "TypeValues" ),
-                    astrTypeNames = (String[])astrTypeValues.clone();
+                    astrTypeNames = astrTypeValues.clone();
     Parameter       parameter;
     Iterator        iterParameters = item.iterateParameter();
     boolean         fExistingItem = ( (Boolean)request.getAttribute( "IsExisitingItem" ) ).booleanValue();

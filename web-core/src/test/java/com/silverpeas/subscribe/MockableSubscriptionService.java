@@ -25,6 +25,7 @@
 package com.silverpeas.subscribe;
 
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.util.Default;
 
 import javax.inject.Named;
@@ -123,35 +124,24 @@ public class MockableSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource) {
+  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource) {
     return realService.getSubscribers(resource);
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource,
+  public SubscriptionSubscriberList getSubscribers(final SubscriptionResource resource,
       final SubscriptionMethod method) {
     return realService.getSubscribers(resource, method);
   }
 
   @Override
-  public Collection<String> getUserSubscribers(SubscriptionResource resource) {
-    return realService.getUserSubscribers(resource);
-  }
-
-  @Override
-  public Collection<String> getUserSubscribers(final SubscriptionResource resource,
-      final SubscriptionMethod method) {
-    return realService.getUserSubscribers(resource);
-  }
-
-  @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources) {
     return realService.getSubscribers(resources);
   }
 
   @Override
-  public Collection<SubscriptionSubscriber> getSubscribers(
+  public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources, final SubscriptionMethod method) {
     return realService.getSubscribers(resources);
   }

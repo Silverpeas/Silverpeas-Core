@@ -25,7 +25,7 @@
 package com.silverpeas.subscribe.web;
 
 import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
@@ -60,7 +60,7 @@ public class SubscribePostTest extends RESTWebServiceTest<SubscriptionTestResour
   @Before
   public void setup() {
     assertThat(getTestResources().getMockableSubscriptionService(),
-            is(SubscriptionServiceFactory.getFactory().getSubscribeService()));
+            is(SubscriptionServiceProvider.getSubscribeService()));
   }
 
   @Test

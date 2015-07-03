@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.organization;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -51,7 +52,8 @@ public class UserTable extends Table<UserRow> {
       "id, specificId, domainId, login, firstName, lastName," +
           " loginMail, email, accessLevel, loginQuestion, loginAnswer, creationDate, saveDate," +
           " version, tosAcceptanceDate, lastLoginDate, nbSuccessfulLoginAttempts," +
-          " lastLoginCredentialUpdateDate, expirationDate, state, stateSaveDate";
+          " lastLoginCredentialUpdateDate, expirationDate, state, stateSaveDate, " +
+          "notifManualReceiverLimit";
 
   /**
    * Fetch the current user row from a resultSet.
@@ -83,6 +85,9 @@ public class UserTable extends Table<UserRow> {
     u.expirationDate = rs.getTimestamp("expirationDate");
     u.state = rs.getString("state");
     u.stateSaveDate = rs.getTimestamp("stateSaveDate");
+    if (StringUtil.isInteger(rs.getString("notifManualReceiverLimit"))) {
+      u.notifManualReceiverLimit= rs.getInt("notifManualReceiverLimit");
+    }
     return u;
   }
 
@@ -245,9 +250,9 @@ public class UserTable extends Table<UserRow> {
     return rows.toArray(new String[rows.size()]);
   }
   static final private String SELECT_ALL_ADMIN_IDS_TRUE =
-      "select id from ST_User where accessLevel='A' order by lastName";
+      "select id from ST_User where accessLevel='A' and state <> 'DELETED' order by lastName";
   static final private String SELECT_ALL_ADMIN_IDS_DOMAIN = "select id from ST_User where "
-      + "((accessLevel='A') or (accessLevel='D')) and (domainId = ?) order by lastName";
+      + "((accessLevel='A') or (accessLevel='D')) and (domainId = ?) and state <> 'DELETED' order by lastName";
 
   /**
    * Returns all the User ids.
@@ -462,6 +467,10 @@ public class UserTable extends Table<UserRow> {
     concatAndOr =
         addParamToQuery(params, query, getSqlTimestamp(userModel.stateSaveDate), "stateSaveDate",
             concatAndOr, andOr);
+    if (userModel.notifManualReceiverLimit != null) {
+      concatAndOr = addParamToQuery(params, query, userModel.notifManualReceiverLimit,
+          "notifManualReceiverLimit", concatAndOr, andOr);
+    }
 
     // Mandatory filters
     if (concatAndOr) {
@@ -555,7 +564,7 @@ public class UserTable extends Table<UserRow> {
     callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_USER, user.id, null, null);
   }
   static final private String INSERT_USER = "insert into ST_User (" + USER_COLUMNS
-      + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, UserRow row) throws
@@ -587,6 +596,7 @@ public class UserTable extends Table<UserRow> {
     insert.setString(20,
         !UserState.UNKNOWN.equals(UserState.from(row.state)) ? row.state : UserState.VALID.name());
     insert.setTimestamp(21, now);
+    insert.setObject(22, row.notifManualReceiverLimit);
   }
 
   /**
@@ -619,7 +629,8 @@ public class UserTable extends Table<UserRow> {
       + " lastLoginCredentialUpdateDate = ?,"
       + " expirationDate = ?,"
       + " state = ?,"
-      + " stateSaveDate = ?"
+      + " stateSaveDate = ?,"
+      + " notifManualReceiverLimit = ?"
       + " where id = ?";
 
   @Override
@@ -644,8 +655,9 @@ public class UserTable extends Table<UserRow> {
     update.setTimestamp(17, getSqlTimestamp(row.expirationDate));
     update.setString(18, row.state);
     update.setTimestamp(19, getSqlTimestamp(row.stateSaveDate));
+    update.setObject(20, row.notifManualReceiverLimit);
 
-    update.setInt(20, row.id);
+    update.setInt(21, row.id);
   }
 
   /**

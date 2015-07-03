@@ -1,0 +1,31 @@
+<p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
+
+<p><u>Soulign&eacute;</u></p>
+
+<p><strong>Gras</strong></p>
+
+<p><strong><img alt="kiss" height="23" src="cid:link-content-0" title="kiss" width="23" /></strong></p>
+
+<p>Photot&egrave;que :</p>
+
+<p><img alt="" border="0" src="cid:link-content-1" /></p>
+
+<p>Upload image :</p>
+
+<p><img alt="" src="cid:attachment-content-2" style="width: 100px; height: 100px;" /></p>
+
+<p><img alt="" src="cid:attachment-content-2" style="width: 100px; height: 100px;" /></p>
+
+<p><img alt="" src="cid:attachment-content-4" style="width: 100px; height: 100px;" /></p>
+
+<p><img alt="" src="/silverpeas/File_bad_link/d07411cc-19af-49f8-af57-16fc9fabf318-bis" style="width: 100px; height: 100px;" /></p>
+
+<p><a href="cid:attachment-content-2">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg</a></p>
+
+<p><a href="cid:attachment-content-3">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg</a></p>
+
+<p><a href="https://www.toto.fr/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259-bis/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
+
+<p><a href="/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>
+
+<p><a href="/silverpeas/attached_file/componentId/infoLetter175/attachmentId_bad_link/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf">/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf</a></p>

@@ -63,6 +63,10 @@ SpaceInstLight space = homepage.getSpace();
 List<SpaceInstLight> subspaces = homepage.getSubSpaces();
 List<ComponentInstLight> apps = homepage.getApps();
 List<UserDetail> admins = homepage.getAdmins();
+
+GraphicElementFactory gef =
+    (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+gef.setSpaceIdForCurrentRequest(homepage.getSpace().getFullId());
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -272,8 +276,8 @@ $(document).ready(function() {
                             <div class="portlet-content slideshow" data-transition="crossfade" data-loop="true" data-skip="false">
 								<ul class="carousel">
 									<% for (PublicationDetail aNews : news) { %>
-										<li class="slide">
-                      					<h4 class="title-quickInfo"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></h4>
+										<li class="slide" onclick="javascript:location.href='<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, aNews.getId())%>'">
+                      					<h4 class="title-quickInfo"><a href="<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, aNews.getId())%>"><%=Encode.forHtml(aNews.getName(helper.getLanguage())) %></a></h4>
                       					<% if (aNews.getThumbnail() != null) { %>
 											<img src="<%=aNews.getThumbnail().getURL()%>" alt=""/>
 										<% } %>

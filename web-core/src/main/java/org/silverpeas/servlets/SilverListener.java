@@ -27,6 +27,7 @@ package org.silverpeas.servlets;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.InMemoryCacheService;
@@ -80,6 +81,7 @@ public class SilverListener
     ServletRequest request = sre.getServletRequest();
     if (request instanceof HttpServletRequest) {
       HttpServletRequest httpRequest = (HttpServletRequest) request;
+      URLManager.setCurrentServerUrl(httpRequest);
       HttpSession httpSession = httpRequest.getSession(false);
       if (httpSession != null) {
         SessionInfo sessionInfo = SessionManagementFactory.getFactory().getSessionManagement()

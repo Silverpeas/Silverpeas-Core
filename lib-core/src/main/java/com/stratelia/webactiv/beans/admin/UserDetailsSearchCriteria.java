@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   public static String[] ANY_GROUPS = ANY;
 
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
+  private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
   private static final String ROLE_NAMES = "roleIds";
@@ -93,6 +95,12 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
+    criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    return null;
+  }
+
+  @Override
   public UserDetailsSearchCriteria onResourceId(String resourceId) {
     if (isDefined(resourceId)) {
       criteria.put(RESOURCE_ID, resourceId);
@@ -134,6 +142,10 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnAccessLevelsSet() {
     return criteria.containsKey(USER_ACCESS_LEVELS);
+  }
+
+  public boolean isCriterionOnUserStatesToExcludeSet() {
+    return criteria.containsKey(USER_STATES_TO_EXCLUDE);
   }
 
   public boolean isCriterionOnNameSet() {
@@ -198,6 +210,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
    */
   public UserAccessLevel[] getCriterionOnAccessLevels() {
     return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
+  }
+
+  /**
+   * Gets user states to exclude criterion.
+   * @return the access level criterion.
+   */
+  public UserState[] getCriterionOnUserStatesToExclude() {
+    return (UserState[]) criteria.get(USER_STATES_TO_EXCLUDE);
   }
 
   /**

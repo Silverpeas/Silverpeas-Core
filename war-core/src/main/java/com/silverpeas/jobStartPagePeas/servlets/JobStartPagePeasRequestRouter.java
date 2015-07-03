@@ -20,14 +20,29 @@
  */
 package com.silverpeas.jobStartPagePeas.servlets;
 
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.silverpeas.admin.components.LocalizedParameter;
+import com.silverpeas.admin.components.LocalizedParameterList;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
+
+import com.silverpeas.admin.components.GroupOfParameters;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
-import com.silverpeas.admin.components.ParameterSorter;
+import com.silverpeas.admin.components.ParameterList;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.localized.LocalizedComponent;
-import com.silverpeas.admin.localized.LocalizedParameter;
-import com.silverpeas.admin.localized.LocalizedParameterSorter;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
 import com.silverpeas.ui.DisplayI18NHelper;
@@ -51,20 +66,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import java.rmi.RemoteException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
 
 public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobStartPagePeasSessionController> {
 
@@ -301,6 +302,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("ListComponents", jobStartPageSC.getAllLocalizedComponents());
       destination = "/jobStartPagePeas/jsp/componentsList.jsp";
     } else if (function.equals("CreateInstance")) {
+      jobStartPageSC.setManagedInstanceId(null);
       destination = prepareCreateInstance(jobStartPageSC, request);
     } else if ("EffectiveCreateInstance".equals(function)) {
       // Create the component
@@ -490,6 +492,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         destination = "/admin/jsp/accessForbidden.jsp";
       } else {
         jobStartPageSC.init();
+        request.setAttribute("PopupMode", true);
         destination = getDestination("GoToComponent", jobStartPageSC, request);
       }
     }
@@ -575,7 +578,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           && request.getParameter("NameObject").length() > 0) {
         jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request.
             getParameter("Description"),
-            request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
+            request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedContentLanguage(
                 request),
             request.getParameter("SelectedLook"),
             request.getParameter("ComponentSpaceQuota"),
@@ -968,16 +971,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     }
   }
 
-  private List<LocalizedParameter> getHiddenParameters(List<LocalizedParameter> parameters) {
-    List<LocalizedParameter> hiddenParameters = new ArrayList<LocalizedParameter>();
-    for (LocalizedParameter parameter : parameters) {
-      if (parameter.isHidden()) {
-        hiddenParameters.add(parameter);
-      }
-    }
-    return hiddenParameters;
-  }
-
   private void request2SpaceInst(SpaceInst spaceInst,
       JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) {
     String name = request.getParameter("NameObject");
@@ -1044,16 +1037,16 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     }
     I18NHelper.setI18NInfo(componentInst, request);
     // Add the parameters (if they exist)
-    WAComponent componentInstSelected;
+    WAComponent component;
     if (StringUtil.isDefined(componentInst.getName())) {
-      componentInstSelected = jobStartPageSC.getComponentByName(componentInst.getName());
+      component = jobStartPageSC.getComponentByName(componentInst.getName());
     } else {
       String componentName = request.getParameter("ComponentName");
-      componentInstSelected = jobStartPageSC.getComponentByName(componentName);
+      component = jobStartPageSC.getComponentByName(componentName);
       componentInst.setName(componentName);
     }
 
-    List<Parameter> parameters = componentInstSelected.cloneParameters();
+    ParameterList parameters = component.getAllParameters().clone();
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasRequestRouter.EffectiveCreateInstance",
         "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
@@ -1067,101 +1060,15 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     componentInst.setParameters(parameters);
   }
 
-  private void mergeParametersWith(List<Parameter> parameters, List<Parameter> parametersToMerge) {
-    for (Parameter parameterToMerge : parametersToMerge) {
-      Parameter parameter = getParameterByName(parameterToMerge.getName(), parameters);
-      if (parameter == null) {
-        // Le parametre existe en base mais plus dans le xmlComponent
-        SilverTrace.info("admin", "Parameters.mergeWith", "root.MSG_GEN_PARAM_VALUE",
-            "dbParameter '" + parameterToMerge.getName() + "' is no more use !");
-      } else {
-        parameter.setValue(parameterToMerge.getValue());
-      }
-    }
-  }
-
-  private Parameter getParameterByName(String name, List<Parameter> parameters) {
-    for (Parameter param : parameters) {
-      if (param.getName().equals(name)) {
-        return param;
-      }
-    }
-    return null;
-  }
-
-  private Parameter createIsHiddenParam(String isHidden) {
-    Parameter hiddenParam = new Parameter();
-    hiddenParam.setName("HiddenComponent");
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      ResourceLocator resource = new ResourceLocator(
-          "com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle", lang);
-      hiddenParam.getLabel().put(lang, resource.getString("JSPP.hiddenComponent"));
-      hiddenParam.getHelp().put(lang, resource.getString("Help.hiddenComponent"));
-      hiddenParam.getWarning().put(lang, resource.getString("Warning.hiddenComponent"));
-      hiddenParam.setOrder(-5);
-      hiddenParam.setMandatory(false);
-      hiddenParam.setUpdatable("always");
-      hiddenParam.setType(ParameterInputType.checkbox.toString());
-      hiddenParam.setValue(isHidden);
-    }
-    return hiddenParam;
-  }
-
-  private Parameter createIsPublicParam(String isPublic) {
-    Parameter publicParam = new Parameter();
-    publicParam.setName("PublicComponent");
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      ResourceLocator resource = new ResourceLocator(
-          "com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle", lang);
-      publicParam.getLabel().put(lang, resource.getString("JSPP.publicComponent"));
-      publicParam.getHelp().put(lang, resource.getString("Help.publicComponent"));
-      publicParam.getWarning().put(lang, resource.getString("Warning.publicComponent"));
-      publicParam.setOrder(-6);
-      publicParam.setMandatory(false);
-      publicParam.setUpdatable("always");
-      publicParam.setType(ParameterInputType.checkbox.toString());
-      publicParam.setValue(isPublic);
-    }
-    return publicParam;
-  }
-
   private String prepareUpdateInstance(JobStartPagePeasSessionController sessionController,
       HttpServletRequest request) {
+    String language = sessionController.getLanguage();
     ComponentInst componentInst = sessionController.getComponentInst(sessionController.
         getManagedInstanceId());
     // Search for component 'generic' label
     WAComponent waComponent = sessionController.getComponentByName(componentInst.getName());
-    LocalizedComponent localizedComponent = new LocalizedComponent(waComponent,
-        sessionController.getLanguage());
-    List<Parameter> parameters = waComponent.cloneParameters();
-    mergeParametersWith(parameters, componentInst.getParameters());
-    Collections.sort(parameters, new ParameterSorter());
-    List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>(
-        parameters.size());
-    for (Parameter parameter : parameters) {
-      localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
-    }
-    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(waComponent.
-        getName(), localizedParameters);
-    String isHidden = "no";
-    if (componentInst.isHidden()) {
-      isHidden = "yes";
-    }
-    Parameter hiddenParam = createIsHiddenParam(isHidden);
-    visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
-    if (JobStartPagePeasSettings.isPublicParameterEnable) {
-      String isPublic = "no";
-      if (componentInst.isPublic()) {
-        isPublic = "yes";
-      }
-      Parameter publicParam = createIsPublicParam(isPublic);
-      visibleParameters
-          .add(0, new LocalizedParameter(publicParam, sessionController.getLanguage()));
-    }
-    request.setAttribute("Parameters", visibleParameters);
-    Collections.sort(localizedParameters, new LocalizedParameterSorter());
-    request.setAttribute("HiddenParameters", getHiddenParameters(localizedParameters));
-    request.setAttribute("JobPeas", localizedComponent.getLabel());
+    request.setAttribute("Parameters", sessionController.getParameters(waComponent, false));
+    request.setAttribute("JobPeas", waComponent.getLabel(language));
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("ComponentInst", componentInst);
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
@@ -1175,23 +1082,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     String componentName = request.getParameter("ComponentName");
     WAComponent component = sessionController.getComponentByName(componentName);
     if (component != null && component.isVisible()) {
-      LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
-          getComponentByName(componentName), sessionController.getLanguage());
       setSpacesNameInRequest(sessionController, request);
-      List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(
-          componentName, componentInstSelected.
-          getSortedParameters());
-      Parameter hiddenParam = createIsHiddenParam("no");
-      visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
-      if (JobStartPagePeasSettings.isPublicParameterEnable) {
-        Parameter publicParam = createIsPublicParam("no");
-        visibleParameters
-            .add(0, new LocalizedParameter(publicParam, sessionController.getLanguage()));
-      }
-      request.setAttribute("Parameters", visibleParameters);
-      request.setAttribute("HiddenParameters", getHiddenParameters(componentInstSelected.
-          getSortedParameters()));
-      request.setAttribute("WAComponent", componentInstSelected);
+      request.setAttribute("Parameters", sessionController.getParameters(component, true));
+      request.setAttribute("WAComponent", component);
       request.setAttribute("brothers", sessionController.getBrotherComponents(true));
       destination = "/jobStartPagePeas/jsp/createInstance.jsp";
     } else {
@@ -1210,37 +1103,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         getManagedInstanceId());
     // Search for component 'generic' label
     WAComponent waComponent = sessionController.getComponentByName(componentInst.getName());
-    List<Parameter> parameters = waComponent.cloneParameters();
-    mergeParametersWith(parameters, componentInst.getParameters());
-    Collections.sort(parameters, new ParameterSorter());
-    List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>(
-        parameters.size());
-    for (Parameter parameter : parameters) {
-      localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
-    }
-    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(waComponent.
-        getName(), localizedParameters);
-    String isHidden = "no";
-    if (componentInst.isHidden()) {
-      isHidden = "yes";
-    }
-    LocalizedParameter hiddenParam = new LocalizedParameter(createIsHiddenParam(isHidden),
-        sessionController.getLanguage());
-    visibleParameters.add(0, hiddenParam);
-    if (JobStartPagePeasSettings.isPublicParameterEnable) {
-      String isPublic = "no";
-      if (componentInst.isPublic()) {
-        isPublic = "yes";
-      }
-      LocalizedParameter publicParam = new LocalizedParameter(createIsPublicParam(isPublic),
-          sessionController.getLanguage());
-      visibleParameters.add(0, publicParam);
-    }
-    LocalizedComponent localizedComponent = new LocalizedComponent(waComponent, sessionController.
-        getLanguage());
-    request.setAttribute("Parameters", visibleParameters);
+    request.setAttribute("Parameters", sessionController.getParameters(waComponent, false));
     request.setAttribute("ComponentInst", componentInst);
-    request.setAttribute("JobPeas", localizedComponent.getLabel());
+    request.setAttribute("JobPeas", waComponent);
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());

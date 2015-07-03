@@ -117,14 +117,10 @@
         <item name="Migration" href="../../configuration/migration.html"  collapse="false"/>
         <item name="LDAP Synchronization" href="../../configuration/ldap.html" collapse="false"/>
         <item name="Configuring a reverse-proxy" href="../../configuration/proxy.html"  collapse="true"/>
-        <item name="CAS" href="../../cas/SSO-CAS.html" collapse="true">
-          <item name="Introduction" href="../../cas/SSO-CAS.html" collapse="true"/>
-          <item name="Certificates Configuration" href="../../cas/certificates.html" collapse="true" />
-          <item name="Tomcat as CAS Server Configuration" href="../../cas/configuring_tomcat.html" collapse="true" />
-          <item name="Silverpeas Configuration" href="../../cas/configuring_silverpeas.html" collapse="true" />
-        </item>
+        <item name="CAS" href="../../configuration/cas.html" collapse="true"/>
       </item>
       <item name="FAQ" href="../../faq.html" collapse="true"/>
+      <item name="Blog" href="http://www.silverpeas.org/blog" collapse="true"/>
     </menu>
     <menu name="Silverpeas Projects" inherit="top">
       <item name="Global information" href="#" collapse="true">

@@ -25,6 +25,8 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.notification.ComponentJsonPatch;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.peasCore.URLManager;
+
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.notification.jsondiff.Operation;
 
@@ -427,5 +429,9 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
           .getParameterValue(newParameter)));
     }
     return patch;
+  }
+  
+  public String getPermalink() {
+    return URLManager.getSimpleURL(URLManager.URL_COMPONENT, getId());
   }
 }

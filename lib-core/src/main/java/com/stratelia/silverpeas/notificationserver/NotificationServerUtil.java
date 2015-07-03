@@ -163,6 +163,9 @@ public class NotificationServerUtil {
             if (strValue.startsWith("#DATE#")) {
               strValue = strValue.substring(6, strValue.length());
               result.put(key.toString(), new Date(Long.valueOf(strValue)));
+            } else if (strValue.startsWith("#BOOLEAN#")) {
+              strValue = strValue.substring(9, strValue.length());
+              result.put(key.toString(), new Boolean(strValue));
             } else {
               result.put(key.toString(), strValue);
             }
@@ -190,6 +193,9 @@ public class NotificationServerUtil {
       if (strValue.startsWith("#DATE#")) {
         strValue = strValue.substring(6);
         result.put(key.toString(), new Date(Long.valueOf(strValue)));
+      } else if (strValue.startsWith("#BOOLEAN#")) {
+        strValue = strValue.substring(9, strValue.length());
+        result.put(key.toString(), new Boolean(strValue));
       } else {
         result.put(key.toString(), strValue);
       }
@@ -261,6 +267,17 @@ public class NotificationServerUtil {
           try {
             Date date = (Date) keyValues.get(theKey);
             keyValue = "#DATE#" + String.valueOf(date.getTime());
+            success = true;
+          } catch (ClassCastException cce) {
+            success = false;
+          }
+        }
+
+        //then, try to treat it as a Boolean
+        if (!success) {
+          try {
+            Boolean bool = (Boolean) keyValues.get(theKey);
+            keyValue = "#BOOLEAN#" + String.valueOf(bool);
             success = true;
           } catch (ClassCastException cce) {
             success = false;

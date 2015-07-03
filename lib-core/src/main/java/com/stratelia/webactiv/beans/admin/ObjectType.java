@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 public enum ObjectType {
-  SPACE("S"), INSTANCE("I"), GROUP("G"), OBJECT("O"), NODE("O"), DOCUMENT("D");
+  NODE("O");
 
   private String code;
 

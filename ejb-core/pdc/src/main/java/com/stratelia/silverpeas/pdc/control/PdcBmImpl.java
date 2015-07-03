@@ -589,7 +589,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @param valueId
    * @return List of String
    * @throws PdcException
-   * @see getDaughters
    */
   @Override
   public List<String> getDaughterValues(String axisId, String valueId)
@@ -615,11 +614,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
-   * @param axisId
-   * @param valueId
+   * @param rootId
+   * @param filter
    * @return List of String
    * @throws PdcException
-   * @see getDaughters
    */
   @Override
   public List<Value> getFilteredAxisValues(String rootId, AxisFilter filter) throws PdcException {
@@ -801,7 +799,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * retourne les droits hérités sur la valeur
-   * @param current value
+   * @param value
    * @return ArrayList( ArrayList UsersId, ArrayList GroupsId)
    * @throws PdcException
    */
@@ -838,7 +836,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * retourne les droits sur la valeur
-   * @param current value
+   * @param axisId
+   * @param valueId
    * @return List(List userIds, List groupIds)
    * @throws PdcException
    */
@@ -906,7 +905,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * met à jour les droits sur la valeur
-   * @param ArrayList ( ArrayList UsersId, ArrayList GroupsId), current value
+   * @param userIds
+   * @param groupIds
+   * @param axisId
+   * @param valueId
    * @return
    * @throws PdcException
    */
@@ -1354,7 +1356,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * This method searches if a name of axes is alreadey used !
    * @param axis - a list of axes
-   * @param name - the name of the axe
+   * @param axisToCheck - the name of the axe
    * @return true if the name of the axe exists, false otherwise
    */
   private boolean isAxisNameExist(List<AxisHeader> axis, AxisHeader axisToCheck) {
@@ -1381,7 +1383,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   /**
    * This method searches if a name of values is alreadey used !
    * @param values - a list of values
-   * @param name - the name of the value
+   * @param valueToCheck - the name of the value
    * @return true if the name of the value exists, false otherwise
    */
   private boolean isValueNameExist(List<Value> values, Value valueToCheck) {
@@ -1683,7 +1685,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update a base value from the PdcUtilization table
-   * @param valueId - the base value that must be updated
+   * @param con
+   * @param baseValueToUpdate - the base value that must be updated
+   * @param axisId
+   * @param treeId
    */
   private void updateBaseValueInInstances(Connection con,
       String baseValueToUpdate, String axisId, String treeId)
@@ -1703,7 +1708,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Update some base values from the PdcUtilization table
-   * @param baseValuesToUpdate - the base values that must be updated
+   * @param con
+   * @param baseValueToUpdate - the base value that must be updated
+   * @param axisId
+   * @param treeId
    */
   private void updateBaseValuesInInstances(Connection con,
       String baseValueToUpdate, String axisId, String treeId)
@@ -1792,7 +1800,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     } else {
       for (UsedAxis axis : usedAxis) {
 
-        if (I18NHelper.isI18N) {
+        if (I18NHelper.isI18nContentActivated) {
           AxisHeader header = getAxisHeader(Integer.toString(axis.getAxisId()));
           axis._setAxisHeader(header);
         }
@@ -2437,8 +2445,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * @param con
-   * @see
    */
   private Connection openConnection() throws PdcException {
     Connection con = null;
@@ -2536,7 +2542,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           sComponentId);
 
       // Convert the first position in SearchContext
-      SearchContext searchContext = new SearchContext();
+      SearchContext searchContext = new SearchContext(null);
       if (alPositions != null && alPositions.size() > 0) {
         Position pos = (Position) alPositions.get(0);
         List alValues = pos.getValues();

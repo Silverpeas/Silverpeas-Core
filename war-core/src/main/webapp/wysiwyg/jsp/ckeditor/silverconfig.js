@@ -10,12 +10,12 @@ CKEDITOR.editorConfig = function( config )
 	// config.uiColor = '#AADC6E';
 
 	//config.contentsCss = webContext + '/util/styleSheets/globalSP_SilverpeasV5.css';
-    config.baseHref = webContext + '/wysiwyg/jsp/';
+  config.baseHref = webContext + '/wysiwyg/jsp/';
 	config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
 	config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';	
-    config.extraPlugins = 'userzoom,identitycard,allmedias';
-    config.allowedContent = true;
+  config.extraPlugins = 'userzoom,identitycard,allmedias';
+  config.allowedContent = true;
 	config.toolbarCanCollapse = true;
 	//config.forcePasteAsPlainText = true;
 
@@ -81,14 +81,19 @@ CKEDITOR.editorConfig = function( config )
    	       { name: 'tools',       items : [ 'Maximize', 'ShowBlocks','-','About' ] }
    	];
 
-  config.toolbar_almanach = config.toolbar_Light;
+config.toolbar_quickInfo = [
+  { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
+  { name: 'links',       items : [ 'Link','Unlink' ] },
+  { name: 'insert',      items : [ 'Image','allmedias','Table','HorizontalRule','Smiley','SpecialChar', 'identitycard', 'userzoom' ] },
+  '/',
+  { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
+  { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
+  { name: 'styles',      items : [ 'Styles'] },
+  { name: 'colors',      items : [ 'TextColor','BGColor' ] }
+];
 
-  config.toolbar_forum = config.toolbar_Light;
-
-  config.toolbar_questionReply = config.toolbar_Light;
-
-  config.toolbar_quickInfo = config.toolbar_Light;
-
-  config.toolbar_suggestionBox = config.toolbar_Light;
-
+config.toolbar_almanach = config.toolbar_Light;
+config.toolbar_forum = config.toolbar_Light;
+config.toolbar_questionReply = config.toolbar_Light;
+config.toolbar_suggestionBox = config.toolbar_Light;
 };

@@ -135,6 +135,7 @@ public class WorkflowDesignerRequestRouter extends
         destination = root + "redirect.jsp";
       }
 
+
     } catch (WorkflowDesignerException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = root + "errorpageMain.jsp";
@@ -526,6 +527,7 @@ public class WorkflowDesignerRequestRouter extends
       } else // ModifyColumns
       {
         String strColumnsName = request.getParameter("columns");
+        //Get columns checked in the page
 
         columns = workflowDesignerSC.getProcessModel().getPresentation()
             .getColumnsByRole(strColumnsName);
@@ -552,18 +554,21 @@ public class WorkflowDesignerRequestRouter extends
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
         HttpServletRequest request) throws WorkflowDesignerException {
-      Columns columns = workflowDesignerSC.getProcessModel().getPresentation()
-          .createColumns();
-      Column column;
-      String[] astrColumnNames = request.getParameterValues("column");
+      String role = null;
+      if (StringUtil.isDefined(request.getParameter("role")))
+          role = request.getParameter("role");
 
-      columns.setRoleName(request.getParameter("role"));
+      //Get columns checked in the page
+      String[] astrColumnNames = request.getParameterValues("column");
+      Column column;
+      Columns columns = workflowDesignerSC.getProcessModel().getPresentation().createColumns();
+      columns.setRoleName(role);
 
       for (int i = 0; astrColumnNames != null && i < astrColumnNames.length; i++) {
-        column = columns.createColumn();
-        column.setItem(workflowDesignerSC.getProcessModel().getDataFolder()
-            .getItem(astrColumnNames[i]));
-        columns.addColumn(column);
+          column = columns.createColumn();
+          column.setItem(workflowDesignerSC.getProcessModel().getDataFolder()
+              .getItem(astrColumnNames[i]));
+          columns.addColumn(column);
       }
 
       // The 'Columns' original name has been stored in a hidden field,
@@ -1344,7 +1349,6 @@ public class WorkflowDesignerRequestRouter extends
       }
       if ("AddInput".equals(function)) {
         input = form.createInput();
-        input.setValue(WorkflowDesignerSessionController.NEW_ELEMENT_NAME);
         iInput = form.getInputs().length;
         strContext = strContext + "/inputs[" + Integer.toString(iInput) + "]";
         request.setAttribute("IsExisitingInput", Boolean.FALSE);
@@ -1363,10 +1367,8 @@ public class WorkflowDesignerRequestRouter extends
       request.setAttribute("context", strContext);
       request.setAttribute("parentScreen", calculateParentScreen(
           workflowDesignerSC, strContext));
-      request.setAttribute("DisplayerNames", workflowDesignerSC
-          .retrieveDisplayerNames());
-      request.setAttribute("FolderItemNames", workflowDesignerSC
-          .retrieveFolderItemNames(true, false));
+      request.setAttribute("TypesAndDisplayers", workflowDesignerSC.retrieveTypesAndDisplayers());
+      request.setAttribute("FolderItems", workflowDesignerSC.retrieveFolderItems());
 
       return root + "editInput.jsp";
     }

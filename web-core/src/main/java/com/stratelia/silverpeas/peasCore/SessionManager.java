@@ -30,6 +30,7 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionValidationContext;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -51,6 +52,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.servlets.LogoutServlet;
 
 import javax.annotation.PostConstruct;
@@ -249,6 +251,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       // Delete in wait server messages corresponding to the session to invalidate
       removeInQueueMessages(si.getUserDetail().getId(), si.getSessionId());
 
+      // Clears all volatile resources
+      VolatileResourceCacheService.clearFrom(si);
+
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());
       userNotificationSessions.remove(si.getSessionId());
@@ -427,19 +432,26 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       throws NotificationManagerException {
     SilverTrace.debug("peasCore", "SessionManager.notifyEndOfSession", "userId=" + userId
         + " sessionId=" + sessionId);
+    UserDetail user = UserDetail.getById(userId);
+    String userLanguage = DisplayI18NHelper.getDefaultLanguage();
+    if (user != null) {
+      userLanguage = user.getUserPreferences().getLanguage();
+    }
+    ResourceLocator bundle =
+        new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
+            userLanguage);
     String endOfSessionDate = DateUtil.formatDate(new Date(endOfSession), NOTIFY_DATE_FORMAT);
-    String msgTitle = messages.getString("EndOfSessionNotificationMsgTitle");
+    String msgTitle = bundle.getString("EndOfSessionNotificationMsgTitle");
     msgTitle += endOfSessionDate;
 
     // Notify user the end of session
     NotificationSender notifSender = new NotificationSender(null);
 
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        msgTitle, messages.getString("EndOfSessionNotificationMsgText"));
-    notifMetaData.setSender(null);
+        msgTitle, bundle.getString("EndOfSessionNotificationMsgText"));
     notifMetaData.setSessionId(sessionId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
-    notifMetaData.setSource(messages.getString("administrator"));
+    notifMetaData.setSender(bundle.getString("administrator"));
     notifSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
   }
 

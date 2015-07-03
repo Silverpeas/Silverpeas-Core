@@ -27,15 +27,19 @@ package com.stratelia.webactiv.publication.social;
 import com.silverpeas.socialnetwork.model.AbstractSocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 
 public class SocialInformationPublication extends AbstractSocialInformation {
+
+  private final PublicationDetail publication;
 
   /**
    * Constructor with one param
    * @param publication
    */
   public SocialInformationPublication(PublicationWithStatus publication) {
+    this.publication = publication.getPublication();
     if (publication.isUpdate()) {
       setAuthor(publication.getPublication().getUpdaterId());
       setDate(publication.getPublication().getUpdateDate());
@@ -106,5 +110,9 @@ public class SocialInformationPublication extends AbstractSocialInformation {
     hash = 43 * hash + (this.date != null ? this.date.hashCode() : 0);
     hash = 43 * hash + (this.url != null ? this.url.hashCode() : 0);
     return hash;
+  }
+
+  public PublicationDetail getPublication() {
+    return publication;
   }
 }

@@ -208,7 +208,6 @@ Definition des class de style Silverpeas
 
 .principalContent{
   margin-right:320px;
-  margin-top:10px;
 }
 .rightContent{
   width:310px;
@@ -841,6 +840,20 @@ td.browsebar a:hover {
 
 .hide {
   display: none;
+}
+
+/***************************************/
+/****** Look V5 - Popup ****************/
+/***************************************/
+
+.popup-compute-settings {
+  margin: 0;
+  height: auto;
+}
+
+.popup-compute-finally {
+  margin: 5px;
+  height: auto;
 }
 
 /****************************************/
@@ -3612,11 +3625,6 @@ caption {
   width:25px;
 }
 
-#newsFeedProfil .txt .decoration-status {
-  background-image:url(../icons/newsFeed_statut.gif);
-  padding-left:20px;
-}
-
 #newsFeedProfil .txt .decoration-publication {
   background-image:url(../icons/newsFeed_publication.gif);
   padding-left:20px;
@@ -3652,6 +3660,15 @@ caption {
   background-image:url(../icons/newsFeed_picture.gif);
   padding-left:20px;
 }
+
+#newsFeedProfil .txt .decoration-commentpublication,
+#newsFeedProfil .txt .decoration-commentpost,
+#newsFeedProfil .txt .decoration-commentnews,
+#newsFeedProfil .txt .decoration-commentmedia {
+  background-image:url(../icons/newsFeed_statut.gif);
+  padding-left:20px;
+}
+
 
 #newsFeedProfil .name {
   color:#26334A;
@@ -5001,6 +5018,14 @@ input.search:focus {
 .userPanel .avatar img{
   width:30px;
   height:auto;
+}
+
+.userPanel .state-deactivated .avatar {
+  opacity:0.5;
+}
+
+.userPanel .state-deactivated .name_user {
+  color:#666;
 }
 
 .pageNav_silverpeas {
@@ -6519,4 +6544,58 @@ iframe.embed {
 
 .popup-read-notification .content-notification {
   margin:1em 0;
+}
+
+
+/***  Admin - ComponentInfo***/
+
+.general-info img.icons-application{
+	float:left;
+	margin:0 1em 0 0;
+}
+.general-info img.applicationInfo {
+	height:12px;
+	vertical-align:baseline;
+}
+.general-info div{
+	padding:0.5em 0;
+}
+.principalContent .inlineMessage {
+	margin-left:0;
+	margin-right:0;
+}
+.principalContent  .title-principal {
+	padding:0;
+	margin:0 0 1em 0;
+}
+a.navigation-button {
+    background-color: #f4f4f4;
+    background-image: url("../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    color: #4c4c4c;
+    font-size: 100%;
+    padding: 7px 10px;
+}
+
+#backToApplication a.navigation-button,
+#goToApplication a.navigation-button {
+	display:block;
+	text-align:center;
+	margin-bottom:0.5em;
+}
+
+#infoInstance .inlineMessage {
+	text-align:left;
+}
+
+#backToApplication a.navigation-button span,
+#goToApplication a.navigation-button span {
+    background: url("../icons/back.png") no-repeat scroll 0 1px transparent;
+    font-weight: bold;
+    line-height: 16px;
+    padding: 2px 0 2px 24px;
+}
+#goToApplication a.navigation-button span {
+    background: url("../icons/go-to.png") no-repeat scroll 0 1px transparent;
 }

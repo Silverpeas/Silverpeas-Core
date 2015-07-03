@@ -317,4 +317,9 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
     }
     return calendarBm;
   }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "agenda.notifEventLinkLabel";
+  }
 }

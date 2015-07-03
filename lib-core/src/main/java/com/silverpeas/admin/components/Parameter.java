@@ -152,6 +152,13 @@ public class Parameter implements Cloneable {
     }
     return label;
   }
+  
+  public String getLabel(String lang) {
+    if (getLabel().containsKey(lang)) {
+      return getLabel().get(lang);
+    }
+    return getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+  }
 
   /**
    * Sets the value of the label property.
@@ -280,6 +287,13 @@ public class Parameter implements Cloneable {
   public void setUpdatable(String value) {
     this.updatable = value;
   }
+  
+  public String getHelp(String lang) {
+    if (getHelp().containsKey(lang)) {
+      return getHelp().get(lang);
+    }
+    return getHelp().get(DisplayI18NHelper.getDefaultLanguage());
+  }
 
   /**
    * Gets the value of the help property.
@@ -309,6 +323,13 @@ public class Parameter implements Cloneable {
       warning = new HashMap<String, String>();
     }
     return warning;
+  }
+  
+  public String getWarning(String lang) {
+    if (getWarning().containsKey(lang)) {
+      return getWarning().get(lang);
+    }
+    return getWarning().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
   /**

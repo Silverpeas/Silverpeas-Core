@@ -26,8 +26,12 @@ package com.silverpeas.comment.dao;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.comment.socialnetwork.SocialInformationComment;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.date.Period;
+
 import java.util.List;
 
 /**
@@ -147,5 +151,27 @@ public interface CommentDAO {
    * @return a list of the last comments.
    */
   public List<Comment> getLastComments(String instanceId, int count);
+
+  /**
+   * Get the list of SocialInformationComment added by userId in a period
+   * @param resourceTypes the aimed resources types.
+   * @param userId the author of comments.
+   * @param period the period into which the comment has been created or modified.
+   * @return List of {@link SocialInformation}
+   */
+  List<SocialInformationComment> getSocialInformationCommentsListByUserId(
+      List<String> resourceTypes, String userId, Period period);
+
+  /**
+   * Gets the list of SocialInformationComment added by myContactsIds in a period
+   * @param resourceTypes the aimed resources types.
+   * @param myContactsIds the aimed user identifiers of contacts.
+   * @param instanceIds the aimed identifiers of component instances.
+   * @param period the period into which the comment has been created or modified.
+   * @return List of {@link SocialInformation}
+   */
+  List<SocialInformationComment> getSocialInformationCommentsListOfMyContacts(
+      List<String> resourceTypes, List<String> myContactsIds, List<String> instanceIds,
+      Period period);
 
 }

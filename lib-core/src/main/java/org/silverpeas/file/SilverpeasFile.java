@@ -177,4 +177,43 @@ public class SilverpeasFile extends File {
     return copiedFile;
   }
 
+  /**
+   * Indicates if the current silverpeas file is of type archive.
+   * @return true if it is an archive file, false otherwise.
+   */
+  public boolean isArchive() {
+    return FileUtil.isArchive(getPath());
+  }
+
+  /**
+   * Indicates if the current file is of type image.
+   * @return true if it is an image file, false otherwise.
+   */
+  public boolean isImage() {
+    return FileUtil.isImage(getPath());
+  }
+
+  /**
+   * Indicates if the current file is of type mail.
+   * @return true if it is a mail file, false otherwise.
+   */
+  public boolean isMail() {
+    return FileUtil.isMail(getPath());
+  }
+
+  /**
+   * Indicates if the current file is of type PDF.
+   * @return true if it is a PDF file, false otherwise.
+   */
+  public boolean isPdf() {
+    return FileUtil.isPdf(getPath());
+  }
+
+  /**
+   * Indicates if the current file is of type OpenOffice compatible.
+   * @return true if it is a OpenOffice compatible file, false otherwise.
+   */
+  public boolean isOpenOfficeCompatible() {
+    return FileUtil.isOpenOfficeCompatible(getPath());
+  }
 }

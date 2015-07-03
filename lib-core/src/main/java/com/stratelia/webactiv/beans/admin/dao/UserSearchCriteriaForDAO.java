@@ -26,8 +26,10 @@ package com.stratelia.webactiv.beans.admin.dao;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,10 +42,11 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 public class UserSearchCriteriaForDAO implements SearchCriteria {
 
-  private static final String QUERY = "select {0} from {1} where state <> ''DELETED'' {2} {3}";
+  private static final String QUERY = "select {0} from {1} where state not in ({2}) {3} {4}";
   private static final String ORDER_BY_LASTNAME = "order by lastName";
 
   private StringBuilder filter = new StringBuilder();
+  private Set<UserState> userStatesToExclude = new HashSet<UserState>();
   private Set<String> tables = new HashSet<String>();
   private PaginationPage page = null;
 
@@ -124,8 +127,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     // (the administrators should be visible by anyone in order to be contacted)
     if (isDefined(domainId)) {
       tables.add("st_user");
-      getFixedQuery().append("(st_user.domainId = ").append(Integer.valueOf(domainId)).
-              append(" or st_user.accessLevel = 'A')");
+      getFixedQuery().append("st_user.domainId = ").append(Integer.valueOf(domainId));
     }
     return this;
   }
@@ -144,12 +146,29 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
+  @Override
+  public UserSearchCriteriaForDAO onUserStatesToExclude(final UserState... userStates) {
+    Collections.addAll(userStatesToExclude, userStates);
+    String tmpFilter = filter.toString().replaceFirst(" (and|or) $", "");
+    filter = new StringBuilder(tmpFilter);
+    return this;
+  }
+
   public String toSQLQuery(String fields) {
     String ordering = ORDER_BY_LASTNAME;
     if (fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
       ordering = "";
     }
-    return MessageFormat.format(QUERY, fields, impliedTables(), queryFilter(), ordering);
+
+    StringBuilder excludedUserStatesSQLPart =
+        new StringBuilder("'").append(UserState.DELETED).append("'");
+    for (UserState userStateToExclude : userStatesToExclude) {
+      excludedUserStatesSQLPart.append(", '").append(userStateToExclude).append("'");
+    }
+
+    return MessageFormat
+        .format(QUERY, fields, impliedTables(), excludedUserStatesSQLPart.toString(), queryFilter(),
+            ordering);
   }
 
   @Override

@@ -100,6 +100,25 @@ public class CacheServiceFactory {
   }
 
   /**
+   * Gets the volatile resource cache linked to the current user session.<br/>
+   * For example (and for now), this cache permits to handle attachments linked to a contribution
+   * not yet persisted. In case of the user does not persist its contribution, all resources
+   * linked to a "volatile" contribution (attachments for the example) are automatically deleted
+   * on the user session closing.
+   * @return the volatile resource cache linked to the current user session.
+   */
+  public static VolatileResourceCacheService getSessionVolatileResourceCacheService() {
+    VolatileResourceCacheService volatileResourceCacheService = getSessionCacheService()
+        .get(VolatileResourceCacheService.class.getName(), VolatileResourceCacheService.class);
+    if (volatileResourceCacheService == null) {
+      volatileResourceCacheService = new VolatileResourceCacheService();
+      getSessionCacheService()
+          .put(VolatileResourceCacheService.class.getName(), volatileResourceCacheService);
+    }
+    return volatileResourceCacheService;
+  }
+
+  /**
    * Gets the cache of the application.
    * @return an applicative cache service
    */

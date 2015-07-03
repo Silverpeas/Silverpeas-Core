@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="com.stratelia.silverpeas.notificationManager.NotificationManagerSettings" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -33,21 +34,31 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 
+<c:set var="context" value="${pageContext.request.contextPath}"/>
+<c:set var="USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED" value="<%= NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled()%>"/>
+<c:set var="USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE" value="<%= NotificationManagerSettings.getUserManualNotificationRecipientLimit()%>"/>
+
+<fmt:message key="JDP.userManualNotifReceiverLimitValue" var="userManualNotifReceiverLimitValueLabel"><fmt:param value="${USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_DEFAULT_VALUE}"/></fmt:message>
+
+<c:set var="userObject" value="${requestScope.userObject}"/>
+<jsp:useBean id="userObject" type="com.stratelia.webactiv.beans.admin.UserFull"/>
+<c:set var="currentUser" value="${requestScope.CurrentUser}"/>
+<jsp:useBean id="currentUser" type="com.stratelia.webactiv.beans.admin.UserDetail"/>
 
 <%
   Domain domObject = (Domain) request.getAttribute("domainObject");
-  UserFull userObject = (UserFull) request.getAttribute("userObject");
   String action = (String) request.getAttribute("action");
   String groupsPath = (String) request.getAttribute("groupsPath");
   Boolean userRW = (Boolean) request.getAttribute("isUserRW");
   Integer minLengthLogin = (Integer) request.getAttribute("minLengthLogin");
-  UserDetail currentUser = (UserDetail) request.getAttribute("CurrentUser");
   List<Group> groups = (List) request.getAttribute("GroupsManagedByCurrentUser");
 
   boolean bUserRW = (userRW != null) ? userRW : false;
@@ -56,9 +67,8 @@
       "domainContent?Iddomain=" + domObject.getId());
   browseBar.setPath(groupsPath);
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <view:includePlugin name="password"/>
@@ -69,6 +79,31 @@
   // Password
   $(document).ready(function(){
     $('#userPasswordId').password();
+
+    <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
+    $("input[name='userAccessLevel']").on("change", function() {
+      var selectedRightAccess = $("input[name='userAccessLevel']:checked").val();
+      var $manualNotificationBlock = $('#identity-manual-notification');
+      if(selectedRightAccess === 'USER' || selectedRightAccess === 'GUEST') {
+        $manualNotificationBlock.show();
+      } else {
+        $manualNotificationBlock.hide();
+      }
+    });
+
+    var $limitActivation = $('#userManualNotifReceiverLimitEnabled').on("change", function() {
+      var $me = $(this);
+      var $limitValue = $('#form-row-user-manual-notification-limitation-value');
+      if($me.is(':checked')) {
+        $limitValue.show();
+      } else {
+        $limitValue.hide();
+      }
+    });
+
+    $limitActivation.trigger("change");
+    $("input[name='userAccessLevel']:checked").trigger("change");
+    </c:if>
   });
 
 function SubmitWithVerif()
@@ -108,6 +143,16 @@ function SubmitWithVerif()
     <% } %>
   }
   <% } %>
+
+  <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
+  var rightAccess = $("input[name='userAccessLevel']:checked").val();
+  var limitValue = $.trim($(document.userForm.userManualNotifReceiverLimitValue).val());
+  if ((rightAccess === 'USER' || rightAccess === 'GUEST')
+      && $(document.userForm.userManualNotifReceiverLimitEnabled).is(":checked")
+      && (!isInteger(limitValue) || (limitValue.length > 0 && eval(limitValue) <= 0))) {
+    errorMsg += "- <fmt:message key="GML.thefield" /> '${userManualNotifReceiverLimitValueLabel}' <fmt:message key="GML.MustContainsPositiveNumber" />";
+  }
+  </c:if>
 
   if (errorMsg == "")
   {
@@ -155,67 +200,75 @@ function selectUnselect()
 </script>
 </head>
 <body onload="selectUnselect();">
-
-<style type="text/css">
-  .txtlibform {
-    width: 300px;
-  }
-</style>
 <%
 out.println(window.printBefore());
-out.println(frame.printBefore());
 %>
+<view:frame>
   <form name="userForm" action="<%=action%>" method="post">
     <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) {
         out.print(userObject.getId());
       } %>"/>
+      
+    <fmt:message key="JDP.mandatory" var="mandatoryIcon" bundle="${icons}" />
+      
     <fieldset id="identity-main" class="skinFieldset">
-      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
-    <table cellpadding="5" cellspacing="0" border="0" width="100%">
-      <tr>
-          <td class="txtlibform"><fmt:message key="GML.lastName"/> :</td>
-            <td>
-              <% if (action.equals("userMS")) { %>
-                <%= userObject.getLastName()%>
+      <legend><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
+      <div class="fields">
+		<!--Last name-->
+      	<div class="field" id="form-row-name">
+			<label class="txtlibform"><fmt:message key="GML.lastName"/></label>
+			<div class="champs">
+				<% if (action.equals("userMS")) { %>
+                <%=userObject.getLastName()%>
               <% } else { %>
-                <input type="text" name="userLastName" id="userLastName" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+                <input type="text" name="userLastName" id="userLastName" size="50" maxlength="99" 
+                	value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />
+                	&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
               <% } %>
-            </td>
-        </tr>
-        <tr>
-          <td class="txtlibform"><fmt:message key="GML.surname"/> :</td>
-            <td>
-              <% if (action.equals("userMS")) { %>
-              <%= userObject.getFirstName()%>
-            <% } else { %>
-              <input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
-            <% } %>
-            </td>
-        </tr>
-        <tr>
-          <td class="txtlibform"><fmt:message key="GML.login"/> :</td>
-            <td>
-              <% if (action.equals("userCreate")) { %>
-                  <input type="text" name="userLogin" size="50" maxlength="50" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+			</div>
+		</div>
+		<!--Surname-->
+      	<div class="field" id="form-row-surname">
+			<label class="txtlibform"><fmt:message key="GML.surname"/></label>
+			<div class="champs">
+				<% if (action.equals("userMS")) { %>
+              	<%=userObject.getFirstName()%>
+            	<% } else { %>
+              	<input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99" 
+              		value="<%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
+            	<% } %>
+			</div>
+		</div>
+		<!--Login-->
+      	<div class="field" id="form-row-login">
+			<label class="txtlibform"><fmt:message key="GML.login"/></label>
+			<div class="champs">
+				<% if (action.equals("userCreate")) { %>
+                  <input type="text" name="userLogin" size="50" maxlength="50" 
+                  	value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>
+                  	&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
                 <% } else { %>
                   <%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%>
                 <% } %>
-            </td>
-        </tr>
-        <tr>
-            <td class="txtlibform"><fmt:message key="GML.eMail"/> :</td>
-            <td>
-              <% if (action.equals("userMS")) { %>
-              <%= userObject.geteMail()%>
-            <% } else { %>
-                  <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" />
+			</div>
+		</div>
+		<!--Email-->
+      	<div class="field" id="form-row-email">
+			<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
+			<div class="champs">
+				<% if (action.equals("userMS")) { %>
+              	<%=userObject.geteMail()%>
+            	<% } else { %>
+                  <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99" 
+                  	value="<%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" />
                 <% } %>
-            </td>
-        </tr>
-        <tr>
-            <td class="txtlibform"><fmt:message key="JDP.userRights"/> :</td>
-            <td>
-              <% if (currentUser.isAccessAdmin()) { %>
+			</div>
+		</div>
+		<!--Rights-->
+      	<div class="field" id="form-row-rights">
+			<label class="txtlibform"><fmt:message key="JDP.userRights"/></label>
+			<div class="champs">
+				<% if (currentUser.isAccessAdmin()) { %>
                   <input type="radio" name="userAccessLevel" value="ADMINISTRATOR" <%
                     if (userObject.isAccessAdmin()) {
                       out.print("checked");
@@ -239,39 +292,44 @@ out.println(frame.printBefore());
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.guest") %>
                 <% } else { %>
-          <input type="hidden" name="userAccessLevel" value="USER"/><fmt:message key="GML.user" />
+          		  <input type="hidden" name="userAccessLevel" value="USER"/><fmt:message key="GML.user" />
                 <% } %>
-            </td>
-        </tr>
-        <% if (userObject.isPasswordAvailable()) { %>
-            <tr>
-                <td class="txtlibform"><fmt:message key="JDP.silverPassword"/> :</td>
-                <td>
-                    <input type="checkbox" name="userPasswordValid" id="userPasswordValid" value="true" <%
-                      if (userObject.isPasswordValid()) {
-                        out.print("checked");
-                      } %> onclick="selectUnselect()"/>&nbsp;<fmt:message key="GML.yes" /><br/>
-                </td>
-            </tr>
-            <tr>
-                <td class="txtlibform"><fmt:message key="GML.password"/> :</td>
-                <td>
-                    <input type="password" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
-                </td>
-            </tr>
-            <tr>
-                <td class="txtlibform"><fmt:message key="GML.passwordAgain"/> :</td>
-                <td>
-                    <input type="password" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
-                </td>
-            </tr>
-            <tr id="sendEmailTRid" style="display:none;">
-                <td class="txtlibform"><fmt:message key="JDP.sendEmail" /></td>
-                <td>
-                    <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<fmt:message key="GML.yes" /> <br/>
-                </td>
-            </tr>
-
+			</div>
+		</div>
+		<% if (userObject.isPasswordAvailable()) { %>
+		<!--Password Silverpeas ?-->
+      	<div class="field" id="form-row-passwordsp">
+			<label class="txtlibform"><fmt:message key="JDP.silverPassword"/></label>
+			<div class="champs">
+				<input type="checkbox" name="userPasswordValid" id="userPasswordValid" value="true" 
+				<%
+                 if (userObject.isPasswordValid()) {
+                   out.print("checked");
+                 } %> onclick="selectUnselect()"/>&nbsp;<fmt:message key="GML.yes" /><br/>
+			</div>
+		</div>
+		<!--Password-->
+      	<div class="field" id="form-row-password">
+			<label class="txtlibform"><fmt:message key="GML.password"/></label>
+			<div class="champs">
+				<input type="password" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
+			</div>
+		</div>
+		<!--Password again-->
+      	<div class="field" id="form-row-passwordAgain">
+			<label class="txtlibform"><fmt:message key="GML.passwordAgain"/></label>
+			<div class="champs">
+				<input type="password" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
+			</div>
+		</div>
+		<!--Send Email-->
+      	<div class="field" id="sendEmailTRid">
+			<label class="txtlibform"><fmt:message key="JDP.sendEmail"/></label>
+			<div class="champs">
+				<input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />
+				&nbsp;<fmt:message key="GML.yes" /> <br/>
+			</div>
+		</div>
         <% }
 
         //in case of group manager, the added user must be set to one group
@@ -279,91 +337,134 @@ out.println(frame.printBefore());
         //else if he manages several groups, manager chooses one group
         if (groups != null && groups.size() > 0) {
       %>
-      <tr>
-        <td class="txtlibform"><fmt:message key="GML.groupe"/> :</td>
-        <td valign="baseline">
-          <% if (groups.size() == 1) {
-            Group group = groups.get(0);
-          %>
-          <%=group.getName() %> <input type="hidden" name="GroupId" id="GroupId" value="<%=group.getId()%>"/>
-          <% } else { %>
-          <select id="GroupId" name="GroupId">
-            <% for (Group group : groups) {
-            %>
-            <option value="<%=group.getId()%>"><%=group.getName()%>
-            </option>
-            <% } %>
-          </select>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
-          <% } %>
-        </td>
-      </tr>
+      	<!--Group-->
+      	<div class="field" id="form-row-group">
+			<label class="txtlibform"><fmt:message key="GML.groupe"/></label>
+			<div class="champs">
+				<% if (groups.size() == 1) {
+            		Group group = groups.get(0);
+	          	%>
+	          	<%=group.getName() %> <input type="hidden" name="GroupId" id="GroupId" value="<%=group.getId()%>"/>
+	          	<% } else { %>
+	          	<select id="GroupId" name="GroupId">
+	            <% for (Group group : groups) {
+	            %>
+	            <option value="<%=group.getId()%>"><%=group.getName()%>
+	            </option>
+	            <% } %>
+	          </select>&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
+	          <% } %>
+			</div>
+		</div>
       <% } %>
+        <!--User Language-->
+        <div class="field" id="form-row-user-language">
+          <label class="txtlibform"><fmt:message key="JDP.userPreferredLanguage"/></label>
 
-      <tr>
-        <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>)</td>
-      </tr>
-    </table>
+          <div class="champs">
+            <viewTags:userPreferredLanguageSelector user="${not empty userObject.id ? userObject : null}"
+                                                    readOnly="${not empty userObject.id}"/>
+          </div>
+        </div>
+      </div>
     </fieldset>
+
+      <%--User Manual Notification User Receiver Limit--%>
+    <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
+      <fieldset id="identity-manual-notification" class="skinFieldset" style="display: none">
+        <legend class="without-img"><fmt:message key="JDP.userManualNotif"/></legend>
+        <div class="fields">
+          <div class="field" id="form-row-user-manual-notification-limitation-activation">
+            <label class="txtlibform"><fmt:message key="JDP.userManualNotifReceiverLimitActivation"/></label>
+
+            <div class="champs">
+              <input type="checkbox" name="userManualNotifReceiverLimitEnabled" id="userManualNotifReceiverLimitEnabled" value="true"
+                     ${(userObject.userManualNotificationUserReceiverLimit)?' checked':''}/>
+              &nbsp;<fmt:message key="GML.yes"/>
+            </div>
+          </div>
+          <div class="field" id="form-row-user-manual-notification-limitation-value">
+            <label class="txtlibform">${userManualNotifReceiverLimitValueLabel}</label>
+
+            <div class="champs">
+              <input type="text" name="userManualNotifReceiverLimitValue" id="userManualNotifReceiverLimitValue" size="50" maxlength="3"
+                     value="${userObject.userManualNotificationUserReceiverLimit
+                              and not empty userObject.notifManualReceiverLimit
+                              and userObject.notifManualReceiverLimit gt 0 ? ('' + userObject.notifManualReceiverLimit) : ''}"/>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </c:if>
+    
     <fieldset id="identity-extra" class="skinFieldset">
       <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-      <table border="0" cellspacing="0" cellpadding="5" width="100%">
+      <div class="fields">
         <%
           String[] properties = userObject.getPropertiesNames();
           for (final String property : properties) {
+         	// Not display the password !
             if (!property.startsWith("password")) {
         %>
       <c:set var="propertyName" value="<%=property%>"/>
       <c:set var="domainProperty" value="<%=userObject.getProperty(property)%>"/>
       <c:set var="propertyValue" value="<%=userObject.getValue(property)%>"/>
-      <tr>
-        <td class="txtlibform"><%=userObject.getSpecificLabel(resource.getLanguage(), property) %>
-          :
-        </td>
-        <td>
-          <% if (bUserRW || userObject.isPropertyUpdatableByAdmin(property)) { %>
-          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
-              "USERID".equals(userObject.getPropertyType(property))) { %>
-          <c:choose>
-            <c:when test="${domainProperty.maxLength gt 100}">
-              <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
-            </c:when>
-            <c:otherwise>
-              <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
-            </c:otherwise>
-          </c:choose>
-          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) { %>
-          <input type="radio" name="prop_<%=property%>" value="1" <%
-            if (userObject.getValue(property) != null &&
-                "1".equals(userObject.getValue(property))) {
-              out.print("checked");
-            } %>/><fmt:message key="GML.yes"/>
-          <input type="radio" name="prop_<%=property%>" value="0" <%
-            if (userObject.getValue(property) == null ||
-                "".equals(userObject.getValue(property)) ||
-                "0".equals(userObject.getValue(property))) {
-              out.print("checked");
-            } %>/><fmt:message key="GML.no"/>
-          <% } %>
-          <% } else { %>
-          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
-              "USERID".equals(userObject.getPropertyType(property))) { %>
-          <%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
-          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-            if (StringUtil.getBooleanValue(userObject.getValue(property))) {
-              out.print(resource.getString("GML.yes"));
-            } else {
-              out.print(resource.getString("GML.no"));
-            }
-          } %>
-          <% } %>
-        </td>
-      </tr>
-      <%
-          }
-        }
+      	<!--Specific Info-->
+      	<div class="field" id="form-row-<%=property%>">
+			<label class="txtlibform">
+			<%=EncodeHelper.javaStringToHtmlString(userObject.
+	        		    getSpecificLabel(resource.getLanguage(),
+	        		        property))%>
+			</label>
+			<div class="champs">
+				<% if (bUserRW || userObject.isPropertyUpdatableByAdmin(property)) { %>
+		          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
+		              "USERID".equals(userObject.getPropertyType(property))) { %>
+		          <c:choose>
+		            <c:when test="${domainProperty.maxLength gt 100}">
+		              <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
+		            </c:when>
+		            <c:otherwise>
+		              <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
+		            </c:otherwise>
+		          </c:choose>
+		          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) { %>
+		          <input type="radio" name="prop_<%=property%>" value="1" <%
+		            if (userObject.getValue(property) != null &&
+		                "1".equals(userObject.getValue(property))) {
+		              out.print("checked");
+		            } %>/><fmt:message key="GML.yes"/>
+		          <input type="radio" name="prop_<%=property%>" value="0" <%
+		            if (userObject.getValue(property) == null ||
+		                "".equals(userObject.getValue(property)) ||
+		                "0".equals(userObject.getValue(property))) {
+		              out.print("checked");
+		            } %>/><fmt:message key="GML.no"/>
+		          <% } %>
+		          <% } else { %>
+		          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
+		              "USERID".equals(userObject.getPropertyType(property))) { %>
+		          <%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
+		          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
+		            if (StringUtil.getBooleanValue(userObject.getValue(property))) {
+		              out.print(resource.getString("GML.yes"));
+		            } else {
+		              out.print(resource.getString("GML.no"));
+		            }
+		          } %>
+          		<% } %>
+			</div>
+		</div>
+		<%
+          	  } //if
+        	} //for
         %>
-    </table>
+      </div>
     </fieldset>
+    
+    <div class="legend">
+    	<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+    </div>
   </form>
 <br/>
 <%
@@ -371,8 +472,9 @@ out.println(frame.printBefore());
   bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
   bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
   out.println("<center>"+bouton.print()+"</center>");
-
-  out.println(frame.printAfter());
+%>
+</view:frame>
+<%
   out.println(window.printAfter());
 %>
 </body>

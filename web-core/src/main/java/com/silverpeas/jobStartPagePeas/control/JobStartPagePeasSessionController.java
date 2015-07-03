@@ -20,11 +20,36 @@
  */
 package com.silverpeas.jobStartPagePeas.control;
 
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.admin.localized.LocalizedComponent;
-import com.silverpeas.admin.localized.LocalizedOption;
-import com.silverpeas.admin.localized.LocalizedParameter;
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import com.silverpeas.admin.components.*;
+import com.silverpeas.jobStartPagePeas.AllComponentParameters;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
+
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.jobStartPagePeas.DisplaySorted;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasException;
@@ -42,7 +67,6 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -71,22 +95,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.*;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.admin.space.SpaceServiceFactory;
-import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.exception.QuotaRuntimeException;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.UnitUtil;
-import org.silverpeas.util.memory.MemoryUnit;
 
 /**
  * Class declaration
@@ -900,6 +908,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
 
     selection.resetAll();
+    selection.setFilterOnDeactivatedState(false);
 
     String hostSpaceName = getMultilang().getString("JSPP.manageHomePage");
     selection.setHostSpaceName(hostSpaceName);
@@ -1229,30 +1238,76 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     return null;
   }
-
-  public List<LocalizedParameter> getVisibleParameters(String appName,
-      List<LocalizedParameter> parameters) {
-    List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
-    for (LocalizedParameter parameter : parameters) {
-      if (parameter.isVisible()) {
-        if (parameter.isXmlTemplate()) {
-          // display only templates allowed according to context
-          parameter.setOptions(getVisibleTemplateOptions(appName, parameter));
-        }
-        visibleParameters.add(parameter);
+  
+  private void setParameterOptions(ParameterList parameterList, String appName) {
+    for (Parameter parameter : parameterList) {
+      if (parameter.isXmlTemplate()) {
+        // display only templates allowed according to context
+        parameter.setOptions(getVisibleTemplateOptions(appName, parameter));
       }
     }
-    return visibleParameters;
+  }
+  
+  private void setParameterValues(ParameterList parameters) {
+    if (StringUtil.isDefined(getManagedInstanceId())) {
+      ComponentInst componentInst = getComponentInst(getManagedInstanceId());
+      if (componentInst != null) {
+        parameters.setValues(componentInst.getParameters());
+      }
+    }
   }
 
-  private List<LocalizedOption> getVisibleTemplateOptions(String appName,
-      LocalizedParameter parameter) {
+  public AllComponentParameters getParameters(String componentName) {
+    WAComponent component = getComponentByName(componentName);
+    return getParameters(component, true);
+  }
+
+  public AllComponentParameters getParameters(WAComponent component, boolean creation) {
+    LocalizedParameterList parameters = getUngroupedParameters(component, creation);
+    return new AllComponentParameters(parameters, getGroupsOfParameters(component));
+  }
+  
+  private LocalizedParameterList getUngroupedParameters(WAComponent component, boolean creation) {
+    ParameterList parameterList = new ParameterList(component.getParameters()).clone();
+    parameterList.sort();
+    setParameterOptions(parameterList, component.getName());
+    setParameterValues(parameterList);
+
+    LocalizedParameterList localized = new LocalizedParameterList(parameterList, getLanguage());
+
+    ComponentInst existingComponent = null;
+    if (!creation) {
+      existingComponent = getComponentInst(getManagedInstanceId());
+    }
+    localized.add(0, createIsHiddenParam(existingComponent));
+    if (JobStartPagePeasSettings.isPublicParameterEnable) {
+      localized.add(0, createIsPublicParam(existingComponent));
+    }
+
+    return localized;
+  }
+  
+  private List<LocalizedGroupOfParameters> getGroupsOfParameters(WAComponent component) {
+    List<GroupOfParameters> groups = component.getSortedGroupsOfParameters();
+    List<LocalizedGroupOfParameters> localizedGroups = new ArrayList<LocalizedGroupOfParameters>();
+    for (GroupOfParameters group : groups) {
+      GroupOfParameters clonedGroup = group.clone();
+      ParameterList parameters = clonedGroup.getParameterList();
+      parameters.sort();
+      setParameterOptions(parameters, component.getName());
+      setParameterValues(parameters);
+      localizedGroups.add(clonedGroup.localize(getLanguage()));
+    }
+    return localizedGroups;
+  }
+  
+  private List<Option> getVisibleTemplateOptions(String appName, Parameter parameter) {
     GlobalContext aContext = new GlobalContext(getManagedSpaceId(), getManagedInstanceId());
     aContext.setComponentName(appName);
     PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-    List<LocalizedOption> options = parameter.getOptions();
-    List<LocalizedOption> visibleOptions = new ArrayList<LocalizedOption>();
-    for (LocalizedOption option : options) {
+    List<Option> options = parameter.getOptions();
+    List<Option> visibleOptions = new ArrayList<Option>();
+    for (Option option : options) {
       String templateName = option.getValue();
       try {
         if (templateManager.isPublicationTemplateVisible(templateName, aContext)) {
@@ -1422,6 +1477,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
 
     selection.resetAll();
+    selection.setFilterOnDeactivatedState(false);
 
     String hostSpaceName = getMultilang().getString("JSPP.manageHomePage");
     selection.setHostSpaceName(hostSpaceName);
@@ -1809,5 +1865,44 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     Properties configuration = new Properties(templateConfiguration);
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     return template;
+  }
+
+  private LocalizedParameter createIsHiddenParam(ComponentInst component) {
+    String isHidden = "no";
+    if (component != null && component.isHidden()) {
+      isHidden = "yes";
+    }
+    Parameter hiddenParam = new Parameter();
+    hiddenParam.setName("HiddenComponent");
+    hiddenParam.setOrder(-5);
+    hiddenParam.setMandatory(false);
+    hiddenParam.setUpdatable("always");
+    hiddenParam.setType(ParameterInputType.checkbox.toString());
+    hiddenParam.setValue(isHidden);
+    hiddenParam.getLabel().put(getLanguage(), getString("JSPP.hiddenComponent"));
+    hiddenParam.getHelp().put(getLanguage(), getString("Help.hiddenComponent"));
+    hiddenParam.getWarning().put(getLanguage(), getString("Warning.hiddenComponent"));
+
+    return new LocalizedParameter(hiddenParam, getLanguage());
+  }
+
+  private LocalizedParameter createIsPublicParam(ComponentInst component) {
+    String isPublic = "no";
+    if (component != null && component.isPublic()) {
+      isPublic = "yes";
+    }
+    Parameter publicParam = new Parameter();
+    publicParam.setName("PublicComponent");
+    publicParam.setOrder(-6);
+    publicParam.setMandatory(false);
+    publicParam.setUpdatable("always");
+    publicParam.setType(ParameterInputType.checkbox.toString());
+    publicParam.setValue(isPublic);
+
+    publicParam.getLabel().put(getLanguage(), getString("JSPP.publicComponent"));
+    publicParam.getHelp().put(getLanguage(), getString("Help.publicComponent"));
+    publicParam.getWarning().put(getLanguage(), getString("Warning.publicComponent"));
+
+    return new LocalizedParameter(publicParam, getLanguage());
   }
 }

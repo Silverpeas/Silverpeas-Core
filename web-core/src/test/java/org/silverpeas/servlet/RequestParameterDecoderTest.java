@@ -35,12 +35,13 @@ import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,13 +54,18 @@ public class RequestParameterDecoderTest {
   @Before
   public void setup() throws ParseException {
     httpRequestMock = mock(HttpRequest.class);
+
     when(httpRequestMock.getParameter(anyString())).then(new Answer<Object>() {
       @Override
       public Object answer(final InvocationOnMock invocation) throws Throwable {
         String parameterName = (String) invocation.getArguments()[0];
         if (StringUtil.isDefined(parameterName)) {
           if (parameterName.equals("aString")) {
-            return "aStringValue";
+            return "&lt;a&gt;aStringValue&lt;/a&gt;";
+          } else if (parameterName.equals("aStringToUnescape")) {
+            return "&lt;a&gt;aStringValueToUnescape&lt;/a&gt;";
+          } else if (parameterName.equals("anUri")) {
+            return "/an/uri/";
           }
         }
         return null;
@@ -137,6 +143,19 @@ public class RequestParameterDecoderTest {
         return null;
       }
     });
+    when(httpRequestMock.getParameterAsEnum(anyString(), any(Class.class))).then(
+        new Answer<Object>() {
+          @Override
+          public Object answer(final InvocationOnMock invocation) throws Throwable {
+            String parameterName = (String) invocation.getArguments()[0];
+            if (StringUtil.isDefined(parameterName)) {
+              if (parameterName.equals("anEnum")) {
+                return EnumWithoutCreationAnnotation.VALUE_A;
+              }
+            }
+            return null;
+          }
+        });
   }
 
   private File getImageResource() throws Exception {
@@ -155,9 +174,12 @@ public class RequestParameterDecoderTest {
       IOUtils.closeQuietly(result.getaRequestFile().getInputStream());
     }
     assertThat(result.getaStringNotInParameter(), nullValue());
-    assertThat(result.getaString(), is("aStringValue"));
+    assertThat(result.getaString(), is("&lt;a&gt;aStringValue&lt;/a&gt;"));
+    assertThat(result.getaStringNotInParameterToUnescape(), isEmptyString());
+    assertThat(result.getaStringToUnescape(), is("<a>aStringValueToUnescape</a>"));
     assertThat(result.getAnIntegerNotInParameter(), nullValue());
     assertThat(result.getAnInteger(), is(1));
+    assertThat(result.getaPrimitiveIntegerNotInParameter(), is(-1));
     assertThat(result.getaPrimitiveInteger(), is(2));
     assertThat(result.getaLongNotInParameter(), nullValue());
     assertThat(result.getaLong(), is(10L));
@@ -167,6 +189,10 @@ public class RequestParameterDecoderTest {
     assertThat(result.isaPrimitiveBoolean(), is(false));
     assertThat(result.getaDateNotInParameter(), nullValue());
     assertThat(result.getaDate(), is(TODAY));
+    assertThat(result.getAnEnumNotInParameter(), nullValue());
+    assertThat(result.getAnEnum(), is(EnumWithoutCreationAnnotation.VALUE_A));
+    assertThat(result.getAnUriNotInParameter(), nullValue());
+    assertThat(result.getAnUri(), is(URI.create("/an/uri/")));
   }
 
   @Test(expected = RuntimeException.class)

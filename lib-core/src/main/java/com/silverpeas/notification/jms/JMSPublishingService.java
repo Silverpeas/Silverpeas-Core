@@ -24,21 +24,21 @@
 
 package com.silverpeas.notification.jms;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.notification.NotificationPublisher;
+import com.silverpeas.notification.NotificationTopic;
+import com.silverpeas.notification.PublishingException;
+import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
+import com.silverpeas.notification.jms.access.JMSAccessObject;
+import com.silverpeas.util.ExecutionAttempts;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
-
-import com.silverpeas.notification.NotificationPublisher;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.PublishingException;
-import com.silverpeas.notification.SilverpeasNotification;
-import com.silverpeas.notification.jms.access.JMSAccessObject;
-import com.silverpeas.util.ExecutionAttempts;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.silverpeas.util.ExecutionAttempts.retry;
 
@@ -55,6 +55,12 @@ public class JMSPublishingService implements NotificationPublisher {
 
   @Override
   public void publish(final SilverpeasNotification notification, final NotificationTopic onTopic) {
+
+    // As treatments of asynchronous JMS notifications are executed in an other context of the
+    // user request, the indicator of the confirmation of subscription notification sending must
+    // be managed here (as this indicator is attached to the user request).
+    UserSubscriptionNotificationSendingHandler.setupSilverpeasNotification(notification);
+
     try {
       retry(2, new ExecutionAttempts.Job() {
 

@@ -28,11 +28,13 @@ public class UserFragmentVO {
 
   private String userId;
   private String fragment;
+  private DirectoryItem.ITEM_TYPE type;
 
-  public UserFragmentVO(String userId, String fragment) {
+  public UserFragmentVO(String userId, String fragment, DirectoryItem.ITEM_TYPE type) {
     super();
     this.userId = userId;
     this.fragment = fragment;
+    this.type = type;
   }
 
   public String getUserId() {
@@ -49,6 +51,10 @@ public class UserFragmentVO {
 
   public void setFragment(String fragment) {
     this.fragment = fragment;
+  }
+  
+  public String getType() {
+    return type.toString();
   }
 
 }

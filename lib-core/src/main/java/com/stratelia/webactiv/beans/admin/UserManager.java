@@ -834,6 +834,7 @@ public class UserManager {
     ur.expirationDate = user.getExpirationDate();
     ur.state = user.getState().name();
     ur.stateSaveDate = user.getStateSaveDate();
+    ur.notifManualReceiverLimit = user.getNotifManualReceiverLimit();
     return ur;
   }
 
@@ -862,6 +863,7 @@ public class UserManager {
     user.setExpirationDate(ur.expirationDate);
     user.setState(UserState.from(ur.state));
     user.setStateSaveDate(ur.stateSaveDate);
+    user.setNotifManualReceiverLimit(ur.notifManualReceiverLimit);
     return user;
   }
 

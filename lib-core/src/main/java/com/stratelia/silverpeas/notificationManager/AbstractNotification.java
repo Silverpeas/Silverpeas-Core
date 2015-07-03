@@ -37,9 +37,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class AbstractNotification {
 
-  private ResourceLocator notifResources = new ResourceLocator(
-      "org.silverpeas.notificationManager.settings.notificationManagerSettings", "");
-
   public String getApplicationURL() {
     return URLManager.getApplicationURL();
   }
@@ -77,20 +74,10 @@ public class AbstractNotification {
           + "/autoRedirect.jsp?domainId=" + dom.getId() + "&goto=";
   }
 
-  /**
-   * Gets the resources locator used for settings some notification parameters.
-   * @return the locator of the resource with the notification parameters.
-   */
-  protected ResourceLocator getNotificationResources() {
-    return notifResources;
-  }
-
-  /**
-   * Sets the resource locator to be used by this NotificationManager instance in order to sets the
-   * notification parameters.
-   * @param resourceLocator the locator of the resource with the notification parameters.
-   */
-  public void setNotificationResources(final ResourceLocator resourceLocator) {
-    notifResources = resourceLocator;
+  public String getUserAutoRedirectSilverpeasServerURL(final String userId) {
+    final UserDetail ud = UserDetail.getById(userId);
+    final Domain dom = ud.getDomain();
+    String url = dom.getSilverpeasServerURL() + getApplicationURL();
+    return url;
   }
 }

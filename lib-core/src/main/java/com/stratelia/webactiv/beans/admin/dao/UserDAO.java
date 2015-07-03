@@ -24,7 +24,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
@@ -43,10 +42,10 @@ public class UserDAO {
       "DISTINCT(id),specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,"
       + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
-      + "state,stateSaveDate";
+      + "state,stateSaveDate, notifManualReceiverLimit";
   private static final String SELECT_DOMAINS_BY_LOGIN = "SELECT DISTINCT(domainId) AS domain FROM "
-      + "st_user WHERE state <> 'DELETED' AND state <> 'UNKNOWN' AND state <> 'BLOCKED' "
-      + "AND state <> 'EXPIRED' AND login = ? ORDER BY domainId";
+      + "st_user WHERE state NOT IN ('DELETED', 'UNKNOWN', 'BLOCKED', 'DEACTIVATED', 'EXPIRED') "
+      + "AND login = ? ORDER BY domainId";
 
 
   public UserDAO() {
@@ -224,16 +223,15 @@ public class UserDAO {
   private static ListSlice<UserDetail> theUserDetailsFrom(ResultSet rs, int start, int end) throws
       SQLException {
     ListSlice<UserDetail> users = new ListSlice<UserDetail>(start, end);
-    rs.relative(start);
+    if(start > 0) {
+      rs.next();
+      rs.relative(start-1);
+    }
     int i;
-    for (i = start; rs.next() && i < end; i++) {
-      users.add(fetchUser(rs));
-    }
-    if (i == end) {
-      i++;
-    }
-    while (rs.next()) {
-      i++;
+    for (i = start; rs.next(); i++) {
+      if (i < end) {
+        users.add(fetchUser(rs));
+      }
     }
     users.setOriginalListSize(i);
     return users;
@@ -264,6 +262,9 @@ public class UserDAO {
     u.setExpirationDate(rs.getTimestamp(19));
     u.setState(UserState.from(rs.getString(20)));
     u.setStateSaveDate(rs.getTimestamp(21));
+    if (StringUtil.isInteger(rs.getString(22))) {
+      u.setNotifManualReceiverLimit(rs.getInt(22));
+    }
     return u;
   }
 }

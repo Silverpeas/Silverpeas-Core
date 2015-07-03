@@ -159,4 +159,14 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   protected boolean isSendImmediatly() {
     return (getResource() instanceof SilverpeasToolContent);
   }
+
+  @Override
+  protected String getMultilangPropertyFile() {
+    return "org.silverpeas.util.comment.multilang.comment";
+  }
+
+  @Override
+  protected String getContributionAccessLinkLabelBundleKey() {
+    return "comment.notifCommentLinkLabel";
+  }
 }

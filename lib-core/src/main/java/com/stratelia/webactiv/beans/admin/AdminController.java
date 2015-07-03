@@ -744,7 +744,6 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // User Profile related functions
   // ----------------------------------------------
-  // JCC 10/04/2002 ajout de getProfileIds
   /**
 * All the profiles to which the user belongs
 * @return an array of profile IDs
@@ -764,7 +763,6 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Group Profile related functions
   // ----------------------------------------------
-  // JCC 10/04/2002 ajout de getProfileIdsOfGroup
   /**
 * All the profiles to which the group belongs
 * @return an array of profile IDs
@@ -779,6 +777,79 @@ public class AdminController implements java.io.Serializable {
           "admin.MSG_ERR_GET_USERPROFILE", e);
       return null;
     }
+  }
+  
+  /*
+   * Assign rights of a user to a user
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceUserId : the user id of the source user
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromUserToUser(RightAssignationContext.MODE operationMode,
+      String sourceUserId, String targetUserId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    SilverTrace
+        .info("admin", "AdminController.assignRightsFromUserToUser", "root.MSG_GEN_ENTER_METHOD");
+    getAdminService()
+        .assignRightsFromUserToUser(operationMode, sourceUserId, targetUserId, nodeAssignRights,
+            authorId);
+  }
+
+
+  /*
+   * Assign rights of a user to a group
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceUserId : the user id of the source user
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromUserToGroup(RightAssignationContext.MODE operationMode,
+      String sourceUserId, String targetGroupId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    SilverTrace
+        .info("admin", "AdminController.assignRightsFromUserToGroup", "root.MSG_GEN_ENTER_METHOD");
+    getAdminService()
+        .assignRightsFromUserToGroup(operationMode, sourceUserId, targetGroupId, nodeAssignRights,
+            authorId);
+  }
+
+  /*
+   * Assign rights of a group to a user
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceGroupId : the group id of the source group
+   * @param targetUserId : the user id of the target user
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromGroupToUser(RightAssignationContext.MODE operationMode,
+      String sourceGroupId, String targetUserId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    SilverTrace
+        .info("admin", "AdminController.assignRightsFromGroupToUser", "root.MSG_GEN_ENTER_METHOD");
+    getAdminService()
+        .assignRightsFromGroupToUser(operationMode, sourceGroupId, targetUserId, nodeAssignRights,
+            authorId);
+  }
+
+  /*
+   * Assign rights of a group to a group
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
+   * @param sourceGroupId : the group id of the source group
+   * @param targetGroupId : the group id of the target group
+   * @param nodeAssignRights : true if you want also to add rights to nodes
+   * @param authorId : the userId of the author of this action
+   */
+  public void assignRightsFromGroupToGroup(RightAssignationContext.MODE operationMode,
+      String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
+      throws AdminException {
+    SilverTrace
+        .info("admin", "AdminController.assignRightsFromGroupToGroup", "root.MSG_GEN_ENTER_METHOD");
+    getAdminService()
+        .assignRightsFromGroupToGroup(operationMode, sourceGroupId, targetGroupId, nodeAssignRights,
+            authorId);
   }
 
   // ----------------------------------------------
@@ -980,20 +1051,20 @@ public class AdminController implements java.io.Serializable {
   // Space Profile related functions
   // ----------------------------------------------
   /**
-* Return the space profile Instance corresponding to the given space profile id
-*/
+  * Return the space profile Instance corresponding to the given space profile id
+  */
   public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
     SilverTrace.info("admin", "AdminController.getSpaceProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+          "root.MSG_GEN_ENTER_METHOD");
     try {
       return getAdminService().getSpaceProfileInst(sSpaceProfileId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getSpaceProfileInst",
-          "admin.MSG_ERR_GET_SPACE_PROFILE", e);
-      return null;
+       "admin.MSG_ERR_GET_SPACE_PROFILE", e);
+        return null;
     }
   }
-
+  
   /** Add the given Space Profile Instance */
   public String addSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       String userId) {
@@ -1249,8 +1320,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().getUserFull(domainId, specificId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull",
-          "admin.EX_ERR_GET_USER_DETAIL", "specificId = " + specificId, e);
+      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
+          "specificId = " + specificId, e);
       return null;
     }
   }
@@ -1290,8 +1361,7 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().addUser(userDetail);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addUser",
-          "admin.EX_ERR_ADD_USER", e);
+      SilverTrace.error("admin", "AdminController.addUser", "admin.EX_ERR_ADD_USER", e);
       return "";
     }
   }
@@ -1327,6 +1397,32 @@ public class AdminController implements java.io.Serializable {
       getAdminService().unblockUser(userId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.unblockUser", "admin.EX_ERR_UNBLOCK_USER", e);
+    }
+  }
+
+  /**
+   * Deactivate the given user
+   */
+  public void deactivateUser(String userId) {
+    SilverTrace.info("admin", "AdminController.deactivateUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().deactivateUser(userId);
+    } catch (Exception e) {
+      SilverTrace
+          .error("admin", "AdminController.deactivateUser", "admin.EX_ERR_DEACTIVATE_USER", e);
+    }
+  }
+
+  /**
+   * Activate the given user
+   */
+  public void activateUser(String userId) {
+    SilverTrace.info("admin", "AdminController.activateUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().activateUser(userId);
+    } catch (Exception e) {
+      SilverTrace
+          .error("admin", "AdminController.activateUser", "admin.EX_ERR_UNDEACTIVATE_USER", e);
     }
   }
 
