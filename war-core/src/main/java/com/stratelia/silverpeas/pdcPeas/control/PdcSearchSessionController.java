@@ -104,6 +104,16 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
+
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
   static public final String ALL_SPACES = "*";
@@ -2189,6 +2199,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       int id = Integer.parseInt(icId);
       InterestCenter ic = InterestCenterManager.getInstance().getICByID(id);
+      if (StringUtil.isDefined(ic.getPeasID()) &&
+          !getComponentAccessController().isUserAuthorized(getUserId(), ic.getPeasID())) {
+        ic.setPeasID(null);
+      }
       getSearchContext().clearCriterias();
       List<? extends Criteria> criterias = ic.getPdcContext();
       for (Criteria criteria : criterias) {

@@ -21,11 +21,13 @@
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class InterestCentersHelper {
@@ -53,7 +55,14 @@ public class InterestCentersHelper {
       ic.setName(request.getParameter("requestName"));
       ic.setQuery(request.getParameter("query"));
       ic.setWorkSpaceID(request.getParameter("spaces"));
-      ic.setPeasID(request.getParameter("componentSearch"));
+      String componentId = request.getParameter("componentSearch");
+      if (StringUtil.isDefined(componentId)) {
+        ComponentAccessController componentAccessController =
+            ServiceProvider.getService(ComponentAccessController.class);
+        if (componentAccessController.isUserAuthorized(pdcSC.getUserId(), componentId)) {
+          ic.setPeasID(componentId);
+        }
+      }
       ic.setAfterDate(getDate(request.getParameter("createafterdate"), pdcSC));
       ic.setBeforeDate(getDate(request.getParameter("createbeforedate"), pdcSC));
       ic.setAuthorID(request.getParameter("authorSearch"));

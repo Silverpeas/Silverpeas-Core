@@ -24,11 +24,13 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import org.silverpeas.accesscontrol.ComponentAccessController;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
@@ -640,5 +642,9 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   @Override
   public void setClipboardError(String messageId, Exception ex) throws ClipboardException {
     controller.setMessageError(messageId, ex);
+  }
+
+  protected ComponentAccessController getComponentAccessController() {
+    return ServiceProvider.getService(ComponentAccessController.class);
   }
 }
