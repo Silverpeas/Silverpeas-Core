@@ -20,6 +20,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
+import com.silverpeas.accesscontrol.ComponentAccessController;
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -29,6 +30,9 @@ import com.stratelia.webactiv.util.DateUtil;
 import javax.servlet.http.HttpServletRequest;
 
 public class InterestCentersHelper {
+
+  private static ComponentAccessController componentAccessController =
+      new ComponentAccessController();
 
   public static String putSelectedInterestCenterId(HttpServletRequest request)
       throws Exception {
@@ -53,7 +57,12 @@ public class InterestCentersHelper {
       ic.setName(request.getParameter("requestName"));
       ic.setQuery(request.getParameter("query"));
       ic.setWorkSpaceID(request.getParameter("spaces"));
-      ic.setPeasID(request.getParameter("componentSearch"));
+      String componentId = request.getParameter("componentSearch");
+      if (StringUtil.isDefined(componentId)) {
+        if (componentAccessController.isUserAuthorized(pdcSC.getUserId(), componentId)) {
+          ic.setPeasID(componentId);
+        }
+      }
       ic.setAfterDate(getDate(request.getParameter("createafterdate"), pdcSC));
       ic.setBeforeDate(getDate(request.getParameter("createbeforedate"), pdcSC));
       ic.setAuthorID(request.getParameter("authorSearch"));
