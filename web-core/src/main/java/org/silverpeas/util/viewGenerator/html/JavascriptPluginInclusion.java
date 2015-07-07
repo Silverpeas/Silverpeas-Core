@@ -23,8 +23,10 @@
  */
 package org.silverpeas.util.viewGenerator.html;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
@@ -48,8 +50,8 @@ import java.text.MessageFormat;
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath = URLManager.getApplicationURL() +
-      "/util/styleSheets/";
+  private static final String stylesheetPath =
+      URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String angularjsPath = javascriptPath + "angularjs/";
@@ -78,6 +80,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
   private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
+  private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST = "ddUploadBundle_";
+  private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD = "silverpeas-ddUpload.js";
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
@@ -126,8 +130,8 @@ public class JavascriptPluginInclusion {
   private static final String TICKER_CSS = "ticker/ticker-style.css";
 
   static {
-    ResourceLocator wysiwygSettings = new ResourceLocator(
-        "org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+    ResourceLocator wysiwygSettings =
+        new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
     JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor") + "/ckeditor.js";
   }
 
@@ -157,7 +161,8 @@ public class JavascriptPluginInclusion {
       String jsCallbackContentOnSuccessfulLoad, String jsCallback) {
     StringBuilder sb = new StringBuilder();
     sb.append("jQuery(document).ready(function() {");
-    sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined') {");
+    sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
+    sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
     sb.append("    jQuery.getScript('").append(appendVersion(src)).append("', function() {");
     if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
       sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
@@ -193,7 +198,8 @@ public class JavascriptPluginInclusion {
     return new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(appendVersion(href));
   }
 
-  public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml, String language) {
+  public static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml,
+      String language) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_IDENTITYCARD));
     return xhtml;
   }
@@ -226,9 +232,13 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
-    xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
-    xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
+    Object includeQTipDone = CacheServiceFactory.getRequestCacheService().get("@includeQTipDone@");
+    if (includeQTipDone == null) {
+      xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
+      xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
+      xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
+      CacheServiceFactory.getRequestCacheService().put("@includeQTipDone@", true);
+    }
     return xhtml;
   }
 
@@ -482,8 +492,29 @@ public class JavascriptPluginInclusion {
     String subscriptionLoad =
         generateDynamicPluginLoading(javascriptPath + SILVERPEAS_SUBSCRIPTION, "subscription",
             "jQuery.subscription.parameters.confirmNotificationSendingOnUpdateEnabled = " +
-                SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() + ";", jsCallback);
+                SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() + ";",
+            jsCallback);
     return getDynamicPopupJavascriptLoadContent(subscriptionLoad);
+  }
+
+  /**
+   * Includes the Silverpeas drag and drop upload HTML5 Plugin.
+   * This plugin depends on the associated i18n javascript file.
+   * @return the completed parent container.
+   */
+  public static ElementContainer includeDragAndDropUpload(final ElementContainer xhtml,
+      final String language) {
+    Object ddUploadDone = CacheServiceFactory.getRequestCacheService().get("@ddUploadDone@");
+    if (ddUploadDone == null) {
+      includeQTip(xhtml);
+      SilverpeasTemplate bundle =
+          SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("ddUpload");
+      xhtml.addElement(scriptContent(bundle.applyFileTemplate(
+          SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
+      xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
+      CacheServiceFactory.getRequestCacheService().put("@ddUploadDone@", true);
+    }
+    return xhtml;
   }
 
   private static String appendVersion(String url) {

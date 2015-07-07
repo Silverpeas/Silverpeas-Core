@@ -35,7 +35,22 @@ import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.util.mail.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
+import org.apache.commons.exec.util.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.tika.Tika;
+import org.silverpeas.util.mail.Mail;
+
+import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,7 +64,6 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 public class FileUtil implements MimeTypes {
 
@@ -503,5 +517,48 @@ public class FileUtil implements MimeTypes {
       return directory.delete();
     }
     return false;
+  }
+
+  /**
+   * Moves all files from sub folders to the given root folder and deletes after all the sub
+   * folders.
+   * @param rootFolder the root folder from which the sub folders are retrieved and into which the
+   * files will be moved if any.
+   * @return an array of {@link File} that represents the found sub folders. The returned array is
+   * never null.
+   * @throws IOException
+   */
+  public static File[] moveAllFilesAtRootFolder(File rootFolder) throws IOException {
+    return moveAllFilesAtRootFolder(rootFolder, true);
+  }
+
+  /**
+   * Moves all files from sub folders to the given root folder.
+   * @param rootFolder the root folder from which the sub folders are retrieved and into which the
+   * files will be moved if any.
+   * @param deleteFolders true if the sub folders must be deleted.
+   * @return an array of {@link File} that represents the found sub folders. The returned array is
+   * never null.
+   * @throws IOException
+   */
+  public static File[] moveAllFilesAtRootFolder(File rootFolder, boolean deleteFolders)
+      throws IOException {
+    File[] foldersAtRoot = rootFolder != null ?
+        rootFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter()) : null;
+    if (foldersAtRoot != null) {
+      for (File folderAtRoot : foldersAtRoot) {
+        for (File file : FileUtils.listFiles(folderAtRoot, FileFilterUtils.fileFileFilter(),
+            FileFilterUtils.trueFileFilter())) {
+          File newFilePath = new File(rootFolder, file.getName());
+          if (!newFilePath.exists()) {
+            FileUtils.moveFile(file, newFilePath);
+          }
+        }
+        if (deleteFolders) {
+          FileUtils.deleteQuietly(folderAtRoot);
+        }
+      }
+    }
+    return foldersAtRoot != null ? foldersAtRoot : new File[0];
   }
 }

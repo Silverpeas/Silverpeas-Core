@@ -61,6 +61,49 @@ if (!String.prototype.isNotDefined) {
   };
 }
 
+if (!window.StringUtil) {
+  window.StringUtil = new function() {
+    var _self = this;
+    this.isDefined = function(aString) {
+      return typeof aString === 'string' && aString != null && aString.isDefined();
+    };
+    this.isNotDefined = function(aString) {
+      return !_self.isDefined(aString);
+    };
+  };
+}
+
+if (!window.SilverpeasError) {
+  window.SilverpeasError = new function() {
+    var _self = this;
+    var _errors = [];
+    this.reset = function() {
+      _errors = [];
+    };
+    this.add = function(message) {
+      if (StringUtil.isDefined(message)) {
+        _errors.push(message);
+      }
+      return _self;
+    };
+    this.existsAtLeastOne = function() {
+      return _errors.length;
+    };
+    this.show = function() {
+      if (_self.existsAtLeastOne()) {
+        var errorContainer = jQuery('<div>');
+        for (var i = 0; i < _errors.length; i++) {
+          jQuery('<div>').append(_errors[i]).appendTo(errorContainer);
+        }
+        notyError(errorContainer);
+        _self.reset();
+        return true;
+      }
+      return false;
+    };
+  };
+}
+
 function SP_openWindow(page, name, width, height, options) {
   var top = (screen.height - height) / 2;
   var left = (screen.width - width) / 2;
@@ -71,7 +114,7 @@ function SP_openWindow(page, name, width, height, options) {
     left = 0;
   }
   return window.open(page, name,
-          "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," + options);
+      "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," + options);
 }
 
 function SP_openUserPanel(page, name, options) {
@@ -82,9 +125,12 @@ function SP_openUserPanel(page, name, options) {
  * Resizing and positioning method.
  * If no resize is done, then no positioning is done.
  */
-function currentPopupResize() {
-  jQuery(document.body).ready(function() {
-    window.setTimeout(function() {
+if (!window.currentPopupResize) {
+  window.currentPopupResize = function() {
+    var log = function(message) {
+      //console.log("POPUP RESIZE - " + message);
+    };
+    var resize = function(context) {
       var $document = jQuery(document.body);
       $document.removeClass("popup-compute-finally");
       $document.addClass("popup-compute-settings");
@@ -106,14 +152,41 @@ function currentPopupResize() {
       var wHeight = Math.min((screen.height - 100), (heightOffset + 10 + $document.height()));
 
       // Setting if necessary new sizes and new position
-      if (wWidthBefore !== wWidth || wHeightBefore !== wHeight) {
-        window.resizeTo(wWidth, wHeight);
-        var top = (screen.height - window.outerHeight) / 2;
-        var left = (screen.width - window.outerWidth) / 2;
-        window.moveTo(left, top);
+      context.attempt += 1;
+      if (context.attempt <= 100 &&
+          (wWidthBefore !== wWidth || wHeightBefore !== wHeight || wHeight <= 200)) {
+        log("modify attempt " + context.attempt);
+        if (wHeight > 200) {
+          log("resizeTo width = " + wWidth + ', height = ' + wHeight);
+          context.effectiveResize += 1;
+          window.resizeTo(wWidth, wHeight);
+          var top = (screen.height - window.outerHeight) / 2;
+          var left = (screen.width - window.outerWidth) / 2;
+          if (!context.moveDone) {
+            log("moveTo left = " + left + ', height = ' + top);
+            context.moveDone = true;
+            window.moveTo(left, top);
+          }
+        }
+        window.setTimeout(function() {
+          resize(context);
+        }, 100);
+      } else {
+        if (context.effectiveResize > 1) {
+          log("resize done");
+        } else {
+          log('wWidthBefore = ' + wWidthBefore + ", wWidth = " + wWidth + ', wHeightBefore = ' +
+              wHeightBefore + ', wHeight = ' + wHeight);
+          log("no resize performed");
+        }
       }
-    },0);
-  });
+    };
+    jQuery(document.body).ready(function() {
+      window.setTimeout(function() {
+        resize({attempt : 0, effectiveResize : 0});
+      }, 0);
+    });
+  };
 }
 
 /**
@@ -150,4 +223,84 @@ function getWindowScrollBarThicknessSize() {
     body.removeChild(t);
   }
   return r;
+}
+
+if (!window.SilverpeasPluginBundle) {
+  SilverpeasPluginBundle = function(bundle) {
+    var translations = bundle ? bundle : {};
+    this.get = function() {
+      var key = arguments[0];
+      var translation = translations[key];
+
+      var paramIndex = 0;
+      for (var i = 1; i < arguments.length; i++) {
+        var params = arguments[i];
+        if (params && typeof params === 'object' && params.length) {
+          params.forEach(function(param) {
+            translation =
+                translation.replace(new RegExp('[{]' + (paramIndex++) + '[}]', 'g'), param);
+          });
+        } else if (params && typeof params === 'string') {
+          translation =
+              translation.replace(new RegExp('[{]' + (paramIndex++) + '[}]', 'g'), params);
+        }
+      }
+      return translation.replace(/[{][0-9]+[}]/g, '');
+    };
+  };
+}
+
+if (typeof extendsObject === 'undefined') {
+  /**
+   * Extends an object.
+   * @returns {*}
+   */
+  function extendsObject() {
+    var target, key, object, val;
+    target = arguments[0];
+    object = arguments[1];
+    for (key in object) {
+      val = object[key];
+      target[key] = val;
+    }
+    return target;
+  }
+}
+
+if (typeof window.silverpeasAjax === 'undefined') {
+  function silverpeasAjax(options) {
+    if (typeof options === 'string') {
+      options = {url : options};
+    }
+    var params = extendsObject({"method" : "GET", url : '', headers : {}}, options);
+    return new Promise(function(resolve, reject) {
+
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        notySetupRequestComplete.call(this, xhr);
+        if (xhr.status == 200) {
+          resolve(xhr);
+        } else {
+          reject(xhr);
+          console.log("HTTP request error: " + xhr.status);
+        }
+      };
+
+      xhr.onerror = function() {
+        reject(Error("Network error..."));
+      };
+
+      if (typeof params.onprogress === 'function') {
+        xhr.upload.addEventListener("progress", params.onprogress, false);
+      }
+
+      xhr.open(params.method, params.url);
+      var headerKeys = Object.getOwnPropertyNames(params.headers);
+      for (var i = 0; i < headerKeys.length; i++) {
+        var headerKey = headerKeys[i];
+        xhr.setRequestHeader(headerKey, params.headers[headerKey]);
+      }
+      xhr.send(params.data);
+    });
+  }
 }

@@ -421,7 +421,8 @@
   }
 
   /**
-   * Verify that upload is possible. This method handles the UI according to the result of the verify.
+   * Verify that upload is possible. This method handles the UI according to the result of the
+   * verify.
    * @param params
    * @param nbFilesToSend
    * @return {boolean}
@@ -560,7 +561,31 @@
         }).submit();
       } else if (isFileAPI) {
         // HTML5 upload way
-        self.sendFile(file);
+        var xhr = new XMLHttpRequest();
+        if (xhr.upload && file) {
+          __renderUploadFile(uploadContext, self, file.name, $waitingEndOfUploadContainer);
+          xhr.onload = function() {
+            notySetupRequestComplete.call(this, xhr);
+            if (xhr.status == 200) {
+              self.sendFile(file);
+            } else {
+              xhr.onerror.call(this);
+            }
+          };
+
+          // Error
+          xhr.onerror = function() {
+            uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
+            xhr = null;
+          };
+
+          xhr.open("POST", uploadContext.uploadUrl + '/verify', true);
+          var data = new FormData();
+          data.append('fullPath', file.name);
+          data.append('name', file.name);
+          data.append('size', file.size);
+          xhr.send(data);
+        }
       } else {
         alert('Technical error ...');
       }
@@ -569,48 +594,46 @@
     // HTML5 upload way
     this.sendFile = function(file) {
       xhr = new XMLHttpRequest();
-      if (xhr.upload && file) {
-        __renderUploadFile(uploadContext, self, file.name, $waitingEndOfUploadContainer);
 
-        // End of the upload
-        xhr.onload = function() {
-          try {
-            var uploadedFilesData = $.parseJSON($(this.responseText).html());
-            self.sendComplete(uploadedFilesData);
-            __triggerUploadedListChanged(uploadContext);
-          } catch (e) {
-            xhr.onerror.call(this);
-          }
-        };
+      // End of the upload
+      xhr.onload = function() {
+        notySetupRequestComplete.call(this, xhr);
+        try {
+          var uploadedFilesData = $.parseJSON($(this.responseText).html());
+          self.sendComplete(uploadedFilesData);
+          __triggerUploadedListChanged(uploadContext);
+        } catch (e) {
+          xhr.onerror.call(this);
+        }
+      };
 
-        // Progress informations
-        var $loadInfo = $('<span>').appendTo($waitingEndOfUploadContainer);
-        var $loadBar = $('<div>').addClass('progress-bar').appendTo($waitingEndOfUploadContainer);
-        xhr.upload.addEventListener("progress", function(event) {
-          var ratio = event.loaded / event.total;
-          var percentage = parseInt(ratio * 100);
-          $loadInfo.empty();
-          $loadInfo.append(' (').append(percentage).append('%)');
-          $loadBar.height($waitingEndOfUploadContainer.height());
-          $loadBar.width(parseInt($waitingEndOfUploadContainer.width() * ratio));
-        }, false);
+      // Progress informations
+      var $loadInfo = $('<span>').appendTo($waitingEndOfUploadContainer);
+      var $loadBar = $('<div>').addClass('progress-bar').appendTo($waitingEndOfUploadContainer);
+      xhr.upload.addEventListener("progress", function(event) {
+        var ratio = event.loaded / event.total;
+        var percentage = parseInt(ratio * 100);
+        $loadInfo.empty();
+        $loadInfo.append(' (').append(percentage).append('%)');
+        $loadBar.height($waitingEndOfUploadContainer.height());
+        $loadBar.width(parseInt($waitingEndOfUploadContainer.width() * ratio));
+      }, false);
 
-        // Error
-        xhr.onerror = function() {
-          uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
-          window.console &&
-                  window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
-                  this.responseText && this.responseText.length > 0 ? this.responseText :
-                  'Maybe due to an upload of a wrong type of file...')));
-          xhr = null;
-        };
+      // Error
+      xhr.onerror = function() {
+        uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
+        window.console &&
+                window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
+                this.responseText && this.responseText.length > 0 ? this.responseText :
+                'Maybe due to an upload of a wrong type of file...')));
+        xhr = null;
+      };
 
-        // Start upload
-        xhr.open("POST", uploadContext.uploadUrl, true);
-        xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-        xhr.setRequestHeader('X-FILENAME', encodeURIComponent(file.name));
-        xhr.send(file);
-      }
+      // Start upload
+      xhr.open("POST", uploadContext.uploadUrl, true);
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+      xhr.setRequestHeader('X-FULL-PATH', encodeURIComponent(file.name));
+      xhr.send(file);
     };
 
     // Upload complete
@@ -697,7 +720,7 @@
         uploadHandler.abort();
       }
       if (uploadedFileData) {
-        __deleteFile(uploadedFileData.fileId);
+        __deleteFile(uploadedFileData.uploadSessionId);
       }
       $file.fadeOut(200, function() {
         $file.remove();
@@ -787,8 +810,8 @@
       // Hidden technical input
       $file.prepend($('<input>', {
         type: 'hidden',
-        name: 'uploaded-file-' + uploadedFileData.fileId,
-        value: uploadedFileData.fileId
+        name: 'uploaded-file-' + uploadedFileData.uploadSessionId,
+        value: uploadedFileData.uploadSessionId
       }));
 
       // Header - details
@@ -797,15 +820,15 @@
               uploadedFileData.formattedSize);
 
       // Body - title and description
-      $fileTitle.attr('id', uploadedFileData.fileId + '-title');
-      $fileTitle.attr('name', uploadedFileData.fileId + '-title');
+      $fileTitle.attr('id', uploadedFileData.uploadSessionId + '-title');
+      $fileTitle.attr('name', uploadedFileData.uploadSessionId + '-title');
       if (!isFileAPI) {
-        $('label', $fileTitleInfo).attr('for', uploadedFileData.fileId + '-title');
+        $('label', $fileTitleInfo).attr('for', uploadedFileData.uploadSessionId + '-title');
       }
-      $fileDescription.attr('id', uploadedFileData.fileId + '-description');
-      $fileDescription.attr('name', uploadedFileData.fileId + '-description');
+      $fileDescription.attr('id', uploadedFileData.uploadSessionId + '-description');
+      $fileDescription.attr('name', uploadedFileData.uploadSessionId + '-description');
       if (!isFileAPI) {
-        $('label', $fileDescriptionInfo).attr('for', uploadedFileData.fileId + '-description');
+        $('label', $fileDescriptionInfo).attr('for', uploadedFileData.uploadSessionId + '-description');
       }
     };
   }
@@ -841,11 +864,14 @@
    * @return {boolean}
    * @private
    */
-  function __deleteFile(fileId) {
+  function __deleteFile(uploadSessionId) {
     $.ajax({
-      url: webContext + '/services/fileUpload/' + fileId,
+      url: webContext + '/services/fileUpload',
       type: 'DELETE',
       cache: false,
+      headers : {
+        "X-UPLOAD-SESSION" : uploadSessionId
+      },
       error: function(jqXHR, textStatus, errorThrown) {
         window.console &&
                 window.console.log('Silverpeas File Upload JQuery Plugin - ERROR - ' + errorThrown);

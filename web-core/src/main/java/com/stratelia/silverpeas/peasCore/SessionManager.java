@@ -46,6 +46,7 @@ import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.upload.UploadSession;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -236,6 +237,9 @@ public class SessionManager implements SessionManagement {
 
       // Clears all volatile resources
       VolatileResourceCacheService.clearFrom(si);
+
+      // Clears all upload sessions
+      UploadSession.clearFrom(si);
 
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());

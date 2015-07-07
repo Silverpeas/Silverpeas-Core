@@ -72,6 +72,16 @@ public class SilverpeasHttpServlet extends HttpServlet {
   }
 
   /**
+   * The precondition given in one or more of the request-header fields evaluated to false when
+   * it was tested on the server. This response code allows the client to place preconditions on
+   * the current resource metainformation (header field data) and thus prevent the requested
+   * method from being applied to a resource other than the one intended.
+   */
+  protected void throwHttpPreconditionFailedError() {
+    throw new HttpError(HttpServletResponse.SC_PRECONDITION_FAILED);
+  }
+
+  /**
    * The HTTP server understood the request, but is refusing to fulfill it. This status code is
    * commonly used when the server does not wish to reveal exactly why the request has been
    * refused, or when no other response is applicable (for example the server is an Intranet and

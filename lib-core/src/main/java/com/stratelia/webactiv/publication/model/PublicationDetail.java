@@ -23,6 +23,30 @@
  */
 package com.stratelia.webactiv.publication.model;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
+import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.date.Period;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.rating.ContributionRating;
+import org.silverpeas.rating.ContributionRatingPK;
+import org.silverpeas.rating.Rateable;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
@@ -46,28 +70,11 @@ import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.accesscontrol.NodeAccessControl;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.date.Period;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.silverpeas.rating.ContributionRating;
-import org.silverpeas.rating.ContributionRatingPK;
-import org.silverpeas.rating.Rateable;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.publication.control.PublicationBm;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -1190,23 +1197,25 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    boolean canBeAccessed = accessController.
-        isUserAuthorized(user.getId(), getComponentInstanceId());
-    if (canBeAccessed) {
-      AccessController<NodePK> nodeAccessController =
-          AccessControllerProvider.getAccessController(NodeAccessControl.class);
-      Collection<NodePK> nodes =
-          getPublicationBm().getAllFatherPK(new PublicationPK(getId(), getInstanceId()));
-      for (NodePK aNode : nodes) {
-        canBeAccessed = nodeAccessController.isUserAuthorized(user.getId(), aNode);
-        if (canBeAccessed) {
-          break;
-        }
-      }
-    }
-    return canBeAccessed;
+    AccessController<PublicationPK> accessController =
+        AccessControllerProvider.getAccessController("publicationAccessController");
+    return accessController.isUserAuthorized(user.getId(), getPK());
+  }
+
+  /**
+   * Is the specified user can access this publication on persist context?
+   * <p/>
+   * A user can access a publication on persist context if he has enough rights to access both the
+   * application instance in which is managed this publication and one of the nodes to which this
+   * publication belongs to.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this publication, false otherwise.
+   */
+  public boolean canBeModifiedBy(final UserDetail user) {
+    AccessController<PublicationPK> accessController =
+        AccessControllerProvider.getAccessController("publicationAccessController");
+    return accessController.isUserAuthorized(user.getId(), getPK(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
   /**

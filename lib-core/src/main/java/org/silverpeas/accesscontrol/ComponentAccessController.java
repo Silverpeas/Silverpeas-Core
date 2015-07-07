@@ -80,13 +80,25 @@ public class ComponentAccessController extends AbstractAccessController<String>
   }
 
   /**
-   * Indicates that the rights are set on node as well as the component.
-   * @param componentId
-   * @return
+   * Indicates if file sharing is enabled on the component instance represented by the given
+   * identifier.
+   * @param componentId the identifier of the component instance.
+   * @return true if file sharing is enabled.
    */
-  public boolean isSharingEnabled(String componentId) {
+  public boolean isFileSharingEnabled(String componentId) {
     return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
         getComponentParameterValue(componentId, "useFileSharing"));
+  }
+
+  /**
+   * Indicates if publication sharing is enabled on the component instance represented by the given
+   * identifier.
+   * @param componentId the identifier of the component instance.
+   * @return true if file sharing is enabled.
+   */
+  public boolean isPublicationSharingEnabled(String componentId) {
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
+        getComponentParameterValue(componentId, "usePublicationSharing"));
   }
 
   private boolean isThemeTracker(String componentId) {

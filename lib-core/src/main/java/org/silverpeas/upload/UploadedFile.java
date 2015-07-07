@@ -34,8 +34,6 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -43,14 +41,16 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.Collection;
 
 /**
- * Representation of an uploaded file. User: Yohann Chastagnier Date: 18/03/13
+ * Representation of an uploaded file.<br/>
+ * Each {@link UploadedFile} is associated to a unique {@link UploadSession} instance. So, it can
+ * not be possible to get several {@link UploadedFile} from an {@link UploadSession}.
+ * @author Yohann Chastagnier
  */
 public class UploadedFile {
 
-  private String fileUploadId;
+  private UploadSession uploadSession;
   private File file;
   private String title;
   private String description;
@@ -60,27 +60,28 @@ public class UploadedFile {
    * Creates a representation of an uploaded file from HttpServletRequest and a given uploaded file
    * identifier.
    * @param request
-   * @param uploadedFileId
+   * @param uploadSessionId
    * @param uploader
    * @return
    */
-  public static UploadedFile from(HttpServletRequest request, String uploadedFileId,
+  public static UploadedFile from(HttpServletRequest request, String uploadSessionId,
       UserDetail uploader) {
-    return new UploadedFile(uploadedFileId, getUploadedFileFromUploadId(uploadedFileId),
-        request.getParameter(uploadedFileId + "-title"),
-        request.getParameter(uploadedFileId + "-description"), uploader.getId());
+    UploadSession uploadSession = UploadSession.from(uploadSessionId);
+    return new UploadedFile(uploadSession, getUploadedFile(uploadSession),
+        request.getParameter(uploadSessionId + "-title"),
+        request.getParameter(uploadSessionId + "-description"), uploader.getId());
   }
 
   /**
    * Default constructor.
-   * @param fileUploadId
+   * @param uploadSession
    * @param file
    * @param title
    * @param description
    */
-  private UploadedFile(final String fileUploadId, final File file, final String title,
+  private UploadedFile(final UploadSession uploadSession, final File file, final String title,
       final String description, String uploader) {
-    this.fileUploadId = fileUploadId;
+    this.uploadSession = uploadSession;
     this.file = file;
     this.title = title;
     this.description = description;
@@ -91,8 +92,8 @@ public class UploadedFile {
    * Gets the identifier of the uploaded file.
    * @return
    */
-  public String getFileUploadId() {
-    return fileUploadId;
+  public UploadSession getUploadSession() {
+    return uploadSession;
   }
 
   /**
@@ -124,7 +125,7 @@ public class UploadedFile {
    * its temporary upload repository.
    */
   private void markAsProcessed() {
-    FileUtils.deleteQuietly(file);
+    uploadSession.clear();
   }
 
   /**
@@ -202,9 +203,8 @@ public class UploadedFile {
 
     // Simple document
     SimpleDocument document = new SimpleDocument(pk, resourcePk.getId(), 0, false, null,
-        new SimpleAttachment(getFile().getName().substring(getFileUploadId().length() + 1), lang,
-            title, description, getFile().length(), FileUtil.getMimeType(getFile().getPath()),
-            uploader, DateUtil.getNow(), null)
+        new SimpleAttachment(getFile().getName(), lang, title, description, getFile().length(),
+            FileUtil.getMimeType(getFile().getPath()), uploader, DateUtil.getNow(), null)
     );
 
     // Simple document details
@@ -218,17 +218,15 @@ public class UploadedFile {
   }
 
   /**
-   * Gets an uploaded file from a given uploaded file identifier.
-   * @param uploadedFileId
+   * Gets an uploaded file from a given upload session.
+   * @param uploadSession
    * @return
    */
-  private static File getUploadedFileFromUploadId(String uploadedFileId) {
-    File tempDir = new File(FileRepositoryManager.getTemporaryPath());
-    Collection<File> files =
-        FileUtils.listFiles(tempDir, new PrefixFileFilter(uploadedFileId), FalseFileFilter.FALSE);
-    if (files.isEmpty() || files.size() > 1) {
-      return new File(tempDir, "unexistingFile");
+  private static File getUploadedFile(UploadSession uploadSession) {
+    File[] files = uploadSession.getRootFolderFiles();
+    if (files.length != 1) {
+      return new File(FileRepositoryManager.getTemporaryPath(), "unexistingFile");
     }
-    return files.iterator().next();
+    return files[0];
   }
 }

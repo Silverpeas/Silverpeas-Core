@@ -25,22 +25,24 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.AccessControlOperation;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.accesscontrol.ComponentAccessController;
+import com.silverpeas.accesscontrol.NodeAccessController;
+import com.silverpeas.accesscontrol.PublicationAccessController;
+import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.control.PublicationService;
-import com.stratelia.webactiv.publication.model.Alias;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collection;
 import java.util.Set;
+
+import static com.silverpeas.accesscontrol.AccessControlOperation.*;
 
 /**
  * @author ehugonnet
@@ -59,93 +61,50 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   private NodeAccessController nodeAccessController;
 
   @Inject
-  private ComponentHelper componentHelper;
-
-  protected SimpleDocumentAccessController() {
-  }
+  private PublicationAccessController publicationAccessController;
 
   @Override
   public boolean isUserAuthorized(String userId, SimpleDocument object,
       final AccessControlContext context) {
-
-    // Saving the result of component access control in order to verify the alias right accesses.
-    boolean componentAccessAuthorized = true;
-
-    // Component access control
-    final Set<SilverpeasRole> componentUserRoles =
-        getComponentAccessController().getUserRoles(context, userId, object.getInstanceId());
-    if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
-      componentAccessAuthorized = false;
-    }
+    Set<SilverpeasRole> componentUserRoles = null;
+    boolean componentAccessAuthorized = false;
 
     // Node access control
     if (componentHelper.isThemeTracker(object.getInstanceId())) {
       String foreignId = object.getForeignId();
-      if (StringUtil.isInteger(foreignId)) {
-        final PublicationDetail pubDetail;
-        try {
-          pubDetail = getActualForeignPublication(foreignId, object.getInstanceId());
-        } catch (Exception e) {
-          SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
-              "root.NO_EX_MESSAGE", e);
-          return false;
-        }
+      Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController()
+          .getUserRoles(context, userId, new PublicationPK(foreignId, object.getInstanceId()));
+      PublicationDetail publicationDetail =
+          context.get(PublicationAccessController.PUBLICATION_DETAIL_KEY, PublicationDetail.class);
+      if (publicationDetail != null) {
+        // As publicationDetail exists, publicationUserRoles are the one of the publication
+        return isUserAuthorizedByContext(false, userId, object, context, publicationUserRoles,
+            publicationDetail.getCreatorId());
 
-        // Check if an alias of publication is authorized
-        // (special treatment in case of the user has no access right on component instance)
-        if (!componentAccessAuthorized) {
-          try {
-            Collection<Alias> aliases = getPublicationBm().getAlias(pubDetail.getPK());
-            for (Alias alias : aliases) {
-              if (getNodeAccessController()
-                  .isUserAuthorized(userId, new NodePK(alias.getId(), alias.getInstanceId()),
-                      context)) {
-                return true;
-              }
-            }
-            return false;
-          } catch (Exception e) {
-            SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
-                "root.NO_EX_MESSAGE", e);
-            return false;
-          }
+      } else {
+        // As publicationDetail does not exist, publicationUserRoles are the one of the component
+        // instance
+        componentUserRoles = publicationUserRoles;
+        componentAccessAuthorized =
+            getComponentAccessController().isUserAuthorized(componentUserRoles);
+        if (componentAccessAuthorized && isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
+          String nodeId = foreignId.substring("Node_".length());
+          final Set<SilverpeasRole> nodeUserRoles =
+              getNodeAccessController().getUserRoles(context, userId, new NodePK(nodeId, object.
+                  getInstanceId()));
+          return getNodeAccessController().isUserAuthorized(nodeUserRoles) &&
+              isUserAuthorizedByContext(true, userId, object, context, nodeUserRoles, "unknown");
         }
-
-        // If rights are not handled on directories, directory rights are not checked !
-        else if (getComponentAccessController().isRightOnTopicsEnabled(object.getInstanceId())) {
-          try {
-            Collection<NodePK> nodes = getPublicationBm()
-                .getAllFatherPK(new PublicationPK(pubDetail.getId(), object.getInstanceId()));
-            if (!nodes.isEmpty()) {
-              for (NodePK nodePk : nodes) {
-                final Set<SilverpeasRole> nodeUserRoles =
-                    getNodeAccessController().getUserRoles(context, userId, nodePk);
-                if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
-                  return isUserAuthorizedByContext(false, userId, object, context, nodeUserRoles,
-                      pubDetail.getCreatorId());
-                }
-              }
-              return false;
-            }
-          } catch (Exception ex) {
-            SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
-                "root.NO_EX_MESSAGE", ex);
-            return false;
-          }
-        }
-        return isUserAuthorizedByContext(false, userId, object, context, componentUserRoles,
-            pubDetail.getCreatorId());
-
-      } else if (componentAccessAuthorized && isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
-        String nodeId = foreignId.substring("Node_".length());
-        final Set<SilverpeasRole> nodeUserRoles =
-            getNodeAccessController().getUserRoles(context, userId, new NodePK(nodeId, object.
-                getInstanceId()));
-        return getNodeAccessController().isUserAuthorized(nodeUserRoles) &&
-            isUserAuthorizedByContext(true, userId, object, context, nodeUserRoles, "unknown");
       }
     }
 
+    // Component access control
+    if (!componentAccessAuthorized && componentUserRoles == null) {
+      componentUserRoles =
+          getComponentAccessController().getUserRoles(context, userId, object.getInstanceId());
+      componentAccessAuthorized =
+          getComponentAccessController().isUserAuthorized(componentUserRoles);
+    }
     return componentAccessAuthorized &&
         isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);
   }
@@ -162,8 +121,11 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   private boolean isUserAuthorizedByContext(final boolean isNodeAttachmentCase, String userId,
       SimpleDocument object, final AccessControlContext context, Set<SilverpeasRole> userRoles,
       String foreignUserAuthor) {
-    boolean authorized = true;
+    boolean authorized = !userRoles.isEmpty();
     boolean isRoleVerificationRequired = false;
+
+    boolean downloadOperation = isDownloadActionFrom(context.getOperations());
+    boolean sharingOperation = isSharingActionFrom(context.getOperations());
 
     // Checking the versions
     if (object.isVersioned() && !object.isPublic()) {
@@ -171,41 +133,44 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     }
 
     // Verifying download is possible
-    if (context.getOperations().contains(AccessControlOperation.download) &&
-        !object.isDownloadAllowedForReaders()) {
+    if (authorized && downloadOperation && !object.isDownloadAllowedForReaders()) {
       authorized = object.isDownloadAllowedForRoles(userRoles);
       isRoleVerificationRequired = authorized;
     }
 
     // Verifying sharing is possible
-    if (context.getOperations().contains(AccessControlOperation.sharing)) {
-      authorized = getComponentAccessController().isSharingEnabled(object.getInstanceId());
+    if (authorized && sharingOperation) {
+      authorized = getComponentAccessController().isFileSharingEnabled(object.getInstanceId());
       isRoleVerificationRequired = authorized;
     }
 
     // Verifying persist actions are possible
-    if (authorized && AccessControlOperation.hasAPersistentAction(context.getOperations())) {
+    if (authorized && isPersistActionFrom(context.getOperations())) {
       isRoleVerificationRequired = true;
     }
 
     // Verifying roles if necessary
     if (isRoleVerificationRequired) {
-      SilverpeasRole greaterUserRole = SilverpeasRole.getGreaterFrom(userRoles);
+      SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
+      if (greatestUserRole == null) {
+        greatestUserRole = SilverpeasRole.reader;
+      }
+
       if (isNodeAttachmentCase) {
-        if (context.getOperations().contains(AccessControlOperation.download)) {
-          authorized = greaterUserRole.isGreaterThan(SilverpeasRole.writer);
+        if (downloadOperation) {
+          authorized = greatestUserRole.isGreaterThan(SilverpeasRole.writer);
         } else {
-          authorized = greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+          authorized = greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
         }
       } else {
-        if (context.getOperations().contains(AccessControlOperation.sharing)) {
-          return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+        if (sharingOperation) {
+          return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
         }
-        if (SilverpeasRole.writer.equals(greaterUserRole)) {
+        if (SilverpeasRole.writer.equals(greatestUserRole)) {
           authorized = userId.equals(foreignUserAuthor) ||
               getComponentAccessController().isCoWritingEnabled(object.getInstanceId());
         } else {
-          authorized = greaterUserRole.isGreaterThan(SilverpeasRole.writer);
+          authorized = greatestUserRole.isGreaterThan(SilverpeasRole.writer);
         }
       }
     }
@@ -214,29 +179,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
   private boolean isFileAttachedToWysiwygDescriptionOfNode(String foreignId) {
     return StringUtil.isDefined(foreignId) && foreignId.startsWith("Node_");
-  }
-
-  protected PublicationService getPublicationBm() {
-    return publicationService;
-  }
-
-  /**
-   * Return the 'real' publication to which this file is attached to. In case of a clone
-   * publication we need the cloned one (that is the original publication).
-   * @param foreignId
-   * @param instanceId
-   * @return
-   * @throws Exception
-   */
-  private PublicationDetail getActualForeignPublication(String foreignId, String instanceId)
-      throws Exception {
-    PublicationDetail pubDetail =
-        getPublicationBm().getDetail(new PublicationPK(foreignId, instanceId));
-    if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
-      pubDetail =
-          getPublicationBm().getDetail(new PublicationPK(pubDetail.getCloneId(), instanceId));
-    }
-    return pubDetail;
   }
 
   /**
@@ -253,5 +195,16 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
    */
   protected NodeAccessController getNodeAccessController() {
     return nodeAccessController;
+  }
+
+  /**
+   * Gets a controller of access on publication.
+   * @return a PublicationAccessController instance.
+   */
+  protected PublicationAccessController getPublicationAccessController() {
+    if (publicationAccessController == null) {
+      publicationAccessController = new PublicationAccessController();
+    }
+    return publicationAccessController;
   }
 }

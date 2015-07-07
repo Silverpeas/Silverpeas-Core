@@ -142,6 +142,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case subscription:
           includeDynamicallySubscription(xhtml, null);
           break;
+        case dragAndDropUpload:
+          includeDragAndDropUpload(xhtml, getLanguage());
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore

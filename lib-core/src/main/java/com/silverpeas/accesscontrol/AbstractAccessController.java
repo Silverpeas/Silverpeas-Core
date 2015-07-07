@@ -23,7 +23,6 @@
  */
 package com.silverpeas.accesscontrol;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import org.silverpeas.util.WAPrimaryKey;
@@ -57,12 +56,11 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
   @SuppressWarnings("unchecked")
   public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId, T object) {
     String cacheKey = buildUserRoleCacheKey(context, userId, object);
-    Set<SilverpeasRole> userRoles =
-        CacheServiceProvider.getRequestCacheService().get(cacheKey, Set.class);
+    Set<SilverpeasRole> userRoles = context.get(cacheKey, Set.class);
     if (userRoles == null) {
       userRoles = EnumSet.noneOf(SilverpeasRole.class);
       fillUserRoles(userRoles, context, userId, object);
-      CacheServiceProvider.getRequestCacheService().put(cacheKey, userRoles);
+      context.put(cacheKey, userRoles);
     }
     return userRoles;
   }

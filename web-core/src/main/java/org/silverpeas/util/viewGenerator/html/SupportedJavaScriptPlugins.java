@@ -163,5 +163,11 @@ public enum SupportedJavaScriptPlugins {
    * Silverpeas plugin to handle subscription services. This plugin loads dynamically and is not
    * loaded several times if the plugin already exists in the current html page.
    */
-  subscription
+  subscription,
+  /**
+   * Silverpeas plugin to handle file and folder upload services by drag and drop. This plugin
+   * loads dynamically and is not loaded several times if the plugin already exists in the
+   * current html page.
+   */
+  dragAndDropUpload
 }

@@ -1,22 +1,25 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.importExportPeas.servlets;
 
@@ -30,20 +33,24 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementProvider;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.servlet.FileUploadUtil;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.web.util.SilverpeasTransverseWebErrorUtil;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -60,8 +67,9 @@ import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
+ * @author
  */
-public class ImportDragAndDrop extends HttpServlet {
+public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
 
@@ -84,91 +92,83 @@ public class ImportDragAndDrop extends HttpServlet {
     doPost(req, res);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("importExportPeas", "ImportDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding("UTF-8");
-    if (!request.isContentInMultipart()) {
-      res.getOutputStream().println("SUCCESS");
-      return;
-    }
 
-    String userLanguage = null;
+    UserDetail currentUser = UserDetail.getCurrentRequester();
+    String userLanguage = currentUser.getUserPreferences().getLanguage();
+    UploadSession uploadSession = UploadSession.from(request);
     StringBuilder result = new StringBuilder();
     try {
       String componentId = request.getParameter("ComponentId");
+
+      if (!uploadSession.isUserAuthorized(componentId)) {
+        throwHttpForbiddenError();
+      }
+
       String topicId = request.getParameter("TopicId");
       if (!StringUtil.isDefined(topicId)) {
-        String sessionId = request.getParameter("SessionId");
-        SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-        SessionInfo session = sessionManagement.getSessionInfo(sessionId);
+        SessionInfo session = getSessionInfo(req);
         topicId = session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
-      String userId = request.getParameter("UserId");
-      userLanguage = StringUtil.isNotDefined(userId) ? I18NHelper.defaultLanguage :
-          UserDetail.getById(userId).getUserPreferences().getLanguage();
-      boolean ignoreFolders = StringUtil.getBooleanValue(request.getParameter("IgnoreFolders"));
-      boolean draftUsed = StringUtil.getBooleanValue(request.getParameter("Draft"));
+      boolean ignoreFolders = request.getParameterAsBoolean("IgnoreFolders");
+      String contentLanguage = request.getParameter("ContentLanguage");
+      boolean draftUsed = request.getParameterAsBoolean("Draft");
+      String publicationName = request.getParameter("PublicationName");
+      String publicationDescription =
+          isDescriptionHandled(uploadSession) ? request.getParameter("PublicationDescription") : "";
+      String publicationKeywords =
+          areKeywordsHandled(uploadSession) ? request.getParameter("PublicationKeywords") : "";
+      boolean onePublicationForAll = StringUtil.isDefined(publicationName);
+      String versionType = request.getParameter("VersionType");
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " topicId = " + topicId + " userId = " + userId +
-              " ignoreFolders = " + ignoreFolders + ", draftUsed = " + draftUsed);
+          "componentId = " + componentId + " topicId = " + topicId + " userId = " +
+              currentUser.getId() + " ignoreFolders = " + ignoreFolders + ", draftUsed = " +
+              draftUsed + ", contentLanguage = " + contentLanguage + ", publicationName = " +
+              publicationName + ", publicationDescription= " + publicationDescription +
+              ", publicationKeywords = " + publicationKeywords + ", versionType = " + versionType);
 
-      String savePath =
-          FileRepositoryManager.getTemporaryPath() + "tmpupload" + File.separator + topicId +
-              System.currentTimeMillis() + File.separator;
-
-      List<FileItem> items = request.getFileItems();
-      for (FileItem item : items) {
-        if (!item.isFormField()) {
-          String fileUploadId = item.getFieldName().substring(4);
-          String parentPath =
-              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
-          String fileName = FileUploadUtil.getFileName(item);
-          // special case for file on root of disk
-          if (StringUtil.isDefined(parentPath) && parentPath.endsWith(":\\")) {
-            parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
-          }
-          parentPath = FileUtil.convertPathToServerOS(parentPath);
-          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "fileName = " + fileName);
-          if (fileName != null) {
-            if (fileName.contains(File.separator)) {
-              fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
-              parentPath = parentPath + File.separatorChar + fileName.substring(0, fileName.
-                  lastIndexOf(File.separatorChar));
-            }
-            SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-                "fileName on Unix = " + fileName);
-          }
-          if (!ignoreFolders && parentPath != null && parentPath.length() > 0) {
-            result.append("newFolder=true&");
-            fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
-          }
-          if (!"".equals(savePath)) {
-            File f = new File(savePath + fileName);
-            File parent = f.getParentFile();
-            if (!parent.exists()) {
-              parent.mkdirs();
-            }
-            item.write(f);
-          }
-        } else {
-          SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-              "item = " + item.getFieldName() + " - " + item.getString());
-        }
+      if (isDescriptionMandatory(uploadSession) &&
+          StringUtil.isNotDefined(publicationDescription)) {
+        throwHttpPreconditionFailedError();
       }
+
+      File rootUploadFolder = uploadSession.getRootFolder();
+      if (!ignoreFolders && !onePublicationForAll) {
+        File[] foldersAtRoot =
+            rootUploadFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
+        if (foldersAtRoot != null && foldersAtRoot.length > 0) {
+          result.append("newFolder=true&");
+        }
+      } else {
+        FileUtil.moveAllFilesAtRootFolder(rootUploadFolder);
+      }
+
       MassiveReport massiveReport = new MassiveReport();
-      UserDetail userDetail =
-          OrganizationControllerProvider.getOrganisationController().getUserDetail(userId);
 
       try {
-        MassiveDocumentImport massiveImporter = MassiveDocumentImport.getInstance();
+        MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         ImportSettings settings =
-            new ImportSettings(savePath, userDetail, componentId, topicId, draftUsed, true,
-                ImportSettings.FROM_DRAGNDROP);
+            new ImportSettings(rootUploadFolder.getPath(), currentUser, componentId, topicId,
+                draftUsed, true, ImportSettings.FROM_DRAGNDROP);
+        settings.setVersioningUsed(
+            StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType));
+        if (settings.isVersioningUsed()) {
+          settings.setVersionType(Integer.valueOf(versionType));
+        }
+        settings.setContentLanguage(contentLanguage);
+        if (onePublicationForAll) {
+          settings.getPublicationForAllFiles().setName(publicationName);
+          settings.getPublicationForAllFiles().setDescription(publicationDescription);
+          settings.getPublicationForAllFiles().setKeywords(publicationKeywords);
+        }
+
         ImportReport importReport = massiveImporter.importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
@@ -186,27 +186,14 @@ public class ImportDragAndDrop extends HttpServlet {
       } catch (ImportExportException ex) {
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
         SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, userLanguage);
-        res.getOutputStream().println("ERROR");
-        return;
+        throw new ServletException(ex);
       }
-    } catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
-      final StringBuilder sb = new StringBuilder("ERROR: ");
-      String transverseMessage = SilverpeasTransverseWebErrorUtil.
-          performAppletAlertExceptionMessage(e, userLanguage);
-      if (isDefined(transverseMessage)) {
-        sb.append(transverseMessage);
-      } else {
-        sb.append(e.getMessage());
-      }
-      res.getOutputStream().println(sb.toString());
-      return;
+    } finally {
+      uploadSession.clear();
     }
 
     if (result.length() > 0) {
       res.getOutputStream().println(result.substring(0, result.length() - 1));
-    } else {
-      res.getOutputStream().println("SUCCESS");
     }
   }
 
@@ -224,5 +211,38 @@ public class ImportDragAndDrop extends HttpServlet {
     PdcClassification defaultClassification =
         pdcClassificationService.findAPreDefinedClassification(topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
+  }
+
+  /**
+   * Indicates if the description data of a publication is handled for the component instance
+   * represented by the given identifier.
+   * @param uploadSession the upload session that stores the component instance identifier.
+   * @return true if the description data is handled, false otherwise.
+   */
+  private boolean isDescriptionHandled(UploadSession uploadSession) {
+    String paramValue = uploadSession.getComponentInstanceParameterValue("useDescription");
+    return "1".equalsIgnoreCase(paramValue) || "2".equalsIgnoreCase(paramValue) ||
+        "".equals(paramValue);
+  }
+
+  /**
+   * Indicates if the description data of a publication is mandatory for the component instance
+   * represented by the given identifier.
+   * @param uploadSession the upload session that stores component instance identifier.
+   * @return true if the description data is mandatory, false otherwise.
+   */
+  private boolean isDescriptionMandatory(UploadSession uploadSession) {
+    return "2".equalsIgnoreCase(uploadSession.getComponentInstanceParameterValue("useDescription"));
+  }
+
+  /**
+   * Indicates if the keyword data of a publication is handled for the component instance
+   * represented by the given identifier.
+   * @param uploadSession the upload session that stores component instance identifier.
+   * @return true if the keyword data is handled, false otherwise.
+   */
+  private boolean areKeywordsHandled(UploadSession uploadSession) {
+    String paramValue = uploadSession.getComponentInstanceParameterValue("useKeywords");
+    return StringUtil.getBooleanValue(paramValue) || "".equals(paramValue);
   }
 }
