@@ -489,10 +489,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>com.silverpeas.formTemplate.servlets.FormTemplateRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>VersioningDragAndDrop</servlet-name>
-    <servlet-class>org.silverpeas.attachment.web.VersionedDragAndDrop</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>FileSharingRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.sharing.servlets.FileSharingRequestRouter</servlet-class>
   </servlet>
@@ -914,10 +910,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>FormTemplateRequestRouter</servlet-name>
     <url-pattern>/RformTemplate/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>VersioningDragAndDrop</servlet-name>
-    <url-pattern>/VersioningDragAndDrop/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>FileSharingRequestRouter</servlet-name>

@@ -24,13 +24,30 @@
 package org.silverpeas.upload.web;
 
 import org.silverpeas.servlet.RequestFile;
+import org.silverpeas.upload.UploadSession;
 
 import javax.ws.rs.FormParam;
+
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
 
 /**
  * @author: Yohann Chastagnier
  */
 public class UploadedRequestFile {
+
+  /**
+   * A parameter indicating from which the upload was performed. It is valued
+   * with the identifier of the HTML or javascript component at the origin of the uploading.
+   * According to his value, the expected response can be different.
+   */
+  @FormParam(X_REQUESTED_WITH)
+  private String xRequestedWith;
+
+  /**
+   * The upload session identifier
+   */
+  @FormParam(FileUploadData.X_UPLOAD_SESSION)
+  private String uploadSessionId;
 
   /**
    * Detail about the uploaded file like the filename for example.
@@ -40,9 +57,36 @@ public class UploadedRequestFile {
   private RequestFile requestFile;
 
   /**
+   * The component instance identifier
+   */
+  @FormParam(FileUploadData.X_COMPONENT_INSTANCE_ID)
+  private String componentInstanceId;
+
+  /**
+   * @see #xRequestedWith
+   */
+  public String getXRequestedWith() {
+    return xRequestedWith;
+  }
+
+  /**
+   * @see #uploadSessionId
+   */
+  public String getUploadSessionId() {
+    return uploadSessionId;
+  }
+
+  /**
    * @see #requestFile
    */
   public RequestFile getRequestFile() {
     return requestFile;
+  }
+
+  /**
+   * @see #componentInstanceId
+   */
+  public String getComponentInstanceId() {
+    return componentInstanceId;
   }
 }

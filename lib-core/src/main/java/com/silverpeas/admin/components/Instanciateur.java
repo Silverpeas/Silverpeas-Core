@@ -67,8 +67,7 @@ public class Instanciateur {
   private static String spaceId = "";
   private static String componentId = "";
   private static String userId = "";
-  private final static Map<String, WAComponent> componentsByName =
-      new HashMap<String, WAComponent>();
+  private static Map<String, WAComponent> componentsByName = new HashMap<String, WAComponent>();
   private static final ObjectFactory objectFactory = new ObjectFactory();
   private static final XMLInputFactory factory = XMLInputFactory.newFactory();
 

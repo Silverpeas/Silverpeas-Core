@@ -31,6 +31,9 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -44,11 +47,14 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
-import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.ActifyDocumentProcessor;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
@@ -64,11 +70,15 @@ import org.silverpeas.util.mail.MailExtractor;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.silverpeas.attachment.AttachmentServiceFactory.getAttachmentService;
+import static org.silverpeas.attachment.model.DocumentType.attachment;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -93,8 +103,6 @@ public class RepositoriesTypeManager {
       ImportReportManager reportManager) {
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(settings.getUser());
-    VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
     PdcImportExport pdcIE = new PdcImportExport();
 
     while (itListRep_Type.hasNext()) {
@@ -130,7 +138,7 @@ public class RepositoriesTypeManager {
             File file = itListcontenuPath.next();
             if (file.isFile()) {
               settings.setFolderId(String.valueOf(topicId));
-              importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
+              importFile(null, file, reportManager, massiveReport, gedIE, pdcIE, settings);
             } else if (file.isDirectory()) {
               switch (rep_Type.getMassiveTypeInt()) {
                 case RepositoryType.NO_RECURSIVE:
@@ -139,8 +147,8 @@ public class RepositoriesTypeManager {
                 case RepositoryType.RECURSIVE_NOREPLICATE:
                   // traitement récursif spécifique
                   settings.setPathToImport(file.getAbsolutePath());
-                  processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE,
-                      attachmentIE, versioningIE, pdcIE, settings);
+                  processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE, pdcIE,
+                      settings);
                   break;
                 case RepositoryType.RECURSIVE_REPLICATE:
                   try {
@@ -162,14 +170,14 @@ public class RepositoriesTypeManager {
     }
   }
 
-  private PublicationDetail importFile(File file, ImportReportManager reportManager,
-      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
-      ImportSettings settings) {
+  private PublicationDetail importFile(final PublicationDetail previousSavedPublication, File file,
+      ImportReportManager reportManager, MassiveReport massiveReport, GEDImportExport gedIE,
+      PdcImportExport pdcIE, ImportSettings settings) {
     SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
         "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
     String componentId = gedIE.getCurrentComponentId();
     UserDetail userDetail = gedIE.getCurentUserDetail();
-    PublicationDetail pubDetailToCreate = null;
+    PublicationDetail pubDetailToSave = null;
     try {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport();
@@ -181,74 +189,160 @@ public class RepositoriesTypeManager {
       if (fileSize <= 0L) {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
         reportManager.addNumberOfFilesNotImported(1);
-        return pubDetailToCreate;
+        return null;
       } else if (fileSize > maximumFileSize) {
         unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
         reportManager.addNumberOfFilesNotImported(1);
-        return pubDetailToCreate;
+        return null;
       }
 
-      // On récupére les infos nécéssaires à la création de la publication
-      pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
-      pubDetailToCreate.setPk(new PublicationPK("unknown", "useless", componentId));
-      if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.
-          isDraftUsed()) {
-        pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
-        pubDetailToCreate.setStatusMustBeChecked(false);
+      if (!settings.mustCreateOnePublicationForAllFiles() || previousSavedPublication == null) {
+
+        // On récupére les infos nécéssaires à la création de la publication
+        pubDetailToSave =
+            PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
+        pubDetailToSave.setPk(new PublicationPK("unknown", "useless", componentId));
+        if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.
+            isDraftUsed()) {
+          pubDetailToSave.setStatus(PublicationDetail.DRAFT);
+          pubDetailToSave.setStatusMustBeChecked(false);
+        }
+        SilverTrace
+            .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
+                "pubDetailToCreate.status = " + pubDetailToSave.getStatus());
+
+        // Création de la publication
+        pubDetailToSave =
+            gedIE.createPublicationForMassiveImport(unitReport, pubDetailToSave, settings);
+        unitReport.setLabel(pubDetailToSave.getPK().getId());
+
+        SilverTrace
+            .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
+                "pubDetailToCreate created");
+      } else {
+        pubDetailToSave = previousSavedPublication;
       }
-      SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = " + pubDetailToCreate.getStatus());
 
-      // Création de la publication
-      pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate,
-          settings);
-      unitReport.setLabel(pubDetailToCreate.getPK().getId());
-
-      SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
-
-      if (FileUtil.isMail(file.getName())) {
+      if (!settings.mustCreateOnePublicationForAllFiles() && FileUtil.isMail(file.getName())) {
         // if imported file is an e-mail, its textual content is saved in a dedicated form
         // and attached files are attached to newly created publication
-        processMailContent(pubDetailToCreate, file, reportManager, unitReport, gedIE, settings.
+        processMailContent(pubDetailToSave, file, reportManager, unitReport, gedIE, settings.
             isVersioningUsed());
       }
 
       // add attachment
-      SimpleDocument document;
-      SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
-      if (settings.isVersioningUsed()) {
-        document = new HistorisedDocument();
-        document.setPublicDocument(settings.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION);
-      } else {
-        document = new SimpleDocument();
-      }
-      document.setPK(pk);
-      document.setAttachment(new SimpleAttachment());
-      document.setFilename(file.getName());
-      document.setSize(fileSize);
-      document.getAttachment().setCreatedBy(userDetail.getId());
-      if (settings.useFileDates()) {
-        document.setCreated(pubDetailToCreate.getCreationDate());
-        if (pubDetailToCreate.getUpdateDate() != null) {
-          document.setUpdated(pubDetailToCreate.getUpdateDate());
+      Date creationDate = new Date();
+      if (settings.useFileDates() && !settings.mustCreateOnePublicationForAllFiles()) {
+        if (pubDetailToSave.getUpdateDate() != null) {
+          creationDate = pubDetailToSave.getUpdateDate();
+        } else {
+          creationDate = pubDetailToSave.getCreationDate();
         }
-      } else {
-        document.setCreated(new Date());
       }
-      document.setForeignId(pubDetailToCreate.getPK().getId());
-      document.setContentType(FileUtil.getMimeType(file.getName()));
-      AttachmentServiceFactory.getAttachmentService()
-            .createAttachment(document, file, pubDetailToCreate.isIndexable(), false);
+
+      final SimpleDocument document =
+          handleFileToAttach(userDetail, componentId, pubDetailToSave.getPK().getId(), null,
+              attachment, file, settings.getContentLanguage(), creationDate,
+              pubDetailToSave.isIndexable(), settings.isVersioningUsed(),
+              settings.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION);
+
       reportManager.addNumberOfFilesProcessed(1);
       reportManager.addImportedFileSize(document.getSize(), componentId);
+
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverTrace
           .error("importExport", "RepositoriesTypeManager.importFile", "root.EX_NO_MESSAGE", ex);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.defaultLanguage);
     }
-    return pubDetailToCreate;
+    return pubDetailToSave;
+  }
+
+  /**
+   * Handles the creation or modification of an attached file on the aimed resource.
+   */
+  public static SimpleDocument handleFileToAttach(UserDetail currentUser, String componentId,
+      String resourceId, String oldSilverpeasId, final DocumentType documentType, File file,
+      String contentLanguage, final Date creationDate, boolean hasToBeIndexed,
+      boolean isComponentVersionActivated, boolean publicVersionRequired) throws IOException {
+    final String fileName = file.getName();
+    final long fileSize = file.length();
+    boolean publicVersion = isComponentVersionActivated && publicVersionRequired;
+
+    SilverTrace.info("importExport", "RepositoriesTypeManager.handleFilesToAttach",
+        "root.MSG_GEN_PARAM_VALUE",
+        "componentId = " + componentId + ", resourceId = " + resourceId + ", userId = " +
+            currentUser.getId() + ", contentLanguage = " + contentLanguage + ", hasToBeIndexed = " +
+            hasToBeIndexed + ", fileName = " + fileName + ", fileSize = " + fileSize +
+            (isComponentVersionActivated ? (", publicVersion = " + publicVersion) : "") +
+            ", oldSilverpeasId = " + oldSilverpeasId);
+
+    final String mimeType = FileUtil.getMimeType(fileName);
+    final SimpleDocumentPK documentPK = new SimpleDocumentPK(null, componentId);
+    if (StringUtil.isDefined(oldSilverpeasId)) {
+      if (StringUtil.isInteger(oldSilverpeasId)) {
+        documentPK.setOldSilverpeasId(Long.parseLong(oldSilverpeasId));
+      } else {
+        documentPK.setId(oldSilverpeasId);
+      }
+    }
+
+    SimpleDocument document = getAttachmentService().
+        findExistingDocument(documentPK, fileName, new ForeignPK(resourceId, componentId),
+            contentLanguage);
+
+    final boolean needCreation = (document == null || !document.isVersioned());
+    if (needCreation) {
+      if (isComponentVersionActivated) {
+        document = new HistorisedDocument(documentPK, resourceId, 0, currentUser.getId(),
+            new SimpleAttachment(fileName, contentLanguage, fileName, "", fileSize, mimeType,
+                currentUser.getId(), creationDate, null));
+        document.setPublicDocument(publicVersion);
+      } else {
+        document = new SimpleDocument(new SimpleDocumentPK(null, componentId), resourceId, 0, false,
+            new SimpleAttachment(fileName, contentLanguage, null, null, fileSize, mimeType,
+                currentUser.getId(), creationDate, null));
+      }
+      document.setDocumentType(documentType);
+    }
+
+    setMetadata(document, file);
+
+    if (needCreation) {
+      boolean notifying = !document.isVersioned() || publicVersion;
+      document =
+          getAttachmentService().createAttachment(document, file, hasToBeIndexed, notifying);
+    } else {
+      document.setLanguage(contentLanguage);
+      document.setPublicDocument(publicVersion);
+      document.edit(currentUser.getId());
+      getAttachmentService().updateAttachment(document, file, hasToBeIndexed, publicVersion);
+      UnlockContext unlockContext =
+          new UnlockContext(document.getId(), currentUser.getId(), contentLanguage, "");
+      unlockContext.addOption(UnlockOption.UPLOAD);
+      if (!publicVersion) {
+        unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+      }
+      getAttachmentService().unlock(unlockContext);
+    }
+
+    // Specific case: 3d file to convert by Actify Publisher
+    ActifyDocumentProcessor.getProcessor().process(document);
+
+    return document;
+  }
+
+  /**
+   * Sets the metadata from the physical file.
+   * @param document the attachment.
+   * @param file the physical file.
+   */
+  private static void setMetadata(SimpleDocument document, File file) {
+    final MetadataExtractor extractor = MetadataExtractor.getInstance();
+    final MetaData metadata = extractor.extractMetadata(file);
+    document.setSize(file.length());
+    document.setTitle(metadata.getTitle());
+    document.setDescription(metadata.getSubject());
   }
 
   private void processMailContent(PublicationDetail pubDetail, File file,
@@ -358,26 +452,20 @@ public class RepositoriesTypeManager {
    *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
-   * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
-   * @param componentId - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId - id du thème dans lequel seront crées les éléments, l'id passé est toujours le
-   * même dans le cas présent
    * @throws ImportExportException
    */
   public void processImportRecursiveNoReplicate(ImportReportManager reportManager,
-      MassiveReport massiveReport, GEDImportExport gedIE, AttachmentImportExport attachmentIE,
-      VersioningImportExport versioningIE, PdcImportExport pdcIE, ImportSettings settings) {
+      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
+      ImportSettings settings) {
     Iterator<File> itListcontenuPath = getPathContent(new File(settings.getPathToImport()));
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
+        importFile(null, file, reportManager, massiveReport, gedIE, pdcIE, settings);
       } else if (file.isDirectory()) {
         // traitement récursif spécifique
         settings.setPathToImport(file.getAbsolutePath());
-        processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE, attachmentIE,
-            versioningIE, pdcIE, settings);
+        processImportRecursiveNoReplicate(reportManager, massiveReport, gedIE, pdcIE, settings);
       }
     }
   }
@@ -388,26 +476,24 @@ public class RepositoriesTypeManager {
    *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
-   * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
-   * @param path - dossier correspondant au niveau de récursivité auquel on se trouve.
-   * @param componentId - id du composant dans le lequel l'import massif est effectué.
-   * @param topicId - id du thème dans lequel seront crées les éléments du niveau de récursivité
-   * auquel on se trouve.
    * @return the list of publications created by the import.
    * @throws ImportExportException
    */
   public List<PublicationDetail> processImportRecursiveReplicate(ImportReportManager reportManager,
-      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings)
+      MassiveReport massiveReport, GEDImportExport gedIE, PdcImportExport pdcIE,
+      ImportSettings settings)
       throws ImportExportException {
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     File path = new File(settings.getPathToImport());
     Iterator<File> itListcontenuPath = getPathContent(path);
+    PublicationDetail publication = null;
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        PublicationDetail publication =
-            importFile(file, reportManager, massiveReport, gedIE, pdcIE, settings);
-        if (publication != null) {
+        publication =
+            importFile(publication, file, reportManager, massiveReport, gedIE, pdcIE, settings);
+        if (publication != null &&
+            (!settings.mustCreateOnePublicationForAllFiles() || publications.isEmpty())) {
           publications.add(publication);
         }
       } else if (file.isDirectory()) {

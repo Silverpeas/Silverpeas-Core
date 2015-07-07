@@ -1449,17 +1449,12 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /* Objet board */
 .tableBoard {
-  border-style: solid;
-  border-width: 1px;
-  border-color: #CCC;
-  background-color: #FFF;
-  background-image:
-    url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-  background-repeat: no-repeat;
-  background-position: right top;
+  border: 1px solid #CCC;
+  background: #FFF url(../../admin/jsp/icons/silverpeasV5/fondBoard.jpg) no-repeat right top;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 10px;
+  width: 100%;
 }
 
 .tableBoard > td {
@@ -5461,6 +5456,29 @@ input.search:focus {
   margin-bottom:14px;
 }
 
+.ui-dialog .form-container {
+}
+
+.ui-dialog .form-container .label {
+  font-weight: bold;
+  color: #666;
+}
+
+.ui-dialog .form-container label {
+  font-weight: normal;
+  color: #333;
+}
+
+.ui-dialog .form-container input {
+  vertical-align: text-bottom;
+}
+
+.ui-dialog .form-container .block {
+  border: 1px dotted #333;
+  margin: 5px -4px -5px -5px;
+  padding: 2px 5px 5px 4px;
+}
+
 /*******************************/
 /** created action bar **/
 /*******************************/
@@ -5526,6 +5544,118 @@ input.search:focus {
   background: url("../icons/attachedFiles.gif") no-repeat scroll 11px 0 transparent;
 }
 
+.droparea {
+  padding: 0;
+  background: #FFF url(../icons/dropFile.png) no-repeat 6px 2px ;
+  border: 3px dashed #e5e5e5;
+  text-align: center;
+  top: 0;
+  left: 0;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.droparea.hover {
+  background-color: #A8DE66;
+  border: 3px solid #9BCD5E;
+}
+
+.droparea-cover {
+  position: relative;
+}
+
+.droparea-cover-help {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 9;
+}
+
+.droparea-cover-help-highlight {
+  border: 1px dashed #999;
+}
+
+.droparea-cover-help-publication-list {
+  top: auto;
+  left: auto;
+  bottom: 24px;
+  right: 22px;
+  }
+
+.droparea-cover-help-attachment {
+  bottom: auto;
+  left: auto;
+  top: 5px;
+  right: 26px;
+}
+
+.droparea-cover-help-attachment-edit {
+  bottom: auto;
+  left: auto;
+  top: 2px;
+  right: 2px;
+}
+
+.droparea-cover-help-content {
+  max-width: 600px;
+ }
+
+.droparea-cover-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #fff url(../icons/dropFile.png) no-repeat 6px 2px ;
+  border: 3px dashed #999;
+  opacity: 0.7;
+  z-index: 10;
+}
+
+.droparea span {
+  color: #666;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+.percentage-progress {
+  border-radius:8px;
+  background-color:#FFF;
+  border:1px solid #CCC;
+  position:relative;
+  height:18px;
+  margin:1em 0;
+}
+.percentage-progress span.percentage-progress-bar {
+  border-radius:8px 0 0 8px;
+  display:block;
+  width:0%;
+  background-color:#b5df7d;
+  background-image:linear-gradient(to right, #bee38d, #8dd332);
+  position:absolute;
+  height:18px;
+  z-index:1
+}
+.percentage-progress span.percentage-progress-value {
+  display:block;
+  width:100%;
+  text-align:center;
+  font-weight:bold;
+  position:absolute;
+  height:18px;
+  line-height: 18px;
+  z-index:10
+}
+
+.percentage-end img {
+  vertical-align:middle;
+}
+
 div.fileUpload {
   width: 90%;
 }
@@ -5557,16 +5687,6 @@ div.fileUpload {
   margin:0 110px 0 28px;
 }
 
-.fileUpload-container .actions .droparea {
-  padding: 0;
-  background: #FFF url(../icons/dropFile.png) no-repeat 6px 2px ;
-  border: 3px dashed #e5e5e5;
-  text-align: center;
-  top: 0;
-  left: 0;
-  height: 32px;
-}
-
 .fileUpload-container .actions.dng .milieuBoutonV5.button {
   position:absolute;
   top:0;
@@ -5596,17 +5716,6 @@ div.fileUpload {
   color:#333 !important;
 }
 
-.fileUpload-container .actions .droparea.hover {
-  background-color: #A8DE66;
-  border: 3px solid #9BCD5E;
-}
-
-.fileUpload-container .actions .droparea span {
-  color: #666;
-  font-weight: bold;
-  line-height: 32px;
-  vertical-align: middle;
-}
 
 .fileUpload-container .actions a {
   cursor: pointer;

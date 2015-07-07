@@ -25,6 +25,8 @@ package com.silverpeas.accesscontrol;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,6 +37,7 @@ import java.util.Set;
 public class AccessControlContext {
 
   private Set<AccessControlOperation> operations = EnumSet.noneOf(AccessControlOperation.class);
+  private Map<String, Object> cache = new HashMap<String, Object>();
 
   /**
    * Gets an initialized instance of access control context.
@@ -69,5 +72,34 @@ public class AccessControlContext {
       return Collections.unmodifiableSet(Collections.singleton(AccessControlOperation.unknown));
     }
     return Collections.unmodifiableSet(operations);
+  }
+
+  /**
+   * Puts into context a value linked to a key.
+   * @param key the key.
+   * @param value the value.
+   * @param <T>
+   * @return the current instance.
+   */
+  public <T> AccessControlContext put(String key, T value) {
+    cache.put(key, value);
+    return this;
+  }
+
+  /**
+   * Gets from context a value from a key that has been stored into the context instance.
+   * @param key the key associated to the searched value.
+   * @param classType the type of expected value.
+   * @param <T>
+   * @return the value if any, null if the expected type does not match with the one of the existing
+   * value.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> T get(String key, Class<T> classType) {
+    Object value = cache.get(key);
+    if (value == null || !classType.isAssignableFrom(value.getClass())) {
+      return null;
+    }
+    return (T) value;
   }
 }

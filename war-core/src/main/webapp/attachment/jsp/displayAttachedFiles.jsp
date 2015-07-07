@@ -31,6 +31,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
@@ -40,6 +41,7 @@
 <%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
 <%@ page import="org.silverpeas.attachment.web.WebDavTokenProducer" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="com.stratelia.webactiv.SilverpeasRole" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -53,9 +55,7 @@
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
-<c:choose>
-  <c:when test="${isVersionActive}">
-    <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
+<c:if test="${isVersionActive}">
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
@@ -68,12 +68,7 @@
     }
   versioningSC.setProfile(request.getParameter("profile"));
   %>
-  </c:when>
-  <c:otherwise>
-<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
-  </c:otherwise>
-</c:choose>
-<script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
+</c:if>
 <script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
@@ -89,10 +84,11 @@
   <view:settings var="onlineEditingWithCustomProtocol" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="attachment.onlineEditing.customProtocol" />
   <view:settings var="onlineEditingWithCustomProtocolAlert" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${true}" key="attachment.onlineEditing.customProtocol.alert" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
-  <c:set var="dndDisabledLocally" value="${'false' eq fn:toLowerCase(param.dnd)}" scope="page"/>
+  <c:set var="dndDisabledLocally" value="${silfn:isDefined(param.dnd) and not silfn:booleanValue(param.dnd)}" scope="page"/>
   <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable && not dndDisabledLocally}" />
 
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
+  <c:set var="greatestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
   <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
   <c:choose>
@@ -197,7 +193,7 @@
 %>
 
 <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
-<div class="attachments bgDegradeGris">
+<div class="attachments bgDegradeGris attachmentDragAndDrop${param.Id}">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
   <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
@@ -352,33 +348,6 @@
           </c:if>
         </c:forEach>
     </ul>
-    <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
-      <c:choose>
-        <c:when test="${isVersionActive}">
-        <div>
-            <div class="dragNdrop">
-              <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>
-            </div>
-            <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
-            <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
-          </div>
-        </c:when>
-        <c:otherwise>
-          <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
-          <c:url var="dropUrl" value="/DragAndDrop/drop">
-            <c:param name="UserId" value="${mainSessionController.userId}" />
-            <c:param name="ComponentId" value="${componentId}" />
-            <c:param name="PubId" value="${param.Id}" />
-            <c:param name="IndexIt" value="${indexIt}" />
-            <c:param name="Context" value="${param.Context}"/>
-          </c:url>
-          <div class="dragNdrop">
-            <a href="javascript:showHideDragDrop('<%=URLManager.getServerURL(request)%><c:out value="${dropUrl}" />','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<fmt:message key="GML.applet.dnd.alt" />','<c:out value="${maximumFileSize}" />','<%=URLManager.getApplicationURL()%>','<fmt:message key="GML.DragNDropExpand" />','<fmt:message key="GML.DragNDropCollapse" />')" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand" /></a>
-            <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
-          </div>
-      </c:otherwise>
-    </c:choose>
-  </c:if>
 </div>
 </c:if>
 <div id="attachmentModalDialog" style="display: none"> </div>
@@ -419,28 +388,6 @@
       publicVersionsWindow = SP_openWindow(url,windowName, "800", "475",
       "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised");
     }
-
-  <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
-  <c:url var="publicURL" value="/VersioningDragAndDrop/jsp/Drop">
-    <c:param name="UserId" value="${mainSessionController.userId}" />
-    <c:param name="ComponentId" value="${componentId}" />
-    <c:param name="Id" value="${param.Id}" />
-    <c:param name="IndexIt" value="${indexIt}" />
-    <c:param name="Type" value="0"/>
-  </c:url>
-  <c:url var="workURL" value="/VersioningDragAndDrop/jsp/Drop">
-    <c:param name="UserId" value="${mainSessionController.userId}" />
-    <c:param name="ComponentId" value="${componentId}" />
-    <c:param name="Id" value="${param.Id}" />
-    <c:param name="IndexIt" value="${indexIt}" />
-    <c:param name="Type" value="1"/>
-  </c:url>
-  function showDnD() {
-    showHideDragDrop('${publicURL}', '<%=URLManager.getFullApplicationURL(request)%>/upload/VersioningPublic_<%=language%>.html',
-      '${workURL}', '<%=URLManager.getFullApplicationURL(request)%>/upload/VersioningWork_<%=language%>.html',
-      '<fmt:message key="GML.applet.dnd.alt" />', '${maximumFileSize}', '<%=URLManager.getApplicationURL()%>',
-      '<fmt:message key="GML.DragNDropExpand" />', '<fmt:message key="GML.DragNDropCollapse" />');
-  }
 
   String.prototype.format = function () {
     var args = arguments;
@@ -1276,7 +1223,7 @@
 </div>
 
   <div id="dialog-attachment-switch" style="display:none">
-    <p id="attachment-switch-warning-message">Prout</p>
+    <p id="attachment-switch-warning-message">dummy</p>
     <form name="attachment-switch-form" id="attachment-switch-form" method="put" accept-charset="UTF-8">
       <div id="attachment-switch-simple" style="display:none">
         <label for="switch-version-major" class="label-ui-dialog"><fmt:message key="attachment.switch.version.major" /></label>
@@ -1325,3 +1272,12 @@
 </div>
 
 <view:progressMessage/>
+<c:if test="${contextualMenuEnabled && dragAndDropEnable}">
+  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${param.Id}"
+                                  greatestUserRole="${greatestUserRole}"
+                                  componentInstanceId="${componentId}"
+                                  resourceId="${param.Id}"
+                                  contentLanguage="${contentLanguage}"
+                                  hasToBeIndexed="${indexIt}"
+                                  documentType="${param.Context}"/>
+</c:if>

@@ -41,7 +41,7 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
   private static final String SERVLET_JSP_EXCEPTION_ATTRIBUTE = "javax.servlet.jsp.jspException";
 
   /**
-   * Checks if a DataStorageQuotaException is registred in the servlet request
+   * Checks if a DataStorageQuotaException is registered in the servlet request
    * @param request the http servlet request
    * @param language the language of current user
    * @throws DataStorageQuotaException, ComponentFileFilterException

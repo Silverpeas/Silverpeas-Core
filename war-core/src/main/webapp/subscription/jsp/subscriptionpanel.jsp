@@ -224,7 +224,7 @@
 
         // the promise of the processing termination to chain the asynchronous computations together;
         // it is immediatly resolved as the computation of this method is synchrone.
-        var termination =  Promise.defer();
+        var termination =  AngularPromise.defer();
         termination.resolve(0);
         termination = termination.promise;
 

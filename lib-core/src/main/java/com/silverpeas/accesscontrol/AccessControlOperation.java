@@ -23,9 +23,12 @@
  */
 package com.silverpeas.accesscontrol;
 
+import com.silverpeas.util.CollectionUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -50,5 +53,38 @@ public enum AccessControlOperation {
     } catch (Exception e) {
       return unknown;
     }
+  }
+
+  /**
+   * Indicates if it exists a persist action from the given collection.
+   * @param accessControlOperations actions.
+   * @return true if it exists at least one of persist action, false otherwise.
+   */
+  public static boolean isPersistActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) && !CollectionUtils
+        .intersection(AccessControlOperation.PERSIST_ACTIONS, accessControlOperations).isEmpty();
+  }
+
+  /**
+   * Indicates if it exists a sharing action from the given collection.
+   * @param accessControlOperations actions.
+   * @return true if it exists a sharing action, false otherwise.
+   */
+  public static boolean isSharingActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) &&
+        accessControlOperations.contains(sharing);
+  }
+
+  /**
+   * Indicates if it exists a download action from the given collection.
+   * @param accessControlOperations actions.
+   * @return true if it exists a download action, false otherwise.
+   */
+  public static boolean isDownloadActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) &&
+        accessControlOperations.contains(download);
   }
 }

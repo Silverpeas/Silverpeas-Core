@@ -20,21 +20,25 @@
  */
 package com.silverpeas.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import com.silverpeas.util.exception.RelativeFileAccessException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -43,23 +47,50 @@ import static org.junit.Assert.*;
  */
 public class FileUtilTest {
 
-  public FileUtilTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
+  private File rootFolder;
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
+    rootFolder = File.createTempFile("root", "Folder");
+    if (rootFolder.exists()) {
+      FileUtils.deleteQuietly(rootFolder);
+      rootFolder =
+          new File(FileUtils.getTempDirectory(), "rootFolder_" + UUID.randomUUID().toString());
+    }
+    rootFolder.mkdirs();
+    FileUtils.touch(new File(rootFolder, "atRoot.txt"));
+    File subFolderA = new File(rootFolder, "SubFolderA");
+    subFolderA.mkdir();
+    FileUtils.touch(new File(subFolderA, "atSubFolderA_1.txt"));
+    FileUtils.touch(new File(subFolderA, "atSubFolderA_2.txt"));
+    File subFolderB = new File(rootFolder, "SubFolderB");
+    subFolderB.mkdir();
+    FileUtils.touch(new File(subFolderB, "atSubFolderB_1.txt"));
+    FileUtils.touch(new File(subFolderB, "sameName.txt"));
+    File subFolderBSubFolderA = new File(subFolderB, "SubFolderBSubFolderA");
+    subFolderBSubFolderA.mkdir();
+    FileUtils.touch(new File(subFolderBSubFolderA, "atSubFolderBSubFolderA_1.txt"));
+    FileUtils.touch(new File(subFolderBSubFolderA, "atSubFolderBSubFolderA_2.txt"));
+    FileUtils.touch(new File(subFolderBSubFolderA, "sameName.txt"));
+
+    String[] expectedFiles = new String[]{"/atRoot.txt", "/SubFolderA/atSubFolderA_1.txt",
+        "/SubFolderA/atSubFolderA_2.txt", "/SubFolderB/atSubFolderB_1.txt",
+        "/SubFolderB/sameName.txt", "/SubFolderB/SubFolderBSubFolderA/atSubFolderBSubFolderA_1.txt",
+        "/SubFolderB/SubFolderBSubFolderA/atSubFolderBSubFolderA_2.txt",
+        "/SubFolderB/SubFolderBSubFolderA/sameName.txt"};
+
+    List<String> actualFiles = new ArrayList<String>();
+    int substringIndex = rootFolder.getPath().length();
+    for (File file : FileUtils.listFiles(rootFolder, FileFilterUtils.trueFileFilter(),
+        FileFilterUtils.trueFileFilter())) {
+      actualFiles.add(FilenameUtils.separatorsToUnix(file.getPath().substring(substringIndex)));
+    }
+    assertThat(actualFiles, containsInAnyOrder(expectedFiles));
   }
 
   @After
   public void tearDown() {
+    FileUtils.deleteQuietly(rootFolder);
   }
 
   @Test
@@ -127,6 +158,7 @@ public class FileUtilTest {
     assertTrue(FileUtil.isArchive("toto.tgz"));
   }
 
+  @Ignore("This test is not multi-platform compliant")
   @Test
   public void testConvertFilePath() {
     String result = FileUtil.convertFilePath(new File("/", "file\r \\' - '' .pdf"));
@@ -195,5 +227,39 @@ public class FileUtilTest {
 
     assertThat(FileUtil.deleteEmptyDir(root), is(true));
     assertThat(root.exists(), is(false));
+  }
+
+  @Test
+  public void testMoveAllFilesAtRootFolder() throws IOException {
+    File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(rootFolder);
+    assertThat(foldersAtRoot, arrayWithSize(2));
+    for (File folder : foldersAtRoot) {
+      assertThat(folder.exists(), is(false));
+    }
+
+    String[] expectedFiles =
+        new String[]{"/atRoot.txt", "/atSubFolderA_1.txt", "/atSubFolderA_2.txt",
+            "/atSubFolderB_1.txt", "/atSubFolderBSubFolderA_1.txt", "/atSubFolderBSubFolderA_2.txt",
+            "/sameName.txt"};
+
+    List<String> actualFiles = new ArrayList<String>();
+    int substringIndex = rootFolder.getPath().length();
+    for (File file : FileUtils.listFiles(rootFolder, FileFilterUtils.trueFileFilter(),
+        FileFilterUtils.trueFileFilter())) {
+      actualFiles.add(FilenameUtils.separatorsToUnix(file.getPath().substring(substringIndex)));
+    }
+    assertThat(actualFiles, containsInAnyOrder(expectedFiles));
+  }
+
+  @Test
+  public void testMoveAllFilesAtRootFolderThatDoesNotExist() throws IOException {
+    File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(new File("juudejdefgegzflbzefjze"));
+    assertThat(foldersAtRoot, arrayWithSize(0));
+  }
+
+  @Test
+  public void testMoveAllFilesAtRootFolderWhichInstanceIsNull() throws IOException {
+    File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(null);
+    assertThat(foldersAtRoot, arrayWithSize(0));
   }
 }
