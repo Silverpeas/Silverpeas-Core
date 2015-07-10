@@ -239,6 +239,7 @@ public class ZipManager {
       ArchiveEntry archiveEntry;
       while ((archiveEntry = archiveStream.getNextEntry()) != null) {
         File currentFile = new File(dest, archiveEntry.getName());
+        validateFilename(currentFile.getCanonicalPath(), dest.getCanonicalPath());
         try {
           currentFile.getParentFile().mkdirs();
           if (archiveEntry.isDirectory()) {
@@ -293,5 +294,27 @@ public class ZipManager {
       }
     }
     return nbFiles;
+  }
+
+  /**
+   * Validate that fileName given in parameter is inside extraction target directory (intendedDir)
+   * @param fileName the file name to extract
+   * @param intendedDir the extraction target directory
+   * @return the filename if fileName is inside extraction target directory
+   * @throws java.io.IOException if fileName is outside extraction target directory
+   */
+  private static String validateFilename(String fileName, String intendedDir)
+      throws java.io.IOException {
+    File f = new File(fileName);
+    String canonicalPath = f.getCanonicalPath();
+
+    File iD = new File(intendedDir);
+    String canonicalID = iD.getCanonicalPath();
+
+    if (canonicalPath.startsWith(canonicalID)) {
+      return canonicalPath;
+    } else {
+      throw new IllegalStateException("File is outside extraction target directory (security)");
+    }
   }
 }
