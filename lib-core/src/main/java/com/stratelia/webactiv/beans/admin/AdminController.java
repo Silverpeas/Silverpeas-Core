@@ -1812,4 +1812,16 @@ public class AdminController implements java.io.Serializable {
     return admin.copyAndPasteSpace(pasteDetail);
   }
 
+  public boolean isDomainManagerUser(String userId, String domainId) {
+    SilverTrace.info("admin", "AdminController.isDomainManagerUser",
+        "userId = " + userId + ", domainId = " + domainId);
+    try {
+      return admin.isDomainManagerUser(userId, domainId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.isDomainManagerUser",
+          "Error inside admin service", e);
+    }
+    return false;
+  }
+
 }

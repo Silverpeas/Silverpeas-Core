@@ -28,6 +28,7 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ServiceProvider;
@@ -1276,4 +1277,12 @@ public interface Administration {
   void assignRightsFromGroupToGroup(RightAssignationContext.MODE operationMode,
       String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException;
+
+  /**
+   * Is the specified user a manager of the specified domain?
+   * @param userId the user identifier.
+   * @param domainId the domain identifier.
+   * @return true if user identified by given userId is the manager of given domain identifier.
+   */
+  boolean isDomainManagerUser(String userId, String domainId);
 }
