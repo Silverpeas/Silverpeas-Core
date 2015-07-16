@@ -153,8 +153,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
             "root.MSG_GEN_ENTER_METHOD");
     UserAccessLevel userProfile = getUserDetail().getAccessLevel();
     AdminController ac = ServiceProvider.getService(AdminController.class);
+    String[] manageableSpaceRootIds = ac.getUserManageableSpaceRootIds(getUserId());
     if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile) &&
-        ac.getUserManageableSpaceRootIds(getUserId()) != null) {
+        manageableSpaceRootIds != null && manageableSpaceRootIds.length > 0) {
       userProfile = UserAccessLevel.SPACE_ADMINISTRATOR;
     }
     SilverTrace

@@ -51,6 +51,8 @@ public class SilverStatisticsPeasRequestRouter extends
     ComponentRequestRouter<SilverStatisticsPeasSessionController> {
 
   private static final long serialVersionUID = -7422373100761515806L;
+  private final SilverStatisticsActionAccessController actionAccessController =
+      new SilverStatisticsActionAccessController();
 
   /**
    * Method declaration
@@ -707,6 +709,12 @@ public class SilverStatisticsPeasRequestRouter extends
         "SilverStatisticsPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
+  }
+
+  @Override
+  protected boolean checkUserAuthorization(final String function,
+      final SilverStatisticsPeasSessionController componentSC) {
+    return actionAccessController.hasRightAccess(function, componentSC.getUserProfile());
   }
 
   /**
