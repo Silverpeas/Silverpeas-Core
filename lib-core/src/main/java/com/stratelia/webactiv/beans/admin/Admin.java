@@ -7565,4 +7565,15 @@ public final class Admin {
     }
     return context.setAuthor(authorId);
   }
+
+  /**
+   * @param userId the user identifier
+   * @param domainId the domain identifier
+   * @return true if user identified by given userId is the manager of given domain identifier
+   */
+  public boolean isDomainManagerUser(String userId, String domainId) {
+    UserDetail userDetail = UserDetail.getById(userId);
+    return userDetail != null && userDetail.getDomainId().equals(domainId) &&
+        UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(userDetail.getAccessLevel());
+  }
 }
