@@ -88,4 +88,36 @@ public class FileDescription implements Serializable {
   private final String encoding;
   private final String format;
   private final String lang;
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final FileDescription that = (FileDescription) o;
+
+    if (format != null ? !format.equals(that.format) : that.format != null) {
+      return false;
+    }
+    if (lang != null ? !lang.equals(that.lang) : that.lang != null) {
+      return false;
+    }
+    if (!path.equals(that.path)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = path.hashCode();
+    result = 31 * result + (format != null ? format.hashCode() : 0);
+    result = 31 * result + (lang != null ? lang.hashCode() : 0);
+    return result;
+  }
 }
