@@ -198,6 +198,9 @@ public class ApplicationIndexer extends AbstractIndexer {
     if ("mydb".equalsIgnoreCase(name)) {
       return "MyDB";
     }
+    if ("organizationchart".equalsIgnoreCase(name) || "orgchartGroup".equalsIgnoreCase(name)) {
+      return "OrganizationChart";
+    }
     return className;
   }
 

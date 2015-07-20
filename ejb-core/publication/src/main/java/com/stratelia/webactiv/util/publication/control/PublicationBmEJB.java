@@ -1345,7 +1345,6 @@ public class PublicationBmEJB implements PublicationBm {
         updateIndexEntryWithXMLFormContent(indexEntry, publi);
       }
       AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
-      IndexEngineProxy.addIndexEntry(indexEntry);
     }
     return indexEntry;
   }
