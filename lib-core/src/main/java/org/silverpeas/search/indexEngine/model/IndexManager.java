@@ -20,30 +20,9 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.search.indexEngine.parser.Parser;
-import org.silverpeas.search.indexEngine.parser.ParserManager;
-import org.silverpeas.search.util.SearchEnginePropertiesManager;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -57,13 +36,29 @@ import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.search.indexEngine.parser.Parser;
+import org.silverpeas.search.indexEngine.parser.ParserManager;
+import org.silverpeas.search.util.SearchEnginePropertiesManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
-import static org.silverpeas.util.i18n.I18NHelper.defaultLocale;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import static org.apache.lucene.document.Field.Index.ANALYZED;
 import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.apache.lucene.document.Field.Store.NO;
 import static org.apache.lucene.document.Field.Store.YES;
 import static org.apache.lucene.util.Version.LUCENE_36;
+import static org.silverpeas.util.i18n.I18NHelper.defaultLocale;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -105,7 +100,7 @@ public class IndexManager {
   public static final int ADD = 0;
   public static final int REMOVE = 1;
   public static final int READD = 2;
-  private Map<String, IndexWriter> indexWriters = new HashMap<String, IndexWriter>();
+  private Pair<String, IndexWriter> indexWriter = Pair.of("", null);
 
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
@@ -136,47 +131,30 @@ public class IndexManager {
   /**
    * Optimize all the modified index.
    */
-  public void optimize() {
+  public void flush() {
+    String writerPath = indexWriter.getKey();
     SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
-        "# of index to optimize = " + indexWriters.size());
+        "writerPath = " + writerPath);
 
-    Iterator<Entry<String, IndexWriter>> writerPaths = indexWriters.entrySet().iterator();
-    while (writerPaths.hasNext()) {
-      Entry<String, IndexWriter> writerEntry = writerPaths.next();
-      String writerPath = writerEntry.getKey();
-      SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
-          "writerPath = " + writerPath);
-
-      if (writerPath != null) {
-        IndexWriter writer = writerEntry.getValue();
-        if (writer != null) {
-          SilverTrace.debug("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
-              "try to optimize " + writerPath);
-          // First, optimize
-          try {
-            writer.optimize();
-          } catch (IOException e) {
-            SilverTrace.error("indexEngine", "IndexManager.optimize()",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't optimize index " + writerPath, e);
-          }
-
-          SilverTrace.info("indexEngine", "IndexManager.optimize()", "root.MSG_GEN_PARAM_VALUE",
-              "# of documents indexed in " + writerPath + " = " + writer.maxDoc());
-          // Then, close the writer
-          try {
-            writer.close();
-          } catch (IOException e) {
-            SilverTrace.error("indexEngine", "IndexManager.optimize()",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath, e);
-          }
+    if (StringUtil.isDefined(writerPath)) {
+      IndexWriter writer = indexWriter.getValue();
+      if (writer != null) {
+        SilverTrace.debug("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
+            "try to optimize " + writerPath);
+        // Then, close the writer
+        try {
+          writer.close();
+        } catch (IOException e) {
+          SilverTrace.error("indexEngine", "IndexManager.optimize()",
+              "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath, e);
         }
-        // update the spelling index
-        if (enableDymIndexing) {
-          DidYouMeanIndexer.createSpellIndexForAllLanguage("content", writerPath);
-        }
-
-        writerPaths.remove();
       }
+      // update the spelling index
+      if (enableDymIndexing) {
+        DidYouMeanIndexer.createSpellIndexForAllLanguage("content", writerPath);
+      }
+
+      indexWriter = Pair.of("", null);
     }
   }
 
@@ -287,8 +265,9 @@ public class IndexManager {
    * @return an IndexWriter or null if the index can't be found or create or read.
    */
   private IndexWriter getIndexWriter(String path, String language) {
-    IndexWriter writer = indexWriters.get(path);
+    IndexWriter writer = indexWriter.getKey().equals(path) ? indexWriter.getValue() : null;
     if (writer == null) {
+      flush();
       try {
         File file = new File(path);
         if (!file.exists()) {
@@ -307,7 +286,7 @@ public class IndexManager {
             "indexEngine.MSG_UNKNOWN_INDEX_FILE", path, e);
       }
       if (writer != null) {
-        indexWriters.put(path, writer);
+        indexWriter = Pair.of(path, writer);
       }
     }
     return writer;

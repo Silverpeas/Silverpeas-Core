@@ -83,7 +83,10 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
    */
   public void addFileContent(String path, String encoding, String format, String lang) {
     if (path != null) {
-      getFileList().add(new FileDescription(path, encoding, format, lang));
+      FileDescription fd = new FileDescription(path, encoding, format, lang);
+      if (!getFileList().contains(fd)) {
+        getFileList().add(fd);
+      }
     }
   }
 
