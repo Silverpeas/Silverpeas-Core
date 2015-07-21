@@ -57,7 +57,7 @@
   <st_user id="5" domainid="2" specificid="4" firstname="Delegated" lastname="User" email="delegated.user@silverpeas.com" login="duser" loginmail="" accesslevel="D" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2015-01-01 00:00:00 0'/>
   <st_group id="1" domainid="0" specificid="1" name="Admnistrateurs" description="administrateurs de la plateforme" synchrorule=""/>
   <st_group id="2" domainid="0" specificid="2" name="Les Simpsons" description="La famille Simpson" synchrorule=""/>
-  <st_group id="3" domainid="2" specificid="2" name="Grenoble" description="All the people from Grenoble" synchrorule=""/>
+  <st_group id="3" domainid="2" specificid="1" name="Grenoble" description="All the people from Grenoble" synchrorule=""/>
   <st_group_user_rel groupid="1" userid="0"/>
   <st_group_user_rel groupid="2" userid="1"/>
   <st_group_user_rel groupid="2" userid="2"/>

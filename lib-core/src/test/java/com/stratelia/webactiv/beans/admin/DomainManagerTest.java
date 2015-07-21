@@ -25,7 +25,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 
@@ -40,17 +40,15 @@ public class DomainManagerTest extends AbstractTestDao {
   private Admin instance;
 
   public DomainManagerTest() {
-    instance = new Admin();
   }
 
-  @Override
-  @Before
+  @BeforeClass
   public void setUp() throws Exception {
     super.setUp();
+    instance = AdminReference.getAdminService();
     instance.reloadCache();
   }
 
-  @Override
   @After
   public void tearDown() throws Exception {
     super.tearDown();
