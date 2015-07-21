@@ -12,7 +12,7 @@ import java.io.InputStream;
 /**
  * A representation of a File in Silverpeas. This class abstracts the way the files are managed
  * in Silverpeas by extending the original JDK file with additional features. A file in Silverpeas
- * belongs always to an component instance and is qualified by its MIME type.
+ * belongs always to a component instance and is qualified by its MIME type.
  * <p/>
  * Such file can be either a document referred by a publication's attachment or an image from a
  * form.
@@ -29,6 +29,10 @@ public class SilverpeasFile extends File {
 
   private final String instanceId;
   private String mimeType;
+  /**
+   * Path to instance identified by instanceId used for security purpose
+   */
+  private String instancePath;
 
   /**
    * Creates a new Silverpeas file beloging to the specified component instance and located at the
@@ -51,6 +55,7 @@ public class SilverpeasFile extends File {
   protected SilverpeasFile(String componentId, String path, String mimeType) {
     super(path);
     this.instanceId = componentId;
+    this.instancePath = path.substring(0, path.indexOf(componentId) + componentId.length());
     if (StringUtil.isDefined((mimeType))) {
       this.mimeType = mimeType;
     } else {
@@ -215,5 +220,9 @@ public class SilverpeasFile extends File {
    */
   public boolean isOpenOfficeCompatible() {
     return FileUtil.isOpenOfficeCompatible(getPath());
+  }
+
+  public boolean isFileSecure() {
+    return FileUtil.isFileSecure(getPath(), this.instancePath);
   }
 }

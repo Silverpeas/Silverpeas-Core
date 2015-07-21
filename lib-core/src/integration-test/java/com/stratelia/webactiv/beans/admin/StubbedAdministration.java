@@ -1186,4 +1186,15 @@ public class StubbedAdministration implements Administration {
       final String authorId) throws AdminException {
 
   }
+
+  /**
+   * Is the specified user a manager of the specified domain?
+   * @param userId the user identifier.
+   * @param domainId the domain identifier.
+   * @return true if user identified by given userId is the manager of given domain identifier.
+   */
+  @Override
+  public boolean isDomainManagerUser(final String userId, final String domainId) {
+    return false;
+  }
 }

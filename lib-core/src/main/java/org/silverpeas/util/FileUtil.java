@@ -459,4 +459,38 @@ public class FileUtil implements MimeTypes {
     }
     return foldersAtRoot != null ? foldersAtRoot : new File[0];
   }
+
+  /**
+   * Validate that fileName given in parameter is inside extraction target directory (intendedDir)
+   * @param fileName the file name to extract
+   * @param intendedDir the extraction target directory
+   * @return the filename if fileName is inside extraction target directory
+   * @throws java.io.IOException if fileName is outside extraction target directory
+   */
+  public static String validateFilename(String fileName, String intendedDir)
+      throws java.io.IOException {
+    File f = new File(fileName);
+    String canonicalPath = f.getCanonicalPath();
+
+    File iD = new File(intendedDir);
+    String canonicalID = iD.getCanonicalPath();
+
+    if (canonicalPath.startsWith(canonicalID)) {
+      return canonicalPath;
+    } else {
+      throw new IllegalStateException("File is outside extraction target directory (security)");
+    }
+  }
+
+  public static boolean isFileSecure(String fileName, String intendedDir) {
+    boolean result = false;
+    try {
+      validateFilename(fileName, intendedDir);
+      result = true;
+    } catch (Exception e) {
+      SilverTrace.warn("fileutil", "FileUtil.isFileSecure", "Security alert on " + fileName);
+    }
+    return result;
+  }
+
 }

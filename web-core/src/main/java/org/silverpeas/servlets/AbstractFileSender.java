@@ -44,19 +44,29 @@ public abstract class AbstractFileSender extends HttpServlet {
 
 
   protected void sendFile(HttpServletResponse response, SilverpeasFile file) throws IOException {
-    response.setContentType(file.getMimeType());
-    response.setHeader("Content-Length", String.valueOf(file.length()));
-    SilverTrace.debug("peasUtil", "AbstractFileSender.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-        " file: " + file.getAbsolutePath());
-    try {
-      FileUtils.copyFile(file, response.getOutputStream());
-      response.getOutputStream().flush();
+    if (file != null && file.exists() && file.isFileSecure()) {
+      response.setContentType(file.getMimeType());
+      response.setHeader("Content-Length", String.valueOf(file.length()));
       SilverTrace.debug("peasUtil", "AbstractFileSender.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-          " File was sent");
-    } catch (IOException e) {
-      SilverTrace.error("peasUtil", "AbstractFileSender.sendFile", "root.EX_CANT_READ_FILE",
-          " file: " + file.getAbsolutePath(), e);
-      displayWarningHtmlCode(response);
+          " file: " + file.getAbsolutePath());
+      try {
+        FileUtils.copyFile(file, response.getOutputStream());
+        response.getOutputStream().flush();
+        SilverTrace.debug("peasUtil", "AbstractFileSender.sendFile()", "root.MSG_GEN_ENTER_METHOD",
+            " File was sent");
+      } catch (IOException e) {
+        SilverTrace.error("peasUtil", "AbstractFileSender.sendFile", "root.EX_CANT_READ_FILE",
+            " file: " + file.getAbsolutePath(), e);
+        displayWarningHtmlCode(response);
+      }
+    } else {
+      response.setHeader("Content-Length", "0");
+      if (file != null && !file.isFileSecure()) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      } else {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      }
+      response.getOutputStream().flush();
     }
   }
 

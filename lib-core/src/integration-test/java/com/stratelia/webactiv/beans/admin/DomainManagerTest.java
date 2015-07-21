@@ -23,11 +23,18 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import org.junit.After;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
+
+import javax.inject.Inject;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -35,48 +42,44 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ebonnet
  */
-public class DomainManagerTest extends AbstractTestDao {
+@RunWith(Arquillian.class)
+public class DomainManagerTest {
 
-  private Admin instance;
+  @Inject
+  private AdminController adminController;
 
   public DomainManagerTest() {
-    instance = new Admin();
   }
 
-  @Override
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom("/com/silverpeas/domains/silverpeasdriver/create_table.sql")
+          .loadInitialDataSetFrom("test-domainmanager-dataset.sql");
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarForTestClass(DomainManagerTest.class)
+        .addSilverpeasExceptionBases()
+        .addAdministrationFeatures()
+        .addAsResource("com/silverpeas/domains/silverpeasdriver")
+        .build();
+  }
+
   @Before
-  public void setUp() throws Exception {
-    super.setUp();
-    instance.reloadCache();
-  }
-
-  @Override
-  @After
-  public void tearDown() throws Exception {
-    super.tearDown();
-    instance.reloadCache();
-  }
-
-  @Override
-  protected String getDatasetFileName() {
-    return "test-domain-manager-dataset.xml";
-  }
-
-  @Override
-  protected String getTableCreationFileName() {
-    return "create-database.sql";
+  public void reloadCache() {
+    adminController.reloadAdminCache();
   }
 
   @Test
   public void testGetDomainManagerUser() throws Exception {
     String sUserId = "5";
-    String expectedDomainId = "2";
-    UserDetail userDetail = instance.getUserDetail(sUserId);
+    String expectedDomainId = "0";
+    UserDetail userDetail = adminController.getUserDetail(sUserId);
     assertThat(userDetail.getDomainId(), is(expectedDomainId));
     assertThat(userDetail.getAccessLevel(), is(UserAccessLevel.DOMAIN_ADMINISTRATOR));
-    assertThat(instance.isDomainManagerUser(sUserId, expectedDomainId), is(true));
-    assertThat(instance.isDomainManagerUser("4", expectedDomainId), is(false));
-    assertThat(instance.isDomainManagerUser("0", "0"), is(false));
+    assertThat(adminController.isDomainManagerUser(sUserId, expectedDomainId), is(true));
+    assertThat(adminController.isDomainManagerUser("4", expectedDomainId), is(false));
+    assertThat(adminController.isDomainManagerUser("0", "0"), is(false));
   }
   
 }

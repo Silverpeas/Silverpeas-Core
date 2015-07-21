@@ -6908,7 +6908,12 @@ class Admin implements Administration {
    */
   @Override
   public boolean isDomainManagerUser(String userId, String domainId) {
-    UserDetail userDetail = UserDetail.getById(userId);
+    UserDetail userDetail = null;
+    try {
+      userDetail = getUserDetail(userId);
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "Admin.isDomainManagerUser", "cannot load user " + userId, e);
+    }
     return userDetail != null && userDetail.getDomainId().equals(domainId) &&
         UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(userDetail.getAccessLevel());
   }
