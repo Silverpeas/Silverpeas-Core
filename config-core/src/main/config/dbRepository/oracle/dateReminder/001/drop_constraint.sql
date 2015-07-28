@@ -1,0 +1,1 @@
+ALTER TABLE st_dateReminder DROP CONSTRAINT const_st_dateReminder_pk;
