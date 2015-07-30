@@ -38,8 +38,10 @@ import org.slf4j.LoggerFactory;
 import com.silverpeas.util.StringUtil;
 
 /**
+ * @deprecated replaced by WebDavCredentialsProvider class.
  * @author ehugonnet
  */
+@Deprecated
 public class SilverpeasDigestCredentialsProvider implements CredentialsProvider {
 
   private static final Logger log = LoggerFactory.getLogger(

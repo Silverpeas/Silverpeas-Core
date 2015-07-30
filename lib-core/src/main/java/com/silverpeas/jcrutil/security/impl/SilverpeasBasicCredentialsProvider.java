@@ -39,8 +39,11 @@ import org.apache.jackrabbit.webdav.DavConstants;
 /**
  * This code is a derivative of the org.apache.jackrabbit.server.BasicCredentialsProvider form
  * Apache Jackrabbit whic is under Apache 2.0 License.
+ *
+ * @deprecated replaced by WebDavCredentialsProvider class.
  * @author ehugonnet
  */
+@Deprecated
 public class SilverpeasBasicCredentialsProvider implements CredentialsProvider {
 
   private final String defaultHeaderValue;
