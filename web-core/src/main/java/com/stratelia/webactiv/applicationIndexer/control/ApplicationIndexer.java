@@ -142,7 +142,15 @@ public class ApplicationIndexer extends AbstractIndexer {
       }
       if (componentIndexer == null) {
         componentIndexer =
+            loadIndexer("com.silverpeas.components." + packageName + '.' + className + "Indexer");
+      }
+      if (componentIndexer == null) {
+        componentIndexer =
             loadIndexer("org.silverpeas." + packageName + '.' + className + "Indexer");
+      }
+      if (componentIndexer == null) {
+        componentIndexer =
+            loadIndexer("org.silverpeas.components." + packageName + '.' + className + "Indexer");
       }
     } catch (InstantiationException e) {
       SilverTrace.warn(silvertraceModule, "ApplicationIndexer.getIndexer()",
@@ -190,6 +198,9 @@ public class ApplicationIndexer extends AbstractIndexer {
     if ("mydb".equalsIgnoreCase(name)) {
       return "MyDB";
     }
+    if ("organizationchart".equalsIgnoreCase(name) || "orgchartGroup".equalsIgnoreCase(name)) {
+      return "OrganizationChart";
+    }
     return className;
   }
 
@@ -205,7 +216,8 @@ public class ApplicationIndexer extends AbstractIndexer {
       return "survey";
     }
     if ("webPages".equalsIgnoreCase(packageName) || "resourcesManager".equalsIgnoreCase(packageName)
-        || "mydb".equalsIgnoreCase(packageName) || "formsOnline".equalsIgnoreCase(packageName)) {
+        || "mydb".equalsIgnoreCase(packageName) || "formsOnline".equalsIgnoreCase(packageName)
+        || "suggestionBox".equalsIgnoreCase(packageName)) {
       return packageName.toLowerCase();
     }
     return packageName;

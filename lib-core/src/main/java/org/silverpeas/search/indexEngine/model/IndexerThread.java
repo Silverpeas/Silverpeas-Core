@@ -27,12 +27,16 @@ package org.silverpeas.search.indexEngine.model;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * A thread IndexerThread index in the background a batch of index requests. All the public methods
  * are static, so only one thread runs and processes the requests.
  */
 public class IndexerThread extends Thread {
+
+  private static final int queueLimit = 200;
+  private static final Semaphore queueSemaphore = new Semaphore(queueLimit, true);
 
   /**
    * Builds and starts the thread which will process all the requests. This method is synchonized on
@@ -42,8 +46,7 @@ public class IndexerThread extends Thread {
   static public void start(IndexManager indexManager) {
     synchronized (requestList) {
       if (indexerThread == null) {
-        SilverTrace.debug("indexEngine", "IndexerThread",
-            "indexEngine.INFO_STARTS_INDEXER_THREAD");
+        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_STARTS_INDEXER_THREAD");
         indexerThread = new IndexerThread(indexManager);
         indexerThread.start();
       }
@@ -55,11 +58,17 @@ public class IndexerThread extends Thread {
    * @param indexEntry
    */
   static public void addIndexEntry(FullIndexEntry indexEntry) {
-    synchronized (requestList) {
-      SilverTrace.debug("indexEngine", "IndexerThread",
-          "indexEngine.INFO_ADDS_ADD_REQUEST", indexEntry.toString());
-      requestList.add(new AddIndexEntryRequest(indexEntry));
-      requestList.notify();
+    try {
+      queueSemaphore.acquire();
+      synchronized (requestList) {
+        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_ADD_REQUEST",
+            indexEntry.toString());
+        requestList.add(new AddIndexEntryRequest(indexEntry));
+        requestList.notify();
+      }
+    } catch (InterruptedException e) {
+      SilverTrace
+          .error("indexEngine", "IndexerThread", "indexEngine.INFO_STARTS_INDEXER_THREAD", e);
     }
   }
 
@@ -67,11 +76,17 @@ public class IndexerThread extends Thread {
    * Add a request 'remove entry index'
    */
   static public void removeIndexEntry(IndexEntryPK indexEntry) {
-    synchronized (requestList) {
-      SilverTrace.debug("indexEngine", "IndexerThread",
-          "indexEngine.INFO_ADDS_REMOVE_REQUEST", indexEntry.toString());
-      requestList.add(new RemoveIndexEntryRequest(indexEntry));
-      requestList.notify();
+    try {
+      queueSemaphore.acquire();
+      synchronized (requestList) {
+        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_REMOVE_REQUEST",
+            indexEntry.toString());
+        requestList.add(new RemoveIndexEntryRequest(indexEntry));
+        requestList.notify();
+      }
+    } catch (InterruptedException e) {
+      SilverTrace
+          .error("indexEngine", "IndexerThread", "indexEngine.INFO_STARTS_INDEXER_THREAD", e);
     }
   }
 
@@ -92,9 +107,9 @@ public class IndexerThread extends Thread {
         request = null;
 
         synchronized (requestList) {
-          SilverTrace.info("indexEngine", "IndexerThread",
-              "root.MSG_GEN_PARAM_VALUE", "# of items to index = "
-              + requestList.size());
+          SilverTrace.info("indexEngine", "IndexerThread", "root.MSG_GEN_PARAM_VALUE",
+              "# of items to index = " + requestList.size() + ", queueSemaphore available: " +
+                  queueSemaphore.availablePermits());
           if (!requestList.isEmpty()) {
             request = requestList.remove(0);
           }
@@ -105,15 +120,16 @@ public class IndexerThread extends Thread {
          * the requests) will not be blocked.
          */
         if (request != null) {
+          queueSemaphore.release();
           request.process(indexManager);
         }
 
       } while (request != null);
 
       /**
-       * Then we optimize all the modified index.
+       * Then the index writer is flushed.
        */
-      indexManager.optimize();
+      indexManager.flush();
 
       /*
        * Finally, unless a new request has been made while optimisation, we wait the notification of
@@ -122,12 +138,13 @@ public class IndexerThread extends Thread {
       try {
         synchronized (requestList) {
           if (requestList.isEmpty()) {
+            queueSemaphore.release(queueLimit - queueSemaphore.availablePermits());
             requestList.wait();
           }
         }
       } catch (InterruptedException e) {
-        SilverTrace.debug("indexEngine", "IndexerThread",
-            "indexEngine.INFO_INTERRUPTED_WHILE_WAITING");
+        SilverTrace
+            .debug("indexEngine", "IndexerThread", "indexEngine.INFO_INTERRUPTED_WHILE_WAITING");
       }
     }
   }
@@ -136,7 +153,7 @@ public class IndexerThread extends Thread {
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
    * access will be synchronized on this list. Futhermore this list is used to synchronize the
    * providers and the consumers of the list :
-   * 
+   *
    * <PRE>
    * // provider
    * synchronized(requestList)
@@ -144,7 +161,7 @@ public class IndexerThread extends Thread {
    * requestList.add(...);
    * requestList.notify();
    * }
-   * 
+   *
    * // consumer
    * synchronized(requestList)
    * {
@@ -153,7 +170,7 @@ public class IndexerThread extends Thread {
    * }
    * </PRE>
    */
-  static private final List<Request> requestList = new ArrayList<Request>();
+  static private final List<Request> requestList = new ArrayList<Request>(queueLimit);
 
   /**
    * All the requests are processed by a single background thread. This thread is built and started
@@ -185,7 +202,7 @@ interface Request {
    * Method declaration
    * @param indexManager
    */
-  public void process(IndexManager indexManager);
+  void process(IndexManager indexManager);
 }
 
 /**
