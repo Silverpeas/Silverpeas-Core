@@ -58,12 +58,12 @@ import javax.servlet.http.HttpSession;
  */
 @Singleton
 public class SilverpeasSessionOpener {
-  
+
   private static final int HTTP_DEFAULT_PORT = 80;
 
   protected SilverpeasSessionOpener() {
   }
-  
+
   /**
    * Opens a session in Silverpeas for the authenticated user behinds the specified HTTP request.
    * <p/>
@@ -102,7 +102,7 @@ public class SilverpeasSessionOpener {
       String allowPasswordChange = (String) session.getAttribute(
           Authentication.PASSWORD_CHANGE_ALLOWED);
       MainSessionController controller;
-      if (!sessionInfo.isDefined()) {
+      if (!sessionInfo.isDefined() || sessionInfo == SessionInfo.AnonymousSession) {
         // the session is a new one, then open it in Silverpeas
         controller = new MainSessionController(authKey, session.getId());
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
@@ -114,6 +114,8 @@ public class SilverpeasSessionOpener {
             sessionInfo = sessionManagement.openSession(controller.getCurrentUserDetail(), request);
             registerSuccessfulConnexion(controller);
             SynchronizerTokenService.getInstance().setUpSessionTokens(sessionInfo);
+          } else {
+            sessionManagement.openAnonymousSession();
           }
         }
       } else {
@@ -203,7 +205,7 @@ public class SilverpeasSessionOpener {
   protected String getHomePageUrl(HttpRequest request, String redirectURL) {
     String absoluteBaseURL = getAbsoluteUrl(request);
     StringBuilder absoluteUrl = new StringBuilder(absoluteBaseURL);
-    
+
     HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -247,7 +249,7 @@ public class SilverpeasSessionOpener {
     } else {
       absoluteUrl.append("/Main/").append(favoriteFrame);
     }
-    
+
     // checks authentication hooks
     String alternativeURL = null;
     for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
@@ -260,7 +262,7 @@ public class SilverpeasSessionOpener {
     }
     return absoluteUrl.toString();
   }
-  
+
   /**
    * Computes the beginning of an absolute URL for the home page.
    *

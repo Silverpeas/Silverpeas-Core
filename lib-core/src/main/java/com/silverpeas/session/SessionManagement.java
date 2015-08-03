@@ -1,21 +1,24 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- *
+ * <p/>
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * <p/>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
+ * <p/>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.session;
@@ -131,6 +134,17 @@ public interface SessionManagement {
    * that session.
    */
   SessionInfo openSession(final UserDetail user, final HttpServletRequest request);
+
+  /**
+   * Opens a new anonymous session.
+   * The opened session is an HTTP one and it is managed directly by the underlying
+   * HTTP server/container. This method is for anonymous session in which HTTP servlets are used as
+   * entry-point in the WEB communication with Silverpeas.
+   *
+   * @return a SessionInfo instance representing the current opened anonymous session with
+   * information about that session.
+   */
+  SessionInfo openAnonymousSession();
 
   /**
    * Closes the specified user session.

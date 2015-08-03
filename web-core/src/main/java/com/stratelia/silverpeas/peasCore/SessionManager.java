@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager
 import com.stratelia.silverpeas.silvertrace.SilverLog;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
@@ -139,10 +140,10 @@ public class SessionManager implements SessionManagement {
       }
       initSchedulerTimeStamp();
 
-      SilverLog.logConnexion("SessionManager starting", "TimeStamp="
-          + convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp),
-          "UserSessionTimeout=" + convertMillisecondsToMinutes(userSessionTimeout)
-          + " adminSessionTimeout=" + convertMillisecondsToMinutes(adminSessionTimeout));
+      SilverLog.logConnexion("SessionManager starting", "TimeStamp=" +
+              convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp),
+          "UserSessionTimeout=" + convertMillisecondsToMinutes(userSessionTimeout) +
+              " adminSessionTimeout=" + convertMillisecondsToMinutes(adminSessionTimeout));
 
       // register the shutdown session management process when the server is in shutdown.
       Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -214,8 +215,8 @@ public class SessionManager implements SessionManagement {
       removeSession(si);
     } else {
       SilverTrace.debug("peasCore", "SessionManager.removeSession",
-          "L'objet de session n'a pas ete "
-          + "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
+          "L'objet de session n'a pas ete " +
+              "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
 
     }
   }
@@ -249,7 +250,12 @@ public class SessionManager implements SessionManagement {
   public synchronized SessionInfo getSessionInfo(String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
-      session = SessionInfo.NoneSession;
+      if (UserDetail.getCurrentRequester() != null &&
+          UserDetail.getCurrentRequester().isAnonymous()) {
+        session = SessionInfo.AnonymousSession;
+      } else {
+        session = SessionInfo.NoneSession;
+      }
     }
     return session;
   }
@@ -517,6 +523,13 @@ public class SessionManager implements SessionManagement {
       SilverTrace.error("peasCore", "SessionManagement.openSession", "root.EX_NO_MESSAGE", ex);
     }
     return si;
+  }
+
+  @Override
+  public SessionInfo openAnonymousSession() {
+    CacheServiceProvider.getSessionCacheService()
+        .put(UserDetail.CURRENT_REQUESTER_KEY, UserDetail.getAnonymousUser());
+    return SessionInfo.AnonymousSession;
   }
 
   /**

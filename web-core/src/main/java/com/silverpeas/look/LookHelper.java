@@ -26,9 +26,9 @@ package com.silverpeas.look;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.ation.model.PublicationDetail;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.http.HttpSession;
