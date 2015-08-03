@@ -104,6 +104,8 @@ public interface SilverpeasCalendar {
 
   public Collection<ToDoHeader> getNotCompletedToDosForUser(String userId);
 
+  public List<String> getAllToDoForUser(String userId);
+
   public Collection<ToDoHeader> getOrganizerToDos(String organizerId);
 
   public Collection<ToDoHeader> getClosedToDos(String organizerId);

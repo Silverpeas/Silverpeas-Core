@@ -35,6 +35,7 @@ import org.silverpeas.util.exception.UtilException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -114,6 +115,21 @@ public class CalendarEJB implements SilverpeasCalendar {
       return ToDoDAO.getNotCompletedToDoHeadersForUser(con, userId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getNotCompletedToDosForUser(String userId)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public List<String> getAllToDoForUser(final String userId) {
+    SilverTrace.info("calendar", "CalendarEJB.getAllToDoForUser(userId)",
+        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+    Connection con = getConnection();
+    try {
+      return ToDoDAO.getAllTodoByUser(con, userId);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException("CalendarEJB.getAllToDoForUser(String userId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
     } finally {
       DBUtil.close(con);
