@@ -328,4 +328,24 @@ public class ToDoDAO {
       DBUtil.close(rs, prepStmt);
     }
   }
+
+  public static List<String> getAllTodoByUser(Connection con, String userId) throws SQLException {
+    List<String> taskIds = new ArrayList<String>();
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    String selectStatement = "SELECT DISTINCT(ctd.id) FROM CalendarToDo ctd, " +
+        "CalendarToDoAttendee  ctda WHERE ctda.userid = ? " +
+        "AND (ctd.id = ctda.todoId)";
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt.setString(1, userId);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        taskIds.add(rs.getString(1));
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return taskIds;
+  }
 }
