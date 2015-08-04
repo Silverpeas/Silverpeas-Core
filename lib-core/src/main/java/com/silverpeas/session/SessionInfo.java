@@ -33,6 +33,7 @@ import java.util.Map;
 public class SessionInfo {
 
   public static final SessionInfo NoneSession = new SessionInfo(null, null);
+  public static final SessionInfo AnonymousSession = getAnonymousSession();
 
   private final String sessionId;
   private String ipAddress;
@@ -42,6 +43,14 @@ public class SessionInfo {
   private final Map<String, Object> attributes = new HashMap<String, Object>();
   private long idleTimestamp;
   private final InMemoryCacheService cache = new InMemoryCacheService();
+
+  private static SessionInfo getAnonymousSession() {
+    UserDetail anonymousUser = UserDetail.getAnonymousUser();
+    if (UserDetail.getAnonymousUser() != null) {
+      return new SessionInfo(null, anonymousUser);
+    }
+    return NoneSession;
+  }
 
   /**
    * Constructs a new instance about a given opened user session.
@@ -183,7 +192,7 @@ public class SessionInfo {
   }
 
   /**
-   * Is this session is defined? A session is defined if it a session opened to a user in
+   * Is this session is defined? A session is defined if it's a session opened to a user in
    * Silverpeas.
    *
    * @return true if this session is defined, false otherwise.

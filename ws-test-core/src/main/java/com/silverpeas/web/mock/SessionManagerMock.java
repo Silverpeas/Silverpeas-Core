@@ -24,15 +24,16 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionValidationContext;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.authentication.Authentication;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.silverpeas.authentication.Authentication;
 
 /**
  * A mock of a session manager for testing purpose.
@@ -82,6 +83,11 @@ public class SessionManagerMock implements SessionManagement {
     HttpSessionInfo sessionInfo = new HttpSessionInfo(session.getId(), user, session);
     sessions.put(sessionInfo.getSessionId(), sessionInfo);
     return sessionInfo;
+  }
+
+  @Override
+  public SessionInfo openAnonymousSession(final HttpServletRequest request) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override

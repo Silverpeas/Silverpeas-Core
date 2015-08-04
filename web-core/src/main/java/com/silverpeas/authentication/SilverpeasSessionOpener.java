@@ -37,13 +37,13 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
-import javax.servlet.http.HttpSession;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.UserAuthenticationListener;
 import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
@@ -54,12 +54,12 @@ import org.silverpeas.web.token.SynchronizerTokenServiceFactory;
  * @author ehugonnet
  */
 public class SilverpeasSessionOpener {
-  
+
   private static final int HTTP_DEFAULT_PORT = 80;
 
   public SilverpeasSessionOpener() {
   }
-  
+
   /**
    * Opens a session in Silverpeas for the authenticated user behinds the specified HTTP request.
    * <p/>
@@ -99,7 +99,7 @@ public class SilverpeasSessionOpener {
       String allowPasswordChange = (String) session.getAttribute(
           Authentication.PASSWORD_CHANGE_ALLOWED);
       MainSessionController controller;
-      if (!sessionInfo.isDefined()) {
+      if (!sessionInfo.isDefined() || sessionInfo == SessionInfo.AnonymousSession) {
         // the session is a new one, then open it in Silverpeas
         controller = new MainSessionController(authKey, session.getId());
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
@@ -112,6 +112,8 @@ public class SilverpeasSessionOpener {
             registerSuccessfulConnexion(controller);
             SynchronizerTokenServiceFactory.getSynchronizerTokenService().setUpSessionTokens(
                 sessionInfo);
+          } else {
+            sessionManagement.openAnonymousSession(request);
           }
         }
       } else {
@@ -200,7 +202,7 @@ public class SilverpeasSessionOpener {
   protected String getHomePageUrl(HttpRequest request, String redirectURL) {
     String absoluteBaseURL = getAbsoluteUrl(request);
     StringBuilder absoluteUrl = new StringBuilder(absoluteBaseURL);
-    
+
     HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -244,7 +246,7 @@ public class SilverpeasSessionOpener {
     } else {
       absoluteUrl.append("/Main/").append(favoriteFrame);
     }
-    
+
     // checks authentication hooks
     String alternativeURL = null;
     for (UserAuthenticationListener listener : UserAuthenticationListenerRegistration
@@ -257,7 +259,7 @@ public class SilverpeasSessionOpener {
     }
     return absoluteUrl.toString();
   }
-  
+
   /**
    * Computes the beginning of an absolute URL for the home page.
    *

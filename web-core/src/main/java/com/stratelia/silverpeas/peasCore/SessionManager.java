@@ -52,6 +52,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.servlets.LogoutServlet;
 
@@ -148,9 +149,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       initSchedulerTimeStamp();
 
       SilverLog.logConnexion("SessionManager starting", "TimeStamp="
-          + convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp),
+              + convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp),
           "UserSessionTimeout=" + convertMillisecondsToMinutes(userSessionTimeout)
-          + " adminSessionTimeout=" + convertMillisecondsToMinutes(adminSessionTimeout));
+              + " adminSessionTimeout=" + convertMillisecondsToMinutes(adminSessionTimeout));
 
       // register the shutdown session management process when the server is in shutdown.
       Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -233,7 +234,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     } else {
       SilverTrace.debug("peasCore", "SessionManager.removeSession",
           "L'objet de session n'a pas ete "
-          + "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
+              + "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
 
     }
   }
@@ -267,7 +268,12 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   public synchronized SessionInfo getSessionInfo(String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
-      session = SessionInfo.NoneSession;
+      if (UserDetail.getCurrentRequester() != null &&
+          UserDetail.getCurrentRequester().isAnonymous()) {
+        session = SessionInfo.AnonymousSession;
+      } else {
+        session = SessionInfo.NoneSession;
+      }
     }
     return session;
   }
@@ -525,8 +531,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 
   /**
@@ -565,6 +571,13 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       SilverTrace.error("peasCore", "SessionManagement.openSession", "root.EX_NO_MESSAGE", ex);
     }
     return si;
+  }
+
+  @Override
+  public SessionInfo openAnonymousSession(final HttpServletRequest request) {
+    CacheServiceFactory.getSessionCacheService().put(
+        UserDetail.CURRENT_REQUESTER_KEY, UserDetail.getAnonymousUser());
+    return SessionInfo.AnonymousSession;
   }
 
   /**
