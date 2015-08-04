@@ -24,31 +24,29 @@
 
 package com.silverpeas.look;
 
-import java.util.List;
-
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.ation.model.PublicationDetail;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodePK;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
-import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * A LookHelper is an utility class aiming to facilitate the access of the current Web
  * navigation of the user in the Silverpeas Web interface as well of some settings on the Web
  * displaying. As such a LookHelper is instantiated once per user session.
  */
-public interface LookHelper {
+interface LookHelper {
 
   /**
    * Creates a new look helper instance and put it into the current user session.
    * @param session a user HTTP session.
    * @return a new look helper.
    */
-  public static LookHelper newLookHelper(HttpSession session) {
+  static LookHelper newLookHelper(HttpSession session) {
     LookHelper lookHelper = new LookSilverpeasV5Helper(session);
     session.setAttribute(LookHelper.SESSION_ATT, lookHelper);
     return lookHelper;
@@ -59,111 +57,111 @@ public interface LookHelper {
    * @param session an HTTP user session.
    * @return a look helper or null if no one was registered into the current user session.
    */
-  public static LookHelper getLookHelper(HttpSession session) {
+  static LookHelper getLookHelper(HttpSession session) {
     return (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
   }
 
-  public String getURLOfLastVisitedCollaborativeSpace();
+  String getURLOfLastVisitedCollaborativeSpace();
 
-  public final String SESSION_ATT = "Silverpeas_LookHelper";
+  String SESSION_ATT = "Silverpeas_LookHelper";
 
-  public abstract String getSpaceId();
+  String getSpaceId();
 
-  public abstract void setSpaceId(String spaceId);
+  void setSpaceId(String spaceId);
 
-  public abstract String getSubSpaceId();
+  String getSubSpaceId();
 
-  public abstract void setSubSpaceId(String subSpaceId);
+  void setSubSpaceId(String subSpaceId);
 
-  public abstract String getComponentId();
+  String getComponentId();
 
-  public abstract void setComponentId(String componentId);
+  void setComponentId(String componentId);
 
-  public abstract boolean isMenuPersonalisationEnabled();
+  boolean isMenuPersonalisationEnabled();
 
   /**
    * @param spaceId can be id of a space or a subspace
    */
-  public abstract void setSpaceIdAndSubSpaceId(String spaceId);
+  void setSpaceIdAndSubSpaceId(String spaceId);
 
-  public abstract void setComponentIdAndSpaceIds(String spaceId,
+  void setComponentIdAndSpaceIds(String spaceId,
       String subSpaceId, String componentId);
 
   @Deprecated
-  public abstract void init(MainSessionController mainSessionController,
+  void init(MainSessionController mainSessionController,
       ResourceLocator resources);
 
-  public abstract String getUserFullName(String userId);
+  String getUserFullName(String userId);
 
-  public abstract String getUserFullName();
+  String getUserFullName();
 
-  public abstract String getUserId();
+  String getUserId();
 
-  public abstract String getLanguage();
+  String getLanguage();
 
-  public abstract boolean isAnonymousUser();
+  boolean isAnonymousUser();
 
-  public abstract boolean displayPDCInNavigationFrame();
+  boolean displayPDCInNavigationFrame();
 
-  public abstract boolean displayPDCFrame();
+  boolean displayPDCFrame();
 
-  public abstract boolean displayContextualPDC();
+  boolean displayContextualPDC();
 
-  public abstract boolean displaySpaceIcons();
+  boolean displaySpaceIcons();
 
-  public abstract String getSpaceId(String componentId);
+  String getSpaceId(String componentId);
 
-  public abstract String getWallPaper(String spaceId);
+  String getWallPaper(String spaceId);
 
-  public abstract int getNBConnectedUsers();
+  int getNBConnectedUsers();
 
-  public abstract boolean isAnonymousAccess();
+  boolean isAnonymousAccess();
 
-  public abstract boolean getSettings(String key);
+  boolean getSettings(String key);
 
-  public abstract boolean getSettings(String key, boolean defaultValue);
+  boolean getSettings(String key, boolean defaultValue);
 
-  public abstract String getSettings(String key, String defaultValue);
-  
-  public abstract int getSettings(String key, int defaultValue);
+  String getSettings(String key, String defaultValue);
 
-  public abstract String getString(String key);
+  int getSettings(String key, int defaultValue);
 
-  public abstract boolean isBackOfficeVisible();
+  String getString(String key);
 
-  public abstract List<TopItem> getTopItems();
+  boolean isBackOfficeVisible();
 
-  public abstract List<String> getTopSpaceIds();
+  List<TopItem> getTopItems();
 
-  public abstract String getMainFrame();
+  List<String> getTopSpaceIds();
 
-  public abstract void setMainFrame(String mainFrame);
+  String getMainFrame();
 
-  public abstract String getSpaceWallPaper();
+  void setMainFrame(String mainFrame);
 
-  public abstract String getComponentURL(String componentId);
+  String getSpaceWallPaper();
 
-  public abstract String getDate();
+  String getComponentURL(String componentId);
 
-  public abstract String getDefaultSpaceId();
+  String getDate();
 
-  public abstract List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis);
+  String getDefaultSpaceId();
 
-  public abstract List<PublicationDetail> getValidPublications(NodePK nodePK);
+  List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis);
 
-  public abstract UserMenuDisplay getDisplayUserMenu();
+  List<PublicationDetail> getValidPublications(NodePK nodePK);
 
-  public abstract void setDisplayUserMenu(UserMenuDisplay userMenuDisplayMode);
+  UserMenuDisplay getDisplayUserMenu();
 
-  public abstract boolean isEnableUFSContainsState();
+  void setDisplayUserMenu(UserMenuDisplay userMenuDisplayMode);
 
-  public abstract boolean isDisplayPDCInHomePage();
-  
-  public abstract String getSpaceWithCSSToApply();
-  
-  public DefaultSpaceHomePage getSpaceHomePage(String spaceId);
-  
-  public TickerSettings getTickerSettings();
+  boolean isEnableUFSContainsState();
+
+  boolean isDisplayPDCInHomePage();
+
+  String getSpaceWithCSSToApply();
+
+  DefaultSpaceHomePage getSpaceHomePage(String spaceId);
+
+  TickerSettings getTickerSettings();
 
   UserDetail getUserDetail();
 
