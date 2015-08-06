@@ -201,7 +201,7 @@ public class TreeCache {
 
   public static List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);
-    if (component != null) {
+    if (component != null && component.hasDomainFather()) {
       return getSpacePath(Integer.parseInt(component.getDomainFatherId().substring(
           SpaceInst.SPACE_KEY_PREFIX.length())));
     }

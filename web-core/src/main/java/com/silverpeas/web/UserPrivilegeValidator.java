@@ -60,9 +60,9 @@ import static org.silverpeas.util.StringUtil.isInteger;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
- * authentification and of the authorization for a caller to request the decorated web service.
+ * authentication and of the authorization for a caller to request the decorated web service.
  *
- * Indeed, the validation mechanisme is encapsulated within the RESTWebService as it requires access
+ * Indeed, the validation mechanism is encapsulated within the RESTWebService as it requires access
  * to the incoming HTTP request as well to the current user session if any. In order to delegate
  * externally the validation triggering,
  */
@@ -98,7 +98,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * credentials passed through the request (as an HTTP header). Once the authentication succeed,
    * the identification of the user is done and detail about it can then be got. A runtime exception
    * is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The validation
-   * fails when one of the belowed situation is occuring: <ul> <li>The user session key is
+   * fails when one of the below situation is occurring: <ul> <li>The user session key is
    * invalid;</li> <li>The user isn't authenticated and no credentials are passed with the
    * request;</li> <li>The user authentication failed.</li> </ul>
    *

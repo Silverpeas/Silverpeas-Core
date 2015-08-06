@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-public class LookSilverpeasV5Helper implements LookHelper {
+public class LookSilverpeasV5Helper extends LookHelper {
 
   private OrganizationController organizationController;
   private ResourceLocator resources = null;

@@ -39,14 +39,16 @@ import java.util.List;
  * navigation of the user in the Silverpeas Web interface as well of some settings on the Web
  * displaying. As such a LookHelper is instantiated once per user session.
  */
-interface LookHelper {
+public abstract class LookHelper {
+
+  public static final String SESSION_ATT = "Silverpeas_LookHelper";
 
   /**
    * Creates a new look helper instance and put it into the current user session.
    * @param session a user HTTP session.
    * @return a new look helper.
    */
-  static LookHelper newLookHelper(HttpSession session) {
+  public static LookHelper newLookHelper(HttpSession session) {
     LookHelper lookHelper = new LookSilverpeasV5Helper(session);
     session.setAttribute(LookHelper.SESSION_ATT, lookHelper);
     return lookHelper;
@@ -57,112 +59,110 @@ interface LookHelper {
    * @param session an HTTP user session.
    * @return a look helper or null if no one was registered into the current user session.
    */
-  static LookHelper getLookHelper(HttpSession session) {
+  public static LookHelper getLookHelper(HttpSession session) {
     return (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
   }
 
-  String getURLOfLastVisitedCollaborativeSpace();
+  public abstract String getURLOfLastVisitedCollaborativeSpace();
 
-  String SESSION_ATT = "Silverpeas_LookHelper";
+  public abstract String getSpaceId();
 
-  String getSpaceId();
+  public abstract void setSpaceId(String spaceId);
 
-  void setSpaceId(String spaceId);
+  public abstract String getSubSpaceId();
 
-  String getSubSpaceId();
+  public abstract void setSubSpaceId(String subSpaceId);
 
-  void setSubSpaceId(String subSpaceId);
+  public abstract String getComponentId();
 
-  String getComponentId();
+  public abstract void setComponentId(String componentId);
 
-  void setComponentId(String componentId);
-
-  boolean isMenuPersonalisationEnabled();
+  public abstract boolean isMenuPersonalisationEnabled();
 
   /**
    * @param spaceId can be id of a space or a subspace
    */
-  void setSpaceIdAndSubSpaceId(String spaceId);
+  public abstract void setSpaceIdAndSubSpaceId(String spaceId);
 
-  void setComponentIdAndSpaceIds(String spaceId,
+  public abstract void setComponentIdAndSpaceIds(String spaceId,
       String subSpaceId, String componentId);
 
   @Deprecated
-  void init(MainSessionController mainSessionController,
+  public abstract void init(MainSessionController mainSessionController,
       ResourceLocator resources);
 
-  String getUserFullName(String userId);
+  public abstract String getUserFullName(String userId);
 
-  String getUserFullName();
+  public abstract String getUserFullName();
 
-  String getUserId();
+  public abstract String getUserId();
 
-  String getLanguage();
+  public abstract String getLanguage();
 
-  boolean isAnonymousUser();
+  public abstract boolean isAnonymousUser();
 
-  boolean displayPDCInNavigationFrame();
+  public abstract boolean displayPDCInNavigationFrame();
 
-  boolean displayPDCFrame();
+  public abstract boolean displayPDCFrame();
 
-  boolean displayContextualPDC();
+  public abstract boolean displayContextualPDC();
 
-  boolean displaySpaceIcons();
+  public abstract boolean displaySpaceIcons();
 
-  String getSpaceId(String componentId);
+  public abstract String getSpaceId(String componentId);
 
-  String getWallPaper(String spaceId);
+  public abstract String getWallPaper(String spaceId);
 
-  int getNBConnectedUsers();
+  public abstract int getNBConnectedUsers();
 
-  boolean isAnonymousAccess();
+  public abstract boolean isAnonymousAccess();
 
-  boolean getSettings(String key);
+  public abstract boolean getSettings(String key);
 
-  boolean getSettings(String key, boolean defaultValue);
+  public abstract boolean getSettings(String key, boolean defaultValue);
 
-  String getSettings(String key, String defaultValue);
+  public abstract String getSettings(String key, String defaultValue);
 
-  int getSettings(String key, int defaultValue);
+  public abstract int getSettings(String key, int defaultValue);
 
-  String getString(String key);
+  public abstract String getString(String key);
 
-  boolean isBackOfficeVisible();
+  public abstract boolean isBackOfficeVisible();
 
-  List<TopItem> getTopItems();
+  public abstract List<TopItem> getTopItems();
 
-  List<String> getTopSpaceIds();
+  public abstract List<String> getTopSpaceIds();
 
-  String getMainFrame();
+  public abstract String getMainFrame();
 
-  void setMainFrame(String mainFrame);
+  public abstract void setMainFrame(String mainFrame);
 
-  String getSpaceWallPaper();
+  public abstract String getSpaceWallPaper();
 
-  String getComponentURL(String componentId);
+  public abstract String getComponentURL(String componentId);
 
-  String getDate();
+  public abstract String getDate();
 
-  String getDefaultSpaceId();
+  public abstract String getDefaultSpaceId();
 
-  List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis);
+  public abstract List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis);
 
-  List<PublicationDetail> getValidPublications(NodePK nodePK);
+  public abstract List<PublicationDetail> getValidPublications(NodePK nodePK);
 
-  UserMenuDisplay getDisplayUserMenu();
+  public abstract UserMenuDisplay getDisplayUserMenu();
 
-  void setDisplayUserMenu(UserMenuDisplay userMenuDisplayMode);
+  public abstract void setDisplayUserMenu(UserMenuDisplay userMenuDisplayMode);
 
-  boolean isEnableUFSContainsState();
+  public abstract boolean isEnableUFSContainsState();
 
-  boolean isDisplayPDCInHomePage();
+  public abstract boolean isDisplayPDCInHomePage();
 
-  String getSpaceWithCSSToApply();
+  public abstract String getSpaceWithCSSToApply();
 
-  DefaultSpaceHomePage getSpaceHomePage(String spaceId);
+  public abstract DefaultSpaceHomePage getSpaceHomePage(String spaceId);
 
-  TickerSettings getTickerSettings();
+  public abstract TickerSettings getTickerSettings();
 
-  UserDetail getUserDetail();
+  public abstract UserDetail getUserDetail();
 
 }

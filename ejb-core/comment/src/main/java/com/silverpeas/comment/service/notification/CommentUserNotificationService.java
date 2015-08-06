@@ -68,7 +68,6 @@ import static org.silverpeas.util.StringUtil.isDefined;
             propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode",
             propertyValue = "Auto-acknowledge")})
-@Singleton
 public class CommentUserNotificationService extends JMSResourceEventListener<CommentEvent> {
 
   /**

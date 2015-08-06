@@ -25,9 +25,10 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Instanciateur;
-import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -126,10 +127,22 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
 
   /**
    * Get the domain father id
-   * @return the space father id. If space has no father, returns an empty string.
+   * @return the component instance father id. If the component instance has no father,
+   * returns an empty string.
    */
   public String getDomainFatherId() {
     return m_sDomainFatherId;
+  }
+
+  /**
+   * Has this component instance a domain father? In the case of a component instance, a domain
+   * father is a space. For example, a component instance has no domain father when it belongs to
+   * the user's personal space.
+   * @return true if this component has a domain father, false otherwise.
+   */
+  public boolean hasDomainFather() {
+    return StringUtil.isDefined(m_sDomainFatherId) &&
+        m_sDomainFatherId.startsWith(SpaceInst.SPACE_KEY_PREFIX);
   }
 
   /**
