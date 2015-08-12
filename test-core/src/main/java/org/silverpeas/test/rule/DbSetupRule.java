@@ -85,9 +85,9 @@ public class DbSetupRule implements TestRule {
    * specify it.
    * </p>
    * In order to work fine, it is not recommended to insert an initial data set with these
-   * scripts. For doing a such purpose, please invoke one of the
+   * scripts. For doing a such purpose, please invoke one of the following methods:
    * {@link #loadInitialDataSetFrom(com.ninja_squad.dbsetup.operation.Operation...)} or
-   * {@link #loadInitialDataSetFrom(String...)} methods.
+   * {@link #loadInitialDataSetFrom(String...)}.
    * @param sqlScripts the path of the SQL scripts in the classpath and from which the database
    * will be set up.
    */

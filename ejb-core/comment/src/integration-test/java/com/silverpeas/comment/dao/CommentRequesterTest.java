@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.date.Period;
 import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
@@ -63,13 +64,16 @@ public class CommentRequesterTest {
 
   private final JDBCCommentRequester commentRequester = new JDBCCommentRequester();
 
+  private static final String TABLE_CREATION_SCRIPT = "create-database.sql";
+  private static final String DATASET_SCRIPT = "comment-dataset.sql";
+
   private final String DUMMY_COMMENT_ID = "newCommentId";
   private final String DUMMY_INSTANCE_ID = "newInstanceId";
   private final Date DUUMMY_DATE = java.sql.Date.valueOf("2015-01-01");
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "comments-dataset.xml");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
+      .loadInitialDataSetFrom(DATASET_SCRIPT);
 
   private Connection con;
 

@@ -22,11 +22,12 @@ package org.silverpeas.util;
 
 import com.coremedia.iso.IsoFile;
 import com.coremedia.iso.boxes.Box;
-import com.coremedia.iso.boxes.ContainerBox;
+import com.coremedia.iso.boxes.Container;
 import com.coremedia.iso.boxes.MovieBox;
 import com.coremedia.iso.boxes.MovieHeaderBox;
 import com.coremedia.iso.boxes.TrackBox;
 import com.coremedia.iso.boxes.TrackHeaderBox;
+import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
@@ -95,7 +96,7 @@ public class MetadataExtractor {
       TikaInputStream tstream = null;
       try {
         tstream = TikaInputStream.get(file, metadata);
-        isoFile = new IsoFile(tstream.getFileChannel());
+        isoFile = new IsoFile(new FileDataSourceImpl(tstream.getFileChannel()));
       } finally {
         IOUtils.closeQuietly(tstream);
       }
@@ -161,8 +162,8 @@ public class MetadataExtractor {
         (filledBoxes != null) ? filledBoxes : new HashMap<String, List<Box>>();
     if (CollectionUtil.isNotEmpty(boxes)) {
       for (Box box : boxes) {
-        if (box instanceof ContainerBox) {
-          getFilledBoxes(((ContainerBox) box).getBoxes(), result);
+        if (box instanceof Container) {
+          getFilledBoxes(((Container) box).getBoxes(), result);
         } else {
           MapUtil.putAddList(result, box.getType(), box);
         }

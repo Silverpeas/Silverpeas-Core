@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.WarBuilder4WarCore;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -43,8 +43,8 @@ import static org.hamcrest.Matchers.*;
 public class SilverStatisticsPeasDAOConnexionEmptyTest {
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "test-stats-connections-empty-dataset.xml");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("test-stats-connections-empty-dataset.sql");
 
   @Before
   public void generalSetUp() throws Exception {

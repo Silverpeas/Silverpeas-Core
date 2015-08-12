@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.WarBuilder4WarCore;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
+import org.silverpeas.test.rule.DbSetupRule;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,8 +46,8 @@ public class SilverStatisticsPeasDAOConnexionTest {
   private static final String dateEnd = "2011-07-01";
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "test-stats-connections-dataset.xml");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("test-stats-connections-dataset.sql");
 
   @Before
   public void generalSetUp() throws Exception {

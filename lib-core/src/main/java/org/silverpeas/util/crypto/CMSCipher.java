@@ -24,8 +24,8 @@ import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSEnvelopedDataGenerator;
 import org.bouncycastle.cms.CMSProcessableByteArray;
-import org.bouncycastle.cms.KeyTransRecipientInformation;
 import org.bouncycastle.cms.RecipientInfoGenerator;
+import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
@@ -127,9 +127,9 @@ public class CMSCipher implements Cipher {
       // Déchiffrement de la chaine
       CMSEnvelopedData ced = new CMSEnvelopedData(encryptedData);
       @SuppressWarnings("unchecked")
-      Collection<KeyTransRecipientInformation> recip = ced.getRecipientInfos().getRecipients();
+      Collection<RecipientInformation> recip = ced.getRecipientInfos().getRecipients();
 
-      KeyTransRecipientInformation rinfo = recip.iterator().next();
+      RecipientInformation rinfo = recip.iterator().next();
       // privatekey est la clé privée permettant de déchiffrer la clé
       // secrète (symétrique)
       if (!keyFilePath.isInFile()) {

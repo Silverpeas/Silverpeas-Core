@@ -101,7 +101,7 @@ public class LDAPDriverTest {
   }
 
   @Before
-  @RunAsClient
+  //@RunAsClient
   public void prepareConnection() throws Exception {
     final String BASE_PATH = getLDAPServerPath();
     final String LDIF_CONFIG_FILE = BASE_PATH + "/opendj/config/config.ldif";
@@ -128,7 +128,7 @@ public class LDAPDriverTest {
 
 
   @After
-  @RunAsClient
+  //@RunAsClient
   public void closeConnection() throws AdminException {
     try {
       LDAPUtility.closeConnection(connectionId);
