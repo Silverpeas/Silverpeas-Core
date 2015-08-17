@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.ComponentPasteInterface;
+import com.silverpeas.admin.components.ApplicationResourcePasting;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
@@ -64,6 +64,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -5218,8 +5219,8 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     Group theGroup = getGroup(groupId);
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theGroup
-        .getDomainId()));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(
+        Integer.parseInt(theGroup.getDomainId()));
     synchroDomain.removeGroup(theGroup.getSpecificId());
     return deleteGroupById(groupId, true);
   }
@@ -5261,8 +5262,8 @@ class Admin implements Administration {
     Collection<UserDetail> listUsersUpdate = new ArrayList<>();
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
-    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD", "userId="
-        + userId);
+    SilverTrace.info("admin", "admin.synchronizeUser", "root.MSG_GEN_ENTER_METHOD",
+        "userId=" + userId);
     try {
       // Start transaction
       domainDriverManager.startTransaction(false);
@@ -6366,13 +6367,10 @@ class Admin implements Administration {
       pasteDetail.setToComponentId(sComponentId);
       String componentRootName = URLManager.getComponentNameFromComponentId(pasteDetail.
           getFromComponentId());
-      String className = "com.silverpeas.component." + componentRootName + "." + componentRootName
-          .substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
-      if (Class.forName(className).getClass() != null) {
-        ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.forName(className).
-            newInstance();
-        componentPaste.paste(pasteDetail);
-      }
+      String className = componentRootName + ApplicationResourcePasting.NAME_SUFFIX;
+      ApplicationResourcePasting componentPaste = ServiceProvider.getService(className);
+      componentPaste.paste(pasteDetail);
+    } catch (IllegalStateException e) {
     } catch (Exception e) {
       SilverTrace.warn("admin", "Admin.copyAndPasteComponent()", "root.GEN_EXIT_METHOD", e);
     }

@@ -47,7 +47,7 @@ public class DefaultDataStorageSpaceQuotaService
     implements DataStorageSpaceQuotaService {
 
   private static final ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+      new ResourceLocator("org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
 
   private static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
 

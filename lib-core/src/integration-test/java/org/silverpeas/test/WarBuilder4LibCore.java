@@ -30,6 +30,7 @@ import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -40,7 +41,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
-import org.apache.commons.collections.list.UnmodifiableList;
 import org.silverpeas.EntityReference;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
@@ -495,7 +495,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addAdministrationFeatures() {
     if (!contains(Administration.class)) {
-      addClasses(Administration.class, ScheduledDBReset.class);
+      addClasses(Administration.class, ScheduledDBReset.class, PublicationTemplateException.class);
       addClasses(Recover.class);
       addClasses(DriverSettings.class);
       addPackages(true, "org.silverpeas.util.i18n");

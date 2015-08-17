@@ -97,7 +97,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private ArrayList<ComponentInst> components;
 
   /* Collection of subspaces Instances */
-  private List<SpaceInst> subSpaces;
+  private List<SpaceInst> subSpaces = new ArrayList<>();
 
   /* Collection of space profiles Instances */
   private ArrayList<SpaceProfileInst> spaceProfiles;

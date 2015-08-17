@@ -22,12 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.admin.components;
+package com.silverpeas.admin;
 
-import java.rmi.RemoteException;
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
+import java.sql.Connection;
 
-public interface ComponentPasteInterface {
+public class FakeComponentInstanciator implements ComponentsInstanciatorIntf {
 
-  void paste(PasteDetail pasteDetail) throws RemoteException;
+  @Override
+  public void create(Connection connection, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    // do nothing
+  }
+
+  @Override
+  public void delete(Connection connection, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    // do nothing
+  }
 
 }
