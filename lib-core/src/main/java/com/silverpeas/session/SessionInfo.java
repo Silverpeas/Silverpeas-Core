@@ -47,7 +47,7 @@ public class SessionInfo {
 
   private static SessionInfo getAnonymousSession() {
     UserDetail anonymousUser = UserDetail.getAnonymousUser();
-    if (UserDetail.getAnonymousUser() != null) {
+    if (anonymousUser != null) {
       return new SessionInfo(null, anonymousUser);
     }
     return NoneSession;

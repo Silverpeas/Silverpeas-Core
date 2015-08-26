@@ -115,7 +115,7 @@ public class SilverpeasSessionOpener {
             registerSuccessfulConnexion(controller);
             SynchronizerTokenService.getInstance().setUpSessionTokens(sessionInfo);
           } else {
-            sessionManagement.openAnonymousSession();
+            sessionManagement.openAnonymousSession(request);
           }
         }
       } else {

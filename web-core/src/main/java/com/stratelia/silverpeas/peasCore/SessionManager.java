@@ -526,10 +526,12 @@ public class SessionManager implements SessionManagement {
   }
 
   @Override
-  public SessionInfo openAnonymousSession() {
+  public SessionInfo openAnonymousSession(final HttpServletRequest request) {
     CacheServiceProvider.getSessionCacheService()
         .put(UserDetail.CURRENT_REQUESTER_KEY, UserDetail.getAnonymousUser());
-    return SessionInfo.AnonymousSession;
+    SessionInfo sessionInfo = SessionInfo.AnonymousSession;
+    sessionInfo.setIPAddress(request.getRemoteHost());
+    return sessionInfo;
   }
 
   /**

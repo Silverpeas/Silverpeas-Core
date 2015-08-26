@@ -144,7 +144,7 @@ public interface SessionManagement {
    * @return a SessionInfo instance representing the current opened anonymous session with
    * information about that session.
    */
-  SessionInfo openAnonymousSession();
+  SessionInfo openAnonymousSession(final HttpServletRequest request);
 
   /**
    * Closes the specified user session.
