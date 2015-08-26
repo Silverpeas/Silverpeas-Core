@@ -163,7 +163,10 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       // process extra properties
       for (Map.Entry<String, String> property : properties.entrySet()) {
-        theModifiedUser.setValue(property.getKey(), property.getValue());
+        if (theModifiedUser.isPropertyUpdatableByUser(property.getKey()) ||
+            (isAdmin() && theModifiedUser.isPropertyUpdatableByAdmin(property.getKey()))) {
+          theModifiedUser.setValue(property.getKey(), property.getValue());
+        }
       }
       adminCtrl.updateUserFull(theModifiedUser);
 
