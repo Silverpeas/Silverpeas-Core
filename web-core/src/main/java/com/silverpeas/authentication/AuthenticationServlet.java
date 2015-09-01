@@ -90,7 +90,7 @@ public class AuthenticationServlet extends HttpServlet {
       request.setCharacterEncoding(CharEncoding.UTF_8);
     }
     if (request.isWithinAnonymousUserSession()) {
-      silverpeasSessionOpener.closeSession(session);
+      session.invalidate();
     }
 
     // Get the authentication settings

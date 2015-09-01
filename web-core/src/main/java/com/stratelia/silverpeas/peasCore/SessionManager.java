@@ -577,7 +577,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   public SessionInfo openAnonymousSession(final HttpServletRequest request) {
     CacheServiceFactory.getSessionCacheService().put(
         UserDetail.CURRENT_REQUESTER_KEY, UserDetail.getAnonymousUser());
-    return SessionInfo.AnonymousSession;
+    SessionInfo sessionInfo = SessionInfo.AnonymousSession;
+    sessionInfo.setIPAddress(request.getRemoteHost());
+    return sessionInfo;
   }
 
   /**
