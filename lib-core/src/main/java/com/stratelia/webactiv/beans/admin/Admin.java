@@ -4107,8 +4107,9 @@ class Admin implements Administration {
         String[] childSpaceIds;
         for (Integer asManageableSpaceId : asManageableSpaceIds) {
           // add manageable space id in result
-          if (!alManageableSpaceIds.contains(asManageableSpaceId)) {
-            alManageableSpaceIds.add(String.valueOf(asManageableSpaceId));
+          String asManageableSpaceIdAsString = String.valueOf(asManageableSpaceId);
+          if (!alManageableSpaceIds.contains(asManageableSpaceIdAsString)) {
+            alManageableSpaceIds.add(asManageableSpaceIdAsString);
             alDriverManageableSpaceIds.add(asManageableSpaceId);
           }
 
