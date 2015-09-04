@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -20,105 +20,93 @@
  */
 package com.silverpeas.admin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.apache.commons.lang3.time.DateUtils;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-
-import java.util.Date;
-
-import java.io.InputStream;
-import java.util.List;
-
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import org.apache.commons.io.IOUtils;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-
-import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.almanach.AlmanachInstanciator;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.DefaultOrganizationController;
+import org.apache.commons.lang3.time.DateUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.admin.space.SpaceServiceProvider;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.search.searchEngine.model.ParseException;
+import org.silverpeas.search.searchEngine.model.SearchEngineException;
+import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
+import org.silverpeas.search.util.SearchEnginePropertiesManager;
+import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.token.exception.TokenException;
+import org.silverpeas.token.exception.TokenRuntimeException;
+import org.silverpeas.util.AbstractTable;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.memory.MemoryData;
+import org.silverpeas.util.memory.MemoryUnit;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import org.silverpeas.util.DBUtil;
 
+@RunWith(Arquillian.class)
 public class UsersAndGroupsTest {
 
-  private static DataSource dataSource;
-  private static ClassPathXmlApplicationContext context;
+  @Inject
+  private Administration admin;
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-    context = new ClassPathXmlApplicationContext(new String[]{
-      "spring-domains-embbed-datasource.xml", "spring-domains.xml"});
-    dataSource = context.getBean("jpaDataSource", DataSource.class);
-    InitialContext ic = new InitialContext();
-    ic.rebind("jdbc/Silverpeas", dataSource);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
-  }
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom("/com/silverpeas/domains/silverpeasdriver/create_table.sql")
+          .loadInitialDataSetFrom("test-usersandgroups-dataset.sql");
 
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-    DBUtil.clearTestInstance();
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
-    context.close();
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4LibCore.onWarForTestClass(SpacesAndComponentsTest.class)
+        .addSilverpeasExceptionBases()
+        .addAdministrationFeatures()
+        .addSynchAndAsynchResourceEventFeatures()
+        .addAsResource("org/silverpeas/jobStartPagePeas/settings")
+        .addAsResource("com/silverpeas/domains/silverpeasdriver")
+        .addMavenDependencies("org.apache.lucene:lucene-core")
+        .addMavenDependencies("org.apache.lucene:lucene-analyzers")
+        .addPackages(false, "org.silverpeas.admin.space.quota")
+        .addPackages(true, "org.silverpeas.search.indexEngine")
+        .addPackages(false, "com.stratelia.silverpeas.peasCore")
+        .addPackages(false, "com.stratelia.silverpeas.containerManager")
+        .addPackages(false, "com.stratelia.silverpeas.contentManager")
+        .addPackages(true, "com.silverpeas.usernotification")
+        .addPackages(true, "com.stratelia.silverpeas.notificationManager.constant")
+        .addPackages(true, "com.stratelia.silverpeas.notificationserver")
+        .addPackages(true, "com.stratelia.silverpeas.notificationManager")
+        .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
+            MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
+            AttachmentServiceProvider.class, AlmanachInstanciator.class, ParseException.class,
+            SearchEngineException.class, WAIndexSearcher.class, TokenException.class,
+            SearchEnginePropertiesManager.class, TokenRuntimeException.class, AbstractTable.class)
+        .build();
   }
 
   @Before
-  public void init() throws Exception {
-    IDatabaseConnection connection = getConnection();
-    DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    connection.close();
-  }
-
-  @After
-  public void after() throws Exception {
-    IDatabaseConnection connection = getConnection();
-    DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    connection.close();
-  }
-
-  private IDatabaseConnection getConnection() throws Exception {
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    return connection;
-  }
-
-  protected IDataSet getDataSet() throws Exception {
-    InputStream in = this.getClass().getClassLoader().getResourceAsStream(
-        "com/silverpeas/admin/test-usersandgroups-dataset.xml");
-    try {
-      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-      ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
-      dataSet.addReplacementObject("[NULL]", null);
-      return dataSet;
-    } finally {
-      IOUtils.closeQuietly(in);
-    }
+  public void reloadCache() {
+    admin.reloadCache();
   }
 
   @Test
-  public void shouldAddNewUser() {
+  public void shouldAddNewUser() throws Exception {
     Date now = new Date();
     Date tosAcceptanceDate = DateUtils.addDays(now, 1);
     Date lastLoginDate = DateUtils.addDays(now, 2);
@@ -142,11 +130,10 @@ public class UsersAndGroupsTest {
     user.setStateSaveDate(stateSaveDate);
 
     String newUserId = "5";
-    AdminController ac = getAdminController();
-    String userId = ac.addUser(user);
+    String userId = admin.addUser(user);
     assertThat(userId, is(newUserId));
 
-    user = ac.getUserDetail(newUserId);
+    user = admin.getUserDetail(newUserId);
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.getSaveDate(), greaterThan(now));
     assertThat(user.getVersion(), is(0));
@@ -161,17 +148,16 @@ public class UsersAndGroupsTest {
   }
 
   @Test
-  public void shouldUpdateUser() {
+  public void shouldUpdateUser() throws Exception {
     Date now = new Date();
     Date tosAcceptanceDate = DateUtils.addDays(now, 1);
     Date lastLoginDate = DateUtils.addDays(now, 2);
     Date lastLoginCredentialUpdateDate = DateUtils.addDays(now, 3);
     Date expirationDate = DateUtils.addDays(now, 4);
     Date stateSaveDate = DateUtils.addDays(now, 5);
-    AdminController ac = getAdminController();
 
     String updatedUserId = "1";
-    UserDetail user = ac.getUserDetail(updatedUserId);
+    UserDetail user = admin.getUserDetail(updatedUserId);
 
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.isAccessAdmin(), is(true));
@@ -199,9 +185,9 @@ public class UsersAndGroupsTest {
     user.setNbSuccessfulLoginAttempts(7);
     user.setLastLoginCredentialUpdateDate(lastLoginCredentialUpdateDate);
     user.setExpirationDate(expirationDate);
-    ac.updateUser(user);
+    admin.updateUser(user);
 
-    user = ac.getUserDetail(updatedUserId);
+    user = admin.getUserDetail(updatedUserId);
     assertThat(user.geteMail(), is(newEmail));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(user.isAccessAdmin(), is(false));
@@ -225,9 +211,9 @@ public class UsersAndGroupsTest {
 
     expirationDate = DateUtils.addDays(now, -4);
     user.setExpirationDate(expirationDate);
-    ac.updateUser(user);
+    admin.updateUser(user);
 
-    user = ac.getUserDetail(updatedUserId);
+    user = admin.getUserDetail(updatedUserId);
     assertThat(user.getVersion(), is(2));
     assertThat(user.isExpiredState(), is(true));
 
@@ -236,9 +222,9 @@ public class UsersAndGroupsTest {
     user.setExpirationDate(null);
     user.setState(UserState.EXPIRED);
     user.setStateSaveDate(stateSaveDate);
-    ac.updateUser(user);
+    admin.updateUser(user);
 
-    user = ac.getUserDetail(updatedUserId);
+    user = admin.getUserDetail(updatedUserId);
     assertThat(user.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(false));
@@ -255,9 +241,9 @@ public class UsersAndGroupsTest {
     assertThat(user.getStateSaveDate().getTime(), is(stateSaveDate.getTime()));
 
     user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
-    ac.updateUser(user);
+    admin.updateUser(user);
 
-    user = ac.getUserDetail(updatedUserId);
+    user = admin.getUserDetail(updatedUserId);
     assertThat(user.getVersion(), is(4));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.DOMAIN_ADMINISTRATOR));
     assertThat(user.isAccessAdmin(), is(false));
@@ -268,9 +254,9 @@ public class UsersAndGroupsTest {
     assertThat(user.isAccessGuest(), is(false));
 
     user.setAccessLevel(UserAccessLevel.PDC_MANAGER);
-    ac.updateUser(user);
+    admin.updateUser(user);
 
-    user = ac.getUserDetail(updatedUserId);
+    user = admin.getUserDetail(updatedUserId);
     assertThat(user.getVersion(), is(5));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.PDC_MANAGER));
     assertThat(user.isAccessAdmin(), is(false));
@@ -281,119 +267,114 @@ public class UsersAndGroupsTest {
     assertThat(user.isAccessGuest(), is(false));
   }
 
+  
   @Test
-  public void shouldDeleteUser() {
-    AdminController ac = getAdminController();
+  public void shouldDeleteUser() throws Exception {
     String userIdToDelete = "1";
-    String userId = ac.deleteUser(userIdToDelete);
+    String userId = admin.deleteUser(userIdToDelete);
     assertThat(userId, is(userIdToDelete));
-    UserDetail user = ac.getUserDetail(userId);
+    UserDetail user = admin.getUserDetail(userId);
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.getState(), is(UserState.DELETED));
     assertThat(user.isDeletedState(), is(true));
   }
 
+  
   @Test
-  public void testGetUsers() {
-    DefaultOrganizationController oc = new DefaultOrganizationController();
-    List<UserDetail> users = Arrays.asList(oc.getAllUsers());
+  public void testGetUsers() throws Exception {
+    List<UserDetail> users = admin.getAllUsers();
     assertThat(users.size(), is(3));
     assertThat(users.get(0).getId(), is("1"));
     assertThat(users.get(1).getId(), is("3"));
     assertThat(users.get(2).getId(), is("2"));
 
-    users = oc.getAllUsersFromNewestToOldest();
+    users = admin.getAllUsersFromNewestToOldest();
     assertThat(users.size(), is(3));
     assertThat(users.get(0).getId(), is("3"));
     assertThat(users.get(1).getId(), is("2"));
     assertThat(users.get(2).getId(), is("1"));
 
-    List<String> domainIds = new ArrayList<String>();
+    List<String> domainIds = new ArrayList<>();
     domainIds.add("0");
-    users = oc.getUsersOfDomains(domainIds);
+    users = admin.getUsersOfDomains(domainIds);
     assertThat(users.size(), is(3));
     assertThat(users.get(0).getId(), is("1"));
     assertThat(users.get(1).getId(), is("3"));
     assertThat(users.get(2).getId(), is("2"));
 
-    users = oc.getUsersOfDomainsFromNewestToOldest(domainIds);
+    users = admin.getUsersOfDomainsFromNewestToOldest(domainIds);
     assertThat(users.get(0).getId(), is("3"));
     assertThat(users.get(1).getId(), is("2"));
     assertThat(users.get(2).getId(), is("1"));
   }
 
+  
   @Test
-  public void shouldAddGroup() {
-    AdminController ac = getAdminController();
+  public void shouldAddGroup() throws Exception {
     Group group = new Group();
     group.setDomainId("0");
     group.setName("Groupe 2");
-    String groupId = ac.addGroup(group);
+    String groupId = admin.addGroup(group);
     assertThat(groupId, is("2"));
   }
 
+  
   @Test
-  public void testUpdateGroup() {
-    AdminController ac = getAdminController();
+  public void testUpdateGroup() throws Exception {
     String desc = "New description";
-    Group group = ac.getGroupById("1");
+    Group group = admin.getGroup("1");
     group.setDescription(desc);
-    ac.updateGroup(group);
-    group = ac.getGroupById("1");
+    admin.updateGroup(group);
+    group = admin.getGroup("1");
     assertThat(group.getDescription(), is(desc));
   }
 
+  
   @Test
-  public void shouldDeleteGroup() {
-    AdminController ac = getAdminController();
-    Group group = ac.getGroupById("1");
+  public void shouldDeleteGroup() throws Exception {
+    Group group = admin.getGroup("1");
     assertThat(group.getId(), is("1"));
-    ac.deleteGroupById("1");
-    group = ac.getGroupById("1");
+    admin.deleteGroupById("1");
+    group = admin.getGroup("1");
     assertThat(group.getId(), is(nullValue()));
   }
 
+  
   @Test
-  public void shouldFindUsersInGroup() {
-    AdminController ac = getAdminController();
+  public void shouldFindUsersInGroup() throws Exception {
     Group subGroup = new Group();
     subGroup.setDomainId("0");
     subGroup.setName("Groupe 1-1");
     subGroup.setSuperGroupId("1");
-    String groupId = ac.addGroup(subGroup);
+    String groupId = admin.addGroup(subGroup);
     assertThat(groupId, is("2"));
 
-    String[] subGroupIds = ac.getAllSubGroupIds("1");
+    String[] subGroupIds = admin.getAllSubGroupIds("1");
     assertThat(subGroupIds.length, is(1));
 
     String[] userIds = new String[1];
     userIds[0] = "1";
-    subGroup = ac.getGroupById(groupId);
+    subGroup = admin.getGroup(groupId);
     subGroup.setUserIds(userIds);
-    ac.updateGroup(subGroup);
+    admin.updateGroup(subGroup);
 
     // test if users of subgroups are indirectly attach to root group
-    UserDetail[] users = ac.getAllUsersOfGroup("1");
+    UserDetail[] users = admin.getAllUsersOfGroup("1");
     assertThat(users.length, is(1));
     subGroup.setUserIds(new String[0]);
-    ac.updateGroup(subGroup);
-    users = ac.getAllUsersOfGroup("1");
+    admin.updateGroup(subGroup);
+    users = admin.getAllUsersOfGroup("1");
     assertThat(users.length, is(0));
   }
 
+  
   @Test
   public void testGroupManager() throws AdminException {
-    AdminController ac = getAdminController();
-    GroupProfileInst profile = ac.getGroupProfile("1");
+    GroupProfileInst profile = admin.getGroupProfileInst("1");
     profile.addUser("1");
-    ac.updateGroupProfile(profile);
-    List<String> managerIds = AdministrationServiceProvider.getAdminService().getUserManageableGroupIds("1");
+    admin.updateGroupProfileInst(profile);
+    List<String> managerIds = admin.getUserManageableGroupIds("1");
     assertThat(managerIds, hasSize(1));
   }
 
-  private AdminController getAdminController() {
-    AdminController ac = new AdminController(null);
-    ac.reloadAdminCache();
-    return ac;
-  }
 }

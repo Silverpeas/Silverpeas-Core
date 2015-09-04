@@ -47,7 +47,7 @@ import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 import static org.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 
 /**
- * This objet is used by all the admin jsp such as SpaceManagement, UserManagement,
+ * This object is used by all the admin jsp such as SpaceManagement, UserManagement,
  * etc... It provides access functions to query and modify the domains as well as the company
  * organization It should be used only by a client that has the administrator rights. The
  * OrganizationController extends {@link AdministrationServiceProvider]} that maintains a static

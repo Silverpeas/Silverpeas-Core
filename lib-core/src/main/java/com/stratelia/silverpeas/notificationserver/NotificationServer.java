@@ -25,17 +25,17 @@
 package com.stratelia.silverpeas.notificationserver;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,11 +47,13 @@ import java.util.Map;
         destinationName = "queue/notificationsQueue")})
 public class NotificationServer {
 
-  private JMSContext context;
+  private static final String JMS_HEADER_CHANNEL = "CHANNEL";
 
-  private String mJmsFactory = JNDINames.JMS_FACTORY;
-  private String mJmsQueue = JNDINames.JMS_QUEUE;
-  private String mJmsHeaderChannel = JNDINames.JMS_HEADER_CHANNEL;
+  @Inject
+  private JMSContext context;
+  @Resource(lookup = "java:/queue/notificationsQueue")
+  private Queue queue;
+
   private Map<String, String> mJmsHeaders;
 
   /**
@@ -70,11 +72,11 @@ public class NotificationServer {
   public long addNotification(NotificationData pData) throws NotificationServerException {
     long notificationid = 0; // a gerer plus tard (necessite une database)
     mJmsHeaders.clear();
-    mJmsHeaders.put(mJmsHeaderChannel, pData.getTargetChannel());
+    mJmsHeaders.put(JMS_HEADER_CHANNEL, pData.getTargetChannel());
     pData.setNotificationId(notificationid);
     String notificationAsXML = NotificationServerUtil.convertNotificationDataToXML(pData);
     try {
-      jmsSendToQueue(notificationAsXML, mJmsFactory, mJmsQueue, mJmsHeaders);
+      jmsSendToQueue(notificationAsXML, mJmsHeaders);
     } catch (Exception e) {
       throw new NotificationServerException("NotificationServer.addNotification()",
           SilverpeasException.ERROR, "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE",
@@ -86,11 +88,9 @@ public class NotificationServer {
   /**
    * Send the NotificationMessage in a JMS Queue
    */
-  private void jmsSendToQueue(String notificationMessage, String jmsFactory, String jmsQueue,
-      Map<String, String> pJmsHeaders) throws JMSException, NamingException {
+  private void jmsSendToQueue(String notificationMessage, Map<String, String> pJmsHeaders)
+      throws JMSException, NamingException {
     // Initialization
-    InitialContext ic = new InitialContext();
-    Queue queue = (Queue) ic.lookup(jmsQueue);
     TextMessage textMsg = context.createTextMessage();
     textMsg.setText(notificationMessage);
     // Add property
