@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,12 +28,12 @@
  */
 package com.silverpeas.admin.components;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.GlobalContext;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,14 +42,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.silverpeas.util.GlobalContext;
-
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.PathTestUtil;
+import static org.apache.commons.io.FileUtils.getFile;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -57,25 +52,22 @@ import com.silverpeas.util.PathTestUtil;
  */
 public class InstanciateurTest {
 
-  public static final String MAPPINGS_PATH = PathTestUtil.TARGET_DIR
-      + "test-classes" + File.separatorChar + "templateRepository" + File.separatorChar + "mapping";
-  public static final String TEMPLATES_PATH = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "templateRepository"
-      + File.separatorChar;
+  public static final String XML_COMPONENTS_PATH = "xmlcomponents";
+  public File MAPPINGS_PATH;
+  public File TEMPLATES_PATH;
+  public File TARGET_DIR;
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Before
-  public void setUp() {
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH;
-  }
+  public void setUpClass() throws Exception {
+    TARGET_DIR = getFile(
+        InstanciateurTest.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+    MAPPINGS_PATH = getFile(TARGET_DIR, "templateRepository", "mapping");
+    TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
 
-  public InstanciateurTest() {
+    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
   }
 
   /**
@@ -84,10 +76,8 @@ public class InstanciateurTest {
    */
   @Test
   public void testLoadComponent() throws Exception {
-    String path = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "xmlComponent"
-        + File.separatorChar + "almanach.xml";
-    Instanciateur instance = new Instanciateur();
-    WAComponent result = instance.loadComponent(path);
+    File path = getFile(TARGET_DIR, XML_COMPONENTS_PATH, "almanach.xml");
+    WAComponent result = Instanciateur.loadComponent(path);
     assertNotNull(result);
     assertThat(result.getName(), is("almanach"));
     assertThat(result.getDescription(), hasKey("fr"));
@@ -116,10 +106,8 @@ public class InstanciateurTest {
    */
   @Test
   public void testLoadComponentWithXmlTemplates() throws Exception {
-    String path = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "xmlComponent"
-        + File.separatorChar + "kmelia.xml";
-    Instanciateur instance = new Instanciateur();
-    WAComponent result = instance.loadComponent(path);
+    File path = getFile(TARGET_DIR, XML_COMPONENTS_PATH, "kmelia.xml");
+    WAComponent result = Instanciateur.loadComponent(path);
     assertNotNull(result);
     assertThat(result.getName(), is("kmelia"));
     assertThat(result.getDescription(), hasKey("fr"));
@@ -138,6 +126,7 @@ public class InstanciateurTest {
         paramWithXMLTemplate = parameter;
       }
     }
+    assertThat(paramWithXMLTemplate, is(notNullValue()));
     assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
     GlobalContext context = new GlobalContext("WA1");
     context.setComponentName("kmelia");
@@ -159,21 +148,10 @@ public class InstanciateurTest {
     assertThat(option.getName().get("fr"), is("template"));
   }
 
-  private class OptionComparator implements Comparator<Option> {
-
-    @Override
-    public int compare(Option o1, Option o2) {
-      return o1.getValue().compareTo(o2.getValue());
-    }
-
-  }
-
   @Test
   public void testLoadComponentWithOneTemplate() throws Exception {
-    String path = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "xmlComponent"
-        + File.separatorChar + "classifieds.xml";
-    Instanciateur instance = new Instanciateur();
-    WAComponent result = instance.loadComponent(path);
+    File path = getFile(TARGET_DIR, XML_COMPONENTS_PATH, "classifieds.xml");
+    WAComponent result = Instanciateur.loadComponent(path);
     assertNotNull(result);
     assertThat(result.getName(), is("classifieds"));
 
@@ -184,6 +162,7 @@ public class InstanciateurTest {
         paramWithXMLTemplate = parameter;
       }
     }
+    assertThat(paramWithXMLTemplate, is(notNullValue()));
     assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
     GlobalContext context = new GlobalContext("WA1");
     context.setComponentName("classifieds");
@@ -191,7 +170,7 @@ public class InstanciateurTest {
     assertThat(templateManager.getPublicationTemplates(context).size(),
         is(1));
     assertThat(paramWithXMLTemplate, is(notNullValue()));
-    List<Option> visibleOptions = new ArrayList<Option>();
+    List<Option> visibleOptions = new ArrayList<>();
     List<Option> options = paramWithXMLTemplate.getOptions();
     for (Option option : options) {
       String templateName = option.getValue();
@@ -231,5 +210,14 @@ public class InstanciateurTest {
     assertEquals(4, components.size());
     component = Instanciateur.getWAComponent(componentName);
     assertEquals(label, component.getLabel().get("fr"));
+  }
+
+  private class OptionComparator implements Comparator<Option> {
+
+    @Override
+    public int compare(Option o1, Option o2) {
+      return o1.getValue().compareTo(o2.getValue());
+    }
+
   }
 }
