@@ -248,7 +248,7 @@
         if (groupIds.length > 0) {
           termination = termination.then(function() {
             return UserGroup.get({
-              id : groupIds
+              ids : groupIds
             }).then(function(groups) {
               $(groups).each(function(index, group) {
                 context.groups[group.id] = group;
