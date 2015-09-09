@@ -434,7 +434,8 @@ public class JavascriptPluginInclusion {
    */
   public static ElementContainer includeSecurityTokenizing(final ElementContainer xhtml) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
-      xhtml.addElement(script(javascriptPath + SILVERPEAS_TOKENIZING));
+      xhtml.addElement(new script().setType(JAVASCRIPT_TYPE)
+          .setSrc(javascriptPath + SILVERPEAS_TOKENIZING + "?_=" + System.currentTimeMillis()));
     }
     StringBuilder sb = new StringBuilder();
     String setTokensCondition = "if(typeof setTokens === 'function')";
