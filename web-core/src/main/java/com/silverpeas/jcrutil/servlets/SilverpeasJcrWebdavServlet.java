@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2013 Silverpeas
+/*
+ * Copyright (C) 2000 - 2014 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -18,45 +18,39 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jcrutil.servlets;
 
 import com.silverpeas.jcrutil.security.impl.WebDavCredentialsProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.jackrabbit.server.CredentialsProvider;
-import org.silverpeas.util.crypto.CryptMD5;
+import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 
+import javax.inject.Inject;
 import javax.jcr.Repository;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@Deprecated
-public class SimpleDigestWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
+/**
+ * A servlet taking in charge the access of the content in the JCR repository by WebDAV.
+ * @author mmoquillon
+ */
+public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
 
+  private static Logger logger = Logger.getLogger(SilverpeasJcrWebdavServlet.class.getSimpleName());
 
-  private static final long serialVersionUID = -1609493516113921269L;
-  private static final int DIGEST_KEY_SIZE = 16;
-  private static final ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.util.jcr", "");
+  private Repository repository;
+  private WebDavCredentialsProvider credentialsProvider = new WebDavCredentialsProvider();
 
   @Override
-  public String getAuthenticateHeaderValue() {
-    String nOnce = generateNOnce();
-    return "Digest realm=\"" + resources.getString("jcr.authentication.realm") + "\", "
-        + "qop=\"auth\", nonce=\"" + nOnce + "\", " + "opaque=\"" + CryptMD5.encrypt(nOnce) + "\"";
+  public void init() throws ServletException {
+    super.init();
+    setLocatorFactory(new JcrResourceLocatorFactory(getPathPrefix()));
   }
 
-  protected String generateNOnce() {
-    String nOnceValue = RandomStringUtils.random(DIGEST_KEY_SIZE) + ":"
-        + System.currentTimeMillis() + ":" + resources.getString("jcr.authentication.realm");
-    return CryptMD5.encrypt(nOnceValue);
-  }
-  /**
-   * the jcr repository
-   */
-  private Repository repository;
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public Repository getRepository() {
     if (repository == null) {
@@ -65,18 +59,22 @@ public class SimpleDigestWebdavServlet extends org.apache.jackrabbit.webdav.simp
     return repository;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public void setRepository(Repository repository) {
-    this.repository = repository;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   protected CredentialsProvider getCredentialsProvider() {
-    return new WebDavCredentialsProvider();
+    return credentialsProvider;
+  }
+
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    try {
+      super.service(request, response);
+    } catch (IOException ex) {
+      logger.log(Level.SEVERE, ex.getMessage(), ex);
+      throw ex;
+    } catch (ServletException ex) {
+      logger.log(Level.SEVERE, ex.getMessage(), ex);
+      throw ex;
+    }
   }
 }

@@ -24,14 +24,13 @@
 
 package com.silverpeas.jcrutil.servlets;
 
-import javax.jcr.Repository;
-
+import com.silverpeas.jcrutil.security.impl.WebDavCredentialsProvider;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.jackrabbit.server.CredentialsProvider;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
+import javax.jcr.Repository;
 
-import com.stratelia.webactiv.util.ResourceLocator;
-
+@Deprecated
 public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 
   private static final long serialVersionUID = -1609493516113921269L;
@@ -70,6 +69,6 @@ public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.Sim
    */
   @Override
   protected CredentialsProvider getCredentialsProvider() {
-    return new SilverpeasBasicCredentialsProvider(getInitParameter(INIT_PARAM_MISSING_AUTH_MAPPING));
+    return new WebDavCredentialsProvider();
   }
 }
