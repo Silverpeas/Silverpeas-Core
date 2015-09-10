@@ -24,8 +24,9 @@
 
 package com.silverpeas.scheduler.trigger;
 
+import org.silverpeas.util.ServiceProvider;
+
 import java.text.ParseException;
-import org.quartz.CronExpression;
 
 /**
  * This job trigger fires a job execution at given moments in time, defined with a Unix cron-like
@@ -102,13 +103,13 @@ public final class CronJobTrigger extends JobTrigger {
 
   private static final String CRON_SYNTAX_TO_FIX =
       "[0-9,/\\-\\*]+[ ]+[0-9,/\\-\\*]+[ ]+\\*[ ]+[0-9,/\\-\\*]+[ ]+\\*";
-  private String cron;
+  private CronExpression cron;
 
   /**
    * Gets the cron expression that drives the triggering policy of this trigger.
    * @return the cron expression as String.
    */
-  public String getCronExpression() {
+  public CronExpression getCronExpression() {
     return cron;
   }
 
@@ -123,15 +124,21 @@ public final class CronJobTrigger extends JobTrigger {
     // It is a workaround of the 'every' support for both day-of-month and day-of-week parameters
     // as usualy that means whatever for the user (they are not set explicitly).
     String[] cronExpressionParts = cronExpression.trim().split("[ ]+");
+    if (cronExpressionParts.length != 5) {
+      throw new ParseException("Malformed cron expression '" + cronExpression +
+          "'. The cron expression must contain 5 space-separated statements: " +
+          "MINUTES HOURS DAY_OF_MONTH MONTH DAY_OF_WEEK", cronExpression.length());
+    }
     if (cronExpressionParts[2].equals("*") && cronExpressionParts[4].matches("[0-9,/\\-,\\*]+")) {
       cronExpressionParts[2] = "?";
     } else if (cronExpressionParts[4].equals("*") && cronExpressionParts[2].matches("[0-9,/\\-]+")) {
       cronExpressionParts[4] = "?";
     }
-    this.cron =
-        cronExpressionParts[0] + " " + cronExpressionParts[1] + " " + cronExpressionParts[2]
-        + " " + cronExpressionParts[3] + " " + cronExpressionParts[4];
-    CronExpression exp = new CronExpression("* " + this.cron);
+
+    CronExpressionFactory factory = ServiceProvider.getService(CronExpressionFactory.class);
+    this.cron = factory.create(
+        cronExpressionParts[0] + " " + cronExpressionParts[1] + " " + cronExpressionParts[2] + " " +
+            cronExpressionParts[3] + " " + cronExpressionParts[4]);
   }
 
   @Override

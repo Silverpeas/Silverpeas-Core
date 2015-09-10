@@ -88,8 +88,9 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
 
   @Override
   public void visit(CronJobTrigger trigger) {
+    QuartzCronExpression cronExpression = (QuartzCronExpression)trigger.getCronExpression();
     TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName)
-        .withSchedule(CronScheduleBuilder.cronSchedule("0 " + trigger.getCronExpression()));
+        .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression.getExpression()));
     if (trigger.getStartDate() != null) {
       triggerBuilder.startAt(trigger.getStartDate());
     }
