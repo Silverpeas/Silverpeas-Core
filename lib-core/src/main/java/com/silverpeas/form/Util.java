@@ -70,7 +70,6 @@ public class Util {
     addSilverpeasScript(includes, "/wysiwyg/jsp/ckeditor/ckeditor.js");
     addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
     addSilverpeasScript(includes, "/util/javaScript/checkForm.js");
-    addSilverpeasScript(includes, "/util/javaScript/animation.js");
 
     // includes external scripts once because
     // including several times the same script (once per field) can provide
