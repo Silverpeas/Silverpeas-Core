@@ -368,8 +368,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       String profileName = request.getParameter("NameProfile");
       String profileLabel = request.getParameter("LabelProfile");
 
-      ProfileInst profile = jobStartPageSC.getProfile(profileId, profileName,
-          profileLabel);
+      ProfileInst profile = jobStartPageSC.getProfile(profileId, profileName, profileLabel);
       jobStartPageSC.setManagedProfile(profile);
       request.setAttribute("Profile", profile);
 
@@ -379,26 +378,21 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
       destination = "/jobStartPagePeas/jsp/roleInstance.jsp";
     } else if (function.equals("SelectUsersGroupsProfileInstance")) {
-      try {
-        jobStartPageSC.initUserPanelInstanceForGroupsUsers((String) request.getAttribute(
-            "myComponentURL"));
-      } catch (Exception e) {
-        SilverTrace.warn("jobStartPagePeas",
-            "JobStartPagePeasRequestRouter.getDestination()",
-            "root.EX_USERPANEL_FAILED", "function = " + function, e);
-      }
+      List<String> userIds = (List<String>) StringUtil
+          .splitString(request.getParameter("UserPanelCurrentUserIds"), ',');
+      List<String> groupIds = (List<String>) StringUtil
+          .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
+      jobStartPageSC
+          .initUserPanelInstanceForGroupsUsers((String) request.getAttribute("myComponentURL"),
+              userIds, groupIds);
       destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
-    } else if (function.equals("EffectiveCreateInstanceProfile")) {
-      jobStartPageSC.createInstanceProfile();
-      request.setAttribute("urlToReload", "CurrentRoleInstance");
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("EffectiveUpdateInstanceProfile")) {
-      jobStartPageSC.updateInstanceProfile();
-      request.setAttribute("urlToReload", "CurrentRoleInstance");
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("CancelCreateOrUpdateInstanceProfile")) {
-      request.setAttribute("urlToReload", "CurrentRoleInstance");
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+    } else if (function.equals("EffectiveSetInstanceProfile")) {
+      String[] userIds =
+          StringUtil.split(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
+      String[] groupIds = StringUtil
+          .split(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
+      jobStartPageSC.updateInstanceProfile(userIds, groupIds);
+      destination = getDestination("CurrentRoleInstance", jobStartPageSC, request);
     } else if (function.equals("PlaceComponentAfter")) {
       ComponentInst compoint1 = jobStartPageSC.getComponentInst(
           jobStartPageSC.getManagedInstanceId());
@@ -412,10 +406,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       refreshNavBar(jobStartPageSC, request);
       request.setAttribute("urlToReload", "GoToCurrentComponent");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("DeleteUsersGroupsProfileInstance")) {
-      jobStartPageSC.deleteInstanceProfile();
-      destination = getDestination("CurrentRoleInstance", jobStartPageSC,
-          request);
     } else if (function.equals("ProfileInstanceDescription")) {
       ComponentInst compoint1 = jobStartPageSC.getComponentInst(
           jobStartPageSC.getManagedInstanceId());
@@ -655,7 +645,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       destination = "/jobStartPagePeas/jsp/startPageInfo.jsp";
     } else if (function.equals("SpaceManager")) {
       String role = request.getParameter("Role");
-
       if (!StringUtil.isDefined(role)) {
         role = "Manager";
       }
@@ -705,33 +694,21 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       destination = "/jobStartPagePeas/jsp/spaceManager.jsp";
     } else if (function.equals("SelectUsersGroupsSpace")) {
       String role = request.getParameter("Role");
-      try {
-        jobStartPageSC.initUserPanelSpaceForGroupsUsers((String) request.getAttribute(
-            "myComponentURL"), role);
-      } catch (Exception e) {
-        SilverTrace.warn("jobStartPagePeas",
-            "JobStartPagePeasRequestRouter.getDestination()",
-            "root.EX_USERPANEL_FAILED", "function = " + function, e);
-      }
+      List<String> userIds = (List<String>) StringUtil
+          .splitString(request.getParameter("UserPanelCurrentUserIds"), ',');
+      List<String> groupIds = (List<String>) StringUtil
+          .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
+      jobStartPageSC
+          .initUserPanelSpaceForGroupsUsers((String) request.getAttribute("myComponentURL"), role,
+              userIds, groupIds);
       destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
-    } else if (function.equals("EffectiveCreateSpaceProfile")) {
+    } else if (function.equals("EffectiveSetSpaceProfile")) {
       String role = request.getParameter("Role");
-      jobStartPageSC.createSpaceRole(role);
-      request.setAttribute("urlToReload", "SpaceManager?Role=" + role);
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("EffectiveUpdateSpaceProfile")) {
-      String role = request.getParameter("Role");
-      jobStartPageSC.updateSpaceRole(role);
-      request.setAttribute("urlToReload", "SpaceManager?Role=" + role);
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("CancelCreateOrUpdateSpaceProfile")) {
-      String role = request.getParameter("Role");
-
-      request.setAttribute("urlToReload", "SpaceManager?Role=" + role);
-      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-    } else if (function.equals("DeleteSpaceManager")) {
-      String role = request.getParameter("Role");
-      jobStartPageSC.deleteSpaceRole(role);
+      List<String> userIds = (List<String>)
+          StringUtil.splitString(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
+      List<String> groupIds = (List<String>) StringUtil
+          .splitString(request.getParameter("roleItems" + "UserPanelCurrentGroupIds"), ',');
+      jobStartPageSC.updateSpaceRole(role, userIds, groupIds);
       destination = getDestination("SpaceManager", jobStartPageSC, request);
     } else if (function.equals("SpaceManagerDescription")) {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();

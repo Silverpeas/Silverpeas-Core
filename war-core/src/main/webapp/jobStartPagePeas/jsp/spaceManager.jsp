@@ -26,14 +26,23 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
+
+<c:set var="m_SpaceExtraInfos" value="${requestScope['SpaceExtraInfos']}"/>
+
 <%
 	SpaceProfileInst 	m_Profile 			= (SpaceProfileInst) request.getAttribute("Profile");
 	List<Group>			m_listGroup 		= (List<Group>) request.getAttribute("listGroupSpace");
 	List<UserDetail> 	m_listUser 			= (List<UserDetail>) request.getAttribute("listUserSpace");
-	Boolean 			m_ProfileEditable 	= (Boolean) request.getAttribute("ProfileEditable");
 	String				role				= (String) request.getAttribute("Role");
-	DisplaySorted 		m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
 	boolean 			isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 	
 	List<Group>			inheritedGroups		= (List<Group>) request.getAttribute("listInheritedGroups"); //List of GroupDetail
@@ -54,160 +63,62 @@
 	browseBar.setExtraInformation(nameProfile);
 		
 	//Onglets
-    TabbedPane tabbedPane = gef.getTabbedPane();
+  TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("GML.description"),"StartPageInfo", false);
-	
 	tabbedPane.addTab(resource.getString("JSPP.SpaceAppearance"), "SpaceLook", false);
-	
-    tabbedPane.addTab(resource.getString("JSPP.Manager"), "SpaceManager", role.equals("Manager"));
-    
-    if (isInHeritanceEnable) {
-	    tabbedPane.addTab(resource.getString("JSPP.admin"), "SpaceManager?Role=admin", role.equals("admin"));
-	    tabbedPane.addTab(resource.getString("JSPP.publisher"), "SpaceManager?Role=publisher", role.equals("publisher"));
-	    tabbedPane.addTab(resource.getString("JSPP.writer"), "SpaceManager?Role=writer", role.equals("writer"));
-	    tabbedPane.addTab(resource.getString("JSPP.reader"), "SpaceManager?Role=reader", role.equals("reader"));
-    }
+  tabbedPane.addTab(resource.getString("JSPP.Manager"), "SpaceManager", role.equals("Manager"));
+  if (isInHeritanceEnable) {
+	  tabbedPane.addTab(resource.getString("JSPP.admin"), "SpaceManager?Role=admin", role.equals("admin"));
+    tabbedPane.addTab(resource.getString("JSPP.publisher"), "SpaceManager?Role=publisher", role.equals("publisher"));
+    tabbedPane.addTab(resource.getString("JSPP.writer"), "SpaceManager?Role=writer", role.equals("writer"));
+    tabbedPane.addTab(resource.getString("JSPP.reader"), "SpaceManager?Role=reader", role.equals("reader"));
+  }
+
+  String labelInheritedRights = resource.getString("JSPP.inheritedRights");
+  String labelLocalRights = resource.getString("JSPP.localRights");
 %>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<script type="text/javascript">
-function goToOperationInAnotherWindow(larg, haut) {
-	windowName = "userPanelWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	userPanelWindow = SP_openWindow("SelectUsersGroupsSpace?Role=<%=role%>", windowName, larg, haut, windowParams, false);
-}    
-
-function deleteRoleContent() {	
-    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceManager")%>")) { 
-      jQuery('#genericForm').attr('action', "DeleteSpaceManager?Role=<%=role%>").submit();
-	}
-}	
-</script>
+<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
 </head>
 <body id="admin-role">
 <%
-	if (m_SpaceExtraInfos.isAdmin) {
-		// Space edition
-		if (m_Profile == null) { //creation
-			operationPane.addOperation(resource.getIcon("JSPP.userManage"),resource.getString("JSPP.SpaceProfilePanelCreateTitle"),"javaScript:onClick=goToOperationInAnotherWindow(850, 800)");
-		} else {
-		  	//update
-			operationPane.addOperation(resource.getIcon("JSPP.userManage"),resource.getString("JSPP.SpaceProfilePanelModifyTitle"),"javaScript:onClick=goToOperationInAnotherWindow(850, 800)");
-			
-			if (m_ProfileEditable.equals(Boolean.TRUE)) {
-				operationPane.addOperation(resource.getIcon("JSPP.spaceManagerDescription"),resource.getString("JSPP.ProfilePanelModifyTitle"),"javaScript:onClick=goToOperationInAnotherWindow('SpaceManagerDescription', 750, 250)");
-			}
-				
-			if (!m_listGroup.isEmpty() || !m_listUser.isEmpty()) { 
-				operationPane.addOperation(resource.getIcon("JSPP.usersGroupsDelete"),resource.getString("JSPP.SpaceProfilePanelDeleteTitle"),"javaScript:onClick=deleteRoleContent()");
-			}
-		}
-	}
-	
 out.println(window.printBefore());
 out.println(tabbedPane.print());
-out.println(frame.printBefore());
 %>
+<view:frame>
 <% if (role.equals("Manager")) { %>
 	<span class="inlineMessage">
 	<%=resource.getString("JSPP.Manager.help")%>
 	</span>
 	<br clear="all"/>
 <% } %>
-<%
-out.println(board.printBefore());
-%>
-<center>
-<br/><br/>
+
 	<% if ((inheritedGroups != null && !inheritedGroups.isEmpty()) || (inheritedUsers != null && !inheritedUsers.isEmpty())) { %>
-	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<tr>
-			<td colspan="2" class="txttitrecol"><%=resource.getString("JSPP.inheritedRights")%></td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
-		</tr>
-		<tr>
-			<td align="center" class="txttitrecol"><%=resource.getString("GML.type")%></td>
-			<td align="center" class="txttitrecol"><%=resource.getString("GML.name")%></td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
-		</tr>
-		<% if (inheritedGroups != null) { %>
-		<% for (Group group : inheritedGroups) { %>
-			<tr>
-			<% if (group.isSynchronized()) { %>
-				<td align="center"><img src="<%=resource.getIcon("JSPP.scheduledGroup") %>" class="group-icon"/></td>
-			<% } else { %>
-				<td align="center"><img src="<%=resource.getIcon("JSPP.group")%>" class="group-icon"/></td>
-			<% } %>
-			<td align="center"><%=group.getName() %></td>
-			</tr>
-		<% } %>
-		<% } %>
-		
-		<% if (inheritedUsers != null) { %>
-		<% for (UserDetail user : inheritedUsers) { %>
-			<tr>
-				<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
-				<td align="center"><view:username userId="<%=user.getId()%>" /></td>
-			</tr>
-		<% } %>
-		<% } %>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
-		</tr>
-	</table>
-	<br/><br/>
+    <viewTags:displayListOfUsersAndGroups users="<%=inheritedUsers%>" groups="<%=inheritedGroups%>" label="<%=labelInheritedRights%>" displayAvatar="false"/>
 	<% } %>
 
-	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<% if (isInHeritanceEnable) { %>
-		<tr>
-			<td colspan="2" class="txttitrecol"><%=resource.getString("JSPP.localRights")%></td>
-		</tr>
-		<% } %>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
-		</tr>
-		<tr>
-			<td align="center" class="txttitrecol"><%=resource.getString("GML.type")%></td>
-			<td align="center" class="txttitrecol"><%=resource.getString("GML.name")%></td>
-		</tr>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
-		</tr>		
-		<% for (Group group : m_listGroup) { %>
-		  	<tr>
-				<% if (group.isSynchronized()) { %>
-					<td align="center"><img src="<%=resource.getIcon("JSPP.scheduledGroup") %>" class="group-icon"/></td>
-				<% } else { %>
-					<td align="center"><img src="<%=resource.getIcon("JSPP.group")%>" class="group-icon"/></td>
-				<% } %>
-				<td align="center"><%=group.getName() %></td>
-			</tr>
-		<% } %>
-		
-		<% for (UserDetail user : m_listUser) { %>
-			<tr>
-				<td align="center"><img src="<%=resource.getIcon("JSPP.user") %>" class="user-icon"/></td>
-				<td align="center"><view:username userId="<%=user.getId()%>" /></td>
-			</tr>
-		<% } %>
-		<tr>
-			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"/></td>
-		</tr>
-	</table>
-<br/><br/>
-</center>
+  <form name="roleList" action="EffectiveSetSpaceProfile">
+    <c:set var="callback" value=""/>
+    <c:if test="${m_SpaceExtraInfos.admin}">
+      <c:set var="callback" value="SelectUsersGroupsSpace"/>
+    </c:if>
+    <viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>" label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>" id="roleItems" updateCallback="${callback}" displayAvatar="false"/>
+    <input type="hidden" name="Role" value="<%=role%>"/>
+  </form>
+
+  <view:buttonPane>
+    <fmt:message var="buttonCancel" key="GML.cancel"/>
+    <fmt:message var="buttonOK" key="GML.validate"/>
+    <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
+    <view:button label="${buttonCancel}" action="StartPageInfo"/>
+  </view:buttonPane>
+
+</view:frame>
 <%
-out.println(board.printAfter());
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<form id="genericForm" action="" method="POST"></form>
 </body>
 </html>

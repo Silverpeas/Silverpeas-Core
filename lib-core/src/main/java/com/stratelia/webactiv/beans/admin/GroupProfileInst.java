@@ -130,4 +130,14 @@ public class GroupProfileInst implements Serializable {
   public void removeAllUsers() {
     m_alUsers = new ArrayList<String>();
   }
+
+  public void setUsers(List<String> users) {
+    removeAllUsers();
+    addUsers(users);
+  }
+
+  public void setGroups(List<String> groups) {
+    removeAllGroups();
+    addGroups(groups);
+  }
 }

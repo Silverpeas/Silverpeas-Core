@@ -26,45 +26,35 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
 
 <%@ include file="check.jsp" %>
 <%
-    Board board = gef.getBoard();
-
 	Domain  domObject 		= (Domain)request.getAttribute("domainObject");
     Group 	grObject 		= (Group)request.getAttribute("groupObject");
     String 	groupsPath 		= (String)request.getAttribute("groupsPath");
-    
-    Iterator	groups		= (Iterator) request.getAttribute("Groups");
-    Iterator	users		= (Iterator) request.getAttribute("Users");
+
+    List<Group>	groups		= (List<Group>) request.getAttribute("Groups");
+    List<UserDetail>	users		= (List<UserDetail>) request.getAttribute("Users");
         
     String thisGroupId = grObject.getId();
 
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
-    if (groupsPath != null)
-        browseBar.setPath(groupsPath);
-    
-    operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.GroupManagersUpdate"),"javaScript:onClick=goToOperationInAnotherWindow(850, 800)");
-    
-    if (groups.hasNext() || users.hasNext()) 
-		operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.GroupManagersDelete"),"javaScript:onClick=deleteRoleContent()");
+    if (groupsPath != null) {
+      browseBar.setPath(groupsPath);
+    }
 %>
 <html>
 <head>
 <view:looknfeel/>
-<script type="text/javascript">
-function goToOperationInAnotherWindow(larg, haut) {
-	windowName = "userPanelWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	userPanelWindow = SP_openWindow("groupManagersChoose", windowName, larg, haut, windowParams, false);
-}
-
-function deleteRoleContent() {
-  if (window.confirm("<%=resource.getString("JDP.GroupManagersDeleteConfirmation")%>")) {
-    jQuery('#genericForm').attr('action', "groupManagersDelete").submit();
-  }
-}	
-</script>
+<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
 </head>
 <body>
 <%
@@ -74,58 +64,20 @@ TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("GML.description"), "groupContent?Idgroup="+thisGroupId, false);
 tabbedPane.addTab(resource.getString("JDP.roleManager"), "groupManagersView?Id="+thisGroupId, true);
 out.println(tabbedPane.print());
-
-out.println(frame.printBefore());
 %>
-<center>
+<view:frame>
+<form name="roleList" action="groupManagersUpdate">
+  <fmt:message var="fieldsetLabel" key="JDP.roleManager"/>
+  <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>" id="roleItems" updateCallback="groupManagersChoose" label="${fieldsetLabel}"/>
+</form>
+  <view:buttonPane>
+    <fmt:message var="buttonCancel" key="GML.cancel"/>
+    <fmt:message var="buttonOK" key="GML.validate"/>
+    <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
+    <view:button label="${buttonCancel}" action="groupContent?Idgroup=<%=grObject.getId()%>"/>
+  </view:buttonPane>
+</view:frame>
 <%
-out.println(board.printBefore());
-%>
-<TABLE width="100%" align="center" border="0" cellPadding="0" cellSpacing="0">
-<TR>
-	<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JDP.px")%>"></TD>
-</TR>
-<TR>
-	<TD align="center" class="txttitrecol"><%=resource.getString("GML.type")%></TD>
-	<TD align="center" class="txttitrecol"><%=resource.getString("GML.name")%></TD>
-</TR>
-<TR>
-	<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JDP.px")%>"></TD>
-</TR>		
-<%
-	// La boucle sur les groupes 
-	Group group = null;
-	while (groups.hasNext())
-	{
-		group = (Group) groups.next();
-		out.println("<TR>");
-		if (group.isSynchronized())
-			out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JDP.groupSynchronized")+"\"></TD>");
-		else
-			out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JDP.group")+"\"></TD>");
-		out.println("<TD align=\"center\">"+group.getName()+"</TD>");
-		out.println("</TR>");
-	}
-	
-	//La boucle sur les users
-	UserDetail user = null;
-	while (users.hasNext()) {
-		user = (UserDetail) users.next(); 
-	%>
-		<tr>
-		<td align="center"><img src="<%=resource.getIcon("JDP.user") %>"></td>
-		<td align="center"><view:username userId="<%=user.getId()%>"/></td>
-		</tr>
-	<% } %>
-<TR>
-	<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JDP.px")%>"></TD>
-</TR>
-</TABLE>
-</center>
-<form id="genericForm" action="" method="POST"></form>
-<%
-out.println(board.printAfter());
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>
