@@ -108,8 +108,6 @@ class Admin implements Administration {
   private static String m_domainSynchroCron = "";
   // Helpers
   private static final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
-  // Component instanciator
-  private static Instanciateur componentInstanciator = null;
   private static SpaceInstanciator spaceInstanciator = null;
   // Entreprise client space Id
   private static int m_nEntrepriseClientSpaceId = 0;
@@ -126,6 +124,8 @@ class Admin implements Administration {
   private static boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
 
+  @Inject
+  private Instanciateur componentInstanciator;
   @Inject
   private UserManager userManager;
   @Inject
@@ -161,7 +161,6 @@ class Admin implements Administration {
     delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
     // Cache management
     cache.setCacheAvailable(StringUtil.getBooleanValue(resources.getString("UseCache", "1")));
-    componentInstanciator = new Instanciateur();
   }
 
   protected Admin() {
@@ -171,9 +170,6 @@ class Admin implements Administration {
   @PostConstruct
   private void initialize() {
     setup();
-    if (spaceInstanciator == null) {
-      spaceInstanciator = new SpaceInstanciator(getAllComponents());
-    }
     // Init tree cache
     synchronized (Admin.class) {
       if (!cacheLoaded) {
@@ -847,12 +843,12 @@ class Admin implements Administration {
 
   @Override
   public Map<String, SpaceTemplate> getAllSpaceTemplates() {
-    return spaceInstanciator.getAllSpaceTemplates();
+    return getSpaceInstanciator().getAllSpaceTemplates();
   }
 
   @Override
   public SpaceInst getSpaceInstFromTemplate(String templateName) {
-    return spaceInstanciator.getSpaceToInstanciate(templateName);
+    return getSpaceInstanciator().getSpaceToInstanciate(templateName);
   }
 
   // -------------------------------------------------------------------------
@@ -6906,5 +6902,12 @@ class Admin implements Administration {
       context.withoutAssigningComponentObjectRights();
     }
     return context.setAuthor(authorId);
+  }
+
+  private SpaceInstanciator getSpaceInstanciator() {
+    if (spaceInstanciator == null) {
+      spaceInstanciator = new SpaceInstanciator(getAllComponents());
+    }
+    return spaceInstanciator;
   }
 }

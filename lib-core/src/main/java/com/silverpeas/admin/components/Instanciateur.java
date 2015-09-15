@@ -37,7 +37,9 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.lang.SystemWrapper;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -58,27 +60,13 @@ import java.util.Map;
 
 public class Instanciateur {
 
-  private final static ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.beans.admin.instance.control.instanciator", "");
-  private final static String xmlPackage = resources.getString("xmlPackage").trim();
   private static Connection connection = null;
   private static String spaceId = "";
   private static String componentId = "";
   private static String userId = "";
-  private final static Map<String, WAComponent> componentsByName =
-      new HashMap<String, WAComponent>();
+  private static Map<String, WAComponent> componentsByName = null;
   private static final ObjectFactory objectFactory = new ObjectFactory();
   private static final XMLInputFactory factory = XMLInputFactory.newFactory();
-
-  // Init Function
-  static {
-    try {
-      buildWAComponentList();
-    } catch (Exception mre) {
-      SilverTrace.fatal("admin", "Instanciateur.static",
-          "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", mre);
-    }
-  }
 
   /**
    * Creates new instantiator
@@ -161,7 +149,7 @@ public class Instanciateur {
 
   public void unInstantiateComponentName(String componentName) throws InstanciationException {
     try {
-      WAComponent component = componentsByName.get(componentName);
+      WAComponent component = getComponentsByName().get(componentName);
       if (component == null) {
         String fullPath = getDescriptorFullPath(componentName);
         component = loadComponent(fullPath);
@@ -200,7 +188,7 @@ public class Instanciateur {
   }
 
   public synchronized static WAComponent getWAComponent(String componentName) {
-    return componentsByName.get(componentName);
+    return getComponentsByName().get(componentName);
   }
 
   public static boolean isWorkflow(String componentName) {
@@ -212,12 +200,12 @@ public class Instanciateur {
   }
 
   public synchronized static Map<String, WAComponent> getWAComponents() {
-    return Collections.unmodifiableMap(componentsByName);
+    return Collections.unmodifiableMap(getComponentsByName());
   }
 
   public synchronized static Map<String, String> getAllComponentsNames() {
     Map<String, String> hComponents = new HashMap<String, String>();
-    Collection<WAComponent> components = componentsByName.values();
+    Collection<WAComponent> components = getComponentsByName().values();
     for (WAComponent component : components) {
       hComponents.put(component.getName(), component.getLabel().get(I18NHelper.defaultLanguage));
     }
@@ -226,7 +214,7 @@ public class Instanciateur {
 
   public synchronized static List<WAComponent> getVisibleComponentsForPersonalSpace() {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
-    Collection<WAComponent> components = componentsByName.values();
+    Collection<WAComponent> components = getComponentsByName().values();
     for (WAComponent component : components) {
       if (component.isVisibleInPersonalSpace()) {
         visibleComponents.add(component);
@@ -241,7 +229,6 @@ public class Instanciateur {
    * @throws InstanciationException when something goes wrong
    */
   public synchronized static void rebuildWAComponentCache() throws InstanciationException {
-    componentsByName.clear();
     try {
       buildWAComponentList();
     } catch (IOException e) {
@@ -263,21 +250,22 @@ public class Instanciateur {
   }
 
   private static Collection<File> getFileList() {
-    return FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
+    return FileUtils.listFiles(new File(getXMLPackage()), new String[]{"xml"}, true);
   }
 
   static String getDescriptorFullPath(String componentName) throws IOException {
     IOFileFilter filter = new NameFileFilter(componentName + ".xml");
-    List<File> list = new ArrayList<File>(FileUtils.listFiles(new File(xmlPackage), filter,
+    List<File> list = new ArrayList<>(FileUtils.listFiles(new File(getXMLPackage()), filter,
         TrueFileFilter.INSTANCE));
     if (!list.isEmpty()) {
       return list.get(0).getCanonicalPath();
     }
-    return new File(xmlPackage, componentName + ".xml").getCanonicalPath();
+    return new File(getXMLPackage(), componentName + ".xml").getCanonicalPath();
   }
 
   private synchronized static void buildWAComponentList() throws IOException, JAXBException,
       XMLStreamException {
+    componentsByName = new HashMap<>();
     Collection<File> files = getFileList();
     for (File xmlFile : files) {
       String componentName = FilenameUtils.getBaseName(xmlFile.getName());
@@ -348,6 +336,19 @@ public class Instanciateur {
    * @return the path to the directory
    */
   public static String getXMLPackage() {
-    return xmlPackage;
+    SystemWrapper system = SystemWrapper.get();
+    return system.getenv("SILVERPEAS_HOME") + "/xmlcomponents";
+  }
+
+  private static Map<String, WAComponent> getComponentsByName() {
+    if (componentsByName == null) {
+      try {
+        buildWAComponentList();
+      } catch (Exception mre) {
+        SilverTrace.fatal("admin", "Instanciateur.static",
+            "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", mre);
+      }
+    }
+    return componentsByName;
   }
 }

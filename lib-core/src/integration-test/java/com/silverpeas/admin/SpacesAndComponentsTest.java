@@ -26,17 +26,6 @@ package com.silverpeas.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.stratelia.silverpeas.containerManager.ContainerInterface;
-import com.stratelia.silverpeas.containerManager.ContainerManager;
-import com.stratelia.silverpeas.containerManager.ContainerManagerException;
-import com.stratelia.silverpeas.containerManager.ContainerPeas;
-import com.stratelia.silverpeas.containerManager.URLIcone;
-import com.stratelia.silverpeas.contentManager.ContentInterface;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentPeas;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.almanach.AlmanachInstanciator;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -52,28 +41,29 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opends.server.replication.plugin.FakeOperationComparator;
 import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.admin.space.quota.DefaultDataStorageSpaceQuotaService;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.memory.MemoryData;
 import org.silverpeas.util.memory.MemoryUnit;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -93,6 +83,9 @@ public class SpacesAndComponentsTest {
   public DbSetupRule dbSetupRule =
       DbSetupRule.createTablesFrom("create_space_components_database.sql")
           .loadInitialDataSetFrom("test-spaces_and_components-dataset.sql");
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -116,6 +109,8 @@ public class SpacesAndComponentsTest {
 
   @Before
   public void reloadCache() {
+    File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
+    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     adminController.reloadAdminCache();
   }
 

@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.lang.SystemWrapper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class InstanciateurTest {
     TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
 
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
+    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
   }
 
   /**
