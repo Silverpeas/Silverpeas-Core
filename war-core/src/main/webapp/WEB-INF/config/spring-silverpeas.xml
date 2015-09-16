@@ -89,6 +89,7 @@
   <ctx:component-scan base-package="org.silverpeas.preferences"/>
   <ctx:component-scan base-package="org.silverpeas.file"/>
   <ctx:component-scan base-package="org.silverpeas.media.video"/>
+  <ctx:component-scan base-package="org.silverpeas.dateReminder"/>
 
   <bean id="transactionFactory" class="org.silverpeas.persistence.TransactionFactory"
         factory-method="getFactory"/>
@@ -207,12 +208,17 @@
   <bean id="thumbnailServiceFactory" class="com.silverpeas.thumbnail.service.ThumbnailServiceFactory"
         factory-method="getInstance"/>
 
-  <!-- the provider of the differnt access controllers available in Silverpeas -->
+  <!-- the provider of the different access controllers available in Silverpeas -->
   <bean id="accessControllerProvider" class="com.silverpeas.accesscontrol.AccessControllerProvider"
         factory-method="getInstance"/>
 
   <!-- the provider of the video thumbnails service in Silverpeas -->
   <bean id="videoThumbnailExtractorFactory" class="org.silverpeas.media.video.VideoThumbnailExtractorFactory"
+        factory-method="getInstance"/>
+
+  <!-- the factory of dateReminder services.
+  It wraps and provides an access to different service instances relative to dateReminder handling -->
+  <bean id="dateReminderFactory" class="org.silverpeas.dateReminder.persistent.service.DateReminderServiceFactory"
         factory-method="getInstance"/>
 
 </beans>

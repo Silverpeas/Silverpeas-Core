@@ -1,0 +1,1 @@
+CREATE INDEX idx_dateReminder ON st_dateReminder (resourceType, resourceId);

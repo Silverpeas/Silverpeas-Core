@@ -112,7 +112,7 @@ public class PersistentResourceToken implements Token {
    * generated and persisted into the data source.
    *
    * @param resource the resource for which the token has to be generated.
-   * @return a token for the specified resource.
+   * @return a token for the specified resource.Quota
    * @throws TokenException
    */
   public static PersistentResourceToken createToken(final EntityReference resource) throws

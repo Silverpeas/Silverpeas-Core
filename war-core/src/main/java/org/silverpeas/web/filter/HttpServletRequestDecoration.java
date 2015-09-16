@@ -23,19 +23,20 @@
  */
 package org.silverpeas.web.filter;
 
-import java.io.IOException;
+import org.silverpeas.servlet.HttpRequest;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import org.silverpeas.servlet.HttpRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * A filter to decorate the incoming request into a {@link org.silverpeas.servlet.HttpRequest}
  * instance.
- *
  * @author mmoquillon
  */
 public class HttpServletRequestDecoration implements Filter {
@@ -43,7 +44,19 @@ public class HttpServletRequestDecoration implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
-    ServletRequest httpRequest = HttpRequest.decorate(request);
+    HttpRequest httpRequest = HttpRequest.decorate(request);
+    if (!httpRequest.isContentInMultipart()) {
+      Long jQueryTs = httpRequest.getParameterAsLong("_");
+      if (jQueryTs == null) {
+        jQueryTs = httpRequest.getParameterAsLong("IEFix");
+      }
+      if (jQueryTs != null && jQueryTs.compareTo(0l) != 0) {
+        HttpServletResponse servletResponse = (HttpServletResponse) response;
+        servletResponse.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+        servletResponse.setHeader("Pragma", "no-cache"); //HTTP 1.0
+        servletResponse.setDateHeader("Expires", -1); //prevents caching at the proxy server
+      }
+    }
     chain.doFilter(httpRequest, response);
   }
 
