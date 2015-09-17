@@ -1,5 +1,5 @@
 CREATE TABLE st_dateReminder (
-  id             VARCHAR(40) PRIMARY KEY,
+  id             VARCHAR(40) NOT NULL,
   resourceType   VARCHAR(50) NOT NULL,
   resourceId     VARCHAR(50) NOT NULL ,
   dateReminder   DATETIME   NOT NULL ,
