@@ -471,14 +471,10 @@ public class JDBCCommentRequester {
 
   public List<Comment> getLastComments(Connection con, String instanceId, int count) throws
       SQLException {
-    final List<String> params = new ArrayList<String>();
     String query = "SELECT commentId, commentOwnerId, commentCreationDate, "
         + "commentModificationDate, commentComment, resourceType, resourceId, instanceId "
         + "FROM sb_comment_comment where instanceId = ? ORDER BY commentCreationDate DESC, "
         + "commentId DESC";
-    if (count > 0) {
-      query += " LIMIT ?";
-    }
     PreparedStatement stmt = null;
     ResultSet rs = null;
     List<Comment> comments = new ArrayList<Comment>(count);
@@ -486,7 +482,7 @@ public class JDBCCommentRequester {
       stmt = con.prepareStatement(query);
       stmt.setString(1, instanceId);
       if (count > 0) {
-        stmt.setInt(2, count);
+        stmt.setMaxRows(count);
       }
       rs = stmt.executeQuery();
       while (rs.next()) {
