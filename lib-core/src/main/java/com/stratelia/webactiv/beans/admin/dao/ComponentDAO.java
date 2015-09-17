@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -139,6 +140,18 @@ public class ComponentDAO {
       int userId, String componentName) throws SQLException {
     Set<String> componentIds = new HashSet<String>();
     componentIds.addAll(getAllPublicComponentIds(con));
+
+    // Public component instance ids must be filtered in case when a component name filter is
+    // defined.
+    if (StringUtil.isDefined(componentName)) {
+      Iterator<String> componentIdsIt = componentIds.iterator();
+      while (componentIdsIt.hasNext()) {
+        if (!componentIdsIt.next().startsWith(componentName)) {
+          componentIdsIt.remove();
+        }
+      }
+    }
+
     if (groupIds != null && groupIds.size() > 0) {
       componentIds.addAll(getAllAvailableComponentIds(con, groupIds, componentName));
     }

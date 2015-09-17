@@ -442,15 +442,20 @@ public class JDBCCommentRequester {
       query.append(") ");
       clause = "AND ";
     }
-    if (CollectionUtil.isNotEmpty(listInstanceId)) {
-      query.append(clause).append("instanceId IN (");
-      clause = "";
-      for (String instanceId : listInstanceId) {
-        query.append(clause).append("?");
-        clause = ", ";
-        params.add(instanceId);
+    if (listInstanceId != null) {
+      if (listInstanceId.isEmpty()) {
+        // This empty list indicates that the requester has no component access.
+        query.append(clause).append("instanceId IN ('noComponentInstanceId') ");
+      } else {
+        query.append(clause).append("instanceId IN (");
+        clause = "";
+        for (String instanceId : listInstanceId) {
+          query.append(clause).append("?");
+          clause = ", ";
+          params.add(instanceId);
+        }
+        query.append(") ");
       }
-      query.append(") ");
       clause = "AND ";
     }
     if (period != null && period.isValid()) {
