@@ -20,13 +20,14 @@
  */
 package com.silverpeas.importExport.control;
 
-import org.apache.commons.io.FilenameUtils;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.apache.commons.io.FilenameUtils;
 
 public class ImportSettings implements Cloneable {
-  
+
   private static final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
   public static final int FROM_XML = 0;
@@ -42,7 +43,9 @@ public class ImportSettings implements Cloneable {
   private boolean versioningUsed;
   private int versionType;
   private int method;
-  
+  private String contentLanguage;
+  private PublicationDetail publicationForAllFiles = new PublicationDetail();
+
   public ImportSettings(String pathToImport, UserDetail user, String componentId, String folderId,
       boolean draftUsed, boolean poiUsed, int method) {
     super();
@@ -58,7 +61,7 @@ public class ImportSettings implements Cloneable {
   public String getPathToImport() {
     return pathToImport;
   }
-  
+
   public void setPathToImport(String path) {
     pathToImport = path;
   }
@@ -74,7 +77,7 @@ public class ImportSettings implements Cloneable {
   public String getFolderId() {
     return folderId;
   }
-  
+
   public void setFolderId(String folderId) {
     this.folderId = folderId;
   }
@@ -108,7 +111,7 @@ public class ImportSettings implements Cloneable {
   public int getMethod() {
     return method;
   }
-  
+
   public boolean isPublicationMergeEnabled() {
     if (getMethod() == FROM_XML) {
       return settings.getBoolean("xml.publication.merge", true);
@@ -118,7 +121,34 @@ public class ImportSettings implements Cloneable {
       return settings.getBoolean("manual.publication.merge", false);
     }
   }
-  
+
+  /**
+   * Indicates that it must be created one publication for all files.
+   * <p>PLEASE notice that the creation of one publication for all files is compatible only with
+   * {@link #getMethod()} returning {@link #FROM_DRAGNDROP}. The code has to be adjusted for other
+   * processes.</p>
+   * @return true if one publication only must be created.
+   */
+  public boolean mustCreateOnePublicationForAllFiles() {
+    return StringUtil.isDefined(publicationForAllFiles.getName());
+  }
+
+  /**
+   * Gets the instance of {@link PublicationDetail} that stores the following data in case of
+   * creation of one publication for all imported files:
+   * <ul>
+   *   <li>the name of the publication. If it exists then the method {@link
+   *   #mustCreateOnePublicationForAllFiles()} will indicate that all files will be attached to
+   *   a same publication</li>
+   *   <li>the description of a publication</li>
+   *   <li>the keywords of a publication</li>
+   * </ul>
+   * @return a string that represents the publication description.
+   */
+  public PublicationDetail getPublicationForAllFiles() {
+    return publicationForAllFiles;
+  }
+
   public String getPublicationName(String filename) {
     if (settings.getBoolean("publication.name.with.extension", false)) {
       return filename;
@@ -133,7 +163,15 @@ public class ImportSettings implements Cloneable {
   public int getVersionType() {
     return versionType;
   }
-  
+
+  public String getContentLanguage() {
+    return contentLanguage;
+  }
+
+  public void setContentLanguage(final String contentLanguage) {
+    this.contentLanguage = contentLanguage;
+  }
+
   public boolean useFileDates() {
     if (getMethod() == FROM_XML) {
       return settings.getBoolean("xml.publication.useFileDates", false);
@@ -144,8 +182,12 @@ public class ImportSettings implements Cloneable {
     }
   }
 
+  @Override
   public ImportSettings clone() {
-    return new ImportSettings(pathToImport, user, componentId, folderId, draftUsed, poiUsed, method);
+    try {
+      return (ImportSettings) super.clone();
+    } catch (CloneNotSupportedException e) {
+      return null;
+    }
   }
-  
 }

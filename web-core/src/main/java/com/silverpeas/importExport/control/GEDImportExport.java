@@ -203,18 +203,22 @@ public abstract class GEDImportExport extends ComponentImportExport {
         pubIdExists = StringUtil.isInteger(pubDetailToCreate.getId());
       }
       if (!pubIdExists) {
-        if (!settings.isPublicationMergeEnabled()) {
-          pubAlreadyExist = false;
-        } else {
+        pubAlreadyExist = false;
+        if (settings.isPublicationMergeEnabled()) {
           try {
             Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
             if (itListNode_Type.hasNext()) {
               NodePositionType node_Type = itListNode_Type.next();
-              pubDet_temp = getPublicationBm().getDetailByNameAndNodeId(pubDetailToCreate.getPK(),
-                  pubDetailToCreate.getName(), node_Type.getId());
+              pubDet_temp = getPublicationBm()
+                  .getDetailByNameAndNodeId(pubDetailToCreate.getPK(), pubDetailToCreate.getName(),
+                      node_Type.getId());
+
+              // Checking that the user has rights to add attachments
+              if (pubDet_temp.canBeModifiedBy(getCurentUserDetail())) {
+                pubAlreadyExist = true;
+              }
             }
-          } catch (Exception pre) {
-            pubAlreadyExist = false;
+          } catch (Exception ignore) {
           }
         }
       } else {

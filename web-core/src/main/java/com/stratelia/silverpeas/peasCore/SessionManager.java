@@ -55,6 +55,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.cache.service.CacheServiceFactory;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.servlets.LogoutServlet;
+import org.silverpeas.upload.UploadSession;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -254,6 +255,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
       // Clears all volatile resources
       VolatileResourceCacheService.clearFrom(si);
+
+      // Clears all upload sessions
+      UploadSession.clearFrom(si);
 
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());

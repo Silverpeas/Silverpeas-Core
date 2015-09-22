@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -73,7 +75,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -1204,23 +1205,25 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N> impleme
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider.getAccessController(
-        "componentAccessController");
-    boolean canBeAccessed = accessController.
-        isUserAuthorized(user.getId(), getComponentInstanceId());
-    if (canBeAccessed) {
-      AccessController<NodePK> nodeAccessController = AccessControllerProvider.getAccessController(
-          "nodeAccessController");
-      Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(getId(),
-          getInstanceId()));
-      for (NodePK aNode : nodes) {
-        canBeAccessed = nodeAccessController.isUserAuthorized(user.getId(), aNode);
-        if (canBeAccessed) {
-          break;
-        }
-      }
-    }
-    return canBeAccessed;
+    AccessController<PublicationPK> accessController =
+        AccessControllerProvider.getAccessController("publicationAccessController");
+    return accessController.isUserAuthorized(user.getId(), getPK());
+  }
+
+  /**
+   * Is the specified user can access this publication on persist context?
+   * <p/>
+   * A user can access a publication on persist context if he has enough rights to access both the
+   * application instance in which is managed this publication and one of the nodes to which this
+   * publication belongs to.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this publication, false otherwise.
+   */
+  public boolean canBeModifiedBy(final UserDetail user) {
+    AccessController<PublicationPK> accessController =
+        AccessControllerProvider.getAccessController("publicationAccessController");
+    return accessController.isUserAuthorized(user.getId(), getPK(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
   /**

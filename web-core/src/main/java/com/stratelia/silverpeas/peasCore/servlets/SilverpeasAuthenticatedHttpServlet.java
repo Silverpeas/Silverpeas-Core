@@ -139,4 +139,14 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
     }
     return null;
   }
+
+  /**
+   * Retrieves the SessionInfo linked to the current request.
+   * @param request
+   * @return
+   */
+  protected SessionInfo getSessionInfo(final HttpServletRequest request) {
+    return SessionManagementFactory.getFactory().getSessionManagement()
+        .getSessionInfo(getMainSessionController(request).getSessionId());
+  }
 }

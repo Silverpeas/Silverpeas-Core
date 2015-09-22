@@ -35,6 +35,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.text.MessageFormat;
 
 public class AbstractSimpleDocumentResource extends RESTWebService {
 
@@ -65,6 +66,7 @@ public class AbstractSimpleDocumentResource extends RESTWebService {
         String errorMessage = getBundle().getString("attachment.dialog.errorFileSize") + " " +
             getBundle().getString("attachment.dialog.maximumFileSize") + " (" +
             UnitUtil.formatMemSize(maximumFileSize) + ")";
+        errorMessage = MessageFormat.format(errorMessage, fileToCheck.getName());
         NotifierUtil.addError(errorMessage);
         throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
             .entity(errorMessage).build());

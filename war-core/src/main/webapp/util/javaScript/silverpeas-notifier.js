@@ -36,7 +36,7 @@ function notyInfo(text, customOptions) {
   if (customOptions) {
     $.extend(options, customOptions);
   }
-  __noty(options);
+  return __noty(options);
 }
 
 /**
@@ -51,7 +51,7 @@ function notySuccess(text, customOptions) {
   if (customOptions) {
     $.extend(options, customOptions);
   }
-  __noty(options);
+  return __noty(options);
 }
 
 /**
@@ -68,7 +68,7 @@ function notyWarning(text, customOptions) {
   if (customOptions) {
     $.extend(options, customOptions);
   }
-  __noty(options);
+  return __noty(options);
 }
 
 /**
@@ -85,7 +85,7 @@ function notyError(text, customOptions) {
   if (customOptions) {
     $.extend(options, customOptions);
   }
-  __noty(options);
+  return __noty(options);
 }
 
 /**
@@ -100,7 +100,7 @@ function __noty(customOptions) {
     dismissQueue: true
   }, customOptions);
   if (options.text) {
-    noty(options);
+    return noty(options);
   }
 }
 
@@ -166,6 +166,16 @@ function notyRegistredMessages(registredKey) {
   });
 }
 
+function notySetupRequestComplete(request) {
+  if (!request.notySetupAjaxMessagesCompleteDone) {
+    request.notySetupAjaxMessagesCompleteDone = true;
+    var registredKeyOfMessages = request.getResponseHeader('X-Silverpeas-MessageKey');
+    if (registredKeyOfMessages) {
+      notyRegistredMessages(registredKeyOfMessages);
+    }
+  }
+};
+
 /**
  * Setup all JQuery Ajax call to handle returns of messages (or technical errors).
  */
@@ -177,27 +187,18 @@ function notySetupAjaxMessages() {
     }
     window.console && window.console.log('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
   };
-  var complete = function(jqXHR) {
-    if (!jqXHR.notySetupAjaxMessagesCompleteDone) {
-      jqXHR.notySetupAjaxMessagesCompleteDone = true;
-      var registredKeyOfMessages = jqXHR.getResponseHeader('X-Silverpeas-MessageKey');
-      if (registredKeyOfMessages) {
-        notyRegistredMessages(registredKeyOfMessages);
-      }
-    }
-  };
   jQuery.ajaxSetup({
     error: function(jqXHR, textStatus, errorThrown) {
       error.call(this, jqXHR, errorThrown);
     },
     complete: function(jqXHR, textStatus) {
-      complete.call(this, jqXHR);
+      notySetupRequestComplete.call(this, jqXHR);
     }
   });
   jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
     error.call(this, jqXHR, errorThrown);
   });
   jQuery(document).ajaxComplete(function(event, jqXHR, settings) {
-    complete.call(this, jqXHR);
+    notySetupRequestComplete.call(this, jqXHR);
   });
 }

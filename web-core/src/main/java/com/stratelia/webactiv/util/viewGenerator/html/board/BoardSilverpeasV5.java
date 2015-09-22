@@ -54,8 +54,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
   public String printBefore() {
     StringBuilder result = new StringBuilder(50);
 
-    result
-        .append("<table cellpadding=\"5\" cellspacing=\"0\" border=\"0\" width=\"98%\" class=\"tableBoard\"><tr><td>");
+    result.append("<table class=\"tableBoard\"><tr><td>");
 
     return result.toString();
   }
