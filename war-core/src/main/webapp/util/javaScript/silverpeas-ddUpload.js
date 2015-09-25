@@ -835,10 +835,12 @@ var dragAndDropUploadEnabled = window.File;
     pluginContainer.hideHelp = function() {
       if (pluginHelp.style.display !== 'none') {
         pluginHelp.style.display = 'none';
-        if (!originalHelpContainerBorderStyle) {
-          helpHighlightContainer.classList.remove('droparea-cover-help-highlight');
-        } else {
-          helpHighlightContainer.style.borderStyle = '';
+        if (helpHighlightContainer) {
+          if (!originalHelpContainerBorderStyle) {
+            helpHighlightContainer.classList.remove('droparea-cover-help-highlight');
+          } else {
+            helpHighlightContainer.style.borderStyle = '';
+          }
         }
       }
     };
