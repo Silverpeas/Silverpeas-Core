@@ -24,15 +24,12 @@
 
 package org.silverpeas.util.viewGenerator.html.progressMessage;
 
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 /**
  * @author neysseri
@@ -51,11 +48,11 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
   @Override
   public String print() {
     Object progressMessageDone =
-        CacheServiceFactory.getRequestCacheService().get("@progressMessage@");
+        CacheServiceProvider.getRequestCacheService().get("@progressMessage@");
     if (progressMessageDone != null) {
       return "";
     }
-    CacheServiceFactory.getRequestCacheService().put("@progressMessage@", true);
+    CacheServiceProvider.getRequestCacheService().put("@progressMessage@", true);
     String message1 = getMultilang().getString("GEF.progressMessage.message1");
     String message2 = getMultilang().getString("GEF.progressMessage.message2");
 

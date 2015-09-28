@@ -22,22 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
+import com.silverpeas.accesscontrol.AbstractAccessController;
+import com.silverpeas.accesscontrol.AccessControlContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.Alias;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.ComponentHelper;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Set;
 
@@ -55,15 +55,25 @@ public class PublicationAccessController extends AbstractAccessController<Public
   public static final String PUBLICATION_DETAIL_KEY = "PUBLICATION_DETAIL_KEY";
 
   @Inject
-  private NodeAccessController accessController;
+  private NodeAccessControl nodeAccessController;
 
   @Inject
-  private ComponentAccessController componentAccessController;
+  private ComponentAccessControl componentAccessController;
+
+  @Inject
+  private PublicationService publicationService;
+
+  @Inject
+  private ComponentHelper componentHelper;
+
+  PublicationAccessController() {
+    // Instance by IoC only.
+  }
 
   @Override
   public boolean isUserAuthorized(String userId, PublicationPK pubPk,
       final AccessControlContext context) {
-    return isUserAuthorizedByContext(userId, pubPk, context, getUserRoles(context, userId, pubPk));
+    return isUserAuthorizedByContext(userId, pubPk, context, getUserRoles(userId, pubPk, context));
   }
 
   /**
@@ -125,12 +135,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     // Component access control
     final Set<SilverpeasRole> componentUserRoles =
-        getComponentAccessController().getUserRoles(context, userId, publicationPK.getInstanceId());
+        getComponentAccessController().getUserRoles(userId, publicationPK.getInstanceId(), context);
     if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
       componentAccessAuthorized = false;
     }
 
-    if (ComponentHelper.getInstance().isThemeTracker(publicationPK.getInstanceId())) {
+    if (componentHelper.isThemeTracker(publicationPK.getInstanceId())) {
       if (StringUtil.isInteger(publicationPK.getId())) {
         final PublicationDetail pubDetail;
         try {
@@ -147,11 +157,11 @@ public class PublicationAccessController extends AbstractAccessController<Public
         // (special treatment in case of the user has no access right on component instance)
         if (!componentAccessAuthorized) {
           try {
-            Collection<Alias> aliases = getPublicationBm().getAlias(pubDetail.getPK());
+            Collection<Alias> aliases = getPublicationService().getAlias(pubDetail.getPK());
             for (Alias alias : aliases) {
 
               final Set<SilverpeasRole> nodeUserRoles = getNodeAccessController()
-                  .getUserRoles(context, userId, new NodePK(alias.getId(), alias.getInstanceId()));
+                  .getUserRoles(userId, new NodePK(alias.getId(), alias.getInstanceId()), context);
               if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
                 userRoles.addAll(nodeUserRoles);
                 return;
@@ -169,12 +179,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
         else if (getComponentAccessController()
             .isRightOnTopicsEnabled(publicationPK.getInstanceId())) {
           try {
-            Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(
+            Collection<NodePK> nodes = getPublicationService().getAllFatherPK(
                 new PublicationPK(pubDetail.getId(), publicationPK.getInstanceId()));
             if (!nodes.isEmpty()) {
               for (NodePK nodePk : nodes) {
                 final Set<SilverpeasRole> nodeUserRoles =
-                    getNodeAccessController().getUserRoles(context, userId, nodePk);
+                    getNodeAccessController().getUserRoles(userId, nodePk, context);
                 if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
                   userRoles.addAll(nodeUserRoles);
                   return;
@@ -195,7 +205,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
     }
   }
 
-  protected PublicationService getPublicationBm() {
+  protected PublicationService getPublicationService() {
     return publicationService;
   }
 
@@ -210,10 +220,10 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private PublicationDetail getActualForeignPublication(String foreignId, String instanceId)
       throws Exception {
     PublicationDetail pubDetail =
-        getPublicationBm().getDetail(new PublicationPK(foreignId, instanceId));
+        getPublicationService().getDetail(new PublicationPK(foreignId, instanceId));
     if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
       pubDetail =
-          getPublicationBm().getDetail(new PublicationPK(pubDetail.getCloneId(), instanceId));
+          getPublicationService().getDetail(new PublicationPK(pubDetail.getCloneId(), instanceId));
     }
     return pubDetail;
   }
@@ -222,10 +232,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * Gets a controller of access on the components of a publication.
    * @return a ComponentAccessController instance.
    */
-  protected ComponentAccessController getComponentAccessController() {
-    if (componentAccessController == null) {
-      componentAccessController = new ComponentAccessController();
-    }
+  private ComponentAccessControl getComponentAccessController() {
     return componentAccessController;
   }
 
@@ -233,7 +240,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * Gets a controller of access on the nodes of a publication.
    * @return a NodeAccessController instance.
    */
-  protected NodeAccessController getNodeAccessController() {
-    return accessController;
+  private NodeAccessControl getNodeAccessController() {
+    return nodeAccessController;
   }
 }

@@ -23,21 +23,20 @@
  */
 package org.silverpeas.upload;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAPrimaryKey;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;

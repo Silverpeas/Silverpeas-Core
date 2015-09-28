@@ -20,11 +20,11 @@
  */
 package com.silverpeas.importExport.control;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 public class ImportSettings implements Cloneable {
 

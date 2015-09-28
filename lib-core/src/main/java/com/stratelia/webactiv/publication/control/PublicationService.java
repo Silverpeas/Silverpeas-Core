@@ -31,6 +31,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.publication.model.ValidationStep;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.Collection;
@@ -43,6 +44,10 @@ import java.util.List;
  * @author
  */
 public interface PublicationService {
+
+  static PublicationService get() {
+    return ServiceProvider.getService(PublicationService.class);
+  }
 
   /**
    * get details on the publication specified by the primary key given in pubPK parameter

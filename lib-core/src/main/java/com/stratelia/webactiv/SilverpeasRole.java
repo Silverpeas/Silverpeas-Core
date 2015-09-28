@@ -23,11 +23,10 @@
  */
 package com.stratelia.webactiv;
 
-import org.codehaus.jackson.annotate.JsonValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.cache.service.CacheServiceFactory;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.SimpleCacheService;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
@@ -37,7 +36,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
+import static org.silverpeas.core.admin.OrganizationControllerProvider.getOrganisationController;
 
 public enum SilverpeasRole {
   admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor;
@@ -198,7 +197,7 @@ public enum SilverpeasRole {
    */
   public static SilverpeasRole getGreatestOfCurrentUserOn(String componentInstanceId) {
     String cacheKey = GREATEST_ROLE_OF_CURRENT_USER_PREFIX + componentInstanceId;
-    SimpleCacheService cache = CacheServiceFactory.getRequestCacheService();
+    SimpleCacheService cache = CacheServiceProvider.getRequestCacheService();
     SilverpeasRole greatestOfCurrentUser = cache.get(cacheKey, SilverpeasRole.class);
     if (greatestOfCurrentUser == null) {
       Collection<SilverpeasRole> roles = from(getOrganisationController()

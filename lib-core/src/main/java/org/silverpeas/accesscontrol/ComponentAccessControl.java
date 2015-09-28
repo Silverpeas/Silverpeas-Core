@@ -25,10 +25,41 @@
 package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AccessController;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This interface extends access controller interface for a Component resource.
  * @author Yohann Chastagnier
  */
 public interface ComponentAccessControl extends AccessController<String> {
+
+  /**
+   * Indicates is the rights are set on node as well as the component.
+   * @param instanceId the identifier of the component instance.
+   * @return true if rights are enabled at node level, false otherwise.
+   */
+  boolean isRightOnTopicsEnabled(String instanceId);
+
+  /**
+   * Indicates if publication sharing is enabled on the component instance represented by the given
+   * identifier.
+   * @param instanceId the identifier of the component instance.
+   * @return true if file sharing is enabled, false otherwise.
+   */
+  boolean isPublicationSharingEnabled(String instanceId);
+
+  /**
+   * Indicates that the rights are set on node as well as the component.
+   * @param instanceId the identifier of the component instance.
+   * @return true if co-writing is enabled, false otherwise.
+   */
+  boolean isCoWritingEnabled(String instanceId);
+
+  /**
+   * Indicates if file sharing is enabled on the component instance represented by the given
+   * identifier.
+   * @param instanceId the identifier of the component instance.
+   * @return true if file sharing is enabled, false otherwise.
+   */
+  boolean isFileSharingEnabled(String instanceId);
 }

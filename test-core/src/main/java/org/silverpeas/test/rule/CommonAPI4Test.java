@@ -25,7 +25,9 @@
 package org.silverpeas.test.rule;
 
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
+import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -38,6 +40,9 @@ import org.silverpeas.util.lang.SystemWrapper;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
 
+import java.io.File;
+
+import static org.apache.commons.io.FileUtils.getFile;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -49,16 +54,36 @@ public class CommonAPI4Test implements TestRule {
   @Override
   public Statement apply(final Statement base, final Description description) {
 
+    File testTempData = new File(new File(
+        description.getTestClass().getProtectionDomain().getCodeSource().getLocation().getFile()),
+        "test-temp-data");
+
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        reset(TestBeanContainer.getMockedBeanContainer());
-        systemWrapper();
-        silverTrace();
-        managedThreadFactory();
-        base.evaluate();
+        TestContext testContext = new TestContext(description, testTempData);
+        try {
+          beforeEvaluate(testContext);
+          base.evaluate();
+        } finally {
+          try {
+            afterEvaluate(testContext);
+          } finally {
+            FileUtils.deleteQuietly(testTempData);
+          }
+        }
       }
     };
+  }
+
+  protected void beforeEvaluate(final TestContext context) {
+    reset(TestBeanContainer.getMockedBeanContainer());
+    systemWrapper();
+    silverTrace();
+    managedThreadFactory();
+  }
+
+  protected void afterEvaluate(final TestContext context) {
   }
 
   @SuppressWarnings("unchecked")
@@ -96,5 +121,23 @@ public class CommonAPI4Test implements TestRule {
     }
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(ManagedThreadPool.class))
         .thenReturn(managedThreadPool);
+  }
+
+  protected class TestContext {
+    private final Description description;
+    private final File tempData;
+
+    public TestContext(final Description description, final File tempData) {
+      this.description = description;
+      this.tempData = tempData;
+    }
+
+    public Description getDescription() {
+      return description;
+    }
+
+    public File getTempData() {
+      return tempData;
+    }
   }
 }

@@ -97,6 +97,36 @@ public class MockByReflectionRule implements TestRule {
   }
 
   /**
+   * Spies a field specified by the given field name of the given instance with a new mock instance
+   * of the specified class.
+   * @param <T> the type of the mocked instance.
+   * @param instanceOrClass the instance or class into which the field will be mocked.
+   * @param classToMock the class to get a new mock instance.
+   * @param fieldNames the aimed field name. If several, then it represents a path to access to
+   * the field. If the fieldName path part starts with '.' character, it sets that the
+   * field is static.
+   * @return the new mocked instance.
+   */
+  public <T> T spyField(Object instanceOrClass, Class<T> classToMock, String fieldNames) {
+    return setField(instanceOrClass, Mockito.spy(classToMock), fieldNames);
+  }
+
+  /**
+   * Spies a field specified by the given field name of the given instance with a new mock instance
+   * of the specified class.
+   * @param <T> the type of the mocked instance.
+   * @param instanceOrClass the instance or class into which the field will be mocked.
+   * @param value the value to spy.
+   * @param fieldNames the aimed field name. If several, then it represents a path to access to
+   * the field. If the fieldName path part starts with '.' character, it sets that the
+   * field is static.
+   * @return the new mocked instance.
+   */
+  public <T> T spyField(Object instanceOrClass, T value, String fieldNames) {
+    return setField(instanceOrClass, Mockito.spy(value), fieldNames);
+  }
+
+  /**
    * Sets a field specified by the given field name of the given instance with a given value
    * of the specified class.
    * @param <T> the type of the mocked instance.

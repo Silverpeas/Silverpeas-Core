@@ -18,8 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.util;
+package org.silverpeas.util;
 
+import org.junit.Rule;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -47,6 +50,9 @@ import static org.junit.Assert.*;
  * @author ehugonnet
  */
 public class FileUtilTest {
+
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   private File rootFolder;
 

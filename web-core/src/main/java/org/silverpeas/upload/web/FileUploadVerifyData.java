@@ -23,12 +23,10 @@
  */
 package org.silverpeas.upload.web;
 
-import org.silverpeas.servlet.RequestFile;
-
 import javax.ws.rs.FormParam;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class FileUploadVerifyData {
 

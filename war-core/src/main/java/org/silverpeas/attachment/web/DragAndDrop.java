@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -33,9 +32,9 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.UploadSession;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,21 +43,14 @@ import java.io.IOException;
 import java.util.Date;
 
 import static com.silverpeas.importExport.control.RepositoriesTypeManager.handleFileToAttach;
-import static com.silverpeas.util.StringUtil.getBooleanValue;
-import static com.silverpeas.util.i18n.I18NHelper.checkLanguage;
+import static org.silverpeas.util.StringUtil.getBooleanValue;
+import static org.silverpeas.util.i18n.I18NHelper.checkLanguage;
 
 /**
  * Servlet used whith the drag and drop applet to import non-versioned documents.
  */
 public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 4084217276750892258L;
-
-  @Inject
-  private MetadataExtractor metadataExtractor;
-  @Inject
-  private ActifyDocumentProcessor actifyDocumentProcessor;
-  @Inject
-  private AttachmentService attachmentService;
 
   /**
    * Method declaration

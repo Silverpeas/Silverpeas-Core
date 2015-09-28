@@ -24,7 +24,6 @@
 package org.silverpeas.upload;
 
 import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.session.SessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
@@ -32,24 +31,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.springframework.context.ApplicationContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getTemporaryPath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.silverpeas.cache.service.CacheServiceFactory.getSessionCacheService;
+import static org.silverpeas.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
 
 /**
  * @author Yohann Chastagnier
@@ -59,9 +56,12 @@ public class UploadSessionTest {
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();
   private static final String UPLOAD_SESSION_CACHE_KEY_PREFIX = "@@@_instance_for_";
 
-  private SessionInfo si = new SessionInfo(null, null);
+  private SessionInfo si;
   private AccessController accessControllerMock;
-  private OrganisationController organisationControllerMock;
+  private OrganizationController organisationControllerMock;
+
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -69,19 +69,22 @@ public class UploadSessionTest {
   @Before
   @After
   public void cleanTest() {
+
+    // Test
     FileUtils.deleteQuietly(new File(getTemporaryPath()));
     getSessionCacheService().remove(SESSION_CACHE_KEY);
-    getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
+  }
 
-    AccessControllerProvider acp = AccessControllerProvider.getInstance();
-    ApplicationContext contextMocked =
-        reflectionRule.mockField(acp, ApplicationContext.class, "context");
-    accessControllerMock = mock(AccessController.class);
-    when(contextMocked.getBean("componentAccessController")).thenReturn(accessControllerMock);
+  @Before
+  public void setup() {
+    accessControllerMock =
+        commonAPI4Test.injectIntoMockedBeanContainer(mock(ComponentAccessControl.class));
 
-    OrganisationControllerFactory ocf = OrganisationControllerFactory.getFactory();
     organisationControllerMock =
-        reflectionRule.mockField(ocf, OrganisationController.class, "organisationController");
+        commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
+
+    si = new SessionInfo(null, null);
+    getSessionCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, new UserDetail());
   }
 
   @SuppressWarnings("unchecked")
@@ -308,12 +311,7 @@ public class UploadSessionTest {
   public void getComponentInstanceParameterValueWithTwoDifferentParameters() throws Exception {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(organisationControllerMock.getComponentParameterValue(anyString(), anyString()))
-        .then(new Answer<String>() {
-          @Override
-          public String answer(final InvocationOnMock invocation) throws Throwable {
-            return "aParameter".equals(invocation.getArguments()[1]) ? "toto" : "titi";
-          }
-        });
+        .then(invocation -> "aParameter".equals(invocation.getArguments()[1]) ? "toto" : "titi");
     assertThat(uploadSession.getComponentInstanceParameterValue("aParameter"), is("toto"));
     assertThat(uploadSession.getComponentInstanceParameterValue("otherParameter"), is("titi"));
     verify(organisationControllerMock, times(2))
@@ -326,12 +324,7 @@ public class UploadSessionTest {
       throws Exception {
     UploadSession uploadSession = initializeUploadSessionAndRegisterFile().getUploadSession();
     when(organisationControllerMock.getComponentParameterValue(anyString(), anyString()))
-        .then(new Answer<String>() {
-          @Override
-          public String answer(final InvocationOnMock invocation) throws Throwable {
-            return "aParameter".equals(invocation.getArguments()[1]) ? "toto" : "titi";
-          }
-        });
+        .then(invocation -> "aParameter".equals(invocation.getArguments()[1]) ? "toto" : "titi");
     assertThat(uploadSession.getComponentInstanceParameterValue("aParameter"), is("toto"));
     assertThat(uploadSession.getComponentInstanceParameterValue("aParameter"), is("toto"));
     assertThat(uploadSession.getComponentInstanceParameterValue("aParameter"), is("toto"));
@@ -352,7 +345,6 @@ public class UploadSessionTest {
 
   /**
    * Creates an upload session and register a file.
-   * @return
    * @throws Exception
    */
   private UploadSessionFile initializeUploadSessionAndRegisterFile() throws Exception {
@@ -361,7 +353,6 @@ public class UploadSessionTest {
 
   /**
    * Creates an upload session from the given identifier and register a file.
-   * @return
    * @throws Exception
    */
   private UploadSessionFile initializeUploadSessionAndRegisterFile(String uploadSessionId)

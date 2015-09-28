@@ -40,13 +40,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
+import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.upload.UploadSession;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

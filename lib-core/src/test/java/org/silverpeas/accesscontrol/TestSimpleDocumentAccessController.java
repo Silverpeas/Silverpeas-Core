@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
-import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.admin.components.WAComponent;
-import org.silverpeas.util.CollectionUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
@@ -36,23 +36,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.silverpeas.accesscontrol.SimpleDocumentAccessController;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.ComponentHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -61,53 +58,51 @@ import static org.mockito.Mockito.*;
  * @author ehugonnet
  */
 
-public class SimpleDocumentAccessControllerTest {
+public class TestSimpleDocumentAccessController {
 
   private static final String userId = "bart";
 
-  private OrganizationController controller;
   private PublicationService publicationService;
-
-  private ComponentAccessController componentAccessController;
-  private NodeAccessController nodeAccessController;
-  private PublicationAccessController publicationAccessController;
-  private SimpleDocumentAccessController testInstance;
+  private ComponentAccessControl componentAccessController;
+  private NodeAccessControl nodeAccessController;
+  private SimpleDocumentAccessControl testInstance;
   private TestContext testContext;
+
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   @Before
   public void setup() {
-    WAComponent kmeliaComponent = new WAComponent();
-    kmeliaComponent.setName("kmelia");
-    HashMap<String, String> label = new HashMap<String, String>();
-    label.put("en", "kmelia");
-    label.put("fr", "kmelia");
-    kmeliaComponent.setLabel(label);
-    kmeliaComponent.setVisible(true);
-    kmeliaComponent.setPortlet(true);
-    WAComponent yellowComponent = new WAComponent();
-    yellowComponent.setName("yellowpages");
-    HashMap<String, String> label2 = new HashMap<String, String>();
-    label2.put("en", "yellowpages");
-    label2.put("fr", "yellowpages");
-    yellowComponent.setLabel(label2);
-    yellowComponent.setVisible(true);
-    yellowComponent.setPortlet(true);
-    Map<String, WAComponent> waComponentMap = new HashMap<String, WAComponent>();
-    waComponentMap.put("kmelia", kmeliaComponent);
-    waComponentMap.put("yellowpages", yellowComponent);
-
-    reflectionRule.setField(Instanciateur.class, waComponentMap, "componentsByName");
-
-    controller = mock(OrganizationController.class);
-    componentAccessController = mock(ComponentAccessController.class);
-    nodeAccessController = mock(NodeAccessController.class);
-    publicationAccessController = new PublicationAccessControllerForTest();
-    publicationService = mock(PublicationService.class);
-    testInstance = new SimpleDocumentAccessControllerForTest();
+    testInstance = new SimpleDocumentAccessController();
     testContext = new TestContext();
+
+    componentAccessController = reflectionRule
+        .mockField(testInstance, ComponentAccessControl.class, "componentAccessController");
+    nodeAccessController =
+        reflectionRule.mockField(testInstance, NodeAccessControl.class, "nodeAccessController");
+    ComponentHelper componentHelper =
+        reflectionRule.spyField(testInstance, ComponentHelper.class, "componentHelper");
+
+    final PublicationAccessControl publicationAccessController = reflectionRule
+        .setField(testInstance, new PublicationAccessController(), "publicationAccessController");
+    reflectionRule.setField(publicationAccessController, componentAccessController,
+        "componentAccessController");
+    reflectionRule
+        .setField(publicationAccessController, nodeAccessController, "nodeAccessController");
+    publicationService = reflectionRule
+        .mockField(publicationAccessController, PublicationService.class, "publicationService");
+    reflectionRule.setField(publicationAccessController, componentHelper, "componentHelper");
+
+    when(componentHelper.extractComponent(anyString())).thenAnswer(invocation -> {
+      String instanceId = (String) invocation.getArguments()[0];
+      String componentName = instanceId.replaceAll("[0-9]", "");
+      WAComponent component = new WAComponent();
+      component.setName(componentName);
+      return component;
+    });
   }
 
   @Test
@@ -1669,7 +1664,7 @@ public class SimpleDocumentAccessControllerTest {
 
   /**
    * Centralization.
-   * @param expectedUserAuthorization
+   * @param expectedUserAuthorization the expected user authorization to verify.
    */
   private void assertIsUserAuthorized(boolean expectedUserAuthorization) {
     testContext.setup();
@@ -1703,7 +1698,7 @@ public class SimpleDocumentAccessControllerTest {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      reset(controller, componentAccessController, nodeAccessController, publicationService);
+      reset(componentAccessController, nodeAccessController, publicationService);
       isGED = false;
       isCoWriting = false;
       isFileSharing = false;
@@ -1786,9 +1781,10 @@ public class SimpleDocumentAccessControllerTest {
       return testVerifyResults;
     }
 
+    @SuppressWarnings("unchecked")
     public void setup() {
       when(componentAccessController
-          .getUserRoles(any(AccessControlContext.class), anyString(), anyString()))
+          .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(componentUserRoles));
       when(componentAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(new Returns(!componentUserRoles.isEmpty()));
@@ -1799,37 +1795,26 @@ public class SimpleDocumentAccessControllerTest {
       when(componentAccessController.isFileSharingEnabled(anyString()))
           .then(new Returns(isFileSharing));
       when(nodeAccessController
-          .getUserRoles(any(AccessControlContext.class), anyString(), any(NodePK.class))).then(
+          .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class))).then(
           new Returns(isRightsOnDirectories ?
               (nodeNotInheritedUserRoles == null ? componentUserRoles : nodeNotInheritedUserRoles) :
               componentUserRoles));
-      when(nodeAccessController.isUserAuthorized(any(EnumSet.class))).then(new Answer<Boolean>() {
-        @Override
-        public Boolean answer(final InvocationOnMock invocation) throws Throwable {
-          return CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]);
-        }
+      when(nodeAccessController.isUserAuthorized(any(EnumSet.class)))
+          .then(invocation -> CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]));
+      when(publicationService.getDetail(any(PublicationPK.class))).then(invocation -> {
+        PublicationDetail publi = new PublicationDetail();
+        publi.setPk((PublicationPK) invocation.getArguments()[0]);
+        publi.setStatus(PublicationDetail.VALID);
+        publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
+        return publi;
       });
-      when(publicationService.getDetail(any(PublicationPK.class))).then(new Answer<PublicationDetail>() {
-        @Override
-        public PublicationDetail answer(final InvocationOnMock invocation) throws Throwable {
-          PublicationDetail publi = new PublicationDetail();
-          publi.setPk((PublicationPK) invocation.getArguments()[0]);
-          publi.setStatus(PublicationDetail.VALID);
-          publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
-          return publi;
+      when(publicationService.getAllFatherPK(any(PublicationPK.class))).then(invocation -> {
+        Collection<NodePK> nodes = new ArrayList<>();
+        if (!testContext.isPublicationOnRootDirectory) {
+          nodes.add(new NodePK("nodeId"));
         }
+        return nodes;
       });
-      when(publicationService.getAllFatherPK(any(PublicationPK.class)))
-          .then(new Answer<Collection<NodePK>>() {
-            @Override
-            public Collection<NodePK> answer(final InvocationOnMock invocation) throws Throwable {
-              Collection<NodePK> nodes = new ArrayList<NodePK>();
-              if (!testContext.isPublicationOnRootDirectory) {
-                nodes.add(new NodePK("nodeId"));
-              }
-              return nodes;
-            }
-          });
     }
   }
 
@@ -1890,9 +1875,10 @@ public class SimpleDocumentAccessControllerTest {
       return this;
     }
 
+    @SuppressWarnings("unchecked")
     public void verifyMethodCalls() {
       verify(componentAccessController, times(nbCallOfComponentAccessControllerGetUserRoles))
-          .getUserRoles(any(AccessControlContext.class), anyString(), anyString());
+          .getUserRoles(anyString(), anyString(), any(AccessControlContext.class));
       verify(componentAccessController, times(0))
           .isUserAuthorized(anyString(), anyString(), any(AccessControlContext.class));
       verify(componentAccessController, times(nbCallOfComponentAccessControllerIsUserAuthorized))
@@ -1901,50 +1887,15 @@ public class SimpleDocumentAccessControllerTest {
           times(nbCallOfComponentAccessControllerIsRightOnTopicsEnabled))
           .isRightOnTopicsEnabled(anyString());
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerGetUserRoles))
-          .getUserRoles(any(AccessControlContext.class), anyString(), any(NodePK.class));
+          .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class));
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerIsUserAuthorized))
           .isUserAuthorized(any(EnumSet.class));
       verify(publicationService, times(nbCallOfPublicationBmGetDetail))
           .getDetail(any(PublicationPK.class));
       verify(publicationService, times(nbCallOfPublicationBmGetAllFatherPK))
           .getAllFatherPK(any(PublicationPK.class));
-      verify(publicationBm, times(nbCallOfPublicationBmGetAlias))
+      verify(publicationService, times(nbCallOfPublicationBmGetAlias))
           .getAlias(any(PublicationPK.class));
-    }
-  }
-
-  private class SimpleDocumentAccessControllerForTest extends SimpleDocumentAccessController {
-
-    @Override
-    protected PublicationAccessController getPublicationAccessController() {
-      return publicationAccessController;
-    }
-
-    @Override
-    protected ComponentAccessController getComponentAccessController() {
-      return componentAccessController;
-    }
-
-    @Override
-    protected NodeAccessController getNodeAccessController() {
-      return nodeAccessController;
-    }
-  }
-
-  private class PublicationAccessControllerForTest extends PublicationAccessController {
-    @Override
-    protected PublicationService getPublicationBm() throws Exception {
-      return publicationService;
-    }
-
-    @Override
-    protected ComponentAccessController getComponentAccessController() {
-      return componentAccessController;
-    }
-
-    @Override
-    protected NodeAccessController getNodeAccessController() {
-      return nodeAccessController;
     }
   }
 }

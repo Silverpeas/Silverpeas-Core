@@ -232,8 +232,7 @@ public class URLManager {
    * @return
    */
   public static String getComponentNameFromComponentId(String sClientComponentId) {
-    ComponentHelper componentHelper = ServiceProvider.getService(ComponentHelper.class);
-    return componentHelper.extractComponentName(sClientComponentId);
+    return ComponentHelper.get().extractComponentName(sClientComponentId);
   }
 
   /**

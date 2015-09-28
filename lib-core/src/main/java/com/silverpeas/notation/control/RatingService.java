@@ -30,7 +30,7 @@ import java.util.Map;
 
 public interface RatingService {
 
-  static RatingService getInstance() {
+  static RatingService get() {
     return ServiceProvider.getService(RatingService.class);
   }
 

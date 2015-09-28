@@ -23,21 +23,21 @@
  */
 package org.silverpeas.upload.web;
 
-import com.silverpeas.accesscontrol.ComponentAccessController;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
 import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.upload.UploadSession;
 import org.silverpeas.upload.UploadSessionFile;
-import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
 
@@ -58,8 +58,7 @@ import java.text.MessageFormat;
 import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packJSonArrayWithHtmlContainer;
-import static org.silverpeas.web.util.IFrameAjaxTransportUtil.packJSonObjectWithHtmlContainer;
+import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
  * A REST Web resource that permits to upload files. It has to be used with one of the following
@@ -79,12 +78,12 @@ public class FileUploadResource extends RESTWebService {
   private static final Semaphore requestLimit = new Semaphore(50, true);
 
   @Inject
-  private ComponentAccessController componentAccessController;
+  private ComponentAccessControl componentAccessController;
 
   /**
    * Performs some verifications before starting a file upload.
    * All the verifications are checked again on the effective upload (security).
-   * @return
+   * @return the result of the verification: HTTP OK.
    */
   @POST
   @Path("verify")
@@ -103,14 +102,15 @@ public class FileUploadResource extends RESTWebService {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @return the response in relation with jQuery plugins used on the client side: a html textarea
    * tag that contains a JSON array structure. Each line of this array contains
-   * information of an uploaded file :<br/>
-   * - <b>fileId</b> : the uploaded file identifier<br/>
-   * - <b>name</b> : the name of the uploaded file (without its path)<br/>
-   * - <b>size</b> : the byte size of the uploaded file<br/>
-   * - <b>formattedSize</b> : the formatted file size according to the language of
-   * user<br/>
-   * - <b>iconUrl</b> : the url of the icon that represents the type of the uploaded
-   * file<br/>
+   * information of an uploaded file :
+   * <ul>
+   * <li><b>uploadSessionId</b> : the uploaded session identifier</li>
+   * <li><b>fullPath</b> : the full path of the uploaded file</li>
+   * <li><b>name</b> : the name of the uploaded file (without its path)</li>
+   * <li><b>size</b> : the byte size of the uploaded file</li>
+   * <li><b>formattedSize</b> : the formatted file size according to the language of user</li>
+   * <li><b>iconUrl</b> : the url of the icon that represents the type of the uploaded file</li>
+   * </ul>
    */
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -145,21 +145,23 @@ public class FileUploadResource extends RESTWebService {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @return the response in relation with jQuery plugins used on the client side: a html textarea
    * tag that contains a JSON array structure. Each line of this array contains
-   * information of an uploaded file :<br/>
-   * - <b>fileId</b> : the uploaded file identifier<br/>
-   * - <b>name</b> : the name of the uploaded file (without its path)<br/>
-   * - <b>size</b> : the byte size of the uploaded file<br/>
-   * - <b>formattedSize</b> : the formatted file size according to the language of
-   * user<br/>
-   * - <b>iconUrl</b> : the url of the icon that represents the type of the uploaded
-   * file<br/>
+   * information of an uploaded file :
+   * <ul>
+   * <li><b>uploadSessionId</b> : the uploaded session identifier</li>
+   * <li><b>fullPath</b> : the full path of the uploaded file</li>
+   * <li><b>name</b> : the name of the uploaded file (without its path)</li>
+   * <li><b>size</b> : the byte size of the uploaded file</li>
+   * <li><b>formattedSize</b> : the formatted file size according to the language of user</li>
+   * <li><b>iconUrl</b> : the url of the icon that represents the type of the uploaded file</li>
+   * </ul>
    */
   @POST
   @Consumes(MediaType.APPLICATION_OCTET_STREAM)
   @Produces(MediaType.TEXT_HTML)
   public Response uploadFile(InputStream inputStream) {
     try {
-      String jsonFile = packJSonObjectWithHtmlContainer(uploadFile(FileUploadData.from(getHttpServletRequest()), inputStream));
+      String jsonFile = packJSonObjectWithHtmlContainer(
+          uploadFile(FileUploadData.from(getHttpServletRequest()), inputStream));
       return Response.ok().entity(jsonFile).build();
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -170,14 +172,14 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Handles the upload of one file.
-   * @param fileUploadData
+   * @param fileUploadData the uploaded file data (except the content)
    * @param inputStream the input stream to upload
    * @return a builder of the JSON representation of the uploaded file (more information on
    * {@link FileUploadResource#uploadFiles()})
    * @throws IOException
    */
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> uploadFile(FileUploadData fileUploadData, InputStream inputStream)
-      throws Exception {
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> uploadFile(
+      FileUploadData fileUploadData, InputStream inputStream) throws Exception {
 
     if (StringUtil.isNotDefined(fileUploadData.getFullPath())) {
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -226,7 +228,7 @@ public class FileUploadResource extends RESTWebService {
       }
 
       // JSON response
-      return toJSONObject(uploadSessionFile);
+      return asJSON(uploadSessionFile);
 
     } finally {
       requestLimit.release();
@@ -235,8 +237,8 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Checks the maximum size authorized.
-   * @param fileName
-   * @param fileSize
+   * @param fileName the name of the file to check.
+   * @param fileSize the size of the file to check.
    */
   private void checkMaximumFileSize(final String fileName, long fileSize) {
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
@@ -278,21 +280,21 @@ public class FileUploadResource extends RESTWebService {
 
   /**
    * Builds a JSON representation of the given uploaded file.
-   * @param uploadSessionFile
-   * @return a JSON representation of the uploaded file.(more information on {@link
-   * FileUploadResource#uploadFiles()})
+   * @param uploadSessionFile the uploaded file into current session.
+   * @return a builder of the JSON representation of the uploaded file (more information on
+   * {@link FileUploadResource#uploadFiles()})
    */
-  private JSONObject toJSONObject(UploadSessionFile uploadSessionFile) {
-    JSONObject fileInfo = new JSONObject();
-    fileInfo.put("uploadSessionId", uploadSessionFile.getUploadSession().getId());
-    fileInfo.put("fullPath", uploadSessionFile.getFullPath());
-    fileInfo.put("name", uploadSessionFile.getServerFile().getName());
-    fileInfo.put("size", uploadSessionFile.getServerFile().length());
-    fileInfo.put("formattedSize", UnitUtil
-        .formatMemSize(new BigDecimal(String.valueOf(uploadSessionFile.getServerFile().length()))));
-    fileInfo.put("iconUrl", FileRepositoryManager
-        .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName())));
-    return fileInfo;
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> asJSON(
+      UploadSessionFile uploadSessionFile) {
+    return (o ->
+       o.put("uploadSessionId", uploadSessionFile.getUploadSession().getId())
+        .put("fullPath", uploadSessionFile.getFullPath())
+        .put("name", uploadSessionFile.getServerFile().getName())
+        .put("size", uploadSessionFile.getServerFile().length())
+        .put("formattedSize", UnitUtil.formatMemSize(
+            new BigDecimal(String.valueOf(uploadSessionFile.getServerFile().length()))))
+        .put("iconUrl", FileRepositoryManager
+            .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName()))));
   }
 
   @DELETE

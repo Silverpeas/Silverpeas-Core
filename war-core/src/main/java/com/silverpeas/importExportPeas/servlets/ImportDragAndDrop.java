@@ -33,16 +33,17 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.session.SessionInfo;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.upload.UploadSession;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,18 +53,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -153,7 +143,6 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       MassiveReport massiveReport = new MassiveReport();
 
       try {
-        MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         ImportSettings settings =
             new ImportSettings(rootUploadFolder.getPath(), currentUser, componentId, topicId,
                 draftUsed, true, ImportSettings.FROM_DRAGNDROP);
@@ -169,7 +158,8 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
           settings.getPublicationForAllFiles().setKeywords(publicationKeywords);
         }
 
-        ImportReport importReport = massiveImporter.importDocuments(settings, massiveReport);
+        ImportReport importReport =
+            MassiveDocumentImport.get().importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
           ComponentReport componentReport = importReport.getListComponentReport().get(0);

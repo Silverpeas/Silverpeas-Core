@@ -32,8 +32,4 @@ import org.silverpeas.util.ServiceProvider;
  * @author Yohann Chastagnier
  */
 public interface SimpleDocumentAccessControl extends AccessController<SimpleDocument> {
-
-  static SimpleDocumentAccessControl get() {
-    return ServiceProvider.getService(SimpleDocumentAccessControl.class);
-  }
 }

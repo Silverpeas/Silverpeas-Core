@@ -25,11 +25,11 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This interface extends access controller for a Publication resource.
  * @author Yohann Chastagnier
  */
 public interface PublicationAccessControl extends AccessController<PublicationPK> {
-
 }

@@ -1,29 +1,31 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.accesscontrol;
+package org.silverpeas.accesscontrol;
 
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -32,19 +34,15 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.silverpeas.accesscontrol.ComponentAccessController;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.ComponentHelper;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
@@ -52,17 +50,13 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  *
  * @author ehugonnet
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Instanciateur.class})
-public class ComponentAccessControllerTest {
+public class TestComponentAccessController {
   private static final String toolId = "toolId";
   private static final String componentAdminId = "ADMIN";
   private static final String componentId = "kmelia18";
@@ -76,9 +70,12 @@ public class ComponentAccessControllerTest {
 
   private static final String userId = "bart";
 
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+
   private OrganizationController controller;
 
-  private ComponentAccessController instance;
+  private ComponentAccessControl instance;
   private AccessControlContext accessControlContext;
 
   @Rule
@@ -86,44 +83,34 @@ public class ComponentAccessControllerTest {
 
   @Before
   public void setup() {
-    mockStatic(Instanciateur.class);
-    WAComponent kmeliaComponent = new WAComponent();
-    kmeliaComponent.setName("kmelia");
-    HashMap<String, String> label = new HashMap<String, String>();
-    label.put("en", "kmelia");
-    label.put("fr", "kmelia");
-    kmeliaComponent.setLabel(label);
-    kmeliaComponent.setVisible(true);
-    kmeliaComponent.setPortlet(true);
-    WAComponent yellowComponent = new WAComponent();
-    yellowComponent.setName("yellowpages");
-    HashMap<String, String> label2 = new HashMap<String, String>();
-    label2.put("en", "yellowpages");
-    label2.put("fr", "yellowpages");
-    yellowComponent.setLabel(label2);
-    yellowComponent.setVisible(true);
-    yellowComponent.setPortlet(true);
-    when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
-    when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
+    instance = new ComponentAccessController();
+    accessControlContext = AccessControlContext.init();
+    controller =
+        mockByReflectionRule.mockField(instance, OrganizationController.class, "controller");
+    commonAPI4Test.injectIntoMockedBeanContainer(controller);
+    ComponentHelper componentHelper =
+        mockByReflectionRule.spyField(instance, ComponentHelper.class, "componentHelper");
 
-    controller = mock(OrganizationController.class);
-    mockByReflectionRule.setField(OrganisationControllerFactory.class, controller,
-        "instance.organisationController");
-
-    when(controller.getComponentInst(anyString())).thenAnswer(new Answer<ComponentInst>() {
-      @Override
-      public ComponentInst answer(final InvocationOnMock invocation) throws Throwable {
-        String instanceIdArg = (String) invocation.getArguments()[0];
-        ComponentInst componentInst = new ComponentInst();
-        if (publicComponentId.equals(instanceIdArg) ||
-            publicComponentIdWithUserRole.equals(instanceIdArg)) {
-          componentInst.setPublic(true);
-        }
-        return componentInst;
-      }
+    when(componentHelper.extractComponent(anyString())).thenAnswer(invocation -> {
+      String instanceId = (String) invocation.getArguments()[0];
+      String componentName = instanceId.replaceAll("[0-9]","");
+      WAComponent component = new WAComponent();
+      component.setName(componentName);
+      return component;
     });
 
-    when(controller.getUserDetail(anyString())).thenReturn(new UserDetail());
+    when(controller.getComponentInst(anyString())).thenAnswer(invocation -> {
+      String instanceIdArg = (String) invocation.getArguments()[0];
+      ComponentInst componentInst = new ComponentInst();
+      if (publicComponentId.equals(instanceIdArg) ||
+          publicComponentIdWithUserRole.equals(instanceIdArg)) {
+        componentInst.setPublic(true);
+      }
+      return componentInst;
+    });
+
+    final UserDetail user = new UserDetail();
+    when(controller.getUserDetail(anyString())).thenReturn(user);
     when(controller.isToolAvailable(toolId)).thenReturn(true);
     when(controller.getComponentParameterValue(publicFilesComponentId, "publicFiles"))
         .thenReturn("true");
@@ -150,11 +137,6 @@ public class ComponentAccessControllerTest {
     when(controller.isComponentAvailable(publicFilesComponentIdWithUserRole, userId))
         .thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
-
-    // instance on which tests are performed.
-    instance = new ComponentAccessController();
-    instance.setOrganizationController(controller);
-    accessControlContext = AccessControlContext.init();
   }
 
   /**
@@ -249,10 +231,36 @@ public class ComponentAccessControllerTest {
    * @throws Exception
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndDonwloadContext()
+  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndDownloadContext()
       throws Exception {
     setupUser(SilverpeasRole.admin);
     accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.admin,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.admin, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true,
+        SilverpeasRole.admin);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithAdminUserRoleAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.admin);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
 
     assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
     assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
@@ -325,10 +333,36 @@ public class ComponentAccessControllerTest {
    * @throws Exception
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndDonwloadContext()
+  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndDownloadContext()
       throws Exception {
     setupUser(SilverpeasRole.writer);
     accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true,
+        SilverpeasRole.writer, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.writer, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.writer);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.writer);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true,
+        SilverpeasRole.writer);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithWriterUserRoleAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.writer);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
 
     assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
     assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
@@ -398,10 +432,34 @@ public class ComponentAccessControllerTest {
    * @throws Exception
    */
   @Test
-  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndDonwloadContext()
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndDownloadContext()
       throws Exception {
     setupUser(SilverpeasRole.user);
     accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
 
     assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
     assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
@@ -427,7 +485,7 @@ public class ComponentAccessControllerTest {
       boolean expectedUserAuthorization, SilverpeasRole... expectedUserRoles) {
     CacheServiceProvider.getRequestCacheService().clear();
     Set<SilverpeasRole> componentUserRole =
-        instance.getUserRoles(accessControlContext, userId, instanceId);
+        instance.getUserRoles(userId, instanceId, accessControlContext);
     if (expectedUserRoles.length > 0) {
       assertThat("User roles on " + instanceId, componentUserRole, contains(expectedUserRoles));
     } else {

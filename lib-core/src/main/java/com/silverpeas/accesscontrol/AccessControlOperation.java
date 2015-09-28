@@ -23,10 +23,10 @@
  */
 package com.silverpeas.accesscontrol;
 
-import org.silverpeas.util.CollectionUtil;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonValue;
+import org.silverpeas.util.CollectionUtil;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -53,23 +53,6 @@ public enum AccessControlOperation {
     } catch (Exception e) {
       return unknown;
     }
-  }
-
-  public static boolean hasAPersistentAction(Collection<AccessControlOperation> operations) {
-    if (PERSIST_ACTIONS.size() < operations.size()) {
-      for (AccessControlOperation op : PERSIST_ACTIONS) {
-        if (operations.contains(op)) {
-          return true;
-        }
-      }
-    } else {
-      for (AccessControlOperation op : operations) {
-        if (PERSIST_ACTIONS.contains(op)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   /**

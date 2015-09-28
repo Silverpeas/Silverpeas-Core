@@ -24,19 +24,20 @@
 package org.silverpeas.util.viewGenerator.html;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.subscription.SubscriptionSettings;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 
 import java.text.MessageFormat;
 
@@ -232,12 +233,12 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
-    Object includeQTipDone = CacheServiceFactory.getRequestCacheService().get("@includeQTipDone@");
+    Object includeQTipDone = CacheServiceProvider.getRequestCacheService().get("@includeQTipDone@");
     if (includeQTipDone == null) {
       xhtml.addElement(link(jqueryCssPath + JQUERY_QTIP + ".css"));
       xhtml.addElement(script(jqueryPath + JQUERY_MIGRATION));
       xhtml.addElement(script(jqueryPath + JQUERY_QTIP + ".min.js"));
-      CacheServiceFactory.getRequestCacheService().put("@includeQTipDone@", true);
+      CacheServiceProvider.getRequestCacheService().put("@includeQTipDone@", true);
     }
     return xhtml;
   }
@@ -504,7 +505,7 @@ public class JavascriptPluginInclusion {
    */
   public static ElementContainer includeDragAndDropUpload(final ElementContainer xhtml,
       final String language) {
-    Object ddUploadDone = CacheServiceFactory.getRequestCacheService().get("@ddUploadDone@");
+    Object ddUploadDone = CacheServiceProvider.getRequestCacheService().get("@ddUploadDone@");
     if (ddUploadDone == null) {
       includeQTip(xhtml);
       SilverpeasTemplate bundle =
@@ -512,7 +513,7 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(scriptContent(bundle.applyFileTemplate(
           SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
       xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
-      CacheServiceFactory.getRequestCacheService().put("@ddUploadDone@", true);
+      CacheServiceProvider.getRequestCacheService().put("@ddUploadDone@", true);
     }
     return xhtml;
   }

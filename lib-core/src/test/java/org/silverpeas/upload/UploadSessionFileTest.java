@@ -23,7 +23,9 @@
  */
 package org.silverpeas.upload;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
 
@@ -34,6 +36,9 @@ import static org.hamcrest.Matchers.is;
  * @author Yohann Chastagnier
  */
 public class UploadSessionFileTest {
+
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   @Test
   public void createInstance() {

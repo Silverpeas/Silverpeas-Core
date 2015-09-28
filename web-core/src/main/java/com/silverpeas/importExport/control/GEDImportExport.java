@@ -197,7 +197,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
                       node_Type.getId());
 
               // Checking that the user has rights to add attachments
-              if (pubDet_temp.canBeModifiedBy(getCurentUserDetail())) {
+              if (pubDet_temp.canBeModifiedBy(getCurrentUserDetail())) {
                 pubAlreadyExist = true;
               }
             }

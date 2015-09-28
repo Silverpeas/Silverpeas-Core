@@ -125,7 +125,7 @@ public class PublicationImportExport {
         if (settings.useFileDates()) {
           // extract creation and last modification dates
           if (metaData == null) {
-            metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+            metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
           }
           if (metaData.getCreationDate() != null) {
             creationDate = metaData.getCreationDate();

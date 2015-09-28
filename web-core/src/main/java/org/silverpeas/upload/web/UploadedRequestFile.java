@@ -24,14 +24,13 @@
 package org.silverpeas.upload.web;
 
 import org.silverpeas.servlet.RequestFile;
-import org.silverpeas.upload.UploadSession;
 
 import javax.ws.rs.FormParam;
 
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.X_REQUESTED_WITH;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class UploadedRequestFile {
 

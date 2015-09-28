@@ -37,12 +37,11 @@ public class MassiveDocumentImport {
   @Inject
   private RepositoriesTypeManager repositoriesTypeManager;
 
-  public static MassiveDocumentImport getInstance() {
+  public static MassiveDocumentImport get() {
     return ServiceProvider.getService(MassiveDocumentImport.class);
   }
 
-  protected MassiveDocumentImport() {
-
+  private MassiveDocumentImport() {
   }
 
   /**

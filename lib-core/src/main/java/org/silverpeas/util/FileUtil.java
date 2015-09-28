@@ -27,25 +27,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.tika.Tika;
-import org.silverpeas.util.exception.RelativeFileAccessException;
-import org.silverpeas.util.mail.Mail;
-
-import javax.activation.MimetypesFileTypeMap;
-import org.apache.commons.exec.util.StringUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.tika.Tika;
+import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.util.mail.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -64,6 +51,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 public class FileUtil implements MimeTypes {
 
@@ -73,12 +61,8 @@ public class FileUtil implements MimeTypes {
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
-      new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-        @Override
-        public ConfigurationClassLoader run() {
-          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-        }
-      });
+      (java.security.PrivilegedAction<ConfigurationClassLoader>) () -> new ConfigurationClassLoader(
+          FileUtil.class.getClassLoader()));
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -88,8 +72,8 @@ public class FileUtil implements MimeTypes {
    * @return the name of the migrated bundle.
    */
   public static String convertBundleName(final String bundle) {
-    return bundle.replace("com.silverpeas", "org.silverpeas").replace(
-        "com.stratelia.silverpeas", "org.silverpeas").replace("com.stratelia.webactiv",
+    return bundle.replaceFirst("com.silverpeas", "org.silverpeas").replaceFirst(
+        "com.stratelia.silverpeas", "org.silverpeas").replaceFirst("com.stratelia.webactiv",
             "org.silverpeas");
   }
 

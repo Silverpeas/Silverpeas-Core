@@ -23,8 +23,8 @@
  */
 package org.silverpeas.upload.web;
 
-import com.silverpeas.util.StringUtil;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;

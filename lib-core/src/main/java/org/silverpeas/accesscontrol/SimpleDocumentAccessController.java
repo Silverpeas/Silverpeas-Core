@@ -25,15 +25,11 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AbstractAccessController;
 import com.silverpeas.accesscontrol.AccessControlContext;
-import com.silverpeas.accesscontrol.ComponentAccessController;
-import com.silverpeas.accesscontrol.NodeAccessController;
-import com.silverpeas.accesscontrol.PublicationAccessController;
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.node.model.NodePK;
+import com.stratelia.webactiv.publication.control.PublicationService;
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.StringUtil;
@@ -52,16 +48,20 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     implements SimpleDocumentAccessControl {
 
   @Inject
-  private PublicationService publicationService;
+  private ComponentAccessControl componentAccessController;
 
   @Inject
-  private ComponentAccessController componentAccessController;
+  private NodeAccessControl nodeAccessController;
 
   @Inject
-  private NodeAccessController nodeAccessController;
+  private PublicationAccessControl publicationAccessController;
 
   @Inject
-  private PublicationAccessController publicationAccessController;
+  private ComponentHelper componentHelper;
+
+  SimpleDocumentAccessController () {
+    // Instance by IoC only.
+  }
 
   @Override
   public boolean isUserAuthorized(String userId, SimpleDocument object,
@@ -73,7 +73,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     if (componentHelper.isThemeTracker(object.getInstanceId())) {
       String foreignId = object.getForeignId();
       Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController()
-          .getUserRoles(context, userId, new PublicationPK(foreignId, object.getInstanceId()));
+          .getUserRoles(userId, new PublicationPK(foreignId, object.getInstanceId()), context);
       PublicationDetail publicationDetail =
           context.get(PublicationAccessController.PUBLICATION_DETAIL_KEY, PublicationDetail.class);
       if (publicationDetail != null) {
@@ -90,8 +90,8 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         if (componentAccessAuthorized && isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
           String nodeId = foreignId.substring("Node_".length());
           final Set<SilverpeasRole> nodeUserRoles =
-              getNodeAccessController().getUserRoles(context, userId, new NodePK(nodeId, object.
-                  getInstanceId()));
+              getNodeAccessController().getUserRoles(userId, new NodePK(nodeId, object.
+                  getInstanceId()), context);
           return getNodeAccessController().isUserAuthorized(nodeUserRoles) &&
               isUserAuthorizedByContext(true, userId, object, context, nodeUserRoles, "unknown");
         }
@@ -101,7 +101,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     // Component access control
     if (!componentAccessAuthorized && componentUserRoles == null) {
       componentUserRoles =
-          getComponentAccessController().getUserRoles(context, userId, object.getInstanceId());
+          getComponentAccessController().getUserRoles(userId, object.getInstanceId(), context);
       componentAccessAuthorized =
           getComponentAccessController().isUserAuthorized(componentUserRoles);
     }
@@ -185,7 +185,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
    * Gets a controller of access on the components of a publication.
    * @return a ComponentAccessController instance.
    */
-  protected ComponentAccessController getComponentAccessController() {
+  private ComponentAccessControl getComponentAccessController() {
     return componentAccessController;
   }
 
@@ -193,7 +193,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
    * Gets a controller of access on the nodes of a publication.
    * @return a NodeAccessController instance.
    */
-  protected NodeAccessController getNodeAccessController() {
+  private NodeAccessControl getNodeAccessController() {
     return nodeAccessController;
   }
 
@@ -201,10 +201,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
    * Gets a controller of access on publication.
    * @return a PublicationAccessController instance.
    */
-  protected PublicationAccessController getPublicationAccessController() {
-    if (publicationAccessController == null) {
-      publicationAccessController = new PublicationAccessController();
-    }
+  private PublicationAccessControl getPublicationAccessController() {
     return publicationAccessController;
   }
 }

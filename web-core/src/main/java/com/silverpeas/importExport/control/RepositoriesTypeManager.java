@@ -30,12 +30,6 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MetaData;
-import com.silverpeas.util.MetadataExtractor;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -53,7 +47,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
@@ -62,6 +56,10 @@ import org.silverpeas.importExport.versioning.VersioningImportExport;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -82,7 +80,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.attachment.AttachmentServiceFactory.getAttachmentService;
+import static org.silverpeas.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.attachment.model.DocumentType.attachment;
 
 /**
@@ -350,11 +348,14 @@ public class RepositoriesTypeManager {
    * @param file the physical file.
    */
   private static void setMetadata(SimpleDocument document, File file) {
-    final MetadataExtractor extractor = MetadataExtractor.getInstance();
-    final MetaData metadata = extractor.extractMetadata(file);
+    final MetaData metadata = getMetadataExtractor().extractMetadata(file);
     document.setSize(file.length());
     document.setTitle(metadata.getTitle());
     document.setDescription(metadata.getSubject());
+  }
+
+  private static MetadataExtractor getMetadataExtractor() {
+    return ServiceProvider.getService(MetadataExtractor.class);
   }
 
   private void processMailContent(PublicationDetail pubDetail, File file,
