@@ -526,13 +526,12 @@
             $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $worker.css({'visibility':'visible'});
             if (edit) {
+              var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               <c:if test="${onlineEditingWithCustomProtocol}">
-                var webDavURL = eval("webDav".concat(oldId));
                 // display alert popin
-                showInformationAboutOnlineEditingWithCustomProtocol(webDavURL);
+                showInformationAboutOnlineEditingWithCustomProtocol(url);
               </c:if>
               <c:if test="${not onlineEditingWithCustomProtocol}">
-                var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
                 window.open(url, '_self');
               </c:if>
             } else if (download) {
@@ -1051,7 +1050,7 @@
         buttons: {
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.edit"/>": function() {
             $.cookie(customProtocolCookieName, "IKnowIt", { expires: 3650, path: '/' });
-            window.location.href = $(this).data('webDavURL');
+            $.get($(this).data('webDavURL'));
             $(this).dialog("close");
           },
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.cancel"/>": function() {
@@ -1198,7 +1197,7 @@
     if (${onlineEditingWithCustomProtocolAlert} && ("IKnowIt" != customProtocolCookieValue)) {
       $("#dialog-attachment-onlineEditing-customProtocol").data('webDavURL', webDavURL).dialog("open");
     } else {
-      window.location.href = webDavURL;
+      $.get(webDavURL);
     }
   }
 </script>

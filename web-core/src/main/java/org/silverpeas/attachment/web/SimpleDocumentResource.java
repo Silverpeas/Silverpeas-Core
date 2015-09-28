@@ -232,6 +232,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
       }
       AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
+      if (isWebdav) {
+        WebDavTokenProducer.deleteToken(getUserDetail(), document.getId());
+      }
       document = getSimpleDocument(uploadData.getLanguage());
       URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
           getLanguage()).build();
@@ -411,6 +414,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
     boolean result = AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
+    if (result) {
+      WebDavTokenProducer.deleteToken(getUserDetail(), document.getId());
+    }
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         result, document.getOldSilverpeasId(), document.getId());
   }

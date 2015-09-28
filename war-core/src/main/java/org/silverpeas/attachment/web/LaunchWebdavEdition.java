@@ -23,11 +23,8 @@ package org.silverpeas.attachment.web;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.cache.service.CacheService;
-import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,8 +34,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.util.UUID;
 
 /**
  * @author ehugonnet
@@ -58,28 +53,30 @@ public class LaunchWebdavEdition extends HttpServlet {
    */
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    response.setContentType("application/x-java-jnlp-file");
-    response.setHeader("Content-Disposition", "inline; filename=launch.jnlp");
-    PrintWriter out = response.getWriter();
-    try {
+    try (PrintWriter out = response.getWriter()) {
       UserDetail user = UserDetail.getCurrentRequester();
       if (user == null) {
         String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
       }
-      String token = generateAuthToken();
-      CacheService cacheService = CacheServiceProvider.getApplicationCacheService();
-      cacheService.put(token, user); // 12h by default of TTL
-      prepareJNLP(request, out, user.getLogin(), token);
-    } finally {
-      out.close();
+      String documentUrl = request.getParameter("documentUrl");
+      String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
+      String webDavUrl = computeWebDavUrl(documentUrl, token);
+      if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
+        response.setContentType("application/javascript");
+        response.setHeader("Content-Disposition", "inline; filename=launch.js");
+        out.append("window.location.href='").append(webDavUrl).append("';");
+      } else {
+        response.setContentType("application/x-java-jnlp-file");
+        response.setHeader("Content-Disposition", "inline; filename=launch.jnlp");
+        prepareJNLP(request, out, user.getLogin(), webDavUrl);
+      }
     }
   }
 
   private void prepareJNLP(HttpServletRequest request, PrintWriter out, String login,
-      String token)
-      throws UnsupportedEncodingException {
+      String documentUrl) throws UnsupportedEncodingException {
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     out.print("<jnlp spec=\"1.0+\" codebase=\"");
     out.print(URLManager.getServerURL(request));
@@ -112,18 +109,17 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t</resources>");
     out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.OfficeOnline\">");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(enrichWithToken(request.getParameter("documentUrl"), token),
-        CharEncoding.UTF_8));
+    out.print(URLEncoder.encode(documentUrl, CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"),
         CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(login);
+    out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(resources.getBoolean("disconnectedMode", false));
+    out.print(resources.getBoolean("deconnectedMode", false));
     out.println("</argument>");
     out.println("\t</application-desc>");
     out.println(" </jnlp>");
@@ -167,12 +163,15 @@ public class LaunchWebdavEdition extends HttpServlet {
     return "Generating the JNLP for direct edition";
   }
 
-  private static String generateAuthToken() {
-    String[] parts = UUID.randomUUID().toString().split("-");
-    return StringUtil.asBase64(parts[parts.length - 1].getBytes());
+  private static String fetchDocumentId(String documentUrl) {
+    String[] paths = documentUrl.split("/");
+    if (paths.length > 3) {
+      return paths[paths.length - 3];
+    }
+    return null;
   }
 
-  private static String enrichWithToken(String url, String token) {
-    return url.replaceAll("/webdav/", "/webdav/" + token + "/");
+  private static String computeWebDavUrl(String documentUrl, String token) {
+    return documentUrl.replaceAll("/webdav/", "/webdav/" + token + "/");
   }
 }
