@@ -39,6 +39,7 @@ import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -97,17 +98,15 @@ public class SilverStatisticsManager {
         SilverTrace.error("silverstatistics", "SilverStatisticsManager.initSilverStatistics",
             "silverstatistics.MSG_CONFIG_FILE", e);
       }
-      ResourceLocator resourcesLocator =
-          new ResourceLocator("org.silverpeas.silverstatistics.SilverStatistics");
-      Properties resources = resourcesLocator.getProperties();
-
-      initSchedulerStatistics(resources.getProperty("scheduledGetStatVolumeTimeStamp"),
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.silverstatistics.SilverStatistics");
+      initSchedulerStatistics(settings.getString("scheduledGetStatVolumeTimeStamp"),
           STAT_VOLUME_JOB_NAME, "doGetStatVolume");
-      initSchedulerStatistics(resources.getProperty("scheduledGetStatSizeTimeStamp"),
+      initSchedulerStatistics(settings.getString("scheduledGetStatSizeTimeStamp"),
           STAT_SIZE_JOB_NAME, "doGetStatSize");
-      initSchedulerStatistics(resources.getProperty("scheduledCumulStatTimeStamp"),
+      initSchedulerStatistics(settings.getString("scheduledCumulStatTimeStamp"),
           STAT_CUMUL_JOB_NAME, "doCumulStat");
-      initDirectoryToScan(resources);
+      initDirectoryToScan(settings);
 
     } catch (Exception ex) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManager.initSilverStatistics",
@@ -189,11 +188,11 @@ public class SilverStatisticsManager {
   /**
    * @param resource
    */
-  private void initDirectoryToScan(Properties resource) {
+  private void initDirectoryToScan(SettingBundle resource) {
     try {
       // read the directories
       int i = 0;
-      String directoryPath = resource.getProperty("SilverPeasDataPath" + Integer.toString(i));
+      String directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i));
       // for each directory
       while (directoryPath != null) {
         // Test existence
@@ -204,7 +203,7 @@ public class SilverStatisticsManager {
         directoryToScan.add(directoryPath);
         i++;
         try {
-          directoryPath = resource.getProperty("SilverPeasDataPath" + Integer.toString(i));
+          directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i));
         } catch (MissingResourceException ex) {
           directoryPath = null;
         }

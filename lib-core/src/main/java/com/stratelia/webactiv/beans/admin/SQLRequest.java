@@ -27,6 +27,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -67,10 +68,10 @@ public class SQLRequest {
   private String allQueries;
 
   /**
-   * Silverpeas Object to read properties files. These files contain the SQL command to create,
-   * delete, insert and update
+   * The setting bundle containing the SQL command to create,
+   * delete, insert or update data.
    */
-  private ResourceLocator resourceLocation = new ResourceLocator();
+  private SettingBundle sqlRequests;
 
   // constructor
   public SQLRequest(String fullPathName, String dbServerName) {
@@ -92,7 +93,7 @@ public class SQLRequest {
   }
 
   public SQLRequest() {
-    this("com.stratelia.webactiv.node", "default");
+    this("org.silverpeas.node", "default");
   }
 
   //
@@ -103,36 +104,36 @@ public class SQLRequest {
    * Set create SQL file into the allQueries String
    */
   protected void setCreateQueries() {
-    this.resourceLocation.setPropertyLocation(fullPathName + "." + dbServerName
-        + "_create", "fr");
-    this.allQueries = this.resourceLocation.getString("cle");
+    this.sqlRequests =
+        ResourceLocator.getSettingBundle(fullPathName + "." + dbServerName + "_create");
+    this.allQueries = this.sqlRequests.getString("cle");
   }
 
   /**
    * Set delete SQL file into the allQueries String
    */
   protected void setDeleteQueries() {
-    this.resourceLocation.setPropertyLocation(fullPathName + "." + dbServerName
-        + "_delete", "fr");
-    this.allQueries = this.resourceLocation.getString("cle");
+    this.sqlRequests =
+        ResourceLocator.getSettingBundle(fullPathName + "." + dbServerName + "_delete");
+    this.allQueries = this.sqlRequests.getString("cle");
   }
 
   /**
    * Set insert SQL file into the allQueries String
    */
   protected void setInsertQueries() {
-    this.resourceLocation.setPropertyLocation(fullPathName + "." + dbServerName
-        + "_insert", "fr");
-    this.allQueries = this.resourceLocation.getString("cle");
+    this.sqlRequests =
+        ResourceLocator.getSettingBundle(fullPathName + "." + dbServerName + "_insert");
+    this.allQueries = this.sqlRequests.getString("cle");
   }
 
   /**
    * Set update SQL file into the allQueries String
    */
   protected void setUpdateQueries() {
-    this.resourceLocation.setPropertyLocation(fullPathName + "." + dbServerName
-        + "_update", "fr");
-    this.allQueries = this.resourceLocation.getString("cle");
+    this.sqlRequests =
+        ResourceLocator.getSettingBundle(fullPathName + "." + dbServerName + "_update");
+    this.allQueries = this.sqlRequests.getString("cle");
   }
 
   /**

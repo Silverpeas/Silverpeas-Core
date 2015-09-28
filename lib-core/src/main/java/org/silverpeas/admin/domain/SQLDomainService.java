@@ -37,6 +37,7 @@ import org.silverpeas.admin.domain.repository.SQLDomainRepository;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -51,11 +52,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.Normalizer;
+import java.util.Properties;
 
 @Singleton
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
-  ResourceLocator templateSettings;
+  SettingBundle templateSettings;
   ResourceLocator adminSettings;
 
   private final static String DATABASE_TABLE_NAME_DOMAIN_PREFIX = "Domain";
@@ -69,7 +71,7 @@ public class SQLDomainService extends AbstractDomainService {
   @PostConstruct
   void init() {
     templateSettings =
-        new ResourceLocator("org.silverpeas.domains.templateDomainSQL", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.domains.templateDomainSQL");
     adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
   

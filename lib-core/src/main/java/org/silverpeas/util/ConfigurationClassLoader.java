@@ -24,7 +24,6 @@
 
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.lang.SystemWrapper;
 
 import java.io.File;
@@ -38,16 +37,20 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.io.File.separator;
-import static java.io.File.separatorChar;
-
 /**
+ * The resource bundles and the properties files and all located into a particular directory
+ * in the Silverpeas home directory that isn't in the classpath of the running JEE application.
+ * Therefore this class loader aims to manage the access to the resources in this particular
+ * location; it acts as a bridge between the current hierarchy of class loaders and this particular
+ * unmanaged location.
+ * </p>
+ * By default, when a resource is asked, it looks for in the current hierarchy of class loaders
+ * before to seek the resource into the resources directory in the Silverpeas home directory.
  * @author ehugonnet
  */
 public class ConfigurationClassLoader extends ClassLoader {
 
-  private String baseDir =
-      SystemWrapper.get().getenv("SILVERPEAS_HOME") + File.separatorChar + "properties";
+  private File baseDir = new File(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties");
 
   @Override
   public synchronized void clearAssertionStatus() {
@@ -96,14 +99,12 @@ public class ConfigurationClassLoader extends ClassLoader {
   public URL getResource(String name) {
     URL resource = super.getResource(name);
     if (resource == null && name != null) {
-      String fileName = baseDir + name;
-      File file = new File(fileName);
-      if (file.exists()) {
+      File file = new File(baseDir, name);
+      if (file.exists() && file.isFile()) {
         try {
           resource = file.toURI().toURL();
         } catch (MalformedURLException ex) {
           Logger.getLogger(ConfigurationClassLoader.class.getName()).log(Level.SEVERE, null, ex);
-          resource = super.getResource(name);
         }
       }
     }
@@ -114,16 +115,12 @@ public class ConfigurationClassLoader extends ClassLoader {
   public InputStream getResourceAsStream(String name) {
     InputStream inputStream = super.getResourceAsStream(name);
     if (inputStream == null && name != null) {
-      String fileName = baseDir + name;
-      SilverTrace.info("util", "ConfigurationClassLoader.getResourceAsStream",
-          "util.MSG_NO_PROPERTY_FILE", "Looking for file " + fileName);
-      File file = new File(fileName);
-      if (file.exists()) {
+      File file = new File(baseDir, name);
+      if (file.exists() && file.isFile()) {
         try {
           inputStream = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
           Logger.getLogger(ConfigurationClassLoader.class.getName()).log(Level.SEVERE, null, ex);
-          return null;
         }
       }
     }
@@ -162,16 +159,7 @@ public class ConfigurationClassLoader extends ClassLoader {
   }
 
   public ConfigurationClassLoader(ClassLoader parent) {
-    this(parent, SystemWrapper.get().getenv("SILVERPEAS_HOME") + separatorChar + "properties");
+    super(parent);
   }
 
-  public ConfigurationClassLoader(ClassLoader parent, String directory) {
-    super(parent);
-    assert directory != null;
-    if (directory.endsWith(separator)) {
-      this.baseDir = directory;
-    } else {
-      this.baseDir = directory + separatorChar;
-    }
-  }
 }

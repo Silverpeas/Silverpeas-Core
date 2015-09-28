@@ -35,27 +35,102 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Logger;
 
+
+/**
+ * The resource locator gives access to the resource bundles and to the settings that are located
+ * into a particular directory, the Silverpeas resources home directory. The mechanism used to
+ * access the files in which are defined both the localized resources and the settings is wrapped
+ * by this class.
+ * </p>
+ * The resource bundles and the settings aren't provided in a classical way (injection point)
+ * because they aren't carried into the Silverpeas archive as it should be usually done.
+ * Instead, they are located into a peculiar directory in the Silverpeas home directory so that
+ * administrators can easily modify them by hand. The access to this directory is handled by this
+ * class. If in the future, the mechanism requires to be modified, then this modification will be
+ * transparent for the rest of the code.
+ */
 public class ResourceLocator implements Serializable {
 
   private static final long serialVersionUID = -2389291572691404932L;
+  private static final int INITIAL_CACHE_SIZE = 128;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
+  private static final ConcurrentMap<String, SilverpeasBundle> bundles =
+      new ConcurrentHashMap<>(INITIAL_CACHE_SIZE);
+
   final static String DEFAULT_EXTENSION = ".properties";
   private String propertyFile = null;
   private Locale propertyLocale = null;
   private ResourceLocator defaultResource = null;
 
+  /**
+   * Gets the localized resource defined under the specified full qualified name and for the
+   * specified locale. This resource can be a set of icons or of messages that are defined for
+   * the given locale.
+   * @param name the full qualified name of the localized resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @param locale is an ISO 639-1 code identifying a language. If null, the default locale of the
+   * platform onto which Silverpeas is running will be taken into account.
+   * @return a resource bundle with the asked localized resource.
+   */
+  public static LocalizationBundle getLocalizationResource(String name, String locale) {
+    return (LocalizationBundle) bundles.computeIfAbsent(name + "_" + locale, n -> {
+      Locale localeToUse =
+          (locale == null || locale.trim().isEmpty() ? Locale.getDefault() : new Locale(locale));
+      return new LocalizationBundle(name, localeToUse,
+          (bundleName, bundleLocale) -> loadResourceBundle(bundleName, bundleLocale));
+    });
+  }
+
+  /**
+   * Gets the localized resource that is defined under the specified full qualified name and for
+   * the default locale (locale of the platform on which Silverpeas is running). This
+   * resource can be a set of icons or of messages that are defined for a given locale.
+   * @param name the full qualified name of the localized resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @return a resource bundle with the asked localized resource.
+   */
+  public static LocalizationBundle getLocalizationResource(String name) {
+    return getLocalizationResource(name, null);
+  }
+
+  /**
+   * Gets settings resource that is defined under the specified full qualified name. This
+   * resource is a set of settings used to configure the behaviour of a Silverpeas functionality.
+   * @param name the full qualified name of the localized resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @return the properties with the asked settings.
+   */
+  public static SettingBundle getSettingBundle(String name) {
+    return (SettingBundle) bundles.computeIfAbsent(name,
+        n -> new SettingBundle(name, (bundleName) -> loadResourceBundle(bundleName)));
+  }
+
+  private static ResourceBundle loadResourceBundle(String bundleName) {
+    return loadResourceBundle(bundleName, Locale.ROOT);
+  }
+
+  private static ResourceBundle loadResourceBundle(String bundleName, Locale locale) {
+    try {
+      return ResourceBundle.getBundle(bundleName, locale, loader, new ConfigurationControl());
+    } catch (MissingResourceException mex) {
+      Logger.getLogger(ResourceLocator.class.getName()).severe(mex.getMessage());
+      throw mex;
+    }
+  }
+
+
+
   // --------------------------------------------------------------------------------------------
   // METHODS for .properties
   // --------------------------------------------------------------------------------------------
-  /** Creates new ResourceLocator */
-  public ResourceLocator() {
-  }
-
-  public ResourceLocator(String propertyFile) {
-    this(propertyFile, null, null);
-  }
 
   /**
    * Create a resource locator with the given property file (Ex: com.stratelia.webactiv.util.util)
@@ -582,4 +657,5 @@ public class ResourceLocator implements Serializable {
             });
     return (stream);
   }
+
 }

@@ -260,7 +260,7 @@ public class FileUtil implements MimeTypes {
       parent =
           GeneralPropertiesManager.getGeneralMultilang(locale.getLanguage()).getResourceBundle();
     }
-    return new ResourceBundleWrapper(bundle, parent);
+    return new LocalizationBundle(bundle, parent);
   }
 
   /**
