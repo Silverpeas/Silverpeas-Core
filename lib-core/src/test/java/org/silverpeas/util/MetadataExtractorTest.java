@@ -1,30 +1,33 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
+ * the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * <p>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
+ * <p>
+ * You should have received a copy of the GNU Affero General Public License along with this
+ * program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.util;
+package org.silverpeas.util;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.media.Definition;
-import org.silverpeas.util.MetaData;
-import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.test.rule.CommonAPI4Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -43,14 +46,20 @@ public class MetadataExtractorTest {
   private static final File docxFile = getDocumentNamed("/Test.docx");
   private static final File ooFile = getDocumentNamed("/LibreOffice.odt");
   private static final File tifFile = getDocumentNamed("/logo-silverpeas-2010.tif");
-  private static final File emptyPdfFile = getDocumentNamed(
-      "/20115061_FDS_Rubson SA2 Sanitaire 2 en 1 tous coloris MAJ 2012_HENKEL.pdf");
+  private static final File emptyPdfFile = getDocumentNamed("/empty.pdf");
   private static final File mp4File = getDocumentNamed("/video.mp4");
   private static final File movFile = getDocumentNamed("/video.mov");
   private static final File flvFile = getDocumentNamed("/video.flv");
   private static final File mp3File = getDocumentNamed("/sound.mp3");
 
-  public MetadataExtractorTest() {
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  private MetadataExtractor instance;
+
+  @Before
+  public void setup() {
+    instance = new MetadataExtractor();
   }
 
   /**
@@ -58,7 +67,6 @@ public class MetadataExtractorTest {
    */
   @Test
   public void testExtractMetadataFromOLE2WordDocument() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = docFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -79,7 +87,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFrom2007WordDocument() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = docxFile;
     assertThat(file.exists(), is(true));
     MetaData result = instance.extractMetadata(file);
@@ -105,7 +112,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromOpenOfficeDocument() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = ooFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -126,7 +132,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromTifImage() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = tifFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -154,19 +159,18 @@ public class MetadataExtractorTest {
   @Test
   public void testExtractMetadataFromPdfWithoutMetadata() throws Exception {
     File file = emptyPdfFile;
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
-    assertThat(result.getTitle(), is(
-        "20115061_FDS_Rubson SA2 Sanitaire 2 en 1 tous coloris MAJ 2012_HENKEL"));
-    assertThat(result.getSubject(), is(""));
-    assertThat(result.getAuthor(), is(""));
+    assertThat(result.getTitle(), is("Blank PDF Document"));
+    assertThat(result.getSubject(), nullValue());
+    assertThat(result.getAuthor(),
+        is("Department of Justice (Executive Office of Immigration Review)"));
     assertThat(result.getComments(), is(nullValue()));
-    assertThat(result.getKeywords()[0], is(""));
+    assertThat(result.getKeywords(), emptyArray());
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
-    assertThat(result.getCreationDate().getTime(), is(1356623042000L));
-    assertThat(result.getLastSaveDateTime().getTime(), is(1361543391000L));
+    assertThat(result.getCreationDate().getTime(), is(1141675593000L));
+    assertThat(result.getLastSaveDateTime().getTime(), is(1141672353000L));
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.NULL));
     assertThat(result.getFramerate(), nullValue());
@@ -192,7 +196,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromMp4Video() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = mp4File;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -208,7 +211,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromMovVideo() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = movFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -224,7 +226,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromFlvVideo() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = flvFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
@@ -240,7 +241,6 @@ public class MetadataExtractorTest {
 
   @Test
   public void testExtractMetadataFromMp3Audio() {
-    MetadataExtractor instance = MetadataExtractor.getInstance();
     File file = mp3File;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));

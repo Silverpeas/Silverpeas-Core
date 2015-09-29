@@ -20,155 +20,90 @@
  */
 package org.silverpeas.util;
 
-import com.coremedia.iso.IsoFile;
-import com.coremedia.iso.boxes.Box;
-import com.coremedia.iso.boxes.Container;
-import com.coremedia.iso.boxes.MovieBox;
-import com.coremedia.iso.boxes.MovieHeaderBox;
-import com.coremedia.iso.boxes.TrackBox;
-import com.coremedia.iso.boxes.TrackHeaderBox;
-import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.mp4.MP4Parser;
+import org.silverpeas.util.time.TimeData;
+import org.silverpeas.util.time.TimeUnit;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
+/**
+ * This tool is kind of interface between the Silverpeas callers which needs to get metadata from
+ * files and the API used to extract them.
+ */
 public class MetadataExtractor {
 
-  private MetadataExtractor() {
+  private static Set<MediaType> mp4ParserSupportedTypes =
+      new MP4Parser().getSupportedTypes(new ParseContext());
+
+  MetadataExtractor() {
   }
-
-  private static final Pattern VIDEO_ADDITIONAL_METADATA_PATTERN =
-      Pattern.compile("(?i)/[x\\-ms]*(m4v|mp4|quicktime)$");
-
 
   /**
-   * Return Metadata of a document.
-   * @param fileName
-   * @return Metadata
+   * Extracts Metadata of a file.
+   * @param filePath the full path of a file.
+   * @return a {@link MetaData} instance that handles the metadata extracted from a file
+   * represented by the given full path.
    */
-  public MetaData extractMetadata(String fileName) {
-    return extractMetadata(new File(fileName));
+  public MetaData extractMetadata(String filePath) {
+    return extractMetadata(new File(filePath));
   }
 
+  /**
+   * Extracts Metadata of a file.
+   * @param file a file.
+   * @return a {@link MetaData} instance that handles the metadata extracted from the given file.
+   */
   public MetaData extractMetadata(File file) {
-    InputStream inputStream = null;
-    try {
-      Metadata metadata = new Metadata();
-      inputStream = TikaInputStream.get(file, metadata);
+    Metadata metadata = new Metadata();
+    try (InputStream inputStream = TikaInputStream.get(file, metadata)) {
       new Tika().parse(inputStream, metadata).close();
-      additionalExtractions(file, metadata);
-      return new MetaData(file, metadata);
-    } catch (IOException ex) {
+      return adjust(file, metadata);
+    } catch (Exception ex) {
       SilverTrace.warn("MetadataExtractor.getMetadata()", "SilverpeasException.WARNING",
           "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage(), ex);
       return new MetaData(file, new Metadata());
-    } finally {
-      IOUtils.closeQuietly(inputStream);
     }
   }
 
   /**
-   * Additional extractions. After each tika upgrade, please verify if this treatment is necessary.
-   * Only apply for mp4 or quicktime video (mp4|quicktime).
-   * @param file
-   * @param metadata
+   * Adjusts the the given metadata by adding new ones or modifying extracted ones.
+   * @param file the file from which the metadata were extracted.
+   * @param metaData the extracted metadata to adjust if necessary.
+   * @return a {@link MetaData} instance that handles the metadata extracted from the given file.
    */
-  private void additionalExtractions(File file, Metadata metadata) throws IOException {
-    String contentType = metadata.get(Metadata.CONTENT_TYPE);
-    Matcher videoMatcher = VIDEO_ADDITIONAL_METADATA_PATTERN.matcher(contentType);
-    if (videoMatcher.find()) {
+  private MetaData adjust(final File file, Metadata metaData) {
+    String contentType = metaData.get(Metadata.CONTENT_TYPE);
+    MediaType mediaType = MediaType.parse(contentType);
+    adjustMp4Duration(metaData, mediaType);
+    return new MetaData(file, metaData);
+  }
 
-      // The technique is taken from MP4Parser implementation
-      IsoFile isoFile;
-      TikaInputStream tstream = null;
+
+  /**
+   * Adjusts MP4 extracted duration.<br/>
+   * Indeed {@link MP4Parser} puts into metadata the duration in seconds.<br/>
+   * It can not be perfect all the time!
+   * @param metadata the current extracted metadata.
+   * @param mediaType the mediaType of current processed file.
+   */
+  private void adjustMp4Duration(Metadata metadata, MediaType mediaType) {
+    if (mp4ParserSupportedTypes.contains(mediaType)) {
       try {
-        tstream = TikaInputStream.get(file, metadata);
-        isoFile = new IsoFile(new FileDataSourceImpl(tstream.getFileChannel()));
-      } finally {
-        IOUtils.closeQuietly(tstream);
-      }
-
-      // For DEBUG
-      // Map<String, List<Box>> filledBoxes = new HashMap<String, List<Box>>();
-      // getFilledBoxes(isoFile.getBoxes(), filledBoxes);
-
-      MovieBox movieBox = isoFile.getMovieBox();
-      if (movieBox != null) {
-        MovieHeaderBox movieHeaderBox = movieBox.getMovieHeaderBox();
-        if (movieHeaderBox != null) {
-          computeMp4Duration(metadata, movieHeaderBox);
-          computeMp4Dimension(metadata, movieBox);
-        }
+        TimeData duration =
+            UnitUtil.getTimeData(new BigDecimal(metadata.get(XMPDM.DURATION)), TimeUnit.SEC);
+        metadata.set(XMPDM.DURATION, String.valueOf(duration.getTimeAsLong()));
+      } catch (Exception ignore) {
       }
     }
-  }
-
-  private void computeMp4Duration(Metadata metadata, MovieHeaderBox movieHeaderBox) {
-    BigDecimal duration = BigDecimal.valueOf(movieHeaderBox.getDuration());
-    if (duration.intValue() > 0) {
-      BigDecimal divisor = BigDecimal.valueOf(movieHeaderBox.getTimescale());
-
-      // Duration
-      duration = duration.divide(divisor, 10, BigDecimal.ROUND_HALF_DOWN);
-      // get duration in ms
-      duration = duration.multiply(BigDecimal.valueOf(1000));
-      metadata.add(XMPDM.DURATION, duration.toString());
-    }
-  }
-
-  private void computeMp4Dimension(Metadata metadata, MovieBox movieBox) {
-    // If duration is set, it exists a TrackBox with right width and height definition.
-    List<TrackBox> trackBoxes = movieBox.getBoxes(TrackBox.class);
-    if (trackBoxes.size() > 0) {
-      TrackHeaderBox trackHeader = null;
-      for (TrackBox trackBox : trackBoxes) {
-        boolean isWidthExisting = trackBox.getTrackHeaderBox().getWidth() > 0;
-        if (isWidthExisting || trackHeader == null) {
-          trackHeader = trackBox.getTrackHeaderBox();
-          if (isWidthExisting) {
-            break;
-          }
-        }
-      }
-      if (trackHeader != null) {
-        metadata.set(Metadata.IMAGE_WIDTH, (int) trackHeader.getWidth());
-        metadata.set(Metadata.IMAGE_LENGTH, (int) trackHeader.getHeight());
-      }
-    }
-  }
-
-  /**
-   * For now, this method is just for MP4 media debug...
-   * ...so please do not delete this method.
-   * @param boxes
-   * @param filledBoxes
-   */
-  private Map<String, List<Box>> getFilledBoxes(List<Box> boxes,
-      Map<String, List<Box>> filledBoxes) {
-    Map<String, List<Box>> result =
-        (filledBoxes != null) ? filledBoxes : new HashMap<String, List<Box>>();
-    if (CollectionUtil.isNotEmpty(boxes)) {
-      for (Box box : boxes) {
-        if (box instanceof Container) {
-          getFilledBoxes(((Container) box).getBoxes(), result);
-        } else {
-          MapUtil.putAddList(result, box.getType(), box);
-        }
-      }
-    }
-    return result;
   }
 }

@@ -35,8 +35,11 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MetaData {
 
@@ -282,6 +285,11 @@ public class MetaData {
     String[] result = new String[values.length];
     for (int i = 0; i < values.length; i++) {
       result[i] = cleanString(values[i]);
+    }
+    if (result.length > 1) {
+      Set<String> uniqueResult = new LinkedHashSet<>();
+      Collections.addAll(uniqueResult, result);
+      return uniqueResult.toArray(new String[uniqueResult.size()]);
     }
     return result;
   }

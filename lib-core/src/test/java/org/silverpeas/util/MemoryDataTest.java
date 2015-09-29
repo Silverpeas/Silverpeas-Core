@@ -23,11 +23,13 @@
  */
 package org.silverpeas.util;
 
-import org.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.memory.MemoryData;
 import org.silverpeas.util.memory.MemoryUnit;
 
@@ -48,16 +50,19 @@ public class MemoryDataTest {
   private static Locale currentLocale;
   private static String currentLanguage;
 
-  @BeforeClass
-  public static void forceDefaultLocale() {
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Before
+  public void forceDefaultLocale() {
     currentLocale = Locale.getDefault();
     currentLanguage = I18NHelper.defaultLanguage;
     Locale.setDefault(Locale.FRANCE);
     I18NHelper.defaultLanguage = Locale.getDefault().getLanguage();
   }
 
-  @AfterClass
-  public static void restoreDefaultLocale() {
+  @After
+  public void restoreDefaultLocale() {
     Locale.setDefault(currentLocale);
     I18NHelper.defaultLanguage = currentLanguage;
   }
