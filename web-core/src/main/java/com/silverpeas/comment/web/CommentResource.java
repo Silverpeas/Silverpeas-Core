@@ -274,7 +274,8 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    return CommentEntity.fromComment(comment).withURI(commentURI);
+    return CommentEntity.fromComment(comment).withURI(commentURI)
+        .withCurrentUserLanguage(getUserPreferences().getLanguage());
   }
 
   protected URI identifiedBy(URI uri) {

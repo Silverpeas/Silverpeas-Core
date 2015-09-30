@@ -31,6 +31,7 @@ import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.WebEntity;
 import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.publication.model.PublicationPK;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.owasp.encoder.Encode;
 
 import javax.validation.constraints.NotNull;
@@ -82,10 +83,11 @@ public class CommentEntity implements WebEntity {
   @XmlElement(required = true)
   @NotNull
   private UserProfileEntity author;
+  private String currentUserLanguage;
   @XmlElement(required = true, defaultValue = "")
-  private String creationDate;
+  private String creationDate; //date in the format displayed for the current user
   @XmlElement(required = true, defaultValue = "")
-  private String modificationDate;
+  private String modificationDate; //date in the format displayed for the current user
   @XmlElement
   private boolean indexed = false;
 
@@ -129,10 +131,11 @@ public class CommentEntity implements WebEntity {
    * @return a comment instance.
    */
   public Comment toComment() {
-    Comment comment = new Comment(new CommentPK(id, componentId), resourceType, new PublicationPK(
-        resourceId, componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
-        decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
-        decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
+    Comment comment = new Comment(new CommentPK(getId(), getComponentId()), getResourceType(),
+        new PublicationPK(getResourceId(), getComponentId()), Integer.valueOf(getAuthor().getId()),
+        getAuthor().getFullName(), getText(),
+        decodeFromDisplayDate(getCreationDate(), getCurrentUserLanguage()),
+        decodeFromDisplayDate(getModificationDate(), getCurrentUserLanguage()));
     comment.setOwnerDetail(getAuthor().toUserDetail());
     return comment;
   }
@@ -227,6 +230,33 @@ public class CommentEntity implements WebEntity {
   }
 
   /**
+   * Gets the current user language.
+   * @return the language of the current user.
+   */
+  public String getCurrentUserLanguage() {
+    return currentUserLanguage;
+  }
+
+  /**
+   * Sets a currentUserLanguage to this entity.
+   * @param currentUserLanguage the language of the current user.
+   * @return itself.
+   */
+  public CommentEntity withCurrentUserLanguage(final String currentUserLanguage) {
+    this.currentUserLanguage = currentUserLanguage;
+
+    //change values of creationDate and modificationDate according to language of the current user
+    java.util.Date createDate =
+        decodeFromDisplayDate(getCreationDate(), I18NHelper.defaultLanguage);
+    this.creationDate = encodeToDisplayDate(createDate, this.currentUserLanguage);
+
+    java.util.Date updateDate =
+        decodeFromDisplayDate(getModificationDate(), I18NHelper.defaultLanguage);
+    this.modificationDate = encodeToDisplayDate(updateDate, this.currentUserLanguage);
+    return this;
+  }
+
+  /**
    * Gets the date at which the comment was created.
    *
    * @return the creation date of the comment.
@@ -273,9 +303,11 @@ public class CommentEntity implements WebEntity {
     this.text = comment.getMessage();
     this.textForHtml = Encode.forHtml(comment.getMessage());
     this.author = UserProfileEntity.fromUser(comment.getCreator());
-    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
-    this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
-        getLanguage());
+    //we don't even know the language of the current user (the currentUserLanguage attribute has
+    // not been yet initialized
+    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.defaultLanguage);
+    this.modificationDate =
+        encodeToDisplayDate(comment.getModificationDate(), I18NHelper.defaultLanguage);
   }
 
   @Override
@@ -290,30 +322,30 @@ public class CommentEntity implements WebEntity {
       return false;
     }
     final CommentEntity other = (CommentEntity) obj;
-    if (isDefined(id) && isDefined(other.getId())) {
-      return id.equals(other.getId());
+    if (isDefined(getId()) && isDefined(other.getId())) {
+      return getId().equals(other.getId());
     } else {
-      return componentId.equals(other.getComponentId()) && resourceType.equals(other.
-          getResourceType()) && resourceId.equals(other.getResourceId())
-          && text.equals(other.getText()) && creationDate.equals(other.getCreationDate())
-          && modificationDate.equals(other.getModificationDate())
-          && author.equals(other.getAuthor());
+      return getComponentId().equals(other.getComponentId()) && getResourceType().equals(other.
+          getResourceType()) && getResourceId().equals(other.getResourceId()) &&
+          getText().equals(other.getText()) && getCreationDate().equals(other.getCreationDate()) &&
+          getModificationDate().equals(other.getModificationDate()) &&
+          getAuthor().equals(other.getAuthor());
     }
   }
 
   @Override
   public int hashCode() {
     int hash = 7;
-    if (isDefined(id)) {
-      hash = 17 * hash + this.id.hashCode();
+    if (isDefined(getId())) {
+      hash = 17 * hash + getId().hashCode();
     } else {
-      hash = 17 * hash + (this.componentId != null ? this.componentId.hashCode() : 0);
-      hash = 17 * hash + (this.resourceType != null ? this.resourceType.hashCode() : 0);
-      hash = 17 * hash + (this.resourceId != null ? this.resourceId.hashCode() : 0);
-      hash = 17 * hash + (this.text != null ? this.text.hashCode() : 0);
-      hash = 17 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
-      hash = 17 * hash + (this.modificationDate != null ? this.modificationDate.hashCode() : 0);
-      hash = 17 * hash + (this.author != null ? this.author.hashCode() : 0);
+      hash = 17 * hash + (getComponentId() != null ? getComponentId().hashCode() : 0);
+      hash = 17 * hash + (getResourceType() != null ? getResourceType().hashCode() : 0);
+      hash = 17 * hash + (getResourceId() != null ? getResourceId().hashCode() : 0);
+      hash = 17 * hash + (getText() != null ? getText().hashCode() : 0);
+      hash = 17 * hash + (getCreationDate() != null ? getCreationDate().hashCode() : 0);
+      hash = 17 * hash + (getModificationDate() != null ? getModificationDate().hashCode() : 0);
+      hash = 17 * hash + (getAuthor() != null ? getAuthor().hashCode() : 0);
     }
     return hash;
   }
