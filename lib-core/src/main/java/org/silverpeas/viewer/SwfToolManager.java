@@ -23,11 +23,13 @@
  */
 package org.silverpeas.viewer;
 
-import java.util.Map;
+import org.apache.commons.exec.CommandLine;
+import org.silverpeas.exec.ExternalExecution;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -44,25 +46,21 @@ public class SwfToolManager {
     // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
       if ("path".equals(entry.getKey().toLowerCase())) {
-        Process process = null;
         try {
-          final StringBuilder pdf2SwfCommand = new StringBuilder();
-          pdf2SwfCommand.append("pdf2swf --version");
-          process = Runtime.getRuntime().exec(pdf2SwfCommand.toString());
+          CommandLine commandLine = new CommandLine("pdf2swf");
+          commandLine.addArgument("--version");
+          ExternalExecution.exec(commandLine);
           isActivated = true;
         } catch (final Exception e) {
           // SwfTool is not installed
-        } finally {
-          if (process != null) {
-            process.destroy();
-          }
+          System.err.println("pdf2swf is not installed");
         }
       }
     }
   }
 
   /**
-   * Indicates if im4java is actived
+   * Indicates if im4java is activated
    * @return
    */
   public static boolean isActivated() {

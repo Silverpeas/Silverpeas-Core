@@ -1,18 +1,13 @@
 package org.silverpeas.exec;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.Executor;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.viewer.util.CollectingLogOutputStream;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ExternalExecution {
 
@@ -21,7 +16,16 @@ public class ExternalExecution {
    * @param commandLine
    * @return
    */
-  protected static List<String> exec(final CommandLine commandLine)
+  public static List<String> exec(final CommandLine commandLine) throws ExternalExecutionException {
+    return exec(commandLine, 0);
+  }
+
+  /**
+   * Centralizing command execution code
+   * @param commandLine
+   * @return
+   */
+  public static List<String> exec(final CommandLine commandLine, final int exitStatusOk)
       throws ExternalExecutionException {
     SilverTrace.info("util", "ExternalExecution.exec", "Command " + commandLine);
     final List<String> result = new LinkedList<String>();
@@ -54,9 +58,9 @@ public class ExternalExecution {
       outEater.start();
       process.waitFor();
       int exitStatus = process.exitValue();
-      if (exitStatus != 0) {
-        throw new RuntimeException("Exit error status : " + exitStatus + " "
-            + logErrors.getMessage());
+      if (exitStatus != exitStatusOk) {
+        throw new RuntimeException(
+            "Exit error status : " + exitStatus + " " + logErrors.getMessage());
       }
     } catch (final IOException e) {
       SilverTrace.error("util", "ExternalExecution.exec", "Command execution error", e);
@@ -71,36 +75,5 @@ public class ExternalExecution {
       IOUtils.closeQuietly(logErrors);
     }
     return result;
-  }
-
-  /**
-   * Alternative execution command using apache commons exec
-   * @param cmdLine the command line
-   * @return exit value
-   */
-  protected static int execAlternative(final CommandLine cmdLine) {
-    Executor executor = new DefaultExecutor();
-    executor.setExitValue(0);
-    DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
-    int exitValue;
-    try {
-      executor.execute(cmdLine, resultHandler);
-      resultHandler.waitFor();
-      exitValue = resultHandler.getExitValue();
-    } catch (ExecuteException e) {
-      SilverTrace.error("util", "FFmpegUtil.exec",
-          "Command execution error : " + cmdLine.toString(), e);
-      exitValue = e.getExitValue();
-      throw new ExternalExecutionException(e);
-    } catch (IOException e) {
-      SilverTrace.error("util", "FFmpegUtil.exec",
-          "Command execution error : " + cmdLine.toString(), e);
-      throw new ExternalExecutionException(e);
-    } catch (InterruptedException e) {
-      SilverTrace.error("util", "FFmpegUtil.exec",
-          "Command execution error : " + cmdLine.toString(), e);
-      throw new ExternalExecutionException(e);
-    }
-    return exitValue;
   }
 }

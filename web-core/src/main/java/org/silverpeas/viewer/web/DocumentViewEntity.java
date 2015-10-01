@@ -23,15 +23,14 @@
  */
 package org.silverpeas.viewer.web;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.viewer.DocumentView;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.viewer.DocumentView;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
  * The document view entity is a document view instance that is exposed in the web as
@@ -67,6 +66,12 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
   @XmlElement(defaultValue = "")
   private final int nbPages;
 
+  @XmlElement(defaultValue = "")
+  private final boolean documentSplit;
+
+  @XmlElement(defaultValue = "")
+  private final boolean searchDataComputed;
+
   /**
    * Creates a new document view entity from the specified document view.
    * @param documentView
@@ -95,6 +100,8 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
     height = documentView.getHeight();
     this.language = language;
     nbPages = documentView.getNbPages();
+    documentSplit = documentView.isDocumentSplit();
+    searchDataComputed = documentView.areSearchDataComputed();
   }
 
   /**
@@ -151,5 +158,19 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
    */
   protected int getNbPages() {
     return nbPages;
+  }
+
+  /**
+   * @return the documentSplit
+   */
+  protected boolean getDocumentSplit() {
+    return documentSplit;
+  }
+
+  /**
+   * @return the searchDataComputed
+   */
+  protected boolean getSearchDataComputed() {
+    return searchDataComputed;
   }
 }

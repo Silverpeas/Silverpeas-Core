@@ -31,6 +31,8 @@ import java.io.File;
 public abstract class AbstractView extends AbstractPreview implements DocumentView {
 
   private int nbPages = 0;
+  private boolean documentSplit = false;
+  private boolean searchDataComputed = false;
 
   /**
    * Default constructor
@@ -57,5 +59,23 @@ public abstract class AbstractView extends AbstractPreview implements DocumentVi
   @Override
   public int getNbPages() {
     return nbPages;
+  }
+
+  @Override
+  public boolean isDocumentSplit() {
+    return documentSplit;
+  }
+
+  public void markDocumentSplit(final boolean documentSplit) {
+    this.documentSplit = documentSplit;
+  }
+
+  @Override
+  public boolean areSearchDataComputed() {
+    return searchDataComputed;
+  }
+
+  public void markSearchDataComputed(final boolean searchDataComputed) {
+    this.searchDataComputed = searchDataComputed;
   }
 }

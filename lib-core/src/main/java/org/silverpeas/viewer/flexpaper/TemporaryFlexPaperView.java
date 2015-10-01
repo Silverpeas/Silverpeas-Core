@@ -29,6 +29,9 @@ import org.silverpeas.viewer.AbstractView;
 import org.silverpeas.viewer.util.DocumentInfo;
 
 import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.viewer.util.SwfUtil;
+
+import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 
 /**
  * @author Yohann Chastagnier
@@ -55,7 +58,8 @@ public class TemporaryFlexPaperView extends AbstractView {
    */
   @Override
   public String getURLAsString() {
-    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
+    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getParentFile().getName() + "/" +
+        getPhysicalFile().getName());
   }
 
   /*

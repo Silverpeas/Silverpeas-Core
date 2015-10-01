@@ -23,20 +23,22 @@
  */
 package org.silverpeas.viewer;
 
-import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
-
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.viewer.exception.PreviewException;
-import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
-import org.silverpeas.viewer.util.DocumentInfo;
-import org.silverpeas.viewer.util.SwfUtil;
-
 import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.util.FileUtil;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
+import org.silverpeas.viewer.util.DocumentInfo;
+import org.silverpeas.viewer.util.JsonPdfUtil;
+import org.silverpeas.viewer.util.SwfUtil;
+
+import java.io.File;
+import java.io.IOException;
+
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 
 /**
  * @author Yohann Chastagnier
@@ -67,24 +69,32 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       throw new PreviewException("IT IS NOT POSSIBLE GETTING DOCUMENT VIEW");
     }
 
-    // Save file instance to an generic local variable
-    final DocumentView documentView;
+    final File pdfFile;
+
+    /*
+     * 1 - converting it into PDF document
+     */
 
     // If the document is an Open Office one
-    // 1 - converting it into PDF document
-    // 2 - converting the previous result into PNG image
     if (FileUtil.isOpenOfficeCompatible(physicalFile.getName())) {
-      final File pdfFile = toPdf(physicalFile, generateTmpFile(PDF_DOCUMENT_EXTENSION));
-      documentView =
-          toSwf(originalFileName, pdfFile, changeFileExtension(pdfFile, SWF_DOCUMENT_EXTENSION));
-      FileUtils.deleteQuietly(pdfFile);
+      pdfFile = toPdf(physicalFile, generateTmpFile(PDF_DOCUMENT_EXTENSION));
     }
 
     // If the document is a PDF (or plain text)
-    // 1 - convert it into PNG resized image.
     else {
-      documentView = toSwf(originalFileName, physicalFile, generateTmpFile(SWF_DOCUMENT_EXTENSION));
+      pdfFile = generateTmpFile(PDF_DOCUMENT_EXTENSION);
+      try {
+        FileUtils.copyFile(physicalFile, pdfFile);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+
+    /*
+     * 2 - converting the previous result into SWF file
+     */
+    final DocumentView documentView = toSwf(originalFileName, pdfFile);
+    FileUtils.deleteQuietly(pdfFile);
 
     // Returning the result
     return documentView;
@@ -103,19 +113,49 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
 
   /**
    * Convert into Swf file
-   * @param source
+   * @param pdfSource
    * @return
    */
-  private DocumentView toSwf(final String originalFileName, final File source,
-      final File destination) {
+  private DocumentView toSwf(final String originalFileName, final File pdfSource) {
 
     // NbPages & max page width & max page height
-    final DocumentInfo info = SwfUtil.getPdfDocumentInfo(source);
+    final DocumentInfo info = SwfUtil.getPdfDocumentInfo(pdfSource);
 
-    // Create images
-    SwfUtil.fromPdfToSwf(source, destination);
+    File swfFile = new File(pdfSource.getParentFile(),
+        getBaseName(pdfSource.getName()) + "/file." + SWF_DOCUMENT_EXTENSION);
+    swfFile.getParentFile().mkdirs();
+
+    boolean jsonConversion = JsonPdfToolManager.isActivated();
+    boolean splitMode = jsonConversion;
+
+    // Create SWF data
+    if (!splitMode) {
+      try {
+        SwfUtil.fromPdfToSwf(pdfSource, swfFile, false);
+      } catch (Exception e) {
+        e.printStackTrace();
+        splitMode = true;
+      }
+    }
+
+    if (splitMode) {
+      swfFile = new File(swfFile.getParentFile(), "page." + SWF_DOCUMENT_EXTENSION);
+      SwfUtil.fromPdfToSwf(pdfSource, swfFile, true);
+      if (jsonConversion) {
+        try {
+          JsonPdfUtil.convert(pdfSource, swfFile);
+        } catch (Exception e) {
+          e.printStackTrace();
+          jsonConversion = false;
+        }
+      }
+    }
 
     // Files
-    return new TemporaryFlexPaperView(originalFileName, destination, info);
+    TemporaryFlexPaperView documentView =
+        new TemporaryFlexPaperView(originalFileName, swfFile, info);
+    documentView.markDocumentSplit(splitMode);
+    documentView.markSearchDataComputed(jsonConversion);
+    return documentView;
   }
 }

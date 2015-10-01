@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.media.video.ffmpeg;
+package org.silverpeas.viewer;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
@@ -31,33 +31,36 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Map;
 
-@Named("ffmpegToolManager")
+/**
+ * @author Yohann Chastagnier
+ */
+@Named("jsonPdfToolManager")
 @Singleton
-public class FFmpegToolManager {
+public class JsonPdfToolManager {
 
   private static boolean isActivated = false;
 
   @PostConstruct
   public void initialize() throws Exception {
 
-    // SwfTools settings
+    // pdf2json settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
       if ("path".equals(entry.getKey().toLowerCase())) {
         try {
-          CommandLine commandLine = new CommandLine("ffmpeg");
-          commandLine.addArgument("-version");
-          ExternalExecution.exec(commandLine);
+          CommandLine commandLine = new CommandLine("pdf2json");
+          commandLine.addArgument("-v");
+          ExternalExecution.exec(commandLine, 1);
           isActivated = true;
         } catch (final Exception e) {
-          // FFmpeg is not installed
-          System.err.println("ffmpeg is not installed");
+          // pdf2json is not installed
+          System.err.println("pdf2json is not installed");
         }
       }
     }
   }
 
   /**
-   * Indicates if ffmpeg is actived
+   * Indicates if im4java is activated
    * @return
    */
   public static boolean isActivated() {
