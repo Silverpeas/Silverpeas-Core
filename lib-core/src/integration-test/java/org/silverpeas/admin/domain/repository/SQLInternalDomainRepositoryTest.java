@@ -83,7 +83,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
       .columns("id", " name", " description", " propfilename", " classname",
           " authenticationserver", " thetimestamp", " silverpeasserverurl")
       .values(1, "domainSilverpeas", "Domain interne à Silverpeas",
-          "com.stratelia.silverpeas.domains.domainSP",
+          "org.silverpeas.domains.domainSP",
           "com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver", "autDomainSP", "0",
           "autDomainSP").build();
   public static final Operation TEST_DELETION_TABLES = Operations.sequenceOf(

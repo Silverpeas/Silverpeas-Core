@@ -33,6 +33,7 @@ import org.exolab.castor.mapping.MappingException;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * This class offers services about database persistence. It uses Castor library to read/write
@@ -40,10 +41,10 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class WorkflowJDOManager {
   /**
-   * ResourceLocator object to retrieve messages in a properties file
+   * ResourceLocator object to retrieve settings in a properties file
    */
-  private static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.workflow.engine.castorSettings", "fr");
+  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.workflow.engine.castorSettings");
 
   /**
    * JDO object used by Castor persistence mechanism

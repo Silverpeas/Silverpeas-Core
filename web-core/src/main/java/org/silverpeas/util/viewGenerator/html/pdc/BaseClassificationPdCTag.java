@@ -23,27 +23,27 @@ package org.silverpeas.util.viewGenerator.html.pdc;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
-import java.text.MessageFormat;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
+import java.text.MessageFormat;
 
 import static org.silverpeas.util.StringUtil.getBooleanValue;
 import static org.silverpeas.util.StringUtil.isDefined;
-
 import static org.silverpeas.util.viewGenerator.html.pdc.PdcClassificationTagOperation.*;
 
 /**
@@ -215,7 +215,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    */
   private String executePlugin(PdcClassificationTagOperation operation) throws JspTagException {
     String context = URLManager.getApplicationURL();
-    ResourcesWrapper resources = getResources();
+    MultiSilverpeasBundle resources = getResources();
     String function = operation.getPluginFunction();
     String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)
         || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
@@ -278,10 +278,11 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
    * @return a resources wrapper instance.
    * @throws JspTagException if an error occurs while fetching the resources.
    */
-  protected ResourcesWrapper getResources() throws JspTagException {
+  protected MultiSilverpeasBundle getResources() throws JspTagException {
     MainSessionController controller = getSessionAttribute(LANGUAGE_KEY);
     String language = controller.getFavoriteLanguage();
-    ResourcesWrapper resources = new ResourcesWrapper(new ResourceLocator(
+    MultiSilverpeasBundle resources =
+        new MultiSilverpeasBundle(ResourceLocator.getLocalizationBundle(
         "org.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
     return resources;
 

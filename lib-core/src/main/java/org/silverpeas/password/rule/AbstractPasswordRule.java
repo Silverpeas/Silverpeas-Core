@@ -23,11 +23,13 @@
  */
 package org.silverpeas.password.rule;
 
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.password.constant.PasswordRuleType;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,10 +41,8 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 public abstract class AbstractPasswordRule implements PasswordRule {
   protected static final int DEFAULT_LENGTH = 8;
-  protected static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.password.settings.password", "");
-  private static final Map<String, ResourceLocator> multilang = new HashMap<>();
-
+  protected static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   private PasswordRuleType passwordRuleType;
 
   protected AbstractPasswordRule(final PasswordRuleType passwordRuleType) {
@@ -95,16 +95,18 @@ public abstract class AbstractPasswordRule implements PasswordRule {
    * @return
    */
   protected String getString(final String key, final String language, final String... params) {
-    ResourceLocator messages = multilang.get(language);
-    if (messages == null) {
-      synchronized (multilang) {
-        messages =
-            new ResourceLocator("org.silverpeas.password.multilang.passwordBundle", language);
-        multilang.put(language, messages);
-      }
+    LocalizationBundle messages =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.password.multilang.passwordBundle",
+            language);
+    String translation;
+    try {
+      translation =
+          (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
+              messages.getString(key);
+    } catch (MissingResourceException ex) {
+      translation = "";
     }
-    return (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
-        messages.getString(key, "");
+    return translation;
   }
 
   /**

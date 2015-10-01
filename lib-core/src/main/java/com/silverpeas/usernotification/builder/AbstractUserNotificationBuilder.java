@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifMessageType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -47,7 +48,6 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   private String title = null;
   private String content = null;
   private UserNotification userNotification = null;
-  private final Map<String, ResourceLocator> bundles = new HashMap<String, ResourceLocator>();
 
   /**
    * Default constructor
@@ -232,7 +232,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * Gets the bundle
    * @return
    */
-  protected final ResourceLocator getBundle() {
+  protected final LocalizationBundle getBundle() {
     return getBundle(I18NHelper.defaultLanguage);
   }
 
@@ -240,11 +240,10 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * Gets the bundle
    * @return
    */
-  protected final ResourceLocator getBundle(final String language) {
-    ResourceLocator bundle = bundles.get(language);
-    if (bundle == null && StringUtils.isNotBlank(getMultilangPropertyFile())) {
-      bundle = new ResourceLocator(getMultilangPropertyFile(), language);
-      bundles.put(language, bundle);
+  protected final LocalizationBundle getBundle(final String language) {
+    LocalizationBundle bundle = null;
+    if (StringUtils.isNotBlank(getMultilangPropertyFile())) {
+      bundle = ResourceLocator.getLocalizationBundle(getMultilangPropertyFile(), language);
     }
     return bundle;
   }

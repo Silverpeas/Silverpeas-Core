@@ -28,11 +28,14 @@
 
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="com.silverpeas.ui.DisplayI18NHelper" %>
 <%@ include file="headLog.jsp" %>
 
 <%
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+  LocalizationBundle authenticationBundle =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication",
+          request.getLocale().getLanguage());
   GraphicElementFactory gef =
       (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 %>

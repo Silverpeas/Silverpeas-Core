@@ -26,6 +26,7 @@ package com.silverpeas.socialnetwork.connectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.util.SettingBundle;
 import org.springframework.social.connect.UserProfile;
 
 import com.silverpeas.socialnetwork.service.AccessToken;
@@ -34,11 +35,11 @@ import org.silverpeas.util.ResourceLocator;
 
 public abstract class AbstractSocialNetworkConnector implements SocialNetworkConnector {
 
-  private ResourceLocator settings = null;
+  private SettingBundle settings = null;
 
   void init() {
-    settings = new ResourceLocator(
-        "org.silverpeas.social.settings.socialNetworkSettings", "");
+    settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.social.settings.socialNetworkSettings");
   }
 
   @Override
@@ -54,7 +55,7 @@ public abstract class AbstractSocialNetworkConnector implements SocialNetworkCon
   @Override
   abstract public String getUserProfileId(AccessToken authorizationToken);
 
-  protected ResourceLocator getSettings() {
+  protected SettingBundle getSettings() {
     return settings;
   }
 }

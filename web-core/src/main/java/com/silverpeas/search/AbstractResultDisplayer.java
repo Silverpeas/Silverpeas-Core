@@ -29,7 +29,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 
@@ -47,7 +47,7 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
       SilverpeasTemplate componentTemplate) {
 
     GlobalSilverResult silverResult = searchResult.getGsr();
-    ResourcesWrapper settings = searchResult.getSettings();
+    MultiSilverpeasBundle settings = searchResult.getSettings();
 
     componentTemplate.setAttribute("gsr", silverResult);
     componentTemplate.setAttribute("name", EncodeHelper.javaStringToHtmlString(silverResult

@@ -21,10 +21,10 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import org.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.organization.SpaceRow;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.i18n.AbstractI18NBean;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -138,8 +138,8 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
   public String getName(String language) {
 
     if (isPersonalSpace) {
-      return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace",
-          "Mon espace");
+      return ResourceLocator.getGeneralBundle(language)
+          .getString("GML.personalSpace");
     }
 
     return super.getName(language);

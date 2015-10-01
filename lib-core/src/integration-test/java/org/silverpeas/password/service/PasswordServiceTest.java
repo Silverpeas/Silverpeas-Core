@@ -274,7 +274,7 @@ public class PasswordServiceTest {
     }
 
     public void settings(String resourceLocator) {
-      settings = new ResourceLocator(resourceLocator, "");
+      settings = ResourceLocator.getSettingBundle(resourceLocator);
       ((DefaultPasswordService) passwordService).loadRules();
     }
   }

@@ -36,6 +36,7 @@ import java.util.TreeSet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class SearchCompletion {
 
@@ -71,10 +72,10 @@ public class SearchCompletion {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-    ResourceLocator resource =
-        new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
-    int autocompletionMaxResults = Integer.parseInt(resource.getString("autocompletionMaxResults"));
+    int autocompletionMaxResults = Integer.parseInt(settings.getString("autocompletionMaxResults"));
     try {
       con = DBUtil.openConnection();
       // request pdc

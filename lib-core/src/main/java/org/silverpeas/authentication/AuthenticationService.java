@@ -41,6 +41,7 @@ import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -92,27 +93,27 @@ public class AuthenticationService {
   public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "Error_6";
 
   static {
-    ResourceLocator propFile = new ResourceLocator(
-        "org.silverpeas.authentication.domains", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.authentication.domains");
 
     // Lecture du fichier de proprietes
-    m_DataSourceJNDIName = propFile.getString("SQLDomainDataSourceJNDIName");
+    m_DataSourceJNDIName = settings.getString("SQLDomainDataSourceJNDIName");
 
-    m_DomainTableName = propFile.getString("SQLDomainTableName");
-    m_DomainIdColumnName = propFile.getString("SQLDomainIdColumnName");
-    m_DomainNameColumnName = propFile.getString("SQLDomainNameColumnName");
-    m_DomainAuthenticationServerColumnName = propFile.getString(
+    m_DomainTableName = settings.getString("SQLDomainTableName");
+    m_DomainIdColumnName = settings.getString("SQLDomainIdColumnName");
+    m_DomainNameColumnName = settings.getString("SQLDomainNameColumnName");
+    m_DomainAuthenticationServerColumnName = settings.getString(
         "SQLDomainAuthenticationServerColumnName");
 
-    m_KeyStoreTableName = propFile.getString("SQLKeyStoreTableName");
-    m_KeyStoreKeyColumnName = propFile.getString("SQLKeyStoreKeyColumnName");
-    m_KeyStoreLoginColumnName = propFile.getString("SQLKeyStoreLoginColumnName");
-    m_KeyStoreDomainIdColumnName = propFile.getString("SQLKeyStoreDomainIdColumnName");
+    m_KeyStoreTableName = settings.getString("SQLKeyStoreTableName");
+    m_KeyStoreKeyColumnName = settings.getString("SQLKeyStoreKeyColumnName");
+    m_KeyStoreLoginColumnName = settings.getString("SQLKeyStoreLoginColumnName");
+    m_KeyStoreDomainIdColumnName = settings.getString("SQLKeyStoreDomainIdColumnName");
 
-    m_UserTableName = propFile.getString("SQLUserTableName");
-    m_UserIdColumnName = propFile.getString("SQLUserIdColumnName");
-    m_UserLoginColumnName = propFile.getString("SQLUserLoginColumnName");
-    m_UserDomainColumnName = propFile.getString("SQLUserDomainColumnName");
+    m_UserTableName = settings.getString("SQLUserTableName");
+    m_UserIdColumnName = settings.getString("SQLUserIdColumnName");
+    m_UserLoginColumnName = settings.getString("SQLUserLoginColumnName");
+    m_UserDomainColumnName = settings.getString("SQLUserDomainColumnName");
   }
 
   @Inject

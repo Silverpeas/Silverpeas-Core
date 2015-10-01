@@ -21,35 +21,33 @@
  */
 package com.silverpeas.thumbnail.servlets;
 
-import java.io.File;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.ThumbnailSessionController;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.servlet.FileUploadUtil;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import org.silverpeas.servlet.HttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
 
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
-  private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "org.silverpeas.publication.publicationSettings", "fr");
+  private static final SettingBundle publicationSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
   private static final long serialVersionUID = -2685660972761271210L;
 
   @Override
@@ -282,8 +280,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
     SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
         "root.MSG_GEN_ENTER_METHOD");
 
-    ResourceLocator settings = new ResourceLocator(
-        "org.silverpeas.util.attachment.Attachment", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
     boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
 
     SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",

@@ -20,7 +20,9 @@
  */
 package com.silverpeas;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * A service providing the transverse operations related to a given Silverpeas application. A
@@ -60,18 +62,18 @@ public interface ApplicationService<T extends SilverpeasContent> {
   /**
    * Gets the settings of this Silverpeas component.
    *
-   * @return a ResourceLocator instance giving access the settings.
+   * @return a SettingBundle instance giving access the settings.
    */
-  ResourceLocator getComponentSettings();
+  SettingBundle getComponentSettings();
 
   /**
    * Gets the localized messages defined in this Silverpeas component.
    *
    * @param language the language in which the messages has to be localized. If empty or null, then
    * the bundle with default messages is returned.
-   * @return a ResourceLocator instance giving access the localized messages.
+   * @return a LocalizationBundle instance giving access the localized messages.
    */
-  ResourceLocator getComponentMessages(String language);
+  LocalizationBundle getComponentMessages(String language);
 
   /**
    * Is this service related to the specified component instance. The service is related to the

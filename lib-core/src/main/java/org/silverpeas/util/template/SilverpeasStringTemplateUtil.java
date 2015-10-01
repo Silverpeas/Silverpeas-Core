@@ -25,6 +25,7 @@
 package org.silverpeas.util.template;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class SilverpeasStringTemplateUtil {
 
@@ -34,7 +35,7 @@ public class SilverpeasStringTemplateUtil {
   public final static String customCoreDir;
 
   static {
-    ResourceLocator settings = new ResourceLocator("org.silverpeas.util.stringtemplate", "");
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.stringtemplate");
     defaultComponentsDir = settings.getString("template.dir.components.default");
     customComponentsDir = settings.getString("template.dir.components.custom");
     defaultCoreDir = settings.getString("template.dir.core.default");

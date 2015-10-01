@@ -28,6 +28,7 @@ import com.silverpeas.wysiwyg.dynamicvalue.exception.PropertyNotFoundRuntimeExce
 import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -224,12 +225,12 @@ public class DynamicValueDAO {
    */
   private static void initTableInfos() {
     try {
-      ResourceLocator rs = new ResourceLocator(SETTINGS_PATH, "");
-      tableName = rs.getString("tableName").trim();
-      keyColumnName = rs.getString("keyColumnName").trim();
-      valueColumnName = rs.getString("valueColumnName").trim();
-      startDateColumnName = rs.getString("startDateColumnName").trim();
-      endDateColumnName = rs.getString("endDateColumnName").trim();
+      SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
+      tableName = settings.getString("tableName").trim();
+      keyColumnName = settings.getString("keyColumnName").trim();
+      valueColumnName = settings.getString("valueColumnName").trim();
+      startDateColumnName = settings.getString("startDateColumnName").trim();
+      endDateColumnName = settings.getString("endDateColumnName").trim();
     } catch (Exception e) {
 
     }

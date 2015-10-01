@@ -36,6 +36,7 @@ import org.owasp.encoder.Encode;
 import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 
@@ -66,10 +67,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   private String m_CallerRooterName;
   private String m_CallerJSPPage;
   private String m_CallerTargetFrame;
-  /**
-   * The bundle containing all the settings.
-   */
-  private ResourceLocator settings = null;
   private String sessionId = null;
 
   /**
@@ -79,8 +76,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    */
   public ClipboardSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
-    super(mainSessionCtrl, context, "com.stratelia.webactiv.clipboard.multilang.clipboard",
-        "com.stratelia.webactiv.clipboard.settings.clipboardIcons");
+    super(mainSessionCtrl, context, "org.silverpeas.clipboard.multilang.clipboard",
+        "org.silverpeas.clipboard.settings.clipboardIcons");
     sessionId = mainSessionCtrl.getSessionId();
   }
 
@@ -316,11 +313,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   @Override
-  public ResourceLocator getSettings() {
-    if (settings == null) {
-      settings = new ResourceLocator("org.silverpeas.clipboard.settings.clipboardSettings", "");
-    }
-    return settings;
+  public SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle("org.silverpeas.clipboard.settings.clipboardSettings");
   }
 
   /**

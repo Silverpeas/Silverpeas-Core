@@ -24,8 +24,10 @@
 
 package org.silverpeas.search.util;
 
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -51,13 +53,16 @@ public class SearchEnginePropertiesManager {
   public synchronized static List<String> getFieldsNameList() {
     if (fieldsNameList == null) {
       fieldsNameList = new ArrayList<>();
-      ResourceLocator resource = new ResourceLocator(
-          "com.silverpeas.searchEngine.searchEngineSettings", "");
-      String property = resource.getString("sorting.formXML.fields");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.searchEngine.searchEngineSettings");
+      String property = settings.getString("sorting.formXML.fields");
       if (StringUtil.isDefined(property)) {
-        StringTokenizer tokens = new StringTokenizer(property, ",");
-        while (tokens.hasMoreTokens()) {
-          fieldsNameList.add(tokens.nextToken());
+        String[] tokens = property.split(",");
+        for (String token: tokens) {
+          token = token.trim();
+          if (!token.isEmpty()) {
+            fieldsNameList.add(token);
+          }
         }
       }
     }

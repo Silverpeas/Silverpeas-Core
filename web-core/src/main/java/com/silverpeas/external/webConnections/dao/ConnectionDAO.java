@@ -24,6 +24,19 @@
 
 package com.silverpeas.external.webConnections.dao;
 
+import com.silverpeas.external.webConnections.model.ConnectionDetail;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.crypto.Cipher;
+import org.silverpeas.util.crypto.CipherFactory;
+import org.silverpeas.util.crypto.CipherKey;
+import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,24 +47,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.crypto.Cipher;
-import org.silverpeas.util.crypto.CipherFactory;
-import org.silverpeas.util.crypto.CipherKey;
-import org.silverpeas.util.crypto.CryptoException;
-import org.silverpeas.util.crypto.CryptographicAlgorithmName;
-
-import com.silverpeas.external.webConnections.model.ConnectionDetail;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
-
 public class ConnectionDAO {
   private static String tableName = "SB_webConnections_info";
-  private static ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.external.webConnections.settings.webConnectionsSettings",
-          "fr");
+  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.external.webConnections.settings.webConnectionsSettings");
   // warning: the key code should be in hexadecimal!
   private static String keyCode = settings.getString("keycode");
 

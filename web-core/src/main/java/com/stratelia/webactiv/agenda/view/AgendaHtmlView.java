@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.agenda.view;
 
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
@@ -84,7 +85,7 @@ public class AgendaHtmlView {
    * @see
    */
   public AgendaHtmlView(int viewType, Date date,
-      AgendaSessionController agendaSessionController, ResourceLocator settings) {
+      AgendaSessionController agendaSessionController, SettingBundle settings) {
     this.viewType = viewType;
     setDate(date);
     this.agendaSessionController = agendaSessionController;

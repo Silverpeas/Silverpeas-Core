@@ -28,10 +28,12 @@
 
 <%@ page import="org.silverpeas.util.ResourceLocator"
 %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%
-	ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-	ResourceLocator generalMultilang = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", "");
-
+	SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+	LocalizationBundle generalMultilang = ResourceLocator.getGeneralBundle(
+			request.getLocale().getLanguage());
 	String sURI = request.getRequestURI();
 	String sServletPath = request.getServletPath();
 	String sPathInfo = request.getPathInfo();

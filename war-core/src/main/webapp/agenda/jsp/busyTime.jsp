@@ -63,7 +63,7 @@ ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(ag
 
   agenda.viewByDay();
 
-  ResourceLocator settings = agenda.getSettings();
+  SettingBundle settings = agenda.getSettings();
   String action = (String) request.getParameter("Action");
   int formIndex = new Integer((String) request.getParameter("Form")).intValue();
 

@@ -26,19 +26,20 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.*"%>
+<%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
-
-<%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationService" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
+<%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
+
+<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -67,12 +68,14 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)) {
   spaceId = subSpaceId;
 }
 
-ResourceLocator resourceSearchEngine = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+  SettingBundle resourceSearchEngine =
+      ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.minChars", 3);
 
 //Is "forgotten password" feature active ?
-ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
-ResourceLocator general	= new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.authentication.multilang.authentication", request.getLocale().getLanguage());
+SettingBundle general	= ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
 boolean forgottenPwdActive = !pwdResetBehavior.equalsIgnoreCase("false");
 String urlToForgottenPwd = m_sContext+"/CredentialsServlet/ForgotPassword";

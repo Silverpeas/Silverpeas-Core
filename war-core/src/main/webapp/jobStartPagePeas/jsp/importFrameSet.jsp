@@ -28,6 +28,7 @@
 
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController, org.silverpeas.util.ResourceLocator, org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -37,7 +38,7 @@ MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAtt
       (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
   String language = m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
+LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
 
  %>
 

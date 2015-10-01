@@ -68,8 +68,8 @@ if (m_MainSessionCtrl == null)
 
 GraphicElementFactory	gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String  language = m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
-ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
-ResourceLocator portletsBundle = new ResourceLocator("org.silverpeas.portlets.multilang.portletsBundle", language);
+LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
+SettingBundle homePageSettings = ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
+LocalizationBundle portletsBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.portlets.multilang.portletsBundle", language);
 String m_sContext = GeneralPropertiesManager.getString("ApplicationURL");
 %>

@@ -23,11 +23,11 @@
  */
 package com.silverpeas.pdcSubscription;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.LocalizationBundle;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -67,7 +67,7 @@ public class PdcResourceClassificationUserNotification
   @Override
   protected void performBuild(final SilverContentInterface silverContent) {
     String lang = getUserLanguage(getPdcSubscription().getOwnerId());
-    ResourceLocator resources = getBundle(lang);
+    LocalizationBundle resources = getBundle(lang);
 
     final StringBuilder message = new StringBuilder(150);
 

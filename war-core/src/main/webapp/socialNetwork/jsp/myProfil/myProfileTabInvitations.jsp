@@ -28,7 +28,7 @@
     pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="java.util.List"%>
@@ -51,7 +51,7 @@
 	  	invitations = (List) request.getAttribute("Inbox");
 	  	receivedCssClass = "class=\"active\"";
 	}
-	ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+	MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 %>
 <style type="text/css">
 .inlineMessage {

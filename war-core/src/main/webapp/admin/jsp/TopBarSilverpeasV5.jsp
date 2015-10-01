@@ -40,7 +40,7 @@
 
 <%
 LookHelper 	helper 	= LookHelper.getLookHelper(session);
-ResourceLocator settings 		= gef.getFavoriteLookSettings();
+SettingBundle settings 		= gef.getFavoriteLookSettings();
 
 String currentComponentId 	= helper.getComponentId();
 String currentSpaceId		= helper.getSpaceId();

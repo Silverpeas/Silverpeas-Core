@@ -33,6 +33,7 @@ import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -1266,8 +1267,8 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   private List<String> getItemsExcludedFromGlobalSearch(String parameterName) {
-    ResourceLocator searchSettings = new ResourceLocator(
-        "org.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+    SettingBundle searchSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.pdcPeas.settings.pdcPeasSettings");
     List<String> items = new ArrayList<String>();
     String param = searchSettings.getString(parameterName);
     if (StringUtil.isDefined(param)) {

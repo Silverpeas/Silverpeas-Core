@@ -66,6 +66,7 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
@@ -518,13 +519,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   private String replaceWysiwygStringsForImport(String wysiwygText) {
-    ResourceLocator mapping =
-        new ResourceLocator("com.silverpeas.importExport.settings.stringsMapping", "");
+    SettingBundle mapping =
+        ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.stringsMapping");
     String newWysiwygText = wysiwygText;
 
-    Enumeration<String> classes = mapping.getKeys();
-    while (classes.hasMoreElements()) {
-      String oldString = classes.nextElement();
+    for (String oldString : mapping.keySet()) {
       String newString = mapping.getString(oldString);
       newWysiwygText = replaceWysiwygStringForImport(oldString, newString, newWysiwygText);
     }
@@ -548,8 +547,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private String removeWysiwygStringsForImport(String wysiwygText) {
     String currentWysiwygText = wysiwygText;
-    ResourceLocator resource =
-        new ResourceLocator("com.silverpeas.importExport.settings.mapping", "");
+    SettingBundle resource =
+        ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.mapping");
     String dir = resource.getString("mappingDir");
     if (StringUtil.isDefined(dir)) {
       BufferedReader reader = null;

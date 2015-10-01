@@ -20,11 +20,13 @@
  */
 package com.silverpeas.portlets.portal;
 
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.MissingResourceException;
 import java.util.Properties;
-
-import org.silverpeas.util.ResourceLocator;
 
 /**
  * PropertiesContext loads the portal driver properties. A portal driver is a lightweight portal
@@ -38,7 +40,7 @@ public class PropertiesContext {
   private static final String PORTLET_RENDER_MODE_PARALLEL = "portletRenderModeParallel";
   private static final String ENABLE_AUTODEPLOY = "enableAutodeploy";
   private static final String AUTODEPLOY_DIR_WATCH_INTERVAL = "autodeployDirWatchInterval";
-  private Properties configProperties;
+  private SettingBundle configProperties;
 
   /**
    * Gets the properties context of the Silverpeas portal.
@@ -54,10 +56,14 @@ public class PropertiesContext {
    */
   protected PropertiesContext() {
     InputStream defaultConfigBundle = null;
-    Properties defaultProperties = new Properties();
+    SettingBundle properties;
     try {
-      ResourceLocator properties = new ResourceLocator("org.silverpeas.portlets." + CONFIG_FILE, "");
-      defaultProperties = properties.getProperties();
+      properties =
+          ResourceLocator.getSettingBundle("org.silverpeas.portlets." + CONFIG_FILE);
+      if (!properties.exists()) {
+        throw new MissingResourceException("Missing org.silverpeas.portlets." + CONFIG_FILE,
+            PropertiesContext.class.getName(), "");
+      }
     } finally {
       if (defaultConfigBundle != null) {
         try {
@@ -67,11 +73,11 @@ public class PropertiesContext {
         }
       }
     }
-    configProperties = new Properties(defaultProperties);
+    configProperties = properties;
   }
 
   public boolean isPortletRenderModeParallel() {
-    String value = configProperties.getProperty(PORTLET_RENDER_MODE_PARALLEL);
+    String value = configProperties.getString(PORTLET_RENDER_MODE_PARALLEL);
     if ("true".equals(value)) {
       return true;
     }
@@ -79,7 +85,7 @@ public class PropertiesContext {
   }
 
   public boolean enableAutodeploy() {
-    String value = configProperties.getProperty(ENABLE_AUTODEPLOY);
+    String value = configProperties.getString(ENABLE_AUTODEPLOY);
     if ("true".equals(value)) {
       return true;
     }
@@ -87,7 +93,7 @@ public class PropertiesContext {
   }
 
   public long getAutodeployDirWatchInterval() {
-    String value = configProperties.getProperty(AUTODEPLOY_DIR_WATCH_INTERVAL);
+    String value = configProperties.getString(AUTODEPLOY_DIR_WATCH_INTERVAL);
     long watchInterval;
     try {
       watchInterval = Long.parseLong(value);

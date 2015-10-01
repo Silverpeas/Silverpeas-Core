@@ -27,13 +27,14 @@ import java.io.File;
 
 import org.silverpeas.util.ImageUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractPreview implements Preview {
-  protected final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.viewer.viewer", "");
+  protected final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.viewer.viewer");
 
   private final String originalFileName;
   private final File physicalFile;

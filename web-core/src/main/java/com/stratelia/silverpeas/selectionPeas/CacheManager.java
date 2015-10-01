@@ -25,6 +25,8 @@
 package com.stratelia.silverpeas.selectionPeas;
 
 import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
@@ -53,14 +55,14 @@ abstract public class CacheManager {
   protected Map<String, PanelLine> setCache = new HashMap<>();
   protected Set<String> selectedElements = new HashSet<>();
   protected Set<String> selectedSets = new HashSet<>();
-  protected ResourceLocator localResourceLocator = null;
+  protected LocalizationBundle localResourceLocator = null;
   protected ResourceLocator globalResourceLocator = null;
-  protected ResourceLocator iconResourceLocator = null;
+  protected SettingBundle iconResourceLocator = null;
   protected String language = DisplayI18NHelper.getDefaultLanguage();
   protected Selection selection = null;
 
-  public CacheManager(String language, ResourceLocator local,
-      ResourceLocator icon, Selection selection) {
+  public CacheManager(String language, LocalizationBundle local,
+      SettingBundle icon, Selection selection) {
     this.language = language;
     this.localResourceLocator = local;
     globalResourceLocator = GeneralPropertiesManager.getGeneralMultilang(this.language);

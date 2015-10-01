@@ -27,6 +27,7 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.searchEngine.model.SearchCompletion;
 import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -44,8 +45,8 @@ import java.util.Set;
 @Singleton
 public class SimpleSearchEngine implements SearchEngine {
 
-  ResourceLocator pdcSettings =
-      new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", "fr");
+  SettingBundle pdcSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
   private final boolean enableWordSpelling = pdcSettings.getBoolean("enableWordSpelling", false);
 

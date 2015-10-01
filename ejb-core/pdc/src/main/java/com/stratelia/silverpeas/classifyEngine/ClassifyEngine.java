@@ -24,17 +24,17 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -72,8 +72,8 @@ public class ClassifyEngine {
   @PostConstruct
   protected void init() {
     // Get the maximum number of axis that the classifyEngine can handle
-    ResourceLocator res = new ResourceLocator(
-        "org.silverpeas.classifyEngine.ClassifyEngine", "");
+    SettingBundle res =
+        ResourceLocator.getSettingBundle("org.silverpeas.classifyEngine.ClassifyEngine");
     String sMaxAxis = res.getString("MaxAxis");
     nbMaxAxis = Integer.parseInt(sMaxAxis);
     try {

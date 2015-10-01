@@ -1,3 +1,7 @@
+<%@ page import="org.silverpeas.util.StringUtil" %>
+<%@ page import="com.stratelia.webactiv.agenda.control.AgendaSessionController" %>
+<%@ page import="org.silverpeas.util.FileServerUtils" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -31,7 +35,7 @@
 
 <%
 
-  ResourceLocator settings = agenda.getSettings();
+	SettingBundle settings = agenda.getSettings();
 	String statusMessage = "";
 	boolean exportDone = false;
 	String calendarIcsFileName = "";

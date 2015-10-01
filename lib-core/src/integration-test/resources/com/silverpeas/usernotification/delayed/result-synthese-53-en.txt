@@ -39,7 +39,7 @@
 			</div>
 			</div><br/>
 			<div id="footer">
-			You will receive this next month a new notification synthesis.<br/>
+			You will receive next month a new notification synthesis.<br/>
 			You can change whenever you want the receive frequency of this notification synthesis from the settings of "My notifications" from your personnal space.</div>
 		</div>
 	</body>

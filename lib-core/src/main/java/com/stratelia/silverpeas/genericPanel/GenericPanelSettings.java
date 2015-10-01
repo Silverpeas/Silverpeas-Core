@@ -25,12 +25,13 @@
 package com.stratelia.silverpeas.genericPanel;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class GenericPanelSettings {
   public static final int m_ElementsByPage;
   static {
-    ResourceLocator rs = new ResourceLocator(
-        "com.stratelia.silverpeas.genericPanel.settings.genericPanelSettings", "");
-    m_ElementsByPage = rs.getInteger("ElementsByPage", 20);
+    SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.genericPanel.settings.genericPanelSettings");
+    m_ElementsByPage = settings.getInteger("ElementsByPage", 20);
   }
 }

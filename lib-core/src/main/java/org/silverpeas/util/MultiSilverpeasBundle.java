@@ -1,23 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,69 +31,67 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 /**
- * Class declaration
- * @author
+ * A bundle that is a wrapper of several kinds of resource bundles.
  */
-public class ResourcesWrapper {
+public class MultiSilverpeasBundle {
 
-  private ResourceLocator specificMultilang = null;
-  private ResourceLocator specificIcons = null;
-  private ResourceLocator specificSettings = null;
-  private ResourceLocator genericMultilang = null;
+  private LocalizationBundle specificMultilang = null;
+  private SettingBundle specificIcons = null;
+  private SettingBundle specificSettings = null;
   private String language = null;
 
   /**
-   * @param specificMultilang - Multilang of component
-   * @param specificIcons - Icons of component
-   * @param language - user's language
+   * Constructs a new multiple bundle.
+   * @param specificMultilang the localized messages
+   * @param specificIcons the icons
+   * @param language the language of the localized resources.
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang, ResourceLocator specificIcons,
-      String language) {
+  public MultiSilverpeasBundle(LocalizationBundle specificMultilang,
+      SettingBundle specificIcons, String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
-    this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
     this.language = language;
   }
 
   /**
-   * @param specificMultilang - Multilang of component
-   * @param specificIcons - Icons of component
-   * @param specificSettings - Settings of component
-   * @param language - user's language
+   * Constructs a new multiple bundle.
+   * @param specificMultilang the localized messages
+   * @param specificIcons the icons
+   * @param specificSettings the settings
+   * @param language the language of the localized resources.
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang, ResourceLocator specificIcons,
-      ResourceLocator specificSettings, String language) {
+  public MultiSilverpeasBundle(LocalizationBundle specificMultilang,
+      SettingBundle specificIcons, SettingBundle specificSettings, String language) {
     this.specificMultilang = specificMultilang;
     this.specificIcons = specificIcons;
-    this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
     this.language = language;
     this.specificSettings = specificSettings;
   }
 
   /**
-   * @param specificMultilang - Multilang of component
-   * @param language - user's language
+   * Constructs a new multiple bundle.
+   * @param specificMultilang the localized messages
+   * @param language the language of the localized resources.
    */
-  public ResourcesWrapper(ResourceLocator specificMultilang, String language) {
+  public MultiSilverpeasBundle(LocalizationBundle specificMultilang, String language) {
     this.specificMultilang = specificMultilang;
-    this.genericMultilang = GeneralPropertiesManager.getGeneralMultilang(language);
     this.language = language;
   }
 
   /**
    * Return the ResourceBundle for usage in JSTL.
-   * @return the ResourceBundle under the ResourceLocator.
+   * @return the ResourceBundle.
    */
   public ResourceBundle getMultilangBundle() {
-    return specificMultilang.getResourceBundle();
+    return specificMultilang;
   }
 
   /**
-   * Return the icons ResourceBundle for usage in JSTL.
-   * @return the icons ResourceBundle under the ResourceLocator.
+   * Return the icons settings.
+   * @return the SettingBundle.
    */
-  public ResourceBundle getIconsBundle() {
-    return specificIcons.getResourceBundle();
+  public SettingBundle getIconsBundle() {
+    return specificIcons;
   }
 
   /**
@@ -105,14 +103,8 @@ public class ResourcesWrapper {
     String valret = null;
     if (key != null) {
       valret = key;
-      if (key.startsWith("GML.")) {
-        if (genericMultilang != null) {
-          valret = genericMultilang.getString(key);
-        }
-      } else {
-        if (specificMultilang != null) {
-          valret = specificMultilang.getString(key);
-        }
+      if (specificMultilang != null) {
+        valret = specificMultilang.getString(key);
       }
     }
     if (valret == null) {
@@ -122,7 +114,7 @@ public class ResourcesWrapper {
   }
 
   public String getStringWithParam(String key, String param) {
-    String[] params = { param };
+    String[] params = {param};
     return getStringWithParams(key, params);
   }
 
@@ -131,14 +123,8 @@ public class ResourcesWrapper {
 
     if (key != null) {
       valret = key;
-      if (key.startsWith("GML.")) {
-        if (genericMultilang != null) {
-          valret = genericMultilang.getStringWithParams(key, params);
-        }
-      } else {
-        if (specificMultilang != null) {
-          valret = specificMultilang.getStringWithParams(key, params);
-        }
+      if (specificMultilang != null) {
+        valret = specificMultilang.getStringWithParams(key, params);
       }
     }
     if (valret == null) {
@@ -155,9 +141,6 @@ public class ResourcesWrapper {
     return language;
   }
 
-  /*
-   * public String getLanguage(String code) { return I18NHelper.getLanguage(language, code); }
-   */
   /**
    * We look at the key in the specific settings file.
    * @param key - key in the settings file
@@ -225,7 +208,7 @@ public class ResourcesWrapper {
     return DateUtil.stringToDate(date, language);
   }
 
-  private String getValue(String key, ResourceLocator resourceLocator) {
+  private String getValue(String key, SilverpeasBundle resourceLocator) {
     String valret = null;
     if (key != null) {
       valret = key;

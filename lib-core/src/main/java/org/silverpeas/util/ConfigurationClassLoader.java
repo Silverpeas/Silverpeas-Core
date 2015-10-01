@@ -50,8 +50,6 @@ import java.util.logging.Logger;
  */
 public class ConfigurationClassLoader extends ClassLoader {
 
-  private File baseDir = new File(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties");
-
   @Override
   public synchronized void clearAssertionStatus() {
     super.clearAssertionStatus();
@@ -99,7 +97,7 @@ public class ConfigurationClassLoader extends ClassLoader {
   public URL getResource(String name) {
     URL resource = super.getResource(name);
     if (resource == null && name != null) {
-      File file = new File(baseDir, name);
+      File file = new File(bundlesBaseDirectory(), name);
       if (file.exists() && file.isFile()) {
         try {
           resource = file.toURI().toURL();
@@ -115,7 +113,7 @@ public class ConfigurationClassLoader extends ClassLoader {
   public InputStream getResourceAsStream(String name) {
     InputStream inputStream = super.getResourceAsStream(name);
     if (inputStream == null && name != null) {
-      File file = new File(baseDir, name);
+      File file = new File(bundlesBaseDirectory(), name);
       if (file.exists() && file.isFile()) {
         try {
           inputStream = new FileInputStream(file);
@@ -160,6 +158,10 @@ public class ConfigurationClassLoader extends ClassLoader {
 
   public ConfigurationClassLoader(ClassLoader parent) {
     super(parent);
+  }
+
+  protected File bundlesBaseDirectory() {
+    return new File(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties");
   }
 
 }

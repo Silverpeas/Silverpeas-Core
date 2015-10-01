@@ -41,6 +41,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
@@ -59,8 +60,8 @@ import java.util.Map;
  */
 public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The

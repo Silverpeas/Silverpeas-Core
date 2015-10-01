@@ -24,8 +24,11 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +53,8 @@ abstract public class AbstractDomainDriver implements DomainDriver {
 
   /**
    * Initialize the domain driver with the initialization parameter stocked in table This parameter
-   * could be a table name or a ressource file name or whatever specified by the domain driver
-   * Default : ressource file name
+   * could be a table name or a resource file name or whatever specified by the domain driver
+   * Default : resource file name
    * @param domainId id of domain
    * @param initParam name of resource file
    * @param authenticationServer name of the authentication server (no more used yet)
@@ -60,24 +63,24 @@ abstract public class AbstractDomainDriver implements DomainDriver {
   @Override
   public void init(int domainId, String initParam, String authenticationServer)
       throws Exception {
-    ResourceLocator rs = new ResourceLocator(initParam, "");
+    SettingBundle settings = ResourceLocator.getSettingBundle(initParam);
     int nbProps = 0;
 
     this.domainId = domainId;
 
     // Init the domain's users properties
     domainProperties.clear();
-    m_PropertiesMultilang = rs.getString("property.ResourceFile");
-    String s = rs.getString("property.Number");
+    m_PropertiesMultilang = settings.getString("property.ResourceFile");
+    String s = settings.getString("property.Number");
     if (StringUtil.isDefined(s)) {
       nbProps = Integer.parseInt(s);
     }
     keys = new String[nbProps];
     m_mapParameters = new String[nbProps];
     for (int i = 1; i <= nbProps; i++) {
-      s = rs.getString("property_" + Integer.toString(i) + ".Name");
-      if ((s != null) && (s.length() > 0)) {
-        DomainProperty newElmt = new DomainProperty(rs, String.valueOf(i)); // Retreives all
+      s = settings.getString("property_" + Integer.toString(i) + ".Name", "");
+      if (!s.trim().isEmpty()) {
+        DomainProperty newElmt = new DomainProperty(settings, String.valueOf(i)); // Retreives all
         // property's
         // infos
         domainProperties.add(newElmt);
@@ -87,10 +90,10 @@ abstract public class AbstractDomainDriver implements DomainDriver {
     }
 
     // X509 Certificates management is enable ?
-    x509Enabled = rs.getBoolean("security.x509.enabled", false);
+    x509Enabled = settings.getBoolean("security.x509.enabled", false);
 
     // Init the domain's properties
-    initFromProperties(rs);
+    initFromProperties(settings);
   }
 
   @Override
@@ -150,9 +153,10 @@ abstract public class AbstractDomainDriver implements DomainDriver {
     HashMap<String, String> valret = m_PropertiesLabels.get(language);
     if (valret == null) {
       HashMap<String, String> newLabels = new HashMap<String, String>();
-      ResourceLocator rs = new ResourceLocator(m_PropertiesMultilang, language);
+      LocalizationBundle msg =
+          ResourceLocator.getLocalizationBundle(m_PropertiesMultilang, language);
       for (String key : keys) {
-        newLabels.put(key, rs.getString(key));
+        newLabels.put(key, msg.getString(key));
       }
       m_PropertiesLabels.put(language, newLabels);
       valret = newLabels;
@@ -166,9 +170,10 @@ abstract public class AbstractDomainDriver implements DomainDriver {
 
     if (valret == null) {
       HashMap<String, String> newDescriptions = new HashMap<String, String>();
-      ResourceLocator rs = new ResourceLocator(m_PropertiesMultilang, language);
+      LocalizationBundle msg =
+          ResourceLocator.getLocalizationBundle(m_PropertiesMultilang, language);
       for (String key : keys) {
-        newDescriptions.put(key, rs.getString(key + ".description"));
+        newDescriptions.put(key, msg.getString(key + ".description"));
       }
       m_PropertiesDescriptions.put(language, newDescriptions);
       valret = newDescriptions;
@@ -182,7 +187,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * @param rs name of resource file
    */
   @Override
-  public void initFromProperties(ResourceLocator rs) throws Exception {
+  public void initFromProperties(SettingBundle rs) throws Exception {
   }
 
   /**

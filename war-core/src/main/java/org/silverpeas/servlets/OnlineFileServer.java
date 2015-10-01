@@ -20,15 +20,16 @@
  */
 package org.silverpeas.servlets;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -97,7 +98,8 @@ public class OnlineFileServer extends AbstractFileSender {
 
 
   @Override
-  protected ResourceLocator getResources() {
-   return new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+  protected SettingBundle getSettingBunde() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
   }
 }

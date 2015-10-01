@@ -123,7 +123,7 @@
       	}
       }
   } else if(isDomainSql) {
-  	ResourceLocator propDomain = new ResourceLocator(domObject.getPropFileName(), "");
+	SettingBundle propDomain = ResourceLocator.getSettingBundle(domObject.getPropFileName());
   	boolean synchroUser = propDomain.getBoolean("ExternalSynchro", false);
   	if(synchroUser) {
   	    operationPane.addLine();

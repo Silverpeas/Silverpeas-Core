@@ -22,15 +22,8 @@ package org.silverpeas.importExport.attachment;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -38,6 +31,14 @@ import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import java.io.File;
@@ -56,8 +57,8 @@ import java.util.List;
 public class AttachmentImportExport {
 
   private UserDetail user;
-  private final ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.importExport.settings.importSettings", "");
+  private final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
 
   public AttachmentImportExport(final UserDetail user) {
     this.user = user;
@@ -269,7 +270,7 @@ public class AttachmentImportExport {
   public File getAttachmentFile(AttachmentDetail attachment) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(attachment.getAttachmentPath()));
     if (file == null || !file.exists() || !file.isFile()) {
-      String baseDir = resources.getString("importRepository");
+      String baseDir = settings.getString("importRepository");
       file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + attachment.
           getPhysicalName()));
     }

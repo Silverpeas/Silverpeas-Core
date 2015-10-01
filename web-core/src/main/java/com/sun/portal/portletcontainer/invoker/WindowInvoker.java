@@ -962,7 +962,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
     ResourceBundle bundle = null;
     StringBuffer buffer = new StringBuffer();
     try {
-      bundle = getResourceBundle("com.silverpeas.portlets.multilang.WindowInvoker");
+      bundle = getResourceBundle("org.silverpeas.portlets.multilang.WindowInvoker");
       buffer.append(bundle.getString(errorCode.toString()));
     } catch (MissingResourceException ex) {
       logger.log(Level.FINE,

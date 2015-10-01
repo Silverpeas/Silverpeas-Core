@@ -8,6 +8,7 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.owasp.encoder.Encode;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
@@ -141,9 +142,8 @@ public class Notification {
     }
     notifMetaData.addGroupRecipients(groupRecipients);
     for (String language : DisplayI18NHelper.getLanguages()) {
-      ResourceLocator bundle =
-          new ResourceLocator("org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
-              language);
+      LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", language);
       notifMetaData.addLanguage(language, getSubject(), bundle.getString("AuthorMessage") + " :");
       notifMetaData.addExtraMessage(getBody(), language);
     }

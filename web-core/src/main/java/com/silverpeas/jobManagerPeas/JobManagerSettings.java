@@ -24,12 +24,13 @@
 
 package com.silverpeas.jobManagerPeas;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * This class manage the informations needed for job manager
@@ -47,50 +48,17 @@ public class JobManagerSettings {
   public static boolean m_IsPortletDeployerVisible = false;
 
   static {
-    ResourceLocator rs = new ResourceLocator(
-        "com.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(
+        "org.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings");
 
-    m_UsersByPage = readInt(rs, "UsersByPage", 10);
-    m_GroupsByPage = readInt(rs, "GroupsByPage", 10);
-    m_IsKMVisible = readBoolean(rs, "IsKMVisible", false);
-    m_IsToolsVisible = readBoolean(rs, "IsToolsVisible", false);
-    m_IsToolSpecificAuthentVisible = readBoolean(rs,
-        "IsToolSpecificAuthentVisible", false);
-    m_IsToolWorkflowDesignerVisible = readBoolean(rs,
-        "IsToolWorkflowDesignerVisible", false);
-    m_IsTemplateDesignerVisible = readBoolean(rs, "IsTemplateDesignerVisible",
-        false);
-    m_IsPortletDeployerVisible = readBoolean(rs, "IsPortletDeployerVisible",
-        false);
-  }
-
-  static protected int readInt(ResourceLocator rs, String propName,
-      int defaultValue) {
-    String s = rs.getString(propName, Integer.toString(defaultValue));
-    return Integer.parseInt(s);
-  }
-
-  static protected boolean readBoolean(ResourceLocator rs, String propName,
-      boolean defaultValue) {
-    String s = null;
-    if (defaultValue) {
-      s = rs.getString(propName, "true");
-    } else {
-      s = rs.getString(propName, "false");
-    }
-
-    boolean valret = defaultValue;
-    if (defaultValue) {
-      if ("false".equalsIgnoreCase(s)) {
-        valret = false;
-      }
-    } else {
-      if ("true".equalsIgnoreCase(s)) {
-        valret = true;
-      }
-    }
-
-    return valret;
+    m_UsersByPage = rs.getInteger("UsersByPage", 10);
+    m_GroupsByPage = rs.getInteger("GroupsByPage", 10);
+    m_IsKMVisible = rs.getBoolean("IsKMVisible", false);
+    m_IsToolsVisible = rs.getBoolean("IsToolsVisible", false);
+    m_IsToolSpecificAuthentVisible = rs.getBoolean("IsToolSpecificAuthentVisible", false);
+    m_IsToolWorkflowDesignerVisible = rs.getBoolean("IsToolWorkflowDesignerVisible", false);
+    m_IsTemplateDesignerVisible = rs.getBoolean("IsTemplateDesignerVisible", false);
+    m_IsPortletDeployerVisible = rs.getBoolean("IsPortletDeployerVisible", false);
   }
 
   static public void sortGroups(Group[] toSort) {

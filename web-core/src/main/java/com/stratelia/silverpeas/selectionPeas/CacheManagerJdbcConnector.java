@@ -37,14 +37,16 @@ import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorDAO;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class CacheManagerJdbcConnector extends CacheManager {
 
   JdbcConnectorDAO jdbcConnectorDAO;
 
-  public CacheManagerJdbcConnector(String language, ResourceLocator local,
-      ResourceLocator icon, Selection selection) {
+  public CacheManagerJdbcConnector(String language, LocalizationBundle local,
+      SettingBundle icon, Selection selection) {
     super(language, local, icon, selection);
     this.selection = selection;
   }

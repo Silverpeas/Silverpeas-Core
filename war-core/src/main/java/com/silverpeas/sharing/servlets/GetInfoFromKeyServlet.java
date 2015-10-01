@@ -38,6 +38,7 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,8 +51,8 @@ import static com.silverpeas.sharing.servlets.FileSharingConstants.*;
 public class GetInfoFromKeyServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1541425708777215319L;
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.sharing.settings.sharing", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.sharing.settings.sharing");
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)

@@ -89,7 +89,7 @@ PdcClassifySessionController createComponentSessionController(MainSessionControl
 		pdcSC = setComponentSessionController(session, mainSessionCtrl);
 	}
 
-	resource = new ResourcesWrapper(pdcSC.getMultilang(), pdcSC.getIcon(), pdcSC.getLanguage());
+	resource = new MultiSilverpeasBundle(pdcSC.getMultilang(), pdcSC.getIcon(), pdcSC.getLanguage());
 	language = resource.getLanguage();
     		
 	if (silverObjectId != null)

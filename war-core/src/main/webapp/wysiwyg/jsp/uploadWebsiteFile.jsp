@@ -43,6 +43,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.servlet.HttpRequest" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -50,7 +51,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String m_context = URLManager.getApplicationURL();
 	String language = request.getParameter("Language");
 	String thePath = request.getParameter("Path");
-    ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
         language);
 
     //Le cadre

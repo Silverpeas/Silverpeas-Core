@@ -38,13 +38,12 @@ import java.text.MessageFormat;
 public class NotifierUtil {
 
   /**
-   * Gets the resource locator from the given property file and by taking into account of the
-   * current known language.
-   * @param propertyFileBaseName
-   * @return
+   * Gets the localization bundle with the specified base name and for the root locale.
+   * @param bundleBaseName the bundle base name.
+   * @return a localization bundle.
    */
-  public static ResourceLocator getResourceLocator(String propertyFileBaseName) {
-    return MessageManager.getResourceLocator(propertyFileBaseName);
+  public static LocalizationBundle getLocalizationBundle(String bundleBaseName) {
+    return MessageManager.getLocalizationBundle(bundleBaseName);
   }
 
   /**

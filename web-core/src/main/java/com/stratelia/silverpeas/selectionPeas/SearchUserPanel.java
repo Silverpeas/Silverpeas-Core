@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 public class SearchUserPanel extends BrowsePanelProvider {
@@ -37,7 +38,7 @@ public class SearchUserPanel extends BrowsePanelProvider {
 
   SelectionUsersGroups m_SelectionExtraParams = null;
 
-  public SearchUserPanel(String language, ResourceLocator rs, CacheManager cm,
+  public SearchUserPanel(String language, LocalizationBundle rs, CacheManager cm,
       SelectionUsersGroups sug) {
     super(language, rs, cm, CacheType.CM_ELEMENT);
     initAll(sug);
@@ -59,15 +60,15 @@ public class SearchUserPanel extends BrowsePanelProvider {
     }
 
     // Set the Page name
-    pageName = resourceLocator.getString("selectionPeas.usersList");
-    pageSubTitle = resourceLocator.getString("selectionPeas.searchUser");
+    pageName = messages.getString("selectionPeas.usersList");
+    pageSubTitle = messages.getString("selectionPeas.searchUser");
 
     // Build search tokens
     searchTokens = new PanelSearchToken[2];
 
-    searchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, resource
+    searchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, messages
         .getString("GML.lastName"), "");
-    searchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, resource
+    searchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, messages
         .getString("GML.firstName"), "");
 
     // Set filters and get Ids

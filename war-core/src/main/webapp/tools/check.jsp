@@ -37,7 +37,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
@@ -87,6 +87,7 @@ if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSes
 	</script>
 	<%
 }
-ResourceLocator resource = new ResourceLocator("org.silverpeas.multilang.generalMultilang", m_MainSessionCtrl.getFavoriteLanguage());
+LocalizationBundle resource = ResourceLocator.getGeneralBundle(
+    m_MainSessionCtrl.getFavoriteLanguage());
 
 %>

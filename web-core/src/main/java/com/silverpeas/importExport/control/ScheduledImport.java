@@ -32,12 +32,14 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.initialization.Initialization;
-import org.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -45,8 +47,8 @@ import java.io.File;
 public class ScheduledImport implements SchedulerEventListener, Initialization {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";
-  private final ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.importExport.settings.importSettings", "");
+  private final SettingBundle resources =
+      ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
   private File dir = null; // Where the import XML descriptors are stored
   private String postPolicy = null;
 
@@ -84,9 +86,9 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
     String userId = resources.getString("userIdAsCreatorId");
     UserDetail user = OrganizationControllerProvider
         .getOrganisationController().getUserDetail(userId);
-    ResourceLocator multilang = new ResourceLocator(
-        "com.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");
-    ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");
+    LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.importExportPeas.multilang.importExportPeasBundle");
+    MultiSilverpeasBundle resource = new MultiSilverpeasBundle(multilang, "fr");
 
     File[] files = dir.listFiles();
     for (File file : files) {

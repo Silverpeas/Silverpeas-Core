@@ -25,18 +25,10 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.DefaultCommentService;
-import org.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,6 +38,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.ResourceLocator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -91,7 +85,7 @@ public class CommentUserNotificationServiceTest {
   /**
    * The settings of the comment core component.
    */
-  private static final String SETTINGS_PATH = "com.stratelia.webactiv.util.comment.Comment";
+  private static final String SETTINGS_PATH = "org.silverpeas.util.comment.Comment";
   /**
    * The user notification to test. It is partially mocked.
    */
@@ -267,7 +261,8 @@ public class CommentUserNotificationServiceTest {
     when(commentService.getAllCommentsOnPublication(COMMENT_RESOURCETYPE,
         new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID)))
         .thenReturn(classifiedComments);
-    when(commentService.getComponentSettings()).thenReturn(new ResourceLocator(SETTINGS_PATH, ""));
+    when(commentService.getComponentSettings()).thenReturn(
+        ResourceLocator.getSettingBundle(SETTINGS_PATH));
     return commentService;
   }
 

@@ -96,7 +96,7 @@ public class UnsubscribeResource extends RESTWebService {
       SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
       NotifierUtil.addSuccess(MessageFormat
-          .format(getBundle().getResourceBundle().getString("GML.unsubscribe.success"),
+          .format(getBundle().getString("GML.unsubscribe.success"),
               component.getLabel(getUserDetail().getUserPreferences().getLanguage())));
       return Response.ok(Collections.singletonList("OK")).build();
     } catch (CommentRuntimeException ex) {

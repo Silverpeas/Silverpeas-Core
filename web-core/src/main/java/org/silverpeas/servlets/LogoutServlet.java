@@ -22,12 +22,14 @@ package org.silverpeas.servlets;
 
 import com.silverpeas.session.SessionManagementProvider;
 import org.silverpeas.util.ResourceLocator;
-import java.io.IOException;
+import org.silverpeas.util.SettingBundle;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 public class LogoutServlet extends HttpServlet {
 
@@ -43,8 +45,8 @@ public class LogoutServlet extends HttpServlet {
     StringBuilder buffer = new StringBuilder(512);
     buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
     buffer.append(request.getServerPort()).append(request.getContextPath());
-    ResourceLocator resource =
-        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+    SettingBundle resource = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings");
     String postLogoutPage = resource.getString("logout.page", "/Login.jsp?ErrorCode=4&logout=true");
     if (postLogoutPage.startsWith("http")) {
       response.sendRedirect(postLogoutPage);

@@ -25,8 +25,12 @@
 package org.silverpeas.util.viewGenerator.html.pagination;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+
+import java.util.MissingResourceException;
 
 public abstract class AbstractPagination implements Pagination {
 
@@ -38,7 +42,7 @@ public abstract class AbstractPagination implements Pagination {
   private String altNextPage = "";
   private String baseURL = null;
   private int nbPagesAround = -1;
-  private ResourceLocator multilang;
+  private LocalizationBundle multilang;
 
   public AbstractPagination() {
   }
@@ -196,11 +200,11 @@ public abstract class AbstractPagination implements Pagination {
   }
 
   @Override
-  public void setMultilang(ResourceLocator multilang) {
+  public void setMultilang(LocalizationBundle multilang) {
     this.multilang = multilang;
   }
 
-  public ResourceLocator getMultilang() {
+  public LocalizationBundle getMultilang() {
     return multilang;
   }
 
@@ -209,7 +213,13 @@ public abstract class AbstractPagination implements Pagination {
   }
 
   public String getString(String key, String defaultValue) {
-    return getMultilang().getString(key, defaultValue);
+    String translation;
+    try {
+      translation = getMultilang().getString(key);
+    } catch (MissingResourceException ex) {
+      translation = defaultValue;
+    }
+    return translation;
   }
 
   @Override

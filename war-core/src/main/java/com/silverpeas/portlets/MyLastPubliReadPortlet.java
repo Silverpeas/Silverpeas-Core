@@ -26,8 +26,6 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import com.stratelia.webactiv.statistic.control.StatisticService;
 import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 

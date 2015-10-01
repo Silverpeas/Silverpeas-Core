@@ -27,6 +27,7 @@ import com.silverpeas.web.UserPrivilegeValidation;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.HttpMethod;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.Filter;
@@ -51,7 +52,7 @@ import java.util.List;
  */
 public class WebCORSFilter implements Filter {
 
-  private static final ResourceLocator settings = new ResourceLocator("org.silverpeas.general", "");
+  private static final SettingBundle settings = ResourceLocator.getGeneralBundle();
   private static final String ALL_DOMAINS_ALLOWED = "*";
 
   /*

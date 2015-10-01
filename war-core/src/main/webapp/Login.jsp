@@ -25,6 +25,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -34,8 +35,8 @@
 
 <%
 
-  ResourceLocator general =
-      new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  SettingBundle general =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
   String loginPage;
   String errorCode = request.getParameter("ErrorCode");

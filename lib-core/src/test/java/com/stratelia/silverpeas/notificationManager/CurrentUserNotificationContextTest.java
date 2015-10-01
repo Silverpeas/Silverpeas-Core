@@ -34,6 +34,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import static com.stratelia.silverpeas.notificationManager.CurrentUserNotificationContext
     .getCurrentUserNotificationContext;
@@ -51,7 +52,7 @@ public class CurrentUserNotificationContextTest {
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   private UserDetail currentUser;
-  private ResourceLocator mockedSettings;
+  private SettingBundle mockedSettings;
 
   @Before
   public void setup() {
@@ -59,7 +60,7 @@ public class CurrentUserNotificationContextTest {
     CacheServiceProvider.getRequestCacheService().clear();
     CacheServiceProvider.getRequestCacheService().put(UserDetail.CURRENT_REQUESTER_KEY, currentUser);
     mockedSettings = reflectionRule
-        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+        .mockField(NotificationManagerSettings.class, SettingBundle.class, "settings");
     // By default, a user is not an anonymous one
     assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(false));
 

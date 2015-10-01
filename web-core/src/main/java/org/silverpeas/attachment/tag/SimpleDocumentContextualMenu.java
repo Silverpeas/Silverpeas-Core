@@ -26,7 +26,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -84,10 +86,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       MainSessionController mainSessionController = (MainSessionController) pageContext.getSession()
           .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       String favoriteLanguage = mainSessionController.getFavoriteLanguage();
-      ResourceLocator messages = new ResourceLocator(
+      LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
-      ResourceLocator settings =
-          new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
       String httpServerBase =
           URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
       pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
@@ -119,9 +121,9 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
-      String userId, final String userLanguage, ResourceLocator resources,
+      String userId, final String userLanguage, LocalizationBundle resources,
       String httpServerBase, boolean showMenuNotif, boolean useContextualMenu,
-      ResourceLocator settings) throws UnsupportedEncodingException {
+      SettingBundle settings) throws UnsupportedEncodingException {
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(2048);

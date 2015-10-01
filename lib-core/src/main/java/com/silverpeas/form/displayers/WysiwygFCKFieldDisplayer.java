@@ -48,7 +48,9 @@ import org.silverpeas.util.Charsets;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
@@ -79,8 +81,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   public static final String dbKey = "xmlWysiwygField_";
   public static final String dir = "xmlWysiwyg";
-  private static final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
   /**
    * Constructeur
@@ -196,7 +198,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
       String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
 
-      ResourceLocator resources = new ResourceLocator(
+      LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
 
       StringBuilder stringBuilder = new StringBuilder();

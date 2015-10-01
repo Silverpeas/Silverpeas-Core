@@ -29,6 +29,7 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.util.SettingBundle;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -52,8 +53,8 @@ import static org.silverpeas.password.web.PasswordResourceURIs.*;
 @Path(PASSWORD_BASE_URI)
 @Authenticated
 public class PasswordResource extends AbstractPasswordResource {
-  protected static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.password.settings.password", "");
+  protected static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   protected static int nbMatchingCombinedRules =
       settings.getInteger("password.combination.nbMatchingRules", 0);
 

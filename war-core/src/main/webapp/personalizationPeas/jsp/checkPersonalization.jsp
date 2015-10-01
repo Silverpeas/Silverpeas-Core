@@ -41,7 +41,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 
 <%@ page import="com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController"%>
@@ -66,6 +66,7 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="org.owasp.encoder.Encode"%>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -100,9 +101,9 @@
 	// Pixels
 	String ArrayPnoColorPix   = m_context + "/util/icons/colorPix/15px.gif";
 
-	ResourcesWrapper 	resource 	= (ResourcesWrapper) request.getAttribute("resources");
-	ResourceLocator 	rs 			= new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-	ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+	MultiSilverpeasBundle resource 	= (MultiSilverpeasBundle) request.getAttribute("resources");
+	SettingBundle rs 			= ResourceLocator.getSettingBundle("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+	SettingBundle general = ResourceLocator.getSettingBundle("com.stratelia.silverpeas.lookAndFeel.generalLook");
 
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 

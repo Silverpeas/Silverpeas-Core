@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
@@ -50,7 +51,7 @@ public abstract class AbstractOperationPane implements OperationPane {
   private OperationPaneType type = OperationPaneType.component;
   private Vector<String> stack = null;
   private List<String> creationItems = null;
-  private ResourceLocator multilang;
+  private LocalizationBundle multilang;
 
   /**
    * Constructor declaration
@@ -109,11 +110,11 @@ public abstract class AbstractOperationPane implements OperationPane {
   }
 
   @Override
-  public void setMultilang(ResourceLocator multilang) {
+  public void setMultilang(LocalizationBundle multilang) {
     this.multilang = multilang;
   }
 
-  public ResourceLocator getMultilang() {
+  public LocalizationBundle getMultilang() {
     return multilang;
   }
 

@@ -29,7 +29,7 @@
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionController"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="java.util.*"%>
 <%@ page import="org.silverpeas.util.*"%>
 
@@ -54,7 +54,7 @@
         return;
       }
 
-      ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+      MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
       String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");

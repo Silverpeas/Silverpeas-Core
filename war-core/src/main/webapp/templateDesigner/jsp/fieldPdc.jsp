@@ -35,9 +35,9 @@
 <%
 	String pdcUtilizationContext = m_context + "/RpdcUtilization/jsp/";
 	String language = resource.getLanguage();
-	ResourcesWrapper pdcResource = new ResourcesWrapper(
-		new ResourceLocator("org.silverpeas.pdcPeas.multilang.pdcBundle", language),
-		new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasIcons", language),
+	MultiSilverpeasBundle pdcResource = new MultiSilverpeasBundle(
+		ResourceLocator.getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle", language),
+		ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasIcons"),
 		language);
 	
 	String pdcAxis = "";

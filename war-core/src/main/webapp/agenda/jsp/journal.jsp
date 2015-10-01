@@ -37,7 +37,7 @@
   boolean readOnly = false;
 
   ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
-  ResourceLocator settings = agenda.getSettings();
+	SettingBundle settings = agenda.getSettings();
 
   String action = request.getParameter("Action"); //Add || Update || View (vient de choisir une categorie)
   													// || DiffusionListOK (vient de choisir des participants dans le UserPanel)

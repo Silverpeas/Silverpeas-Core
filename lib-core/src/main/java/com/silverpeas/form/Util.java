@@ -27,8 +27,9 @@ package com.silverpeas.form;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -36,13 +37,12 @@ import java.util.Map;
 
 public class Util {
 
-  private static final ResourceLocator formIcons = new ResourceLocator(
-      "org.silverpeas.form.settings.formIcons", "");
-  private static final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.form.settings.form", "");
+  private static final SettingBundle formIcons = ResourceLocator.getSettingBundle(
+      "org.silverpeas.form.settings.formIcons");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.form.settings.form");
   private static final String path = URLManager.getApplicationURL();
-  private static ResourceLocator generalMessage;
-  private static ResourceLocator message;
+  private static LocalizationBundle message;
   private static String language;
 
   public static String getPath() {
@@ -59,9 +59,6 @@ public class Util {
 
   public static String getString(String msg, String language) {
     setLanguage(language);
-    if (msg.startsWith("GML.")) {
-      return generalMessage.getString(msg);
-    }
     return message.getString(msg);
   }
 
@@ -140,8 +137,8 @@ public class Util {
   private synchronized static void setLanguage(String lg) {
     if ((language == null) || (!language.trim().toLowerCase().equals(lg.trim().toLowerCase()))) {
       language = lg;
-      generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
-      message = new ResourceLocator("com.silverpeas.form.multilang.formBundle", language);
+      message = ResourceLocator.getLocalizationBundle("org.silverpeas.form.multilang.formBundle",
+          language);
     }
   }
 

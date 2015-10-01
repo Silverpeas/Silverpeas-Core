@@ -68,6 +68,7 @@ import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -1871,8 +1872,8 @@ public class PublicationBmEJB implements PublicationBm {
   private static final String thumbnailDirectory;
 
   static {
-    ResourceLocator publicationSettings =
-        new ResourceLocator("org.silverpeas.publication.publicationSettings", "");
+    SettingBundle publicationSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
     useTagCloud = publicationSettings.getBoolean("useTagCloud", false);
     indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
     thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");

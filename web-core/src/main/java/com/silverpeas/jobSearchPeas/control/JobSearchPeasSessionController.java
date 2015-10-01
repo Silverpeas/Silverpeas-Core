@@ -79,7 +79,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   public JobSearchPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.jobSearchPeas.multilang.jobSearchPeasBundle");
+        "org.silverpeas.jobSearchPeas.multilang.jobSearchPeasBundle");
     setComponentRootName(URLManager.CMP_JOBSEARCHPEAS);
   }
 

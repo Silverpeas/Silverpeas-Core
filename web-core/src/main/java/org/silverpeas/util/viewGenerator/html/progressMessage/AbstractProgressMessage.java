@@ -36,6 +36,7 @@ package org.silverpeas.util.viewGenerator.html.progressMessage;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import java.util.List;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
@@ -47,7 +48,7 @@ import org.apache.ecs.xhtml.script;
 public abstract class AbstractProgressMessage implements ProgressMessage {
 
   protected List<String> messages;
-  protected ResourceLocator multilang;
+  protected LocalizationBundle multilang;
   private ElementContainer xhtmlRenderer = new ElementContainer();
 
   public AbstractProgressMessage() {
@@ -62,7 +63,7 @@ public abstract class AbstractProgressMessage implements ProgressMessage {
   }
 
   @Override
-  public void setMultilang(ResourceLocator resource) {
+  public void setMultilang(LocalizationBundle resource) {
     multilang = resource;
   }
 
@@ -70,7 +71,7 @@ public abstract class AbstractProgressMessage implements ProgressMessage {
     return messages;
   }
 
-  public ResourceLocator getMultilang() {
+  public LocalizationBundle getMultilang() {
     return multilang;
   }
 

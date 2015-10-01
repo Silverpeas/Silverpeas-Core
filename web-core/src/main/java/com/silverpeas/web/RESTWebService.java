@@ -28,7 +28,6 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.web.aspect.ComponentInstMustExistIfSpecified;
 import com.silverpeas.web.aspect.WebEntityMustBeValid;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
@@ -36,7 +35,7 @@ import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.settings.SilverpeasSettings;
 import org.silverpeas.token.Token;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.token.SynchronizerTokenService;
@@ -83,7 +82,7 @@ public abstract class RESTWebService implements WebResource {
   private Collection<SilverpeasRole> userRoles = null;
   private SilverpeasRole greaterUserRole;
 
-  private ResourceLocator bundle = null;
+  private LocalizationBundle bundle = null;
 
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) throws
@@ -218,12 +217,13 @@ public abstract class RESTWebService implements WebResource {
    *
    * @return
    */
-  protected ResourceLocator getBundle() {
+  protected LocalizationBundle getBundle() {
     if (bundle == null) {
       if (getBundleLocation() == null) {
-        bundle = GeneralPropertiesManager.getGeneralMultilang(getUserPreferences().getLanguage());
+        bundle = ResourceLocator.getGeneralBundle(getUserPreferences().getLanguage());
       } else {
-        bundle = new ResourceLocator(getBundleLocation(), getUserPreferences().getLanguage());
+        bundle = ResourceLocator.getLocalizationBundle(getBundleLocation(),
+            getUserPreferences().getLanguage());
       }
     }
     return bundle;

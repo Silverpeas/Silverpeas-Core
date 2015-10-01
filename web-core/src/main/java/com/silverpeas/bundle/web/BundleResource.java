@@ -27,7 +27,9 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.enterprise.context.RequestScoped;
@@ -41,6 +43,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.MissingResourceException;
+import java.util.Properties;
 
 /**
  * The bundle resource represents either a settings bundle or an i18n messages bundle.
@@ -130,15 +133,22 @@ public class BundleResource extends RESTWebService {
       localizedBundle = localizedBundle.substring(0, bundle.lastIndexOf("_"));
     }
     localizedBundle = localizedBundle.replaceAll("/", ".");
-    ResourceLocator generalResource = GeneralPropertiesManager.getGeneralMultilang(language);
-    ResourceLocator resource = new ResourceLocator(localizedBundle, language);
+    LocalizationBundle resource = ResourceLocator.getLocalizationBundle(localizedBundle, language);
     try {
       if (!bundle.trim().isEmpty() && bundle.contains("multilang")) {
         StringWriter messages = new StringWriter();
-        resource.getProperties().store(messages, localizedBundle + " - " + resource.getLanguage());
-        generalResource.getProperties().store(messages,
-            GeneralPropertiesManager.GENERAL_PROPERTIES_FILE
-            + " - " + generalResource.getLanguage());
+        Properties properties = new Properties();
+        Properties generalProperties = new Properties();
+        for (String key : resource.keySet()) {
+          if (key.startsWith("GML.")) {
+            generalProperties.setProperty(key, resource.getString(key));
+          } else {
+            properties.setProperty(key, resource.getString(key));
+          }
+        }
+        properties.store(messages, localizedBundle + " - " + resource.getLocale().getLanguage());
+        generalProperties.store(messages, GeneralPropertiesManager.GENERAL_PROPERTIES_FILE + " - " +
+            resource.getLocale().getLanguage());
         return Response.ok(messages.toString()).build();
       } else {
         return Response.status(Response.Status.BAD_REQUEST).entity(
@@ -172,13 +182,21 @@ public class BundleResource extends RESTWebService {
       settingsBundle = settingsBundle.substring(0, bundle.lastIndexOf("_"));
     }
     settingsBundle = settingsBundle.replaceAll("/", ".");
-    ResourceLocator generalSettings = new ResourceLocator(GENERAL_SETTINGS, "");
-    ResourceLocator settings = new ResourceLocator(settingsBundle, "");
+    SettingBundle generalSettings = ResourceLocator.getSettingBundle(GENERAL_SETTINGS);
+    SettingBundle settings = ResourceLocator.getSettingBundle(settingsBundle);
     try {
       if (!bundle.trim().isEmpty() && !bundle.contains("multilang")) {
         StringWriter messages = new StringWriter();
-        settings.getProperties().store(messages, settingsBundle);
-        generalSettings.getProperties().store(messages, GENERAL_SETTINGS);
+        Properties properties = new Properties();
+        Properties generalProperties = new Properties();
+        for (String key : generalSettings.keySet()) {
+          generalProperties.setProperty(key, generalSettings.getString(key));
+        }
+        for (String key : settings.keySet()) {
+          properties.setProperty(key, settings.getString(key));
+        }
+        properties.store(messages, settingsBundle);
+        generalProperties.store(messages, GENERAL_SETTINGS);
         return Response.ok(messages.toString()).build();
       } else {
         return Response.status(Response.Status.BAD_REQUEST).entity(

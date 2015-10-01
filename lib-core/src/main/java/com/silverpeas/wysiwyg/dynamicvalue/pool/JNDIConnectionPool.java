@@ -25,6 +25,7 @@
 package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.annotation.PostConstruct;
 import javax.naming.InitialContext;
@@ -61,7 +62,7 @@ public class JNDIConnectionPool implements ConnectionPool {
 
   @PostConstruct
   protected void init() {
-    ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+    SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
     String jndiName = settings.getString(JNDI_NAME_PROPERTY, DEFAULT_SILVERPEAS_DATASOURCE);
     try {
       dataSource = InitialContext.doLookup(jndiName);

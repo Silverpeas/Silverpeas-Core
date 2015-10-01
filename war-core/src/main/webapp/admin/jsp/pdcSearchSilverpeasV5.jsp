@@ -37,12 +37,10 @@
 <%@page import="com.stratelia.silverpeas.pdcPeas.model.QueryParameters"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.SearchContext"%>
 <%@page import="java.util.List"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.ResourcesWrapper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -83,7 +81,7 @@ boolean someAxisPertinent(List<SearchAxis> axis)
 	return false;
 }
 
-void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> axis, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws ThesaurusException, IOException {
+void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> axis, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, MultiSilverpeasBundle resource, String axisTypeIcon, JspWriter out) throws ThesaurusException, IOException {
 	SearchAxis	searchAxis			= null;
 	int			axisId				= -1;
 	String		axisName			= null;
@@ -160,7 +158,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
 }
 %>
 <%
-ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 

@@ -27,7 +27,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="java.util.List"%>
@@ -41,7 +41,7 @@
 	if (!wall) {
 	  urlServlet += "&View=MyFeed";
 	}
-	ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+	MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 %>
 <script type="text/javascript" src="<%=URLManager.getApplicationURL() %>/socialNetwork/jsp/js/newsfeed.js"></script>
 <script type="text/javascript">

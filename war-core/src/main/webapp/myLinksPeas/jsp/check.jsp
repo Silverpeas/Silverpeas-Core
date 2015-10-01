@@ -53,7 +53,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
@@ -74,7 +74,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();

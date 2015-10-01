@@ -5,6 +5,7 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Administration;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.security.CipherKeyUpdateException;
@@ -67,7 +68,8 @@ public class CipherKeyResource extends RESTWebService {
   @Consumes(MediaType.TEXT_PLAIN)
   @Produces(MediaType.TEXT_PLAIN)
   public Response setCipherKey(final String cipherKey) {
-    ResourceLocator messages = new ResourceLocator("org.silverpeas.crypto.multilang.cryptoBundle",
+    LocalizationBundle messages =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.crypto.multilang.cryptoBundle",
         getUserPreferences().getLanguage());
     Response status;
     try {

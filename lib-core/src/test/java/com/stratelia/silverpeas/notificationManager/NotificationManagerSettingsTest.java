@@ -29,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -43,14 +43,15 @@ public class NotificationManagerSettingsTest {
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
-  private ResourceLocator mockedSettings;
+  private SettingBundle mockedSettings;
 
   @Before
   public void setup() {
 
     // Settings
-    mockedSettings = reflectionRule
-        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+    mockedSettings =
+        reflectionRule.mockField(NotificationManagerSettings.class, SettingBundle.class,
+            "settings");
     setDefaultChannels("");
     setDelayedNotificationFrequencyChoiceList("");
     setDefaultDelayedNotificationFrequencyChoiceList("");

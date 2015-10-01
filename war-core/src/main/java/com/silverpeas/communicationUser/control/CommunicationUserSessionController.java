@@ -70,9 +70,9 @@ public class CommunicationUserSessionController extends AbstractComponentSession
   public CommunicationUserSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.communicationUser.multilang.communicationUserBundle",
-        "com.silverpeas.communicationUser.settings.communicationUserIcons",
-        "com.silverpeas.communicationUser.settings.communicationUserSettings");
+        "org.silverpeas.communicationUser.multilang.communicationUserBundle",
+        "org.silverpeas.communicationUser.settings.communicationUserIcons",
+        "org.silverpeas.communicationUser.settings.communicationUserSettings");
     setComponentRootName(URLManager.CMP_COMMUNICATIONUSER);
   }
 

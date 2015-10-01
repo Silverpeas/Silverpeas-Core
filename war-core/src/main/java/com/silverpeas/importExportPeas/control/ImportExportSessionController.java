@@ -33,7 +33,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -59,7 +59,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   }
 
   public ImportReport processImport(String xmlFileName,
-      ResourcesWrapper resource) throws ImportExportException {
+      MultiSilverpeasBundle resource) throws ImportExportException {
     ImportReport importReport = importExport.processImport(getUserDetail(), xmlFileName);
     importExport.writeImportToLog(importReport, resource);
     return importReport;

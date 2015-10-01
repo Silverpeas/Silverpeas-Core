@@ -20,25 +20,25 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.AbstractI18NBean;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.memory.MemoryUnit;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -185,8 +185,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   public String getName(String language) {
 
     if (isPersonalSpace) {
-      return GeneralPropertiesManager.getGeneralMultilang(language)
-          .getString("GML.personalSpace", "Mon espace");
+      return ResourceLocator.getGeneralBundle(language)
+          .getString("GML.personalSpace");
     }
 
     return super.getName(language);

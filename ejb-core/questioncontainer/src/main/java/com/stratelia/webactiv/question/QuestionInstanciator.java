@@ -33,17 +33,18 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 
 public class QuestionInstanciator extends SQLRequest {
-  private static ResourceLocator settings =
-      new ResourceLocator("com.stratelia.webactiv.question.questionSettings", "fr");
+  private static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.question.questionSettings");
 
   public QuestionInstanciator() {
   }
 
   public QuestionInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.question");
+    super("org.silverpeas.question");
   }
 
   public void create(Connection con, String spaceId, String componentId, String userId)

@@ -1624,7 +1624,7 @@
       <name>settings</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>org.silverpeas.util.ResourcesWrapper</type>
+      <type>org.silverpeas.util.MultiSilverpeasBundle</type>
     </attribute>
   </tag>
   <tag>

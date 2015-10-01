@@ -54,6 +54,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.URLUtils;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -74,7 +75,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   private Calendar currentCalendar;
   private SilverpeasCalendar calendarBm;
   private Category category = null;
-  private ResourceLocator settings;
   private JournalHeader currentJournalHeader = null;
   private Collection<Attendee> currentAttendees = null;
   private Collection<Category> currentCategories = null;
@@ -570,11 +570,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return
    * @see
    */
-  public ResourceLocator getSettings() {
-    if (settings == null) {
-      settings = new ResourceLocator("com.stratelia.webactiv.agenda.settings.agendaSettings", "");
-    }
-    return settings;
+  public SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle("org.silverpeas.agenda.settings.agendaSettings");
   }
 
   /**
@@ -1388,7 +1385,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get userDetail for this agenda
-   * @param userDetail
    */
   public UserDetail getAgendaUserDetail() {
     return agendaUserDetail;
@@ -1396,7 +1392,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Get userId for this agenda
-   * @param userDetail
    */
   public String getAgendaUserId() {
     return agendaUserId;
@@ -1459,13 +1454,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     return exportIcalAgenda(null, null);
   }
 
-  /**
-   * Export SilverpeasCalendar in Ical format
-   * @param startDate
-   * @param endDate
-   * @return ReturnCode (See ReturnCodes)
-   * @throws Exception
-   */
   public String importIcalAgenda(File fileCalendar) throws Exception {
     SilverTrace
         .debug("agenda", "AgendaSessionController.importIcalAgenda()", "root.MSG_GEN_ENTER_METHOD");
@@ -1604,7 +1592,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   /**
    * Ask if the same days of the month are all holidays
    * @param cal
-   * @param month (0=january, etc...)
+   * @param currentMonth (0=january, etc...)
    * @return true or false
    */
   public boolean isSameDaysAreHolidays(Calendar cal, int currentMonth) {

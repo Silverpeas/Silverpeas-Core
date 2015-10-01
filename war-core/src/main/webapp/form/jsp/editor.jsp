@@ -32,17 +32,19 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%
-    String code = (String) request.getParameter("Code"); 
-    
-    ResourceLocator scc = new ResourceLocator("com.silverpeas.form.multilang.formBundle", "fr");
-    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("fr");
-    String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String code = (String) request.getParameter("Code");
+
+  LocalizationBundle scc =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.form.multilang.formBundle",
+          request.getLocale().getLanguage());
+    String iconsPath = ResourceLocator.getGeneralBundle().getString("ApplicationURL");
 	String iconsPathWysiwyg =iconsPath+"/util/icons/wysiwyg/";
 	//icones
 	String pxSrc = iconsPath + "/util/icons/colorPix/1px.gif";
@@ -55,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/checkForm.js"></script>
 
 
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<TITLE><%=scc.getString("GML.popupTitle")%></TITLE>
 
 <META http-equiv=Content-Type content="text/html; charset=windows-1252">
 <STYLE>
@@ -335,7 +337,7 @@ onload=doLoad()>
 						       </OPTION></SELECT>&nbsp;&nbsp;
 						
 						      <SELECT onchange="format('fontSize',this[this.selectedIndex].value); this.selectedIndex=0">
-						        <OPTION class=heading selected><%=generalMessage.getString("GML.size")%>
+						        <OPTION class=heading selected><%=scc.getString("GML.size")%>
 						        <OPTION value=1>8<OPTION value=2>10<OPTION value=3>12<OPTION value=4>14<OPTION value=5>18<OPTION value=6>24<OPTION value=7>36
 						      </OPTION></SELECT>&nbsp;&nbsp;
 						

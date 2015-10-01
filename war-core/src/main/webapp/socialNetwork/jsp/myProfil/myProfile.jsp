@@ -34,18 +34,14 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
-<%@ page import="org.silverpeas.util.EncodeHelper" %>
-<%@ page import="org.silverpeas.util.ResourcesWrapper" %>
+<%@ page import="org.silverpeas.util.*" %>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -54,9 +50,8 @@
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
     String language = request.getLocale().getLanguage();
-    ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
-    ResourceLocator multilang = new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle", language);
-    ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
+    MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
+    org.silverpeas.util.LocalizationBundle multilang = ResourceLocator.getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
     String view = (String) request.getAttribute("View");
 

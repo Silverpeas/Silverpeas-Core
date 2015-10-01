@@ -44,6 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%!
@@ -114,7 +115,7 @@ if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSes
   org.silverpeas.core.admin.OrganizationController m_OrganizationController =
       OrganizationControllerProvider.getOrganisationController();
 
-ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
+LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
 
 String sURI = request.getRequestURI();
 String sServletPath = request.getServletPath();

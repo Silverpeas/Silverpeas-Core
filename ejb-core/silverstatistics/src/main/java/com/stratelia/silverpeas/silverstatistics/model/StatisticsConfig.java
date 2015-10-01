@@ -127,7 +127,7 @@ public class StatisticsConfig {
    */
   public void init() throws SilverStatisticsConfigException {
     ResourceBundle resource = FileUtil
-        .loadBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics",
+        .loadBundle("org.silverpeas.silverstatistics.SilverStatistics",
             Locale.getDefault());
     initialize(resource);
   }

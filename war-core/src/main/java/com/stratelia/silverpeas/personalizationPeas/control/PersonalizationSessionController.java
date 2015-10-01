@@ -59,9 +59,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   public PersonalizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.personalizationPeas.multilang.personalizationBundle",
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasIcons",
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+        "org.silverpeas.personalizationPeas.multilang.personalizationBundle",
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasIcons",
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
     setComponentRootName(URLManager.CMP_PERSONALIZATION);
     notificationManager = new NotificationManager(getLanguage());
   }

@@ -38,7 +38,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 
 <%// En fonction de ce dont vous avez besoin %>
@@ -76,5 +76,5 @@
         Frame			frame			= gef.getFrame();
 		Board			board			= gef.getBoard();
 
-        ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+        MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 %>

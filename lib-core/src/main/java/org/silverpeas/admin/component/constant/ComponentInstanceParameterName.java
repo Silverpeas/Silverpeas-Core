@@ -23,8 +23,9 @@
  */
 package org.silverpeas.admin.component.constant;
 
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 /**
  * Centralization of common parameter names of component instances.
@@ -35,8 +36,8 @@ public enum ComponentInstanceParameterName {
   authorizedFileExtension("file.authorized.default"),
   forbiddenFileExtension("file.forbidden.default");
 
-  private final static ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+  private final static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
 
   private final String defaultValueKey;
 

@@ -28,7 +28,9 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.List;
@@ -77,9 +79,9 @@ public interface CommentService {
 
   void unindexAllCommentsOnPublication(final String resourceType, WAPrimaryKey pk);
 
-  ResourceLocator getComponentMessages(String language);
+  LocalizationBundle getComponentMessages(String language);
 
-  ResourceLocator getComponentSettings();
+  SettingBundle getComponentSettings();
 
   List<SocialInformationComment> getSocialInformationCommentsListByUserId(
       List<String> listResourceType, String userId, Period period);

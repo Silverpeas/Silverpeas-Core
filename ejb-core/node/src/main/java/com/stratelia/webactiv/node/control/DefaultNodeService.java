@@ -35,6 +35,7 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
@@ -65,8 +66,8 @@ public class DefaultNodeService implements NodeService {
   /**
    * Database name where is stored nodes
    */
-  private static final ResourceLocator nodeSettings = new ResourceLocator(
-      "org.silverpeas.node.nodeSettings", "fr");
+  private static final SettingBundle nodeSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
 
   /**
    * Method declaration

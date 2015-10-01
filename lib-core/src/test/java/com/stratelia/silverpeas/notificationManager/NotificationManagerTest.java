@@ -24,12 +24,12 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.util.ResourceLocator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,14 +50,14 @@ public class NotificationManagerTest {
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
-  private ResourceLocator mockedSettings;
+  private SettingBundle mockedSettings;
 
   @Before
   public void setUp() {
 
     // Settings
-    mockedSettings = reflectionRule
-        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+        SettingBundle.class, "settings");
   }
 
   /**

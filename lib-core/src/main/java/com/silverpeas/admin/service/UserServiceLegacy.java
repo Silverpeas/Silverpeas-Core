@@ -39,7 +39,9 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -54,13 +56,13 @@ import java.util.Random;
 @Singleton
 public class UserServiceLegacy implements UserService {
 
-  ResourceLocator multilang = null;
+  LocalizationBundle multilang = null;
 
   @PostConstruct
   void init() {
       multilang =
-        new ResourceLocator(
-        "com.silverpeas.social.multilang.registration", DisplayI18NHelper
+        ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.social.multilang.registration", DisplayI18NHelper
         .getDefaultLanguage());
   }
 
@@ -167,8 +169,8 @@ public class UserServiceLegacy implements UserService {
           "credentialsMail");
 
       // Retrieve login page URL
-      ResourceLocator generalLook =
-          new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+      SettingBundle generalLook =
+          ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
       String loginPage = generalLook.getString("loginPage", "defaultLogin.jsp");
       StringBuilder url = new StringBuilder();
       if (!loginPage.startsWith("http")) {

@@ -155,8 +155,8 @@ public abstract class AbstractWindow implements Window {
         OrganizationControllerProvider.getOrganisationController();
     if (organizationController.isComponentManageable(getGEF().getComponentIdOfCurrentRequest(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
-      String label =
-          GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
+      String label = GeneralPropertiesManager.getGeneralMultilang(
+          getGEF().getMultilang().getLocale().getLanguage())
               .getString("GML.operations.setupComponent");
       String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
           "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentIdOfCurrentRequest();
@@ -307,8 +307,8 @@ public abstract class AbstractWindow implements Window {
         final String viewMgrLabel, addFavLabel;
         final String viewMgrAction, addFavAction;
         boolean addFavOperation = true;
-        ResourceLocator bundle =
-            GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage());
+        ResourceLocator bundle = GeneralPropertiesManager.getGeneralMultilang(
+            getGEF().getMultilang().getLocale().getLanguage());
         if (OperationPaneType.space.equals(getOperationPane().getType())) {
           viewMgrLabel =
               bundle.getString("GML.space.responsibles", "Responsables").replaceAll("''", "'");

@@ -24,6 +24,7 @@
 package org.silverpeas.servlets.credentials;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * A wrapper of the settings on the registration of a new user.
@@ -32,8 +33,8 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class RegistrationSettings {
 
-  private static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.authentication.settings.authenticationSettings", "");
+  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
   private static String SELF_AUTHENTICATION_ACTIVATION = "newRegistrationEnabled";
   private static String SELF_AUTHENTICATION_DOMAINID = "justRegisteredDomainId";
   private static long PURGE_PERIOD = 10;

@@ -1,13 +1,14 @@
 package org.silverpeas.web.util;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class DomainDetector {
 
-  private static ResourceLocator domainSettings = new ResourceLocator(
-      "org.silverpeas.authentication.settings.domainSettings", "");
+  private static SettingBundle domainSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.authentication.settings.domainSettings");
 
   /**
    * Return domain id according to server URL and settings file

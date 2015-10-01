@@ -35,6 +35,7 @@ import org.silverpeas.password.rule.MinLengthPasswordRule;
 import org.silverpeas.password.rule.PasswordRule;
 import org.silverpeas.password.rule.SequentialForbiddenPasswordRule;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
@@ -56,8 +57,8 @@ import java.util.Set;
  */
 @Singleton
 public class DefaultPasswordService implements PasswordService {
-  protected static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.password.settings.password", "");
+  protected static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   protected static int nbMatchingCombinedRules =
       settings.getInteger("password.combination.nbMatchingRules", 0);
 

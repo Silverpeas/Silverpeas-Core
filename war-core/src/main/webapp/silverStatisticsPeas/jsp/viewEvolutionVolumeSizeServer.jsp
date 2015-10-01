@@ -32,7 +32,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%!
 
-	private String formatDate(ResourcesWrapper resources, String date)
+	private String formatDate(MultiSilverpeasBundle resources, String date)
 	{//date au format AAAA-MM-jj
 
 		String dateFormate = "";

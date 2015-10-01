@@ -23,6 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
@@ -72,7 +73,7 @@ public class PersonalSpaceController {
     WAComponent baseComponent = Instanciateur.getWAComponent(componentName);
     if (baseComponent == null || !baseComponent.isVisibleInPersonalSpace()) {
       UserDetail user = UserDetail.getById(userId);
-      ResourceLocator messages = getMessages(user.getUserPreferences().getLanguage());
+      LocalizationBundle messages = getMessages(user.getUserPreferences().getLanguage());
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");
       throw new AdminException(MessageFormat.format(errorText, componentName), false);
     }
@@ -148,7 +149,7 @@ public class PersonalSpaceController {
     return null;
   }
 
-  private ResourceLocator getMessages(String language) {
-    return new ResourceLocator(MESSAGES_LOCATION, language);
+  private LocalizationBundle getMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_LOCATION, language);
   }
 }

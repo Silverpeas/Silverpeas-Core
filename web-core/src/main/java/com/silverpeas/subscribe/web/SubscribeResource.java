@@ -68,7 +68,7 @@ public class SubscribeResource extends RESTWebService {
       SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
       NotifierUtil.addSuccess(MessageFormat
-          .format(getBundle().getResourceBundle().getString("GML.subscribe.success"),
+          .format(getBundle().getString("GML.subscribe.success"),
               component.getLabel(getUserDetail().getUserPreferences().getLanguage())));
       return "OK";
     } catch (CommentRuntimeException ex) {

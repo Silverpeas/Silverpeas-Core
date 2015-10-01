@@ -37,7 +37,7 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
@@ -69,7 +69,7 @@ public class HtmlSearchResultTag extends TagSupport {
   private Integer sortValue = null;
   private Boolean activeSelection = false;
   private Boolean exportEnabled = false;
-  private ResourcesWrapper settings = null;
+  private MultiSilverpeasBundle settings = null;
   private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
 
   @Override
@@ -160,7 +160,7 @@ public class HtmlSearchResultTag extends TagSupport {
    */
   private String getHtmlResult() throws JspTagException {
     // Get settings from ResourcesWrapper
-    ResourcesWrapper settings = getSettings();
+    MultiSilverpeasBundle settings = getSettings();
     // Retrieve result instance identifier
     String instanceId = gsr.getInstanceId();
     String componentName = instanceId;
@@ -232,7 +232,7 @@ public class HtmlSearchResultTag extends TagSupport {
    * @return the default HTML result search of a searched element
    * @throws JspTagException
    */
-  private String generateHTMLSearchResult(ResourcesWrapper settings, String componentName,
+  private String generateHTMLSearchResult(MultiSilverpeasBundle settings, String componentName,
       String extraInformation) {
     // initialize html result
     StringBuilder result = new StringBuilder();
@@ -429,19 +429,19 @@ public class HtmlSearchResultTag extends TagSupport {
   /**
    * @return a ResourcesWrapper which encapsulate pdcPeas settings and bundles
    */
-  private ResourcesWrapper getSettings() {
+  private MultiSilverpeasBundle getSettings() {
     if (settings == null) {
       String language = getUserPreferences().getLanguage();
-      ResourceLocator messages =
-          new ResourceLocator("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
-      settings = new ResourcesWrapper(messages,
-          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
-          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", ""), language);
+      settings = new MultiSilverpeasBundle(
+          ResourceLocator.getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle",
+              language),
+          ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasIcons"),
+          ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings"), language);
     }
     return settings;
   }
 
-  public void setSettings(ResourcesWrapper settings) {
+  public void setSettings(MultiSilverpeasBundle settings) {
     this.settings = settings;
   }
 

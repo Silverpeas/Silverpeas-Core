@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
@@ -37,7 +38,7 @@ public class BrowseUserPanel extends BrowsePanelProvider {
 
   SelectionUsersGroups m_SelectionExtraParams = null;
 
-  public BrowseUserPanel(String language, ResourceLocator rs, CacheManager cm,
+  public BrowseUserPanel(String language, LocalizationBundle rs, CacheManager cm,
       SelectionUsersGroups sug) {
     super(language, rs, cm, CacheType.CM_ELEMENT);
     initAll(sug);
@@ -69,8 +70,8 @@ public class BrowseUserPanel extends BrowsePanelProvider {
     }
 
     // Set the Page name
-    pageName = resourceLocator.getString("selectionPeas.usersAll");
-    pageSubTitle = resourceLocator.getString("selectionPeas.searchUser");
+    pageName = messages.getString("selectionPeas.usersAll");
+    pageSubTitle = messages.getString("selectionPeas.searchUser");
 
     // Build search tokens
     searchTokens = new PanelSearchToken[0];
@@ -83,7 +84,7 @@ public class BrowseUserPanel extends BrowsePanelProvider {
     if ((parentGroupId == null) || (parentGroupId.length() <= 0)) {
       return pageName;
     }
-    return resourceLocator.getString("selectionPeas.usersOfGroup") + parentGroupName + " ";
+    return messages.getString("selectionPeas.usersOfGroup") + parentGroupName + " ";
   }
 
   public void setMiniFilter(int filterIndex, String filterValue) {

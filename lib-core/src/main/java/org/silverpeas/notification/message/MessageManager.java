@@ -24,10 +24,10 @@
 package org.silverpeas.notification.message;
 
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 
 /**
  * This manager provides tools to register and restitute volatile messages (info, success or error)
@@ -153,33 +153,34 @@ public class MessageManager {
   }
 
   /**
-   * Gets the resource locator from the given property file and by taking into account of the
-   * current known language.
-   * @param propertyFileBaseName
-   * @return
+   * Gets the localization bundle with the given base name and for the root locale.
+   * @param bundleBaseName the localization bundle base name.
+   * @return a localization bundle.
    */
-  public static ResourceLocator getResourceLocator(String propertyFileBaseName) {
-    return getResourceLocator(getRegistredKey(), propertyFileBaseName, null);
+  public static LocalizationBundle getLocalizationBundle(String bundleBaseName) {
+    return getLocalizationBundle(getRegistredKey(), bundleBaseName, null);
   }
 
   /**
-   * Gets the resource locator from the given property file and given language.
-   * @param propertyFileBaseName
-   * @param language
-   * @return
+   * Gets from the message container the localization bundle with the specified bundle base name
+   * and for the given language.
+   * @param messageContainerName the name of the message container.
+   * @param bundleBaseName the base name of the localization bundle.
+   * @param language the language for which the bundle is asked.
+   * @return a localization bundle.
    */
-  protected static ResourceLocator getResourceLocator(String registredKey,
-      String propertyFileBaseName, String language) {
-    MessageContainer container = getMessageContainer(registredKey);
+  protected static LocalizationBundle getLocalizationBundle(String messageContainerName,
+      String bundleBaseName, String language) {
+    MessageContainer container = getMessageContainer(messageContainerName);
 
     // If null, manager has not been initialized -> ERROR is traced
     if (container == null) {
-      SilverTrace.error("notification", "MessageManager.getResourceLocator",
-          "MESSAGE_MANAGER.NOT_INITIALIZED", "ResourceLocator : " + propertyFileBaseName);
+      SilverTrace.error("notification", "MessageManager.getLocalizationBundle",
+          "MESSAGE_MANAGER.NOT_INITIALIZED", "ResourceLocator : " + bundleBaseName);
       return null;
     }
 
-    return container.getResourceLocator(propertyFileBaseName,
+    return container.getLocalizationBundle(bundleBaseName,
         StringUtil.isDefined(language) ? language : container.getLanguage());
   }
 

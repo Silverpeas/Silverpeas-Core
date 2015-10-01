@@ -56,8 +56,8 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   public SelectionPeasWrapperSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.userPanelPeas.multilang.selectionPeasBundle",
-        "com.stratelia.silverpeas.userPanelPeas.settings.selectionPeasIcons");
+        "org.silverpeas.userPanelPeas.multilang.selectionPeasBundle",
+        "org.silverpeas.userPanelPeas.settings.selectionPeasIcons");
   }
 
   /**

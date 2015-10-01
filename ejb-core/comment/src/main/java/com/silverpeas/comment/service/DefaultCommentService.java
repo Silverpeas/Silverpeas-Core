@@ -36,7 +36,9 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.WAPrimaryKey;
 
 import javax.inject.Inject;
@@ -59,7 +61,7 @@ public class DefaultCommentService implements CommentService {
 
   private static final String SETTINGS_PATH = "org.silverpeas.util.comment.Comment";
   private static final String MESSAGES_PATH = "org.silverpeas.util.comment.multilang.comment";
-  private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
 
   @Inject
   private CommentDAO commentDAO;
@@ -421,13 +423,13 @@ public class DefaultCommentService implements CommentService {
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
+  public SettingBundle getComponentSettings() {
     return settings;
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
-    return new ResourceLocator(MESSAGES_PATH, language);
+  public LocalizationBundle getComponentMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 
   @Override

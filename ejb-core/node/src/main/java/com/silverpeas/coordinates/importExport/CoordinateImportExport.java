@@ -30,6 +30,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
@@ -192,11 +193,11 @@ public class CoordinateImportExport {
    * @return
    */
   public List<NodeDetail> getAxis(String componentId) {
-    ResourceLocator nodeSettings = new ResourceLocator(
-        "org.silverpeas.node.nodeSettings", "");
+    SettingBundle nodeSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
-    List<NodeDetail> axis = new ArrayList<NodeDetail>();
+    List<NodeDetail> axis = new ArrayList<>();
     try {
       List headers = getAxisHeaders(componentId);
       NodeDetail header = null;
@@ -225,11 +226,11 @@ public class CoordinateImportExport {
   public List<NodeDetail> getAxisHeadersWithChildren(String componentId,
       boolean includeUnclassified,
       boolean takeAxisInChildrenList) {
-    ResourceLocator nodeSettings = new ResourceLocator(
-        "com.stratelia.webactiv.node.nodeSettings", "");
+    SettingBundle nodeSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
-    List<NodeDetail> axis = new ArrayList<NodeDetail>();
+    List<NodeDetail> axis = new ArrayList<>();
     try {
       List<NodeDetail> headers = getAxisHeaders(componentId);
       for (NodeDetail header : headers) {
@@ -258,8 +259,8 @@ public class CoordinateImportExport {
    * @return
    */
   public List getAxisChildren(NodePK nodePK, boolean takeAxisInChildrenList) {
-    ResourceLocator nodeSettings = new ResourceLocator(
-        "com.stratelia.webactiv.node.nodeSettings", "");
+    SettingBundle nodeSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     List<NodeDetail> children = new ArrayList<NodeDetail>();

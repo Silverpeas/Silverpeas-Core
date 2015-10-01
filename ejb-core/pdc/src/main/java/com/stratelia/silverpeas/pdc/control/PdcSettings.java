@@ -25,14 +25,14 @@
 package com.stratelia.silverpeas.pdc.control;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class PdcSettings {
 
   public static boolean delegationEnabled = false;
 
   static {
-    ResourceLocator resource = new ResourceLocator("com.silverpeas.pdc.pdc", "");
-
-    delegationEnabled = resource.getBoolean("EnableDelegation", false);
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.pdc.pdc");
+    delegationEnabled = settings.getBoolean("EnableDelegation", false);
   }
 }

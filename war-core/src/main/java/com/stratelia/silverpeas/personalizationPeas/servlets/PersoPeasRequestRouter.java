@@ -31,6 +31,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.servlet.HttpRequest;
 
@@ -126,7 +127,7 @@ public class PersoPeasRequestRouter extends
     String id = (String) request.getParameter("id");
     NotificationParametrizationAction parametrizationAction =
         NotificationParametrizationAction.from(action);
-    ResourceLocator messages = personalizationScc.getMultilang();
+    LocalizationBundle messages = personalizationScc.getMultilang();
     switch (parametrizationAction) {
       case Test:
         String testExplanation;

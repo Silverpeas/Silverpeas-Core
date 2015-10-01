@@ -52,9 +52,9 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
    */
   public MyContactProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.silverpeas.social.multilang.socialNetworkBundle",
-        "com.silverpeas.social.settings.socialNetworkIcons",
-        "com.silverpeas.social.settings.socialNetworkSettings");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.social.multilang.socialNetworkBundle",
+        "org.silverpeas.social.settings.socialNetworkIcons",
+        "org.silverpeas.social.settings.socialNetworkSettings");
   }
 
   /**

@@ -1,4 +1,7 @@
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="com.silverpeas.ui.DisplayI18NHelper" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -30,8 +33,9 @@
 <%@ include file="headLog.jsp" %>
 
 <%
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+  LocalizationBundle authenticationBundle =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication",
+          request.getLocale().getLanguage());
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

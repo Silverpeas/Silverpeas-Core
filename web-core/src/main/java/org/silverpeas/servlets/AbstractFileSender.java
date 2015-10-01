@@ -24,10 +24,10 @@
 package org.silverpeas.servlets;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.file.SilverpeasFile;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -62,7 +62,7 @@ public abstract class AbstractFileSender extends HttpServlet {
 
   protected void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     OutputStream out = res.getOutputStream();
-    StringReader sr = new StringReader(getResources().getString("warning"));
+    StringReader sr = new StringReader(getSettingBunde().getString("warning"));
     try {
       IOUtils.copy(sr, out);
       out.flush();
@@ -74,6 +74,6 @@ public abstract class AbstractFileSender extends HttpServlet {
     }
   }
 
-  protected abstract ResourceLocator getResources();
+  protected abstract SettingBundle getSettingBunde();
 
 }

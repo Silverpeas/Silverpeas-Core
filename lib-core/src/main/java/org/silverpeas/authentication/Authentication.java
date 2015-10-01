@@ -28,6 +28,7 @@ import org.silverpeas.authentication.exception.AuthenticationPwdChangeNotAvailEx
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 
 /**
@@ -80,7 +81,7 @@ public abstract class Authentication {
    * @param authenticationServerName the name of a remote service behind a given authentication service.
    * @param settings the settings of the server communication.
    */
-  public void init(String authenticationServerName, ResourceLocator settings) {
+  public void init(String authenticationServerName, SettingBundle settings) {
     this.authServerName = authenticationServerName;
     this.enabled =  settings.getBoolean(this.authServerName + ".enabled", true);
     loadProperties(settings);
@@ -151,7 +152,7 @@ public abstract class Authentication {
    * service.
    * @param settings the communication settings.
    */
-  protected abstract void loadProperties(ResourceLocator settings);
+  protected abstract void loadProperties(SettingBundle settings);
 
   /**
    * Opens a connection with a server of the remote authentication service.

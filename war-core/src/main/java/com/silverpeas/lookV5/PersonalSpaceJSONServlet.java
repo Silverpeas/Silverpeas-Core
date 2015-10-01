@@ -37,6 +37,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
@@ -214,7 +215,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private String getToolsAsJSONArray(LookHelper helper) {
-    ResourceLocator message = new ResourceLocator(
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.homePage.multilang.homePageBundle", helper.getLanguage());
     String json = "";
     if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
@@ -263,7 +264,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private void addNotificationsAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
-      ResourceLocator message) {
+      LocalizationBundle message) {
     if (helper.getSettings("notificationVisible", true)) {
       // get number of notifications
       int nbNotifications = 0;
@@ -285,7 +286,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private void addFileSharingAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
-      ResourceLocator message) {
+      LocalizationBundle message) {
     // mes tickets
     if (helper.getSettings("fileSharingVisible", true)) {
       SharingTicketService sharingTicket =
@@ -304,7 +305,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private void addWebConnectionsAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
-      ResourceLocator message) {
+      LocalizationBundle message) {
     // mes connexions
     if (helper.getSettings("webconnectionsVisible", true)) {
       WebConnectionsInterface webConnections = new WebConnectionService();

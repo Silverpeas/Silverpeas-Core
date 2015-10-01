@@ -23,21 +23,21 @@ package com.stratelia.silverpeas.domains.ldapdriver;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPSearchConstraints;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.LdapConfiguration;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions
  * @author tleroi
  * @version 1.0
  */
-public class LDAPSettings extends DriverSettings {
+public class LDAPSettings implements DriverSettings {
 
   public final static String TIME_STAMP_MSAD = "uSNChanged";
   public final static String TIME_STAMP_MSAD_TT = "whenChanged";
@@ -95,46 +95,46 @@ public class LDAPSettings extends DriverSettings {
    * getSureString.
    * @param rs Properties resource file
    */
-  public void initFromProperties(ResourceLocator rs) {
+  @Override
+  public void initFromProperties(SettingBundle rs) {
     // Database Settings
     // -----------------
     LDAPImpl = rs.getString("database.LDAPImpl", null);
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
-    configuration.setLdapPort(getIntValue(rs, "database.LDAPPort", configuration.getLdapPort()));
-    LDAPProtocolVer = getIntValue(rs, "database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
-    LDAPOpAttributesUsed =
-        getBooleanValue(rs, "database.LDAPOpAttributesUsed", LDAPOpAttributesUsed);
+    configuration.setLdapPort(rs.getInteger("database.LDAPPort", configuration.getLdapPort()));
+    LDAPProtocolVer = rs.getInteger("database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
+    LDAPOpAttributesUsed = rs.getBoolean("database.LDAPOpAttributesUsed", LDAPOpAttributesUsed);
     LDAPProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
     configuration.setUsername(rs.getString("database.LDAPAccessLoginDN", null));
     configuration
         .setPassword(rs.getString("database.LDAPAccessPasswd", "").getBytes(Charsets.UTF_8));
     LDAPUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
     LDAPMaxMsClientTimeLimit =
-        getIntValue(rs, "database.LDAPMaxMsClientTimeLimit", LDAPMaxMsClientTimeLimit);
+        rs.getInteger("database.LDAPMaxMsClientTimeLimit", LDAPMaxMsClientTimeLimit);
     LDAPMaxSecServerTimeLimit =
-        getIntValue(rs, "database.LDAPMaxSecServerTimeLimit", LDAPMaxSecServerTimeLimit);
+        rs.getInteger("database.LDAPMaxSecServerTimeLimit", LDAPMaxSecServerTimeLimit);
     LDAPMaxNbEntryReturned =
-        getIntValue(rs, "database.LDAPMaxNbEntryReturned", LDAPMaxNbEntryReturned);
-    LDAPMaxNbReferrals = getIntValue(rs, "database.LDAPMaxNbReferrals", LDAPMaxNbReferrals);
-    LDAPBatchSize = getIntValue(rs, "database.LDAPBatchSize", LDAPBatchSize);
-    LDAPSearchRecurs = getBooleanValue(rs, "database.LDAPSearchRecurs", LDAPSearchRecurs);
-    configuration.setSecure(getBooleanValue(rs, "database.LDAPSecured", false));
+        rs.getInteger("database.LDAPMaxNbEntryReturned", LDAPMaxNbEntryReturned);
+    LDAPMaxNbReferrals = rs.getInteger("database.LDAPMaxNbReferrals", LDAPMaxNbReferrals);
+    LDAPBatchSize = rs.getInteger("database.LDAPBatchSize", LDAPBatchSize);
+    LDAPSearchRecurs = rs.getBoolean("database.LDAPSearchRecurs", LDAPSearchRecurs);
+    configuration.setSecure(rs.getBoolean("database.LDAPSecured", false));
     if (configuration.isSecure()) {
-      configuration.setLdapPort(getIntValue(rs, "database.LDAPPortSecured", 636));
+      configuration.setLdapPort(rs.getInteger("database.LDAPPortSecured", 636));
     }
-    sortControlSupported = getBooleanValue(rs, "database.SortControlSupported", !"openldap".
+    sortControlSupported = rs.getBoolean("database.SortControlSupported", !"openldap".
         equalsIgnoreCase(LDAPImpl));
     LDAPDefaultSearchConstraints = getSearchConstraints(true);
     LDAPDefaultConstraints = getConstraints(true);
 
     // Synchro parameters
     // -------------------
-    SYNCHROautomatic = getBooleanValue(rs, "synchro.Automatic", SYNCHROautomatic);
-    SYNCHRORecursToGroups = getBooleanValue(rs, "synchro.RecursToGroups", SYNCHRORecursToGroups);
-    SYNCHROthreaded = getBooleanValue(rs, "synchro.Threaded", SYNCHROthreaded);
-    SYNCHROtimeStampVar = getStringValue(rs, "synchro.timeStampVar", SYNCHROtimeStampVar);
-    SYNCHROCacheEnabled = getBooleanValue(rs, "synchro.CacheEnabled", SYNCHROCacheEnabled);
-    SYNCHROImportUsers = getBooleanValue(rs, "synchro.importUsers", true);
+    SYNCHROautomatic = rs.getBoolean("synchro.Automatic", SYNCHROautomatic);
+    SYNCHRORecursToGroups = rs.getBoolean("synchro.RecursToGroups", SYNCHRORecursToGroups);
+    SYNCHROthreaded = rs.getBoolean("synchro.Threaded", SYNCHROthreaded);
+    SYNCHROtimeStampVar = rs.getString("synchro.timeStampVar", SYNCHROtimeStampVar);
+    SYNCHROCacheEnabled = rs.getBoolean("synchro.CacheEnabled", SYNCHROCacheEnabled);
+    SYNCHROImportUsers = rs.getBoolean("synchro.importUsers", true);
 
     // Users Settings
     // --------------
@@ -146,7 +146,7 @@ public class LDAPSettings extends DriverSettings {
     usersLoginField = rs.getString("users.LoginField", null);
     usersFirstNameField = rs.getString("users.FirstNameField", null);
     usersLastNameField = rs.getString("users.LastNameField", null);
-    usersEmailField = getSureString(rs, "users.EmailField");
+    usersEmailField = rs.getString("users.EmailField", "");
     usersAccountControl = rs.getString("users.accountControl", "");
     usersDisabledAccountFlag = rs.getString("users.accountControl.disabledFlags", "");
 
@@ -154,21 +154,21 @@ public class LDAPSettings extends DriverSettings {
     // ---------------
     groupsType = rs.getString("groups.Type", null);
     groupsClassName = rs.getString("groups.ClassName", null);
-    groupsInheritProfiles = getBooleanValue(rs, "groups.InheritProfiles", groupsInheritProfiles);
+    groupsInheritProfiles = rs.getBoolean("groups.InheritProfiles", groupsInheritProfiles);
     groupsFilter = rs.getString("groups.Filter", null);
-    groupsNamingDepth = getIntValue(rs, "groups.NamingDepth", groupsNamingDepth);
+    groupsNamingDepth = rs.getInteger("groups.NamingDepth", groupsNamingDepth);
     groupsIdField = rs.getString("groups.IdField", null);
     groupsIncludeEmptyGroups =
-        getBooleanValue(rs, "groups.IncludeEmptyGroups", groupsIncludeEmptyGroups);
-    groupsSpecificGroupsBaseDN = getSureString(rs, "groups.SpecificGroupsBaseDN");
-    groupsMemberField = getSureString(rs, "groups.MemberField");
-    groupsNameField = getSureString(rs, "groups.NameField");
-    groupsDescriptionField = getSureString(rs, "groups.DescriptionField");
+        rs.getBoolean("groups.IncludeEmptyGroups", groupsIncludeEmptyGroups);
+    groupsSpecificGroupsBaseDN = rs.getString("groups.SpecificGroupsBaseDN", "");
+    groupsMemberField = rs.getString("groups.MemberField", "");
+    groupsNameField = rs.getString("groups.NameField", "");
+    groupsDescriptionField = rs.getString("groups.DescriptionField", "");
 
     // IHM Settings
     // ------------
-    ihmImportUsers = getBooleanValue(rs, "ihm.importUsers", true);
-    ihmImportGroups = getBooleanValue(rs, "ihm.importGroups", true);
+    ihmImportUsers = rs.getBoolean("ihm.importUsers", true);
+    ihmImportGroups = rs.getBoolean("ihm.importGroups", true);
   }
 
   // HOST FIELDS

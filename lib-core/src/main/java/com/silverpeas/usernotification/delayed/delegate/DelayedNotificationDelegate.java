@@ -23,17 +23,6 @@
  */
 package com.silverpeas.usernotification.delayed.delegate;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.silverpeas.usernotification.delayed.DelayedNotificationProvider;
 import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
@@ -42,14 +31,6 @@ import com.silverpeas.usernotification.delayed.synthese.DelayedNotificationSynth
 import com.silverpeas.usernotification.delayed.synthese.SyntheseResource;
 import com.silverpeas.usernotification.delayed.synthese.SyntheseResourceNotification;
 import com.silverpeas.usernotification.model.NotificationResourceData;
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.MapUtil;
-import org.silverpeas.util.comparator.AbstractComplexComparator;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
-
 import com.stratelia.silverpeas.notificationManager.AbstractNotification;
 import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -58,11 +39,20 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServer;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
-
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.MapUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
+
+import java.util.*;
 
 /**
  * @author Yohann Chastagnier
@@ -70,11 +60,6 @@ import org.apache.commons.lang3.StringUtils;
 public class DelayedNotificationDelegate extends AbstractNotification {
 
   private final static String LOCATION_SEPARATOR = " &gt; ";
-
-  /**
-   * Global settings
-   */
-  private final Map<String, ResourceLocator> multilang = new HashMap<>();
 
   /**
    * Notification server instance
@@ -650,14 +635,10 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @return
    */
   private String getStringTranslation(final String key, final String language) {
-    ResourceLocator rl = multilang.get(language);
-    if (rl == null) {
-      rl = new ResourceLocator(
-          "com.stratelia.silverpeas.notificationManager.multilang.notificationManagerBundle",
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.notificationManager.multilang.notificationManagerBundle",
           language);
-      multilang.put(language, rl);
-    }
-    return rl.getString(key, null);
+    return messages.getString(key);
   }
 
   /**

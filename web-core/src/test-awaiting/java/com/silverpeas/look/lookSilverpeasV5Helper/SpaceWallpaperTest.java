@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.util.SettingBundle;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.silverpeas.core.admin.OrganizationController;
@@ -51,8 +52,8 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class SpaceWallpaperTest {
 
-  private ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.util.viewGenerator.settings.SilverpeasV5", "fr");
+  private SettingBundle resources = ResourceLocator.getSettingBundle(
+      "org.silverpeas.util.viewGenerator.settings.SilverpeasV5");
 
   @Inject
   private OrganizationController organizationController;

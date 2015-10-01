@@ -25,11 +25,12 @@
 package com.stratelia.silverpeas.selectionPeas;
 
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 public class BrowseJdbcPanel extends BrowsePanelProvider {
 
-  public BrowseJdbcPanel(String language, ResourceLocator rs, CacheManager cm,
+  public BrowseJdbcPanel(String language, LocalizationBundle rs, CacheManager cm,
       SelectionExtraParams sep) {
     super(language, rs, cm, CacheType.CM_ELEMENT);
     init(sep.getParameter("tableName"));

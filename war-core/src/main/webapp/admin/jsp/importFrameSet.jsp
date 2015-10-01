@@ -65,8 +65,8 @@
   org.silverpeas.core.admin.OrganizationController organizationCtrl = null;
   GraphicElementFactory gef = null;
   String language = null;
-  ResourceLocator message = null;
-  ResourceLocator homePageSettings = null;
+  LocalizationBundle message = null;
+  SettingBundle homePageSettings = null;
   String m_sContext = null;
   if (m_MainSessionCtrl == null) {
 %>
@@ -78,8 +78,8 @@
     gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     language = m_MainSessionCtrl.getFavoriteLanguage();
-    message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
-    homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+    message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
+    homePageSettings = ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
 
     m_sContext = URLManager.getApplicationURL();
   }

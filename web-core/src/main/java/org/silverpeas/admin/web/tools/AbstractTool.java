@@ -25,6 +25,7 @@ package org.silverpeas.admin.web.tools;
 
 import com.silverpeas.look.LookHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 /**
@@ -33,7 +34,6 @@ import org.silverpeas.util.ResourceLocator;
 public abstract class AbstractTool {
 
   private final String language;
-  private ResourceLocator messages = null;
   private final LookHelper lookHelper;
   private final String visibleKey;
   private final String id;
@@ -58,12 +58,9 @@ public abstract class AbstractTool {
     this.urlSuffix = urlSuffix;
   }
 
-  protected ResourceLocator getMessages() {
-    if (messages == null) {
-      messages =
-          new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-    }
-    return messages;
+  protected LocalizationBundle getMessages() {
+    return ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle",
+        language);
   }
 
   /**

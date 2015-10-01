@@ -66,8 +66,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   public PdcSubscriptionSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
-        "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
+        "org.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
+        "org.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
   }
 
   private PdcSubscriptionService getPdcSubscriptionService() {

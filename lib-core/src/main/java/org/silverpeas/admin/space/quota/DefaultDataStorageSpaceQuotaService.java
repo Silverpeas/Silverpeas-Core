@@ -29,6 +29,7 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.memory.MemoryUnit;
 
@@ -46,8 +47,8 @@ public class DefaultDataStorageSpaceQuotaService
     extends AbstractSpaceQuotaService<DataStorageSpaceQuotaKey>
     implements DataStorageSpaceQuotaService {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
 
   private static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
 

@@ -29,7 +29,7 @@
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import=" org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%
       SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) request.getAttribute(
           "SILVERMAIL");
@@ -43,7 +43,7 @@
         return;
       }
 
-      ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+      MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
       String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
           "ApplicationURL");
 %>

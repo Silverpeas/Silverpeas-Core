@@ -67,14 +67,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.WAAttributeValuePair;
+import org.silverpeas.util.*;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.xml.sax.InputSource;
@@ -105,8 +98,8 @@ import static org.silverpeas.util.Charsets.UTF_8;
  */
 public class ImportExport extends AbstractExportProcess {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.importExport.settings.mapping", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.mapping");
   public final static String iframePublication = "publications";
   public final static String iframeIndexPublications = "indexPublications";
   public final static int EXPORT_FULL = 0;
@@ -239,7 +232,8 @@ public class ImportExport extends AbstractExportProcess {
           throw ex;
         }
 
-        String altXsdSystemId = settings.getStringWithParam("xsdSystemId", nsVersion);
+        String altXsdSystemId = settings.getString("xsdSystemId");
+        altXsdSystemId = altXsdSystemId.replace("*", nsVersion);
         if ((altXsdSystemId == null) || (altXsdSystemId.equals(xsdSystemId))) {
           throw ex;
         }
@@ -408,8 +402,8 @@ public class ImportExport extends AbstractExportProcess {
   private ExportReport processExport(UserDetail userDetail, String language,
       List<WAAttributeValuePair> listItemsToExport, NodePK rootPK) throws ImportExportException {
     // pour le multilangue
-    ResourceLocator resourceLocator =
-        new ResourceLocator("com.silverpeas.importExport.multilang.importExportBundle", language);
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.importExport.multilang.importExportBundle", language);
     PublicationsTypeManager pubTypMgr = getPublicationsTypeManager();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
@@ -493,7 +487,7 @@ public class ImportExport extends AbstractExportProcess {
       } else {
         // dans le cas de l'export d'un composant ou d'un thème, créer l'index en treeview
         HtmlExportGenerator htmlGenerator = new HtmlExportGenerator(exportReport, fileExportDir.
-            getName(), resourceLocator);
+            getName(), messages);
         Map<String, List<String>> topicIds = prepareTopicsMap(publicationsType);
         Set<String> keys = topicIds.keySet();
         for (String topicId : keys) {
@@ -762,8 +756,8 @@ public class ImportExport extends AbstractExportProcess {
   public ExportReport processExportKmax(UserDetail userDetail, String language,
       List<WAAttributeValuePair> itemsToExport, List<String> combination, String timeCriteria)
       throws ImportExportException {
-    ResourceLocator resourceLocator =
-        new ResourceLocator("com.silverpeas.importExport.multilang.importExportBundle", language);
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.importExport.multilang.importExportBundle", language);
 
     PublicationsTypeManager pubTypMgr = getPublicationsTypeManager();
     AdminImportExport adminIE = new AdminImportExport();
@@ -816,7 +810,7 @@ public class ImportExport extends AbstractExportProcess {
         File fileHTML = new File(tempDir + thisExportDir + separator + "index.html");
 
         HtmlExportGenerator h =
-            new HtmlExportGenerator(exportReport, fileExportDir.getName(), resourceLocator);
+            new HtmlExportGenerator(exportReport, fileExportDir.getName(), messages);
         Writer fileWriter = null;
         try {
           fileHTML.createNewFile();
@@ -854,7 +848,7 @@ public class ImportExport extends AbstractExportProcess {
         File unclassifiedFileHTML =
             new File(tempDir + thisExportDir + File.separatorChar + unbalancedFileNameRelativePath);
         HtmlExportGenerator h =
-            new HtmlExportGenerator(exportReport, fileExportDir.getName(), resourceLocator);
+            new HtmlExportGenerator(exportReport, fileExportDir.getName(), messages);
         try {
           unclassifiedFileHTML.createNewFile();
           fileWriter =
@@ -897,7 +891,7 @@ public class ImportExport extends AbstractExportProcess {
 
         // Create HTML summary with the search axis
         File fileHTML = new File(tempDir + thisExportDir + separator + "index.html");
-        h = new HtmlExportGenerator(exportReport, fileExportDir.getName(), resourceLocator);
+        h = new HtmlExportGenerator(exportReport, fileExportDir.getName(), messages);
         try {
           fileHTML.createNewFile();
           fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), UTF_8);
@@ -1068,11 +1062,11 @@ public class ImportExport extends AbstractExportProcess {
     return exportReport;
   }
 
-  public void writeImportToLog(ImportReport importReport, ResourcesWrapper resource) {
+  public void writeImportToLog(ImportReport importReport, MultiSilverpeasBundle resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
       ResourceBundle resources = FileUtil
-          .loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverTrace",
+          .loadBundle("org.silverpeas.silvertrace.settings.silverTrace",
               new Locale("", ""));
       String reportLogPath = resources.getString("ErrorDir");
       File file = new File(reportLogPath + separator + reportLogFile);

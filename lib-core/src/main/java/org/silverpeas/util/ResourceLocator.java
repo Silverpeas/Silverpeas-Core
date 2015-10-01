@@ -41,17 +41,31 @@ import java.util.logging.Logger;
 
 
 /**
- * The resource locator gives access to the resource bundles and to the settings that are located
- * into a particular directory, the Silverpeas resources home directory. The mechanism used to
- * access the files in which are defined both the localized resources and the settings is wrapped
- * by this class.
+ * The resource locator gives access to the resource bundles (bundles of localized resources and of
+ * settings) that are located into a particular directory, the Silverpeas resources home directory.
+ * The mechanism used to access the files containing these resources is wrapped by this class. The
+ * resource bundles, according to the type of the resources, are represented by a concrete type
+ * implementing the {@code org.silverpeas.util.SilverpeasBundle} interface. For instance, two kinds
+ * of resources are handled by ResourceLocator: {@code org.silverpeas.util.LocalizationBundle} for
+ * the localized resources (icons, messages, ...) and {@code org.silverpeas.util.SettingBundle} for
+ * the configuration parameters.
  * </p>
- * The resource bundles and the settings aren't provided in a classical way (injection point)
- * because they aren't carried into the Silverpeas archive as it should be usually done.
- * Instead, they are located into a peculiar directory in the Silverpeas home directory so that
- * administrators can easily modify them by hand. The access to this directory is handled by this
- * class. If in the future, the mechanism requires to be modified, then this modification will be
- * transparent for the rest of the code.
+ * The localization bundles and the settings aren't provided in a classical way (id est by
+ * injection point) because they aren't carried into the Silverpeas archive as it should usually be
+ * done. Instead, they are located into a peculiar directory in the Silverpeas home directory so
+ * that administrators can easily modify them by hand. The access to this directory is handled by
+ * this class. If in the future, the mechanism requires to be modified, then this modification will
+ * be transparent for the rest of the code.
+ * </p>
+ * In order to keep stable the memory management with the resource bundles, ResourceLocator loads
+ * the resource bundles on the demand and uses a cache to keep them in memory for all the running
+ * time of Silverpeas so that they aren't collected by the garbage collector. Nevertheless, the
+ * policy on the bundle content loading is delegated to the
+ * {@code org.silverpeas.util.SilverpeasBundle} concrete types, so that advanced mechanism can be
+ * used to keep in memory the content itself with an expiration trigger (policy implemented by
+ * the {@code java.util.ResourceBundle} class). To have a glance of the policy adopted by the
+ * {@code org.silverpeas.util.SilverpeasBundle} concrete types, please read their corresponding
+ * documentation.
  */
 public class ResourceLocator implements Serializable {
 
@@ -74,43 +88,63 @@ public class ResourceLocator implements Serializable {
    * @param name the full qualified name of the localized resource to return. It maps the path
    * of the file in which the resource is stored (the path is relative to the Silverpeas
    * resources home directory).
-   * @param locale is an ISO 639-1 code identifying a language. If null, the default locale of the
-   * platform onto which Silverpeas is running will be taken into account.
-   * @return a resource bundle with the asked localized resource.
+   * @param locale is an ISO 639-1 code identifying a language. If null, empty or missing, the
+   * default locale of the platform onto which Silverpeas is running will be taken into account.
+   * @return a resource bundle with the asked localized resources plus the general ones.
    */
-  public static LocalizationBundle getLocalizationResource(String name, String locale) {
-    return (LocalizationBundle) bundles.computeIfAbsent(name + "_" + locale, n -> {
-      Locale localeToUse =
-          (locale == null || locale.trim().isEmpty() ? Locale.getDefault() : new Locale(locale));
-      return new LocalizationBundle(name, localeToUse,
-          (bundleName, bundleLocale) -> loadResourceBundle(bundleName, bundleLocale));
-    });
+  public static LocalizationBundle getLocalizationBundle(String name, String locale) {
+    Locale localeToUse =
+        (locale == null || locale.trim().isEmpty() ? Locale.ROOT : new Locale(locale));
+    String key =
+        name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
+    return (LocalizationBundle) bundles.computeIfAbsent(key,
+        n -> new LocalizationBundle(name, localeToUse,
+            (bundleName, bundleLocale) -> loadResourceBundle(bundleName, bundleLocale)));
   }
 
   /**
    * Gets the localized resource that is defined under the specified full qualified name and for
-   * the default locale (locale of the platform on which Silverpeas is running). This
-   * resource can be a set of icons or of messages that are defined for a given locale.
+   * the root locale (default locale when no one is specified or a locale is missing);
+   * the resources are provided by the bundle whose the name matches exactly the bundle base name
+   * (id est without any locale extension). This resource can be a set of icons or of messages.
    * @param name the full qualified name of the localized resource to return. It maps the path
    * of the file in which the resource is stored (the path is relative to the Silverpeas
    * resources home directory).
-   * @return a resource bundle with the asked localized resource.
+   * @return the bundle with the asked localized resource plus the general one.
    */
-  public static LocalizationBundle getLocalizationResource(String name) {
-    return getLocalizationResource(name, null);
+  public static LocalizationBundle getLocalizationBundle(String name) {
+    return getLocalizationBundle(name, null);
   }
 
   /**
-   * Gets settings resource that is defined under the specified full qualified name. This
+   * Gets setting resource that is defined under the specified full qualified name. This
    * resource is a set of settings used to configure the behaviour of a Silverpeas functionality.
    * @param name the full qualified name of the localized resource to return. It maps the path
    * of the file in which the resource is stored (the path is relative to the Silverpeas
    * resources home directory).
-   * @return the properties with the asked settings.
+   * @return the bundle with the asked settings.
    */
   public static SettingBundle getSettingBundle(String name) {
     return (SettingBundle) bundles.computeIfAbsent(name,
         n -> new SettingBundle(name, (bundleName) -> loadResourceBundle(bundleName)));
+  }
+
+  /**
+   * Gets the Silverpeas general localized resource for the specified locale. If the locale is
+   * null or empty or missing, then the root locale is taken into account.
+   * @return the bundle with the general localized resource.
+   */
+  public static LocalizationBundle getGeneralBundle(String locale) {
+    return getLocalizationBundle(LocalizationBundle.GENERAL_RESOURCE_BUNDLE_NAME, locale);
+  }
+
+  /**
+   * Gets the Silverpeas general settings resource. This resource is a set of general settings used
+   * to configure the common behaviour of Silverpeas.
+   * @return the bundle with the general settings.
+   */
+  public static SettingBundle getGeneralBundle() {
+    return getSettingBundle(SettingBundle.GENERAL_SETTINGS_NAME);
   }
 
   private static ResourceBundle loadResourceBundle(String bundleName) {
@@ -119,6 +153,10 @@ public class ResourceLocator implements Serializable {
 
   private static ResourceBundle loadResourceBundle(String bundleName, Locale locale) {
     try {
+      if (!bundleName.startsWith("org.silverpeas.")) {
+        Logger.getLogger(ResourceLocator.class.getSimpleName())
+            .severe("INVALID BUNDLE BASE NAME: " + bundleName);
+      }
       return ResourceBundle.getBundle(bundleName, locale, loader, new ConfigurationControl());
     } catch (MissingResourceException mex) {
       Logger.getLogger(ResourceLocator.class.getName()).severe(mex.getMessage());

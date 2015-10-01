@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.EnumerationUtils;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
 
@@ -16,8 +17,8 @@ public class TickerSettings {
   private boolean linkOnItem = false;
   private int refreshDelay = 60;
   
-  public TickerSettings(ResourceLocator settings) {
-    for (String key : (List<String>) EnumerationUtils.toList(settings.getKeys())) {
+  public TickerSettings(SettingBundle settings) {
+    for (String key : settings.keySet()) {
       if (key.startsWith("ticker.plugin")) {
         String param = settings.getString(key, null);
         if (param != null) {

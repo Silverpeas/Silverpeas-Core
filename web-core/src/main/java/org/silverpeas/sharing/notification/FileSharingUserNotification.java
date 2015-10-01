@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.sharing.bean.SharingNotificationVO;
@@ -85,9 +86,14 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
       SilverpeasTemplate template) {
     Ticket ticket = getResource();
     String userId = getUserId();
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
     getNotificationMetaData()
-        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
-            "");
+        .addLanguage(language, title, "");
     template.setAttribute("senderUser", OrganizationControllerProvider.getOrganisationController().
         getUserDetail(userId));
     if (StringUtil.isDefined(fileSharingParam.getAdditionalMessage())) {

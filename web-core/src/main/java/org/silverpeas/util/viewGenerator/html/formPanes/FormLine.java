@@ -32,11 +32,12 @@
 
 package org.silverpeas.util.viewGenerator.html.formPanes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.PageContext;
-
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author frageade
@@ -56,7 +57,7 @@ public abstract class FormLine implements SimpleGraphicElement {
   protected String value;
   protected String id;
   protected String DBType;
-  protected ResourceLocator message;
+  protected LocalizationBundle message;
 
   /**
    * Constructor declaration
@@ -72,7 +73,7 @@ public abstract class FormLine implements SimpleGraphicElement {
     DBEntry = false;
     type = "undefined";
     DBType = "character varying";
-    message = new ResourceLocator(
+    message = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.util.viewGenerator.formPane.formPaneBundle",
         DEFAULT_LANGUAGE);
   }
@@ -93,7 +94,7 @@ public abstract class FormLine implements SimpleGraphicElement {
     DBEntry = false;
     type = "undefined";
     DBType = "character varying";
-    message = new ResourceLocator(
+    message = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.util.viewGenerator.formPane.formPaneBundle",
         DEFAULT_LANGUAGE);
   }
@@ -307,20 +308,9 @@ public abstract class FormLine implements SimpleGraphicElement {
    */
   public void setLanguage(String language) {
     if (language != null) {
-      message = new ResourceLocator(
+      message = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.viewGenerator.formPane.formPaneBundle",
           language);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param language
-   * @see
-   */
-  public void setLanguage(ResourceLocator language) {
-    if (language != null) {
-      message = language;
     }
   }
 

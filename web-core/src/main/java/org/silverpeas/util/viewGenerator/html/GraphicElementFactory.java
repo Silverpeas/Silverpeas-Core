@@ -25,7 +25,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
@@ -78,10 +80,10 @@ public class GraphicElementFactory {
    */
   public static final String RESOURCES_KEY = "resources";
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
-  private final static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "");
-  private static ResourceLocator lookSettings = null;
-  private ResourceLocator favoriteLookSettings = null;
+  private final static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings");
+  private static SettingBundle lookSettings = null;
+  private SettingBundle favoriteLookSettings = null;
   private final static String REQUEST_SPACE_ID = GraphicElementFactory.class + "_REQUEST_SPACE_ID";
   private final static String REQUEST_COMPONENT_ID =
       GraphicElementFactory.class + "_REQUEST_COMPONENT_ID";
@@ -92,7 +94,7 @@ public class GraphicElementFactory {
   private final static String defaultLook = "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static String iconsPath =
       (URLManager.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
-  private ResourceLocator multilang = null;
+  private LocalizationBundle multilang = null;
   private String currentLookName = null;
   private MainSessionController mainSessionController = null;
   public static final String defaultLookName = "Initial";
@@ -105,12 +107,12 @@ public class GraphicElementFactory {
 
   static {
     lookSettings =
-        new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.util.viewGenerator.settings.lookSettings");
     try {
       lookSettings.getString("dummy");
     } catch (MissingResourceException e) {
-      lookSettings =
-          new ResourceLocator("org.silverpeas.util.viewGenerator.settings.defaultLookSettings", "");
+      lookSettings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.util.viewGenerator.settings.defaultLookSettings");
     }
   }
 
@@ -127,10 +129,10 @@ public class GraphicElementFactory {
     return iconsPath;
   }
 
-  public ResourceLocator getMultilang() {
+  public LocalizationBundle getMultilang() {
     if (multilang == null) {
       String language = getLanguage();
-      multilang = new ResourceLocator(
+      multilang = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.viewGenerator.multilang.graphicElementFactoryBundle", language);
     }
     return multilang;
@@ -149,7 +151,7 @@ public class GraphicElementFactory {
    * @return The ResourceLocator returned contains all default environment settings necessary to
    * know wich component to instanciate, but also to know how to generate html code.
    */
-  public static ResourceLocator getSettings() {
+  public static SettingBundle getSettings() {
     return settings;
   }
 
@@ -158,7 +160,7 @@ public class GraphicElementFactory {
    * @return Customer specific look settings if defined, default look settings otherwise
    * @see
    */
-  public ResourceLocator getLookSettings() {
+  public SettingBundle getLookSettings() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
         "root.MSG_GEN_ENTER_METHOD");
     return lookSettings;
@@ -169,7 +171,7 @@ public class GraphicElementFactory {
    * @return
    * @see
    */
-  public ResourceLocator getFavoriteLookSettings() {
+  public SettingBundle getFavoriteLookSettings() {
     return this.favoriteLookSettings;
   }
 
@@ -188,7 +190,7 @@ public class GraphicElementFactory {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()", "root.MSG_GEN_PARAM_VALUE",
         " look = " + lookName + " | corresponding settings = " + selectedLook);
-    this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
+    this.favoriteLookSettings = ResourceLocator.getSettingBundle(selectedLook);
 
     currentLookName = lookName;
   }
@@ -201,13 +203,13 @@ public class GraphicElementFactory {
     return getLookSettings(lookName).getString("StyleSheet");
   }
 
-  public static ResourceLocator getLookSettings(String lookName) {
+  public static SettingBundle getLookSettings(String lookName) {
     String selectedLook = lookSettings.getString(lookName, null);
     if (selectedLook == null) {
       // ce look n'existe plus, look par defaut
       selectedLook = defaultLook;
     }
-    return new ResourceLocator(selectedLook, "");
+    return ResourceLocator.getSettingBundle(selectedLook);
   }
 
   public void setExternalStylesheet(String externalStylesheet) {
@@ -265,12 +267,8 @@ public class GraphicElementFactory {
    * @see
    */
   public List<String> getAvailableLooks() {
-    ResourceLocator theLookSettings = getLookSettings();
-    Enumeration<String> keys = theLookSettings.getKeys();
-    List<String> availableLooks = new ArrayList<String>();
-    while (keys.hasMoreElements()) {
-      availableLooks.add(keys.nextElement());
-    }
+    SettingBundle theLookSettings = getLookSettings();
+    List<String> availableLooks = new ArrayList<>(theLookSettings.keySet());
     return availableLooks;
   }
 

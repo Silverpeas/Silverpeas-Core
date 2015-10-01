@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.genericPanel;
 
 import com.silverpeas.ui.DisplayI18NHelper;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import java.util.Collections;
@@ -39,7 +40,7 @@ abstract public class PanelProvider {
   protected String[] columnHeaders = new String[0];
   protected PanelSearchToken[] searchTokens = null;
 
-  protected ResourceLocator resourceLocator = null;
+  protected LocalizationBundle messages = null;
   protected String language = DisplayI18NHelper.getDefaultLanguage();
 
   protected String[] ids = new String[0];

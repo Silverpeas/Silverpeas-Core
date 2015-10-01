@@ -35,6 +35,7 @@ import com.silverpeas.notation.control.RatingService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.wysiwyg.WysiwygInstanciator;
 
@@ -43,12 +44,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class PublicationInstanciator extends SQLRequest {
-  private static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.publication.publicationSettings", "fr");
-
 
   public PublicationInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.publication");
+    super("org.silverpeas.publication");
   }
 
   public void create(Connection con, String spaceId, String componentId, String userId)
@@ -57,7 +55,7 @@ public class PublicationInstanciator extends SQLRequest {
         .info("publication", "PublicationInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
 
     // PCH le 8/6/2001
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("com.stratelia.webactiv.publication");
+    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("org.silverpeas.publication");
     wysiwygI.create(con, spaceId, componentId, userId);
 
     SilverTrace
@@ -82,7 +80,7 @@ public class PublicationInstanciator extends SQLRequest {
       // No exceptions are throwed because of those informations are not sensible.
     }
 
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("com.stratelia.webactiv.publication");
+    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("org.silverpeas.publication");
     wysiwygI.delete(con, spaceId, componentId, userId);
 
     SilverTrace

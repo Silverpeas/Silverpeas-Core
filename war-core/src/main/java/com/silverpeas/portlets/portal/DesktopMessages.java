@@ -20,6 +20,7 @@
  */
 package com.silverpeas.portlets.portal;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.ResourceLocator;
@@ -34,7 +35,7 @@ public class DesktopMessages {
   private static final String RESOURCE_BASE = "org.silverpeas.portlets.multilang.portletsBundle";
   private static final ThreadLocal<DesktopMessages> cache = new ThreadLocal<DesktopMessages>();
 
-  private ResourceLocator bundle;
+  private LocalizationBundle bundle;
   private Locale locale;
 
   /**
@@ -47,7 +48,7 @@ public class DesktopMessages {
     final String userLanguage =
         (StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage);
     DesktopMessages desktopMessages = new DesktopMessages();
-    desktopMessages.bundle = new ResourceLocator(RESOURCE_BASE, userLanguage);
+    desktopMessages.bundle = ResourceLocator.getLocalizationBundle(RESOURCE_BASE, userLanguage);
     desktopMessages.locale = new Locale(userLanguage);
     cache.set(desktopMessages);
     return desktopMessages;

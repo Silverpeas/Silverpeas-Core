@@ -30,6 +30,7 @@ import java.io.File;
 
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier
@@ -38,8 +39,8 @@ public abstract class AbstractViewerService {
 
   // Extension of pdf document file
   public static final String PDF_DOCUMENT_EXTENSION = "pdf";
-  protected final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.viewer.viewer", "");
+  protected final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.viewer.viewer");
 
   /**
    * Generate a tmp file

@@ -42,8 +42,10 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 
 public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_USER_LASTNAME = 0;
@@ -59,8 +61,8 @@ public class CacheManagerUsersGroups extends CacheManager {
   protected AdminController adminController = ServiceProvider.getService(AdminController.class);
   protected UserDetail userDetail = null;
 
-  public CacheManagerUsersGroups(String language, ResourceLocator local,
-      ResourceLocator icon, Selection selection, UserDetail ud) {
+  public CacheManagerUsersGroups(String language, LocalizationBundle local,
+      SettingBundle icon, Selection selection, UserDetail ud) {
     super(language, local, icon, selection);
     userDetail = ud;
   }

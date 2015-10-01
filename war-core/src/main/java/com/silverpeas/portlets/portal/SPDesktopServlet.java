@@ -39,7 +39,9 @@ import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
@@ -592,7 +594,7 @@ public class SPDesktopServlet extends HttpServlet {
     HttpSession session = request.getSession();
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    ResourceLocator settings = gef.getFavoriteLookSettings();
+    SettingBundle settings = gef.getFavoriteLookSettings();
     if (settings != null) {
       return settings.getString("spaceHomepage");
     }
@@ -739,11 +741,11 @@ public class SPDesktopServlet extends HttpServlet {
   private void setPortletNames(final HttpServletRequest request, final String language, 
       final List<String> portletNames) {
     HttpSession session = request.getSession(true);
-    ResourceLocator resource = new ResourceLocator("org.silverpeas.portlet.multilang.portletBundle", language);
-    Collection<Map> listPortlet = new ArrayList<Map>();//list of HashMap key=portletName, value=title of the portlet
+    LocalizationBundle resource = ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle", language);
+    Collection<Map> listPortlet = new ArrayList<>();//list of HashMap key=portletName, value=title of the portlet
     for(String portletName : portletNames) {
       String shortName = portletName.substring(11); //portletName = silverpeas.LastPublicationsPortlet
-      String defaultTitle = resource.getString("portlet."+shortName+".title", ""); //shortName = LastPublicationsPortlet, key = portlet.LastPublicationsPortlet.title
+      String defaultTitle = resource.getString("portlet."+shortName+".title"); //shortName = LastPublicationsPortlet, key = portlet.LastPublicationsPortlet.title
       Map<String, String> hashPortlet = new HashMap<String, String>();//key=portletName, value=title of the portlet
       hashPortlet.put(portletName, defaultTitle);
       listPortlet.add(hashPortlet);

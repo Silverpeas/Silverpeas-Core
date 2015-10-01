@@ -61,7 +61,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkAgenda.jsp.inc" %>
 
 <%
-  ResourceLocator settings = agenda.getSettings();
+  SettingBundle settings = agenda.getSettings();
   ResourceLocator generalMessage = GeneralPropertiesManager
       .getGeneralMultilang(agenda.getLanguage());
 				

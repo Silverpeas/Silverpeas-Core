@@ -35,6 +35,7 @@ import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +57,7 @@ public class NotificationMetaDataTest {
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   private NotificationMetaData current;
-  private ResourceLocator mockedSettings;
+  private SettingBundle mockedSettings;
 
   @Before
   public void setup() throws Exception {
@@ -65,8 +66,8 @@ public class NotificationMetaDataTest {
     // Settings
     reflectionRule
         .mockField(GeneralPropertiesManager.class, ResourceLocator.class, "generalProperties");
-    mockedSettings = reflectionRule
-        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+        SettingBundle.class, "settings");
 
     // Organization controller
     final OrganizationController mockedOrganizationController =

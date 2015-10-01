@@ -27,11 +27,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * Common use or treatments in relation to user verifier.
@@ -39,12 +40,10 @@ import java.util.Map;
  * Date: 06/02/13
  */
 class AbstractAuthenticationVerifier {
-  protected final static Map<String, ResourceLocator> multilang =
-      new HashMap<String, ResourceLocator>();
-  protected final static ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
-  protected final static ResourceLocator otherSettings =
-      new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+  protected final static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
+  protected final static SettingBundle otherSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.authentication.settings.passwordExpiration");
 
   private UserDetail user;
 
@@ -108,15 +107,16 @@ class AbstractAuthenticationVerifier {
    */
   protected static String getString(final String key, final String language,
       final String... params) {
-    ResourceLocator messages = multilang.get(language);
-    if (messages == null) {
-      synchronized (multilang) {
-        messages =
-            new ResourceLocator("org.silverpeas.authentication.multilang.authentication", language);
-        multilang.put(language, messages);
-      }
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.authentication.multilang.authentication", language);
+    String translation;
+    try {
+      translation =
+          (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
+              messages.getString(key);
+    } catch (MissingResourceException ex) {
+      translation = "";
     }
-    return (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
-        messages.getString(key, "");
+    return translation;
   }
 }

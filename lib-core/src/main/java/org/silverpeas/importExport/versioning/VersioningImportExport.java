@@ -39,6 +39,7 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -58,8 +59,8 @@ import java.util.List;
 public class VersioningImportExport {
 
   private UserDetail user;
-  private final ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.importExport.settings.importSettings", "");
+  private final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
 
   public VersioningImportExport(UserDetail user) {
     this.user = user;
@@ -309,7 +310,7 @@ public class VersioningImportExport {
   InputStream getVersionContent(DocumentVersion version) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(version.getDocumentPath()));
     if (file == null || !file.exists() || !file.isFile()) {
-      String baseDir = resources.getString("importRepository");
+      String baseDir = settings.getString("importRepository");
       file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + version.
           getPhysicalName()));
     }

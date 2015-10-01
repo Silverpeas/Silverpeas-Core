@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.notificationManager;
 import com.silverpeas.usernotification.delayed.constant.DelayedNotificationFrequency;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,9 +42,8 @@ import java.util.TreeSet;
  */
 public class NotificationManagerSettings {
 
-  private static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.notificationManager.settings.notificationManagerSettings",
-          "");
+  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.notificationManager.settings.notificationManagerSettings");
 
   /**
    * Gets the default delayed notification frequency of the server.

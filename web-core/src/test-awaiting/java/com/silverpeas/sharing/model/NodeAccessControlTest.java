@@ -30,8 +30,6 @@ import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
 import com.silverpeas.sharing.services.SharingServiceProvider;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -83,9 +81,11 @@ public class NodeAccessControlTest {
         .thenReturn(fatherPks);
     PowerMockito.when(publicationService.getAlias(new PublicationPK("100", "kmelia10")))
         .thenReturn(aliasPks);
+    /* to replace with ServiceProvider
     PowerMockito
         .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
         .thenReturn(publicationService);
+        */
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -93,8 +93,10 @@ public class NodeAccessControlTest {
         .asList(new NodePK("100", "kmelia10"), new NodePK("11", "kmelia11"),
             new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeService.getDescendantPKs(pk)).thenReturn(descendants);
+    /* to replace with ServiceProvider
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
         thenReturn(nodeService);
+        */
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     resourcePk.setOldSilverpeasId(5L);
@@ -124,9 +126,11 @@ public class NodeAccessControlTest {
             new NodePK("120", "kmelia12")));
     PowerMockito.when(publicationService.getAllFatherPK(new PublicationPK("100", "kmelia10")))
         .thenReturn(fatherPks);
+    /* to replace with ServiceProvider
     PowerMockito
         .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
         .thenReturn(publicationService);
+        */
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -134,8 +138,10 @@ public class NodeAccessControlTest {
         .asList(new NodePK("10", "kmelia10"), new NodePK("11", "kmelia11"),
             new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeService.getDescendantPKs(pk)).thenReturn(descendants);
+    /* to replace with ServiceProvider
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
         thenReturn(nodeService);
+        */
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     resourcePk.setOldSilverpeasId(5L);
@@ -172,9 +178,11 @@ public class NodeAccessControlTest {
         .thenReturn(fatherPks);
     PowerMockito.when(publicationService.getAlias(new PublicationPK("100", "kmelia10")))
         .thenReturn(aliasPks);
+    /* to replace with ServiceProvider
     PowerMockito
         .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
         .thenReturn(publicationService);
+        */
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -182,8 +190,10 @@ public class NodeAccessControlTest {
         .asList(new NodePK("100", "kmelia10"), new NodePK("11", "kmelia11"),
             new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeService.getDescendantPKs(pk)).thenReturn(descendants);
+    /* to replace with ServiceProvider
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
         thenReturn(nodeService);
+        */
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     SimpleDocument attachmentDetail = new SimpleDocument();
@@ -213,9 +223,11 @@ public class NodeAccessControlTest {
             new NodePK("120", "kmelia12")));
     PowerMockito.when(publicationService.getAllFatherPK(new PublicationPK("100", "kmelia10")))
         .thenReturn(fatherPks);
+    /* to replace with ServiceProvider
     PowerMockito
         .when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
         .thenReturn(publicationService);
+        */
 
     NodePK pk = new NodePK("10", "kmelia10");
     NodeService nodeService = PowerMockito.mock(NodeService.class);
@@ -223,8 +235,10 @@ public class NodeAccessControlTest {
         .asList(new NodePK("10", "kmelia10"), new NodePK("11", "kmelia11"),
             new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeService.getDescendantPKs(pk)).thenReturn(descendants);
+    /* to replace with ServiceProvider
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
         thenReturn(nodeService);
+        */
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     SimpleDocument attachmentDetail = new SimpleDocument();
@@ -253,8 +267,10 @@ public class NodeAccessControlTest {
         .asList(new NodePK("100", "kmelia10"), new NodePK("11", "kmelia11"),
             new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeService.getDescendantPKs(pk)).thenReturn(descendants);
+    /* to replace with ServiceProvider
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
         thenReturn(nodeService);
+        */
     NodeDetail nodeDetail = new NodeDetail();
     nodeDetail.setNodePK(pk);
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
@@ -281,8 +297,10 @@ public class NodeAccessControlTest {
         .asList(new NodePK("10", "kmelia10"), new NodePK("11", "kmelia11"),
             new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeService.getDescendantPKs(pk)).thenReturn(descendants);
+    /* to replace with ServiceProvider
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeService.class)).
         thenReturn(nodeService);
+        */
 
     NodeDetail nodeDetail = new NodeDetail();
     nodeDetail.setNodePK(new NodePK("15", "kmelia10"));

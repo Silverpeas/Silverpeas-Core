@@ -114,10 +114,10 @@ public class SQLDomainServiceTest extends DataSetTest {
       .columns("id", " name", " description", " propfilename", " classname",
           " authenticationserver", " thetimestamp", " silverpeasserverurl")
       .values(1, "domainSilverpeas", "default domain for Silverpeas",
-          "com.stratelia.silverpeas.domains.domainSP",
+          "org.silverpeas.domains.domainSP",
           "com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver", "autDomainSP", "0",
           "autDomainSP").values(2, "Customers", "Customers active directory",
-          "com.stratelia.silverpeas.domains.domainSP",
+          "org.silverpeas.domains.domainSP",
           "com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver", "autDomainCustomers",
           "0", "autDomainCustomers").build();
 

@@ -39,8 +39,10 @@ import org.silverpeas.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.web.token.SynchronizerTokenService;
@@ -285,8 +287,8 @@ public class SilverpeasSessionOpener {
   private String alertUserAboutPwdExpiration(String userId, String fromUserId,
       String language, boolean allowPasswordChange) {
     try {
-      ResourceLocator settings = new ResourceLocator(
-          "org.silverpeas.authentication.settings.passwordExpiration", "");
+      SettingBundle settings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.authentication.settings.passwordExpiration");
       String notificationType = settings.getString("notificationType", "POPUP");
       String passwordChangeURL = settings.getString("passwordChangeURL",
           "defaultPasswordAboutToExpire.jsp");
@@ -305,7 +307,7 @@ public class SilverpeasSessionOpener {
 
   private void sendPopupNotificationAboutPwdExpiration(String userId, String fromUserId,
       String language) throws NotificationManagerException {
-    ResourceLocator messages = new ResourceLocator(
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     NotificationSender sender = new NotificationSender(null);
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,

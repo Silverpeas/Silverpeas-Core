@@ -41,6 +41,7 @@ import com.silverpeas.converter.DocumentFormatException;
 import com.silverpeas.converter.option.FilterOption;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * A document format converter using the OpenOffice API to perform its task. This class is the
@@ -48,8 +49,8 @@ import org.silverpeas.util.ResourceLocator;
  */
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
-  private static final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.converter.openoffice", "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.converter.openoffice");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOST = "openoffice.host";
 

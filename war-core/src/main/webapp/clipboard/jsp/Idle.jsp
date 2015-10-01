@@ -58,8 +58,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     int nbConnectedUsers = 0;
     String language = m_MainSessionCtrl.getFavoriteLanguage();
-    ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
-    ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+    LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
+    SettingBundle homePageSettings = ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
     String connectedUsers = message.getString("connectedUsers");
     if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) {
         SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();

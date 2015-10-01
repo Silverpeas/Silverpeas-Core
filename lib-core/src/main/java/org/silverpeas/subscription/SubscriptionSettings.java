@@ -24,6 +24,7 @@
 package org.silverpeas.subscription;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * All settings around the subscription services.
@@ -42,8 +43,8 @@ public class SubscriptionSettings {
    * Gets all the settings of subscription services.
    * @return the resource with the different subscription settings.
    */
-  private static ResourceLocator getSettings() {
-    return new ResourceLocator(SETTINGS_PATH, "");
+  private static SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle(SETTINGS_PATH);
   }
 
   /**

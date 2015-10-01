@@ -30,7 +30,9 @@ import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -74,14 +76,14 @@ public class DynamicValueReplacement {
 
       // build the HTML select with the key list
       if (list != null) {
-        ResourceLocator message = null;
+        LocalizationBundle message = null;
         StringBuilder builder = new StringBuilder();
         // gets the words to display in the first select option
         String firstOption = " ------------------";
         try {
           message =
-              new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
-              language);
+              ResourceLocator.getLocalizationBundle(
+                  "org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
           if (message != null) {
             firstOption = message.getString("DynamicValues");
           }
@@ -195,15 +197,15 @@ public class DynamicValueReplacement {
   }
 
   /**
-   * checks whether the dynamic value functionality is active. This activation is realized by
+   * Checks whether the dynamic value functionality is active. This activation is realized by
    * writing "ON" in an properties file. if the property isn't found or if it's at OFF, the
    * functionality will be considered as inactive.
    * @return true whether the functionality is activated
    */
   public static boolean isActivate() {
-    ResourceLocator resource =
-        new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
-    return resource.getBoolean("activateDynamicValue", false);
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.wysiwyg.settings.wysiwygSettings");
+    return settings.getBoolean("activateDynamicValue", false);
   }
 
 }

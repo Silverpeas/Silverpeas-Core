@@ -28,6 +28,8 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -62,12 +64,12 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   protected ComponentContext context = null;
   private MainSessionController controller = null;
   private String rootName = null;
-  private ResourceLocator message = null;
-  private ResourceLocator icon = null;
+  private LocalizationBundle message = null;
+  private SettingBundle icon = null;
   private String messageLanguage = null;
   private String messageFile = null;
   private String iconFile = null;
-  private ResourceLocator settings = null;
+  private SettingBundle settings = null;
   private String settingsFile = null;
 
   /**
@@ -131,27 +133,28 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   @Override
-  public ResourceLocator getMultilang() {
+  public LocalizationBundle getMultilang() {
     SilverTrace.info("peasCore", "AbstractComponentSessionController.getMultilang()",
         "root.MSG_GEN_ENTER_METHOD", "Current Language=" + controller.getFavoriteLanguage());
-    if (message != null && !message.getLanguage().equals(controller.getFavoriteLanguage())) {
+    if (message != null && !message.getLocale().getLanguage().equals(
+        controller.getFavoriteLanguage())) {
       setMultilangFileName(messageFile);
     }
     return message;
   }
 
   @Override
-  public ResourceLocator getIcon() {
-    if (icon != null && !icon.getLanguage().equals(controller.getFavoriteLanguage())) {
+  public SettingBundle getIcon() {
+    if (icon != null) {
       setIconFileName(iconFile);
     }
     return icon;
   }
 
   @Override
-  public ResourceLocator getSettings() {
+  public SettingBundle getSettings() {
     if (settings == null && settingsFile != null) {
-      settings = new ResourceLocator(settingsFile, "fr");
+      settings = ResourceLocator.getSettingBundle(settingsFile);
     }
     return settings;
   }
@@ -165,7 +168,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     if (messageFile != null) {
       try {
         messageLanguage = getLanguage();
-        message = new ResourceLocator(messageFile, messageLanguage);
+        message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
         // messageLanguage = getLanguage();
         SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
@@ -173,7 +176,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
         SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile + "|Language="
             + getLanguage(), e);
-        message = new ResourceLocator(messageFile, "fr");
+        message = ResourceLocator.getLocalizationBundle(messageFile);
         messageLanguage = getLanguage();
       }
     } else {
@@ -189,19 +192,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   public final void setIconFileName(String iconFileName) {
     iconFile = iconFileName;
     if (iconFile != null) {
-      try {
-        messageLanguage = getLanguage();
-        icon = new ResourceLocator(iconFile, messageLanguage);
-        SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
-            "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
-      } catch (Exception e) {
-        SilverTrace.error("peasCore",
-            "AbstractComponentSessionController.setResourceFileName()",
-            "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
-            + "|Language=" + getLanguage(), e);
-        icon = new ResourceLocator(iconFile, "fr");
-        messageLanguage = getLanguage();
-      }
+        icon = ResourceLocator.getSettingBundle(iconFile);
     } else {
       icon = null;
     }
@@ -219,14 +210,14 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     if (messageFile != null) {
       try {
         messageLanguage = getLanguage();
-        message = new ResourceLocator(messageFile, messageLanguage);
+        message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
         SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
       } catch (Exception e) {
         SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
             + "|Language=" + getLanguage(), e);
-        message = new ResourceLocator(messageFile, "fr");
+        message = ResourceLocator.getLocalizationBundle(messageFile);
         messageLanguage = getLanguage();
       }
     } else {

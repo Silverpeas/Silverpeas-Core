@@ -22,9 +22,9 @@ package org.silverpeas.util;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.memory.MemoryUnit;
 
@@ -49,8 +49,8 @@ public class FileRepositoryManager {
   static String tempPath = "";
   static String domainPropertiesFolderPath;
   static String domainAuthenticationPropertiesFolderPath;
-  static ResourceLocator uploadSettings = new ResourceLocator(
-      "org.silverpeas.util.uploads.uploadSettings", "");
+  final static SettingBundle uploadSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
 

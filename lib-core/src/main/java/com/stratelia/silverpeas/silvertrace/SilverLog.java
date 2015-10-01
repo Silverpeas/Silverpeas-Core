@@ -227,7 +227,7 @@ public class SilverLog {
   static protected void initAll() {
     try {
       ResourceBundle resource =
-          FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverLog",
+          FileUtil.loadBundle("org.silverpeas.silvertrace.settings.silverLog",
           new Locale("", ""));
       logDir = resource.getString("LogDir");
 

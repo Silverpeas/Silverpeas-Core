@@ -24,9 +24,9 @@
 
 --%>
 
-<%@ page import="javax.servlet.*,javax.servlet.http.*,javax.servlet.jsp.*,java.io.PrintWriter,java.io.IOException,java.io.FileInputStream,java.io.ObjectInputStream,java.util.*,java.lang.Boolean,org.silverpeas.util.*,org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="javax.servlet.*,javax.servlet.http.*,javax.servlet.jsp.*,java.io.PrintWriter,java.io.IOException,java.io.FileInputStream,java.io.ObjectInputStream,java.util.*,java.lang.Boolean,org.silverpeas.util.*,org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.DateUtil" %>
-<% ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+<% MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
 Collection cResultData = (Collection)request.getAttribute("ResultData");
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0

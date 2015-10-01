@@ -54,6 +54,7 @@ import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.annotation.Action;
@@ -99,8 +100,8 @@ public class SimpleDocumentService implements AttachmentService {
   @Inject
   private AttachmentEventNotifier notificationService;
 
-  private final ResourceLocator resources =
-      new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
+  private final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
 
   @Override
   public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
@@ -131,7 +132,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
-    if (resources.getBoolean("attachment.index.separately", true)) {
+    if (settings.getBoolean("attachment.index.separately", true)) {
       String language = I18NHelper.checkLanguage(document.getLanguage());
       String objectType = "Attachment" + document.getId() + "_" + language;
       FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
@@ -904,7 +905,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
-    if (resources.getBoolean("attachment.index.incorporated", true)) {
+    if (settings.getBoolean("attachment.index.incorporated", true)) {
       if (!indexEntry.getObjectType().startsWith("Attachment")) {
         ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
         List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());

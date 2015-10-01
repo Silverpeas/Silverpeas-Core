@@ -55,6 +55,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -79,7 +80,7 @@ public class NotificationManager extends AbstractNotification
   static public final String FROM_UID = "I";
   static public final String FROM_EMAIL = "E";
   static public final String FROM_NAME = "N";
-  private ResourceLocator m_Multilang = null;
+  private LocalizationBundle m_Multilang = null;
 
   /**
    *
@@ -89,9 +90,8 @@ public class NotificationManager extends AbstractNotification
     if ((language == null) || (language.length() <= 0)) {
       safeLanguage = "fr";
     }
-    m_Multilang = new ResourceLocator(
-        "com.stratelia.silverpeas.notificationManager.multilang.notificationManagerBundle",
-        safeLanguage);
+    m_Multilang = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.notificationManager.multilang.notificationManagerBundle", safeLanguage);
   }
 
   /**

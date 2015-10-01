@@ -23,21 +23,21 @@
  */
 package org.silverpeas.language.web;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.RESTWebService;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.StringUtil;
-import com.silverpeas.web.RESTWebService;
-import org.silverpeas.util.ResourceLocator;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequestScoped
@@ -56,12 +56,12 @@ public class LanguageResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<LanguageEntity> getAvailableLanguages() {
     List<LanguageEntity> languages = new ArrayList<>();
-    ResourceLocator multilang =
-        new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle",
+    LocalizationBundle multilang =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle",
             getUserPreferences().getLanguage());
     for (String language : DisplayI18NHelper.getLanguages()) {
       LanguageEntity entity = new LanguageEntity(language, multilang.getString(
-          MY_PROFILE_SETTINGS_LANGUAGE_KEY + language, StringUtil.EMPTY));
+          MY_PROFILE_SETTINGS_LANGUAGE_KEY + language));
       entity.setURI(getUriInfo().getRequestUriBuilder().path(language).build());
       languages.add(entity);
     }

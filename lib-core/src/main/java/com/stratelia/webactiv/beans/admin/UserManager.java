@@ -536,7 +536,7 @@ public class UserManager {
         || !StringUtil.isDefined(userDetail.getDomainId())) {
       if (userDetail == null) {
         SynchroReport.error("UserManager.addUser()",
-            "Problème lors de l'ajout de l'utilisateur dans la base, cet utilisateurn'existe pas",
+            "Problème lors de l'ajout de l'utilisateur dans la base, cet utilisateur n'existe pas",
             null);
       } else if (!StringUtil.isDefined(userDetail.getLastName())) {
         SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "

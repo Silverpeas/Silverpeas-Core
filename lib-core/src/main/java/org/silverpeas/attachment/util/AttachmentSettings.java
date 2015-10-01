@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.util;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
 
@@ -38,9 +39,6 @@ public class AttachmentSettings {
 
   private static final AttachmentSettings instance = new AttachmentSettings();
 
-  @Inject
-  private Provider provider;
-
   /**
    * Indicates if obsolete wysiwyg content must be ignored.
    * This method returns always false if {@link #getObsoleteWysiwygContentIgnoredMark()} returns
@@ -49,7 +47,7 @@ public class AttachmentSettings {
    * @return true if wysiwyg content must be ignored, false otherwise.
    */
   public static boolean isObsoleteWysiwygContentIgnored() {
-    return getInstance().getProvider()
+    return getInstance().getSettingBundle()
         .getBoolean("attachment.wysiwyg.content.inspection.obsolete.ignore", false) &&
         StringUtil.isDefined(getObsoleteWysiwygContentIgnoredMark());
   }
@@ -61,7 +59,7 @@ public class AttachmentSettings {
    * @return the mark if defined, empty string otherwise.
    */
   public static String getObsoleteWysiwygContentIgnoredMark() {
-    return getInstance().getProvider()
+    return getInstance().getSettingBundle()
         .getString("attachment.wysiwyg.content.inspection.obsolete.ignore.mark", "");
   }
 
@@ -69,11 +67,8 @@ public class AttachmentSettings {
    * Gets the provider.
    * @return
    */
-  private ResourceLocator getProvider() {
-    if (provider == null) {
-      provider = new Provider();
-    }
-    return provider;
+  private SettingBundle getSettingBundle() {
+    return ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   }
 
   /**
@@ -83,15 +78,4 @@ public class AttachmentSettings {
     return instance;
   }
 
-  /**
-   * This internal class provides the settings.
-   * Implementing by this way the settings access is very useful for maintenance and unit tests.
-   */
-  public static class Provider extends ResourceLocator {
-    private static final long serialVersionUID = -2626681960886868011L;
-
-    public Provider() {
-      super("org.silverpeas.util.attachment.Attachment", "");
-    }
-  }
 }

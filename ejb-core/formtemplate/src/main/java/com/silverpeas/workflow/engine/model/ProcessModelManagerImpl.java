@@ -47,6 +47,7 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.JNDINames;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.xml.sax.InputSource;
@@ -81,10 +82,10 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       "select distinct modelId from SB_Workflow_ProcessInstance";
 
   /**
-   * ResourceLocator object to retrieve messages in a properties file
+   * ResourceLocator object to retrieve settings in a properties file
    */
-  private static ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.workflow.engine.castorSettings", "fr");
+  private static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.workflow.engine.castorSettings");
 
   /**
    * The map (modelId -> cached process model).

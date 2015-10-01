@@ -23,10 +23,10 @@
  */
 package com.silverpeas.pdcSubscription;
 
-import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.LocalizationBundle;
 
 public class PdcSubscriptionDeletionUserNotification
     extends AbstractPdcSubscriptionUserNotification<PDCSubscription> {
@@ -70,7 +70,7 @@ public class PdcSubscriptionDeletionUserNotification
   @Override
   protected void performBuild(final PDCSubscription subscription) {
     String lang = getUserLanguage(subscription.getOwnerId());
-    ResourceLocator resources = getBundle(lang);
+    LocalizationBundle resources = getBundle(lang);
 
     final StringBuilder message = new StringBuilder(150);
 

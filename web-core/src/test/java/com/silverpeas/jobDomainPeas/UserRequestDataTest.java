@@ -35,7 +35,7 @@ import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,7 +53,7 @@ public class UserRequestDataTest {
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
-  private ResourceLocator mockedSettings;
+  private SettingBundle mockedSettings;
   private HttpServletRequest httpServletRequestMock;
   private HttpRequest httpRequest;
 
@@ -61,8 +61,8 @@ public class UserRequestDataTest {
   public void setup() {
     reflectionRule.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
     reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
-    mockedSettings = reflectionRule
-        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+        SettingBundle.class, "settings");
     httpServletRequestMock = mock(HttpServletRequest.class);
     when(httpServletRequestMock.getMethod()).thenReturn("GET");
 

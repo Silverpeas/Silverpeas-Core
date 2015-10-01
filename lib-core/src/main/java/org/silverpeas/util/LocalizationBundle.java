@@ -32,17 +32,24 @@ import java.util.function.BiFunction;
  * A resource bundle that contains the localized resources defined under a fully qualified name in
  * Silverpeas. These resources can be messages, icons, and so one.
  * </p>
- * It decorates {@code java.util.ResourceBundle} to suit the peculiar use of resource bundles in
- * Silverpeas. It wraps in a transparent way both the Silverpeas general resource bundle and the
+ * It decorates {@code java.util.ResourceBundle} to suit the peculiar use of the resource bundles
+ * in Silverpeas. It wraps in a transparent way both the Silverpeas general resource bundle and the
  * resource bundle of the given name. The loading of the resources bundles in Silverpeas is managed
- * by {@code org.silverpeas.util.ResourceLocator} ifself. If no bundle exists with the given fully
- * qualified name or if a given key isn't defined in the bundle, then a
- * {@code MissingResourceException} exception is thrown as expected in the {@code ResourceBundle}
+ * by {@code org.silverpeas.util.ResourceLocator} itself. If no bundle exists with the given fully
+ * qualified name (the bundle base name) or if a given key isn't defined in the bundle, then a
+ * {@code MissingResourceException} exception is thrown as defined in the {@code ResourceBundle}
  * contract.
+ * </p>
+ * To handle the general localized resources and those from the given bundle name it uses an
+ * instance of {@code java.util.ResourceBundle} for each of them. So, it profits then of the bundle
+ * content access policy implemented by this class: the content is cached in memory with an
+ * expiration trigger.
+ * </p>
+ * @see java.util.ResourceBundle
  */
 public class LocalizationBundle extends ResourceBundle implements SilverpeasBundle {
 
-  private static final String GENERAL_RESOURCE_BUNDLE_NAME =
+  protected static final String GENERAL_RESOURCE_BUNDLE_NAME =
       "org.silverpeas.multilang.generalMultilang";
 
   private ResourceBundle bundle = null;
@@ -73,6 +80,8 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   public LocalizationBundle(final ResourceBundle bundle, final ResourceBundle parent) {
     this.bundle = bundle;
     this.parentBundle = parent;
+    this.name = bundle.getBaseBundleName();
+    this.locale = bundle.getLocale();
   }
 
   /**
@@ -140,6 +149,59 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
     return Collections.enumeration(keySet());
   }
 
+  /**
+   * Changes the locale of this localization bundle. The bundle content will be loaded for the
+   * specified locale.
+   * @param locale the new locale.
+   */
+  public void changeLocale(String locale) {
+    this.locale = new Locale(locale);
+  }
+
+  /**
+   * Is this bundle exists?
+   * @return true if this bundle exists, false otherwise.
+   */
+  @Override
+  public boolean exists() {
+    try {
+      ResourceBundle bundle = getWrappedBundle();
+      return bundle != NONE;
+    } catch (MissingResourceException ex) {
+      return false;
+    }
+  }
+
+  public String getStringWithParam(String resName, String param) {
+    String[] params = {param};
+    return getStringWithParams(resName, params);
+  }
+
+  public String getStringWithParams(String resName, String[] params) {
+    String theSt = getString(resName);
+    if (theSt != null) {
+      StringBuilder theResult = new StringBuilder();
+      int theStarIndex = -1;
+      int theParamIndex = 0;
+      int thePreviousIndex = 0;
+
+      theStarIndex = theSt.indexOf('*');
+      while ((theStarIndex >= 0) && (theParamIndex < params.length)) {
+        theResult.append(theSt.substring(thePreviousIndex, theStarIndex));
+        theResult.append(params[theParamIndex++]);
+        thePreviousIndex = theStarIndex + 1;
+        if (thePreviousIndex < theSt.length()) {
+          theStarIndex = theSt.indexOf('*', thePreviousIndex);
+        } else {
+          theStarIndex = -1;
+        }
+      }
+      theResult.append(theSt.substring(thePreviousIndex));
+      return theResult.toString();
+    }
+    return null;
+  }
+
   @Override
   protected Object handleGetObject(String key) {
     ResourceBundle bundle = getWrappedBundle();
@@ -149,7 +211,7 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
       result = bundle.getObject(key);
     } catch (MissingResourceException mrex) {
     }
-    if (result == null && generalBundle != null) {
+    if (result == null && generalBundle != NONE) {
       result = generalBundle.getObject(key);
     }
     return VariableResolver.resolve(result);
@@ -163,9 +225,12 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   }
 
   private ResourceBundle getGeneralWrappedBundle() {
-    if (this.parentBundle != null) {
-      return this.parentBundle;
+    if (!name.equals(GENERAL_RESOURCE_BUNDLE_NAME)) {
+      if (this.parentBundle != null) {
+        return this.parentBundle;
+      }
+      return (loader == null ? NONE : loader.apply(GENERAL_RESOURCE_BUNDLE_NAME, this.locale));
     }
-    return (loader == null ? NONE:loader.apply(GENERAL_RESOURCE_BUNDLE_NAME, this.locale));
+    return NONE;
   }
 }

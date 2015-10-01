@@ -30,6 +30,7 @@ import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailExceptio
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -53,7 +54,7 @@ public class AuthenticationSQL extends Authentication {
   protected String passwordAvailableColumnName;
 
   @Override
-  public void loadProperties(ResourceLocator settings) {
+  public void loadProperties(SettingBundle settings) {
     String serverName = getServerName();
     dataSourceJndiName = settings.getString(serverName + ".SQLDataSourceJNDIName");
     userTableName = settings.getString(serverName + ".SQLUserTableName");

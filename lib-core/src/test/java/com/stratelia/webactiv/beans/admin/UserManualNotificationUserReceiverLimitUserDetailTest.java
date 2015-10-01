@@ -30,14 +30,12 @@ import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserManualNotificationUserReceiverLimitUserDetailTest {
 
@@ -50,13 +48,13 @@ public class UserManualNotificationUserReceiverLimitUserDetailTest {
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
-  private ResourceLocator mockedSettings;
+  private SettingBundle mockedSettings;
   private UserDetail currentUser;
 
   @Before
   public void setup() {
-    mockedSettings = reflectionRule
-        .mockField(NotificationManagerSettings.class, ResourceLocator.class, "settings");
+    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+        SettingBundle.class, "settings");
     currentUser = spy(new UserDetail());
     // By default, a user is not an anonymous one
     assertThat(currentUser.isAnonymous(), is(false));

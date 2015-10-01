@@ -20,16 +20,17 @@
  */
 package com.silverpeas.importExport.control;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 public class ImportSettings implements Cloneable {
 
-  private static final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.importExport.settings.importSettings", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.importSettings");
   public static final int FROM_XML = 0;
   public static final int FROM_DRAGNDROP = 1;
   public static final int FROM_MANUAL = 2;

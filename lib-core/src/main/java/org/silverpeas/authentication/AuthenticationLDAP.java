@@ -38,6 +38,7 @@ import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
 import org.silverpeas.util.Charsets;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -79,7 +80,7 @@ public class AuthenticationLDAP extends Authentication {
   protected LdapConfiguration configuration = new LdapConfiguration();
 
   @Override
-  public void loadProperties(ResourceLocator settings) {
+  public void loadProperties(SettingBundle settings) {
     String serverName = getServerName();
     configuration.setSecure(settings.getBoolean(serverName + ".LDAPSecured", false));
     configuration.setLdapHost(settings.getString(serverName + ".LDAPHost"));

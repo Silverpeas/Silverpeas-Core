@@ -1,6 +1,7 @@
 package org.silverpeas.security.web;
 
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.TestResources;
 import org.silverpeas.util.FileRepositoryManager;
@@ -54,8 +55,8 @@ public class CryptoTestResources extends TestResources {
    */
   private static final String CAST5_KEY = "06277d1ce530c94bd9a13a72a58342be";
 
-  public static final ResourceLocator messages =
-      new ResourceLocator("org.silverpeas.crypto.multilang.cryptoBundle", "fr");
+  public static final LocalizationBundle messages =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.crypto.multilang.cryptoBundle", "fr");
 
   public static void generateCipherKeyFile() throws Exception {
     KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");

@@ -25,6 +25,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,8 +41,8 @@ import java.net.URLEncoder;
  */
 public class LaunchWebdavEdition extends HttpServlet {
 
-  private static final ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.util.attachment.Attachment", "");
+  private static final SettingBundle resources =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.

@@ -24,12 +24,13 @@
 
 package com.silverpeas.authentication;
 
-import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +39,8 @@ import javax.servlet.http.HttpSession;
 @Singleton
 public class MandatoryQuestionChecker {
 
-  private final static ResourceLocator general = new ResourceLocator(
-      "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  private final static SettingBundle general =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
   private String destination;
 
   public String getDestination() {

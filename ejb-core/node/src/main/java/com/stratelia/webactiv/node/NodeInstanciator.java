@@ -47,7 +47,7 @@ public class NodeInstanciator extends SQLRequest {
   }
 
   public NodeInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.node");
+    super("org.silverpeas.node");
   }
 
   public void create(Connection con, String spaceId, String componentId, String userId) throws

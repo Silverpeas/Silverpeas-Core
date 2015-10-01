@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		importSettings.setHostName( request.getRemoteHost() );
 	}
 
-  	ResourceLocator settings = agenda.getSettings();
+    SettingBundle settings = agenda.getSettings();
 	Window window = graphicFactory.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setComponentName(agenda.getString("agenda"));

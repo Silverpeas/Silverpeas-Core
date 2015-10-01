@@ -43,6 +43,7 @@
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.util.EncodeHelper" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
@@ -251,8 +252,8 @@
     }
   }
 
-  ResourceLocator message =
-      new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+  LocalizationBundle message =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
 <fmt:setLocale value="<%=language%>"/>

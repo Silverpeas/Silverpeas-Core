@@ -23,23 +23,23 @@
  */
 package org.silverpeas.password.service;
 
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * User: Yohann Chastagnier
  * Date: 15/01/13
  */
 public class PasswordCheck {
-  protected static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.password.settings.password", "");
-  private static final Map<String, ResourceLocator> multilang =
-      new HashMap<String, ResourceLocator>();
+  protected static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
 
   private Collection<PasswordRule> requiredRulesInError = new ArrayList<PasswordRule>();
   private Collection<PasswordRule> combinedRules = new ArrayList<PasswordRule>();
@@ -138,15 +138,17 @@ public class PasswordCheck {
    * @return
    */
   protected String getString(final String key, final String language, final String... params) {
-    ResourceLocator messages = multilang.get(language);
-    if (messages == null) {
-      synchronized (multilang) {
-        messages =
-            new ResourceLocator("org.silverpeas.password.multilang.passwordBundle", language);
-        multilang.put(language, messages);
-      }
+    LocalizationBundle messages =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.password.multilang.passwordBundle",
+            language);
+    String translation;
+    try {
+      translation =
+          (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
+              messages.getString(key);
+    } catch (MissingResourceException ex) {
+      translation = "";
     }
-    return (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
-        messages.getString(key, "");
+    return translation;
   }
 }

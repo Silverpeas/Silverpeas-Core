@@ -24,6 +24,7 @@
 
 package org.silverpeas.util.viewGenerator.html.pagination;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
 
@@ -73,5 +74,5 @@ public interface Pagination extends SimpleGraphicElement {
 
   public void setBaseURL(String baseUrl);
 
-  public void setMultilang(ResourceLocator multilang);
+  public void setMultilang(LocalizationBundle multilang);
 }

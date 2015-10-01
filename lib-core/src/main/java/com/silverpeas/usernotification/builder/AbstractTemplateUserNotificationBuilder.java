@@ -112,7 +112,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       String linkUrl = getResourceURL(resource);
       String linkLabel = "";
       if (getContributionAccessLinkLabelBundleKey() != null) {
-        linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey(), "");
+        linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey());
       }
       Link link = new Link(linkUrl, linkLabel);
       getNotificationMetaData().setLink(link, curLanguage);

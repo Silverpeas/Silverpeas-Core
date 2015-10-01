@@ -27,8 +27,9 @@ package com.silverpeas.treeMenu.process;
 import com.silverpeas.treeMenu.model.MenuRuntimeException;
 import com.silverpeas.treeMenu.model.TreeFilter;
 import com.silverpeas.treeMenu.model.TreeFilterDefault;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
@@ -51,8 +52,7 @@ public class TreeFilterFactory {
    */
   public static TreeFilter getTreeFilter(String filterName) {
     TreeFilter filter = null;
-    ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.treeMenu.TreeMenu", "");
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.treeMenu.TreeMenu");
     String className =
         settings.getString(filterName, "com.silverpeas.treeMenu.model.TreeFilterDefault");
     if (StringUtil.isDefined(className)) {

@@ -24,21 +24,20 @@
 
 package com.silverpeas.export.servlets;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.html.HtmlCleaner;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
+import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.html.HtmlCleaner;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
-import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
 public class ExportServlet extends HttpServlet {
 
@@ -50,9 +49,8 @@ public class ExportServlet extends HttpServlet {
   private static final String EXPORT_ENCODING_DEFAULT = "UTF8";
   // private static final String EXPORT_ENCODING_ISO = "ISO-8859-1";
 
-  private static final String exportEncoding =
-      new ResourceLocator(
-      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "")
+  private static final String exportEncoding = ResourceLocator.getSettingBundle(
+      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings")
       .getString("gef.arraypane.export.encoding", EXPORT_ENCODING_DEFAULT);
 
   private HtmlCleaner cleaner = new HtmlCleaner();

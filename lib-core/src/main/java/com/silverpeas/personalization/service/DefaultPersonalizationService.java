@@ -29,6 +29,7 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationManager;
 import com.silverpeas.ui.DisplayI18NHelper;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,9 +47,8 @@ public class DefaultPersonalizationService implements PersonalizationService {
   @Inject
   private PersonalizationManager personalizationManager;
 
-  private final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-          "");
+  private final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
 
   private boolean getDefaultWebDAVEditingStatus() {
     return settings.getBoolean("DefaultWebDAVEditingStatus", true);

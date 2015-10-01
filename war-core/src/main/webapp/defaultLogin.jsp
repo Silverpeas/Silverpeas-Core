@@ -22,9 +22,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@page import="org.silverpeas.web.util.DomainDetector" %>
+<%@page import="com.silverpeas.ui.DisplayI18NHelper" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.web.util.DomainDetector" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -37,10 +38,11 @@
 <c:set var="computedDomainId" value="<%= DomainDetector.getDomainId(request)%>"/>
 
 <%
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
+  LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.authentication.multilang.authentication",
+      request.getLocale().getLanguage());
 
-  pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
+  pageContext.setAttribute("authenticationBundle", authenticationBundle);
 
   String domainId = null;
   if (StringUtil.isInteger(request.getParameter("DomainId"))) {

@@ -25,6 +25,7 @@
 package com.silverpeas.jobStartPagePeas;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * This class manage the informations needed for job start page
@@ -54,8 +55,8 @@ public class JobStartPagePeasSettings {
   public static String defaultForbiddenFiles;
 
   static {
-    ResourceLocator rs = new ResourceLocator(
-        "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(
+        "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
     m_IsProfileEditable = rs.getBoolean("IsProfileEditable", false);
     isBackupEnable = rs.getBoolean("IsBackupEnable", false);
     isBasketEnable = rs.getBoolean("UseBasket", false);

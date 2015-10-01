@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.notification.message.Message;
 import org.silverpeas.util.NotifierUtil;
 
@@ -43,13 +43,12 @@ public final class WebMessager {
   }
 
   /**
-   * Gets the resource locator from the given property file and by taking into account of the
-   * current known language.
-   * @param propertyFileBaseName
-   * @return the aimed resource locator instance.
+   * Gets the localization bundle with the specified base name and for the root locale.
+   * @param bundleBaseName the bundle base name.
+   * @return the asked localization bundle.
    */
-  public ResourceLocator getResourceLocator(String propertyFileBaseName) {
-    return NotifierUtil.getResourceLocator(propertyFileBaseName);
+  public LocalizationBundle getLocalizationBundle(String bundleBaseName) {
+    return NotifierUtil.getLocalizationBundle(bundleBaseName);
   }
 
   /**

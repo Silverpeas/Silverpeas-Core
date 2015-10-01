@@ -25,6 +25,7 @@
 package com.silverpeas.ui;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,14 +44,17 @@ public class DisplayI18NHelper {
   private static String defaultLanguage;
 
   static {
-    ResourceLocator rs = new ResourceLocator(
-        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+    SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
 
-    defaultLanguage = rs.getString("DefaultLanguage");
+    defaultLanguage = settings.getString("DefaultLanguage");
 
-    StringTokenizer st = new StringTokenizer(rs.getString("languages"), ",");
-    while (st.hasMoreTokens()) {
-      languages.add(st.nextToken());
+    String[] supportedLanguages = settings.getString("languages").split(",");
+    for (String lang: supportedLanguages) {
+      lang = lang.trim();
+      if (!lang.isEmpty()) {
+        languages.add(lang);
+      }
     }
   }
 

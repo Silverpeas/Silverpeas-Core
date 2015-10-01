@@ -25,7 +25,7 @@
 package com.silverpeas.search;
 
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 
 /**
  * This class encapsulates all the data used to create a ResultDisplayer implementation.
@@ -36,7 +36,7 @@ public class SearchResultContentVO {
   private Integer sortValue = null;
   private Boolean activeSelection = false;
   private Boolean exportEnabled = false;
-  private ResourcesWrapper settings = null;
+  private MultiSilverpeasBundle settings = null;
 
   /**
    * @param userId the user identifier
@@ -47,7 +47,7 @@ public class SearchResultContentVO {
    * @param settings the pdcPeas settings with bundle and properties
    */
   public SearchResultContentVO(String userId, GlobalSilverResult gsr, Integer sortValue,
-      Boolean activeSelection, Boolean exportEnabled, ResourcesWrapper settings) {
+      Boolean activeSelection, Boolean exportEnabled, MultiSilverpeasBundle settings) {
     super();
     this.userId = userId;
     this.gsr = gsr;
@@ -95,7 +95,7 @@ public class SearchResultContentVO {
   /**
    * @return the settings
    */
-  public ResourcesWrapper getSettings() {
+  public MultiSilverpeasBundle getSettings() {
     return settings;
   }
 

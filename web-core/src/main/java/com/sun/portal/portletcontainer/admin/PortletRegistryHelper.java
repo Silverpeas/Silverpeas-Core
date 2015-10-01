@@ -29,6 +29,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -69,7 +70,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
   private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
       "org.silverpeas.portlets.PALogMessages");
   private static String CONFIG_FILE = "ContainerConfig.properties";
-  private static Properties configProperties = null;
+  private static SettingBundle configProperties = null;
 
   private PortletRegistryHelper() {
   }
@@ -145,10 +146,13 @@ public class PortletRegistryHelper implements PortletRegistryTags {
     InputStream is = null;
     if (configProperties == null) {
       try {
-        ResourceLocator rl = new ResourceLocator("org.silverpeas.portlets.portletsSettings", "");
-        configProperties = rl.getProperties();
-      } catch (Exception e) {
-        logger.log(Level.SEVERE, "PSPL_CSPPAM0016", e);
+        SettingBundle rl =
+            ResourceLocator.getSettingBundle("org.silverpeas.portlets.portletsSettings");
+        if (!rl.exists()) {
+          logger.log(Level.SEVERE, "PSPL_CSPPAM0016");
+        } else {
+          configProperties = rl;
+        }
       } finally {
         try {
           if (is != null) {
@@ -165,7 +169,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
     loadConfigFile();
     // In case loadConfigFile throws an exception configProperties will be null
     if (configProperties != null) {
-      registryLocation = configProperties.getProperty(PORTLET_CONTAINER_DIR_PROPERTY);
+      registryLocation = configProperties.getString(PORTLET_CONTAINER_DIR_PROPERTY);
     }
     if (registryLocation == null
         || PORTLET_CONTAINER_HOME_TOKEN.equals(registryLocation)) {

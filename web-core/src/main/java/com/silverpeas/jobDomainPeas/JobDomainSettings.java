@@ -27,6 +27,7 @@ package com.silverpeas.jobDomainPeas;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -47,8 +48,8 @@ public class JobDomainSettings {
   public static boolean lastConnectionColumnEnabled = true;
 
   static {
-    ResourceLocator rs = new ResourceLocator(
-        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(
+        "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
 
     m_UsersByPage = rs.getInteger("UsersByPage", 10);
     m_GroupsByPage = rs.getInteger("GroupsByPage", 10);

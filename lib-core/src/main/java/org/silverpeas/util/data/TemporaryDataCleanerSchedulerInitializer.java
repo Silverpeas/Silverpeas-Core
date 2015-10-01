@@ -46,6 +46,7 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import org.silverpeas.initialization.Initialization;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
@@ -56,8 +57,8 @@ import org.silverpeas.util.ResourceLocator;
 @Singleton
 public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
 
-  private final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.util.data.temporaryDataManagementSettings", "");
+  private final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.util.data.temporaryDataManagementSettings");
 
   public static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());

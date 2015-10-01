@@ -160,7 +160,7 @@ public class JNDINames {
   public static final String NOTIF_API_JMS;
 
   static {
-    ResourceLocator rs = new ResourceLocator("org.silverpeas.util.jndi", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.util.jndi");
 
     CLIPBOARD_EJBHOME = rs.getString("CLIPBOARD_EJBHOME", "silverpeas/Clipboard/local");
     NODEBM_EJBHOME = rs.getString("NODEBM_EJBHOME", "silverpeas/Node/local");

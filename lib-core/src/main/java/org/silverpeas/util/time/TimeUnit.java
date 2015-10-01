@@ -23,8 +23,9 @@
  */
 package org.silverpeas.util.time;
 
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -119,9 +120,6 @@ public enum TimeUnit {
     conversionBoard.put(new TimeConversionBoardKey(MONTH, YEAR), new BigDecimal("12"));
   }
 
-  private final static Map<String, ResourceLocator> multilang =
-      new HashMap<String, ResourceLocator>();
-
   TimeUnit(final String bundleDefault) {
     this.bundleDefault = bundleDefault;
   }
@@ -149,12 +147,9 @@ public enum TimeUnit {
    */
   private static String getStringTranslation(final String key) {
     String language = MessageManager.getLanguage();
-    ResourceLocator rl = multilang.get(language);
-    if (rl == null) {
-      rl = new ResourceLocator("org.silverpeas.util.multilang.util", language);
-      multilang.put(language, rl);
-    }
-    return rl.getString(key, null);
+    LocalizationBundle rl =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
+    return rl.getString(key);
   }
 
 }

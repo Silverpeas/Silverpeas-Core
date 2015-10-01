@@ -34,7 +34,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -83,12 +85,12 @@ public class NewsFeedJSONServlet extends HttpServlet {
       view = "Wall";
     }
 
-    ResourceLocator multilang =
-        new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle",
+    LocalizationBundle multilang =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle",
             mainSessionCtrl.getFavoriteLanguage());
 
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.social.settings.socialNetworkSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.social.settings.socialNetworkSettings");
     int maxNbTries = settings.getInteger("newsFeed.maxNbTries", 10);
     int minNbDataBeforeNewTry = settings.getInteger("newsFeed.minNbDataBeforeNewTry", 15);
 
@@ -137,7 +139,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     out.println(toJsonS(map, multilang));
   }
 
-  private com.silverpeas.calendar.Date[] getPeriod(HttpSession session, ResourceLocator settings) {
+  private com.silverpeas.calendar.Date[] getPeriod(HttpSession session, SettingBundle settings) {
     int periodLength = settings.getInteger("newsFeed.period", 15);
 
     Date lastDate = (Date) session.getAttribute("Silverpeas_NewsFeed_LastDate");
@@ -195,7 +197,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @return JSONObject
    */
   private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONSocialInfo(
-      SocialInformation information, ResourceLocator multilang) {
+      SocialInformation information, LocalizationBundle multilang) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
     return jsonSocialInfoA -> {
@@ -260,9 +262,9 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param map
    * @return JSONArray
    */
-  private String toJsonS(Map<Date, List<SocialInformation>> map, ResourceLocator multilang) {
+  private String toJsonS(Map<Date, List<SocialInformation>> map, LocalizationBundle multilang) {
     SimpleDateFormat formatDate =
-        new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale(multilang.getLanguage()));
+        new SimpleDateFormat("EEEE dd MMMM yyyy", multilang.getLocale());
     return JSONCodec.encodeArray(jsonElt -> {
       for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
         jsonElt.addJSONObject(jsonDate -> {

@@ -39,6 +39,7 @@ import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -69,8 +70,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private static final String AVATAR_EXTENSION =
       GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final String AVATAR_BASEURI = "/display/avatar/";
-  private static final ResourceLocator generalSettings =
-      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+  private static final SettingBundle generalSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
   private String id = null;
   private String specificId = null;
   private String domainId = null;

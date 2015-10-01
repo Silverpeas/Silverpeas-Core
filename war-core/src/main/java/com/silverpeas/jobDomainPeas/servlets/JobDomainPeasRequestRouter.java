@@ -45,6 +45,7 @@ import org.silverpeas.servlet.RequestParameterDecoder;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasTrappedException;
@@ -624,7 +625,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayDomainCreate")) {
           Domain theNewDomain = new Domain();
           theNewDomain.setDriverClassName("com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver");
-          theNewDomain.setPropFileName("com.stratelia.silverpeas.domains.domain");
+          theNewDomain.setPropFileName("org.silverpeas.domains.domain");
           theNewDomain.setAuthenticationServer("autDomain");
           request.setAttribute("domainObject", theNewDomain);
           request.setAttribute("action", "domainCreate");
@@ -650,8 +651,8 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.returnIntoGroup(null);
         request.setAttribute("DisplayOperations", jobDomainSC.getUserDetail().isAccessAdmin());
 
-        ResourceLocator rs = new ResourceLocator(
-            "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
+        SettingBundle rs = ResourceLocator.getSettingBundle(
+            "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
         Properties configuration = new Properties();
         configuration
             .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));

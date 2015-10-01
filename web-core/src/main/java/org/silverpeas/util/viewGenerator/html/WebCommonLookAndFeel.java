@@ -25,6 +25,7 @@ package org.silverpeas.util.viewGenerator.html;
 
 import com.silverpeas.look.SilverpeasLook;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -100,7 +101,7 @@ public class WebCommonLookAndFeel {
     String language = controller.getFavoriteLanguage();
     String userLookName = controller.getFavoriteLook();
 
-    ResourceLocator lookSettings = GraphicElementFactory.getLookSettings(userLookName);
+    SettingBundle lookSettings = GraphicElementFactory.getLookSettings(userLookName);
     if (StringUtil.isDefined(spaceId)) {
       String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
       if (StringUtil.isDefined(spaceLook)) {

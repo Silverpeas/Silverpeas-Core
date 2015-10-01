@@ -48,7 +48,7 @@
 <view:setBundle basename="com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons" var="icons" />
 
 <%!
-void displayItemsListHeader(String query, Pagination pagination, ResourcesWrapper resource, JspWriter out) throws IOException {
+void displayItemsListHeader(String query, Pagination pagination, MultiSilverpeasBundle resource, JspWriter out) throws IOException {
 	out.println("<tr valign=\"middle\">");
 	out.println("<td align=\"center\" class=\"ArrayNavigation\">");
 	out.println("<img align=\"absmiddle\" src=\""+resource.getIcon("pdcPeas.1px")+"\" height=\"20\">");
@@ -60,7 +60,7 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 	out.println("</tr>");
 }
 
-void displayFacet(Facet facet, ResourcesWrapper resource, JspWriter out) throws IOException {
+void displayFacet(Facet facet, MultiSilverpeasBundle resource, JspWriter out) throws IOException {
 	if (facet != null && !facet.isEmpty()) {
 	  	int facetResultLength = resource.getSetting("searchengine.facet.max.length", 30);
 		int nbDefaultFacetEntries = resource.getSetting("searchengine.facet.default.nbEntries", 5);

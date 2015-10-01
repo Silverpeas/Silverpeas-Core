@@ -30,6 +30,7 @@ import java.util.Properties;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
@@ -46,7 +47,7 @@ public class AuthenticationCAS extends Authentication {
   private String loginQuery;
 
   @Override
-  public void loadProperties(ResourceLocator settings) {
+  public void loadProperties(SettingBundle settings) {
     String serverName = getServerName();
     jdbcUrl = settings.getString(serverName + ".SQLJDBCUrl");
     jdbcLogin = settings.getString(serverName + ".SQLAccessLogin");

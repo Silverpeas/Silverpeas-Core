@@ -24,6 +24,13 @@
 
 package org.silverpeas.util.security;
 
+import net.sourceforge.jcetaglib.lib.X509Cert;
+import org.silverpeas.authentication.encryption.UnixDESEncryption;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.exception.UtilException;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,13 +44,6 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import org.silverpeas.authentication.encryption.UnixDESEncryption;
-import net.sourceforge.jcetaglib.lib.X509Cert;
-
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.util.exception.UtilException;
-
 public class X509Factory {
 
   private static String truststoreFile = null;
@@ -56,8 +56,7 @@ public class X509Factory {
   private static String subjectDNSuffix = null;
 
   static {
-    ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.util.security", "");
+    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.security");
     truststoreFile = settings
         .getString(
         "x509.TruststoreFile",

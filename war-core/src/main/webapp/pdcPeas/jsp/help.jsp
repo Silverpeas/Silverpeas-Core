@@ -38,7 +38,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
@@ -47,7 +47,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 Window 		window 		= gef.getWindow();
 BrowseBar 	browseBar 	= window.getBrowseBar();

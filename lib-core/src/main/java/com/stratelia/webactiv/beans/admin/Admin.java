@@ -65,6 +65,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -120,7 +121,7 @@ class Admin implements Administration {
   private static final AdminCache cache = new AdminCache();
   private static SynchroGroupScheduler groupSynchroScheduler = null;
   private static SynchroDomainScheduler domainSynchroScheduler = null;
-  private static ResourceLocator roleMapping = null;
+  private static SettingBundle roleMapping = null;
   private static boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
 
@@ -145,8 +146,8 @@ class Admin implements Administration {
 
   private void setup() {
     // Load silverpeas admin resources
-    ResourceLocator resources = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
-    roleMapping = new ResourceLocator("org.silverpeas.admin.roleMapping", "");
+    SettingBundle resources = ResourceLocator.getSettingBundle("org.silverpeas.beans.admin.admin");
+    roleMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
     m_nEntrepriseClientSpaceId = Integer.parseInt(resources.getString("EntrepriseClientSpaceId"));
     administratorMail = resources.getString("AdministratorEMail");
@@ -5718,7 +5719,7 @@ class Admin implements Administration {
         getCurrentDomainDriverManager();
     Domain theDomain = domainDriverManager.getDomain(domainId);
     String propDomainFileName = theDomain.getPropFileName();
-    ResourceLocator propDomainLdap = new ResourceLocator(propDomainFileName, "");
+    SettingBundle propDomainLdap = ResourceLocator.getSettingBundle(propDomainFileName);
     String nomClasseSynchro = propDomainLdap.getString("synchro.Class");
     if (StringUtil.isDefined(nomClasseSynchro)) {
       Collection<UserDetail> added = usersAdded;

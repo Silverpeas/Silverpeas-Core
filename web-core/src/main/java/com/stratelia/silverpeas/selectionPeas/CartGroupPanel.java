@@ -30,21 +30,20 @@ import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 public class CartGroupPanel extends PanelProvider {
   protected CacheManager m_Cm = null;
-  protected ResourceLocator m_Message = null;
   protected CacheType m_what;
 
   SelectionUsersGroups m_SelectionExtraParams = null;
 
-  public CartGroupPanel(String language, ResourceLocator rs, CacheManager cm,
+  public CartGroupPanel(String language, LocalizationBundle rs, CacheManager cm,
       SelectionUsersGroups sug) {
     // Set the language
     this.language = language;
-    m_Message = GeneralPropertiesManager.getGeneralMultilang(this.language);
-    resourceLocator = rs;
+    messages = rs;
 
     // Set the cache manager
     m_Cm = cm;
@@ -71,7 +70,7 @@ public class CartGroupPanel extends PanelProvider {
     }
 
     // Set the Page name
-    pageName = resourceLocator.getString("selectionPeas.selectedGroups");
+    pageName = messages.getString("selectionPeas.selectedGroups");
     pageSubTitle = "";
 
     // Build search tokens

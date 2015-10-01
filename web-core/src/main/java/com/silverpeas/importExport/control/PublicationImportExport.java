@@ -28,6 +28,7 @@ import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
 import org.silverpeas.util.ResourceLocator;
@@ -47,8 +48,8 @@ import java.util.Map;
 
 public class PublicationImportExport {
 
-  final static ResourceLocator multilang = new ResourceLocator(
-      "org.silverpeas.importExport.multilang.importExportBundle", "fr");
+  final static LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.importExport.multilang.importExportBundle");
 
   private PublicationImportExport() {
   }

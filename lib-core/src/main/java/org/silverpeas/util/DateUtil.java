@@ -40,8 +40,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static org.silverpeas.util.StringUtil.isDefined;
 import static java.util.Calendar.*;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * DateUtil is an helper class for date manipulation.
@@ -157,8 +157,9 @@ public class DateUtil {
       // like 0:00:00.000
       return getOutputDate(date, language);
     }
-    FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
-        language).getString("dateOutputFormat") + " " + getMultilangProperties(language).getString(
+    FastDateFormat formatter = FastDateFormat.getInstance(
+        getLocalizedProperties(language).getString("dateOutputFormat") + " " + getLocalizedProperties(
+            language).getString(
         "hourOutputFormat"));
     return formatter.format(date);
   }
@@ -278,7 +279,7 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific output format.
    */
   public static FastDateFormat getDateOutputFormat(String lang) {
-    return FastDateFormat.getInstance(getMultilangProperties(lang).getString("dateOutputFormat"));
+    return FastDateFormat.getInstance(getLocalizedProperties(lang).getString("dateOutputFormat"));
   }
 
   /**
@@ -287,7 +288,7 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateInputFormat(String language) {
-    return new SimpleDateFormat(getMultilangProperties(language).getString("dateInputFormat"));
+    return new SimpleDateFormat(getLocalizedProperties(language).getString("dateInputFormat"));
   }
 
   /**
@@ -296,7 +297,7 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific output format.
    */
   public static FastDateFormat getHourOutputFormat(String lang) {
-    return FastDateFormat.getInstance(getMultilangProperties(lang).getString("hourOutputFormat"));
+    return FastDateFormat.getInstance(getLocalizedProperties(lang).getString("hourOutputFormat"));
   }
 
   /**
@@ -305,7 +306,7 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getHourInputFormat(String language) {
-    return new SimpleDateFormat(getMultilangProperties(language).getString("hourInputFormat"));
+    return new SimpleDateFormat(getLocalizedProperties(language).getString("hourInputFormat"));
   }
 
   /**
@@ -314,19 +315,20 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
-    return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " " +
-        getMultilangProperties(lang).getString("hourOutputFormat"));
+    return new SimpleDateFormat(getLocalizedProperties(lang).getString("dateInputFormat") + " " +
+        getLocalizedProperties(lang).getString("hourOutputFormat"));
   }
 
   /**
-   * Get all date multilang properties. This properties contains day and month labels, common date
-   * format, and week first day.
-   * @param language The current user's language.
-   * @return The ResourceLocator containing all date multilang properties
+   * Get all the localized date's properties. These properties contain day and month labels,
+   * common date format, and week first day.
+   * @param locale the locale to use.
+   * @return The localization bundle containing all date localized date's properties.
    * @author squere
    */
-  public static ResourceLocator getMultilangProperties(String language) {
-    return new ResourceLocator("com.stratelia.webactiv.util.date.multilang.date", language);
+  public static LocalizationBundle getLocalizedProperties(String locale) {
+    return ResourceLocator.getLocalizationBundle("org.silverpeas.util.date.multilang.date",
+        locale);
   }
 
   /**

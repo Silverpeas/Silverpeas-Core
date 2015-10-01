@@ -38,6 +38,7 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
@@ -64,7 +65,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   private int viewType = PARTICIPANT_TODO_VIEW;
   @Inject
   private SilverpeasCalendar calendarBm;
-  private ResourceLocator settings;
   private ToDoHeader currentToDoHeader = null;
   private Collection<Attendee> currentAttendees = null;
   private NotificationSender notifSender = null;
@@ -427,12 +427,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @return
    * @see
    */
-  public ResourceLocator getSettings() {
-    if (settings == null) {
-      settings = new ResourceLocator(
-          "com.stratelia.webactiv.todo.settings.todoSettings", "");
-    }
-    return settings;
+  public SettingBundle getSettings() {
+    return ResourceLocator.getSettingBundle("org.silverpeas.todo.settings.todoSettings");
   }
 
   /**

@@ -56,8 +56,8 @@ public class MailUtil {
   private static final String notificationPersonalName;
   private static final boolean forceReplyToSenderField;
   private static Iterable<String> domains;
-  public static final ResourceLocator configuration = new ResourceLocator(
-      "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
+  public static final SettingBundle configuration = ResourceLocator.getSettingBundle(
+      "org.silverpeas.notificationserver.channel.smtp.smtpSettings");
 
   static {
     mailhost = configuration.getString(SMTP_SERVER);

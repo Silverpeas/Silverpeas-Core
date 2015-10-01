@@ -30,12 +30,15 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="com.silverpeas.ui.DisplayI18NHelper" %>
 
 <%@ include file="headLog.jsp" %>
 <%
   UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+  LocalizationBundle authenticationBundle =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication",
+          request.getLocale().getLanguage());
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">

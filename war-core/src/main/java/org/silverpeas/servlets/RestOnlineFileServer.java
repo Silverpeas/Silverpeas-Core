@@ -39,6 +39,7 @@ import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.web.servlet.RestRequest;
 
@@ -189,8 +190,9 @@ public class RestOnlineFileServer extends AbstractFileSender {
   }
 
   @Override
-  protected ResourceLocator getResources() {
-    return new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+  protected SettingBundle getSettingBunde() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
   }
 
 }

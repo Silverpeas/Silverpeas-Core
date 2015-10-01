@@ -36,7 +36,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
@@ -50,15 +52,15 @@ import java.util.logging.Logger;
 public class ScheduledReservedFile implements SchedulerEventListener, Initialization {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
-  private ResourceLocator resources =
-      new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
-  private ResourceLocator generalMessage =
-      new ResourceLocator("org.silverpeas.multilang.generalMultilang", "");
+  private SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
+  private LocalizationBundle generalMessage =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.multilang.generalMultilang");
 
   @Override
   public void init() {
     try {
-      String cron = resources.getString("cronScheduledReservedFile");
+      String cron = settings.getString("cronScheduledReservedFile");
       Logger.getLogger(getClass().getSimpleName())
           .log(Level.INFO, "Reserved File Processor scheduled with cron ''{0}''", cron);
       Scheduler scheduler = SchedulerProvider.getScheduler();
@@ -76,8 +78,8 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
         "root.MSG_GEN_ENTER_METHOD");
 
     try {
-      ResourceLocator message =
-          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment",
+      LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.util.attachment.multilang.attachment",
               DisplayI18NHelper.getDefaultLanguage());
 
       StringBuilder messageBody = new StringBuilder();
@@ -199,8 +201,8 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
   private void createMessageByLanguage(String date, String url, SimpleDocument document,
       NotificationMetaData notifMetaData, boolean alert, boolean lib) throws AttachmentException {
     for (String language : DisplayI18NHelper.getLanguages()) {
-      ResourceLocator message =
-          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment", language);
+      LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.util.attachment.multilang.attachment", language);
       String subject = createMessageSubject(message, alert, lib);
       StringBuilder messageBody = new StringBuilder();
       messageBody.append(message.getString("attachment.notifName")).append(" '")
@@ -229,7 +231,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
     notifyUser(notifMetaData, "-1", document.getInstanceId());
   }
 
-  private String createMessageBody(ResourceLocator message, StringBuilder body, String date,
+  private String createMessageBody(LocalizationBundle message, StringBuilder body, String date,
       boolean alert, boolean lib) {
     if (lib) {
       return body.append(" ").append(message.getString("attachment.notifUserLib")).append("\n\n")
@@ -243,7 +245,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
 
   }
 
-  private String createMessageSubject(ResourceLocator message, boolean alert, boolean lib) {
+  private String createMessageSubject(LocalizationBundle message, boolean alert, boolean lib) {
     if (lib) {
       return message.getString("attachment.notifSubjectLib");
     } else if (alert) {

@@ -24,7 +24,7 @@
 
 package com.silverpeas.importExport.report;
 
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import java.text.SimpleDateFormat;
@@ -118,7 +118,7 @@ public class ImportReport {
    * @param resource
    * @return
    */
-  public String writeToLog(ResourcesWrapper resource) {
+  public String writeToLog(MultiSilverpeasBundle resource) {
     StringBuilder sb = new StringBuilder();
     SimpleDateFormat dateFormat = new SimpleDateFormat("[yyyy-MM-dd-HH'H'mm'm'ss's']");
     String dateFormatee = dateFormat.format(new Date());
@@ -169,7 +169,7 @@ public class ImportReport {
     return sb.toString();
   }
 
-  private String logUnitReport(ResourcesWrapper resource, UnitReport unitReport) {
+  private String logUnitReport(MultiSilverpeasBundle resource, UnitReport unitReport) {
     StringBuilder sb = new StringBuilder(200);
     sb.append(unitReport.getLabel()).append(" : ").append(unitReport.getItemName());
     sb.append(", ").append(resource.getString("GML.error")).append(" : ");
@@ -180,7 +180,7 @@ public class ImportReport {
     return sb.toString();
   }
 
-  private String logMassiveReport(ResourcesWrapper resource, MassiveReport massiveReport) {
+  private String logMassiveReport(MultiSilverpeasBundle resource, MassiveReport massiveReport) {
     StringBuilder sb = new StringBuilder(500);
     sb.append(resource.getString("importExportPeas.Repository")).append(" ");
     sb.append(massiveReport.getRepositoryPath()).append("\n");

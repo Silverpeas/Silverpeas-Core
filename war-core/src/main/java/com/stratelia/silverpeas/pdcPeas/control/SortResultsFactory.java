@@ -24,9 +24,10 @@
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 /**
  * @author david derigent
@@ -47,8 +48,8 @@ public class SortResultsFactory {
    */
   public static SortResults getSortResults(String implementor) {
 
-    ResourceLocator settings = new ResourceLocator(
-        "org.silverpeas.searchEngine.searchEngineSettings", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.searchEngine.searchEngineSettings");
     String className = settings.getString(implementor,
         "com.stratelia.silverpeas.pdcPeas.control.DefaultSortResults");
     if (StringUtil.isDefined(className)) {

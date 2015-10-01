@@ -48,7 +48,7 @@ public class CalendarWA1 extends AbstractCalendar {
     List<Date> nonSelectableDays = getNonSelectableDays();
     boolean nonSelectable = isEmptyDayNonSelectable();
 
-    int firstDayOfWeek = Integer.parseInt(settings.getString("GML.weekFirstDay"));
+    int firstDayOfWeek = Integer.parseInt(messages.getString("GML.weekFirstDay"));
 
     if (!shortName) {
       result
@@ -103,7 +103,7 @@ public class CalendarWA1 extends AbstractCalendar {
       }
       result.append(
           "<td class=\"intfdcolor3\" align=\"center\"><span class=\"txtNav4\">")
-          .append(settings.getString("GML.mois" + month)).append(" ").append(
+          .append(messages.getString("GML.mois" + month)).append(" ").append(
           year).append("</span></td>");
       if (navigationBar) {
         result
@@ -124,12 +124,12 @@ public class CalendarWA1 extends AbstractCalendar {
     do {
       if (shortName) {
         result.append("<th ").append(weekDayStyle).append(">").append(
-            settings.getString("GML.shortJour"
+            messages.getString("GML.shortJour"
             + calendar.get(Calendar.DAY_OF_WEEK))).append("</th>");
       } else {
         result.append("<th ").append(weekDayStyle).append(">")
             .append(
-            settings.getString("GML.jour"
+            messages.getString("GML.jour"
             + calendar.get(Calendar.DAY_OF_WEEK))).append("</th>");
       }
       calendar.add(Calendar.DATE, 1);

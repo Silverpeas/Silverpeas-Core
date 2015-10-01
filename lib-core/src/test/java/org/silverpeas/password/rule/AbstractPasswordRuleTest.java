@@ -43,37 +43,37 @@ public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
   @After
   public void afterTest() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.password", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   }
 
   protected void setDefinedSettings() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.passwordDefined", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.passwordDefined");
   }
 
   protected void setDefinedMoreThanOneSettings() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.passwordMoreThanOneDefined", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.passwordMoreThanOneDefined");
   }
 
   protected void setCombinationDefinedMoreThanOneSettings() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.passwordCombinationDefined", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.passwordCombinationDefined");
   }
 
   protected void setNotDefinedSettings() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.passwordNotDefined", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.passwordNotDefined");
   }
 
   protected void setBadDefinedSettings() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.passwordBadDefined", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.passwordBadDefined");
   }
 
   protected void setNotRequiredSettings() {
     AbstractPasswordRule.settings =
-        new ResourceLocator("org.silverpeas.password.settings.passwordNotRequired", "");
+        ResourceLocator.getSettingBundle("org.silverpeas.password.settings.passwordNotRequired");
   }
 
   public abstract void testDefinedPropertyValues();

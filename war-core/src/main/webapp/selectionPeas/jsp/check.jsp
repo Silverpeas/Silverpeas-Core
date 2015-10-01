@@ -55,7 +55,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="org.silverpeas.util.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -68,7 +67,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper" %>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -84,7 +83,7 @@ String componentLabel = browseContext[1];
 String spaceId = browseContext[2];
 String componentId = browseContext[3];
 
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();

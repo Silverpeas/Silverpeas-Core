@@ -34,7 +34,7 @@
 
 <%
   String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  ResourceLocator settings = todo.getSettings();
+  SettingBundle settings = todo.getSettings();
 
   String action = (String) request.getParameter("Action");
   if (action == null) {

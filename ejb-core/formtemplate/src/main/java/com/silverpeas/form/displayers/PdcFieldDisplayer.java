@@ -24,36 +24,13 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import org.apache.ecs.AlignType;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.A;
-import org.apache.ecs.html.Div;
-import org.apache.ecs.html.I;
-import org.apache.ecs.html.IMG;
-import org.apache.ecs.html.Input;
-import org.apache.ecs.html.LI;
-import org.apache.ecs.html.Script;
-import org.apache.ecs.html.Span;
-import org.apache.ecs.html.TD;
-import org.apache.ecs.html.TR;
-import org.apache.ecs.html.Table;
-import org.apache.ecs.html.UL;
-
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.PdcField;
 import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -64,9 +41,20 @@ import com.stratelia.silverpeas.pdc.model.UsedAxisPK;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
-import org.silverpeas.util.ResourcesWrapper;
+import org.apache.ecs.AlignType;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.html.*;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Displayer class of a PDC field.
@@ -77,10 +65,10 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
 
   // Multilang resource path
   private static String MULTILANG_RESOURCE_PATH =
-      "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle";
+      "org.silverpeas.pdcPeas.multilang.pdcBundle";
   // Icons resource path
   private static String ICONS_RESOURCE_PATH =
-      "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons";
+      "org.silverpeas.pdcPeas.settings.pdcPeasIcons";
 
   // Bean to access PDC axis data
   private PdcManager pdcManager = null;
@@ -230,17 +218,15 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
 
     // Header
     TR headerLine = new TR();
-    ResourceLocator resource = GeneralPropertiesManager.getGeneralMultilang(language);
-    ResourcesWrapper pdcResource =
-        new ResourcesWrapper(new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
-        new ResourceLocator(ICONS_RESOURCE_PATH, language), language);
+    MultiSilverpeasBundle pdcResource = new MultiSilverpeasBundle(
+        ResourceLocator.getLocalizationBundle(MULTILANG_RESOURCE_PATH, language),
+        ResourceLocator.getSettingBundle(ICONS_RESOURCE_PATH), language);
     String[] headerLabelsData = {
         "GML.type", "GML.name", "pdcPeas.baseValue", "GML.requiredField", "pdcPeas.variant" };
     for (String headerLabelKey : headerLabelsData) {
       TD headerCell = new TD();
       headerCell.setClass("ArrayColumn");
-      headerCell.addElement(headerLabelKey.startsWith("pdc")
-          ? pdcResource.getString(headerLabelKey) : resource.getString(headerLabelKey));
+      headerCell.addElement(pdcResource.getString(headerLabelKey));
       headerLine.addElement(headerCell);
     }
 
@@ -319,8 +305,8 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
           if (usedAxisMandatory == 1) {
             IMG mandatoryImg = new IMG();
             mandatoryImg.setSrc(pdcResource.getIcon("pdcPeas.bulet"));
-            mandatoryImg.setAlt(resource.getString("GML.requiredField"));
-            mandatoryImg.setTitle(resource.getString("GML.requiredField"));
+            mandatoryImg.setAlt(pdcResource.getString("GML.requiredField"));
+            mandatoryImg.setTitle(pdcResource.getString("GML.requiredField"));
             mandatoryCell.addElement(mandatoryImg);
           } else {
             mandatoryCell.addElement("&nbsp;");
@@ -384,8 +370,8 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     mandatoryImg.setWidth(5);
     mandatoryImg.setHeight(5);
     mandatoryImg.setBorder(0);
-    mandatoryImg.setAlt(resource.getString("GML.obligatoire"));
-    mandatoryImg.setTitle(resource.getString("GML.obligatoire"));
+    mandatoryImg.setAlt(pdcResource.getString("GML.obligatoire"));
+    mandatoryImg.setTitle(pdcResource.getString("GML.obligatoire"));
     mandatoryImg.setStyle("position: relative; margin: 5px");
     globalCell2.addElement(mandatoryImg);
     globalLine.addElement(globalCell2);
@@ -422,9 +408,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     }
     ElementContainer result = new ElementContainer();
 
-    ResourcesWrapper pdcResource = new ResourcesWrapper(
-        new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
-        new ResourceLocator(ICONS_RESOURCE_PATH, language),
+    MultiSilverpeasBundle pdcResource = new MultiSilverpeasBundle(
+        ResourceLocator.getLocalizationBundle(MULTILANG_RESOURCE_PATH, language),
+        ResourceLocator.getSettingBundle(ICONS_RESOURCE_PATH),
         language);
 
     Div div = new Div();
@@ -461,7 +447,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * PDC field.
    */
   private Script getPositionsScript(String fieldName, String axis, String language,
-      ResourcesWrapper pdcResource) {
+      MultiSilverpeasBundle pdcResource) {
     Script script = new Script();
     script.setType("text/javascript");
     script.addElement(
@@ -510,9 +496,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * @return The HTML content of the positions block defined for the PDC field.
    */
   public String getPositionsDivContent(String fieldName, String pattern, String language) {
-    ResourcesWrapper pdcResource = new ResourcesWrapper(
-        new ResourceLocator(MULTILANG_RESOURCE_PATH, language),
-        new ResourceLocator(ICONS_RESOURCE_PATH, language),
+    MultiSilverpeasBundle pdcResource = new MultiSilverpeasBundle(
+        ResourceLocator.getLocalizationBundle(MULTILANG_RESOURCE_PATH, language),
+        ResourceLocator.getSettingBundle(ICONS_RESOURCE_PATH),
         language);
     return getPositionsDivContent(fieldName, pattern, false, pdcResource).toString();
   }
@@ -527,7 +513,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    * @return The HTML content of the positions block defined for the PDC field.
    */
   private ElementContainer getPositionsDivContent(String fieldName, String pattern,
-      boolean readOnly, ResourcesWrapper pdcResource) {
+      boolean readOnly, MultiSilverpeasBundle pdcResource) {
     ElementContainer positionsDiv = new ElementContainer();
     ArrayList<ClassifyPosition> positions = getPositions(pattern);
     if (positions.isEmpty()) {

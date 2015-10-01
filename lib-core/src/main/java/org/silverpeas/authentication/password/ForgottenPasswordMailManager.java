@@ -25,8 +25,10 @@
 package org.silverpeas.authentication.password;
 
 import com.stratelia.webactiv.beans.admin.Administration;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.mail.MailSending;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.mail.MessagingException;
 
@@ -41,8 +43,8 @@ public class ForgottenPasswordMailManager {
   private static final String CONTENT = "content";
   private static final String SUBJECT = "subject";
 
-  private ResourceLocator resource = new ResourceLocator(
-      "com.silverpeas.authentication.multilang.forgottenPasswordMail", "");
+  private LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.authentication.multilang.forgottenPasswordMail");
 
   // SMTP parameters
   private String fromAddress;
@@ -54,8 +56,8 @@ public class ForgottenPasswordMailManager {
   }
 
   private void initFromAddress() {
-    ResourceLocator mailSettings = new ResourceLocator(
-        "com.silverpeas.authentication.settings.forgottenPasswordMail", "");
+    SettingBundle mailSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.forgottenPasswordMail");
     adminEmail = mailSettings.getString("admin.mail", Administration.get().getAdministratorEmail());
     fromAddress = mailSettings.getString("fromAddress", adminEmail);
     fromName = mailSettings.getString("fromName", "Silverpeas");

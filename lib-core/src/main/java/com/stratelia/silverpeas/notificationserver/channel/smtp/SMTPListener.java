@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.Administration;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailSending;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -106,7 +107,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       tmpLanguageString = I18NHelper.defaultLanguage;
     }
 
-    ResourceLocator messages = new ResourceLocator(
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationserver.channel.smtp.multilang.smtpBundle", tmpLanguageString);
     if (tmpFromString == null) {
       throw new NotificationServerException("SMTPListener.send()", SilverpeasException.ERROR,

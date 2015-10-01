@@ -22,6 +22,7 @@ package com.silverpeas.bootstrap;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
@@ -47,12 +48,14 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
    */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    ResourceLocator systemSettings = new ResourceLocator("org.silverpeas.systemSettings", "");
+    SettingBundle systemSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.systemSettings");
     try {
-      Properties systemProperties = systemSettings.getProperties();
-      SystemWrapper.get().setProperties(systemProperties);
-      if (isTrustoreConfigured()) {
-        registerSSLSocketFactory();
+      for (String key : systemSettings.keySet()) {
+        SystemWrapper.get().setProperty(key, systemSettings.getString(key));
+        if (isTrustoreConfigured()) {
+          registerSSLSocketFactory();
+        }
       }
     } catch (GeneralSecurityException e) {
       Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the keystore/trustore.");

@@ -39,7 +39,7 @@ public class CoordinatesInstanciator extends SQLRequest {
   }
 
   public CoordinatesInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.coordinates");
+    super("org.silverpeas.coordinates");
   }
 
   public void create(Connection con, String spaceId, String componentId,

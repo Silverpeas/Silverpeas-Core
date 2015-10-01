@@ -28,6 +28,8 @@ package org.silverpeas.util.viewGenerator.html.formPanes;
 
 import java.util.Vector;
 import javax.servlet.jsp.PageContext;
+
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
 import org.silverpeas.util.Charsets;
@@ -57,7 +59,7 @@ public abstract class FormPane implements SimpleGraphicElement {
   protected String description;
   protected PageContext pageContext = null;
   protected boolean reply;
-  protected ResourceLocator message;
+  protected LocalizationBundle message;
   // Modes de gestion
   protected boolean utilisateurArchivageDemandes;
   protected boolean publieurArchivageDemandes;
@@ -89,7 +91,7 @@ public abstract class FormPane implements SimpleGraphicElement {
     utilisateurArchivageReponses = false;
     publieurArchivageReponses = false;
     utilisateurEnvoiDemandes = false;
-    message = new ResourceLocator(
+    message = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.util.viewGenerator.formPane.formPaneBundle",
         DEFAULT_LANGUAGE);
   }
@@ -337,7 +339,7 @@ public abstract class FormPane implements SimpleGraphicElement {
    */
   public void setLanguage(String language) {
     if (language != null) {
-      message = new ResourceLocator(
+      message = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.viewGenerator.formPane.formPaneBundle",
           language);
     }
@@ -351,7 +353,7 @@ public abstract class FormPane implements SimpleGraphicElement {
    */
   public void add(FormLine line) {
     line.setPane(this);
-    line.setLanguage(message);
+    line.setLanguage(message.getLocale().getLanguage());
     if (line.getType().equals("hidden")) {
       formHiddenFields.add(line);
     } else if (line.getType().equals("button")) {

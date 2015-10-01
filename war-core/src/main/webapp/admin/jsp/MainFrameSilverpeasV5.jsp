@@ -48,7 +48,7 @@ if (!StringUtil.isDefined(spaceIdFromRedirect)) {
 	spaceIdFromRedirect 	= request.getParameter("RedirectToSpaceId");
 }
 String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId");
-ResourceLocator generalMessage			= new ResourceLocator("org.silverpeas.multilang.generalMultilang", language);
+LocalizationBundle generalMessage			= ResourceLocator.getGeneralBundle(language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= StringUtil.getBooleanValue(request.getParameter("Login"));

@@ -24,7 +24,9 @@
 
 package org.silverpeas.util.csv;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class CSVWriter {
   protected int m_nbCols = 0;
@@ -32,7 +34,7 @@ public class CSVWriter {
   protected String[] m_colTypes;
   protected String[] m_colDefaultValues;
   protected String m_separator;
-  protected ResourceLocator m_utilMessages;
+  protected LocalizationBundle m_utilMessages;
 
   // properties spécifiques éventuellement en plus
   protected int m_specificNbCols = 0;
@@ -44,13 +46,13 @@ public class CSVWriter {
    * Constructeur
    */
   public CSVWriter(String language) {
-    m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util",
+    m_utilMessages = ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util",
         language);
   }
 
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator) {
-    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(propertiesFile);
 
     m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
     m_nbCols = m_colNames.length;
@@ -63,7 +65,7 @@ public class CSVWriter {
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator, String specificPropertiesFile,
       String specificRootPropertyName) {
-    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(propertiesFile);
 
     m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
     m_nbCols = m_colNames.length;
@@ -72,7 +74,7 @@ public class CSVWriter {
         m_nbCols);
     m_separator = separator;
 
-    ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
+    SettingBundle specificRs = ResourceLocator.getSettingBundle(specificPropertiesFile);
     m_specificColNames = specificRs.getStringArray(specificRootPropertyName,
         ".Name", -1);
     m_specificNbCols = m_specificColNames.length;

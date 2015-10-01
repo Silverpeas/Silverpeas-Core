@@ -27,6 +27,7 @@ package com.silverpeas.thumbnail.model;
 import java.io.Serializable;
 
 import org.silverpeas.util.MimeTypes;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.ResourceLocator;
@@ -37,8 +38,8 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class ThumbnailDetail implements Serializable, MimeTypes {
 
-  private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "org.silverpeas.publication.publicationSettings", "fr");
+  private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.publication.publicationSettings");
   public static final int THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE = 1;
 
   private static final long serialVersionUID = 1L;

@@ -39,7 +39,7 @@ public class WysiwygInstanciator extends SQLRequest {
   }
 
   public WysiwygInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.wysiwyg");
+    super("org.silverpeas.wysiwyg");
   }
 
 

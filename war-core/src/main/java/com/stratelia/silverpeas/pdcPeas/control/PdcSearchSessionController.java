@@ -38,20 +38,15 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
-import com.stratelia.webactiv.statistic.control.StatisticService;
-import org.silverpeas.search.SearchEngineProvider;
-import org.silverpeas.util.*;
-import com.stratelia.silverpeas.pdc.control.PdcManager;
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.containerManager.ContainerPeas;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.containerManager.ContainerWorkspace;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.silverpeas.pdc.control.Pdc;
 import com.stratelia.silverpeas.pdc.control.GlobalPdcManager;
+import com.stratelia.silverpeas.pdc.control.Pdc;
+import com.stratelia.silverpeas.pdc.control.PdcManager;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -79,10 +74,25 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
+import com.stratelia.webactiv.statistic.control.StatisticService;
+import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.PlainSearchResult;
+import org.silverpeas.search.SearchEngineProvider;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.util.*;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.statistic.model.StatisticRuntimeException;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.security.ComponentSecurity;
+import org.silverpeas.viewer.ViewerProvider;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -91,26 +101,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.StringTokenizer;
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.search.PlainSearchResult;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.viewer.ViewerProvider;
-import org.silverpeas.wysiwyg.control.WysiwygController;
+import java.util.*;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -141,7 +132,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final String SORT_ORDER_ASC = "ASC";
   public static final String SORT_ORDER_DESC = "DESC";
   // Activation ou non de la fonction d'export
-  private boolean isExportEnabled = false;
   private boolean isRefreshEnabled = false;
   public static final int SEARCH_SIMPLE = 0; // only field query
   public static final int SEARCH_ADVANCED = 1; // Simple + filter
@@ -192,7 +182,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     super(mainSessionCtrl, componentContext, multilangBundle, iconBundle,
         "org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
-    isExportEnabled = isExportLicenseOK();
     isRefreshEnabled = getSettings().getBoolean("EnableRefresh", true);
 
     try {
@@ -1198,10 +1187,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (StringUtil.isDefined(downloadLink)) {
         result.setDownloadLink(downloadLink);
       }
-
-      if (isExportEnabled()) {
-        result.setExportable(isCompliantResult(result));
-      }
+      result.setExportable(isCompliantResult(result));
 
       if (getSelectedSilverContents() != null && getSelectedSilverContents().contains(result)) {
         result.setSelected(true);
@@ -1536,9 +1522,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       String userId = gsc.getUserId();
       gsr.setCreatorName(getCompleteUserName(userId));
       gsr.setResultId(i);
-      if (isExportEnabled()) {
-        gsr.setExportable(isCompliantResult(gsr));
-      }
+      gsr.setExportable(isCompliantResult(gsr));
 
       results.add(gsr);
     }
@@ -2032,13 +2016,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String[] getStopWords() {
     if (KEYWORDS == null) {
       try {
-        List<String> wordList = new ArrayList<String>();
-        ResourceLocator resource = new ResourceLocator(
-            "org.silverpeas.search.indexEngine.StopWords", getLanguage());
-        Enumeration<String> stopWord = resource.getKeys();
-        while (stopWord.hasMoreElements()) {
-          wordList.add(stopWord.nextElement());
-        }
+        LocalizationBundle resource =
+            ResourceLocator.getLocalizationBundle("org.silverpeas.search.indexEngine.StopWords",
+                getLanguage());
+        List<String> wordList = new ArrayList<>(resource.keySet());
         KEYWORDS = wordList.toArray(new String[wordList.size()]);
       } catch (MissingResourceException e) {
         SilverTrace.warn("pdcPeas", "PdcSearchSessionController",
@@ -2479,12 +2460,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
    */
   public void setSearchDomains() {
-    ResourceLocator resource;
+    SettingBundle resource;
     List<String[]> domains = new ArrayList<String[]>();
 
     try {
-      resource = new ResourceLocator(
-          "com.stratelia.silverpeas.pdcPeas.settings.domains", "");
+      resource = ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.domains");
       if (resource != null) {
         int i = 1;
         boolean stop = false;
@@ -2549,29 +2529,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return url;
   }
 
-  private boolean isExportLicenseOK() {
-    ResourceLocator resource = new ResourceLocator("license.license", "");
-    String code = resource.getString("export");
-
-    boolean validSequence = true;
-    String serial = "643957685";
-    try {
-      for (int i = 0; i < 9 && validSequence; i++) {
-        String groupe = code.substring(i * 3, i * 3 + 3);
-        int total = 0;
-        for (int j = 0; j < groupe.length(); j++) {
-          String valeur = groupe.substring(j, j + 1);
-          total += new Integer(valeur).intValue();
-        }
-        if (total != new Integer(serial.substring(i * 1, i * 1 + 1)).intValue()) {
-          validSequence = false;
-        }
-      }
-    } catch (Exception e) {
-      validSequence = false;
-    }
-    return validSequence;
-  }
   /**
    * ******************************************************************************************
    */
@@ -2589,13 +2546,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       pdcManager = (PdcManager) new GlobalPdcManager();
     }
     return pdcManager;
-  }
-
-  /**
-   * @return true if export is enabled
-   */
-  public boolean isExportEnabled() {
-    return isExportEnabled;
   }
 
   /**

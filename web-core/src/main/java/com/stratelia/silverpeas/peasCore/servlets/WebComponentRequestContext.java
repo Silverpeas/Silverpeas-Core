@@ -33,9 +33,9 @@ import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToNavigatio
 import com.stratelia.silverpeas.peasCore.servlets.annotation.RedirectToPreviousNavigationStep;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.LocalizationBundle;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
@@ -148,7 +148,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     redirectVariables.put(variableName, variableValue);
   }
 
-  public ResourceLocator getMultilang() {
+  public LocalizationBundle getMultilang() {
     return controller.getMultilang();
   }
 

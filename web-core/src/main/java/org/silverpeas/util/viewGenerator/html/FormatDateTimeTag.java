@@ -27,7 +27,7 @@ import java.util.Date;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.DateUtil;
 
 import static org.silverpeas.util.StringUtil.isDefined;
@@ -79,7 +79,7 @@ public class FormatDateTimeTag extends TagSupport {
     if (isDefined(getLanguage())) {
       formattedDateTime = DateUtil.getOutputDateAndHour(dateTime, getLanguage());
     } else {
-      ResourcesWrapper resources = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+      MultiSilverpeasBundle resources = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           GraphicElementFactory.RESOURCES_KEY);
       if (resources != null) {
         formattedDateTime = resources.getOutputDateAndHour(dateTime);

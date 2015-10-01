@@ -38,7 +38,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="java.util.*"%>
 <%@ page import="org.silverpeas.util.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%//____/ VIEW GENERATOR \_________________________________________________________________________%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
@@ -61,10 +61,11 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%
 	CommunicationUserSessionController communicationScc = (CommunicationUserSessionController) request.getAttribute("communicationUser");
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(communicationScc.getLanguage());
-	ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
-	ResourceLocator settings = new ResourceLocator("com.silverpeas.communicationUser.settings.communicationUserSettings", "");
-	String m_context        = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	LocalizationBundle generalMessage = ResourceLocator.getGeneralBundle(
+      communicationScc.getLanguage());
+	MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
+	SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.communicationUser.settings.communicationUserSettings");
+	String m_context        = ResourceLocator.getGeneralBundle().getString("ApplicationURL");
 	String mandatoryField     = m_context + "/util/icons/mandatoryField.gif";
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	Window window = gef.getWindow();

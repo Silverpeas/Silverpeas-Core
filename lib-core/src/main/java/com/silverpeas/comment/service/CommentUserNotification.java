@@ -23,21 +23,23 @@
  */
 package com.silverpeas.comment.service;
 
-import static org.silverpeas.util.StringUtil.isDefined;
-
-import java.util.Collection;
-import java.util.Properties;
-import java.util.Set;
-
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.usernotification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.usernotification.model.NotificationResourceData;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import org.silverpeas.util.ResourceLocator;
+
+import java.util.Collection;
+import java.util.Properties;
+import java.util.Set;
+
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -64,13 +66,13 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
 
   private final CommentService commentService;
   private final String subjectKey;
-  private final ResourceLocator componentMessages;
+  private final LocalizationBundle componentMessages;
   private final Comment comment;
   private final Set<String> recipients;
 
   public CommentUserNotification(final CommentService commentService, final Comment comment,
-      final SilverpeasContent commentedContent,
-      final String subjectKey, final ResourceLocator componentMessages, final Set<String> recipients) {
+      final SilverpeasContent commentedContent, final String subjectKey,
+      final LocalizationBundle componentMessages, final Set<String> recipients) {
     super(commentedContent, null, "commented");
     this.commentService = commentService;
     this.comment = comment;
@@ -89,7 +91,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
     String subject = componentMessages.getString(getBundleSubjectKey());
     if (!isDefined(subject)) {
       subject =
-          commentService.getComponentMessages(componentMessages.getLanguage())
+          commentService.getComponentMessages(componentMessages.getLocale().getLanguage())
               .getString(DEFAULT_SUBJECT_COMMENT_ADDING);
     }
     return subject;
@@ -108,7 +110,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   @Override
   protected void performTemplateData(final String language, final SilverpeasContent resource,
       final SilverpeasTemplate template) {
-    componentMessages.setLanguage(language);
+    componentMessages.changeLocale(language);
     getNotificationMetaData().addLanguage(language, getTitle(), "");
   }
 
@@ -121,7 +123,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
 
   @Override
   protected SilverpeasTemplate createTemplate() {
-    final ResourceLocator settings = commentService.getComponentSettings();
+    final SettingBundle settings = commentService.getComponentSettings();
     final Properties templateConfiguration = new Properties();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
         settings.getString("templatePath"));

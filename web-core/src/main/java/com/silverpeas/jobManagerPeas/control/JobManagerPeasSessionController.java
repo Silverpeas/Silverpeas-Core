@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,14 +154,12 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       }
 
       if (JobManagerSettings.m_IsToolsVisible) {
-        if (isImportExportLicenseOK() || JobManagerSettings.m_IsToolSpecificAuthentVisible
+        if (JobManagerSettings.m_IsToolSpecificAuthentVisible
             || JobManagerSettings.m_IsToolWorkflowDesignerVisible) {
 
           List<String> ids = new ArrayList<String>(10);
-          if (isImportExportLicenseOK()) {
-            ids.add(jImportExport.getId());
-            services.put(jImportExport.getId(), jImportExport);
-          }
+          ids.add(jImportExport.getId());
+          services.put(jImportExport.getId(), jImportExport);
           if (JobManagerSettings.m_IsToolSpecificAuthentVisible) {
             ids.add(jSpecificAuthent.getId());
             services.put(jSpecificAuthent.getId(), jSpecificAuthent);
@@ -413,29 +412,5 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   public String getIdDefaultService() {
     return "1";
-  }
-
-  private boolean isImportExportLicenseOK() {
-    ResourceLocator resource = new ResourceLocator("license.license", "");
-    String code = resource.getString("import");
-
-    boolean validSequence = true;
-    String serial = "373957568";
-    try {
-      for (int i = 0; i < 9 && validSequence; i++) {
-        String groupe = code.substring(i * 3, i * 3 + 3);
-        int total = 0;
-        for (int j = 0; j < groupe.length(); j++) {
-          String valeur = groupe.substring(j, j + 1);
-          total = total + Integer.parseInt(valeur);
-        }
-        if (total != Integer.parseInt(serial.substring(i, i + 1))) {
-          validSequence = false;
-        }
-      }
-    } catch (NumberFormatException e) {
-      validSequence = false;
-    }
-    return validSequence;
   }
 }

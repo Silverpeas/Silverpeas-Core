@@ -48,7 +48,9 @@ import com.stratelia.webactiv.organization.UserFavoriteSpaceService;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
@@ -180,9 +182,9 @@ public class AjaxServletLookV5 extends HttpServlet {
     } else if (StringUtil.isDefined(spaceId)) {
       if (isPersonalSpace(spaceId)) {
         // Affichage de l'espace perso
-        ResourceLocator settings = gef.getFavoriteLookSettings();
-        ResourceLocator message = new ResourceLocator(
-                "com.stratelia.webactiv.homePage.multilang.homePageBundle",
+        SettingBundle settings = gef.getFavoriteLookSettings();
+        LocalizationBundle message = ResourceLocator.getLocalizationBundle(
+                "org.silverpeas.homePage.multilang.homePageBundle",
                 preferences.getLanguage());
         serializePersonalSpace(writer, userId, preferences.getLanguage(), helper,
                 settings, message);
@@ -696,8 +698,8 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   protected void serializePersonalSpace(Writer writer, String userId, String language,
-          LookHelper helper, ResourceLocator settings,
-          ResourceLocator message) throws IOException {
+          LookHelper helper, SettingBundle settings,
+          LocalizationBundle message) throws IOException {
     // Affichage de l'espace perso
     writer.write("<spacePerso id=\"spacePerso\" type=\"space\" level=\"0\">");
     boolean isAnonymousAccess = helper.isAnonymousAccess();

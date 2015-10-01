@@ -23,13 +23,14 @@
  */
 package org.silverpeas.servlets.credentials;
 
-import org.silverpeas.authentication.AuthenticationServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
 import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -64,7 +65,8 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
       // Error : go back to page
       SilverTrace.error("peasCore", "ChangePasswordFromLoginHandler.doAction()",
           "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login, e);
-      ResourceLocator settings = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
       return performUrlChangePasswordError(request,
           settings.getString("changePasswordFromLoginPage") + "?Login=" + login + "&DomainId=" +
               domainId, credential);

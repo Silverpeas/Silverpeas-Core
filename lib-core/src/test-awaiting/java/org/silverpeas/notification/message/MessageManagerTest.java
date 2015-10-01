@@ -24,6 +24,7 @@
 package org.silverpeas.notification.message;
 
 import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.ResourceLocator;
 import org.junit.After;
@@ -82,14 +83,14 @@ public class MessageManagerTest {
 
   @Test
   public void getResourceLocator() {
-    ResourceLocator locator =
+    LocalizationBundle locator =
         MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
-    ResourceLocator utilLocator =
+    LocalizationBundle utilLocator =
         MessageManager.getResourceLocator("org.silverpeas.util.multilang.util");
     MessageManager.setLanguage("otherLanguage");
-    ResourceLocator locatorOtherLanguage =
+    LocalizationBundle locatorOtherLanguage =
         MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
-    ResourceLocator utilLocatorOtherLanguage =
+    LocalizationBundle utilLocatorOtherLanguage =
         MessageManager.getResourceLocator("org.silverpeas.util.multilang.util");
 
     assertThat(locator, notNullValue());
@@ -117,7 +118,7 @@ public class MessageManagerTest {
 
 
     MessageManager.setLanguage("en");
-    ResourceLocator locatorEn =
+    LocalizationBundle locatorEn =
         MessageManager.getResourceLocator("org.silverpeas.util.multilang.i18n");
 
     assertThat(locator.getString("language_fr"), is("Fran\u00e7ais"));

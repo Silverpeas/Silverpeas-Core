@@ -58,9 +58,11 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.csv.CSVReader;
 import org.silverpeas.util.csv.Variant;
@@ -117,9 +119,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public JobDomainPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle",
-        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasIcons",
-        "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
+        "org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle",
+        "org.silverpeas.jobDomainPeas.settings.jobDomainPeasIcons",
+        "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
     setComponentRootName(URLManager.CMP_JOBDOMAINPEAS);
     m_AdminCtrl = ServiceProvider.getService(AdminController.class);
     sel = getSelection();
@@ -292,8 +294,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       String loginUrl = getLoginUrl(user, req);
 
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        ResourceLocator notifBundle =
-            new ResourceLocator("org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle", lang);
+        LocalizationBundle notifBundle = ResourceLocator.getLocalizationBundle(
+            "org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle", lang);
         notifMetaData.addLanguage(lang, notifBundle.getString("JDP.createAccountNotifTitle"), "");
         templates.put(lang, getTemplate(user, loginUrl, userRequestData.getPassword(), isNewUser));
       }
@@ -317,8 +319,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @return the login URL string representation
    */
   private String getLoginUrl(UserDetail user, HttpServletRequest req) {
-    ResourceLocator general
-        = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+    SettingBundle general =
+        ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
     String loginPage = general.getString("loginPage");
     if (!StringUtil.isDefined(loginPage)) {
       loginPage = "/defaultLogin.jsp";
@@ -366,7 +368,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         && getTargetDomain().getDriverClassName().equals(
             "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
 
-      ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
+      SettingBundle specificRs =
+          ResourceLocator.getSettingBundle(getTargetDomain().getPropFileName());
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomRegroup = null;
       String theUserIdToRegroup = m_TargetUserId;
@@ -454,7 +457,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw jdpe;
     }
     CSVReader csvReader = new CSVReader(getLanguage());
-    csvReader.initCSVFormat("com.silverpeas.jobDomainPeas.settings.usersCSVFormat", "User", ";",
+    csvReader.initCSVFormat("org.silverpeas.jobDomainPeas.settings.usersCSVFormat", "User", ";",
         getTargetDomain().getPropFileName(), "property_");
 
     // spécifique domaine Silverpeas (2 colonnes en moins (password et
@@ -800,7 +803,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         && !"0".equals(getTargetDomain().getId())
         && getTargetDomain().getDriverClassName().equals(
             "com.stratelia.silverpeas.domains.sqldriver.SQLDriver")) {
-      ResourceLocator specificRs = new ResourceLocator(getTargetDomain().getPropFileName(), "");
+      SettingBundle specificRs =
+          ResourceLocator.getSettingBundle(getTargetDomain().getPropFileName());
       int numPropertyRegroup = specificRs.getInteger("property.Grouping", -1);
       String nomLastGroup = null;
       if (numPropertyRegroup > -1) {
@@ -1994,7 +1998,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // 2- Traitement Domaine, appel aux webServices
       String propDomainFileName = theDomain.getPropFileName();
 
-      ResourceLocator propDomainSql = new ResourceLocator(propDomainFileName, "");
+      SettingBundle propDomainSql = ResourceLocator.getSettingBundle(propDomainFileName);
       String nomClasseWebService = propDomainSql.getString("ExternalSynchroClass");
       try {
         synchroUserWebService = (SynchroUserWebServiceItf) Class.forName(nomClasseWebService).

@@ -28,7 +28,7 @@
 
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
@@ -64,7 +64,7 @@
 	    return;
 	}
 
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 
 	String[] browseContext = (String[]) request.getAttribute("browseContext");
 	String spaceLabel = browseContext[0];

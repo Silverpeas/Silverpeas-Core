@@ -36,14 +36,16 @@
 <%@ page import="com.stratelia.webactiv.kmelia.KmeliaSecurity" %>
 <%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper" %>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%
   HttpSession httpSession = request.getSession();
   String redirection = (String) httpSession.getAttribute("gotoNew");
-  ResourceLocator mesLook =
-      new ResourceLocator("org.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
+  LocalizationBundle mesLook =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+          request.getLocale().getLanguage());
+  LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.authentication.multilang.authentication", request.getLocale().getLanguage());
 
   String errorCode = request.getParameter("ErrorCode");
   if (errorCode == null || errorCode.equals("null")) {

@@ -41,6 +41,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -260,10 +261,10 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
   }
 
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
-    ResourceLocator rl = new ResourceLocator(
-        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-    ResourceLocator authenticationSettings =
-        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+    SettingBundle rl = ResourceLocator.getSettingBundle(
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+    SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {

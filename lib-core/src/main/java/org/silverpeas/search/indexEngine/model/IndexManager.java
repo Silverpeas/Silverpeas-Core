@@ -41,6 +41,7 @@ import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -593,17 +594,17 @@ public class IndexManager {
 
   static {
     // Reads and set the index engine parameters from the given properties file
-    ResourceLocator resource = new ResourceLocator("org.silverpeas.search.indexEngine.IndexEngine",
-        "");
-    maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
-    mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
-    maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.search.indexEngine.IndexEngine");
+    maxFieldLength = settings.getInteger("lucene.maxFieldLength", maxFieldLength);
+    mergeFactor = settings.getInteger("lucene.mergeFactor", mergeFactor);
+    maxMergeDocs = settings.getInteger("lucene.maxMergeDocs", maxMergeDocs);
 
-    String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+    String stringValue = settings.getString("lucene.RAMBufferSizeMB", Double.toString(
         IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
     RAMBufferSizeMB = Double.parseDouble(stringValue);
 
-    enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
-    serverName = resource.getString("server.name", "Silverpeas");
+    enableDymIndexing = settings.getBoolean("enableDymIndexing", false);
+    serverName = settings.getString("server.name", "Silverpeas");
   }
 }

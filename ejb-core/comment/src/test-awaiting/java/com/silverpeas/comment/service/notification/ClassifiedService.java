@@ -25,7 +25,10 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.ApplicationService;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,13 +48,15 @@ public class ClassifiedService implements ApplicationService<Classified> {
   }
 
   @Override
-  public ResourceLocator getComponentSettings() {
-    return new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
+  public SettingBundle getComponentSettings() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.classifieds.settings.classifiedsSettings");
   }
 
   @Override
-  public ResourceLocator getComponentMessages(String language) {
-    return new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", language);
+  public LocalizationBundle getComponentMessages(String language) {
+    return ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.classifieds.multilang.classifiedsBundle", language);
   }
 
   public void putContent(final Classified classified) {

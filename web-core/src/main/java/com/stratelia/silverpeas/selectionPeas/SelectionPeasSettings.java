@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.selectionPeas;
 
 import com.stratelia.silverpeas.selection.Selection;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class SelectionPeasSettings {
 
@@ -42,8 +43,8 @@ public class SelectionPeasSettings {
   public static boolean displayDomains;
 
   static {
-    ResourceLocator rs = new ResourceLocator(
-        "com.stratelia.silverpeas.selectionPeas.settings.selectionPeasSettings", "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(
+        "org.silverpeas.selectionPeas.settings.selectionPeasSettings");
     setBySearchPage = rs.getInteger("SetBySearchPage", 14);
     elementBySearchPage = rs.getInteger("ElementBySearchPage", 14);
     setByBrowsePage = rs.getInteger("SetByBrowsePage", 5);

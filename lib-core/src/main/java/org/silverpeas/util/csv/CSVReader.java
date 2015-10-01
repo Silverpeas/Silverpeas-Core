@@ -26,7 +26,10 @@ package org.silverpeas.util.csv;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.UtilTrappedException;
@@ -47,7 +50,7 @@ public class CSVReader {
   protected String[] m_colMandatory;
 
   protected String m_separator;
-  protected ResourceLocator m_utilMessages;
+  protected LocalizationBundle m_utilMessages;
 
   // properties specifiques eventuellement en plus
   protected int m_specificNbCols = 0;
@@ -83,12 +86,13 @@ public class CSVReader {
    * @param language
    */
   public CSVReader(String language) {
-    m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", language);
+    m_utilMessages =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
   }
 
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator) {
-    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+    SettingBundle rs = ResourceLocator.getSettingBundle(propertiesFile);
 
     m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
     m_nbCols = m_colNames.length;
@@ -105,7 +109,7 @@ public class CSVReader {
       String specificRootPropertyName) {
     initCSVFormat(propertiesFile, rootPropertyName, separator);
 
-    ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
+    SettingBundle specificRs = ResourceLocator.getSettingBundle(specificPropertiesFile);
     m_specificColNames = specificRs.getStringArray(specificRootPropertyName,
         ".Name", -1);
     m_specificNbCols = m_specificColNames.length;

@@ -44,7 +44,9 @@ import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -91,7 +93,7 @@ public class SessionManager implements SessionManagement {
   private final Map<String, SessionInfo> userDataSessions = new HashMap<String, SessionInfo>(100);
   // Contains the session when notified
   private final List<String> userNotificationSessions = new ArrayList<String>(100);
-  private ResourceLocator messages = null;
+  private LocalizationBundle messages = null;
   @Inject
   private SilverStatisticsManager myStatisticsManager = null;
   @Inject
@@ -113,20 +115,21 @@ public class SessionManager implements SessionManagement {
             "Initialization of the session management service");
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
-      ResourceLocator rl = new ResourceLocator("com.stratelia.webactiv.clipboard.settings"
-          + ".clipboardSettings", "");
+      SettingBundle rl =
+          ResourceLocator.getSettingBundle("org.silverpeas.clipboard.settings.clipboardSettings");
 
       maxRefreshInterval = (60 + Long.parseLong(rl.getString("IntervalInSec"))) * 1000;
 
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
-      ResourceBundle resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore"
+      ResourceBundle resources = FileUtil.loadBundle("org.silverpeas.peasCore"
           + ".SessionManager", new Locale("", ""));
       String language = resources.getString("language");
       if (!StringUtil.isDefined(language)) {
         language = I18NHelper.defaultLanguage;
       }
-      messages = new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang"
-          + ".peasCoreBundle", language);
+      messages =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
+              language);
       scheduledSessionManagementTimeStamp = convertMinuteInMilliseconds(
           Long.parseLong(resources.getString("scheduledSessionManagementTimeStamp")));
       userSessionTimeout = convertMinuteInMilliseconds(
@@ -417,8 +420,8 @@ public class SessionManager implements SessionManagement {
     if (user != null) {
       userLanguage = user.getUserPreferences().getLanguage();
     }
-    ResourceLocator bundle =
-        new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
+    LocalizationBundle bundle =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
             userLanguage);
     String endOfSessionDate = DateUtil.formatDate(new Date(endOfSession), NOTIFY_DATE_FORMAT);
     String msgTitle = bundle.getString("EndOfSessionNotificationMsgTitle");

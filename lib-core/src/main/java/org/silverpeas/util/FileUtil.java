@@ -55,8 +55,8 @@ import java.util.logging.Logger;
 
 public class FileUtil implements MimeTypes {
 
-  private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
-      "org.silverpeas.util.attachment.mime_types", "");
+  private static final SettingBundle MIME_TYPES_EXTENSIONS =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.mime_types");
   public static final String CONTEXT_TOKEN = ",";
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();

@@ -1292,7 +1292,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
     request.setAttribute("IndexOfFirstResult", Integer.valueOf(pdcSC.
         getIndexOfFirstResultToDisplay()));
-    request.setAttribute("ExportEnabled", Boolean.valueOf(pdcSC.isExportEnabled()));
     request.setAttribute("RefreshEnabled", Boolean.valueOf(pdcSC.isRefreshEnabled()));
     request.setAttribute("ExternalSearchEnabled", Boolean.valueOf(pdcSC.isEnableExternalSearch()));
 

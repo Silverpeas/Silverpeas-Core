@@ -34,11 +34,6 @@ import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.authentication.AuthenticationServiceProvider;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -55,7 +50,17 @@ import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.util.Link;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.template.SilverpeasTemplate;
+import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -63,11 +68,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.util.Link;
+import java.util.MissingResourceException;
 
 /**
  * @author Bensalem Nabil
@@ -261,11 +262,16 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         template.setAttribute("senderMessage", message);
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
-        ResourceLocator localizedMessage =
-            new ResourceLocator("org.silverpeas.social.multilang.socialNetworkBundle", language);
-        notifMetaData.addLanguage(language,
-            localizedMessage.getString("myProfile.invitations.notification.send.subject", subject),
-            "");
+        LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
+            "org.silverpeas.social.multilang.socialNetworkBundle", language);
+        String translation;
+        try {
+          translation =
+              localizedMessage.getString("myProfile.invitations.notification.send.subject");
+        } catch (MissingResourceException ex) {
+          translation = subject;
+        }
+        notifMetaData.addLanguage(language, translation, "");
 
         String url = URLManager.getURL(URLManager.CMP_MYPROFILE, null, null)
             + "MyInvitations";
@@ -340,10 +346,16 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         template.setAttribute("userName", senderUser.getDisplayedName());
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
-        ResourceLocator localizedMessage =
-            new ResourceLocator("org.silverpeas.social.multilang.socialNetworkBundle", language);
-        notifMetaData.addLanguage(language, localizedMessage
-            .getString("myProfile.invitations.notification.accept.subject", subject), "");
+        LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
+            "org.silverpeas.social.multilang.socialNetworkBundle", language);
+        String translation;
+        try {
+          translation =
+              localizedMessage.getString("myProfile.invitations.notification.accept.subject");
+        } catch (MissingResourceException ex) {
+          translation = subject;
+        }
+        notifMetaData.addLanguage(language, translation, "");
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(curRelation.getInviterId())));

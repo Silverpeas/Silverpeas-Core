@@ -27,6 +27,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Singleton;
 
@@ -38,8 +39,8 @@ public class DefaultComponentSpaceQuotaService
     extends AbstractSpaceQuotaService<ComponentSpaceQuotaKey>
     implements ComponentSpaceQuotaService {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
 
   /*
    * (non-Javadoc)

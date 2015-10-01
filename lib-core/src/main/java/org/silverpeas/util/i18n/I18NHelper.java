@@ -28,8 +28,10 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,38 +74,43 @@ public class I18NHelper {
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
 
   static {
-    ResourceLocator rs = new ResourceLocator("org.silverpeas.util.i18n", "");
-    String rsLanguages = rs.getString("languages");
-    StringTokenizer tokenizer = new StringTokenizer(rsLanguages, ",");
-    while (tokenizer.hasMoreTokens()) {
-      String contentLanguageCode = tokenizer.nextToken();
-      allContentLanguageCodes.add(contentLanguageCode);
-      nbContentLanguages++;
-      if (defaultLanguage == null) {
-        defaultLanguage = contentLanguageCode;
-        defaultLocale = new Locale(contentLanguageCode);
-      }
-      ResourceLocator rsLanguage = new ResourceLocator("org.silverpeas.util.multilang.i18n",
-          contentLanguageCode);
+    SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.util.i18n");
+    String[] rsLanguages = rs.getString("languages").split(",");
+    for (String contentLanguageCode : rsLanguages) {
+      contentLanguageCode = contentLanguageCode.trim();
+      if (!contentLanguageCode.isEmpty()) {
+        allContentLanguageCodes.add(contentLanguageCode);
+        nbContentLanguages++;
+        if (defaultLanguage == null) {
+          defaultLanguage = contentLanguageCode;
+          defaultLocale = new Locale(contentLanguageCode);
+        }
+        LocalizationBundle rsLanguage =
+            ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.i18n",
+                contentLanguageCode);
 
-      StringTokenizer tokenizer2 = new StringTokenizer(rsLanguages, ",");
-      List<I18NLanguage> contentLanguageLabels = new ArrayList<I18NLanguage>();
-      while (tokenizer2.hasMoreTokens()) {
-        String language2 = tokenizer2.nextToken();
-        I18NLanguage i18nLanguage = new I18NLanguage(language2, rsLanguage.getString("language_"
-            + language2));
-        contentLanguageLabels.add(i18nLanguage);
+        List<I18NLanguage> contentLanguageLabels = new ArrayList<>();
+        for (String language : rsLanguages) {
+          language = language.trim();
+          if (!language.isEmpty()) {
+            I18NLanguage i18nLanguage =
+                new I18NLanguage(language, rsLanguage.getString("language_" + language));
+            contentLanguageLabels.add(i18nLanguage);
+          }
+        }
+        allContentLanguages.put(contentLanguageCode, contentLanguageLabels);
       }
-      allContentLanguages.put(contentLanguageCode, contentLanguageLabels);
     }
+
     isI18nContentActivated = (nbContentLanguages > 1);
 
     // Fallback languages
-    List<String> fallbackLanguageCodes = new ArrayList<String>(DisplayI18NHelper.getLanguages());
+    List<String> fallbackLanguageCodes = new ArrayList<>(DisplayI18NHelper.getLanguages());
     fallbackLanguageCodes.removeAll(allContentLanguageCodes);
     for (String fallbackLanguageCode : fallbackLanguageCodes) {
-      ResourceLocator rsLanguage =
-          new ResourceLocator("org.silverpeas.util.multilang.i18n", fallbackLanguageCode);
+      LocalizationBundle rsLanguage =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.i18n",
+              fallbackLanguageCode);
 
       List<I18NLanguage> fallbackLanguageLabels = new ArrayList<I18NLanguage>();
       for (String contentLanguageCode : allContentLanguageCodes) {
@@ -249,11 +256,12 @@ public class I18NHelper {
     return getHTMLLinks(languages, lang);
   }
 
-  public static String getFormLine(ResourcesWrapper resources) {
+  public static String getFormLine(MultiSilverpeasBundle resources) {
     return getFormLine(resources, null, null);
   }
 
-  public static String getFormLine(ResourcesWrapper resources, I18NBean bean, String translation) {
+  public static String getFormLine(MultiSilverpeasBundle resources, I18NBean bean,
+      String translation) {
     if (nbContentLanguages == 1) {
       return "";
     }

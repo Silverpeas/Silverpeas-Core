@@ -20,14 +20,15 @@
  */
 package org.silverpeas.servlets.credentials;
 
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationServiceProvider;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationServiceProvider;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,8 +49,8 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
       return "/Login.jsp";
     }
 
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+    SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.passwordExpiration");
     String passwordChangeURL =
         settings.getString("passwordChangeURL", "/defaultPasswordAboutToExpire.jsp");
 

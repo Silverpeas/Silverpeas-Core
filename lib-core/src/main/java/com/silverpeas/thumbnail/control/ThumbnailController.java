@@ -32,6 +32,7 @@ import com.silverpeas.thumbnail.service.ThumbnailServiceProvider;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ImageUtil;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
@@ -57,8 +58,8 @@ import java.util.List;
 
 public class ThumbnailController {
 
-  private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "org.silverpeas.publication.publicationSettings", "fr");
+  private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.publication.publicationSettings");
 
   /**
    * the constructor.

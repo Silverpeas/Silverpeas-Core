@@ -1,4 +1,5 @@
-<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="com.silverpeas.ui.DisplayI18NHelper" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -29,10 +30,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="headLog.jsp" %>
 <%
-  ResourceLocator reinitPasswordBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.forgottenPasswordMail", "");
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+  LocalizationBundle reinitPasswordBundle = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.authentication.multilang.forgottenPasswordMail",
+      request.getLocale().getLanguage());
+  LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
+      "org.silverpeas.authentication.multilang.authentication",
+      request.getLocale().getLanguage());
 
   String action = request.getParameter("Action");
   String actionLabel = "";

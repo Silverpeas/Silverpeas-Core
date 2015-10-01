@@ -23,19 +23,20 @@ package org.silverpeas.util.viewGenerator.html.comment;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion;
-import java.util.Arrays;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.util.Arrays;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -182,13 +183,13 @@ public abstract class CommentWidget extends TagSupport {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
-  private ResourcesWrapper getSettings() {
+  private MultiSilverpeasBundle getSettings() {
     String language = getUserPreferences().getLanguage();
-    ResourceLocator messages = new ResourceLocator("org.silverpeas.util.comment.multilang.comment",
-        language);
-    ResourcesWrapper resources = new ResourcesWrapper(messages,
-        new ResourceLocator("org.silverpeas.util.comment.icons", ""),
-        new ResourceLocator("org.silverpeas.util.comment.Comment", ""), language);
+    MultiSilverpeasBundle resources = new MultiSilverpeasBundle(
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.comment.multilang.comment",
+            language),
+        ResourceLocator.getSettingBundle("org.silverpeas.util.comment.icons"),
+        ResourceLocator.getSettingBundle("org.silverpeas.util.comment.Comment"), language);
 
     return resources;
 
@@ -217,7 +218,7 @@ public abstract class CommentWidget extends TagSupport {
     String context = URLManager.getApplicationURL();
 
     OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
-    ResourcesWrapper settings = getSettings();
+    MultiSilverpeasBundle settings = getSettings();
     UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());
     final boolean isAdmin;

@@ -1,5 +1,6 @@
 package org.silverpeas.util.viewGenerator.html;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.FileServerUtils;
@@ -15,8 +16,8 @@ import java.io.IOException;
  */
 public class ImageTag extends SimpleTagSupport {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
   private static final String IMAGE_SIZE_KEY_PREFIX = "image.size.";
 
   private String src;

@@ -294,8 +294,9 @@ public class DelayedNotificationDelegateTest {
           .getResourceAsStream(
               "com/silverpeas/usernotification/delayed/result-synthese-" + userIds[i] +
                   "-" + language + ".txt")) {
-        assertThat(stub.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", ""),
-            is(IOUtils.toString(expected, Charsets.UTF_8).replaceAll("[\r\n\t]", "")));
+        String expectedNotif = IOUtils.toString(expected, Charsets.UTF_8).replaceAll("[\r\n\t]", "");
+        String actualNotif = stub.sendedList.get(i).getMessage().replaceAll("[\r\n\t]", "");
+        assertThat(actualNotif, is(expectedNotif));
       }
     }
     return stub;

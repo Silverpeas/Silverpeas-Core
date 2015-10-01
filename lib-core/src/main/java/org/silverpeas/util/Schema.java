@@ -28,10 +28,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -51,8 +47,9 @@ public abstract class Schema {
 
   public Schema() throws UtilException {
     createConnection();
-    ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
-    String m_sHaveToTestConnections = resources.getString("HaveToTestConnections");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.beans.admin.admin");
+    String m_sHaveToTestConnections = settings.getString("HaveToTestConnections");
     if ("false".equalsIgnoreCase(m_sHaveToTestConnections)) {
       haveToTestConnections = false;
     }

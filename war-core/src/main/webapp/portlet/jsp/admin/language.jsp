@@ -29,11 +29,12 @@
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpagePopup.jsp"%>
 
 <%!
-  ResourceLocator messageBundle ;
+  LocalizationBundle messageBundle ;
 
 public String getMessage(String messageName) {
   String message = null ;
@@ -48,6 +49,6 @@ public String getMessage(String messageName) {
 %>
 <%
   MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-  messageBundle = new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle", m_MainSessionCtrl.getFavoriteLanguage());
+  messageBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle", m_MainSessionCtrl.getFavoriteLanguage());
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 %>

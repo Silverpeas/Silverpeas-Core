@@ -24,12 +24,12 @@
 
 package com.silverpeas.workflow.api;
 
-import java.util.HashMap;
-
 import com.silverpeas.workflow.engine.WorkflowHub;
-
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+
+import java.util.HashMap;
 
 /**
  * The Workflow class is the main entry to the workflow engine public services. This is a proxy
@@ -85,10 +85,10 @@ public final class Workflow {
    * Returns the localized label.
    */
   static public String getLabel(String labelName, String lang) {
-    ResourceLocator labels = localLabels.get(lang);
+    LocalizationBundle labels = localLabels.get(lang);
     if (labels == null) {
-      labels = new ResourceLocator(
-          "com.silverpeas.workflow.multilang.workflowEngineBundle", lang);
+      labels = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.workflow.multilang.workflowEngineBundle", lang);
 
       localLabels.put(lang, labels);
     }
@@ -110,6 +110,6 @@ public final class Workflow {
     }
   }
 
-  static private final HashMap<String, ResourceLocator> localLabels =
+  static private final HashMap<String, LocalizationBundle> localLabels =
       new HashMap<>();
 }

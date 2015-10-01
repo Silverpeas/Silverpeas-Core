@@ -34,7 +34,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.silverpeas.util.EncodeHelper;
 import com.silverpeas.workflow.api.model.DataFolder;
 import com.silverpeas.workflow.api.model.Item;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
@@ -57,7 +57,7 @@ public class ItemList extends TagSupport {
    */
   public int doStartTag() throws JspException {
     GraphicElementFactory gef;
-    ResourcesWrapper resource;
+    MultiSilverpeasBundle resource;
     ArrayPane itemPane;
     ArrayLine row;
     ArrayColumn column;
@@ -67,7 +67,7 @@ public class ItemList extends TagSupport {
     try {
       gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
           "SessionGraphicElementFactory");
-      resource = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+      resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           "resources");
       strPaneTitle = resource.getString(strPaneTitleKey);
 

@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -99,8 +100,8 @@ public class AuthenticationServlet extends HttpServlet {
     }
 
     // Get the authentication settings
-    ResourceLocator authenticationSettings = new ResourceLocator(
-        "org.silverpeas.authentication.settings.authenticationSettings", "");
+    SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings");
     boolean securedAccess = request.isSecure();
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
@@ -204,8 +205,8 @@ public class AuthenticationServlet extends HttpServlet {
         String allowPasswordChange = (String) session.getAttribute(
             Authentication.PASSWORD_CHANGE_ALLOWED);
         if (StringUtil.getBooleanValue(allowPasswordChange)) {
-          ResourceLocator settings = new ResourceLocator(
-              "com.silverpeas.authentication.settings.passwordExpiration", "");
+          SettingBundle settings = ResourceLocator.getSettingBundle(
+              "org.silverpeas.authentication.settings.passwordExpiration");
           url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
               getLogin() + "&domainId=" + domainId;
         } else {
@@ -215,8 +216,8 @@ public class AuthenticationServlet extends HttpServlet {
         String allowPasswordChange = (String) session.getAttribute(
             Authentication.PASSWORD_CHANGE_ALLOWED);
         if (StringUtil.getBooleanValue(allowPasswordChange)) {
-          ResourceLocator settings = new ResourceLocator(
-              "com.silverpeas.authentication.settings.passwordExpiration", "");
+          SettingBundle settings = ResourceLocator.getSettingBundle(
+              "org.silverpeas.authentication.settings.passwordExpiration");
           url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
               getLogin() + "&domainId=" + domainId;
         } else {
@@ -303,7 +304,7 @@ public class AuthenticationServlet extends HttpServlet {
   }
 
   private String getDomain(HttpServletRequest request, AuthenticationParameters authParameters,
-      ResourceLocator authSettings) {
+      SettingBundle authSettings) {
     if (authParameters.isUserByInternalAuthTokenMode()) {
       return authParameters.getDomainId();
     } else if (authParameters.isSsoMode()) {

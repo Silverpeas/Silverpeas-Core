@@ -49,7 +49,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -61,7 +61,7 @@ BrowseBar browseBar = window.getBrowseBar();
 Frame frame = gef.getFrame();
 Board board = gef.getBoard();
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 if (jobSearchScc == null) {
 	// No session controller in the request -> security exception
 	String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");

@@ -34,6 +34,7 @@ import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -73,7 +74,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @throws Exception
    */
   @Override
-  public void initFromProperties(ResourceLocator rs) throws Exception {
+  public void initFromProperties(SettingBundle rs) throws Exception {
   }
 
   @Override

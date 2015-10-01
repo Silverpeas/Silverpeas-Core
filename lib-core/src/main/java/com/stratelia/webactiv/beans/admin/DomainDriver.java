@@ -25,6 +25,8 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
 import java.util.List;
 import java.util.Map;
 
@@ -148,7 +150,7 @@ public interface DomainDriver {
 
   Map<String, String> getPropertiesDescriptions(String language);
 
-  void initFromProperties(ResourceLocator rs) throws Exception;
+  void initFromProperties(SettingBundle rs) throws Exception;
 
   long getDriverActions();
 

@@ -37,7 +37,7 @@
 
 <%!
 
-void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException {
+void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resource, JspWriter out) throws java.io.IOException {
   out.println("<li class='field' id='"+parameter.getName()+"'>");
   String help = parameter.getHelp();
 	if (help != null) {

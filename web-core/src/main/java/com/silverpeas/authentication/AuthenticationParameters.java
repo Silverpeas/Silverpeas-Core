@@ -28,16 +28,16 @@ import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
 import com.silverpeas.socialnetwork.service.AccessToken;
 import com.silverpeas.socialnetwork.service.SocialNetworkService;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.spnego.SpnegoPrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
+import org.silverpeas.cache.service.CacheServiceProvider;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.spnego.SpnegoPrincipal;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -64,9 +64,8 @@ public class AuthenticationParameters {
   private SocialNetworkID networkId;
 
   public AuthenticationParameters(HttpServletRequest request) {
-    ResourceLocator authenticationSettings = new ResourceLocator(
-        "com.silverpeas.authentication.settings.authenticationSettings",
-        "");
+    SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings");
     HttpSession session = request.getSession();
     boolean cookieEnabled = authenticationSettings.getBoolean(
         "cookieEnabled", false);

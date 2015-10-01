@@ -20,19 +20,30 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.StopFilter;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.fr.ElisionFilter;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.util.Version;
 import org.silverpeas.search.indexEngine.analysis.SilverTokenizer;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import java.io.Reader;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Set;
 
 /**
  * Extends lucene Analyzer : prunes from a tokens stream all the meaningless words and prunes all
@@ -110,12 +121,9 @@ public final class WAAnalyzer extends Analyzer {
       if (!StringUtil.isDefined(currentLanguage)) {
         currentLanguage = I18NHelper.defaultLanguage;
       }
-      ResourceLocator resource = new ResourceLocator("org.silverpeas.search.indexEngine.StopWords",
-          currentLanguage);
-      Enumeration<String> stopWord = resource.getKeys();
-      while (stopWord.hasMoreElements()) {
-        stopWords.add(stopWord.nextElement());
-      }
+      LocalizationBundle resource =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.search.indexEngine.StopWords", currentLanguage);
+      stopWords.addAll(resource.keySet());
     } catch (MissingResourceException e) {
       SilverTrace.warn("indexEngine", "WAAnalyzer", "indexEngine.MSG_MISSING_STOPWORDS_DEFINITION");
     }
@@ -129,8 +137,8 @@ public final class WAAnalyzer extends Analyzer {
     return language;
   }
   static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
-  static private final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.util.indexEngine.IndexEngine", "");
+  static private final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.indexEngine.IndexEngine");
   /**
    * The words which are usually not useful for searching.
    */

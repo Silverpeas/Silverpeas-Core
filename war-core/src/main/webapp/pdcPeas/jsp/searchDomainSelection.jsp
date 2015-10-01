@@ -26,11 +26,11 @@
 <%@page import="java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="java.util.Vector"%>
 
 <%
-   ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+   MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
    List<String[]> searchDomains = (List<String[]>) request.getAttribute("searchDomains");
    String currentSearchDomainId = (String) request.getAttribute("currentSearchDomainId");
    currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;

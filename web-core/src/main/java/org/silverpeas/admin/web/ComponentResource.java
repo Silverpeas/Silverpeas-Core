@@ -27,14 +27,15 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -123,8 +124,8 @@ public class ComponentResource extends AbstractAdminResource {
       profiles.addAll(componentInst.getProfiles());
 
       // Building entities
-      ResourceLocator resource =
-          new ResourceLocator("com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
+      LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
               getUserPreferences().getLanguage());
       UsersAndGroupsRoleEntity roleEntity;
       for (ProfileInst profile : profiles) {

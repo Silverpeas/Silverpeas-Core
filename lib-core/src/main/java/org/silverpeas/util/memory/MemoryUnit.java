@@ -23,12 +23,11 @@
  */
 package org.silverpeas.util.memory;
 
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.notification.message.MessageManager;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
@@ -43,8 +42,6 @@ public enum MemoryUnit {
   private BigDecimal limit = null;
   private final int power;
 
-  private final static Map<String, ResourceLocator> multilang =
-      new HashMap<String, ResourceLocator>();
   static BigDecimal byteMultiplier = new BigDecimal(String.valueOf(1024));
 
   MemoryUnit(int power, final String bundleKey, final String bundleDefault) {
@@ -84,11 +81,8 @@ public enum MemoryUnit {
    */
   private static String getStringTranslation(final String key) {
     String language = MessageManager.getLanguage();
-    ResourceLocator rl = multilang.get(language);
-    if (rl == null) {
-      rl = new ResourceLocator("org.silverpeas.util.multilang.util", language);
-      multilang.put(language, rl);
-    }
-    return rl.getString(key, null);
+    LocalizationBundle rl =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
+    return rl.getString(key);
   }
 }

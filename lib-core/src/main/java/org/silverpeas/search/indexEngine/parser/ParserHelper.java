@@ -24,11 +24,12 @@
 
 package org.silverpeas.search.indexEngine.parser;
 
-import java.util.MissingResourceException;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
+import java.util.MissingResourceException;
 
 /*
  * CVS Informations
@@ -77,15 +78,15 @@ public class ParserHelper {
    * @get the time out parameter or 30000
    */
   static public int getTimeOutParameter() {
-    ResourceLocator resourceLocator = null;
+    SettingBundle settings = null;
     int timeOutParameter = 0;
 
     try {
-      resourceLocator = new ResourceLocator(
-          "org.silverpeas.search.indexEngine.IndexEngine", "");
+      settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.search.indexEngine.IndexEngine");
 
-      if (resourceLocator != null) {
-        timeOutParameter = Integer.parseInt(resourceLocator
+      if (settings != null) {
+        timeOutParameter = Integer.parseInt(settings
             .getString("TimeOutParameter"));
       }
     } catch (MissingResourceException e) {
@@ -93,7 +94,7 @@ public class ParserHelper {
           "indexEngine.MSG_MISSING_INDEXENGINE_PROPERTIES", null, e);
     } catch (NumberFormatException e) {
       SilverTrace.warn("indexEngine", "ParserHelper",
-          "indexEngine.MSG_PARSE_STRING_FAIL", resourceLocator
+          "indexEngine.MSG_PARSE_STRING_FAIL", settings
           .getString("TimeOutParameter"), e);
     }
     return timeOutParameter;

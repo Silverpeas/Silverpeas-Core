@@ -39,7 +39,7 @@ public interface DomainService {
    * @throws DomainCreationException
    * @throws DomainConflictException
    */
-  public String createDomain(Domain domainToCreate) throws DomainCreationException,
+  String createDomain(Domain domainToCreate) throws DomainCreationException,
       DomainConflictException;
 
   /**

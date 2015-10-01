@@ -37,7 +37,7 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
 import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -188,8 +188,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       component = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);
     }
 
-    ResourcesWrapper resources =
-        new ResourcesWrapper(component.getMultilang(), component.getIcon(), component.getSettings(),
+    MultiSilverpeasBundle resources =
+        new MultiSilverpeasBundle(component.getMultilang(), component.getIcon(), component.getSettings(),
             component.getLanguage());
     request.setAttribute("resources", resources);
     String[] browseContext = new String[]{component.getSpaceLabel(), component.getComponentLabel(),

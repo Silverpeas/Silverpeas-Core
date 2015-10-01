@@ -20,12 +20,14 @@
  */
 package org.silverpeas.servlets;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.net.URLDecoder;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,14 +35,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.net.URLDecoder;
 
 /**
  * To get files from temp directory
@@ -138,10 +138,10 @@ public class TempFileServer extends HttpServlet {
     StringReader sr = null;
     OutputStream out2 = res.getOutputStream();
     int read;
-    ResourceLocator resourceLocator = new ResourceLocator(
-        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
 
-    sr = new StringReader(resourceLocator.getString("warning"));
+    sr = new StringReader(messages.getString("warning"));
     try {
       read = sr.read();
       while (read != -1) {

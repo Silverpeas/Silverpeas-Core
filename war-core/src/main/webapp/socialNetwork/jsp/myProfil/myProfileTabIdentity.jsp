@@ -29,7 +29,7 @@
     pageEncoding="UTF-8"%>
 
 <%@page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
@@ -37,10 +37,10 @@
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
-  ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-  ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", resource.getLanguage());
-  ResourceLocator authRs = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", resource.getLanguage());
-  ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", resource.getLanguage());
+  MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
+  SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
+  LocalizationBundle authRs = ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication", resource.getLanguage());
+  SettingBundle general = ResourceLocator.getSettingBundle("org.stratelia.silverpeas.lookAndFeel.generalLook");
 
   boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
   boolean isAdmin = (Boolean) request.getAttribute("isAdmin");

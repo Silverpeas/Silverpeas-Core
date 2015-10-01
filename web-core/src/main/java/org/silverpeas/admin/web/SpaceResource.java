@@ -27,16 +27,17 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
-import org.silverpeas.util.CollectionUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.util.CollectionUtil;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -153,8 +154,8 @@ public class SpaceResource extends AbstractAdminResource {
       profiles.addAll(spaceInst.getProfiles());
 
       // Building entities
-      ResourceLocator resource =
-          new ResourceLocator("com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
+      LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
               getUserPreferences().getLanguage());
       UsersAndGroupsRoleEntity roleEntity;
       for (SpaceProfileInst profile : profiles) {

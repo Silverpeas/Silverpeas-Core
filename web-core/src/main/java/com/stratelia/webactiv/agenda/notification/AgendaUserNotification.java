@@ -40,6 +40,7 @@ import org.silverpeas.util.template.SilverpeasTemplate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.MissingResourceException;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -192,8 +193,13 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected void performTemplateData(final String language, final JournalHeader resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language, getBundle(language).getString(
-        getBundleSubjectKey(), getTitle()), "");
+    String title;
+    try {
+      title = getBundle(language).getString(getBundleSubjectKey());
+    } catch (MissingResourceException ex) {
+      title = getTitle();
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("sender", sender.getDisplayedName());
     if (isDefined(attend)) {
       template.setAttribute(attend, attend);
@@ -287,7 +293,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
    */
   @Override
   protected String getMultilangPropertyFile() {
-    return "com.stratelia.webactiv.agenda.multilang.agenda";
+    return "org.silverpeas.agenda.multilang.agenda";
   }
 
   /*

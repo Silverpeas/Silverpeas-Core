@@ -27,10 +27,6 @@ package com.silverpeas.importExport.report;
 import com.silverpeas.importExport.control.ImportExport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ResourceLocator;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.apache.ecs.ElementContainer;
@@ -40,6 +36,11 @@ import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
 import org.apache.ecs.xhtml.title;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.EncodeHelper;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,20 +56,20 @@ public class HtmlExportGenerator {
   private static final String NEW_LINE = "<br/>\n";
   private String fileExportDir;
   private ExportReport exportReport;
-  private ResourceLocator resourceLocator;
+  private LocalizationBundle messages;
 
   public HtmlExportGenerator(ExportReport exportReport, String fileExportDir) {
     this.fileExportDir = fileExportDir;
     this.exportReport = exportReport;
-    this.resourceLocator = new ResourceLocator(
-        "com.silverpeas.importExport.multilang.importExportBundle", "");
+    this.messages = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.importExport.multilang.importExportBundle");
   }
 
   public HtmlExportGenerator(ExportReport exportReport, String fileExportDir,
-      ResourceLocator resourceLocator) {
+      LocalizationBundle messages) {
     this.fileExportDir = fileExportDir;
     this.exportReport = exportReport;
-    this.resourceLocator = resourceLocator;
+    this.messages = messages;
   }
 
   /**
@@ -174,9 +175,9 @@ public class HtmlExportGenerator {
       StringBuilder header = new StringBuilder();
       header.append(pubIds.size()).append(" ");
       if (pubIds.size() == 1) {
-        header.append(resourceLocator.getString("importExport.document"));
+        header.append(messages.getString("importExport.document"));
       } else {
-        header.append(resourceLocator.getString("importExport.documents"));
+        header.append(messages.getString("importExport.documents"));
       }
       sb.append(writeEnTeteSommaire(header.toString()));
       sb.append(NEW_LINE);
@@ -198,9 +199,9 @@ public class HtmlExportGenerator {
 
     sb.append(getBeginningOfPage(htmlFileExportDir, false));
     sb.append("<body>\n");
-    sb.append(writeEnTeteSommaire("0 " + resourceLocator.getString("importExport.document")));
+    sb.append(writeEnTeteSommaire("0 " + messages.getString("importExport.document")));
     sb.append(NEW_LINE);
-    sb.append(resourceLocator.getString("importExport.empty"));
+    sb.append(messages.getString("importExport.empty"));
     sb.append(getEndOfPage());
 
     return sb.toString();
@@ -211,7 +212,7 @@ public class HtmlExportGenerator {
     StringBuilder sb = new StringBuilder();
     String htmlFileExportDir = encode(fileName);
 
-    sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") + " "
+    sb.append(getBeginningOfPage(messages.getString("importExport.index") + " "
         + htmlFileExportDir, true));
     sb.append("<body>\n");
     // creation du treeview avec la liste des topics
@@ -383,7 +384,7 @@ public class HtmlExportGenerator {
   public String kmaxAxisToHTML(List<NodeDetail> axis, String language) {
     StringBuilder sb = new StringBuilder();
     String htmlFileExportDir = encode(fileExportDir);
-    sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") +
+    sb.append(getBeginningOfPage(messages.getString("importExport.index") +
         htmlFileExportDir,
         false));
     sb.append("<body>\n");
@@ -410,11 +411,11 @@ public class HtmlExportGenerator {
 
     sb.append(NEW_LINE);
     sb
-        .append(
-        "<table width=\"100%\" align=\"center\" cellspacing=\"0\" cellpadding=\"2\" bgcolor=\"#B3BFD1\">\n");
+        .append("<table width=\"100%\" align=\"center\" cellspacing=\"0\" cellpadding=\"2\" " +
+                "bgcolor=\"#B3BFD1\">\n");
     sb.append("<tr>\n");
     sb.append("<td width=\"100%\" align=\"center\">\n");
-    sb.append("<b>").append(resourceLocator.getString("importExport.criteria")).append("<b>\n");
+    sb.append("<b>").append(messages.getString("importExport.criteria")).append("<b>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");
     sb.append("</table>\n");
@@ -422,7 +423,8 @@ public class HtmlExportGenerator {
     int axisNb = 0;
     sb
         .append(
-        "<table border=0 width=\"100%\" valign=center cellspacing=\"0\" cellpadding=\"2\" class=\"intfdcolor\">\n");
+            "<table border=0 width=\"100%\" valign=center cellspacing=\"0\" cellpadding=\"2\" " +
+                "class=\"intfdcolor\">\n");
     sb.append("<tr>\n");
     for (NodeDetail node : axis) {
       if (node.getLevel() == 2) { // It's an axis
@@ -436,7 +438,7 @@ public class HtmlExportGenerator {
         sb.append("<select id=\"").append(axisNb).append("\" name=\"sel").append(axisNb);
         sb.append("\" size=\"1\">");
         sb.append("<option value=\"").append(node.getNodePK().getId()).append("\">");
-        sb.append(resourceLocator.getString("importExport.allCategories")).append("</option>");
+        sb.append(messages.getString("importExport.allCategories")).append("</option>");
       } else if (node.getLevel() == 3) {
         sb.append("<option value=\"").append(node.getNodePK().getId());
         sb.append("\" class=\"intfdcolor51\">");
@@ -456,10 +458,10 @@ public class HtmlExportGenerator {
     sb.append("</tr>\n");
     sb.append("<tr><td>&nbsp;</td></tr>\n");
     sb.append("<tr><td><a target=\"indexPublications\" href=\"index-2.html\">");
-    sb.append(resourceLocator.getString("importExport.unbalanced")).append("</a></td></tr>\n");
+    sb.append(messages.getString("importExport.unbalanced")).append("</a></td></tr>\n");
     sb.append("<t><td colspan=\"").append(axisNb);
     sb.append("\" align=\"center\"><input type=\"button\" value=\"");
-    sb.append(resourceLocator.getString("importExport.validate"));
+    sb.append(messages.getString("importExport.validate"));
     sb.append("\" onClick=\"javascript:submit(").append(axisNb).append(")\"></td></tr>\n");
     sb.append("</table>\n");
     sb.append("<div align=\"center\">\n");
@@ -495,7 +497,7 @@ public class HtmlExportGenerator {
     StringBuilder sb = new StringBuilder();
     String htmlFileExportDir = encode(fileExportDir);
 
-    sb.append("<html>\n<head>\n<title>").append(resourceLocator.getString("importExport.index"));
+    sb.append("<html>\n<head>\n<title>").append(messages.getString("importExport.index"));
     sb.append(htmlFileExportDir).append("</title>");
     sb.append(getHtmlStyle());
     sb.append("</head>\n<body>\n");
@@ -505,7 +507,7 @@ public class HtmlExportGenerator {
           "<table width=\"100%\" align=center cellspacing=\"0\" cellpadding=\"2\" bgcolor=\"#B3BFD1\">\n");
       sb.append("<tr>\n");
       sb.append("<td width=\"100%\" align=\"center\">\n");
-      sb.append("<b>").append(resourceLocator.getString("importExport.criteria")).append("</b>\n");
+      sb.append("<b>").append(messages.getString("importExport.criteria")).append("</b>\n");
       sb.append("</td>\n");
       sb.append("</tr>\n");
       sb.append("</table>\n");
@@ -523,7 +525,7 @@ public class HtmlExportGenerator {
     if (map != null) {
       StringBuilder entete = new StringBuilder(100);
       entete.append(map.size()).append(" ");
-      entete.append(resourceLocator.getString("importExport.documentsIn")).append(" ");
+      entete.append(messages.getString("importExport.documentsIn")).append(" ");
       entete.append(htmlFileExportDir);
       sb.append(writeEnTeteSommaire(entete.toString()));
       sb.append(NEW_LINE);
@@ -562,7 +564,7 @@ public class HtmlExportGenerator {
     if (map != null && !map.isEmpty()) {
       StringBuilder entete = new StringBuilder(100);
       entete.append(map.size()).append(" ");
-      entete.append(resourceLocator.getString("importExport.documentsIn")).append(" ");
+      entete.append(messages.getString("importExport.documentsIn")).append(" ");
       entete.append(positionPathName);
       sb.append(writeEnTeteSommaire(entete.toString()));
       sb.append(NEW_LINE);

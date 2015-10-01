@@ -20,6 +20,12 @@
 */
 package org.silverpeas.search.indexEngine.parser;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.search.indexEngine.parser.tika.TikaParser;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -27,14 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 import java.util.StringTokenizer;
-
-import org.silverpeas.search.indexEngine.parser.tika.TikaParser;
-
-import org.silverpeas.util.ArrayUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
 
 /**
 * The ParserManager class manages all the parsers which will be used to parse the indexed files.
@@ -78,11 +78,10 @@ public final class ParserManager {
 */
   private static void init() {
     try {
-      ResourceLocator parsersConfiguration = new ResourceLocator(
-        "org.silverpeas.search.indexEngine.Parser", "");
-      Enumeration<String> formatNames = parsersConfiguration.getKeys();
-      while (formatNames.hasMoreElements()) {
-        String name = formatNames.nextElement();
+      SettingBundle parsersConfiguration =
+          ResourceLocator.getSettingBundle("org.silverpeas.search.indexEngine.Parser");
+      Set<String> formatNames = parsersConfiguration.keySet();
+      for (String name: formatNames) {
         String newCall = parsersConfiguration.getString(name);
         if ("ignored".equals(newCall) || newCall.isEmpty()) {
           continue; // we skip ignored mime type

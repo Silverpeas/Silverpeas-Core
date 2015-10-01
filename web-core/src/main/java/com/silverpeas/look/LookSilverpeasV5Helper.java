@@ -41,8 +41,10 @@ import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.date.Period;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
@@ -62,9 +64,9 @@ import java.util.StringTokenizer;
 public class LookSilverpeasV5Helper extends LookHelper {
 
   private OrganizationController organizationController;
-  private ResourceLocator resources = null;
-  private ResourceLocator messages = null;
-  private ResourceLocator defaultMessages = null;
+  private SettingBundle resources = null;
+  private LocalizationBundle messages = null;
+  private LocalizationBundle defaultMessages = null;
   private MainSessionController mainSC = null;
   private boolean displayPDCInNav = false;
   private boolean shouldDisplayPDCFrame = false;
@@ -199,20 +201,20 @@ public class LookSilverpeasV5Helper extends LookHelper {
    * org.silverpeas.util.ResourceLocator, org.silverpeas.util.ResourceLocator)
    */
   @Override
-  public final void init(MainSessionController mainSessionController, ResourceLocator resources) {
+  public final void init(MainSessionController mainSessionController, SettingBundle resources) {
     this.mainSC = mainSessionController;
     init(resources);
   }
-  
-  private final void init(ResourceLocator resources) {
+
+  private final void init(SettingBundle resources) {
     this.organizationController = OrganizationControllerProvider.getOrganisationController();
     this.publicationService = ServiceProvider.getService(PublicationService.class);
     this.resources = resources;
-    this.defaultMessages = new ResourceLocator(
+    this.defaultMessages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         getMainSessionController().getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
-      this.messages = new ResourceLocator(resources.getString("MessageBundle"),
+      this.messages = ResourceLocator.getLocalizationBundle(resources.getString("MessageBundle"),
           getMainSessionController().getFavoriteLanguage());
     }
     initProperties();
@@ -433,9 +435,9 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public String getString(String key) {
     if (key.startsWith("lookSilverpeasV5")) {
-      return defaultMessages.getString(key, "");
+      return defaultMessages.getString(key);
     }
-    return messages.getString(key, "");
+    return messages.getString(key);
   }
 
   /*

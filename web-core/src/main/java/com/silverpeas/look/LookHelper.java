@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -89,7 +90,7 @@ public abstract class LookHelper {
 
   @Deprecated
   public abstract void init(MainSessionController mainSessionController,
-      ResourceLocator resources);
+      SettingBundle resources);
 
   public abstract String getUserFullName(String userId);
 

@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -52,8 +53,8 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SpaceInstanciator {
 
-  protected static ResourceLocator configuration = new ResourceLocator(
-      "com.stratelia.webactiv.beans.admin.admin", "");
+  protected static SettingBundle configuration = ResourceLocator.getSettingBundle(
+      "org.stratelia.webactiv.beans.admin.admin");
   private Map<String, SpaceTemplate> spaceTemplates = new HashMap<String, SpaceTemplate>();
   private final Map<String, WAComponent> allComponentsModels;
 

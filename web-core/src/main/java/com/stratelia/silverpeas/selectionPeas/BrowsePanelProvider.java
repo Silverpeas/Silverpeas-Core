@@ -27,28 +27,26 @@ package com.stratelia.silverpeas.selectionPeas;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.LocalizationBundle;
 
 import java.util.Set;
 
 abstract public class BrowsePanelProvider extends PanelProvider {
 
   protected CacheManager cacheManager = null;
-  protected ResourceLocator resource = null;
   protected OrganizationController organizationCOntroller = OrganizationControllerProvider
       .getOrganisationController();
   protected String parentGroupId = "";
   protected String parentGroupName = "";
   protected CacheType m_what;
 
-  public BrowsePanelProvider(String language, ResourceLocator rs, CacheManager cm, CacheType what) {
+  public BrowsePanelProvider(String language, LocalizationBundle rs, CacheManager cm,
+      CacheType what) {
     // Set the language
     this.language = language;
-    resource = GeneralPropertiesManager.getGeneralMultilang(this.language);
-    resourceLocator = rs;
+    messages = rs;
 
     // Set the cache manager
     cacheManager = cm;

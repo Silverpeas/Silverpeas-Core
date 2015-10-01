@@ -29,7 +29,9 @@ import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.web.token.SynchronizerTokenService;
 
@@ -43,21 +45,23 @@ import java.util.ResourceBundle;
  */
 public abstract class FunctionHandler {
 
-  private ResourceBundle resources;
-  private ResourceLocator m_Multilang;
+  private SettingBundle resources;
+  private LocalizationBundle m_Multilang;
   private ForgottenPasswordMailManager forgottenPasswordMailManager;
-  private ResourceLocator general
-      = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
-  private final ResourceLocator authenticationSettings = new ResourceLocator(
-      "org.silverpeas.authentication.settings.authenticationSettings", "");
+  private SettingBundle general
+      = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+  private final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
 
   public FunctionHandler() {
-    resources = FileUtil.loadBundle("org.silverpeas.peasCore.SessionManager", Locale.ROOT);
+    resources = ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
     String language = resources.getString("language");
     if (!StringUtil.isDefined(language)) {
       language = "fr";
     }
-    m_Multilang = new ResourceLocator("org.silverpeas.peasCore.multilang.peasCoreBundle", language);
+    m_Multilang =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
+            language);
     forgottenPasswordMailManager = new ForgottenPasswordMailManager();
   }
 
@@ -99,28 +103,28 @@ public abstract class FunctionHandler {
   /**
    * @return the resources
    */
-  protected ResourceBundle getResources() {
+  protected SettingBundle getResources() {
     return resources;
   }
 
   /**
    * @param resources the resources to set
    */
-  protected void setResources(ResourceBundle resources) {
+  protected void setResources(SettingBundle resources) {
     this.resources = resources;
   }
 
   /**
    * @return the m_Multilang
    */
-  protected ResourceLocator getM_Multilang() {
+  protected LocalizationBundle getM_Multilang() {
     return m_Multilang;
   }
 
   /**
    * @param m_Multilang the m_Multilang to set
    */
-  protected void setM_Multilang(ResourceLocator m_Multilang) {
+  protected void setM_Multilang(LocalizationBundle m_Multilang) {
     this.m_Multilang = m_Multilang;
   }
 
@@ -149,18 +153,18 @@ public abstract class FunctionHandler {
   /**
    * @return the general
    */
-  protected ResourceLocator getGeneral() {
+  protected SettingBundle getGeneral() {
     return general;
   }
 
   /**
    * @param general the general to set
    */
-  protected void setGeneral(ResourceLocator general) {
+  protected void setGeneral(SettingBundle general) {
     this.general = general;
   }
 
-  public ResourceLocator getAuthenticationSettings() {
+  public SettingBundle getAuthenticationSettings() {
     return authenticationSettings;
   }
 

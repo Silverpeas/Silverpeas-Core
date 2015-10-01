@@ -23,19 +23,20 @@
  */
 package org.silverpeas.attachment;
 
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import javax.inject.Singleton;
 
 /**
  * A processor of documents with 3D images or CAD for the Actify tool.
@@ -48,8 +49,8 @@ import javax.inject.Singleton;
 @Singleton
 public class ActifyDocumentProcessor {
 
-  private static final ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.util.attachment.Attachment", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   private static final Logger logger = Logger.getLogger(ActifyDocumentProcessScheduler.class.
       getSimpleName());
 

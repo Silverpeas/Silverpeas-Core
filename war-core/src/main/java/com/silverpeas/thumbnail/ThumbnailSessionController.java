@@ -32,7 +32,7 @@ public class ThumbnailSessionController extends AbstractComponentSessionControll
 
   public ThumbnailSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
-    super(mainSessionCtrl, context, "com.silverpeas.thumbnail.multilang.thumbnailBundle",
+    super(mainSessionCtrl, context, "org.silverpeas.thumbnail.multilang.thumbnailBundle",
         null, null);
   }
 

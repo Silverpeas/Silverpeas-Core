@@ -25,12 +25,14 @@
 package com.silverpeas.socialnetwork.model;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 public enum SocialNetworkID {
   FACEBOOK, LINKEDIN, UNKNOWN;
 
-  private static ResourceLocator settings = new ResourceLocator("com.silverpeas.social.settings.socialNetworkSettings", "");
+  private static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.social.settings.socialNetworkSettings");
 
   public boolean isEnabled() {
     switch (this) {

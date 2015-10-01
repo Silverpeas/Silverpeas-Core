@@ -32,7 +32,7 @@ response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager,
                  com.stratelia.silverpeas.peasCore.MainSessionController,
                  org.silverpeas.util.ResourceLocator"%>
@@ -60,6 +60,7 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 <%@ page import="org.silverpeas.util.ServiceProvider" %>
 
 <%@ page import="java.net.*"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -75,8 +76,8 @@ OperationPane operationPane = window.getOperationPane();
 
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator 		messages 			= new ResourceLocator("org.silverpeas.statistic.multilang.statistic", language);
-ResourceLocator 		generalMessage 		= GeneralPropertiesManager.getGeneralMultilang(language);
-ResourcesWrapper 		resource 			= (ResourcesWrapper)request.getAttribute("resources");
+LocalizationBundle messages 			= ResourceLocator.getLocalizationBundle("org.silverpeas.statistic.multilang.statistic", language);
+LocalizationBundle 		generalMessage 		= ResourceLocator.getGeneralBundle(language);
+MultiSilverpeasBundle resource 			= (MultiSilverpeasBundle)request.getAttribute("resources");
 
 %>

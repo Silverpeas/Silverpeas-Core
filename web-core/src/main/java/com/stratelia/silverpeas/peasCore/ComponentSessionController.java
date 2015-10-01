@@ -30,6 +30,8 @@
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.personalization.UserPreferences;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -114,11 +116,11 @@ public interface ComponentSessionController {
 
   public UserPreferences getPersonalization();
 
-  public ResourceLocator getMultilang();
+  public LocalizationBundle getMultilang();
 
-  public ResourceLocator getIcon();
+  public SettingBundle getIcon();
 
-  public ResourceLocator getSettings();
+  public SettingBundle getSettings();
 
   // Maintenance Mode
   public boolean isAppInMaintenance();

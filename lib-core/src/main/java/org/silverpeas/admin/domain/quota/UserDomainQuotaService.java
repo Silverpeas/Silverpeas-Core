@@ -27,6 +27,7 @@ import com.stratelia.webactiv.beans.admin.DomainDriverManagerProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.service.AbstractQuotaService;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Singleton;
 
@@ -36,8 +37,8 @@ import javax.inject.Singleton;
 @Singleton
 public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuotaKey> {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
 
   /*
    * (non-Javadoc)

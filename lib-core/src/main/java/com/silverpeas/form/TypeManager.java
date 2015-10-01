@@ -26,6 +26,7 @@ package com.silverpeas.form;
 import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -302,10 +303,9 @@ public class TypeManager {
    */
   private void init() throws FormException {
     try {
-      ResourceLocator properties = new ResourceLocator("com.silverpeas.form.settings.types", "");
-      Enumeration<String> binds = properties.getKeys();
-      while (binds.hasMoreElements()) {
-        String identifier = binds.nextElement();
+      SettingBundle properties = ResourceLocator.getSettingBundle("org.silverpeas.form.settings.types");
+      Set<String> binds = properties.keySet();
+      for(String identifier: binds) {
         SilverTrace.info("form", "TypeManager.init",
             "root.MSG_GEN_PARAM_VALUE", "identifier=" + identifier);
         String className = properties.getString(identifier);
@@ -322,7 +322,7 @@ public class TypeManager {
       }
     } catch (MissingResourceException e) {
       throw new FormFatalException("TypeManager", "form.EXP_MISSING_DISPLAYER_PROPERTIES",
-          "com.silverpeas.form.settings.types", e);
+          "org.silverpeas.form.settings.types", e);
     }
   }
   /**

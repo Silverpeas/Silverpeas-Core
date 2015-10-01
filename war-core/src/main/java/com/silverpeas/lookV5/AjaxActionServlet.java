@@ -35,6 +35,7 @@ import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
@@ -325,7 +326,7 @@ public class AjaxActionServlet extends HttpServlet {
     // Retrieve FrameJSP from look name parameter
     String lookName = req.getParameter("LookName");
     String resource = gef.getLookSettings().getString(lookName);
-    ResourceLocator specificSettings = new ResourceLocator(resource, "");
+    SettingBundle specificSettings = ResourceLocator.getSettingBundle(resource);
     final String mainFrame = specificSettings.getString("FrameJSP", DEFAULT_JSP_FRAM);
 
     // Declare JSon result object

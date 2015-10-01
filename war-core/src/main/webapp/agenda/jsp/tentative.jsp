@@ -59,7 +59,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 
-  ResourceLocator settings = agenda.getSettings();
+  SettingBundle settings = agenda.getSettings();
   String action = null;
   String journalId = null;
 

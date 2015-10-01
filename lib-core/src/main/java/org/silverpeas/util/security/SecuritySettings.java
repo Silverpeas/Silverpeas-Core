@@ -24,6 +24,7 @@
 package org.silverpeas.util.security;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * User: Yohann Chastagnier
@@ -31,8 +32,8 @@ import org.silverpeas.util.ResourceLocator;
  */
 public class SecuritySettings {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.util.security", "");
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.security");
 
   /**
    * Is web security mechanisms enabled?

@@ -31,6 +31,7 @@ import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import java.rmi.RemoteException;
@@ -63,7 +64,8 @@ public class AgendaRssServlet extends RssServlet {
   public String getChannelTitle(String userId) {
     UserDetail user = UserDetail.getById(userId);
     UserPreferences preferences = user.getUserPreferences();
-    ResourceLocator message = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
+    LocalizationBundle message =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.agenda.multilang.agenda",
         preferences.getLanguage());
     return message.getStringWithParam("agenda.userAgenda", user.getLastName());
   }
@@ -90,10 +92,10 @@ public class AgendaRssServlet extends RssServlet {
     String name = event.getName();
     if (event.getClassification().isPrivate()
         && !event.getDelegatorId().equals(currentUserId)) {
-      ResourceLocator messageFrench = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
-          "fr");
-      ResourceLocator messageEnglish = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
-          "en");
+      LocalizationBundle messageFrench =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.agenda.multilang.agenda", "fr");
+      LocalizationBundle messageEnglish =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.agenda.multilang.agenda", "en");
       name = messageFrench.getString("agenda.rssPrivateEvent") + " ("
           + messageEnglish.getString("agenda.rssPrivateEvent") + ")";
     }

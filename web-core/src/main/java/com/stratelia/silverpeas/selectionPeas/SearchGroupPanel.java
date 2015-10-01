@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import org.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
 import com.stratelia.silverpeas.genericPanel.PanelSearchToken;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.LocalizationBundle;
 
 public class SearchGroupPanel extends BrowsePanelProvider {
   protected static final int FILTER_NAME = 0;
 
   SelectionUsersGroups m_SelectionExtraParams = null;
 
-  public SearchGroupPanel(String language, ResourceLocator rs, CacheManager cm,
+  public SearchGroupPanel(String language, LocalizationBundle rs, CacheManager cm,
       SelectionUsersGroups sug) {
     super(language, rs, cm, CacheType.CM_SET);
     initAll(sug);
@@ -63,13 +63,13 @@ public class SearchGroupPanel extends BrowsePanelProvider {
     }
 
     // Set the Page name
-    pageName = resourceLocator.getString("selectionPeas.groupsList");
-    pageSubTitle = resourceLocator.getString("selectionPeas.searchGroup");
+    pageName = messages.getString("selectionPeas.groupsList");
+    pageSubTitle = messages.getString("selectionPeas.searchGroup");
 
     // Build search tokens
     searchTokens = new PanelSearchToken[1];
 
-    searchTokens[FILTER_NAME] = new PanelSearchEdit(0, resource
+    searchTokens[FILTER_NAME] = new PanelSearchEdit(0, messages
         .getString("GML.name"), "");
 
     // Set filters and get Ids

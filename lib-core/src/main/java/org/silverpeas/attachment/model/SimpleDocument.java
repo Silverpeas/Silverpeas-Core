@@ -56,8 +56,8 @@ import static org.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 public class SimpleDocument implements Serializable {
 
   private static final long serialVersionUID = 8778738762037114180L;
-  private final static ResourceLocator resources = new ResourceLocator(
-      "org.silverpeas.util.attachment.Attachment", "");
+  private final static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   public static final String WEBDAV_FOLDER = "webdav";
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
@@ -401,7 +401,7 @@ public class SimpleDocument implements Serializable {
       DateUtil.addDaysExceptWeekEnds(calendar, nbDay);
       setExpiry(calendar.getTime());
 
-      int delayReservedFile = resources.getInteger("DelayReservedFile", -1);
+      int delayReservedFile = settings.getInteger("DelayReservedFile", -1);
       if ((delayReservedFile >= 0) && (delayReservedFile <= 100)) {
         int result = (nbDay * delayReservedFile) / 100;
         if (result > 2) {

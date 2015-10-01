@@ -21,7 +21,7 @@ INSERT INTO ST_Domain (id, name, description, propFileName, className, authentic
 VALUES (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '-', '0', '');
 INSERT INTO ST_Domain (id, name, description, propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL)
 VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
-        'com.stratelia.silverpeas.domains.domainSP',
+        'org.silverpeas.domains.domainSP',
         'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP', '0',
         '${URLSERVER}');
 

@@ -24,8 +24,6 @@ package com.silverpeas.accesscontrol;
 import org.silverpeas.accesscontrol.NodeAccessController;
 import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -74,8 +72,10 @@ public class DocumentAccessControllerTest {
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
     PublicationService publicationService = mock(PublicationService.class);
-    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
         .thenReturn(publicationService);
+    /* to replace with ServiceProvider
+    when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
+     */
     when(publicationService.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
@@ -109,8 +109,10 @@ public class DocumentAccessControllerTest {
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
     PublicationService publicationService = mock(PublicationService.class);
+    /* to replace with ServiceProvider
     when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationService.class))
         .thenReturn(publicationService);
+        */
     when(publicationService.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));

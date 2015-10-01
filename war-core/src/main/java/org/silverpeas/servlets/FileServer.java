@@ -32,6 +32,7 @@ import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -146,7 +147,8 @@ public class FileServer extends AbstractFileSender {
   }
 
   @Override
-  protected ResourceLocator getResources() {
-    return new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+  protected SettingBundle getSettingBunde() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
   }
 }

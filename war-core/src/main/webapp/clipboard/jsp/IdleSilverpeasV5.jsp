@@ -63,10 +63,10 @@
 
   int nbConnectedUsers = 0;
   String language = m_MainSessionCtrl.getFavoriteLanguage();
-  ResourceLocator message =
-      new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
-  ResourceLocator homePageSettings =
-      new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
+  LocalizationBundle message =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
+  SettingBundle homePageSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
   String connectedUsers = message.getString("connectedUsers");
   boolean displayConnectedUsers =
       homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null &&

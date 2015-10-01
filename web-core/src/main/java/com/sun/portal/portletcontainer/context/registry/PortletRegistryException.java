@@ -36,7 +36,7 @@ import java.util.ResourceBundle;
  */
 public class PortletRegistryException extends Exception {
 
-  public static final String RESOURCE_BASE = "com.silverpeas.portlets.multilang.PortletRegistry";
+  public static final String RESOURCE_BASE = "org.silverpeas.portlets.multilang.PortletRegistry";
   static Locale locale = Locale.getDefault();
   private static final long serialVersionUID = 7738268731991950804L;
   protected Throwable originalException = null;

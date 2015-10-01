@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.jCharts.nonAxisChart.PieChart2D;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
@@ -47,10 +48,10 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
   private String filterIdGroup;
   private String filterIdUser;
   private String spaceId;
-  private ResourceLocator message;
+  private LocalizationBundle message;
 
   public UserPieChartBuilder(String dateStat, String dateFormate, String filterIdGroup,
-      String filterIdUser, String spaceId, ResourceLocator message) {
+      String filterIdUser, String spaceId, LocalizationBundle message) {
     this.dateStat = dateStat;
     this.dateFormate = dateFormate;
     this.filterIdGroup = filterIdGroup;

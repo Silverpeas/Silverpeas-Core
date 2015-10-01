@@ -23,6 +23,7 @@ package com.stratelia.silverpeas.pdcPeas.servlets;
 import org.silverpeas.search.searchEngine.model.SearchCompletion;
 import org.silverpeas.util.JSONCodec;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -57,8 +58,8 @@ public class AutocompleteServlet extends HttpServlet {
     response.setContentType(SERVLET_HTML_CONTENT_TYPE);
     PrintWriter out = response.getWriter();
     try {
-      ResourceLocator resourceSearchEngine = new ResourceLocator(
-          "org.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+      SettingBundle resourceSearchEngine =
+          ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
       if (resourceSearchEngine.getBoolean("enableAutocompletion", false)) {
         SearchCompletion completion = new SearchCompletion();
         Set<String> suggestions = completion.getSuggestions(request.getParameter("term"));

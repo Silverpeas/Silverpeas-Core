@@ -25,35 +25,28 @@
 package com.silverpeas.portlets.portal.portletwindow;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.sun.portal.container.*;
+import com.sun.portal.portletcontainer.invoker.InvokerException;
+import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
+import com.sun.portal.portletcontainer.invoker.WindowInvoker;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.sun.portal.container.ChannelMode;
-import com.sun.portal.container.ChannelState;
-import com.sun.portal.container.ChannelURLFactory;
-import com.sun.portal.container.Container;
-import com.sun.portal.container.ContainerFactory;
-import com.sun.portal.container.ContainerType;
-import com.sun.portal.container.ContentException;
-import com.sun.portal.container.EntityID;
-import com.sun.portal.container.ErrorCode;
-import com.sun.portal.container.PortletWindowContextException;
-import com.sun.portal.container.WindowRequestReader;
-import com.sun.portal.portletcontainer.invoker.InvokerException;
-import com.sun.portal.portletcontainer.invoker.WindowErrorCode;
-import com.sun.portal.portletcontainer.invoker.WindowInvoker;
-import static org.silverpeas.util.StringUtil.*;
+import static org.silverpeas.util.StringUtil.isDefined;
 
 /**
  * PortletWindowInvoker, is dervied from the abstract base class WindowInvoker.
@@ -66,8 +59,8 @@ public class PortletWindowInvoker extends WindowInvoker {
   private static final Logger logger =
       Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
       "org.silverpeas.portlets.PCDLogMessages");
-  private final static ResourceLocator messages =
-      new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle", "");
+  private LocalizationBundle messages =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle");
 
   @Override
   public void init(ServletContext servletContext, HttpServletRequest request,
@@ -177,9 +170,17 @@ public class PortletWindowInvoker extends WindowInvoker {
       MainSessionController sessionController =
           (MainSessionController) getOriginalRequest().getSession().
           getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      messages.setLanguage(sessionController.getFavoriteLanguage());
+      messages =
+          ResourceLocator.getLocalizationBundle("org.silverpeas.portlet.multilang.portletBundle",
+              sessionController.getFavoriteLanguage());
       String portletTitle = getDefaultTitle();
-      setTitle(messages.getString(portletTitle, portletTitle));
+      String translation;
+      try {
+        translation = messages.getString(portletTitle);
+      } catch (MissingResourceException ex) {
+        translation = portletTitle;
+      }
+      setTitle(translation);
     }
     return super.getTitle();
   }

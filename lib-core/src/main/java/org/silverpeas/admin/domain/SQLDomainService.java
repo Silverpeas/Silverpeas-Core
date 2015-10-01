@@ -58,7 +58,7 @@ import java.util.Properties;
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {
   SettingBundle templateSettings;
-  ResourceLocator adminSettings;
+  SettingBundle adminSettings;
 
   private final static String DATABASE_TABLE_NAME_DOMAIN_PREFIX = "Domain";
   private final static String DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX = "_User";
@@ -72,7 +72,7 @@ public class SQLDomainService extends AbstractDomainService {
   void init() {
     templateSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.domains.templateDomainSQL");
-    adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
+    adminSettings = ResourceLocator.getSettingBundle("org.silverpeas.beans.admin.admin");
   }
   
   private void checkFileName(String fileDomainName)

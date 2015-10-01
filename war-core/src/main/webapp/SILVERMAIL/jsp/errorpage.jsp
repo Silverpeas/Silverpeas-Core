@@ -50,13 +50,14 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 
 <%@ include file="checkSilvermail.jsp" %>
 
 
 <% 
-   message = new ResourceLocator("com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail", silvermailScc.getLanguage());
+   message = ResourceLocator.getLocalizationBundle("org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail", silvermailScc.getLanguage());
 
   if (exception == null)
      exception = new Exception("Exception UNAVAILABLE: Tracing Stack...");
@@ -64,7 +65,7 @@
 
 <%!
 
-private ResourceLocator message;
+private LocalizationBundle message;
 
 private String displayNetworkError() {
   return message.getString("ProblemeCommunicationServeur");

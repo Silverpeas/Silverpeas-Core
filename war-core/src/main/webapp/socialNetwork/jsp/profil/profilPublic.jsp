@@ -37,14 +37,14 @@
 <%@page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
-<%@page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%  
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+	MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 
     UserFull userFull = (UserFull) request.getAttribute("userFull");
     Member member = (Member) request.getAttribute("Member");

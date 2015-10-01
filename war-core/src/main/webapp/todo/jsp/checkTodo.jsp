@@ -56,7 +56,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.stratelia.webactiv.todo.control.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
@@ -65,7 +65,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 	GraphicElementFactory graphicFactory 	= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	ToDoSessionController 	todo 			= (ToDoSessionController) request.getAttribute("todo");
-	ResourcesWrapper 		resources 		= (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resources 		= (MultiSilverpeasBundle)request.getAttribute("resources");
 
 	if (todo == null)
   	{

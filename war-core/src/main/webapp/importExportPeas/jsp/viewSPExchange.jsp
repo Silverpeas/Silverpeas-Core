@@ -30,12 +30,12 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%!
-	String getErrorMessage(int error, ResourcesWrapper resource)
+	String getErrorMessage(int error, MultiSilverpeasBundle resource)
 	{
 		return resource.getString("importExportPeas.ImportError"+error);
 	}
 	
-	String getStatusMessage(int status, ResourcesWrapper resource)
+	String getStatusMessage(int status, MultiSilverpeasBundle resource)
 	{
 		return resource.getString("importExportPeas.ImportStatus"+status);
 	}

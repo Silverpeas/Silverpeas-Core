@@ -47,8 +47,8 @@ public class FileServerUtils {
   public static final String PUBLICATION_ID_PARAMETER = "PubId";
   public static final String SIZE_PARAMETER = "Size";
 
-  private static final ResourceLocator lookSettings =
-      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+  private static final SettingBundle lookSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
   /**
    * Replace chars that have special meanings in url by their http substitute.

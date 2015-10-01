@@ -5,8 +5,9 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -29,7 +30,8 @@ public class ResizedImageCacheCleaner extends Job {
 
   @PostConstruct
   public void scheduleFrequently() throws SchedulerException, ParseException {
-    ResourceLocator settings = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
     if (scheduler.isJobScheduled(getName())) {
       scheduler.unscheduleJob(getName());
     }

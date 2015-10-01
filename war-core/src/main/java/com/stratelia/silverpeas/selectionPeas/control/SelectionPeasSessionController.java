@@ -66,8 +66,8 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   public SelectionPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.selectionPeas.multilang.selectionPeasBundle",
-        "com.stratelia.silverpeas.selectionPeas.settings.selectionPeasIcons");
+        "org.silverpeas.selectionPeas.multilang.selectionPeasBundle",
+        "org.silverpeas.selectionPeas.settings.selectionPeasIcons");
     setComponentRootName(URLManager.CMP_SELECTIONPEAS);
   }
 

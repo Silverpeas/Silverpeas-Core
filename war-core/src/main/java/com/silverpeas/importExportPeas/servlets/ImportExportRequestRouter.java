@@ -34,7 +34,7 @@ import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.WAAttributeValuePair;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -96,7 +96,7 @@ public class ImportExportRequestRouter extends
           }
         }
         ImportReport importReport =
-            importExportSC.processImport(file.getAbsolutePath(), (ResourcesWrapper) request.
+            importExportSC.processImport(file.getAbsolutePath(), (MultiSilverpeasBundle) request.
             getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";

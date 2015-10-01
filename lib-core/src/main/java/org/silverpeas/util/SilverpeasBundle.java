@@ -23,6 +23,9 @@
  */
 package org.silverpeas.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Set;
 
 /**
@@ -53,9 +56,64 @@ public interface SilverpeasBundle {
   String getBaseBundleName();
 
   /**
-   * Gets the value as a String of the data identified by the specified key.
+   * Gets the value as a String of the data identified by the specified key. The key should exist
+   * in the bundle otherwise a {@code java.util.MissingResourceException} exception is thrown.
    * @param key the unique name of the data in this bundle.
    * @return the value of the data as a string of characters.
+   * @throws MissingResourceException if either the bundle doesn't exist or the key isn't defined
+   * in the bundle.
    */
-  String getString(String key);
+  String getString(String key) throws MissingResourceException;
+
+  /**
+   * The resource is a list of objects. Gets the value(s) of the specified property of one or more
+   * objects in the list. The objects in the list are identified by their index in the list (from
+   * 1 to n). The key used to find the asked value(s) is composed first by the list identifier,
+   * then by the index of the object in the list and finally ends with the object's property name
+   * (with the dot as separator). If the computed key isn't defined in the bundle, then no
+   * {@code java.util.MissingResourceException} exception is thrown (for compatibility reason with
+   * Silverpeas versions lesser than 6).
+   * @param list the identifier of the list in the bundle.
+   * @param property the object's property for which the value will be fetch.
+   * @param max the maximum number of objects to read from 1 to n. If max is -1 then the list is
+   * iterated up to find an object whose the property is set. If max is >= 1 then the
+   * specified property of the first max objects are read (if the property isn't set for an object,
+   * it is set to an empty string).
+   * @return an array of string with one property value (if max is -1 or 1) or with several values
+   * (if max > 1). If the property of an object to read isn't set, then an empty string is set
+   * in the array.
+   * @throws MissingResourceException if the bundle doesn't exist.
+   */
+  default String[] getStringArray(String list, String property, int max)
+      throws MissingResourceException {
+    int i = 1;
+    List<String> valret = new ArrayList<>();
+    while ((i <= max) || (max == -1)) {
+      try {
+        String key = list + "." + Integer.toString(i) + "." + property;
+        String s = getString(key);
+        if (!s.trim().isEmpty()) {
+          throw new MissingResourceException(getBaseBundleName(), getClass().getName(), key);
+        }
+        valret.add(s);
+      } catch (MissingResourceException ex) {
+        if (ex.getKey() == null || ex.getKey().trim().isEmpty()) {
+          throw ex;
+        }
+        if (max == -1) {
+          max = i;
+        } else {
+          valret.add("");
+        }
+      }
+      i++;
+    }
+    return valret.toArray(new String[valret.size()]);
+  }
+
+  /**
+   * Is this bundle exists?
+   * @return true if this bundle exists, false otherwise.
+   */
+  boolean exists();
 }

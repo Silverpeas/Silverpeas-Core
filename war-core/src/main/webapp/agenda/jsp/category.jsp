@@ -158,7 +158,7 @@ function validateCategories() {
 
 <%
   String action = null;
-  ResourceLocator settings = agenda.getSettings();
+  SettingBundle settings = agenda.getSettings();
   JournalHeader journal = agenda.getCurrentJournalHeader();
   Collection categories = agenda.getCurrentCategories();
   

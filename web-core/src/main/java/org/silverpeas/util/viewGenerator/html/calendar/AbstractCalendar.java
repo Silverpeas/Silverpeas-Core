@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.monthCalendar.Event;
 
@@ -58,7 +59,7 @@ public abstract class AbstractCalendar implements
   protected String monthDayStyle = "class=\"txtnav3\"";
   protected String monthDayStyleEvent = "class=\"intfdcolor3\"";
   private String context = "";
-  protected ResourceLocator settings = null;
+  protected LocalizationBundle messages = null;
   protected String language = null;
   private List<Event> events = null;
   private List<Date> nonSelectableDays = null;
@@ -73,8 +74,7 @@ public abstract class AbstractCalendar implements
     this.context = context;
     this.language = language;
     this.currentDate = date;
-    this.settings = new ResourceLocator(
-        "com.stratelia.webactiv.multilang.generalMultilang", language);
+    this.messages = ResourceLocator.getGeneralBundle(language);
   }
 
   @Override

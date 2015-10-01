@@ -37,7 +37,7 @@ import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -45,7 +45,6 @@ import org.silverpeas.util.exception.UtilException;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,7 +86,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * class who need it.
    */
   @Override
-  public void initFromProperties(ResourceLocator rs) throws Exception {
+  public void initFromProperties(SettingBundle rs) throws Exception {
     drvSettings.initFromProperties(rs);
   }
 

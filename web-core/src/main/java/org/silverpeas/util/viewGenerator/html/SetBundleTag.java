@@ -24,18 +24,17 @@
 
 package org.silverpeas.util.viewGenerator.html;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.util.StringUtil;
-
-import org.silverpeas.util.ResourceLocator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class SetBundleTag extends TagSupport {
 
@@ -79,8 +78,8 @@ public class SetBundleTag extends TagSupport {
       locale = Locale.getDefault();
     }
     if (StringUtil.isDefined(basename)) {
-      ResourceLocator locator = new ResourceLocator(basename, locale.getLanguage());
-      bundle = locator.getResourceBundle();
+      bundle =
+          ResourceLocator.getLocalizationBundle(basename, locale.getLanguage());
     }
     LocalizationContext locCtxt = new LocalizationContext(bundle);
     if (var != null) {

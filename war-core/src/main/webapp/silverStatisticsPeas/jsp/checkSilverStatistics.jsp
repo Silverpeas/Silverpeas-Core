@@ -70,7 +70,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.*"%>
 <%@ page import="com.stratelia.silverpeas.silverStatisticsPeas.vo.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page import="java.util.List"%>
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
@@ -81,7 +81,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 

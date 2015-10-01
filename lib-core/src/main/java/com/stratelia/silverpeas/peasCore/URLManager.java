@@ -28,6 +28,7 @@ import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -105,7 +106,7 @@ public class URLManager {
   public final static int URL_MEDIA = 10;
   private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL",
       "/silverpeas");
-  static Properties specialsURL = null;
+  static SettingBundle settings = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
   
@@ -159,11 +160,9 @@ public class URLManager {
   }
 
   static {
-    ResourceLocator resources = new ResourceLocator("org.silverpeas.peasCore.URLManager",
-        "");
-    specialsURL = resources.getProperties();
-    httpMode = resources.getString("httpMode");
-    universalLinksUsed = resources.getBoolean("displayUniversalLinks", false);
+    settings = ResourceLocator.getSettingBundle("org.silverpeas.peasCore.URLManager");
+    httpMode = settings.getString("httpMode");
+    universalLinksUsed = settings.getBoolean("displayUniversalLinks", false);
   }
 
   /**
@@ -181,7 +180,7 @@ public class URLManager {
     if (!isDefined(sureCompName)) {
       sureCompName = getComponentNameFromComponentId(sComponentId);
     }
-    String specialString = specialsURL.getProperty(sureCompName);
+    String specialString = settings.getString(sureCompName);
     if (isDefined(specialString)) {
       return specialString;
     }

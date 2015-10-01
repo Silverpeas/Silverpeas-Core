@@ -49,8 +49,8 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
   public ThesaurusSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ThesaurusSessionController(mainSessionCtrl, componentContext,
-        "com.silverpeas.thesaurusPeas.multilang.thesaurusPeasBundle",
-        "com.silverpeas.thesaurusPeas.settings.thesaurusPeasIcons");
+        "org.silverpeas.thesaurusPeas.multilang.thesaurusPeasBundle",
+        "org.silverpeas.thesaurusPeas.settings.thesaurusPeasIcons");
   }
 
   /**

@@ -49,8 +49,8 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
   public WebConnectionsSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.external.webConnections.multilang.webConnectionsBundle",
-        "com.silverpeas.external.webConnections.settings.webConnectionsIcons");
+        "org.silverpeas.external.webConnections.multilang.webConnectionsBundle",
+        "org.silverpeas.external.webConnections.settings.webConnectionsIcons");
   }
 
   /**

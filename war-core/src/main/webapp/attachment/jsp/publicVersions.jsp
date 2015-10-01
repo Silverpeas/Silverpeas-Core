@@ -38,7 +38,7 @@
 <%@ page import="
 				 com.stratelia.silverpeas.peasCore.MainSessionController,
                  com.stratelia.silverpeas.peasCore.URLManager,
-                 org.silverpeas.util.ResourcesWrapper,
+                 org.silverpeas.util.MultiSilverpeasBundle,
                  org.silverpeas.util.FileRepositoryManager,
                  org.silverpeas.util.FileServerUtils,
                  org.silverpeas.util.ResourceLocator,
@@ -53,13 +53,15 @@
 <%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%
   GraphicElementFactory gef =
       (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-  ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
-  ResourceLocator attachmentSettings =
-      new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
+  MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
+  SettingBundle attachmentSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   VersioningSessionController versioningSC =
@@ -71,8 +73,8 @@
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" var="attachmentBundle" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
 <%
-  ResourceLocator messages =
-      new ResourceLocator("org.silverpeas.versioningPeas.multilang.versioning",
+  LocalizationBundle messages =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.versioningPeas.multilang.versioning",
           mainSessionCtrl.getFavoriteLanguage());
 
   SimpleDocument document = (SimpleDocument) request.getAttribute("Document");

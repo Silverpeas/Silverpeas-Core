@@ -35,6 +35,7 @@ package org.silverpeas.util.viewGenerator.html.progressMessage;
 
 import java.util.List;
 
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
 
@@ -44,15 +45,8 @@ import org.silverpeas.util.viewGenerator.html.SimpleGraphicElement;
  */
 public interface ProgressMessage extends SimpleGraphicElement {
 
-  /**
-   * Method declaration
-   * @param label
-   * @param action
-   * @param disabled
-   * @see
-   */
   public void init(List<String> messages);
 
-  public void setMultilang(ResourceLocator resource);
+  public void setMultilang(LocalizationBundle resource);
 
 }

@@ -1,8 +1,9 @@
 package org.silverpeas.util.viewGenerator.html.wysiwyg;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 public class Wysiwyg {
@@ -17,7 +18,8 @@ public class Wysiwyg {
   private String css;
   private boolean displayFileBrowser = true;
 
-  ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+  SettingBundle wysiwygSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
   private static final String INFO_LETTER_APPLICATION = "infoLetter";
 

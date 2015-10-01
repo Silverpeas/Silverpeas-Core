@@ -41,7 +41,7 @@ public class FormTemplateSessionController extends AbstractComponentSessionContr
 
   public FormTemplateSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
-    super(mainSessionCtrl, context, "com.silverpeas.form.multilang.formBundle", null, null);
+    super(mainSessionCtrl, context, "org.silverpeas.form.multilang.formBundle", null, null);
   }
 
   public void setComponentId(String componentId) {

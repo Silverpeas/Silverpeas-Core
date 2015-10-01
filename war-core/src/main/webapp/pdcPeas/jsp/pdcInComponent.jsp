@@ -55,7 +55,7 @@ String getValueIdFromPdcSearchContext(int axisId, SearchContext searchContext)
 		return null;
 }
 
-void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, String userId, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, ResourcesWrapper resource, String axisTypeIcon, JspWriter out) throws IOException {
+void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, String userId, SearchContext searchContext, Boolean activeThesaurus, Jargon jargon, MultiSilverpeasBundle resource, String axisTypeIcon, JspWriter out) throws IOException {
   SearchAxis searchAxis = null;
   int axisId = -1;
   String axisName = null;
@@ -145,7 +145,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, String 
 		pdcSC = setComponentSessionController(session, mainSessionCtrl);
 	}
 	
-	resource = new ResourcesWrapper(pdcSC.getMultilang(), pdcSC.getIcon(), pdcSC.getSettings(), pdcSC.getLanguage());
+	resource = new MultiSilverpeasBundle(pdcSC.getMultilang(), pdcSC.getIcon(), pdcSC.getSettings(), pdcSC.getLanguage());
 	
 	pdcSC.buildComponentListWhereToSearch("dummy", componentId);
 

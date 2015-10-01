@@ -23,12 +23,10 @@
  */
 package org.silverpeas.admin.space.quota.process.check;
 
-import org.silverpeas.admin.space.SpaceServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.core.admin.OrganizationController;
@@ -40,6 +38,9 @@ import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.NotifierUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.inject.Inject;
@@ -56,9 +57,8 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   protected static boolean dataStorageInSpaceQuotaActivated;
 
   static {
-    final ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings",
-            "");
+    final SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings");
     dataStorageInSpaceQuotaActivated =
         settings.getBoolean("quota.space.datastorage.activated", false);
   }

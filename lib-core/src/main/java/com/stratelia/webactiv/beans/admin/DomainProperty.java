@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 public class DomainProperty {
   final static public String PROPERTY_TYPE_STRING = "STRING";
@@ -52,7 +53,7 @@ public class DomainProperty {
   public DomainProperty() {
   }
 
-  public DomainProperty(ResourceLocator rs, String num) {
+  public DomainProperty(SettingBundle rs, String num) {
     String s;
 
     name = rs.getString("property_" + num + ".Name");
@@ -66,10 +67,10 @@ public class DomainProperty {
       }
     }
     maxLength = rs.getInteger("property_" + num + ".MaxLength", DEFAULT_MAX_LENGTH);
-    mapParameter = rs.getString("property_" + num + ".MapParameter");
+    mapParameter = rs.getString("property_" + num + ".MapParameter", null);
     usedToImport = rs.getBoolean("property_" + num + ".UsedToImport", false);
-    redirectOU = rs.getString("property_" + num + ".RedirectOU");
-    redirectAttribute = rs.getString("property_" + num + ".RedirectAttribute");
+    redirectOU = rs.getString("property_" + num + ".RedirectOU", null);
+    redirectAttribute = rs.getString("property_" + num + ".RedirectAttribute", null);
     updateAllowedTo = rs.getString("property_" + num + ".UpdateAllowedTo",
         PROPERTY_UPDATE_NOT_ALLOWED);
   }

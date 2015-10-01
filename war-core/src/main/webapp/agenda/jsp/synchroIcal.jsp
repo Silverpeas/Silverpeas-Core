@@ -30,7 +30,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 
-  ResourceLocator settings = agenda.getSettings();
+	SettingBundle settings = agenda.getSettings();
 	String statusMessage = "";
 	boolean synchroDone = false;
 	String urlIcalendar = "";

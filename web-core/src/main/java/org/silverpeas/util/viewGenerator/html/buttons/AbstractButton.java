@@ -83,12 +83,6 @@ public abstract class AbstractButton implements Button {
    * @see
    */
   public String getIconsPath() {
-    /*
-     * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
-     * generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
-     */
     return GraphicElementFactory.getIconsPath();
   }
 

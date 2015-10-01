@@ -33,22 +33,28 @@
 %>
 
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="java.util.List" %>
-<%@page import="java.util.Date" %>
-<%@ page import="org.silverpeas.util.DateUtil" %>
-<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@page import="org.silverpeas.util.DateUtil" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@page import="org.silverpeas.util.MultiSilverpeasBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.List" %>
 
 
 <%
-	MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-	String					userId				= m_MainSessionCtrl.getUserId();
-	String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-	ResourceLocator 		messages 			= new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment", language);
-	ResourceLocator 		attSettings 		= new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
-	ResourcesWrapper attResources = new ResourcesWrapper(messages, null, attSettings, language);
+	MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+	String userId = m_MainSessionCtrl.getUserId();
+	String language = m_MainSessionCtrl.getFavoriteLanguage();
+  LocalizationBundle messages =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.util.attachment.multilang.attachment",
+          language);
+  SettingBundle attSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
+  MultiSilverpeasBundle attResources =
+      new MultiSilverpeasBundle(messages, null, attSettings, language);
 
 	boolean useContextualMenu = attSettings.getBoolean("ui.useContextualMenu", false);
   pageContext.setAttribute("useContextualMenu", useContextualMenu);

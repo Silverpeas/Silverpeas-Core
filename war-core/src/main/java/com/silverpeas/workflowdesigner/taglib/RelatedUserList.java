@@ -33,7 +33,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.silverpeas.workflow.api.model.RelatedUser;
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayLine;
@@ -60,7 +60,7 @@ public class RelatedUserList extends TagSupport {
     try {
       GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
           "SessionGraphicElementFactory");
-      ResourcesWrapper resource = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+      MultiSilverpeasBundle resource = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           "resources");
       strPaneTitle = resource.getString("workflowDesigner.list.relatedUser");
       strContextEncoded = URLEncoder.encode(strContext + "/relatedUser", "UTF-8");

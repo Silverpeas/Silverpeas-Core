@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.pdcPeas.control;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdcPeas.model.GoogleSite;
 import com.stratelia.silverpeas.pdcPeas.model.GoogleTab;
@@ -45,8 +46,8 @@ public class GoogleTabsUtil {
 
   static {
     try {
-      ResourceLocator settings =
-          new ResourceLocator("org.silverpeas.pdcPeas.settings.google", "");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.google");
 
       key = settings.getString("google.key");
       drawMode = settings.getString("google.sites.drawMode");

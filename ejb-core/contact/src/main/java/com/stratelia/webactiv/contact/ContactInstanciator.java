@@ -20,21 +20,21 @@
  */
 package com.stratelia.webactiv.contact;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.silverpeas.admin.components.InstanciationException;
-
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class ContactInstanciator extends SQLRequest {
 
-  private static ResourceLocator settings = new ResourceLocator(
-      "org.silverpeas.contact.contactSettings", "fr");
+  private static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.contact.contactSettings");
 
   /**
    * Creates new ContactInstanciator
@@ -43,7 +43,7 @@ public class ContactInstanciator extends SQLRequest {
   }
 
   public ContactInstanciator(String fullPathName) {
-    super("com.stratelia.webactiv.contact");
+    super("org.silverpeas.contact");
   }
 
   public void create(Connection con, String spaceId, String componentId, String userId) throws

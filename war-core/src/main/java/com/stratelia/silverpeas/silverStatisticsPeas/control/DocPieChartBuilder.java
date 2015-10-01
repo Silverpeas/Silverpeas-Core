@@ -21,6 +21,7 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -32,9 +33,9 @@ import java.util.Map;
 public class DocPieChartBuilder extends AbstractPieChartBuilder {
 
   private final String spaceId;
-  private final ResourceLocator message;
+  private final LocalizationBundle message;
 
-  public DocPieChartBuilder(String spaceId, ResourceLocator message) {
+  public DocPieChartBuilder(String spaceId, LocalizationBundle message) {
     this.spaceId = spaceId;
     this.message = message;
   }

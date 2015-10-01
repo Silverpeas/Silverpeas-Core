@@ -27,6 +27,7 @@ import javax.servlet.jsp.JspException;
 
 import org.silverpeas.jstl.util.AbstractSetVarTagSupport;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import org.silverpeas.util.ResourceLocator;
@@ -39,11 +40,11 @@ public class SettingsValueTag extends AbstractSetVarTagSupport {
 
   private static final long serialVersionUID = 1L;
   private String key;
-  private ResourceLocator settings;
+  private SettingBundle settings;
   private Object defaultValue;
 
   public void setSettings(String file) {
-    this.settings = new ResourceLocator(file, "");
+    this.settings = ResourceLocator.getSettingBundle(file);
   }
 
   public void setDefaultValue(Object defaultValue) {

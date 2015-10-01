@@ -20,10 +20,7 @@
  */
 package org.silverpeas.authentication;
 
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationExceptionVisitor;
@@ -31,6 +28,10 @@ import org.silverpeas.authentication.exception.AuthenticationHostException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.authentication.exception.AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,8 +78,8 @@ public class AuthenticationServer {
    */
   private AuthenticationServer(String authServerName) {
     try {
-      ResourceLocator serverSettings = new ResourceLocator(
-          "org.silverpeas.authentication." + authServerName, "");
+      SettingBundle serverSettings =
+          ResourceLocator.getSettingBundle("org.silverpeas.authentication." + authServerName);
       fallbackMode = serverSettings.getString("fallbackType");
       passwordChangeAllowed = serverSettings.getBoolean("allowPasswordChange", false);
       int nbServers = Integer.parseInt(serverSettings.getString("autServersCount"));

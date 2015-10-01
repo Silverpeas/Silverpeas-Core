@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail;
@@ -154,7 +155,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   private String getSource(String componentId) {
-    ResourceLocator m_Multilang = new ResourceLocator(
+    LocalizationBundle m_Multilang = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         getLanguage());
     String source = m_Multilang.getString("UserNotification");

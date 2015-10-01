@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.domains.sqldriver;
 
 import com.stratelia.silverpeas.domains.DriverSettings;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * This class read the property file and keep it's values accessible via the get functions
@@ -33,7 +33,7 @@ import org.silverpeas.util.ResourceLocator;
  * @version 1.0
  */
 
-public class SQLSettings extends DriverSettings {
+public class SQLSettings implements DriverSettings {
 
   // Definitions of max lengths due to limitations on Oracle databases
   public static final int DATABASE_TABLE_NAME_MAX_LENGTH = 30;
@@ -71,7 +71,8 @@ public class SQLSettings extends DriverSettings {
    * getSureString.
    * @param rs Properties resource file
    */
-  public void initFromProperties(ResourceLocator rs) {
+  @Override
+  public void initFromProperties(SettingBundle rs) {
     // Database Settings
     // -----------------
     sqlDataSourceJNDIName = rs.getString("database.SQLDataSourceJNDIName", sqlDataSourceJNDIName);

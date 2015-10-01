@@ -38,6 +38,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.crypto.CryptoException;
 
 import com.silverpeas.form.FormException;
@@ -79,8 +80,8 @@ public class PublicationTemplateManager {
   private static JAXBContext JAXB_CONTEXT = null;
 
   static {
-    ResourceLocator templateSettings =
-        new ResourceLocator("org.silverpeas.publicationTemplate.settings.template", "");
+    SettingBundle templateSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.publicationTemplate.settings.template");
 
     templateDir = templateSettings.getString("templateDir");
     defaultTemplateDir =

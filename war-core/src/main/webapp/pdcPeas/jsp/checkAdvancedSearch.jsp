@@ -48,7 +48,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <!-- import PDC -->
 <%@ page import="org.silverpeas.util.FileRepositoryManager"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
@@ -78,7 +78,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.CompoSpace"%>
 <%@ page import="java.text.NumberFormat"%>
-<%@ page import="org.silverpeas.util.*"%>
 
 <!-- common -->
 <%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
@@ -109,7 +108,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

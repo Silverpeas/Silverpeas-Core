@@ -32,6 +32,7 @@
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%
   response.setHeader("Expires", "Tue, 21 Dec 1993 23:59:59 GMT");
@@ -46,18 +47,17 @@
   RegistrationSettings registrationSettings = RegistrationSettings.getSettings();
 
 // Get the authentication settings
-  ResourceLocator authenticationSettings =
-      new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
-  ResourceLocator homePageBundle =
-      new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle",
+  SettingBundle authenticationSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.authentication.settings.authenticationSettings");
+  LocalizationBundle homePageBundle =
+      ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle",
           request.getLocale().getLanguage());
 
 // Get the logo to print
-  ResourceLocator general =
-      new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-   ResourceLocator generalMultilang =
-      new ResourceLocator("org.silverpeas.multilang.generalMultilang",
-          request.getLocale().getLanguage());
+  SettingBundle general =
+      ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+   LocalizationBundle generalMultilang =
+      ResourceLocator.getGeneralBundle(request.getLocale().getLanguage());
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
   String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");

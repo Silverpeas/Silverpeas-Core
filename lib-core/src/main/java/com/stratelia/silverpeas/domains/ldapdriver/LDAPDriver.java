@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
@@ -68,7 +69,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @throws AdminException
    */
   @Override
-  public void initFromProperties(ResourceLocator rs) throws AdminException {
+  public void initFromProperties(SettingBundle rs) throws AdminException {
     driverSettings.initFromProperties(rs);
     synchroCache.init(driverSettings);
     userTranslator = driverSettings.newLDAPUser();

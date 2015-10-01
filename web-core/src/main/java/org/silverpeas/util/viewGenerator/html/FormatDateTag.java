@@ -21,7 +21,7 @@
  */
 package org.silverpeas.util.viewGenerator.html;
 
-import org.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.DateUtil;
 import java.util.Date;
 import java.io.IOException;
@@ -77,7 +77,7 @@ public class FormatDateTag extends TagSupport {
     if (isDefined(getLanguage())) {
       formattedDate = DateUtil.getOutputDate(date, getLanguage());
     } else {
-      ResourcesWrapper resources = (ResourcesWrapper) pageContext.getRequest().getAttribute(
+      MultiSilverpeasBundle resources = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute(
           GraphicElementFactory.RESOURCES_KEY);
       if (resources != null) {
         formattedDate = resources.getOutputDate(date);

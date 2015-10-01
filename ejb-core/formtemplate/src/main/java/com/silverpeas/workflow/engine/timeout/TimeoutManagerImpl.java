@@ -39,6 +39,7 @@ import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Singleton;
 import java.util.Date;
@@ -58,8 +59,8 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
   @Override
   public void initialize() {
     try {
-      ResourceLocator settings = new ResourceLocator(
-          "com.silverpeas.workflow.engine.schedulerSettings", "");
+      SettingBundle settings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.workflow.engine.schedulerSettings");
       // List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
       Scheduler scheduler = SchedulerProvider.getScheduler();
       if (scheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {

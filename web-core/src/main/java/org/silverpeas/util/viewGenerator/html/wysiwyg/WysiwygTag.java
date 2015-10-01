@@ -1,16 +1,15 @@
 package org.silverpeas.util.viewGenerator.html.wysiwyg;
 
-import java.io.IOException;
-import java.net.URLDecoder;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
+import java.io.IOException;
+import java.net.URLDecoder;
 
 public class WysiwygTag extends TagSupport {
 
@@ -157,7 +156,7 @@ public class WysiwygTag extends TagSupport {
     }
     session.setAttribute("WYSIWYG_Language", getLanguage());
 
-    ResourceLocator settings = gef.getFavoriteLookSettings();
+    SettingBundle settings = gef.getFavoriteLookSettings();
     if (settings != null) {
       wysiwyg.setCustomCSS(settings.getString("StyleSheet"));
     }

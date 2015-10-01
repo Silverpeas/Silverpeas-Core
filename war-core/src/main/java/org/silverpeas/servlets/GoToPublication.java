@@ -20,24 +20,19 @@
  */
 package org.silverpeas.servlets;
 
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.peasUtil.GoTo;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.EJBUtilitaire;
-import org.silverpeas.util.JNDINames;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
-
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.StringUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 public class GoToPublication extends GoTo {
 

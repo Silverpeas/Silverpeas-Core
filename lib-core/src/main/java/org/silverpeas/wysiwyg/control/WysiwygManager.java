@@ -47,6 +47,7 @@ import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -143,8 +144,8 @@ public class WysiwygManager {
   }
 
   public String getWebsiteRepository() {
-    ResourceLocator websiteSettings =
-        new ResourceLocator("org.silverpeas.webSites.settings.webSiteSettings", "");
+    SettingBundle websiteSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
     return websiteSettings.getString("uploadsPath");
   }
 

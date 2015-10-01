@@ -20,6 +20,32 @@
  */
 package org.silverpeas.search.searchEngine.model;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.io.IOUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.*;
+import org.apache.lucene.util.Version;
+import org.silverpeas.search.indexEngine.model.ExternalComponent;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexReadersCache;
+import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
+import org.silverpeas.search.util.SearchEnginePropertiesManager;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,41 +57,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
-import org.silverpeas.search.indexEngine.model.ExternalComponent;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.indexEngine.model.IndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.indexEngine.model.IndexReadersCache;
-import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
-import org.silverpeas.search.util.SearchEnginePropertiesManager;
-
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.ResourceLocator;
 
 /**
  * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
@@ -87,16 +78,16 @@ public class WAIndexSearcher {
 
   static {
     try {
-      ResourceLocator resource = new ResourceLocator(
-          "org.silverpeas.searchEngine.searchEngineSettings", "");
-      int paramOperand = resource.getInteger("defaultOperand", 0);
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.searchEngine.searchEngineSettings");
+      int paramOperand = settings.getInteger("defaultOperand", 0);
       if (paramOperand == 0) {
         defaultOperand = QueryParser.OR_OPERATOR;
       } else {
         defaultOperand = QueryParser.AND_OPERATOR;
       }
 
-      maxNumberResult = resource.getInteger("maxResults", 100);
+      maxNumberResult = settings.getInteger("maxResults", 100);
     } catch (MissingResourceException e) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_FILE_NOT_FOUND", e);
     } catch (NumberFormatException e) {
@@ -122,9 +113,9 @@ public class WAIndexSearcher {
    * @return
    */
   public static int getFactorFromProperties(String propertyName, int defaultValue) {
-    ResourceLocator resource = new ResourceLocator(
-        "org.silverpeas.search.indexEngine.IndexEngine", "");
-    return resource.getInteger(propertyName, defaultValue);
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.search.indexEngine.IndexEngine");
+    return settings.getInteger(propertyName, defaultValue);
   }
 
   /**
