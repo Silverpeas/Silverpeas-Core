@@ -75,18 +75,10 @@ public class FFmpegUtil extends ExternalExecution {
     SilverTrace.debug("VideoTool", "FFmpegUtil.extractVideoThumbnail",
         "extract video thumbnail at " + time);
     CommandLine cmd = buildFFmpegThumbnailExtractorCommandLine(videoFile, outputFile, time);
-    List<String> result;
     try {
-      result = exec(cmd);
+      return exec(cmd);
     } catch (ExternalExecutionException e) {
       throw new VideoThumbnailExtractorException(e);
     }
-    return result;
   }
-
-  public static int extractVideoThumb(File videoFile, File outputFile, int time) {
-    CommandLine cmd = buildFFmpegThumbnailExtractorCommandLine(videoFile, outputFile, time);
-    return execAlternative(cmd);
-  }
-
 }

@@ -23,8 +23,6 @@
  */
 package org.silverpeas.viewer.flexpaper;
 
-import java.io.File;
-
 import org.silverpeas.viewer.AbstractView;
 import org.silverpeas.viewer.util.DocumentInfo;
 
@@ -34,6 +32,7 @@ import org.silverpeas.util.FileServerUtils;
  * @author Yohann Chastagnier
  */
 public class TemporaryFlexPaperView extends AbstractView {
+  private static final long serialVersionUID = 2467847236159432664L;
 
   private int width = 0;
   private int height = 0;
@@ -47,15 +46,6 @@ public class TemporaryFlexPaperView extends AbstractView {
     super(originalFileName, physicalFile, info.getNbPages());
     width = info.getMaxWidh();
     height = info.getMaxHeight();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.viewer.Preview#getURLAsString()
-   */
-  @Override
-  public String getURLAsString() {
-    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
   }
 
   /*

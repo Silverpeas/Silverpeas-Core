@@ -31,6 +31,7 @@ import org.silverpeas.util.FileServerUtils;
  * @author Yohann Chastagnier
  */
 public class TemporaryPreview extends AbstractPreview {
+  private static final long serialVersionUID = -8976465787358834699L;
 
   /**
    * Default constructor
@@ -38,14 +39,5 @@ public class TemporaryPreview extends AbstractPreview {
    */
   public TemporaryPreview(final String originalFilename, final File physicalFile) {
     super(originalFilename, physicalFile);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.viewer.Preview#getURLAsString()
-   */
-  @Override
-  public String getURLAsString() {
-    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
   }
 }

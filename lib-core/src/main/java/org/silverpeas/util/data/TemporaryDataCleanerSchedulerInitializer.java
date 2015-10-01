@@ -23,33 +23,29 @@
  */
 package org.silverpeas.util.data;
 
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.listFiles;
-import static org.apache.commons.io.FileUtils.listFilesAndDirs;
-
-import java.io.File;
-import java.util.Collection;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.trigger.JobTrigger;
-import org.silverpeas.initialization.Initialization;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.util.Collection;
+
+import static org.apache.commons.io.FileUtils.*;
+import static org.silverpeas.util.data.TemporaryDataManagementSettings
+    .getTimeAfterThatFilesMustBeDeleted;
+import static org.silverpeas.util.data.TemporaryDataManagementSettings
+    .getTimeAfterThatFilesMustBeDeletedAtServerStart;
 
 /**
  * @author Yohann Chastagnier
@@ -57,14 +53,13 @@ import org.silverpeas.util.ResourceLocator;
 @Singleton
 public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
 
-  private final SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.util.data.temporaryDataManagementSettings");
-
   private static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
 
   @Inject
   private Scheduler scheduler;
+
+  Thread startTask;
 
   @Override
   public void init() throws Exception{
@@ -73,11 +68,16 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
 
     // Cleaning temporary data at start if requested
-    temporaryDataCleanerJob.clean(settings.getLong(
-        "temporaryData.cleaner.job.start.file.age.hours", -1));
+    startTask = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        temporaryDataCleanerJob.clean(getTimeAfterThatFilesMustBeDeletedAtServerStart());
+      }
+    });
+    startTask.start();
 
     // Setting CRON
-    final String cron = settings.getString("temporaryData.cleaner.job.cron", "");
+    final String cron = TemporaryDataManagementSettings.getJobCron();
     scheduler.unscheduleJob(JOB_NAME);
     if (StringUtil.isDefined(cron)) {
       scheduler.scheduleJob(temporaryDataCleanerJob, JobTrigger.triggerAt(cron));
@@ -101,25 +101,24 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     public void execute(final JobExecutionContext context) throws Exception {
 
       // 1 hour minimum
-      final long nbHours = settings.getLong("temporaryData.cleaner.job.file.age.hours", 0);
-      if (nbHours >= 1) {
+      final long nbMilliseconds = getTimeAfterThatFilesMustBeDeleted();
+      if (nbMilliseconds > 0) {
         // Clean
-        clean(nbHours);
+        clean(nbMilliseconds);
       }
     }
 
     /**
      * Cleaning treatment
-     * @param nbHours : age of files that don't have to be deleted (in hours)
+     * @param nbMilliseconds : age of files that don't have to be deleted (in milliseconds)
      */
-    public synchronized void clean(final long nbHours) {
+    public synchronized void clean(final long nbMilliseconds) {
 
       // Temporary temp directory
       if (tempPath.exists()) {
 
         // Nothing to do if fileAge is negative
-        if (nbHours >= 0) {
-          final long nbMilliseconds = nbHours * 60 * 60 * 1000L;
+        if (nbMilliseconds >= 0) {
 
           // Calculating the date from which files should be deleted from their date of last
           // modification. (in milliseconds)
@@ -133,8 +132,8 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
           fileAge = System.currentTimeMillis() - nbMilliseconds;
 
           // Deleting all empty subdirectories
-          delete(listFilesAndDirs(tempPath, FalseFileFilter.FALSE, new AndFileFilter(
-              new AgeFileFilter(fileAge), new AbstractFileFilter() {
+          delete(listFilesAndDirs(tempPath, FalseFileFilter.FALSE,
+              new AndFileFilter(new AgeFileFilter(fileAge), new AbstractFileFilter() {
 
                 @Override
                 public boolean accept(final File file, final String name) {

@@ -31,7 +31,7 @@ import java.util.Map;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecutionException;
 import org.silverpeas.viewer.SwfToolManager;
-import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.exception.ViewerException;
 
 import org.silverpeas.util.StringUtil;
 
@@ -54,12 +54,19 @@ public class SwfUtil extends ExternalExecution {
   private static final String TO_SWF_ENDING_COMMAND = "-f -T 9 -t -s storeallcharacters";
 
   /**
-   * Indicates if Swf utils is activated
-   *
+   * Indicates if pdf2swf tool is activated
    * @return
    */
-  public static boolean isActivated() {
+  public static boolean isPdfToSwfActivated() {
     return SwfToolManager.isActivated();
+  }
+
+  /**
+   * Indicates if swfrender0 tool is activated
+   * @return
+   */
+  public static boolean isPdfToImageActivated() {
+    return isPdfToSwfActivated() && SwfToolManager.isSwfRenderActivated();
   }
 
   /**
@@ -83,11 +90,11 @@ public class SwfUtil extends ExternalExecution {
    * @param fileIn the Swf file
    * @param fileOut the image file
    */
-  public static void fromSwfToImage(final File fileIn, final File fileOut) {
+  private static void fromSwfToImage(final File fileIn, final File fileOut) {
     try {
       exec(buildSwfToImageCommandLine(fileIn, fileOut));
     } catch (ExternalExecutionException e) {
-      throw new PreviewException(e);
+      throw new ViewerException(e);
     }
   }
 
@@ -136,7 +143,7 @@ public class SwfUtil extends ExternalExecution {
     try {
       exec(buildPdfToSwfCommandLine(endingCommand, fileIn, outputFile));
     } catch (ExternalExecutionException e) {
-      throw new PreviewException(e);
+      throw new ViewerException(e);
     }
   }
 

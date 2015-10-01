@@ -23,7 +23,10 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
+import org.apache.commons.exec.CommandLine;
 import org.silverpeas.initialization.Initialization;
+import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecution.Config;
 
 import java.util.Map;
 
@@ -37,18 +40,14 @@ public class FFmpegToolManager implements Initialization {
     // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
       if ("path".equals(entry.getKey().toLowerCase())) {
-        Process process = null;
         try {
-          final StringBuilder ffmpegCommand = new StringBuilder();
-          ffmpegCommand.append("ffmpeg -version");
-          process = Runtime.getRuntime().exec(ffmpegCommand.toString());
+          CommandLine commandLine = new CommandLine("ffmpeg");
+          commandLine.addArgument("-version");
+          ExternalExecution.exec(commandLine, Config.init().doNotDisplayErrorTrace());
           isActivated = true;
         } catch (final Exception e) {
           // FFmpeg is not installed
-        } finally {
-          if (process != null) {
-            process.destroy();
-          }
+          System.err.println("ffmpeg is not installed");
         }
       }
     }

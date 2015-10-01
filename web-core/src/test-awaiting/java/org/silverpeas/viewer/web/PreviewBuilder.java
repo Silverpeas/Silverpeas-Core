@@ -26,7 +26,7 @@ package org.silverpeas.viewer.web;
 import java.io.File;
 
 import org.silverpeas.viewer.Preview;
-import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.exception.ViewerException;
 
 /**
  * @author Yohann Chastagnier
@@ -69,7 +69,7 @@ public class PreviewBuilder {
      * @see org.silverpeas.viewer.Preview#getURLAsString()
      */
     @Override
-    public String getURLAsString() throws PreviewException {
+    public String getURLAsString() throws ViewerException {
       return "/URL/" + fileName;
     }
 

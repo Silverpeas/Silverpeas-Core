@@ -39,9 +39,8 @@ public interface ViewService {
 
   /**
    * Getting pages view instances of the given file
-   * @param originalFileName
-   * @param physicalFile
+   * @param viewerContext
    * @return
    */
-  DocumentView getDocumentView(String originalFileName, File physicalFile);
+  DocumentView getDocumentView(ViewerContext viewerContext);
 }

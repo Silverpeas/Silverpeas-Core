@@ -24,6 +24,7 @@
 package org.silverpeas.viewer.web;
 
 import com.silverpeas.web.ResourceGettingTest;
+import com.stratelia.silverpeas.peasCore.servlets.control.TestWebComponentController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.File;
 import org.junit.Before;
@@ -34,6 +35,7 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.viewer.Preview;
+import org.silverpeas.viewer.ViewerContext;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -92,7 +94,7 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
           }
         });
 
-    when(getTestResources().getPreviewServiceMockWrapper().getPreview(anyString(), any(File.class)))
+    when(getTestResources().getPreviewServiceMockWrapper().getPreview(any(ViewerContext.class)))
         .thenAnswer(new Answer<Preview>() {
 
           /*
@@ -101,8 +103,9 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
            */
           @Override
           public Preview answer(final InvocationOnMock invocation) throws Throwable {
-            final String originalFileName = (String) invocation.getArguments()[0];
-            final File physicalFile = (File) invocation.getArguments()[1];
+            final ViewerContext viewerContext = (ViewerContext) invocation.getArguments()[0];
+            final String originalFileName = viewerContext.getOriginalFileName();
+            final File physicalFile = viewerContext.getOriginalSourceFile();
             final Preview preview = mock(Preview.class);
             when(preview.getOriginalFileName()).thenReturn(originalFileName);
             when(preview.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
