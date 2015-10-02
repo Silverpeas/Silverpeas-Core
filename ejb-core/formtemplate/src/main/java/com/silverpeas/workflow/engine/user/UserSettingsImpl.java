@@ -24,13 +24,6 @@
 
 package com.silverpeas.workflow.engine.user;
 
-import java.util.Vector;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
@@ -40,6 +33,12 @@ import com.silverpeas.workflow.api.user.UserInfo;
 import com.silverpeas.workflow.api.user.UserSettings;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.PersistenceException;
+import org.exolab.castor.jdo.QueryResults;
+
+import java.util.Vector;
 
 /**
  * @table SB_Workflow_UserSettings
@@ -253,7 +252,8 @@ public class UserSettingsImpl implements UserSettings {
         }
       } catch (FormException e) {
         SilverTrace.warn("workflowEngine", "UserSettingsImpl.update",
-            "workflowEngine.EX_ERR_GET_FIELD", fieldNames[i]);
+            "workflowEngine.EX_ERR_GET_FIELD", "fieldName:" + fieldNames[i] +
+                " and data:" + ((data != null)? data.getId() : "null"));
       }
     }
   }

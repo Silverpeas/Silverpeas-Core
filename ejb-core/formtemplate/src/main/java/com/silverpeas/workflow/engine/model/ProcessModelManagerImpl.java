@@ -270,9 +270,6 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
         while (iterForm.hasNext()) {
           formName = iterForm.next().getName();
           getGenericRecordSetManager().removeRecordSet(model.getFormRecordSetName(formName));
-          SilverTrace.info("workflowEngine", "ProcessModelManagerImpl.deleteProcessModel",
-              "root.MSG_GEN_PARAM_VALUE",
-              instanceId + " : Removing form '" + formName + "' successfully done");
         }
       }
     } catch (FormException fe) {

@@ -361,6 +361,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Override
   public ProcessInstance createProcessInstance(String modelId) throws WorkflowException {
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.createProcessInstance",
+        "root.MSG_GEN_ENTER_METHOD", "modelId=" + modelId);
     ProcessInstanceImpl instance = new ProcessInstanceImpl();
     instance.setModelId(modelId);
     instance.create();

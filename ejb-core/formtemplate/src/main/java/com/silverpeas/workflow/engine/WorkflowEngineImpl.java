@@ -23,11 +23,6 @@
  */
 package com.silverpeas.workflow.engine;
 
-import java.util.Date;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
-
 import com.silverpeas.workflow.api.ProcessInstanceManager;
 import com.silverpeas.workflow.api.TaskManager;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
@@ -54,6 +49,11 @@ import org.silverpeas.thread.ManagedThreadPool;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.PersistenceException;
+
+import java.util.Date;
 
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
