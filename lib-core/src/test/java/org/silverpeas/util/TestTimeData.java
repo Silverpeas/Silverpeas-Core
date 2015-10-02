@@ -24,18 +24,12 @@
 package org.silverpeas.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
-import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.time.TimeData;
 import org.silverpeas.util.time.TimeUnit;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,27 +39,7 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 14/11/13
  */
-public class TimeDataTest {
-
-  private static Locale currentLocale;
-  private static String currentLanguage;
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
-  public void forceDefaultLocale() {
-    currentLocale = Locale.getDefault();
-    currentLanguage = I18NHelper.defaultLanguage;
-    Locale.setDefault(Locale.FRANCE);
-    I18NHelper.defaultLanguage = Locale.getDefault().getLanguage();
-  }
-
-  @After
-  public void restoreDefaultLocale() {
-    Locale.setDefault(currentLocale);
-    I18NHelper.defaultLanguage = currentLanguage;
-  }
+public class TestTimeData extends AbstractUnitTest {
 
   @Test
   public void getTime() {

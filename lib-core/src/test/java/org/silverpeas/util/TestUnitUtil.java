@@ -23,37 +23,16 @@
  */
 package org.silverpeas.util;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
-import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.silverpeas.util.UnitUtil.*;
 
-public class UnitUtilTest {
-
-  private static Locale currentLocale;
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
-  public void forceDefaultLocale() {
-    currentLocale = Locale.getDefault();
-    Locale.setDefault(Locale.FRANCE);
-  }
-
-  @After
-  public void restoreDefaultLocale() {
-    Locale.setDefault(currentLocale);
-  }
+public class TestUnitUtil extends AbstractUnitTest {
 
   @Test
   public void testConvertToFromBigDecimal() {
