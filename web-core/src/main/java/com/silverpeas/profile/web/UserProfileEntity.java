@@ -126,7 +126,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     } else {
       this.domainName = user.getDomain().getName();
     }
-    this.fullName = Encode.forHtml(user.getDisplayedName());
+    this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
     this.connected = this.user.isConnected();
     this.webPage = getUserProfileWebPageURI();
