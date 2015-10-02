@@ -282,7 +282,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
           getGenericRecordSetManager().removeRecordSet(model.getFormRecordSetName(formName));
           SilverTrace.info("workflowEngine",
               "ProcessModelManagerImpl.deleteProcessModel",
-              "root.MSG_GEN_PARAM_VALUE", instanceId + " : Removing form '"
+              "root.MSG_GEN_PARAM_VALUE", "instanceId = " + instanceId + " : Removing form '"
               + formName + "' successfully done");
         }
       }
@@ -493,8 +493,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
           con.close();
         }
       } catch (SQLException se) {
-        SilverTrace.error("workflowEngine",
-            "ProcessModelManagerImpl.getAllPeasId",
+        SilverTrace.error("workflowEngine", "ProcessModelManagerImpl.getAllPeasId",
             "root.EX_RESOURCE_CLOSE_FAILED", se);
       }
     }
