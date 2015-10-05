@@ -201,19 +201,13 @@
     edition: function(commentCreation) {
       return this.each(function() {
         var $this = $(this), edition = settings.editionBox;
-        var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
-        var legende = $("<div>").addClass("legende");
+        var editionBox = $("<div id='edition-box'>").appendTo($this);
         $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
         if (settings.author && settings.author.avatar && settings.author.avatar.length > 0) {
           var avatarUrl = settings.author.avatar;
           $("<img>").attr("src", avatarUrl).appendTo($("<div>").addClass("avatar").appendTo(editionBox));
         }
         $("<textarea>").addClass("text").appendTo(editionBox).autoResize();
-        $("<span>").html("&nbsp;").appendTo(editionBox);
-        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
-        legende.appendTo(editionBox);
-        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
         $("<button>").addClass("button").text(edition['ok']).
                 click(function() {
           __addComment($this, commentCreation);
