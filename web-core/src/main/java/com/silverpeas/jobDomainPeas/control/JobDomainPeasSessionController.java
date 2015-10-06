@@ -57,7 +57,6 @@ import org.silverpeas.password.service.PasswordServiceProvider;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.EncodeHelper;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
@@ -1206,7 +1205,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     sel.resetAll();
     sel.setHostSpaceName(getMultilang().getString("JDP.jobDomain"));
     sel.setHostComponentName(new Pair<>(getTargetGroup().getName(), null));
-    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
+    LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(getLanguage());
     Pair<String, String>[] hostPath =
         new Pair[]{new Pair<>(getMultilang().getString("JDP.roleManager") + " > " +
             generalMessage.getString("GML.selection"), null)};

@@ -25,22 +25,19 @@
  */
 package org.silverpeas.importExport.versioning;
 
-import java.io.File;
-import java.util.Date;
-
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.jcr.JcrDataConverter;
+import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
-import org.apache.commons.io.FilenameUtils;
+import java.io.File;
+import java.util.Date;
 
 public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTypes {
 
@@ -251,7 +248,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   public String getWebdavUrl() {
     StringBuilder url = new StringBuilder(500);
-    ResourceLocator messages = GeneralPropertiesManager.getGeneralResourceLocator();
+    SettingBundle messages = ResourceLocator.getGeneralSettingBundle();
     String webAppContext = messages.getString("ApplicationURL");
     if (!webAppContext.endsWith("/")) {
       webAppContext += '/';

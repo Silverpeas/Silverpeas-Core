@@ -55,7 +55,7 @@ String arrLeft				= m_context + "/util/icons/arrow/arrowLeft.gif";
 
   if (agenda == null)
   {
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
   }

@@ -34,7 +34,6 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>

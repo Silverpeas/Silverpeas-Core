@@ -40,7 +40,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.servlet.FileUploadUtil"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="java.io.File"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.servlet.HttpRequest" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>

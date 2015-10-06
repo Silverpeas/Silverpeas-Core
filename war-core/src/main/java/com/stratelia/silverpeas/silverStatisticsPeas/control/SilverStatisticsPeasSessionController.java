@@ -104,7 +104,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private Collection<String> yearsConnection = null;
   private Collection<String> yearsAccess = null;
   private Collection<String> yearsVolume = null;
-  private LocalizationBundle generalMessage = ResourceLocator.getGeneralBundle(getLanguage());
+  private LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(
+      getLanguage());
   private PdcManager pdcManager = null;
 
   // init attributes

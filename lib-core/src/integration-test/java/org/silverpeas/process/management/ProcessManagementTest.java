@@ -39,6 +39,7 @@ import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.test.WarBuilder4LibCore;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,7 +49,6 @@ import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
  * @author Yohann Chastagnier
@@ -78,7 +78,7 @@ public class ProcessManagementTest {
   public void beforeTest() throws Exception {
     BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
     componentInstanceId = "componentInstanceId";
-    sessionRootPath = new File(getString("tempPath"));
+    sessionRootPath = new File(ResourceLocator.getGeneralSettingBundle().getString("tempPath"));
     testResultFile = getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testResult");
     testSuccessfulFile =
         getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSuccessful");

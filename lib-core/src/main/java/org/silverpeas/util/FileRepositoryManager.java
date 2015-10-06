@@ -41,21 +41,15 @@ import static java.io.File.separatorChar;
  */
 public class FileRepositoryManager {
 
-  static final String securityPath = GeneralPropertiesManager.getString("securityPath");
-  static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
-  final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
-      + File.separatorChar + "avatar");
   static String tempPath = "";
   static String domainPropertiesFolderPath;
   static String domainAuthenticationPropertiesFolderPath;
   final static SettingBundle uploadSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
-  static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
 
   static {
-    tempPath = GeneralPropertiesManager.getString("tempPath");
+    tempPath = ResourceLocator.getGeneralSettingBundle().getString("tempPath");
     if (!tempPath.endsWith(File.separator)) {
       tempPath = tempPath + File.separatorChar;
     }
@@ -74,7 +68,7 @@ public class FileRepositoryManager {
    * @return the path of the Silverpeas security directory.
    */
   public static String getSecurityDirPath() {
-    return securityPath + File.separator;
+    return ResourceLocator.getGeneralSettingBundle().getString("securityPath") + File.separator;
   }
 
   /**
@@ -88,17 +82,18 @@ public class FileRepositoryManager {
   public static String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
-    return upLoadPath + separatorChar + sComponentId + separatorChar;
+    return getUploadPath() + sComponentId + separatorChar;
   }
 
   public static String getAbsolutePath(String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
-    return upLoadPath + separatorChar + sComponentId + separatorChar;
+    return getUploadPath() + sComponentId + separatorChar;
   }
 
   public static String getAvatarPath() {
-    return avatarPath;
+    return ResourceLocator.getGeneralSettingBundle().getString(
+        "avatar.path", getUploadPath() + "avatar");
   }
 
   /**
@@ -108,7 +103,8 @@ public class FileRepositoryManager {
    * @return the path of the root repository for uploads.
    */
   public static String getUploadPath() {
-    return upLoadPath + separatorChar;
+    return ResourceLocator.getGeneralSettingBundle().getString(
+        "uploadsPath") + separatorChar;
   }
 
   /**
@@ -243,7 +239,7 @@ public class FileRepositoryManager {
     }
     String fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
     if (fileIcon == null) {
-      fileIcon = unknownFileIcon;
+      fileIcon = uploadSettings.getString("unknown");
     } else {
       if (isReadOnly) {
         fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Lock.gif";
@@ -369,7 +365,8 @@ public class FileRepositoryManager {
    * @return the path of the export template repository.
    */
   public static String getExportTemplateRepository() {
-    String path = exportTemplatePath;
+    String path = ResourceLocator.getGeneralSettingBundle().getString(
+        "exportTemplatePath");
     if (!path.endsWith("/")) {
       path += "/";
     }

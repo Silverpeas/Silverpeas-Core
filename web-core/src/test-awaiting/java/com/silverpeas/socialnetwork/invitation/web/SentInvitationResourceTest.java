@@ -23,19 +23,18 @@
  */
 package com.silverpeas.socialnetwork.invitation.web;
 
-import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
-import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
-
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
+import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests on the operations published by the InvitationResource REST service.
@@ -51,7 +50,7 @@ public class SentInvitationResourceTest extends ResourceGettingTest<InvitationTe
 
   @Before
   public void prepareTestResources() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     currentUser = aUser();
     sessionKey = authenticate(currentUser);
   }

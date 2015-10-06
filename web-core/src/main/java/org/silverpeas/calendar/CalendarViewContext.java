@@ -23,25 +23,22 @@
  */
 package org.silverpeas.calendar;
 
-import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
+import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: Yohann Chastagnier
  * Date: 17/04/13
  */
 public class CalendarViewContext {
-  private final static Map<String, ResourceLocator> bundles = new HashMap<>();
   private final static EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
       EnumSet.of(PeriodType.week, PeriodType.day);
 
@@ -212,13 +209,8 @@ public class CalendarViewContext {
    * Gets the bundle
    * @return
    */
-  protected static ResourceLocator getBundle(final String language) {
-    ResourceLocator bundle = bundles.get(language);
-    if (bundle == null) {
-      bundle = GeneralPropertiesManager.getGeneralMultilang(language);
-      bundles.put(language, bundle);
-    }
-    return bundle;
+  protected static LocalizationBundle getBundle(final String language) {
+    return ResourceLocator.getGeneralLocalizationBundle(language);
   }
 
   /**
@@ -228,7 +220,7 @@ public class CalendarViewContext {
    * @return
    */
   public static String getPeriodLabel(CalendarPeriod period, String language) {
-    ResourceLocator bundle = getBundle(language);
+    LocalizationBundle bundle = getBundle(language);
     StringBuilder periodLabel = new StringBuilder();
     boolean displayWeek = DISPLAY_WEEK_PERIODS.contains(period.getPeriodType());
     // Month of the begin date of the period

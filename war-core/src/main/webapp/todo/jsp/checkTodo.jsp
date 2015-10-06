@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.todo.control.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -69,7 +69,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	if (todo == null)
   	{
-    	String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     	getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     	return;
   	}

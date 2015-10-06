@@ -72,7 +72,7 @@
 <%@ page import="com.stratelia.webactiv.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.node.model.NodeDetail"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
@@ -85,7 +85,7 @@
         GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
         PdcSubscriptionSessionController sessionController = (PdcSubscriptionSessionController)request.getAttribute("pdcSubscriptionPeas");
 
-        String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();

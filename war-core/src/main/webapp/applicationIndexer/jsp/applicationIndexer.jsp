@@ -38,7 +38,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
@@ -110,7 +110,7 @@ MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAtt
 
 if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }

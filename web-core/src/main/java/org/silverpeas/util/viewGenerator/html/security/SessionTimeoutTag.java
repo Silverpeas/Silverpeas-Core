@@ -25,7 +25,7 @@
 package org.silverpeas.util.viewGenerator.html.security;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
@@ -44,8 +44,7 @@ public class SessionTimeoutTag extends TagSupport {
 
     if (mainSessionController == null) {
       // No session controller in the request -> security exception
-      String sessionTimeout =
-          GeneralPropertiesManager.getString("sessionTimeout");
+      String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
       try {
         pageContext.forward(sessionTimeout);
       } catch (IOException ioex) {

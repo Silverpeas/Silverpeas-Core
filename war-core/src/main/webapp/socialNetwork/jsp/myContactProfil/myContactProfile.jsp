@@ -33,7 +33,6 @@
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.*"%>

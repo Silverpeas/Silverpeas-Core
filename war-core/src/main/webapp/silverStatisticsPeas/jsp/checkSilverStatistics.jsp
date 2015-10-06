@@ -73,7 +73,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 
 <%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -83,7 +83,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

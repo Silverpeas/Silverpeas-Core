@@ -28,7 +28,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
     
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -41,17 +41,18 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 
 <%@ page import="org.silverpeas.util.StringUtil"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (mainSessionCtrl == null) {
-  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+  String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
-ResourceLocator message = GeneralPropertiesManager.getGeneralMultilang(mainSessionCtrl.getFavoriteLanguage());
+LocalizationBundle message = ResourceLocator.getGeneralLocalizationBundle(mainSessionCtrl.getFavoriteLanguage());
 String m_context = URLManager.getApplicationURL();
 
 Button btn = gef.getFormButton(message.getString("GML.validate"), "javascript:setPath()", false);

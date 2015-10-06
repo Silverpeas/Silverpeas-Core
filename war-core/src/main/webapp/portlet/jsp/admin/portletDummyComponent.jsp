@@ -31,7 +31,7 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");       //HTTP 1.0
 response.setDateHeader ("Expires",-1);        //prevents caching at the proxy server
 %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.window.Window"%>
@@ -40,7 +40,7 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 
 
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 	
 Window window = gef.getWindow();

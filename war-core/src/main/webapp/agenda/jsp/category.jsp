@@ -71,11 +71,10 @@ boolean notIn(String id, Collection categories) {
 
 %>
 <%
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
+LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(agenda.getLanguage());
 %>
 
 <%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 

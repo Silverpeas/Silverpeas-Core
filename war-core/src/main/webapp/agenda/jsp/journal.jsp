@@ -27,6 +27,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.util.SettingBundle" %>
+<%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ include file="checkAgenda.jsp.inc" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -36,7 +40,8 @@
   boolean autoFocus = true;
   boolean readOnly = false;
 
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
+  LocalizationBundle generalMessage =
+			ResourceLocator.getGeneralLocalizationBundle(agenda.getLanguage());
 	SettingBundle settings = agenda.getSettings();
 
   String action = request.getParameter("Action"); //Add || Update || View (vient de choisir une categorie)

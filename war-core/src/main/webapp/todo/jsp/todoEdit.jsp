@@ -35,7 +35,7 @@
 <%@ page import="com.stratelia.webactiv.todo.control.TodoUserException" %>
 <%@ page import="org.silverpeas.util.DBUtil" %>
 <%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
@@ -53,9 +53,9 @@
 
 <%
 
-  String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+  String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
   String action = request.getParameter("Action");
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(todo.getLanguage());
+  LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(todo.getLanguage());
   SettingBundle settings = todo.getSettings();
 %>
 

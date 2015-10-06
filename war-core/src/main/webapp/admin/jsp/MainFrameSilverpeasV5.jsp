@@ -48,7 +48,7 @@ if (!StringUtil.isDefined(spaceIdFromRedirect)) {
 	spaceIdFromRedirect 	= request.getParameter("RedirectToSpaceId");
 }
 String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId");
-LocalizationBundle generalMessage			= ResourceLocator.getGeneralBundle(language);
+LocalizationBundle generalMessage			= ResourceLocator.getGeneralLocalizationBundle(language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
 boolean			login					= StringUtil.getBooleanValue(request.getParameter("Login"));

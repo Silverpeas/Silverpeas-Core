@@ -42,7 +42,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -53,7 +53,7 @@
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
 {
-  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+  String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
@@ -61,7 +61,7 @@ if (m_MainSessionCtrl == null)
 GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 LocalizationBundle 		message 			= ResourceLocator.getLocalizationBundle("org.silverpeas.portlets.multilang.portletsBundle", language);
-String 					m_context 			= GeneralPropertiesManager.getString("ApplicationURL");
+String 					m_context 			= ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
 <fmt:setLocale value="<%= language %>"/>

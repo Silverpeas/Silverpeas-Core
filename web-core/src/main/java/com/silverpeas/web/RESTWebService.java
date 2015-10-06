@@ -220,7 +220,7 @@ public abstract class RESTWebService implements WebResource {
   protected LocalizationBundle getBundle() {
     if (bundle == null) {
       if (getBundleLocation() == null) {
-        bundle = ResourceLocator.getGeneralBundle(getUserPreferences().getLanguage());
+        bundle = ResourceLocator.getGeneralLocalizationBundle(getUserPreferences().getLanguage());
       } else {
         bundle = ResourceLocator.getLocalizationBundle(getBundleLocation(),
             getUserPreferences().getLanguage());

@@ -57,7 +57,7 @@
   SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
    LocalizationBundle generalMultilang =
-      ResourceLocator.getGeneralBundle(request.getLocale().getLanguage());
+      ResourceLocator.getGeneralLocalizationBundle(request.getLocale().getLanguage());
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
   String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");

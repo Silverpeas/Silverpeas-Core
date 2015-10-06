@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -71,7 +71,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();

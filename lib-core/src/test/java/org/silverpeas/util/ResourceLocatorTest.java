@@ -57,7 +57,7 @@ public class ResourceLocatorTest {
 
   @Test
   public void useGeneralSettingShouldSucceed() {
-    SettingBundle bundle = ResourceLocator.getGeneralBundle();
+    SettingBundle bundle = ResourceLocator.getGeneralSettingBundle();
     assertThat(bundle, is(notNullValue()));
     assertThat(bundle.getString("webdav.respository"), is("repository"));
   }
@@ -108,7 +108,7 @@ public class ResourceLocatorTest {
 
   @Test
   public void useGeneralLocalizationBundleShouldSucceed() {
-    LocalizationBundle bundle = ResourceLocator.getGeneralBundle("en");
+    LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle("en");
     assertThat(bundle, is(notNullValue()));
     assertThat(bundle.getString("GML.cancel"), is("Cancel"));
   }

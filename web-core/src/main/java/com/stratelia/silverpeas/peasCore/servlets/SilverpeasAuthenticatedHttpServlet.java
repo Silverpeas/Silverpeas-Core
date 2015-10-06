@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.web.token.SynchronizerTokenService;
 
 import javax.inject.Inject;
@@ -99,7 +99,7 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
       }
       // Redirecting the user
       redirectOrForwardService(request, response,
-          GeneralPropertiesManager.getString("sessionTimeout"));
+          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
     }
   }
 

@@ -33,8 +33,6 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
 import java.util.Arrays;
@@ -64,8 +62,6 @@ public class NotificationMetaDataTest {
     current = new NotificationMetaData();
 
     // Settings
-    reflectionRule
-        .mockField(GeneralPropertiesManager.class, ResourceLocator.class, "generalProperties");
     mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
 

@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.servlet.HttpRequest;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
@@ -100,7 +100,7 @@ public class WorkflowDesignerRequestRouter extends
 
     // Check access rights
     if (!workflowDesignerSC.getUserDetail().isAccessAdmin()) {
-      return GeneralPropertiesManager.getString("accessForbidden");
+      return ResourceLocator.getGeneralSettingBundle().getString("accessForbidden");
     }
 
     try {

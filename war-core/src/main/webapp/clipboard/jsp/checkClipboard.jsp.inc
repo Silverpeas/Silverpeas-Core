@@ -1,6 +1,5 @@
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@ page import="org.silverpeas.util.ResourcesWrapper"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -11,11 +10,11 @@
 	if (clipboardSC == null)
 	{
 	    // No quickinfo session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
 	
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 %>

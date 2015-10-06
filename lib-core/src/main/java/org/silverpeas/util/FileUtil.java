@@ -256,9 +256,9 @@ public class FileUtil implements MimeTypes {
     }
     ResourceBundle parent = null;
     if (bundleName.toLowerCase().contains("multilang") &&
-        !GeneralPropertiesManager.GENERAL_PROPERTIES_FILE.equalsIgnoreCase(bundleName)) {
+        !LocalizationBundle.GENERAL_BUNDLE_NAME.equalsIgnoreCase(bundleName)) {
       parent =
-          GeneralPropertiesManager.getGeneralMultilang(locale.getLanguage()).getResourceBundle();
+          ResourceLocator.getGeneralLocalizationBundle(locale.getLanguage());
     }
     return new LocalizationBundle(bundle, parent);
   }

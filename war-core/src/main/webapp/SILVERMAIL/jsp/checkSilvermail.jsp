@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import=" org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%
@@ -36,7 +36,7 @@
 
       if (silvermailScc == null) {
         // No session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString(
             "sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request,
             response);
@@ -44,6 +44,6 @@
       }
 
       MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
-      String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+      String m_Context = ResourceLocator.getGeneralSettingBundle().getString(
           "ApplicationURL");
 %>

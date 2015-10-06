@@ -1,14 +1,12 @@
 package com.silverpeas.look;
 
+import com.stratelia.webactiv.publication.model.PublicationDetail;
+import org.silverpeas.util.SettingBundle;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections.EnumerationUtils;
-
-import org.silverpeas.util.ResourceLocator;
-import com.stratelia.webactiv.publication.model.PublicationDetail;
 
 /**
  * Copyright (C) 2000 - 2014 Silverpeas
@@ -41,14 +39,14 @@ public class Ticker {
   private List<TickerItem> items;
   private boolean manager = false;
   private boolean linkOnItem = false;
-  
-  public Ticker(List<PublicationDetail> pubs, ResourceLocator settings) {
-    items = new ArrayList<TickerItem>();
+
+  public Ticker(List<PublicationDetail> pubs, SettingBundle settings) {
+    items = new ArrayList<>();
     for (PublicationDetail pub : pubs) {
       items.add(new TickerItem(pub));
     }
-    
-    for (String key : (List<String>) EnumerationUtils.toList(settings.getKeys())) {
+
+    for (String key : settings.keySet()) {
       if (key.startsWith("ticker.plugin")) {
         String param = settings.getString(key, null);
         if (param != null) {

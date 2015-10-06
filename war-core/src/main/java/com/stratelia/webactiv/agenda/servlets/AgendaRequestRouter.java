@@ -23,8 +23,6 @@ package com.stratelia.webactiv.agenda.servlets;
 import com.silverpeas.ical.ImportIcalManager;
 import com.silverpeas.ical.PasswordEncoder;
 import com.silverpeas.ical.StringUtils;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -34,11 +32,13 @@ import com.stratelia.webactiv.agenda.model.CalendarImportSettings;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.servlet.FileUploadUtil;
+import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -403,18 +403,21 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
 
           // Directory Temp for the uploaded file
           tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc
-              .getComponentId())
-              + GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
+              .getComponentId()) +
+              ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") +
+              File.separator
               + tempFolderName;
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(agendaSc.getComponentId(),
-                GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
+                ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") +
+                    File.separator
                 + tempFolderName);
           }
 
           // Creation of the file in the temp folder
-          fileUploaded = new File(FileRepositoryManager.getAbsolutePath(agendaSc.getComponentId())
-              + GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
+          fileUploaded = new File(FileRepositoryManager.getAbsolutePath(agendaSc.getComponentId()) +
+              ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp") +
+              File.separator
               + tempFolderName + File.separator + logicalName);
           fileItem.write(fileUploaded);
 

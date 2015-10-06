@@ -56,16 +56,16 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%
 	CommunicationUserSessionController communicationScc = (CommunicationUserSessionController) request.getAttribute("communicationUser");
-	LocalizationBundle generalMessage = ResourceLocator.getGeneralBundle(
+	LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(
       communicationScc.getLanguage());
 	MultiSilverpeasBundle resources = (MultiSilverpeasBundle) request.getAttribute("resources");
 	SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.communicationUser.settings.communicationUserSettings");
-	String m_context        = ResourceLocator.getGeneralBundle().getString("ApplicationURL");
+	String m_context        = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	String mandatoryField     = m_context + "/util/icons/mandatoryField.gif";
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	Window window = gef.getWindow();

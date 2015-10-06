@@ -28,15 +28,16 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.silverpeas.portlet.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%
     MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-	String m_context = GeneralPropertiesManager.getString("ApplicationURL");
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+	LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 %>
 

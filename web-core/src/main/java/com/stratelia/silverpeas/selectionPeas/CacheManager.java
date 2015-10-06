@@ -25,9 +25,6 @@
 package com.stratelia.silverpeas.selectionPeas;
 
 import com.silverpeas.ui.DisplayI18NHelper;
-import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
@@ -36,13 +33,11 @@ import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,18 +50,11 @@ abstract public class CacheManager {
   protected Map<String, PanelLine> setCache = new HashMap<>();
   protected Set<String> selectedElements = new HashSet<>();
   protected Set<String> selectedSets = new HashSet<>();
-  protected LocalizationBundle localResourceLocator = null;
-  protected ResourceLocator globalResourceLocator = null;
-  protected SettingBundle iconResourceLocator = null;
   protected String language = DisplayI18NHelper.getDefaultLanguage();
   protected Selection selection = null;
 
-  public CacheManager(String language, LocalizationBundle local,
-      SettingBundle icon, Selection selection) {
+  public CacheManager(String language, Selection selection) {
     this.language = language;
-    this.localResourceLocator = local;
-    globalResourceLocator = GeneralPropertiesManager.getGeneralMultilang(this.language);
-    iconResourceLocator = icon;
     this.selection = selection;
     resetAll();
   }
@@ -180,13 +168,8 @@ abstract public class CacheManager {
 
   public PanelLine[] getSelectedLines(CacheType what) {
     List<PanelLine> en = new ArrayList<>(getCache(what).values());
-    Collections.sort(en, new Comparator<PanelLine>() {
-        @Override
-      public int compare(PanelLine o1, PanelLine o2) {
-        return o1.m_Values[0].toUpperCase().compareTo(
-            o2.m_Values[0].toUpperCase());
-        }
-            });
+    Collections.sort(en, (PanelLine o1, PanelLine o2) -> o1.m_Values[0].toUpperCase()
+        .compareTo(o2.m_Values[0].toUpperCase()));
     return en.toArray(new PanelLine[en.size()]);
   }
 

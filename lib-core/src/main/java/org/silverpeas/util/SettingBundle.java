@@ -29,8 +29,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * A bundle of settings used to configure some features in Silverpeas or the behaviour of an
- * application.
+ * A bundle settings used to configure some features in Silverpeas or the behaviour of an
+ * application. Each setting in the bundle is defined as a key-value pair.
  * </p>
  * It uses a {@code java.util.ResourceBundle} behind the scene to access the settings defined under
  * a fully qualified name (the resource bundle base name), so the lifecycle of the bundle is then
@@ -46,7 +46,7 @@ import java.util.function.Function;
  */
 public class SettingBundle implements SilverpeasBundle {
 
-  protected static final String GENERAL_SETTINGS_NAME = "org.silverpeas.general";
+  public static final String GENERAL_BUNDLE_NAME = "org.silverpeas.general";
 
   private String name;
   private Function<String, ResourceBundle> loader;

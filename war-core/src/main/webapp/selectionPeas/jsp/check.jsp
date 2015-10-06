@@ -62,7 +62,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.selectionPeas.*"%>
 <%@ page import="com.stratelia.silverpeas.genericPanel.*"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Group"%>
@@ -75,7 +75,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 String language = "fr";
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];

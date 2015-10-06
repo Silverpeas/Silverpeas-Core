@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 
 <%@ page import="com.silverpeas.thumbnail.ThumbnailSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 
@@ -69,7 +69,7 @@ ThumbnailSessionController scc = (ThumbnailSessionController) request.getAttribu
 if (scc == null)
 {
     // No questionReply session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
@@ -89,5 +89,6 @@ Frame frame = gef.getFrame();
 String sRequestURL = request.getRequestURL().toString();
 String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 //Example: http://myserver
-String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = ResourceLocator.getGeneralSettingBundle().getString("httpServerBase",
+    m_sAbsolute);
 %>

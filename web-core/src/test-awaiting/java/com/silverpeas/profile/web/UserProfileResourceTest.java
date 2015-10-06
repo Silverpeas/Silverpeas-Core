@@ -27,22 +27,21 @@ import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import org.silverpeas.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import com.sun.jersey.api.client.UniformInterfaceException;
-import java.util.List;
-import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.ws.rs.core.Response;
+import java.util.List;
+
+import static com.silverpeas.profile.web.UserProfileTestResources.*;
+import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-
-import static com.silverpeas.profile.web.UserProfileTestResources.*;
-import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 
 /**
  * Unit tests on the operations published by the UserProfileResource REST service.
@@ -58,7 +57,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
 
   @Before
   public void prepareTestResources() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     currentUser = aUser();
     sessionKey = authenticate(currentUser);
   }
@@ -68,7 +67,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void gettingAllUsersWhateverTheDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
     getTestResources().whenSearchUsersByCriteriaThenReturn(new UserDetailsSearchCriteria(), expectedUsers);
 
@@ -83,7 +82,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersInItsOwnsDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
     currentUser.setDomainId(domainId);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
@@ -101,7 +100,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersInItsOwnsDomainWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
     currentUser.setDomainId(domainId);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
@@ -119,7 +118,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersInItsOwnsDomainWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
     currentUser.setDomainId(domainId);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsersInDomain(domainId);
@@ -137,7 +136,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersWhateverTheDomainWhenInSilverpeasDomainAndWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
     getTestResources().whenSearchUsersByCriteriaThenReturn(new UserDetailsSearchCriteria(), expectedUsers);
 
@@ -153,7 +152,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAllUnaccessibleUsersWhateverTheDomainWhenInSilverpeasDomainAndWithFullDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
       UserDetail[] expectedUsers = getTestResources().getAllExistingUsers();
       getTestResources().whenSearchUsersByCriteriaThenReturn(new UserDetailsSearchCriteria(), expectedUsers);
     } catch (UniformInterfaceException ex) {
@@ -168,7 +167,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAGivenUserWhateverItsDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
             UserProfileEntity.class);
@@ -182,7 +181,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAGivenUserInItsOwnsDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
     currentUser.setDomainId(expectedUser.getDomainId());
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
@@ -197,7 +196,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAGivenUserInItsOwnsDomainWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
     currentUser.setDomainId(expectedUser.getDomainId());
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
@@ -212,7 +211,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAGivenUserInItsOwnsDomainWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
     currentUser.setDomainId(expectedUser.getDomainId());
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
@@ -227,7 +226,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAUserWhateverTheDomainWhenInSilverpeasDomainAndWhenInSemiIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
     UserProfileEntity actualUser = getAt(aResourceURI() + "/" + expectedUser.getId(),
             UserProfileEntity.class);
@@ -242,7 +241,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAnUnaccessibleUserWhateverTheDomainWhenInSilverpeasDomainAndWhenInFullIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
       UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
       getAt(aResourceURI() + "/" + expectedUser.getId(),
               UserProfileEntity.class);
@@ -260,7 +259,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAnUnaccessibleUserInAnotherDomainWithSemiDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
       UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
       currentUser.setDomainId(expectedUser.getDomainId() + "0");
       getAt(aResourceURI() + "/" + expectedUser.getId(), UserProfileEntity.class);
@@ -279,7 +278,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAnUnaccessibleUserInAnotherDomainWithFullDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
       UserDetail expectedUser = getTestResources().anExistingUserNotInSilverpeasDomain();
       currentUser.setDomainId(expectedUser.getDomainId() + "0");
       getAt(aResourceURI() + "/" + expectedUser.getId(), UserProfileEntity.class);
@@ -296,7 +295,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void gettingAllUsersOfAGivenGroupWhateverTheDomain() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
     UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria().onGroupIds(aGroup.getId());
@@ -318,7 +317,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersOfAGivenGroupInItsOwnsDomainWithNoIsolationDomain() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(aGroup.getDomainId());
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
@@ -338,7 +337,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersOfAGivenGroupInItsOwnsDomainWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(aGroup.getDomainId());
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
@@ -358,7 +357,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersOfAGivenGroupInItsOwnsDomainWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(aGroup.getDomainId());
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
@@ -378,7 +377,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
    */
   @Test
   public void getAllUsersOfAGivenGroupWhateverTheDomainWhenInSilverpeasDomainAndWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
     List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
     UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria().onGroupIds(aGroup.getId());
@@ -401,7 +400,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAllUsersOfAnUnaccessibleGroupWhenInSilverpeasDomainAndWithFullDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
       List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
       UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria().onGroupIds(aGroup.getId());
@@ -424,7 +423,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAllUsersOfAnUnaccessibleGivenGroupWithSemiDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(aGroup.getDomainId() + "0");
       List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();
@@ -444,7 +443,7 @@ public class UserProfileResourceTest extends ResourceGettingTest<UserProfileTest
   @Test
   public void getAllUsersOfAnUnaccessibleGivenGroupWithFullDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
       Group aGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(aGroup.getDomainId() + "0");
       List<? extends UserDetail> expectedUsers = aGroup.getAllUsers();

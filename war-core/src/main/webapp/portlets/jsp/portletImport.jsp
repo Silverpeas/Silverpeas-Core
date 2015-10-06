@@ -55,13 +55,13 @@
 
 <%@ page import="org.silverpeas.util.DateUtil"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
 {
-  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+  String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
@@ -71,5 +71,5 @@ String  language = m_MainSessionCtrl.getFavoriteLanguage();
 LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
 SettingBundle homePageSettings = ResourceLocator.getSettingBundle("org.silverpeas.homePage.homePageSettings");
 LocalizationBundle portletsBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.portlets.multilang.portletsBundle", language);
-String m_sContext = GeneralPropertiesManager.getString("ApplicationURL");
+String m_sContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>

@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.SearchCriteria"%>
 <%@page import="com.stratelia.silverpeas.pdc.model.Value"%>
 <%@page import="java.io.IOException"%>
@@ -160,7 +159,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List<SearchAxis> a
 <%
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 //recuperation des parametres pour le PDC
 List<SearchAxis> primaryAxis		= (List) request.getAttribute("ShowPrimaryAxis");

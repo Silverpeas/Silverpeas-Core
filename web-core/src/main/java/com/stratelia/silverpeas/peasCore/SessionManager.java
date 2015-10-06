@@ -37,13 +37,13 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverLog;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.DomainProperties;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -308,27 +308,24 @@ public class SessionManager implements SessionManagement {
       String key = sessionUser.getLogin() + sessionUser.getDomainId();
       // keep users with distinct login and domainId
       if (!distinctConnectedUsersList.containsKey(key) && !sessionUser.isAccessGuest()) {
-        switch (GeneralPropertiesManager.getDomainVisibility()) {
-          case GeneralPropertiesManager.DVIS_ALL:
-            // all users are visible
+        if (DomainProperties.areDomainsVisibleToAll()) {
+          // all users are visible
+          distinctConnectedUsersList.put(key, si);
+        } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+          // only users of user's domain are visible
+          if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
             distinctConnectedUsersList.put(key, si);
-            break;
-          case GeneralPropertiesManager.DVIS_EACH:
-            // only users of user's domain are visible
+          }
+        } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+          // default domain users can see all users
+          // users of other domains can see only users of their domain
+          if ("0".equals(user.getDomainId())) {
+            distinctConnectedUsersList.put(key, si);
+          } else {
             if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
               distinctConnectedUsersList.put(key, si);
             }
-            break;
-          case GeneralPropertiesManager.DVIS_ONE:
-            // default domain users can see all users
-            // users of other domains can see only users of their domain
-            if ("0".equals(user.getDomainId())) {
-              distinctConnectedUsersList.put(key, si);
-            } else {
-              if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
-                distinctConnectedUsersList.put(key, si);
-              }
-            }
+          }
         }
       }
     }

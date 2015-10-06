@@ -21,9 +21,9 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementProvider;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -36,8 +36,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -146,7 +146,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
     if (mainSessionCtrl.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
         isAccessAdmin()) {
-      return GeneralPropertiesManager.getString("redirectAppInMaintenance");
+      return ResourceLocator.getGeneralSettingBundle().getString("redirectAppInMaintenance");
     }
 
     // Get the space id and the component id required by the user
@@ -181,8 +181,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
             "peasCore.MSG_USER_NOT_ALLOWED",
             "User=" + mainSessionCtrl.getUserId() + " | componentId=" + componentId +
                 " | spaceId=" + spaceId);
-        destination =
-            GeneralPropertiesManager.getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
+        destination = ResourceLocator.getGeneralSettingBundle()
+            .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
         return destination;
       }
       component = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);

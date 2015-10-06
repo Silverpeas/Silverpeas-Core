@@ -25,7 +25,6 @@
 package org.silverpeas.search.indexEngine.parser;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
@@ -66,7 +65,7 @@ public class ParserHelper {
   static public String getTempDirectory() {
     String tempDirectory = null;
     try {
-      tempDirectory = GeneralPropertiesManager.getString("tempPath");
+      tempDirectory = ResourceLocator.getGeneralSettingBundle().getString("tempPath");
     } catch (MissingResourceException e) {
       SilverTrace.warn("indexEngine", "ParserHelper",
           "indexEngine.MSG_MISSING_GENERAL_PROPERTIES", null, e);

@@ -31,7 +31,7 @@
 <%@ page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
 <%@ page import="org.silverpeas.util.StringUtil" %>
 <%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ include file="../portletImport.jsp"%>
@@ -42,7 +42,7 @@
 <portlet:defineObjects/>
 
 <%
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
+LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
 
 RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
 Iterator events = (Iterator) pReq.getAttribute("Events");

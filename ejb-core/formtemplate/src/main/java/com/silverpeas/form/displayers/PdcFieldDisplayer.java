@@ -44,7 +44,6 @@ import com.stratelia.silverpeas.treeManager.model.TreeNode;
 import org.apache.ecs.AlignType;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.*;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
 

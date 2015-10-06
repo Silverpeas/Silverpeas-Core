@@ -60,7 +60,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -80,14 +80,14 @@ Board board = gef.getBoard();
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
   // No session controller in the request -> security exception
-  String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+  String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 	%>
 	<script language="javascript">
 		location.href="<%=request.getContextPath()+sessionTimeout%>";
 	</script>
 	<%
 }
-LocalizationBundle resource = ResourceLocator.getGeneralBundle(
+LocalizationBundle resource = ResourceLocator.getGeneralLocalizationBundle(
     m_MainSessionCtrl.getFavoriteLanguage());
 
 %>

@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="java.util.*"%>
@@ -49,13 +49,13 @@
 
       if (popupScc == null) {
         // No session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+        String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
       }
 
       MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
-      String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
       Window window = gef.getWindow();

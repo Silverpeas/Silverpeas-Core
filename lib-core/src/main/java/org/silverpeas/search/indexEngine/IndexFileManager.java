@@ -20,12 +20,11 @@
  */
 package org.silverpeas.search.indexEngine;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.ResourceLocator;
+
+import java.io.File;
 
 import static java.io.File.separatorChar;
 
@@ -42,7 +41,9 @@ public class IndexFileManager {
   public static void configure(String indexPath) {
     indexUpLoadPath = indexPath;
   }
-  private static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+
+  private static String indexUpLoadPath =
+      ResourceLocator.getGeneralSettingBundle().getString("uploadsIndexPath");
 
   static public String getAbsoluteIndexPath(String particularSpace, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",

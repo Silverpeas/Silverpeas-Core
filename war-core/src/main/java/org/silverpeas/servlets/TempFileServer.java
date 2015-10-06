@@ -25,7 +25,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
@@ -77,9 +76,10 @@ public class TempFileServer extends HttpServlet {
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl == null) {
       SilverTrace.warn("peasUtil", "TempFileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
-          + GeneralPropertiesManager.getString("sessionTimeout"));
-      res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.getString(
+          "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
+              ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+      res.sendRedirect(
+          URLManager.getApplicationURL() + ResourceLocator.getGeneralSettingBundle().getString(
           "sessionTimeout"));
     }
     String filePath = FileRepositoryManager.getTemporaryPath() + fileName;

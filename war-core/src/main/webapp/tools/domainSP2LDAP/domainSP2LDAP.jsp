@@ -33,7 +33,6 @@
 <%@page import="com.silverpeas.tools.domainSP2LDAP.*"%>
 <%@page import="java.util.List"%>
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@page import="java.util.HashMap"%>

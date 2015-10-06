@@ -27,7 +27,6 @@ package org.silverpeas.util.i18n;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
@@ -324,7 +323,7 @@ public class I18NHelper {
 
     if (bean != null) {
       String path = URLManager.getApplicationURL();
-      String text = GeneralPropertiesManager.getGeneralMultilang(userLanguage).getString(
+      String text = ResourceLocator.getGeneralLocalizationBundle(userLanguage).getString(
           "GML.translationRemove");
 
       list += "&nbsp;<span id=\"delTranslationLink\">";

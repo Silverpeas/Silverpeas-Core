@@ -45,7 +45,7 @@
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
 
 <%@ page import="com.stratelia.silverpeas.personalizationPeas.control.PersonalizationSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
@@ -74,12 +74,12 @@
 	PersonalizationSessionController personalizationScc = (PersonalizationSessionController) request.getAttribute("personalizationPeas");
 	if (personalizationScc == null) {
 		// No session controller in the request -> security exception
-		String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+		String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
 		getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 		return;
 	}
 
-	String m_context          = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context          = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 	// Icones operationBar
 	String addNotif           = m_context + "/util/icons/addEvent.gif";

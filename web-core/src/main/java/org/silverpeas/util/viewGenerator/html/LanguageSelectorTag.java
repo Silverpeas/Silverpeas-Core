@@ -23,18 +23,6 @@
  */
 package org.silverpeas.util.viewGenerator.html;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.util.i18n.I18NHelper;
-import org.silverpeas.util.i18n.I18NLanguage;
-import org.silverpeas.util.GeneralPropertiesManager;
-
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.Input;
@@ -42,6 +30,16 @@ import org.apache.ecs.html.Label;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.i18n.I18NLanguage;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author ehugonnet
@@ -115,7 +113,7 @@ public class LanguageSelectorTag extends TagSupport {
         Label label = new Label(elementId);
         label.setStyle("margin-right: 5px");
         label.addElement(
-            GeneralPropertiesManager.getGeneralMultilang(userLanguage).getString("GML.language"));
+            ResourceLocator.getGeneralLocalizationBundle(userLanguage).getString("GML.language"));
         xhtml.addElement(label);
       }
       xhtml.addElement(langElement);

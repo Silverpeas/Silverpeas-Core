@@ -26,7 +26,6 @@ package com.silverpeas.bundle.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -134,6 +133,9 @@ public class BundleResource extends RESTWebService {
     }
     localizedBundle = localizedBundle.replaceAll("/", ".");
     LocalizationBundle resource = ResourceLocator.getLocalizationBundle(localizedBundle, language);
+    String bundleName = resource.getBaseBundleName() + " - " + resource.getLocale().getLanguage();
+    String generalBundleName =
+        LocalizationBundle.GENERAL_BUNDLE_NAME + " - " + resource.getLocale().getLanguage();
     try {
       if (!bundle.trim().isEmpty() && bundle.contains("multilang")) {
         StringWriter messages = new StringWriter();
@@ -146,9 +148,8 @@ public class BundleResource extends RESTWebService {
             properties.setProperty(key, resource.getString(key));
           }
         }
-        properties.store(messages, localizedBundle + " - " + resource.getLocale().getLanguage());
-        generalProperties.store(messages, GeneralPropertiesManager.GENERAL_PROPERTIES_FILE + " - " +
-            resource.getLocale().getLanguage());
+        properties.store(messages, bundleName);
+        generalProperties.store(messages, generalBundleName);
         return Response.ok(messages.toString()).build();
       } else {
         return Response.status(Response.Status.BAD_REQUEST).entity(

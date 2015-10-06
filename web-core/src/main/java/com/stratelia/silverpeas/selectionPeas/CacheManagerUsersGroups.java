@@ -43,7 +43,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 
@@ -60,10 +59,14 @@ public class CacheManagerUsersGroups extends CacheManager {
   protected OrganizationController m_oc = OrganizationControllerProvider.getOrganisationController();
   protected AdminController adminController = ServiceProvider.getService(AdminController.class);
   protected UserDetail userDetail = null;
+  protected LocalizationBundle messages;
+  protected SettingBundle iconSettings;
 
-  public CacheManagerUsersGroups(String language, LocalizationBundle local,
-      SettingBundle icon, Selection selection, UserDetail ud) {
-    super(language, local, icon, selection);
+  public CacheManagerUsersGroups(String language, LocalizationBundle messages,
+      SettingBundle icons, Selection selection, UserDetail ud) {
+    super(language, selection);
+    this.messages = messages;
+    this.iconSettings = icons;
     userDetail = ud;
   }
 
@@ -154,7 +157,7 @@ public class CacheManagerUsersGroups extends CacheManager {
         valret[i][0] = names[i];
         valret[i][1] = pl.m_Values[i];
       }
-      valret[names.length][0] = localResourceLocator.getString("selectionPeas.groupParent");
+      valret[names.length][0] = messages.getString("selectionPeas.groupParent");
       valret[names.length][1] = getSetParentName(id);
     }
     return valret;
@@ -162,10 +165,10 @@ public class CacheManagerUsersGroups extends CacheManager {
 
   public String getContentText(CacheType what) {
     if (what == CacheType.CM_SET) {
-      return localResourceLocator.getString("selectionPeas.directUsersOfGroup");
+      return messages.getString("selectionPeas.directUsersOfGroup");
     }
     if (what == CacheType.CM_ELEMENT) {
-      return localResourceLocator.getString("selectionPeas.groupsOfUser");
+      return messages.getString("selectionPeas.groupsOfUser");
     }
     return "";
   }
@@ -176,31 +179,31 @@ public class CacheManagerUsersGroups extends CacheManager {
       if (SelectionPeasSettings.displayNbUsersByGroup) {
         if (SelectionPeasSettings.displayDomains) {
           columnsHeader = new String[4];
-          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
+          columnsHeader[COL_GROUP_NAME] = messages.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = messages
               .getString("GML.description");
-          columnsHeader[COL_GROUP_NBUSERS] = globalResourceLocator.getString("GML.users");
-          columnsHeader[COL_GROUP_NBUSERS + 1] = localResourceLocator
+          columnsHeader[COL_GROUP_NBUSERS] = messages.getString("GML.users");
+          columnsHeader[COL_GROUP_NBUSERS + 1] = messages
               .getString("selectionPeas.domain");
         } else {
           columnsHeader = new String[3];
-          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
+          columnsHeader[COL_GROUP_NAME] = messages.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = messages
               .getString("GML.description");
-          columnsHeader[COL_GROUP_NBUSERS] = globalResourceLocator.getString("GML.users");
+          columnsHeader[COL_GROUP_NBUSERS] = messages.getString("GML.users");
         }
       } else {
         if (SelectionPeasSettings.displayDomains) {
           columnsHeader = new String[3];
-          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
+          columnsHeader[COL_GROUP_NAME] = messages.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = messages
               .getString("GML.description");
-          columnsHeader[COL_GROUP_DESCRIPTION + 1] = localResourceLocator
+          columnsHeader[COL_GROUP_DESCRIPTION + 1] = messages
               .getString("selectionPeas.domain");
         } else {
           columnsHeader = new String[2];
-          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
+          columnsHeader[COL_GROUP_NAME] = messages.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = messages
               .getString("GML.description");
         }
       }
@@ -210,15 +213,15 @@ public class CacheManagerUsersGroups extends CacheManager {
       String[] columnsHeader;
       if (SelectionPeasSettings.displayDomains) {
         columnsHeader = new String[4];
-        columnsHeader[COL_USER_LASTNAME] = globalResourceLocator.getString("GML.lastName");
-        columnsHeader[COL_USER_FIRSTNAME] = globalResourceLocator.getString("GML.firstName");
-        columnsHeader[COL_USER_EMAIL] = globalResourceLocator.getString("GML.eMail");
-        columnsHeader[COL_USER_DOMAIN] = localResourceLocator.getString("selectionPeas.domain");
+        columnsHeader[COL_USER_LASTNAME] = messages.getString("GML.lastName");
+        columnsHeader[COL_USER_FIRSTNAME] = messages.getString("GML.firstName");
+        columnsHeader[COL_USER_EMAIL] = messages.getString("GML.eMail");
+        columnsHeader[COL_USER_DOMAIN] = messages.getString("selectionPeas.domain");
       } else {
         columnsHeader = new String[3];
-        columnsHeader[COL_USER_LASTNAME] = globalResourceLocator.getString("GML.lastName");
-        columnsHeader[COL_USER_FIRSTNAME] = globalResourceLocator.getString("GML.firstName");
-        columnsHeader[COL_USER_EMAIL] = globalResourceLocator.getString("GML.eMail");
+        columnsHeader[COL_USER_LASTNAME] = messages.getString("GML.lastName");
+        columnsHeader[COL_USER_FIRSTNAME] = messages.getString("GML.firstName");
+        columnsHeader[COL_USER_EMAIL] = messages.getString("GML.eMail");
       }
       return columnsHeader;
     }
@@ -231,24 +234,24 @@ public class CacheManagerUsersGroups extends CacheManager {
           999,
           Integer.toString(what.getValue()),
           "set",
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.selectAll"),
-          URLManager.getApplicationURL() + iconResourceLocator.getString(
-              "selectionPeas.unSelectAll"), localResourceLocator.getString(
-              "selectionPeas.selectAll"), localResourceLocator
+          URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.selectAll"),
+          URLManager.getApplicationURL() + iconSettings.getString(
+              "selectionPeas.unSelectAll"), messages.getString(
+              "selectionPeas.selectAll"), messages
               .getString("selectionPeas.unSelectAll"),
-          localResourceLocator.getString("selectionPeas.selectAll"), localResourceLocator
+          messages.getString("selectionPeas.selectAll"), messages
               .getString("selectionPeas.unSelectAll"));
     } else if (what == CacheType.CM_ELEMENT) {
       return new PanelMiniFilterSelect(
           999,
           Integer.toString(what.getValue()),
           "element",
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.selectAll"),
+          URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.selectAll"),
           URLManager.getApplicationURL()
-              + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
-              .getString("selectionPeas.selectAll"), localResourceLocator
-              .getString("selectionPeas.unSelectAll"), localResourceLocator
-              .getString("selectionPeas.selectAll"), localResourceLocator
+              + iconSettings.getString("selectionPeas.unSelectAll"), messages
+              .getString("selectionPeas.selectAll"), messages
+              .getString("selectionPeas.unSelectAll"), messages
+              .getString("selectionPeas.selectAll"), messages
               .getString("selectionPeas.unSelectAll"));
     } else {
       return null;
@@ -259,17 +262,17 @@ public class CacheManagerUsersGroups extends CacheManager {
     if (what == CacheType.CM_SET) {
       PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
       theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
-          localResourceLocator
-          .getString("selectionPeas.filter"), localResourceLocator
+          URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
+          messages
+          .getString("selectionPeas.filter"), messages
           .getString("selectionPeas.filter"));
       return theArray;
     } else if (what == CacheType.CM_ELEMENT) {
       PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
       theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
-          localResourceLocator
-          .getString("selectionPeas.filter"), localResourceLocator
+          URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
+          messages
+          .getString("selectionPeas.filter"), messages
           .getString("selectionPeas.filter"));
       return theArray;
     } else {
@@ -363,9 +366,9 @@ public class CacheManagerUsersGroups extends CacheManager {
   public BrowsePanelProvider getSearchPanelProvider(CacheType what, SelectionExtraParams sep) {
     switch (what) {
       case CM_SET:
-        return new SearchGroupPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+        return new SearchGroupPanel(language, messages, this, getSureExtraParams(sep));
       case CM_ELEMENT:
-        return new SearchUserPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+        return new SearchUserPanel(language, messages, this, getSureExtraParams(sep));
       default:
         return null;
     }
@@ -374,9 +377,9 @@ public class CacheManagerUsersGroups extends CacheManager {
   public BrowsePanelProvider getBrowsePanelProvider(CacheType what, SelectionExtraParams sep) {
     switch (what) {
       case CM_SET:
-        return new BrowseGroupPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+        return new BrowseGroupPanel(language, messages, this, getSureExtraParams(sep));
       case CM_ELEMENT:
-        return new BrowseUserPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+        return new BrowseUserPanel(language, messages, this, getSureExtraParams(sep));
       default:
         return null;
     }
@@ -385,9 +388,9 @@ public class CacheManagerUsersGroups extends CacheManager {
   public PanelProvider getCartPanelProvider(CacheType what, SelectionExtraParams sep) {
     switch (what) {
       case CM_SET:
-        return new CartGroupPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+        return new CartGroupPanel(language, messages, this, getSureExtraParams(sep));
       case CM_ELEMENT:
-        return new CartUserPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+        return new CartUserPanel(language, messages, this, getSureExtraParams(sep));
       default:
         return null;
     }
@@ -396,17 +399,17 @@ public class CacheManagerUsersGroups extends CacheManager {
   public PanelOperation getPanelOperation(String operation) {
     if ("DisplayBrowse".equals(operation)) {
       return new PanelOperation(
-          localResourceLocator.getString("selectionPeas.helpBrowse"),
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.browseArb"),
+          messages.getString("selectionPeas.helpBrowse"),
+          URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.browseArb"),
           operation);
     } else if ("DisplaySearchElement".equals(operation)) {
       return new PanelOperation(
-          localResourceLocator.getString("selectionPeas.helpSearchElement"),
-          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.userSearc"),
+          messages.getString("selectionPeas.helpSearchElement"),
+          URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.userSearc"),
           operation);
     } else if ("DisplaySearchSet".equals(operation)) {
-      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchSet"),
-          URLManager.getApplicationURL() + iconResourceLocator.getString(
+      return new PanelOperation(messages.getString("selectionPeas.helpSearchSet"),
+          URLManager.getApplicationURL() + iconSettings.getString(
           "selectionPeas.groupSearc"), operation);
     } else {
       return null;

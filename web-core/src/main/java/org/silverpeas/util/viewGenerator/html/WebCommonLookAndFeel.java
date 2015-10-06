@@ -24,18 +24,17 @@
 package org.silverpeas.util.viewGenerator.html;
 
 import com.silverpeas.look.SilverpeasLook;
-import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -112,8 +111,9 @@ public class WebCommonLookAndFeel {
     SilverTrace.info("viewgenerator", "GenericHTMLHeader.getLookStyleSheet()",
         "root.MSG_GEN_ENTER_METHOD");
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
-    String contextPath = GeneralPropertiesManager.getString("ApplicationURL");
-    String charset = GeneralPropertiesManager.getString("charset", CharEncoding.UTF_8);
+    String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+    String charset =
+        ResourceLocator.getGeneralSettingBundle().getString("charset", CharEncoding.UTF_8);
     StringBuilder code = new StringBuilder();
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);
@@ -268,7 +268,7 @@ public class WebCommonLookAndFeel {
   }
 
   private String getYahooElements() {
-    String contextPath = GeneralPropertiesManager.getString("ApplicationURL");
+    String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     StringBuilder code = new StringBuilder();
 
     code.append("<!-- CSS for Menu -->\n");

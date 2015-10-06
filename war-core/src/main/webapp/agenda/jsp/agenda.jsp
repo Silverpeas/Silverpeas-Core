@@ -54,7 +54,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.*"%>
 <%@ page import="org.silverpeas.util.DateUtil" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -62,8 +61,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
   SettingBundle settings = agenda.getSettings();
-  ResourceLocator generalMessage = GeneralPropertiesManager
-      .getGeneralMultilang(agenda.getLanguage());
+  LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(agenda.getLanguage());
 				
   String action = request.getParameter("Action");
 

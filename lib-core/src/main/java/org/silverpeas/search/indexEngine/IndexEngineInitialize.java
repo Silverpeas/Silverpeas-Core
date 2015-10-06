@@ -22,7 +22,7 @@ package org.silverpeas.search.indexEngine;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.initialization.Initialization;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
 import java.io.File;
@@ -43,8 +43,9 @@ public class IndexEngineInitialize implements Initialization {
   @Override
   public void init() {
     // Remove all remaining *.lock files in index path
-    String indexPath = GeneralPropertiesManager.getString("uploadsIndexPath");
-    String removeLocks = GeneralPropertiesManager.getString("removeLocksOnInit", "");
+    String indexPath = ResourceLocator.getGeneralSettingBundle().getString("uploadsIndexPath");
+    String removeLocks =
+        ResourceLocator.getGeneralSettingBundle().getString("removeLocksOnInit", "");
     if (StringUtil.getBooleanValue(removeLocks)) {
       String property = System.getProperty("java.io.tmpdir");
       SilverTrace.debug("indexEngine", "IndexEngineInitialize.Initialize()",

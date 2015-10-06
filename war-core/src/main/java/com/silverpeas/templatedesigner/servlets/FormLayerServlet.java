@@ -1,22 +1,20 @@
 package com.silverpeas.templatedesigner.servlets;
 
-import java.io.File;
-import java.io.IOException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.io.FileUtils;
-
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.GeneralPropertiesManager;
+import java.io.File;
+import java.io.IOException;
 
 public class FormLayerServlet extends HttpServlet {
 
@@ -28,7 +26,8 @@ public class FormLayerServlet extends HttpServlet {
     HttpSession session = request.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
     if (mainSessionCtrl == null) {
-      response.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
+      response.sendRedirect(URLManager.getApplicationURL() +
+          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
     }
     
     String pathInfo = request.getPathInfo();
@@ -44,7 +43,8 @@ public class FormLayerServlet extends HttpServlet {
       FileUtils.copyFile(file, response.getOutputStream());
       response.getOutputStream().flush();
     } else {
-      response.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
+      response.sendRedirect(URLManager.getApplicationURL() +
+          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
     }
   }
 

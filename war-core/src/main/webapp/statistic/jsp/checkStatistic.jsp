@@ -33,8 +33,7 @@ response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager,
-                 com.stratelia.silverpeas.peasCore.MainSessionController,
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController,
                  org.silverpeas.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -77,7 +76,7 @@ OperationPane operationPane = window.getOperationPane();
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 LocalizationBundle messages 			= ResourceLocator.getLocalizationBundle("org.silverpeas.statistic.multilang.statistic", language);
-LocalizationBundle 		generalMessage 		= ResourceLocator.getGeneralBundle(language);
+LocalizationBundle 		generalMessage 		= ResourceLocator.getGeneralLocalizationBundle(language);
 MultiSilverpeasBundle resource 			= (MultiSilverpeasBundle)request.getAttribute("resources");
 
 %>

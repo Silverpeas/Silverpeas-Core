@@ -24,16 +24,17 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.web.ResourceGettingTest;
+import com.stratelia.webactiv.beans.admin.DomainProperties;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import com.sun.jersey.api.client.UniformInterfaceException;
-import java.util.List;
-import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.ws.rs.core.Response;
+import java.util.List;
 
 import static com.silverpeas.profile.web.UserProfileTestResources.*;
 import static com.silverpeas.profile.web.matchers.UserGroupsMatcher.contains;
@@ -56,7 +57,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
 
   @Before
   public void prepareTestResources() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     currentUser = aUser();
     sessionKey = authenticate(currentUser);
   }
@@ -66,7 +67,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAllRootGroupsWhateverTheDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
     getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
     currentUser.setDomainId(currentUser.getDomainId() + "0");
@@ -82,7 +83,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAllRootGroupsWhateverTheDomainWhenInSilverpeasDomainAndWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
     getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
 
@@ -97,7 +98,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAllGroupsInItsOwnDomainWhenInSilverpeasDomainAndWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
     Group[] expectedGroups = getTestResources().getAllExistingRootGroupsInDomain(currentUser.getDomainId());
     getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
 
@@ -111,7 +112,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAllRootGroupsInItsOwnsDomainWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
     currentUser.setDomainId(domainId);
     Group[] expectedGroups = getTestResources().getAllRootGroupsAccessibleFromDomain(domainId);
@@ -127,7 +128,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAllRootGroupsInItsOwnDomainWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((1));
     currentUser.setDomainId(domainId);
     Group[] expectedGroups = getTestResources().getAllRootGroupsAccessibleFromDomain(domainId);
@@ -143,7 +144,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAGivenAccessibleGroupWhateverTheDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     currentUser.setDomainId(currentUser.getDomainId() + "0");
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup);
@@ -158,7 +159,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAGivenAccessibleGroupWhateverTheDomainWhenInSilverpeasDomainAndWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup);
     UserGroupProfileEntity expectedGroup = getAt(path, UserGroupProfileEntity.class);
@@ -172,7 +173,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getAGivenAccessibleGroupOnlyInItsOwnDomainWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup);
@@ -188,7 +189,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getAGivenUnaccessibleGroupInAnotherDomainWithSemiDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
       Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(actualGroup.getDomainId() + "0");
       String path = buildURIPathOf(actualGroup);
@@ -207,7 +208,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getAGivenUnaccessibleGroupInAnotherDomainWithFullDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
       Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(actualGroup.getDomainId() + "0");
       String path = buildURIPathOf(actualGroup);
@@ -226,7 +227,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getTheSubGroupsOfAGivenAccessibleGroupWhateverTheDomainWithNoDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup) + "/groups";
     List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
@@ -243,7 +244,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getTheSubGroupsOfAGivenAccessibleGroupOnlyInItsOwnDomainWithSemiDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup) + "/groups";
@@ -261,7 +262,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
    */
   @Test
   public void getTheSubGroupsOfAGivenAccessibleGroupOnlyInItsOwnDomainWithFullDomainIsolation() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ALL);
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup) + "/groups";
@@ -281,7 +282,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getTheSubGroupsOfAGivenUnaccessibleGroupInAnotherDomainWithSemiDomainIsolation() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_ONE);
       Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(actualGroup.getDomainId() + "0");
       String path = buildURIPathOf(actualGroup) + "/groups";
@@ -300,7 +301,7 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
   @Test
   public void getTheSubGroupsOfAGivenUnaccessibleGroupInAnotherDomain() {
     try {
-      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      GeneralPropertiesManagerHelper.setDomainVisibility(DomainProperties.DVIS_EACH);
       Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
       currentUser.setDomainId(actualGroup.getDomainId() + "0");
       String path = buildURIPathOf(actualGroup) + "/groups";

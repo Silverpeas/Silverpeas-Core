@@ -54,12 +54,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.browseBars.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ include file="checkAgenda.jsp.inc" %>
 <%
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
+LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(agenda.getLanguage());
 
   agenda.viewByDay();
 

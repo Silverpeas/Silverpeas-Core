@@ -98,8 +98,7 @@ public class ResourceLocator implements Serializable {
     String key =
         name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
     return (LocalizationBundle) bundles.computeIfAbsent(key,
-        n -> new LocalizationBundle(name, localeToUse,
-            (bundleName, bundleLocale) -> loadResourceBundle(bundleName, bundleLocale)));
+        n -> new LocalizationBundle(name, localeToUse, ResourceLocator::loadResourceBundle));
   }
 
   /**
@@ -126,7 +125,7 @@ public class ResourceLocator implements Serializable {
    */
   public static SettingBundle getSettingBundle(String name) {
     return (SettingBundle) bundles.computeIfAbsent(name,
-        n -> new SettingBundle(name, (bundleName) -> loadResourceBundle(bundleName)));
+        n -> new SettingBundle(name, ResourceLocator::loadResourceBundle));
   }
 
   /**
@@ -134,8 +133,8 @@ public class ResourceLocator implements Serializable {
    * null or empty or missing, then the root locale is taken into account.
    * @return the bundle with the general localized resource.
    */
-  public static LocalizationBundle getGeneralBundle(String locale) {
-    return getLocalizationBundle(LocalizationBundle.GENERAL_RESOURCE_BUNDLE_NAME, locale);
+  public static LocalizationBundle getGeneralLocalizationBundle(String locale) {
+    return getLocalizationBundle(LocalizationBundle.GENERAL_BUNDLE_NAME, locale);
   }
 
   /**
@@ -143,8 +142,21 @@ public class ResourceLocator implements Serializable {
    * to configure the common behaviour of Silverpeas.
    * @return the bundle with the general settings.
    */
-  public static SettingBundle getGeneralBundle() {
-    return getSettingBundle(SettingBundle.GENERAL_SETTINGS_NAME);
+  public static SettingBundle getGeneralSettingBundle() {
+    return getSettingBundle(SettingBundle.GENERAL_BUNDLE_NAME);
+  }
+
+  /**
+   * Resets any caches used directly or indirectly by the ResourceLocator. As consequence, the
+   * bundles will be reloaded when accessing.
+   * </p>
+   * The cache containing the content of the bundles are usually expired at regularly time if a
+   * such time was defined in the system properties of Silverpeas. Otherwise, this method should be
+   * explicitly used to reset this cache and then to force the reload of the bundles' content.
+   */
+  public static void resetCache() {
+    bundles.clear();
+    ResourceBundle.clearCache();
   }
 
   private static ResourceBundle loadResourceBundle(String bundleName) {
@@ -164,71 +176,20 @@ public class ResourceLocator implements Serializable {
     }
   }
 
+  private static InputStream loadResourceBundleAsStream(String bundleName) {
+    InputStream inputStream = loader.getResourceAsStream(bundleName);
+    if (inputStream == null) {
+      throw new MissingResourceException("Can't find bundle for base name " + bundleName,
+          bundleName, "");
+    }
+    return inputStream;
+  }
 
 
   // --------------------------------------------------------------------------------------------
   // METHODS for .properties
   // --------------------------------------------------------------------------------------------
 
-  /**
-   * Create a resource locator with the given property file (Ex: com.stratelia.webactiv.util.util)
-   * Use the function getString to get the parameters from this instance
-   * @param propertyFile
-   * @param language
-   */
-  public ResourceLocator(String propertyFile, String language) {
-    this(propertyFile, language, null);
-  }
-
-  public ResourceLocator(String propertyFile, String language, ResourceLocator defaultResource) {
-    this.defaultResource = defaultResource;
-    this.propertyFile = propertyFile;
-    if (StringUtil.isDefined(language)) {
-      propertyLocale = new Locale(language);
-    } else {
-      propertyLocale = Locale.getDefault();
-    }
-  }
-
-  /**
-   * Create a resource locator with the given property file (Ex: com.stratelia.webactiv.util.util)
-   * Use the function getString to get the parameters from this instance
-   * @deprecated
-   */
-  public ResourceLocator(String sPropertyFile, Locale sLocale) {
-    propertyFile = sPropertyFile;
-    if (sLocale != null) {
-      propertyLocale = sLocale;
-    } else {
-      propertyLocale = Locale.getDefault();
-    }
-  }
-
-  /**
-   * Set properties of a SilverPeas component.
-   * @param sPropertyFile
-   * @param sLanguage
-   */
-  public void setPropertyLocation(String sPropertyFile, String sLanguage) {
-    propertyFile = sPropertyFile;
-    if (sLanguage != null) {
-      propertyLocale = new Locale(sLanguage);
-    } else {
-      propertyLocale = Locale.getDefault();
-    }
-  }
-
-  /**
-   * Switchs this resource locator to the specified language for the same refered property file.
-   * @param sLanguage the language to use for getting property values.
-   */
-  public void setLanguage(final String sLanguage) {
-    if (sLanguage != null) {
-      propertyLocale = new Locale(sLanguage);
-    } else {
-      propertyLocale = Locale.getDefault();
-    }
-  }
 
   private ResourceBundle getResourceBundle(String sPropertyFile, Locale locale) {
     return FileUtil.loadBundle(sPropertyFile, locale);
@@ -365,34 +326,6 @@ public class ResourceLocator implements Serializable {
     return null;
   }
 
-  /**
-   * Read a String-List from a Settings-file with indexes from 1 to n If max is -1, the functions
-   * reads until the propertie's Id is not found. If max >= 1, the functions returns an array of
-   * 'max' elements (the elements not found are set to "")
-   * @param propNamePrefix
-   * @param propNameSufix
-   * @param max the maximum index (-1 for no maximum value)
-   * @return
-   * @see
-   */
-  public String[] getStringArray(String propNamePrefix, String propNameSufix, int max) {
-    int i = 1;
-    List<String> valret = new ArrayList<String>();
-    while ((i <= max) || (max == -1)) {
-      String s = getString(propNamePrefix + java.lang.Integer.toString(i) + propNameSufix, null);
-      if (s != null) {
-        valret.add(s);
-      } else {
-        if (max == -1) {
-          max = i;
-        } else {
-          valret.add("");
-        }
-      }
-      i++;
-    }
-    return valret.toArray(new String[valret.size()]);
-  }
 
   /**
    * Return an enumeration of all keys in the property file loaded

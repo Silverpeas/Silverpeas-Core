@@ -185,7 +185,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   public String getName(String language) {
 
     if (isPersonalSpace) {
-      return ResourceLocator.getGeneralBundle(language)
+      return ResourceLocator.getGeneralLocalizationBundle(language)
           .getString("GML.personalSpace");
     }
 

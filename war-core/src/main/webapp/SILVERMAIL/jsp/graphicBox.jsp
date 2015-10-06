@@ -48,7 +48,7 @@
 // Ze graffik factory
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-String graphicPath        = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String graphicPath        = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String m_context          = graphicPath;
 
 // Icones operationBar

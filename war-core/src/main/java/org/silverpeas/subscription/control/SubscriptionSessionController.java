@@ -40,9 +40,9 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.subscription.SubscriptionContext;
+import org.silverpeas.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +77,7 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String toUserPanel() {
-    String context = GeneralPropertiesManager.getString("ApplicationURL");
+    String context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String validateUrl = context + "/RSubscription/jsp/FromUserPanel";
     String cancelUrl = context + "/RSubscription/jsp/Main";
     Selection sel = getSelection();

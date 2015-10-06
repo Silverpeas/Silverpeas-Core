@@ -61,7 +61,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.admin.spaces.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.jobStartPagePeas.*"%>
 <%@ page import="com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController"%>
@@ -78,7 +78,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 JobStartPagePeasSessionController jobStartPageSC = (JobStartPagePeasSessionController) request.getAttribute("jobStartPageSC");
 
-String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String m_context = iconsPath;
 
 Boolean haveToRefreshNavBar = (Boolean)request.getAttribute("haveToRefreshNavBar");

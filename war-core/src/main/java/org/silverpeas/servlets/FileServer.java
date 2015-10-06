@@ -29,7 +29,6 @@ import org.silverpeas.file.SilverpeasFile;
 import org.silverpeas.file.SilverpeasFileDescriptor;
 import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
@@ -79,9 +78,9 @@ public class FileServer extends AbstractFileSender {
     if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
-              GeneralPropertiesManager.getString("sessionTimeout"));
-      res.sendRedirect(
-          URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
+              ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
+      res.sendRedirect(URLManager.getApplicationURL() +
+          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
       return;
     }
 
@@ -103,7 +102,8 @@ public class FileServer extends AbstractFileSender {
       descriptor.absolutePath();
     } else {
       if (dirType != null) {
-        if (dirType.equals(GeneralPropertiesManager.getString("RepositoryTypeTemp"))) {
+        if (dirType.equals(
+            ResourceLocator.getGeneralSettingBundle().getString("RepositoryTypeTemp"))) {
           descriptor = descriptor.temporaryFile();
         }
       } else {

@@ -23,18 +23,18 @@
  */
 package org.silverpeas.util.viewGenerator.html.upload;
 
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.legend;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.jstl.core.Config;
@@ -230,7 +230,7 @@ public class FileUploadTag extends TagSupport {
       fileUploadContext.language =
           StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
       fileUploadContext.generalBundle =
-          GeneralPropertiesManager.getGeneralMultilang(fileUploadContext.language);
+          ResourceLocator.getGeneralLocalizationBundle(fileUploadContext.language);
     }
     pageContext.setAttribute(FILE_UPLOAD_ATT, this);
   }
@@ -241,6 +241,6 @@ public class FileUploadTag extends TagSupport {
   private class FileUploadContext {
     public boolean jsPluginLoaded = false;
     public String language = null;
-    public ResourceLocator generalBundle = null;
+    public LocalizationBundle generalBundle = null;
   }
 }

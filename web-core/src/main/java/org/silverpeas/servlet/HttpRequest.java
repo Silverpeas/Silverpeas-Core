@@ -29,7 +29,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.upload.FileUploadManager;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.I18NHelper;
 
@@ -63,6 +64,7 @@ import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSI
 public class HttpRequest extends HttpServletRequestWrapper {
 
   private List<FileItem> fileItems = null;
+  private SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
 
   private HttpRequest(HttpServletRequest request) {
     super(request);
@@ -187,13 +189,13 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
   @Override
   public int getServerPort() {
-    return GeneralPropertiesManager.getInteger("server.http.port", super.getServerPort());
+    return generalSettings.getInteger("server.http.port", super.getServerPort());
   }
 
   @Override
   public boolean isSecure() {
-    return !GeneralPropertiesManager.getBoolean("server.mixed", false) && (super.isSecure()
-        || GeneralPropertiesManager.getBoolean("server.ssl", false));
+    return !generalSettings.getBoolean("server.mixed", false) &&
+        (super.isSecure() || generalSettings.getBoolean("server.ssl", false));
   }
 
   /**

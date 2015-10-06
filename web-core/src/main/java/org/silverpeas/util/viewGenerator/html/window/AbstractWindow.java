@@ -32,7 +32,7 @@ import org.apache.ecs.xhtml.script;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -141,7 +141,8 @@ public abstract class AbstractWindow implements Window {
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
-      if (!isPopup() && GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
+      if (!isPopup() &&
+          ResourceLocator.getGeneralSettingBundle().getBoolean("AdminFromComponentEnable", true) &&
           StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest())) {
         addOperationToSetupComponent();
       }
@@ -155,7 +156,7 @@ public abstract class AbstractWindow implements Window {
         OrganizationControllerProvider.getOrganisationController();
     if (organizationController.isComponentManageable(getGEF().getComponentIdOfCurrentRequest(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
-      String label = GeneralPropertiesManager.getGeneralMultilang(
+      String label = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage())
               .getString("GML.operations.setupComponent");
       String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
@@ -307,19 +308,17 @@ public abstract class AbstractWindow implements Window {
         final String viewMgrLabel, addFavLabel;
         final String viewMgrAction, addFavAction;
         boolean addFavOperation = true;
-        ResourceLocator bundle = GeneralPropertiesManager.getGeneralMultilang(
+        LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(
             getGEF().getMultilang().getLocale().getLanguage());
         if (OperationPaneType.space.equals(getOperationPane().getType())) {
-          viewMgrLabel =
-              bundle.getString("GML.space.responsibles", "Responsables").replaceAll("''", "'");
+          viewMgrLabel = bundle.getString("GML.space.responsibles").replaceAll("''", "'");
           viewMgrAction =
               "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
                   "','" + getGEF().getSpaceIdOfCurrentRequest() + "')";
           addFavLabel = bundle.getString("GML.favorite.space.add");
           addFavAction = "addFavoriteSpace('" + getGEF().getSpaceIdOfCurrentRequest() + "')";
         } else {
-          viewMgrLabel =
-              bundle.getString("GML.component.responsibles", "Responsables").replaceAll("''", "'");
+          viewMgrLabel = bundle.getString("GML.component.responsibles").replaceAll("''", "'");
           viewMgrAction =
               "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
                   "','" + getGEF().getComponentIdOfCurrentRequest() + "')";

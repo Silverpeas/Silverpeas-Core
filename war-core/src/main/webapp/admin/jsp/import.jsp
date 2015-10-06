@@ -40,7 +40,6 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%
@@ -52,9 +51,9 @@
       MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
   String language = m_MainSessionCtrl.getFavoriteLanguage();
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
+  LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
 
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
+  String m_context = ResourceLocator.getGeneralSettingBundle().
       getString("ApplicationURL");
 
 

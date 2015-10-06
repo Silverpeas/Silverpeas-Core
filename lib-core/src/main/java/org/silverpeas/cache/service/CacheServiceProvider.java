@@ -23,7 +23,7 @@
  */
 package org.silverpeas.cache.service;
 
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier
@@ -47,7 +47,7 @@ public class CacheServiceProvider {
     requestCacheService = new ThreadCacheService();
 
     // Common cache
-    int nbMaxElements = GeneralPropertiesManager.
+    int nbMaxElements = ResourceLocator.getGeneralSettingBundle().
         getInteger("application.cache.common.nbMaxElements", 0);
     if (nbMaxElements < 0) {
       nbMaxElements = 0;

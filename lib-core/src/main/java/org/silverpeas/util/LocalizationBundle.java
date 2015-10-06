@@ -49,8 +49,7 @@ import java.util.function.BiFunction;
  */
 public class LocalizationBundle extends ResourceBundle implements SilverpeasBundle {
 
-  protected static final String GENERAL_RESOURCE_BUNDLE_NAME =
-      "org.silverpeas.multilang.generalMultilang";
+  public static final String GENERAL_BUNDLE_NAME = "org.silverpeas.multilang.generalMultilang";
 
   private ResourceBundle bundle = null;
   private ResourceBundle parentBundle = null;
@@ -225,11 +224,11 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   }
 
   private ResourceBundle getGeneralWrappedBundle() {
-    if (!name.equals(GENERAL_RESOURCE_BUNDLE_NAME)) {
+    if (!name.equals(GENERAL_BUNDLE_NAME)) {
       if (this.parentBundle != null) {
         return this.parentBundle;
       }
-      return (loader == null ? NONE : loader.apply(GENERAL_RESOURCE_BUNDLE_NAME, this.locale));
+      return (loader == null ? NONE : loader.apply(GENERAL_BUNDLE_NAME, this.locale));
     }
     return NONE;
   }

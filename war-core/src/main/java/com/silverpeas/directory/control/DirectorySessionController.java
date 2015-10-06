@@ -45,6 +45,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.DomainProperties;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -56,7 +57,6 @@ import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -142,26 +142,19 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private DirectoryItemList getUsers() {
-    switch (GeneralPropertiesManager.getDomainVisibility()) {
-      case GeneralPropertiesManager.DVIS_ALL:
-        // all users are visible
+    if (DomainProperties.areDomainsVisibleToAll()) {
+      lastAllListUsersCalled = getUsersSorted();
+    } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+      lastAllListUsersCalled = getUsersOfCurrentUserDomain();
+    } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+      String currentUserDomainId = getUserDetail().getDomainId();
+      if ("0".equals(currentUserDomainId)) {
         lastAllListUsersCalled = getUsersSorted();
-        break;
-      case GeneralPropertiesManager.DVIS_EACH:
-        // only users of user's domain are visible
+      } else {
         lastAllListUsersCalled = getUsersOfCurrentUserDomain();
-        break;
-      case GeneralPropertiesManager.DVIS_ONE:
-        // default domain users can see all users
-        // users of other domains can see only users of their domain
-        String currentUserDomainId = getUserDetail().getDomainId();
-        if ("0".equals(currentUserDomainId)) {
-          lastAllListUsersCalled = getUsersSorted();
-        } else {
-          lastAllListUsersCalled = getUsersOfCurrentUserDomain();
-        }
+      }
     }
-    
+
     //add contacts
     DirectoryItemList contacts = getContacts();
     if (!contacts.isEmpty()) {

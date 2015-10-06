@@ -32,8 +32,6 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.util.ResourceLocator"%>
-<%@page import="org.silverpeas.util.GeneralPropertiesManager"%>
-
 
 <c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController">profil_Silverpeas<c:out value="${componentId}" />

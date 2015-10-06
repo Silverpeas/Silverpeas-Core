@@ -27,7 +27,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.token.exception.TokenValidationException;
-import org.silverpeas.util.GeneralPropertiesManager;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
 
@@ -142,7 +142,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private void redirectToAuthenticationPage(ServletRequest request, ServletResponse response)
       throws ServletException, IOException {
-    String destination = GeneralPropertiesManager.getString("sessionTimeout");
+    String destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     HttpServletResponse httpResponse = (HttpServletResponse) response;
     httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     HttpServletRequest httpRequest = (HttpServletRequest) request;

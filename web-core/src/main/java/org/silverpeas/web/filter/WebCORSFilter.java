@@ -52,7 +52,7 @@ import java.util.List;
  */
 public class WebCORSFilter implements Filter {
 
-  private static final SettingBundle settings = ResourceLocator.getGeneralBundle();
+  private static final SettingBundle settings = ResourceLocator.getGeneralSettingBundle();
   private static final String ALL_DOMAINS_ALLOWED = "*";
 
   /*

@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import org.silverpeas.search.searchEngine.model.DidYouMeanSearcher;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.util.GeneralPropertiesManager;
 
 /**
  *
@@ -43,7 +42,7 @@ public class TestDidYouMeanSearcher {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    String indexDirectory = GeneralPropertiesManager.getString("uploadsIndexPath")
+    String indexDirectory = ResourceLocator.getGeneralSettingBundle().getString("uploadsIndexPath")
         + File.separatorChar + "kmelia2";
     String base = System.getProperty("basedir");
     File fileDest = new File(indexDirectory);

@@ -1,8 +1,8 @@
 package com.silverpeas.export.ical.ical4j;
 
-import org.silverpeas.util.GeneralPropertiesManager;
 import net.fortuna.ical4j.util.HostInfo;
 import net.fortuna.ical4j.util.InetAddressHostInfo;
+import org.silverpeas.util.ResourceLocator;
 
 import java.net.SocketException;
 
@@ -15,9 +15,9 @@ public class OffLineInetAddressHostInfo implements HostInfo {
     try {
       hostName = getInetAddressHostInfo().getHostName();
     } catch (SocketException ex) {
-      hostName = GeneralPropertiesManager.getString("httpServerBase" , "localhost");
+      hostName = ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", "localhost");
     } catch (NullPointerException ex) {
-      hostName = GeneralPropertiesManager.getString("httpServerBase" , "localhost");
+      hostName = ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", "localhost");
     }
     return hostName;
   }

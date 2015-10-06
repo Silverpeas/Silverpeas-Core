@@ -59,7 +59,7 @@
 <% 
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String language = m_MainSessionCtrl.getFavoriteLanguage();
-    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
+    LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(language);
 	Exception exception = (Exception) request.getAttribute("javax.servlet.jsp.jspException");
 	Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
 	String exStr = HomePageUtil.getMessageToDisplay(exception , language);

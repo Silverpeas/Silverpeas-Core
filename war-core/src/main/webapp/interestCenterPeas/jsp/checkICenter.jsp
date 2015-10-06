@@ -60,7 +60,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -68,7 +68,7 @@
 <%
         GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-        String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
         Window			window			= gef.getWindow();
         BrowseBar		browseBar		= window.getBrowseBar();

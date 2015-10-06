@@ -33,7 +33,7 @@
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
 
 <%
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+  String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
   SettingBundle settings = todo.getSettings();
 
   String action = (String) request.getParameter("Action");

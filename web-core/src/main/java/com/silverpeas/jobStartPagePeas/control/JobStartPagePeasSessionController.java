@@ -50,15 +50,7 @@ import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.servlet.FileUploadUtil;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.util.Pair;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.*;
 import org.silverpeas.util.clipboard.ClipboardException;
 import org.silverpeas.util.clipboard.ClipboardSelection;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -890,7 +882,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         nameProfile = getMultilang().getString("JSPP." + role);
       }
     }
-    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
+    LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(getLanguage());
     Pair[] hostPath = {new Pair<>(nameProfile + " > " + generalMessage.getString(
       "GML.selection"), null)};
     selection.setHostPath(hostPath);
@@ -1434,7 +1426,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       selection.setHostComponentName(hostComponentName);
     }
 
-    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
+    LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(getLanguage());
     String compoName = getComponentInst(getManagedInstanceId()).getLabel();
     Pair<String, String>[] hostPath =
         new Pair[]{new Pair<>(compoName + " > " + labelProfile + " > " + generalMessage.

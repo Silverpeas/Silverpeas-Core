@@ -32,7 +32,7 @@
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%
 	SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-	LocalizationBundle generalMultilang = ResourceLocator.getGeneralBundle(
+	LocalizationBundle generalMultilang = ResourceLocator.getGeneralLocalizationBundle(
 			request.getLocale().getLanguage());
 	String sURI = request.getRequestURI();
 	String sServletPath = request.getServletPath();

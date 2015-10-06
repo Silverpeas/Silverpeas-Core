@@ -37,7 +37,7 @@
 <%@ page import="com.silverpeas.look.LookHelper" %>
 <%@ page import="org.silverpeas.util.*" %>
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*" %>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.silverpeas.session.SessionManagement" %>

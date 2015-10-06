@@ -51,7 +51,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager"%>
+
 <%@ page import="org.silverpeas.wysiwyg.*" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 

@@ -33,6 +33,7 @@ import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.session.DefaultProcessSession;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.File;
 import java.util.UUID;
@@ -40,7 +41,6 @@ import java.util.UUID;
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
  * @author Yohann Chastagnier
@@ -63,7 +63,7 @@ public class TestAbstractFileHandler {
   @Before
   public void beforeTest() throws Exception {
     BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-    sessionRootPath = new File(getString("tempPath"));
+    sessionRootPath = new File(ResourceLocator.getGeneralSettingBundle().getString("tempPath"));
     realRootPath = new File(BASE_PATH_TEST.getPath());
     otherFile = new File(new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
 

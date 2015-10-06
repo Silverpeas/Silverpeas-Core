@@ -32,7 +32,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.Encode" %>
@@ -44,7 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   LocalizationBundle scc =
       ResourceLocator.getLocalizationBundle("org.silverpeas.form.multilang.formBundle",
           request.getLocale().getLanguage());
-    String iconsPath = ResourceLocator.getGeneralBundle().getString("ApplicationURL");
+    String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	String iconsPathWysiwyg =iconsPath+"/util/icons/wysiwyg/";
 	//icones
 	String pxSrc = iconsPath + "/util/icons/colorPix/1px.gif";

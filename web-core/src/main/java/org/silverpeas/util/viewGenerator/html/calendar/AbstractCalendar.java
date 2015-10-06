@@ -74,7 +74,7 @@ public abstract class AbstractCalendar implements
     this.context = context;
     this.language = language;
     this.currentDate = date;
-    this.messages = ResourceLocator.getGeneralBundle(language);
+    this.messages = ResourceLocator.getGeneralLocalizationBundle(language);
   }
 
   @Override

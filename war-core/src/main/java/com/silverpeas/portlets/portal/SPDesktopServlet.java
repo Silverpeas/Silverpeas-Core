@@ -38,7 +38,6 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -102,7 +101,8 @@ public class SPDesktopServlet extends HttpServlet {
       String sRequestURL = request.getRequestURL().toString();
       String m_sAbsolute =
           sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-      String baseURL = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
+      String baseURL =
+          ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", m_sAbsolute);
       if (spaceHomePage.startsWith("/")) {
         // case of forward inside application /silverpeas
         String applicationContext = URLManager.getApplicationURL();

@@ -38,16 +38,19 @@ import com.stratelia.silverpeas.selection.SelectionJdbcParams;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorDAO;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
 public class CacheManagerJdbcConnector extends CacheManager {
 
   JdbcConnectorDAO jdbcConnectorDAO;
+  LocalizationBundle messages;
+  SettingBundle iconSettings;
 
-  public CacheManagerJdbcConnector(String language, LocalizationBundle local,
-      SettingBundle icon, Selection selection) {
-    super(language, local, icon, selection);
+  public CacheManagerJdbcConnector(String language, LocalizationBundle messages,
+      SettingBundle icons, Selection selection) {
+    super(language, selection);
+    this.messages = messages;
+    this.iconSettings = icons;
     this.selection = selection;
   }
 
@@ -60,7 +63,7 @@ public class CacheManagerJdbcConnector extends CacheManager {
   }
 
   public BrowsePanelProvider getBrowsePanelProvider(CacheType what, SelectionExtraParams sep) {
-    return new BrowseJdbcPanel(language, localResourceLocator, this, sep);
+    return new BrowseJdbcPanel(language, messages, this, sep);
   }
 
   public PanelProvider getCartPanelProvider(CacheType what, SelectionExtraParams sep) {
@@ -108,16 +111,16 @@ public class CacheManagerJdbcConnector extends CacheManager {
       case CM_SET: {
         PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
         theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
-            URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
-            localResourceLocator.getString("selectionPeas.filter"), localResourceLocator
+            URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
+            messages.getString("selectionPeas.filter"), messages
             .getString("selectionPeas.filter"));
         return theArray;
       }
       case CM_ELEMENT: {
         PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
         theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
-            URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
-            localResourceLocator.getString("selectionPeas.filter"), localResourceLocator
+            URLManager.getApplicationURL() + iconSettings.getString("selectionPeas.filter"),
+            messages.getString("selectionPeas.filter"), messages
             .getString("selectionPeas.filter"));
         return theArray;
       }
@@ -130,17 +133,17 @@ public class CacheManagerJdbcConnector extends CacheManager {
   public PanelOperation getPanelOperation(String operation) {
     switch (operation) {
       case "DisplayBrowse":
-        return new PanelOperation(localResourceLocator.getString("selectionPeas.helpBrowse"),
+        return new PanelOperation(messages.getString("selectionPeas.helpBrowse"),
             URLManager.getApplicationURL() +
-                iconResourceLocator.getString("selectionPeas.browseArb"), operation);
+                iconSettings.getString("selectionPeas.browseArb"), operation);
       case "DisplaySearchElement":
-        return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchElement"),
+        return new PanelOperation(messages.getString("selectionPeas.helpSearchElement"),
             URLManager.getApplicationURL() +
-                iconResourceLocator.getString("selectionPeas.userSearc"), operation);
+                iconSettings.getString("selectionPeas.userSearc"), operation);
       case "DisplaySearchSet":
-        return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchSet"),
+        return new PanelOperation(messages.getString("selectionPeas.helpSearchSet"),
             URLManager.getApplicationURL() +
-                iconResourceLocator.getString("selectionPeas.groupSearc"), operation);
+                iconSettings.getString("selectionPeas.groupSearc"), operation);
       default:
         return null;
     }
@@ -154,24 +157,24 @@ public class CacheManagerJdbcConnector extends CacheManager {
     switch (what) {
       case CM_SET: {
         return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "set",
-            URLManager.getApplicationURL() + iconResourceLocator.getString(
+            URLManager.getApplicationURL() + iconSettings.getString(
             "selectionPeas.selectAll"),
             URLManager.getApplicationURL()
-            + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
-            .getString("selectionPeas.selectAll"), localResourceLocator
-            .getString("selectionPeas.unSelectAll"), localResourceLocator
-            .getString("selectionPeas.selectAll"), localResourceLocator
+            + iconSettings.getString("selectionPeas.unSelectAll"), messages
+            .getString("selectionPeas.selectAll"), messages
+            .getString("selectionPeas.unSelectAll"), messages
+            .getString("selectionPeas.selectAll"), messages
             .getString("selectionPeas.unSelectAll"));
       }
       case CM_ELEMENT: {
         return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "element",
-            URLManager.getApplicationURL() + iconResourceLocator.getString(
+            URLManager.getApplicationURL() + iconSettings.getString(
             "selectionPeas.selectAll"),
             URLManager.getApplicationURL()
-            + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
-            .getString("selectionPeas.selectAll"), localResourceLocator
-            .getString("selectionPeas.unSelectAll"), localResourceLocator
-            .getString("selectionPeas.selectAll"), localResourceLocator
+            + iconSettings.getString("selectionPeas.unSelectAll"), messages
+            .getString("selectionPeas.selectAll"), messages
+            .getString("selectionPeas.unSelectAll"), messages
+            .getString("selectionPeas.selectAll"), messages
             .getString("selectionPeas.unSelectAll"));
       }
       default:

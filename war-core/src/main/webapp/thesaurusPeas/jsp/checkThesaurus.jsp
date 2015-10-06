@@ -79,7 +79,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.thesaurusPeas.control.*"%>
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.*"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
+
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 
@@ -90,7 +90,7 @@ ThesaurusSessionController scc = (ThesaurusSessionController) request.getAttribu
 if (scc == null)
 {
     // No questionReply session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
@@ -104,7 +104,7 @@ String componentLabel = resource.getString("thesaurus.componentName");
 
 String language = scc.getLanguage();
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

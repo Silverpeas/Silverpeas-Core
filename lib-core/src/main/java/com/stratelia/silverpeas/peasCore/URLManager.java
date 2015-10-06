@@ -25,7 +25,6 @@ import com.silverpeas.SilverpeasToolContent;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
@@ -34,7 +33,6 @@ import org.silverpeas.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -104,8 +102,8 @@ public class URLManager {
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
   public final static int URL_MEDIA = 10;
-  private static final String applicationURL = GeneralPropertiesManager.getString("ApplicationURL",
-      "/silverpeas");
+  private static final String applicationURL =
+      ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
   static SettingBundle settings = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
@@ -265,7 +263,7 @@ public class URLManager {
         absoluteUrl += ":" + request.getServerPort();
       }
     }
-    return GeneralPropertiesManager.getString("httpServerBase", absoluteUrl);
+    return ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", absoluteUrl);
   }
 
   public static String getHttpMode() {

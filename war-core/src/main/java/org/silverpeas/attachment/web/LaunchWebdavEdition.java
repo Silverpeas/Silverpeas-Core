@@ -23,7 +23,6 @@ package org.silverpeas.attachment.web;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 
@@ -57,7 +56,8 @@ public class LaunchWebdavEdition extends HttpServlet {
     try (PrintWriter out = response.getWriter()) {
       UserDetail user = UserDetail.getCurrentRequester();
       if (user == null) {
-        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
+        String sessionTimeout =
+            ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
       }

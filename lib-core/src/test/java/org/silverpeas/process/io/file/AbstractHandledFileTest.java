@@ -29,13 +29,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.util.ResourceLocator;
 
 import java.io.File;
 
 import static org.apache.commons.io.FileUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.util.GeneralPropertiesManager.getString;
 
 /**
  * @author Yohann Chastagnier
@@ -61,7 +61,7 @@ public abstract class AbstractHandledFileTest {
   public void beforeTest() throws Exception {
     BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
     currentSession = createSessionTest();
-    sessionRootPath = new File(getString("tempPath"));
+    sessionRootPath = new File(ResourceLocator.getGeneralSettingBundle().getString("tempPath"));
     realRootPath = new File(BASE_PATH_TEST.getPath());
     otherFile = new File(new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
     sessionHandledPath = FileUtils

@@ -71,6 +71,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.DomainProperties;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
@@ -542,12 +543,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else if ("Component".equals(objectType)) {
       // check if component is allowed to current user
       return getOrganisationController().isComponentAvailable(mie.getObjectId(), getUserId());
-    } else if (UserIndexation.OBJECT_TYPE.equals(objectType)
-        && GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
+    } else if (UserIndexation.OBJECT_TYPE.equals(objectType) &&
+        !DomainProperties.areDomainsVisibleToAll()) {
       // visibility between domains is limited, check found user domain against current user domain
       String userId = mie.getObjectId();
       UserDetail userFound = getUserDetail(userId);
-      if (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE) {
+      if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
         if ("0".equals(getUserDetail().getDomainId())) {
           // current user of default domain can see all users
           return true;
@@ -555,8 +556,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           // current user of other domains can see only users of his domain
           return userFound.getDomainId().equals(getUserDetail().getDomainId());
         }
-      } else if (GeneralPropertiesManager.getDomainVisibility()
-          == GeneralPropertiesManager.DVIS_EACH) {
+      } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
         // user found must be in same domain of current user
         return userFound.getDomainId().equals(getUserDetail().getDomainId());
       }

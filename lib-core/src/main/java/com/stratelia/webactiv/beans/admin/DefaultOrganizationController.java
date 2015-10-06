@@ -30,7 +30,6 @@ import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ListSlice;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -40,9 +39,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 import static org.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
@@ -62,6 +64,7 @@ import static org.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 public class DefaultOrganizationController implements OrganizationController {
 
   private static final long serialVersionUID = 3435241972671610107L;
+  private static final Set<String> toolIds = new LinkedHashSet<>(5);
 
   @Inject
   private Administration admin;
@@ -898,8 +901,7 @@ public class DefaultOrganizationController implements OrganizationController {
   public boolean isToolAvailable(String toolId) {
     boolean isToolAvailable;
     try {
-      isToolAvailable =
-          GeneralPropertiesManager.getStringCollection("availableToolIds").contains(toolId);
+      isToolAvailable = getAvailableToolIds().contains(toolId);
     } catch (Exception e) {
       isToolAvailable = false;
       SilverTrace.error("admin", "OrganizationController.isToolAvailable",
@@ -1280,5 +1282,21 @@ public class DefaultOrganizationController implements OrganizationController {
 
   private Administration getAdminService() {
     return admin;
+  }
+
+  private static Set<String> getAvailableToolIds() {
+    Collection<String> propertyValues = toolIds;
+    if (toolIds.isEmpty()) {
+      final String availableToolIds =
+          ResourceLocator.getGeneralSettingBundle().getString("availableToolIds", "");
+      if (!availableToolIds.isEmpty()) {
+        for (String aToolId : availableToolIds.split("[ ,;]")) {
+          if (aToolId != null && !aToolId.trim().isEmpty()) {
+            toolIds.add(aToolId.trim());
+          }
+        }
+      }
+    }
+    return toolIds;
   }
 }

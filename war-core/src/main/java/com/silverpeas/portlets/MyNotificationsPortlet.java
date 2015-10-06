@@ -25,7 +25,7 @@
 package com.silverpeas.portlets;
 
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
-import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILUtil;
+import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.util.StringUtil;
@@ -49,10 +49,10 @@ public class MyNotificationsPortlet extends GenericPortlet implements FormNames 
   @Override
   public void doView(RenderRequest request, RenderResponse response) throws PortletException,
       IOException {
-    SILVERMAILUtil silvermailUtil = new SILVERMAILUtil(UserDetail.getCurrentRequester().getId());
+    String userId = UserDetail.getCurrentRequester().getId();
     Collection<SILVERMAILMessage> messages = new ArrayList<SILVERMAILMessage>();
     try {
-      messages = silvermailUtil.getFolderMessageList("INBOX");
+      messages = SILVERMAILPersistence.getMessageOfFolder(Integer.parseInt(userId), "INBOX");
     } catch (Exception e) {
       SilverTrace.error("portlet", "MyNotificationsPortlet", "portlet.ERROR", e);
     }

@@ -31,7 +31,6 @@ import org.apache.ecs.xhtml.script;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.subscription.SubscriptionSettings;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
@@ -352,11 +351,11 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_RESPONSIBLES));
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
-        GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.platform.responsibles", "")).append("';");
+        ResourceLocator.getGeneralLocalizationBundle(language)
+            .getString("GML.platform.responsibles")).append("';");
     responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
-        GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.notification.send", "")).append("';");
+        ResourceLocator.getGeneralLocalizationBundle(language)
+            .getString("GML.notification.send")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }

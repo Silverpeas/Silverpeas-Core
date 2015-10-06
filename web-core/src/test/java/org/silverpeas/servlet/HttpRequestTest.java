@@ -28,11 +28,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.GeneralPropertiesManager;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -55,14 +53,14 @@ public class HttpRequestTest {
 
   @Before
   public void setup() throws Exception{
-    ResourceLocator generalSettings = reflectionRule
-        .mockField(GeneralPropertiesManager.class, ResourceLocator.class, "generalProperties");
-    when(generalSettings.getString("tempPath"))
-        .thenReturn(File.createTempFile("prefix", "suffix").getPath());
     httpServletRequestMock = mock(HttpServletRequest.class);
     when(httpServletRequestMock.getMethod()).thenReturn("GET");
 
     httpRequest = HttpRequest.decorate(httpServletRequestMock);
+    SettingBundle generalSettings =
+        reflectionRule.mockField(httpRequest, SettingBundle.class, "generalSettings");
+    when(generalSettings.getString("tempPath")).thenReturn(
+        File.createTempFile("prefix", "suffix").getPath());
   }
 
   /*

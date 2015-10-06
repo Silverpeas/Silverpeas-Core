@@ -36,7 +36,6 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileServerUtils;
-import org.silverpeas.util.GeneralPropertiesManager;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
@@ -66,9 +65,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   private static final String AVATAR_PROPERTY =
-      GeneralPropertiesManager.getString("avatar.property", "login");
+      ResourceLocator.getGeneralSettingBundle().getString("avatar.property", "login");
   private static final String AVATAR_EXTENSION =
-      GeneralPropertiesManager.getString("avatar.extension", "jpg");
+      ResourceLocator.getGeneralSettingBundle().getString("avatar.extension", "jpg");
   private static final String AVATAR_BASEURI = "/display/avatar/";
   private static final SettingBundle generalSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
@@ -506,16 +505,16 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if he's restricted in its own domain, false otherwise.
    */
   public boolean isDomainRestricted() {
-    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH ||
-        (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE &&
-            !"0".equals(getDomainId()))) && !isAccessAdmin();
+    return (DomainProperties.areDomainsNonVisibleToOthers() ||
+        (DomainProperties.areDomainsVisibleOnlyToDefaultOne() &&
+            !DomainProperties.isDefaultDomain(getDomainId()))) && !isAccessAdmin();
   }
 
   public boolean isDomainAdminRestricted() {
-    return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) &&
+    return (!DomainProperties.areDomainsVisibleToAll() &&
         (!isAccessAdmin()) &&
-        ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) ||
-            (!"0".equals(getDomainId()))));
+        (!DomainProperties.areDomainsVisibleOnlyToDefaultOne() ||
+            (!DomainProperties.isDefaultDomain(getDomainId()))));
   }
 
   public boolean isBackOfficeVisible() {

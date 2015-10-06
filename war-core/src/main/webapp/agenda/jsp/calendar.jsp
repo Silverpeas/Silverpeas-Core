@@ -54,7 +54,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.viewGenerator.html.buttons.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.GeneralPropertiesManager" %>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
@@ -85,9 +84,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	}
   }
 
-  	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
+	LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(
+      agenda.getLanguage());
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
