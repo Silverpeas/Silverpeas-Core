@@ -43,34 +43,34 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
   private static final long serialVersionUID = 4270519541076741138L;
 
   @XmlElement(defaultValue = "")
-  private final String displayLicenseKey;
+  private String displayLicenseKey;
 
   @XmlElement(defaultValue = "")
-  private final String displayViewerPath;
+  private String displayViewerPath;
 
   @XmlElement(defaultValue = "")
-  private final String url;
+  private String url;
 
   @XmlElement(defaultValue = "")
-  private final String originalFileName;
+  private String originalFileName;
 
   @XmlElement(defaultValue = "")
-  private final String width;
+  private String width;
 
   @XmlElement(defaultValue = "")
-  private final String height;
+  private String height;
 
   @XmlElement(defaultValue = "")
-  private final String language;
+  private String language;
 
   @XmlElement(defaultValue = "")
-  private final int nbPages;
+  private int nbPages;
 
   @XmlElement(defaultValue = "")
-  private final boolean documentSplit;
+  private boolean documentSplit;
 
   @XmlElement(defaultValue = "")
-  private final boolean searchDataComputed;
+  private boolean searchDataComputed;
 
   /**
    * Creates a new document view entity from the specified document view.
@@ -78,7 +78,8 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
    * @param language
    * @return the entity representing the specified document view.
    */
-  public static DocumentViewEntity createFrom(final DocumentView documentView, final String language) {
+  public static DocumentViewEntity createFrom(final DocumentView documentView,
+      final String language) {
     return new DocumentViewEntity(documentView, language);
   }
 
@@ -102,6 +103,9 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
     nbPages = documentView.getNbPages();
     documentSplit = documentView.isDocumentSplit();
     searchDataComputed = documentView.areSearchDataComputed();
+  }
+
+  protected DocumentViewEntity() {
   }
 
   /**

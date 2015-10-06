@@ -24,11 +24,12 @@
 package org.silverpeas.viewer;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface Preview {
+public interface Preview extends Serializable {
 
   /**
    * Getting the license of display software product if any

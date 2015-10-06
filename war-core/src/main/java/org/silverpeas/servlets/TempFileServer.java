@@ -38,6 +38,9 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URLDecoder;
 
+import static org.silverpeas.util.data.TemporaryWorkspaceTranslation
+    .startWithTranslationDescriptorPrefix;
+
 /**
  * To get files from temp directory
  *
@@ -164,6 +167,6 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
    * @return true if given path is valid, false otherwise.
    */
   private static boolean isValid(String path) {
-    return !path.contains("..");
+    return !path.contains("..") && !startWithTranslationDescriptorPrefix(path);
   }
 }

@@ -39,9 +39,8 @@ public interface PreviewService {
 
   /**
    * Getting an Preview instance of the given file
-   * @param originalFileName
-   * @param physicalFile
+   * @param viewerContext
    * @return
    */
-  Preview getPreview(String originalFileName, File physicalFile);
+  Preview getPreview(ViewerContext viewerContext);
 }

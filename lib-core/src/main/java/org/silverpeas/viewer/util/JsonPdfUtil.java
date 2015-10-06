@@ -27,13 +27,11 @@ import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecutionException;
 import org.silverpeas.viewer.JsonPdfToolManager;
-import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.exception.ViewerException;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.silverpeas.viewer.AbstractViewerService.PDF_DOCUMENT_EXTENSION;
 
 /**
  * Some centralization about the use of pdf2json tool.
@@ -64,10 +62,10 @@ public class JsonPdfUtil extends ExternalExecution {
         destination.getName() + "_%." + JSON_DOCUMENT_EXTENSION);
     try {
       if (exec(buildJsonPdfCommandLine(pdfFile, out), 0).isEmpty()) {
-        throw new PreviewException("pdf2json conversion failed...");
+        throw new ViewerException("pdf2json conversion failed...");
       }
     } catch (ExternalExecutionException e) {
-      throw new PreviewException(e);
+      throw new ViewerException(e);
     }
   }
 

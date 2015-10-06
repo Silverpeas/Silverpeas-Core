@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.silverpeas.viewer;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -18,12 +41,13 @@ import java.io.File;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.endsWith;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-viewer.xml")
-public class ViewServiceTest extends AbstractViewerTest {
+public class ViewServiceSplitMethodTest extends AbstractViewerTest {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -43,7 +67,7 @@ public class ViewServiceTest extends AbstractViewerTest {
     when(mockedSettings.getBoolean(eq("viewer.cache.conversion.silent.enabled"), anyBoolean()))
         .thenReturn(false);
     when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
-        .thenReturn(false);
+        .thenReturn(true);
   }
 
   @After
@@ -90,8 +114,8 @@ public class ViewServiceTest extends AbstractViewerTest {
   @Test
   public void testPdfFileView() throws Exception {
     if (canPerformViewConversionTest()) {
-      final DocumentView view = viewService
-          .getDocumentView(new ViewerContext("file.pdf", getDocumentNamed("file.pdf")));
+      final DocumentView view =
+          viewService.getDocumentView(new ViewerContext("file.pdf", getDocumentNamed("file.pdf")));
       assertOfficeOrPdfDocumentView(view);
     }
   }
@@ -176,17 +200,35 @@ public class ViewServiceTest extends AbstractViewerTest {
     assertDocumentView(view, 595, 842, true);
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void assertDocumentView(DocumentView view, int width, int height,
       final boolean cacheUsed) {
+    boolean jsonProcess = JsonPdfToolManager.isActivated();
     assertThat(view, notNullValue());
     int nbFilesAtTempRoot = cacheUsed ? 2 : 1;
     assertThat(new File(FileRepositoryManager.getTemporaryPath()).listFiles(),
         arrayWithSize(nbFilesAtTempRoot));
-    assertThat(view.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
-    assertThat(view.getPhysicalFile().getName(), endsWith("file.swf"));
+    assertThat(view.getPhysicalFile().getName(), endsWith("page.swf"));
     assertThat(view.getWidth(), is(String.valueOf(width)));
     assertThat(view.getHeight(), is(String.valueOf(height)));
-    assertThat(view.isDocumentSplit(), is(false));
-    assertThat(view.areSearchDataComputed(), is(false));
+    assertThat(view.isDocumentSplit(), is(true));
+    assertThat(view.areSearchDataComputed(), is(jsonProcess));
+
+    // Files
+    int nbPages = view.getNbPages();
+    File[] files = view.getPhysicalFile().getParentFile().listFiles();
+    int expectedNbTotalFiles = jsonProcess ? (nbPages + 1 + ((nbPages - 1) / 10)) : nbPages;
+    assertThat(files.length, is(expectedNbTotalFiles));
+
+    for (File file : files) {
+      if (file.getName().startsWith("page.swf")) {
+        assertThat(jsonProcess, is(true));
+        assertThat(file.getName().replaceFirst("page[.]swf_[0-9]+[.]js", ""), isEmptyString());
+      } else if (file.getName().startsWith("page-")) {
+        assertThat(file.getName().replaceFirst("page-[0-9]+.swf", ""), isEmptyString());
+      } else {
+        fail("File '" + file.getPath() + "' is not expected");
+      }
+    }
   }
 }

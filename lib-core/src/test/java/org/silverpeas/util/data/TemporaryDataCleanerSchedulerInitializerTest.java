@@ -23,22 +23,8 @@
  */
 package org.silverpeas.util.data;
 
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.openOutputStream;
-import static org.apache.commons.io.FileUtils.touch;
-import static org.apache.commons.io.FileUtils.write;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.copy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.Collection;
-
-import javax.inject.Inject;
-
+import com.silverpeas.scheduler.Scheduler;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.After;
@@ -48,8 +34,17 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.scheduler.Scheduler;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.Collection;
+
+import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copy;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Yohann Chastagnier
@@ -58,24 +53,26 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 @ContextConfiguration("/spring-temporarydatacleaner-scheduler.xml")
 public class TemporaryDataCleanerSchedulerInitializerTest {
 
-  private final static String rootTempPath = FileRepositoryManager.getTemporaryPath();
+  private static File rootTempFile = new File(FileRepositoryManager.getTemporaryPath());
 
   @Inject
   private Scheduler scheduler;
 
+  @Inject
+  private TemporaryDataCleanerSchedulerInitializer initializer;
+
   @BeforeClass
   public static void beforeAll() throws Exception {
-    deleteQuietly(new File(FileRepositoryManager.getTemporaryPath()));
+    deleteQuietly(rootTempFile);
 
     // Prepare files
-    for (final String fileName : new String[] { "file.jpg", "rep1/file.jpg", "rep2/file.jpg" }) {
+    for (final String fileName : new String[]{"file.jpg", "rep1/file.jpg", "rep2/file.jpg"}) {
       InputStream inputStream = null;
       FileOutputStream outputStream = null;
       try {
-        inputStream =
-            TemporaryDataCleanerSchedulerInitializerTest.class.getClassLoader()
-                .getResourceAsStream("org/silverpeas/util/data/" + fileName);
-        final File outputFile = new File(rootTempPath, fileName);
+        inputStream = TemporaryDataCleanerSchedulerInitializerTest.class.getClassLoader()
+            .getResourceAsStream("org/silverpeas/util/data/" + fileName);
+        final File outputFile = new File(rootTempFile, fileName);
         outputStream = openOutputStream(outputFile);
         copy(inputStream, outputStream);
       } finally {
@@ -87,26 +84,26 @@ public class TemporaryDataCleanerSchedulerInitializerTest {
         }
       }
     }
-    final File fileIntoRoot = new File(rootTempPath, "file");
+    final File fileIntoRoot = new File(rootTempFile, "file");
     touch(fileIntoRoot);
     write(fileIntoRoot, "toto");
-    final File fileIntoNotEmptyDirectory = new File(rootTempPath, "notEmpty/file");
+    final File fileIntoNotEmptyDirectory = new File(rootTempFile, "notEmpty/file");
     touch(fileIntoNotEmptyDirectory);
     write(fileIntoNotEmptyDirectory, "titi");
   }
 
   @After
   public void afterTest() {
-    deleteQuietly(new File(FileRepositoryManager.getTemporaryPath()));
+    deleteQuietly(rootTempFile);
   }
 
   @Test
-  public void test() {
+  public void test() throws Exception {
     assertThat(scheduler.isJobScheduled(TemporaryDataCleanerSchedulerInitializer.JOB_NAME),
         is(true));
+    initializer.startTask.join();
     final Collection<File> files =
-        FileUtils
-            .listFilesAndDirs(new File(rootTempPath), TrueFileFilter.TRUE, TrueFileFilter.TRUE);
+        FileUtils.listFilesAndDirs(rootTempFile, TrueFileFilter.TRUE, TrueFileFilter.TRUE);
     assertThat(files.size(), is(1));
   }
 }

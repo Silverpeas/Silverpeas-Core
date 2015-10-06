@@ -39,6 +39,7 @@ import java.util.Map;
 public class SwfToolManager {
 
   private static boolean isActivated = false;
+  private static boolean isSwfRenderActivated = false;
 
   @PostConstruct
   public void initialize() throws Exception {
@@ -56,14 +57,31 @@ public class SwfToolManager {
           System.err.println("pdf2swf is not installed");
         }
       }
+      try {
+        CommandLine commandLine = new CommandLine("swfrender");
+        commandLine.addArgument("--help");
+        ExternalExecution.exec(commandLine, 1);
+        isSwfRenderActivated = true;
+      } catch (final Exception e) {
+        // SwfTool is not installed
+        System.err.println("swfrender is not installed");
+      }
     }
   }
 
   /**
-   * Indicates if im4java is activated
+   * Indicates if pdf2swf is activated
    * @return
    */
   public static boolean isActivated() {
     return isActivated;
+  }
+
+  /**
+   * Indicates if swfrender is activated
+   * @return
+   */
+  public static boolean isSwfRenderActivated() {
+    return isSwfRenderActivated;
   }
 }
