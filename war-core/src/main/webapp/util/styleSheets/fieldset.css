@@ -296,3 +296,7 @@ fieldset.parameters {
 		display:block;
 	}
 }
+
+#reminder legend {
+  background:transparent url(../../util/icons/calendar_1.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
+}

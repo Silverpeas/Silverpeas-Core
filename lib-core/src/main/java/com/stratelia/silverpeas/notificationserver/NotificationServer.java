@@ -75,7 +75,7 @@ public class NotificationServer {
       jmsSendToQueue(notificationAsXML, mJmsHeaders);
     } catch (Exception e) {
       throw new NotificationServerException("NotificationServer.addNotification()",
-          SilverpeasException.ERROR, "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE",
+          SilverpeasException.ERROR, "notificationServer.EX_CANT_SEND_TO_JMS_QUEUE",
           notificationAsXML, e);
     }
     return notificationid;

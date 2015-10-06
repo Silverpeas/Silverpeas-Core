@@ -90,15 +90,33 @@ public abstract class EntityReference<T> {
       type = paramType.toString();
       type = type.substring(type.lastIndexOf(".") + 1);
     }
+    return getType(type);
+  }
+
+  /**
+   * Extracts automatically the type from a {@link Class}.
+   *
+   * @return the meaningful name in upper case of the type of the referred entity.
+   */
+  public static String getType(Class aClass) {
+    return getType(aClass.getSimpleName());
+  }
+
+  /**
+   * Extracts automatically the type from a simple name of {@link Class}.
+   *
+   * @return the meaningful name in upper case of the type of the referred entity.
+   */
+  public static String getType(String classSimpleName) {
     for (String term : TechnicalTerms) {
-      if (type.contains(term)) {
-        type = type.replace(term, "");
+      if (classSimpleName.contains(term)) {
+        classSimpleName = classSimpleName.replace(term, "");
       }
     }
-    if (type.isEmpty()) {
-      type = UNKNOWN_TYPE;
+    if (classSimpleName.isEmpty()) {
+      classSimpleName = UNKNOWN_TYPE;
     }
-    return type.toUpperCase();
+    return classSimpleName.toUpperCase();
   }
 
   /**
