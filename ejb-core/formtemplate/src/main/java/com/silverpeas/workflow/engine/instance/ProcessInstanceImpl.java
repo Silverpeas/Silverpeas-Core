@@ -656,18 +656,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     Database db = null;
     try {
       db = WorkflowJDOManager.getDatabase();
-      synchronized (db) {
-        SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
-            "instance id is not yet retrieve " + this.getInstanceId() + " for " +
-                this.getModelId());
-        db.begin();
-        db.create(this);
-        SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
-            "instance id has been created " + this.getInstanceId() + " for " + this.getModelId());
-        db.commit();
-        SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
-            "instance id after commit " + this.getInstanceId() + " for " + this.getModelId());
-      }
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
+          "instance id is not yet retrieve " + this.getInstanceId() + " for " +
+              this.getModelId());
+      db.begin();
+      db.create(this);
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
+          "instance id has been created " + this.getInstanceId() + " for " + this.getModelId());
+      db.commit();
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
+          "instance id after commit " + this.getInstanceId() + " for " + this.getModelId());
 
       return this.getInstanceId();
     } catch (PersistenceException pe) {
