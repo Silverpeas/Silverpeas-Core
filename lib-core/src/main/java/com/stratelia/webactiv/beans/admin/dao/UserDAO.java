@@ -115,7 +115,7 @@ public class UserDAO {
    * Gets the number of users that match the specified criteria. The criteria are provided by an
    * UserSearchCriteriaBuilder instance that was used to create them.
    *
-   * @param connection the connetion with a data source to use.
+   * @param connection the connexion with a data source to use.
    * @param criteria a builder with which the criteria the user profiles must satisfy has been
    * built.
    * @return the number of users that match the specified criteria.
@@ -125,7 +125,7 @@ public class UserDAO {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
     try {
-      String query = criteria.toSQLQuery("COUNT(*)");
+      String query = criteria.toSQLQuery("COUNT(DISTINCT id)");
       statement = connection.prepareStatement(query);
       resultSet = statement.executeQuery();
       resultSet.next();

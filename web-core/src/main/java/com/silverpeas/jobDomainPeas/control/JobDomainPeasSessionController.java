@@ -1280,12 +1280,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (isOnlyGroupManager() && !isGroupManagerOnCurrentGroup()) {
       groups = filterGroupsToGroupManager(groups);
     }
-    for (Group group : groups) {
-      if (group != null) {
-        group.setNbUsers(getOrganisationController().getAllSubUsersNumber(
-            group.getId()));
-      }
-    }
     return groups;
   }
 

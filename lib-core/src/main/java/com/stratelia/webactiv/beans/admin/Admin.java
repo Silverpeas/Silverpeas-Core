@@ -5198,7 +5198,7 @@ public final class Admin {
   }
 
   /**
-   * For use in userPanel : return the total number of users recursivly contained in a group
+   * For use in userPanel : return the total number of users recursively contained in a group
    */
   public int getAllSubUsersNumber(String sGroupId) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory
@@ -5208,15 +5208,7 @@ public final class Admin {
       return userManager.getUserNumber(domainDriverManager);
     } else {
 
-      // add users directly in this group
-      int nb = groupManager.getNBUsersDirectlyInGroup(sGroupId);
-
-      // add users in sub groups
-      List<String> groupIds = groupManager.getAllSubGroupIdsRecursively(sGroupId);
-      for (String groupId : groupIds) {
-        nb += groupManager.getNBUsersDirectlyInGroup(groupId);
-      }
-      return nb;
+      return groupManager.getTotalUserCountInGroup("", sGroupId);
     }
   }
 

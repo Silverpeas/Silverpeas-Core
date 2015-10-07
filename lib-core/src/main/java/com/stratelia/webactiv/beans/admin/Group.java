@@ -239,6 +239,12 @@ public class Group implements Serializable, Comparable<Group> {
     return (rule != null && rule.trim().length() > 0);
   }
 
+  /**
+   * Gets the number of direct users in this group; the users from its subgroups aren't counted. To
+   * count also the users in its subgroups, please use the
+   * {@code com.stratelia.webactiv.beans.admin.Group#getTotalNbUsers} method instead.
+   * @return the number of direct users.
+   */
   public int getNbUsers() {
     if (nbUsers == -1) {
       return getUserIds().length;
@@ -247,22 +253,15 @@ public class Group implements Serializable, Comparable<Group> {
   }
 
   /**
-   * Gets the total number of users in this group and in its subgroups.
-   * @return the total number of users.
+   * Gets the total number of users in this group and in its subgroups. Users that are in several
+   * groups are counted only once.
+   * @return the total number of distinct users in its group and subgroups.
    */
   public int getTotalNbUsers() {
     if (nbTotalUsers < 0) {
       nbTotalUsers = getOrganisationController().getAllSubUsersNumber(getId());
     }
     return nbTotalUsers;
-  }
-
-  public void setNbUsers(int nbUsers) {
-    this.nbUsers = nbUsers;
-  }
-
-  public void setTotalNbUsers(int count) {
-    this.nbTotalUsers = count;
   }
 
   protected static OrganisationController getOrganisationController() {

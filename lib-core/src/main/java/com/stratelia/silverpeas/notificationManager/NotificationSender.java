@@ -217,7 +217,7 @@ public class NotificationSender implements java.io.Serializable {
     OrganisationController orgaController = OrganisationControllerFactory.
         getOrganisationController();
     Group group = orgaController.getGroup(groupId);
-    int nbUsers = group.getNbUsers();
+    int nbUsers = group.getTotalNbUsers();
     boolean res1 = settings.getBoolean("notif.receiver.displayGroup", false);
     boolean res2 = StringUtil.isDefined(threshold);
     boolean res3 = StringUtil.isInteger(threshold);

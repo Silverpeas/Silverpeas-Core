@@ -188,7 +188,7 @@ if (showTabs) {
 			        	groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
 					arrayLine.addArrayCellIconPane(iconPane1);
 					arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
-			        arrayLine.addArrayCellText(group.getNbUsers());
+			        arrayLine.addArrayCellText(group.getTotalNbUsers());
 			        arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
 		    	}
 			}
