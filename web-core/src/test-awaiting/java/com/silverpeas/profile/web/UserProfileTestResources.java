@@ -349,12 +349,12 @@ public class UserProfileTestResources extends TestResources {
     Group[] groups = mock.getAllGroups();
     for (Group group : groups) {
       when(mock.getAllUsersOfGroup(group.getId())).thenReturn(new UserDetail[0]);
-      group.setTotalNbUsers(1);
+      //group.setTotalNbUsers(1);
     }
     Group internalGroup = mock.getGroup("1");
     UserDetail[] users = getAllExistingUsers();
     internalGroup.setUserIds(getUserIds(users));
-    internalGroup.setTotalNbUsers(users.length);
+    //internalGroup.setTotalNbUsers(users.length);
 
     for (int i = 0; i <= 1; i++) {
       String domainId = String.valueOf(i);

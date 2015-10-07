@@ -226,7 +226,7 @@ public interface OrganizationController extends java.io.Serializable {
   Group[] searchGroups(Group modelGroup, boolean isAnd);
 
   /**
-   * For use in userPanel : return the total number of users recursivly contained in a group
+   * Returns the total number of distinct users recursively contained in the specified group
    */
   int getAllSubUsersNumber(String sGroupId);
 

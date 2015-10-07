@@ -1078,7 +1078,7 @@ public interface Administration {
       throws AdminException;
 
   /**
-   * For use in userPanel : return the total number of users recursivly contained in a group
+   * For use in userPanel : return the total number of users recursively contained in a group
    */
   int getAllSubUsersNumber(String sGroupId) throws AdminException;
 

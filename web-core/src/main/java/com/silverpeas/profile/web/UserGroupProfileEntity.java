@@ -184,11 +184,6 @@ public class UserGroupProfileEntity extends Group implements WebEntity {
   }
 
   @Override
-  public void setNbUsers(int nbUsers) {
-    this.group.setNbUsers(nbUsers);
-  }
-
-  @Override
   @XmlElement
   public String getDomainId() {
     return this.group.getDomainId();

@@ -4632,15 +4632,7 @@ class Admin implements Administration {
       return userManager.getUserNumber(domainDriverManager);
     } else {
 
-      // add users directly in this group
-      int nb = groupManager.getNBUsersDirectlyInGroup(sGroupId);
-
-      // add users in sub groups
-      List<String> groupIds = groupManager.getAllSubGroupIdsRecursively(sGroupId);
-      for (String groupId : groupIds) {
-        nb += groupManager.getNBUsersDirectlyInGroup(groupId);
-      }
-      return nb;
+      return groupManager.getTotalUserCountInGroup("", sGroupId);
     }
   }
 

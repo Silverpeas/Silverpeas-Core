@@ -110,6 +110,35 @@ public class GroupManager {
   }
 
   /**
+   * Gets the total number of users in the specified group, that is to say the number of distinct
+   * users in the specified group and in its subgroups.
+   * @param domainId the unique identifier to which the group belong.
+   * @param groupId the unique identifier of the group.
+   * @return the total users count in the specified group.
+   * @throws AdminException if an error occurs while computing the user count.
+   */
+  public int getTotalUserCountInGroup(String domainId, String groupId) throws AdminException {
+    Connection connection = null;
+    try {
+      connection = DBUtil.openConnection();
+      SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
+      List<String> groupIds = getAllSubGroupIdsRecursively(groupId);
+      groupIds.add(groupId);
+      UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
+      int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
+          onDomainId(domainId).
+          and().
+          onGroupIds(groupIds.toArray(new String[groupIds.size()])));
+      return userCount;
+    } catch (SQLException e) {
+      throw new AdminException("GroupManager.getGroupsMatchingCriteria",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+    } finally {
+      DBUtil.close(connection);
+    }
+  }
+
+  /**
    * Add a user to a group
    *
    * @param ddManager

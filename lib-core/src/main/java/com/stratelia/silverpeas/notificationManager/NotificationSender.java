@@ -151,8 +151,6 @@ public class NotificationSender implements java.io.Serializable {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  
-
   /**
    * Saving the notification into history if users have been notified.
    * @param metaData

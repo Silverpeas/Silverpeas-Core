@@ -73,7 +73,7 @@ public class NotificationMetaDataTest {
     when(mockedOrganizationController.getGroup(anyString())).thenAnswer(invocation -> {
       Group group = new Group();
       group.setId((String) invocation.getArguments()[0]);
-      group.setNbUsers(5);
+      group.setUserIds(new String[] {"1", "2", "3", "4", "5"});
       return group;
     });
 
