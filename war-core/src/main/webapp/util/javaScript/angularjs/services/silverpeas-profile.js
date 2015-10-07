@@ -81,7 +81,7 @@
             });
           } else {
             window.console &&
-            window.console.log('User profile - ERROR - getting extended user data whithout specifying its id ...');
+            window.console.log('User profile - ERROR - getting extended user data without specifying its id ...');
             return {};
           }
         };

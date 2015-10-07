@@ -89,13 +89,13 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   @Override
-  public SearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
+  public UserDetailsSearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
     criteria.put(USER_ACCESS_LEVELS, accessLevels);
     return this;
   }
 
   @Override
-  public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
+  public UserDetailsSearchCriteria onUserStatesToExclude(final UserState... userStates) {
     criteria.put(USER_STATES_TO_EXCLUDE, userStates);
     return null;
   }
@@ -260,22 +260,22 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Useless as by default the criteria forms a conjonction.
+   * Useless as by default the criteria forms a conjunction.
    *
    * @return itself.
    */
   @Override
-  public SearchCriteria and() {
+  public UserDetailsSearchCriteria and() {
     return this;
   }
 
   /**
-   * Not supported. By default, the criteria form a conjonction.
+   * Not supported. By default, the criteria form a conjunction.
    *
    * @return nothing, thrown an UnsupportedOperationException exception.
    */
   @Override
-  public SearchCriteria or() {
+  public UserDetailsSearchCriteria or() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -285,7 +285,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   @Override
-  public SearchCriteria onPagination(PaginationPage page) {
+  public UserDetailsSearchCriteria onPagination(PaginationPage page) {
     criteria.put(PAGINATION, page);
     return this;
   }
