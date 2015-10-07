@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -36,6 +37,7 @@ import org.silverpeas.util.mail.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -59,12 +61,8 @@ public class FileUtil implements MimeTypes {
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
-      new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-        @Override
-        public ConfigurationClassLoader run() {
-          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-        }
-      });
+      (java.security.PrivilegedAction<ConfigurationClassLoader>) () -> new ConfigurationClassLoader(
+          FileUtil.class.getClassLoader()));
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -74,8 +72,8 @@ public class FileUtil implements MimeTypes {
    * @return the name of the migrated bundle.
    */
   public static String convertBundleName(final String bundle) {
-    return bundle.replace("com.silverpeas", "org.silverpeas").replace(
-        "com.stratelia.silverpeas", "org.silverpeas").replace("com.stratelia.webactiv",
+    return bundle.replaceFirst("com.silverpeas", "org.silverpeas").replaceFirst(
+        "com.stratelia.silverpeas", "org.silverpeas").replaceFirst("com.stratelia.webactiv",
             "org.silverpeas");
   }
 
@@ -503,5 +501,48 @@ public class FileUtil implements MimeTypes {
       return directory.delete();
     }
     return false;
+  }
+
+  /**
+   * Moves all files from sub folders to the given root folder and deletes after all the sub
+   * folders.
+   * @param rootFolder the root folder from which the sub folders are retrieved and into which the
+   * files will be moved if any.
+   * @return an array of {@link File} that represents the found sub folders. The returned array is
+   * never null.
+   * @throws IOException
+   */
+  public static File[] moveAllFilesAtRootFolder(File rootFolder) throws IOException {
+    return moveAllFilesAtRootFolder(rootFolder, true);
+  }
+
+  /**
+   * Moves all files from sub folders to the given root folder.
+   * @param rootFolder the root folder from which the sub folders are retrieved and into which the
+   * files will be moved if any.
+   * @param deleteFolders true if the sub folders must be deleted.
+   * @return an array of {@link File} that represents the found sub folders. The returned array is
+   * never null.
+   * @throws IOException
+   */
+  public static File[] moveAllFilesAtRootFolder(File rootFolder, boolean deleteFolders)
+      throws IOException {
+    File[] foldersAtRoot = rootFolder != null ?
+        rootFolder.listFiles((FileFilter) FileFilterUtils.directoryFileFilter()) : null;
+    if (foldersAtRoot != null) {
+      for (File folderAtRoot : foldersAtRoot) {
+        for (File file : FileUtils.listFiles(folderAtRoot, FileFilterUtils.fileFileFilter(),
+            FileFilterUtils.trueFileFilter())) {
+          File newFilePath = new File(rootFolder, file.getName());
+          if (!newFilePath.exists()) {
+            FileUtils.moveFile(file, newFilePath);
+          }
+        }
+        if (deleteFolders) {
+          FileUtils.deleteQuietly(folderAtRoot);
+        }
+      }
+    }
+    return foldersAtRoot != null ? foldersAtRoot : new File[0];
   }
 }

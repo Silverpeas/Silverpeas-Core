@@ -24,11 +24,11 @@
 package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AccessController;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This interface extends access controller for a Space resource.
  * @author Yohann Chastagnier
  */
 public interface SpaceAccessControl extends AccessController<String> {
-
 }

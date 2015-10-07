@@ -23,9 +23,8 @@
  */
 package com.silverpeas.accesscontrol;
 
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 
 import java.util.EnumSet;
@@ -45,24 +44,15 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     return isUserAuthorized(userId, object, AccessControlContext.init());
   }
 
-  /**
-   * Gets the user roles about the aimed object and by taking in account the context of the access.
-   * After a first call, user role are cached (REQUEST live time) in order to increase the
-   * performances in case of several call on the same user and object.
-   * @param context
-   * @param userId
-   * @param object
-   * @return
-   */
   @SuppressWarnings("unchecked")
-  public Set<SilverpeasRole> getUserRoles(AccessControlContext context, String userId, T object) {
+  public final Set<SilverpeasRole> getUserRoles(String userId, T object,
+      AccessControlContext context) {
     String cacheKey = buildUserRoleCacheKey(context, userId, object);
-    Set<SilverpeasRole> userRoles =
-        CacheServiceProvider.getRequestCacheService().get(cacheKey, Set.class);
+    Set<SilverpeasRole> userRoles = context.get(cacheKey, Set.class);
     if (userRoles == null) {
       userRoles = EnumSet.noneOf(SilverpeasRole.class);
       fillUserRoles(userRoles, context, userId, object);
-      CacheServiceProvider.getRequestCacheService().put(cacheKey, userRoles);
+      context.put(cacheKey, userRoles);
     }
     return userRoles;
   }

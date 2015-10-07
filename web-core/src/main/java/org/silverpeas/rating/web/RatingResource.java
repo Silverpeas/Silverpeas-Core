@@ -80,7 +80,7 @@ public class RatingResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public RaterRatingEntity getRaterRating() {
     try {
-      ContributionRating contributionRating = RatingService.getInstance().getRating(getRatingPK());
+      ContributionRating contributionRating = RatingService.get().getRating(getRatingPK());
       return asWebEntity(contributionRating.getRaterRating(getUserDetail()));
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -90,7 +90,7 @@ public class RatingResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response saveRating(String note) {
-    RatingService ratingService = RatingService.getInstance();
+    RatingService ratingService = RatingService.get();
     if (!StringUtil.isDefined(note)) {
       ratingService.deleteRaterRating(getRaterRatingPK());
       NotifierUtil.addSuccess(getBundle().getString("notation.vote.delete.ok"));

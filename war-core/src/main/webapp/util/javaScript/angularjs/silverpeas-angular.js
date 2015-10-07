@@ -96,7 +96,7 @@ angular.module('silverpeas.directives', ['silverpeas', 'silverpeas.services']);
  * Provider of the promise manager in AngularJS to be used in plain old javascript.
  * @type {promise}
  */
-var Promise = angular.injector(['ng']).get('$q');
+var AngularPromise = angular.injector(['ng']).get('$q');
 
 /**
  * Common directive to provide solution to update HTML DOM with partial HTML

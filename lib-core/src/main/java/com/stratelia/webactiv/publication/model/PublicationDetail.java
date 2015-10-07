@@ -24,6 +24,8 @@
 package com.stratelia.webactiv.publication.model;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.accesscontrol.AccessControlContext;
+import com.silverpeas.accesscontrol.AccessControlOperation;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.form.DataRecord;
@@ -46,11 +48,9 @@ import com.stratelia.silverpeas.contentManager.ContentManagerProvider;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.publication.control.PublicationService;
 import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.accesscontrol.ComponentAccessControl;
-import org.silverpeas.accesscontrol.NodeAccessControl;
+import org.silverpeas.accesscontrol.PublicationAccessControl;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -1190,23 +1190,25 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    boolean canBeAccessed = accessController.
-        isUserAuthorized(user.getId(), getComponentInstanceId());
-    if (canBeAccessed) {
-      AccessController<NodePK> nodeAccessController =
-          AccessControllerProvider.getAccessController(NodeAccessControl.class);
-      Collection<NodePK> nodes =
-          getPublicationBm().getAllFatherPK(new PublicationPK(getId(), getInstanceId()));
-      for (NodePK aNode : nodes) {
-        canBeAccessed = nodeAccessController.isUserAuthorized(user.getId(), aNode);
-        if (canBeAccessed) {
-          break;
-        }
-      }
-    }
-    return canBeAccessed;
+    AccessController<PublicationPK> accessController =
+        AccessControllerProvider.getAccessController(PublicationAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getPK());
+  }
+
+  /**
+   * Is the specified user can access this publication on persist context?
+   * <p/>
+   * A user can access a publication on persist context if he has enough rights to access both the
+   * application instance in which is managed this publication and one of the nodes to which this
+   * publication belongs to.
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this publication, false otherwise.
+   */
+  public boolean canBeModifiedBy(final UserDetail user) {
+    AccessController<PublicationPK> accessController =
+        AccessControllerProvider.getAccessController(PublicationAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getPK(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
   /**
@@ -1237,7 +1239,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   @Override
   public ContributionRating getRating() {
     if (contributionRating == null) {
-      contributionRating = RatingService.getInstance()
+      contributionRating = RatingService.get()
           .getRating(new ContributionRatingPK(getId(), getInstanceId(), "Publication"));
     }
     return contributionRating;

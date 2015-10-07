@@ -24,6 +24,11 @@
 
 package com.silverpeas.accesscontrol;
 
+import com.stratelia.webactiv.SilverpeasRole;
+import org.silverpeas.util.CollectionUtil;
+
+import java.util.Set;
+
 /**
  * A controller of accesses on the Silverpeas resources by a user..
  * @param <T> The type of object we are checking the access on.
@@ -32,12 +37,21 @@ package com.silverpeas.accesscontrol;
 public interface AccessController<T> {
 
   /**
+   * Checks user authorization from the given role collection.
+   * @param userRoles user roles.
+   * @return true if user authorization, false otherwise.
+   */
+  default boolean isUserAuthorized(Set<SilverpeasRole> userRoles) {
+    return CollectionUtil.isNotEmpty(userRoles);
+  }
+
+  /**
    * Checks if the specified user may access the specified object.
    * @param userId the unique identifier of the user.
    * @param object the object to be accessed.
    * @return true if access is granted - false otherwise.
    */
-  public boolean isUserAuthorized(String userId, T object);
+  boolean isUserAuthorized(String userId, T object);
 
   /**
    * Checks if the specified user may access the specified object.
@@ -46,5 +60,16 @@ public interface AccessController<T> {
    * @param context the context in which the object is accessed.
    * @return true if access is granted - false otherwise.
    */
-  public boolean isUserAuthorized(String userId, T object, AccessControlContext context);
+  boolean isUserAuthorized(String userId, T object, AccessControlContext context);
+
+  /**
+   * Gets the user roles about the aimed object and by taking in account the context of the access.
+   * After a first call, user role are cached (REQUEST live time) in order to increase the
+   * performances in case of several call on the same user and object.
+   * @param userId the unique identifier of the user.
+   * @param object the object to be accessed.
+   * @param context the context in which the object is accessed.
+   * @return the role the user has about a resource and according to a context.
+   */
+  Set<SilverpeasRole> getUserRoles(String userId, T object, AccessControlContext context);
 }

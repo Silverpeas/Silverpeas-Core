@@ -41,7 +41,8 @@ public class SpaceAccessController extends AbstractAccessController<String>
   @Inject
   private OrganizationController organizationController;
 
-  public SpaceAccessController() {
+  SpaceAccessController() {
+    // Instance by IoC only.
   }
 
   @Override

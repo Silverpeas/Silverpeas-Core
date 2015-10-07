@@ -71,71 +71,80 @@ public class PublicationImportExport {
     Date creationDate = new Date();
     Date lastModificationDate = null;
 
-    if (FileUtil.isMail(file.getName())) {
-      try {
-        MailExtractor extractor = Extractor.getExtractor(file);
-        Mail mail = extractor.getMail();
+    if (!settings.mustCreateOnePublicationForAllFiles()) {
+      if (FileUtil.isMail(file.getName())) {
+        try {
+          MailExtractor extractor = Extractor.getExtractor(file);
+          Mail mail = extractor.getMail();
 
-        creationDate = mail.getDate();
+          creationDate = mail.getDate();
 
-        // define StringTemplate attributes
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("subject", mail.getSubject());
-        InternetAddress address = mail.getFrom();
-        if (StringUtil.isDefined(address.getPersonal())) {
-          attributes.put("fromPersonal", address.getPersonal());
-          description += address.getPersonal() + " - ";
+          // define StringTemplate attributes
+          Map<String, String> attributes = new HashMap<>();
+          attributes.put("subject", mail.getSubject());
+          InternetAddress address = mail.getFrom();
+          if (StringUtil.isDefined(address.getPersonal())) {
+            attributes.put("fromPersonal", address.getPersonal());
+            description += address.getPersonal() + " - ";
+          }
+          attributes.put("fromAddress", address.getAddress());
+
+          // generate title of publication
+          StringTemplate titleST =
+              new StringTemplate(multilang.getString("importExport.import.mail.title"));
+          titleST.setAttributes(attributes);
+          nomPub = titleST.toString();
+
+          // generate description of publication
+          StringTemplate descriptionST =
+              new StringTemplate(multilang.getString("importExport.import.mail.description"));
+          descriptionST.setAttributes(attributes);
+          description = descriptionST.toString();
+        } catch (Exception e) {
+          SilverTrace
+              .error("importExport", "PublicationImportExport.convertFileInfoToPublicationDetail",
+                  "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
         }
-        attributes.put("fromAddress", address.getAddress());
+      } else {
+        // it's a classical file (not an email)
+        MetaData metaData = null;
+        if (settings.isPoiUsed()) {
+          // extract title, subject and keywords
+          metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
+          if (StringUtil.isDefined(metaData.getTitle())) {
+            nomPub = metaData.getTitle();
+          }
+          if (StringUtil.isDefined(metaData.getSubject())) {
+            description = metaData.getSubject();
+          }
+          if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
+            motsClefs = StringUtils.join(metaData.getKeywords(), ';');
+          }
+        }
 
-        // generate title of publication
-        StringTemplate titleST =
-            new StringTemplate(multilang.getString("importExport.import.mail.title"));
-        titleST.setAttributes(attributes);
-        nomPub = titleST.toString();
-
-        // generate description of publication
-        StringTemplate descriptionST =
-            new StringTemplate(multilang.getString("importExport.import.mail.description"));
-        descriptionST.setAttributes(attributes);
-        description = descriptionST.toString();
-      } catch (Exception e) {
-        SilverTrace.error("importExport",
-            "PublicationImportExport.convertFileInfoToPublicationDetail",
-            "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+        if (settings.useFileDates()) {
+          // extract creation and last modification dates
+          if (metaData == null) {
+            metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
+          }
+          if (metaData.getCreationDate() != null) {
+            creationDate = metaData.getCreationDate();
+          }
+          if (metaData.getLastSaveDateTime() != null) {
+            lastModificationDate = metaData.getLastSaveDateTime();
+          }
+        }
       }
     } else {
-      // it's a classical file (not an email)
-      MetaData metaData = null;
-      if (settings.isPoiUsed()) {
-        // extract title, subject and keywords
-        metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
-        if (StringUtil.isDefined(metaData.getTitle())) {
-          nomPub = metaData.getTitle();
-        }
-        if (StringUtil.isDefined(metaData.getSubject())) {
-          description = metaData.getSubject();
-        }
-        if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
-          motsClefs = StringUtils.join(metaData.getKeywords(), ';');
-        }
-      }
-      
-      if (settings.useFileDates()) {
-        // extract creation and last modification dates
-        if (metaData == null) {
-          metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
-        }
-        if (metaData.getCreationDate() != null) {
-          creationDate = metaData.getCreationDate();
-        }
-        if (metaData.getLastSaveDateTime() != null) {
-          lastModificationDate = metaData.getLastSaveDateTime();
-        }
-      }
+      nomPub = settings.getPublicationForAllFiles().getName();
+      description = settings.getPublicationForAllFiles().getDescription();
+      motsClefs = settings.getPublicationForAllFiles().getKeywords();
+      content = settings.getPublicationForAllFiles().getContent();
     }
-    PublicationDetail publication = new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
-        settings.getUser().getId(), "5", null, motsClefs, content);
+    PublicationDetail publication =
+        new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
+            settings.getUser().getId(), "5", null, motsClefs, content);
+    publication.setLanguage(settings.getContentLanguage());
     if (lastModificationDate != null) {
       publication.setUpdateDate(lastModificationDate);
       publication.setUpdateDateMustBeSet(true);

@@ -33,6 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@ page import="org.silverpeas.attachment.AttachmentServiceProvider" %>
 <%@ page import="org.silverpeas.util.ForeignPK" %>
@@ -99,10 +100,8 @@
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframeajaxtransport"/>
 <view:includePlugin name="popup"/>
-<c:choose>
-  <c:when test="${view:booleanValue(isComponentVersioned)}">
-<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
-<%
+<c:if test="${view:booleanValue(isComponentVersioned)}">
+  <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
   if(versioningSC == null) {
@@ -114,12 +113,7 @@
     }
   versioningSC.setProfile(request.getParameter("profile"));
   %>
-  </c:when>
-  <c:otherwise>
-<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
-  </c:otherwise>
-</c:choose>
-<script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
+</c:if>
 <script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
@@ -414,38 +408,7 @@
 </script>
 <div style="text-align: center;">
   <view:board>
-  <table border="0" width="100%">
-    <c:if test="${dragAndDropEnable}">
-    <tr>
-      <td align="right">
-        <c:choose>
-          <c:when test="${view:booleanValue(isComponentVersioned)}">
-            <div>
-              <div class="dragNdrop">
-                <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>
-              </div>
-              <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
-              <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
-            </div>
-          </c:when>
-          <c:otherwise>
-            <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10485760}" />
-            <c:url var="dropUrl" value="/DragAndDrop/drop">
-              <c:param name="UserId" value="${mainSessionController.userId}" />
-              <c:param name="ComponentId" value="${componentId}" />
-              <c:param name="PubId" value="${param.Id}" />
-              <c:param name="IndexIt" value="${indexIt}" />
-              <c:param name="Context" value="${param.Context}"/>
-            </c:url>
-            <div class="dragNdrop">
-              <a href="javascript:showHideDragDrop('<%=URLManager.getServerURL(request)%><c:out value="${dropUrl}" />','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<fmt:message key="GML.applet.dnd.alt" />','<c:out value="${maximumFileSize}" />','<%=URLManager.getApplicationURL()%>','<fmt:message key="GML.DragNDropExpand" />','<fmt:message key="GML.DragNDropCollapse" />')" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand" /></a>
-              <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </td>
-    </tr>
-    </c:if>    
+  <table border="0" width="100%" class="attachmentDragAndDrop${id}">
     <tr>
       <td><!--formulaire de gestion des fichiers joints -->
         <table border="0" cellspacing="3" cellpadding="0" width="100%">
@@ -607,3 +570,13 @@
 </div>
 
 <view:progressMessage/>
+
+<c:if test="${dragAndDropEnable}">
+  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${id}"
+                                  componentInstanceId="${componentId}"
+                                  resourceId="${id}"
+                                  contentLanguage="${contentLanguage}"
+                                  hasToBeIndexed="${indexIt}"
+                                  documentType="${context}"
+                                  helpCoverClass="droparea-cover-help-attachment-edit"/>
+</c:if>

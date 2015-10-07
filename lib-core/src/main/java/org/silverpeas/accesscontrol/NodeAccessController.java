@@ -34,7 +34,6 @@ import com.stratelia.webactiv.node.control.NodeService;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
@@ -50,7 +49,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     implements NodeAccessControl {
 
   @Inject
-  private ComponentAccessController componentAccessController;
+  private ComponentAccessControl componentAccessController;
 
   @Inject
   private OrganizationController controller;
@@ -58,7 +57,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   @Inject
   private NodeService nodeService;
 
-  protected NodeAccessController() {
+  NodeAccessController() {
+    // Instance by IoC only.
   }
 
   @Override
@@ -77,7 +77,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     }
 
     if (isRoleVerificationRequired) {
-      Set<SilverpeasRole> userRoles = getUserRoles(context, userId, nodePK);
+      Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
       if (sharingOperation) {
         SilverpeasRole greaterUserRole = SilverpeasRole.getGreaterFrom(userRoles);
         return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
@@ -88,17 +88,13 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     return authorized;
   }
 
-  public boolean isUserAuthorized(Set<SilverpeasRole> nodeUserRoles) {
-    return CollectionUtil.isNotEmpty(nodeUserRoles);
-  }
-
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, NodePK nodePK) {
 
     // Component access control
     final Set<SilverpeasRole> componentUserRoles =
-        getComponentAccessController().getUserRoles(context, userId, nodePK.getInstanceId());
+        getComponentAccessController().getUserRoles(userId, nodePK.getInstanceId(), context);
     if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
       return;
     }
@@ -112,7 +108,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
 
     NodeDetail node;
     try {
-      node = getNodeBm().getHeader(nodePK, false);
+      node = getNodeService().getHeader(nodePK, false);
     } catch (Exception ex) {
       SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
           "root.NO_EX_MESSAGE", ex);
@@ -129,7 +125,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     }
   }
 
-  public NodeService getNodeBm() {
+  private NodeService getNodeService() {
     return nodeService;
   }
 
@@ -145,7 +141,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
    * Gets a controller of access on the components of a publication.
    * @return a ComponentAccessController instance.
    */
-  protected ComponentAccessController getComponentAccessController() {
+  private ComponentAccessControl getComponentAccessController() {
     return componentAccessController;
   }
 }

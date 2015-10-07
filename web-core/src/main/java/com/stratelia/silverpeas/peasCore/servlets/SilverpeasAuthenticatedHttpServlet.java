@@ -146,4 +146,14 @@ public class SilverpeasAuthenticatedHttpServlet extends SilverpeasHttpServlet {
   protected SynchronizerTokenService getSynchronizerTokenService() {
     return tokenService;
   }
+
+  /**
+   * Retrieves the SessionInfo linked to the current request.
+   * @param request
+   * @return
+   */
+  protected SessionInfo getSessionInfo(final HttpServletRequest request) {
+    return SessionManagementProvider.getSessionManagement()
+        .getSessionInfo(getMainSessionController(request).getSessionId());
+  }
 }

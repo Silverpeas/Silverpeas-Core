@@ -25,6 +25,8 @@ package com.silverpeas.accesscontrol;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.apache.commons.collections.CollectionUtils;
+import org.silverpeas.util.CollectionUtil;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -53,20 +55,36 @@ public enum AccessControlOperation {
     }
   }
 
-  public static boolean hasAPersistentAction(Collection<AccessControlOperation> operations) {
-    if (PERSIST_ACTIONS.size() < operations.size()) {
-      for (AccessControlOperation op : PERSIST_ACTIONS) {
-        if (operations.contains(op)) {
-          return true;
-        }
-      }
-    } else {
-      for (AccessControlOperation op : operations) {
-        if (PERSIST_ACTIONS.contains(op)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  /**
+   * Indicates if it exists a persist action from the given collection.
+   * @param accessControlOperations actions.
+   * @return true if it exists at least one of persist action, false otherwise.
+   */
+  public static boolean isPersistActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) && !CollectionUtils
+        .intersection(AccessControlOperation.PERSIST_ACTIONS, accessControlOperations).isEmpty();
+  }
+
+  /**
+   * Indicates if it exists a sharing action from the given collection.
+   * @param accessControlOperations actions.
+   * @return true if it exists a sharing action, false otherwise.
+   */
+  public static boolean isSharingActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) &&
+        accessControlOperations.contains(sharing);
+  }
+
+  /**
+   * Indicates if it exists a download action from the given collection.
+   * @param accessControlOperations actions.
+   * @return true if it exists a download action, false otherwise.
+   */
+  public static boolean isDownloadActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) &&
+        accessControlOperations.contains(download);
   }
 }

@@ -28,7 +28,6 @@ import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
 
 import javax.inject.Singleton;
-import java.util.Set;
 
 /**
  * @author ehugonnet
@@ -36,11 +35,11 @@ import java.util.Set;
 @Singleton
 public class ComponentHelper {
 
-  protected ComponentHelper() {
+  public static ComponentHelper get() {
+    return ServiceProvider.getService(ComponentHelper.class);
   }
 
-  public Set<String> listComponentTypes() {
-    return Instanciateur.getWAComponents().keySet();
+  protected ComponentHelper() {
   }
 
   public String extractComponentName(String componentId) {

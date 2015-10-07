@@ -49,7 +49,7 @@ public class FileRepositoryManager {
   static String tempPath = "";
   static String domainPropertiesFolderPath;
   static String domainAuthenticationPropertiesFolderPath;
-  final static ResourceLocator uploadSettings = new ResourceLocator(
+  static ResourceLocator uploadSettings = new ResourceLocator(
       "org.silverpeas.util.uploads.uploadSettings", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";

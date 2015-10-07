@@ -40,6 +40,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
+import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.GeneralPropertiesManager;
@@ -236,6 +237,9 @@ public class SessionManager implements SessionManagement {
 
       // Clears all volatile resources
       VolatileResourceCacheService.clearFrom(si);
+
+      // Clears all upload sessions
+      UploadSession.clearFrom(si);
 
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());

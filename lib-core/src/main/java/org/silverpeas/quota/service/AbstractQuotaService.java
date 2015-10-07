@@ -24,6 +24,8 @@
 package org.silverpeas.quota.service;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.persistence.Transaction;
+import org.silverpeas.persistence.TransactionRuntimeException;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
@@ -35,80 +37,77 @@ import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.quota.repository.QuotaManager;
 
-import javax.enterprise.context.Initialized;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 /**
  * @author Yohann Chastagnier
  */
-@Transactional(Transactional.TxType.SUPPORTS)
 public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaService<T> {
 
   @Inject
   private QuotaManager quotaRepository;
 
-  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota initialize(final T key, final long maxCount) throws QuotaException {
     return initialize(key, 0, maxCount);
   }
 
-  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota initialize(final T key, final Quota quota) throws QuotaException {
     return initialize(key, quota.getMinCount(), quota.getMaxCount());
   }
 
-  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public Quota initialize(final T key, final long minCount, final long maxCount)
       throws QuotaException {
+    return requiredTransaction(() -> {
 
-    // Checking that it does not exist a quota with same key
-    final Quota quota = getByQuotaKey(key);
-    if (!quota.exists()) {
+      // Checking that it does not exist a quota with same key
+      final Quota quota = getByQuotaKey(key);
+      if (!quota.exists()) {
 
-      // If quota does not exist and maxCount is zero : stop
-      if (maxCount == 0) {
-        return quota;
+        // If quota does not exist and maxCount is zero : stop
+        if (maxCount == 0) {
+          return quota;
+        }
+
+        // Initializing the quota
+        quota.setType(key.getQuotaType());
+        quota.setResourceId(key.getResourceId());
       }
 
-      // Initializing the quota
-      quota.setType(key.getQuotaType());
-      quota.setResourceId(key.getResourceId());
-    }
+      // Modifying and saving if changes are detected
+      if (!quota.exists() || minCount != quota.getMinCount() || maxCount != quota.getMaxCount()) {
 
-    // Modifying and saving if changes are detected
-    if (!quota.exists() || minCount != quota.getMinCount() || maxCount != quota.getMaxCount()) {
+        // Setting the quota
+        quota.setMinCount(minCount);
+        quota.setMaxCount(maxCount);
 
-      // Setting the quota
-      quota.setMinCount(minCount);
-      quota.setMaxCount(maxCount);
+        // Validating
+        quota.validate();
 
-      // Validating
-      quota.validate();
-
-      // Saving
-      quotaRepository.saveAndFlush(quota);
-    }
-
-    // Returning the initialized quota
-    return quota;
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  @Override
-  public Quota get(final T key) throws QuotaException {
-    final Quota quota = getByQuotaKey(key);
-    if (quota.exists()) {
-      final long currentCount = getCurrentCount(key);
-      if (quota.getCount() != currentCount) {
-        quota.setCount(currentCount);
+        // Saving
         quotaRepository.saveAndFlush(quota);
       }
-    }
-    return quota;
+
+      // Returning the initialized quota
+      return quota;
+    });
+  }
+
+  @Override
+  public Quota get(final T key) throws QuotaException {
+    return requiredTransaction(() -> {
+      final Quota quota = getByQuotaKey(key);
+      if (quota.exists()) {
+        final long currentCount = getCurrentCount(key);
+        if (quota.getCount() != currentCount) {
+          quota.setCount(currentCount);
+          quotaRepository.saveAndFlush(quota);
+        }
+      }
+      return quota;
+    });
   }
 
   /**
@@ -177,12 +176,26 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     return quota;
   }
 
-  @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void remove(final T key) {
-    final Quota quota = getByQuotaKey(key);
-    if (quota.exists()) {
-      quotaRepository.delete(quota);
+    Transaction.performInOne(() -> {
+      final Quota quota = getByQuotaKey(key);
+      if (quota.exists()) {
+        quotaRepository.delete(quota);
+      }
+      return null;
+    });
+  }
+
+  private <RETURN_VALUE> RETURN_VALUE requiredTransaction(
+      final Transaction.Process<RETURN_VALUE> process) throws QuotaException {
+    try {
+      return Transaction.performInOne(process::execute);
+    } catch (TransactionRuntimeException e) {
+      if (e.getCause() instanceof QuotaException) {
+        throw (QuotaException) e.getCause();
+      }
+      throw e;
     }
   }
 

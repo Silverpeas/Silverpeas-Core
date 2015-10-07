@@ -32,13 +32,13 @@ import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.ComponentHelper;
-import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Set;
+
+import static org.silverpeas.util.StringUtil.getBooleanValue;
 
 /**
  * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be
@@ -56,37 +56,38 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Inject
   private ComponentHelper componentHelper;
 
-  protected ComponentAccessController() {
+  ComponentAccessController() {
+    // Instance by IoC only.
   }
 
-  /**
-   * Indicates that the rights are set on node as well as the component.
-   * @param componentId
-   * @return
-   */
+  @Override
   public boolean isRightOnTopicsEnabled(String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
-        getComponentParameterValue(componentId, "rightsOnTopics"));
+    return isThemeTracker(componentId) &&
+        isComponentInstanceParameterEnabled(componentId, "rightsOnTopics");
   }
 
-  /**
-   * Indicates that the rights are set on node as well as the component.
-   * @param componentId
-   * @return
-   */
+  @Override
   public boolean isCoWritingEnabled(String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
-        getComponentParameterValue(componentId, "coWriting"));
+    return isThemeTracker(componentId) &&
+        isComponentInstanceParameterEnabled(componentId, "coWriting");
   }
 
-  /**
-   * Indicates that the rights are set on node as well as the component.
-   * @param componentId
-   * @return
-   */
-  public boolean isSharingEnabled(String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
-        getComponentParameterValue(componentId, "useFileSharing"));
+  @Override
+  public boolean isFileSharingEnabled(String componentId) {
+    return isThemeTracker(componentId) &&
+        isComponentInstanceParameterEnabled(componentId, "useFileSharing");
+  }
+
+  @Override
+  public boolean isPublicationSharingEnabled(String componentId) {
+    return isThemeTracker(componentId) &&
+        isComponentInstanceParameterEnabled(componentId, "usePublicationSharing");
+  }
+
+  private boolean isComponentInstanceParameterEnabled(String componentId,
+      String componentParameterName) {
+    return getBooleanValue(getOrganisationController().
+        getComponentParameterValue(componentId, componentParameterName));
   }
 
   private boolean isThemeTracker(String componentId) {
@@ -96,13 +97,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   public boolean isUserAuthorized(String userId, String componentId,
       final AccessControlContext context) {
-    return isUserAuthorized(getUserRoles(context, userId, componentId));
+    return isUserAuthorized(getUserRoles(userId, componentId, context));
   }
-
-  public boolean isUserAuthorized(Set<SilverpeasRole> componentUserRoles) {
-    return CollectionUtil.isNotEmpty(componentUserRoles);
-  }
-
 
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
@@ -132,12 +128,12 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return;
     }
 
-    if (componentInst.isPublic() || StringUtil.getBooleanValue(
+    if (componentInst.isPublic() || getBooleanValue(
         getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
       userRoles.add(SilverpeasRole.user);
-      if (AccessControlOperation.hasAPersistentAction(context.getOperations()) &&
-          !context.getOperations().contains(AccessControlOperation.download) &&
-          !context.getOperations().contains(AccessControlOperation.sharing)) {
+      if (!AccessControlOperation.isPersistActionFrom(context.getOperations()) &&
+          !AccessControlOperation.isDownloadActionFrom(context.getOperations()) &&
+          !AccessControlOperation.isSharingActionFrom(context.getOperations())) {
         // In that case, it is not necessary to check deeper the user rights
         return;
       }

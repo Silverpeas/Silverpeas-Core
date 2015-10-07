@@ -26,9 +26,9 @@ package org.silverpeas.image.imagemagick;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.StringUtil;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.util.Map;
 
@@ -36,10 +36,10 @@ import java.util.Map;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class Im4javaManager {
+public class Im4javaManager implements Initialization {
 
-  @PostConstruct
-  public void initialize() throws Exception {
+  @Override
+  public void init() throws Exception {
 
     // Im4java settings
     if (!verify(ProcessStarter.getGlobalSearchPath())) {

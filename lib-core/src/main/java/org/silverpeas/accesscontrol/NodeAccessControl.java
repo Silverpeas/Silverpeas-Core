@@ -26,6 +26,7 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AccessController;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.silverpeas.util.ServiceProvider;
 
 /**
  * This interface extends access controller for a Node resource.

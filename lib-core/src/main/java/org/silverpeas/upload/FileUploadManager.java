@@ -34,7 +34,10 @@ import java.util.Iterator;
 
 /**
  * This manager permits to retrieve from {@link HttpServletRequest} a collection of
- * {@link UploadedFile}. User: Yohann Chastagnier Date: 18/03/13
+ * {@link UploadedFile}.<br/>
+ * This class must be used when silverpeas-fileUpload Silverpeas Javascript Plugin is used on
+ * client-side.<br/>
+ * @author Yohann Chastagnier
  */
 public class FileUploadManager {
 
@@ -59,8 +62,8 @@ public class FileUploadManager {
         if (attributeName.startsWith(UPLOADED_FILE_PREFIX_ID)) {
           // If an attribute name starts with {@link UPLOADED_FILE_PREFIX_ID} an {@link
           // UploadedFile} is performed.
-          uploadedFiles.add(UploadedFile.from(request, request.getParameter(attributeName),
-              uploader));
+          uploadedFiles.add(
+              UploadedFile.from(request, request.getParameter(attributeName), uploader));
         }
       }
 
@@ -72,8 +75,8 @@ public class FileUploadManager {
         if (!uploadedFile.getFile().exists()) {
           it.remove();
           SilverTrace.warn("upload", "FileUploadManager.getUploadedFiles", "EX_FILE_DOES_NOT_EXIST",
-              "FileUploadId: " + uploadedFile.getFileUploadId() + " - FileName: " + uploadedFile
-              .getFile().getName());
+              "UploadSessionId: " + uploadedFile.getUploadSession().getId() + " - FileName: " +
+                  uploadedFile.getFile().getName());
         }
       }
     }

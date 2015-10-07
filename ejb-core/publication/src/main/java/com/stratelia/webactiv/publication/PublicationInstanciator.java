@@ -77,7 +77,7 @@ public class PublicationInstanciator extends SQLRequest {
 
     try {
       // Delete the notations
-      RatingService.getInstance().deleteComponentRatings(componentId);
+      RatingService.get().deleteComponentRatings(componentId);
     } catch (Exception e) {
       // No exceptions are throwed because of those informations are not sensible.
     }

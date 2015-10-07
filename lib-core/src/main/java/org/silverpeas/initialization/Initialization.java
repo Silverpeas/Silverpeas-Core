@@ -38,7 +38,7 @@ public interface Initialization {
    * @throws java.lang.Exception if an error occurs during the initialization process. In this case
    * the Silverpeas startup fails.
    */
-  public void init() throws Exception;
+  void init() throws Exception;
 
   /**
    * Releases the previously initialized resources at Silverpeas shutdown. The implementation of
@@ -46,6 +46,6 @@ public interface Initialization {
    * @throws java.lang.Exception if an error occurs during the shutdown process. In this case, a log
    * will be outputed and the shutdown goes one.
    */
-  public default void release() throws Exception {
+  default void release() throws Exception {
   }
 }

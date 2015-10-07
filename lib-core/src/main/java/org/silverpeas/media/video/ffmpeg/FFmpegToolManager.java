@@ -23,17 +23,16 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import org.silverpeas.initialization.Initialization;
+
 import java.util.Map;
 
-@Singleton
-public class FFmpegToolManager {
+public class FFmpegToolManager implements Initialization {
 
   private static boolean isActivated = false;
 
-  @PostConstruct
-  public void initialize() throws Exception {
+  @Override
+  public void init() throws Exception {
 
     // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {

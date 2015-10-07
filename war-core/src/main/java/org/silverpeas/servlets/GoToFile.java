@@ -20,6 +20,8 @@
  */
 package org.silverpeas.servlets;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.codec.CharEncoding;
@@ -52,7 +54,8 @@ public class GoToFile extends GoTo {
 
     if (isUserLogin(req)) {
       // L'utilisateur a-t-il le droit de consulter le fichier
-      SimpleDocumentAccessControl accessController = SimpleDocumentAccessControl.get();
+      AccessController<SimpleDocument> accessController =
+          AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
       boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), attachment);
       if (isAccessAuthorized) {
         res.setCharacterEncoding(CharEncoding.UTF_8);
