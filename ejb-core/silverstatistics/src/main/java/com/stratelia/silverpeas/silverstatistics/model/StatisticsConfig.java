@@ -25,16 +25,16 @@
 package com.stratelia.silverpeas.silverstatistics.model;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -66,27 +66,24 @@ public class StatisticsConfig {
     allStatisticsConfig = new HashMap<>();
   }
 
-  public void initialize(ResourceBundle resource) throws SilverStatisticsConfigException {
+  public void initialize(SettingBundle settings) throws SilverStatisticsConfigException {
     String configTypeName = "";
     try {
       initGood = true;
-      String tokenSeparator = resource.getString(STATS_SEPARATOR);
+      String tokenSeparator = settings.getString(STATS_SEPARATOR);
       StringTokenizer stTypeStats =
-          new StringTokenizer(resource.getString(STATS_FAMILY), tokenSeparator);
+          new StringTokenizer(settings.getString(STATS_FAMILY), tokenSeparator);
       while (stTypeStats.hasMoreTokens()) {
         TypeStatistics currentType = new TypeStatistics();
         currentType.setName(stTypeStats.nextToken());
         configTypeName = currentType.getName();
-        currentType.setTableName(resource.getString(STATS_TABLE_NAME + currentType.getName()));
+        currentType.setTableName(settings.getString(STATS_TABLE_NAME + currentType.getName()));
         try {
-          currentType.setIsRun(
-              StringUtil.getBooleanValue(resource.getString(STATS_RUN + currentType.getName())));
-          currentType.setPurge(
-              Integer.parseInt(resource.getString(STATS_PURGE_IN_MONTH + currentType.getName())));
-          currentType.setIsAsynchron(StringUtil
-              .getBooleanValue(resource.getString(STATS_ASYNCHRON + currentType.getName())));
+          currentType.setIsRun(settings.getBoolean(STATS_RUN + currentType.getName()));
+          currentType.setPurge(settings.getInteger(STATS_PURGE_IN_MONTH + currentType.getName()));
+          currentType.setIsAsynchron(settings.getBoolean(STATS_ASYNCHRON + currentType.getName()));
           currentType
-              .setModeCumul(StatisticMode.valueOf(resource.getString(STATS_MODE_CUMUL + currentType.
+              .setModeCumul(StatisticMode.valueOf(settings.getString(STATS_MODE_CUMUL + currentType.
                   getName())));
         } catch (SilverStatisticsTypeStatisticsException | MissingResourceException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init",
@@ -94,13 +91,13 @@ public class StatisticsConfig {
         }
 
         StringTokenizer stKeyName =
-            new StringTokenizer(resource.getString(STATS_KEYS_NAME + currentType.getName()),
+            new StringTokenizer(settings.getString(STATS_KEYS_NAME + currentType.getName()),
                 tokenSeparator);
         StringTokenizer stKeyType =
-            new StringTokenizer(resource.getString(STATS_KEYS_TYPE + currentType.getName()),
+            new StringTokenizer(settings.getString(STATS_KEYS_TYPE + currentType.getName()),
                 tokenSeparator);
         StringTokenizer stKeyCumul =
-            new StringTokenizer(resource.getString(STATS_KEYS_CUMUL + currentType.getName()),
+            new StringTokenizer(settings.getString(STATS_KEYS_CUMUL + currentType.getName()),
                 tokenSeparator);
 
         while (stKeyName.hasMoreTokens()) {
@@ -126,10 +123,9 @@ public class StatisticsConfig {
    * @throws SilverStatisticsConfigException
    */
   public void init() throws SilverStatisticsConfigException {
-    ResourceBundle resource = FileUtil
-        .loadBundle("org.silverpeas.silverstatistics.SilverStatistics",
-            Locale.getDefault());
-    initialize(resource);
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.silverstatistics.SilverStatistics");
+    initialize(settings);
   }
 
   /**

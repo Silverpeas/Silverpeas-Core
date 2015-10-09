@@ -35,6 +35,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SMTPAppender;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.annotation.PostConstruct;
@@ -538,11 +540,11 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
     Logger.getRootLogger().getLoggerRepository().resetConfiguration();
     Logger.getRootLogger().setAdditivity(true);
     Logger.getRootLogger().setLevel(Level.ERROR);
-    ResourceBundle resources = FileUtil.loadBundle(
-        "org.silverpeas.silvertrace.settings.silverTrace", Locale.ROOT);
-    String pathFiles = resources.getString("pathSilverTrace");
-    String languageMessage = resources.getString("language");
-    errorDir = resources.getString("ErrorDir");
+    SettingBundle settings =
+        ResourceLocator.getSettingBundle("org.silverpeas.silvertrace.settings.silverTrace");
+    String pathFiles = settings.getString("pathSilverTrace");
+    String languageMessage = settings.getString("language");
+    errorDir = settings.getString("ErrorDir");
     // Load the available messages
     traceMessages.initFromProperties(pathFiles, languageMessage);
     // Get available modules

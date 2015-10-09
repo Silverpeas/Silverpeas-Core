@@ -23,34 +23,11 @@
  */
 package com.sun.portal.portletcontainer.invoker;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
-import com.sun.portal.container.ChannelMode;
-import com.sun.portal.container.ChannelState;
-import com.sun.portal.container.ChannelURLFactory;
-import com.sun.portal.container.ChannelURLType;
-import com.sun.portal.container.Container;
-import com.sun.portal.container.ContainerException;
-import com.sun.portal.container.ContainerFactory;
-import com.sun.portal.container.ContainerLogger;
-import com.sun.portal.container.ContainerRequest;
-import com.sun.portal.container.ContainerType;
-import com.sun.portal.container.ContentException;
-import com.sun.portal.container.EntityID;
-import com.sun.portal.container.ErrorCode;
-import com.sun.portal.container.ExecuteActionRequest;
-import com.sun.portal.container.ExecuteActionResponse;
-import com.sun.portal.container.GetMarkupRequest;
-import com.sun.portal.container.GetMarkupResponse;
-import com.sun.portal.container.GetResourceRequest;
-import com.sun.portal.container.GetResourceResponse;
-import com.sun.portal.container.PortletWindowContext;
-import com.sun.portal.container.PortletWindowContextAbstractFactory;
-import com.sun.portal.container.PortletWindowContextException;
-import com.sun.portal.container.PortletWindowContextFactory;
-import com.sun.portal.container.WindowRequestReader;
+import com.sun.portal.container.*;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 import com.sun.portal.portletcontainer.invoker.util.PortletWindowRules;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +37,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -1154,10 +1130,6 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
    * @return <code>ResourceBundle</code>.
    */
   public ResourceBundle getResourceBundle(String base) {
-    Locale locale = null;
-    locale = new Locale(getPortletWindowContext().
-        getLocaleString());
-    return FileUtil.loadBundle(base,
-        locale);
+    return ResourceLocator.getLocalizationBundle(base, getPortletWindowContext().getLocaleString());
   }
 }

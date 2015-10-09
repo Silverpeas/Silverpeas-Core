@@ -35,6 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,10 +76,9 @@ public class StatisticsConfigTest {
   @Before
   public void initialiseConfig() throws Exception {
     instance = new StatisticsConfig();
-    ResourceBundle resource = FileUtil
-        .loadBundle("com.stratelia.silverpeas.silverstatistics.SilverStatisticsTest",
-            Locale.getDefault());
-    instance.initialize(resource);
+    SettingBundle settings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.silverstatistics.SilverStatisticsTest");
+    instance.initialize(settings);
   }
 
   /**

@@ -22,9 +22,8 @@ package org.silverpeas.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
-import org.apache.commons.codec.binary.Hex;
-import org.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,12 +31,10 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedHashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -409,34 +406,6 @@ public class StringUtil extends StringUtils {
       return s2 == null;
     }
     return s1.equals(s2);
-  }
-
-  /**
-   * Parse a String into a float using the default locale.
-   *
-   * @param value the string to be parsed into a float.
-   * @return the float value.
-   * @throws ParseException
-   */
-  public static float floatValue(String value) throws ParseException {
-    return floatValue(value, I18NHelper.defaultLanguage);
-  }
-
-  /**
-   * Parse a String into a float using the specified locale.
-   *
-   * @param value the string to be parsed into a float
-   * @param language the language for defining the locale
-   * @return the float value.
-   * @throws ParseException
-   */
-  public static float floatValue(String value, String language) throws ParseException {
-    String lang = language;
-    if (!StringUtil.isDefined(language)) {
-      lang = I18NHelper.defaultLanguage;
-    }
-    NumberFormat numberFormat = NumberFormat.getInstance(new Locale(lang));
-    return numberFormat.parse(value).floatValue();
   }
 
   /**

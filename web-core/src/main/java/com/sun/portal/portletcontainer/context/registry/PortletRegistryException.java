@@ -24,6 +24,9 @@
 package com.sun.portal.portletcontainer.context.registry;
 
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
+
 import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -114,7 +117,7 @@ public class PortletRegistryException extends Exception {
   @Override
   public String getMessage() {
     // non-localized resource bundle
-    ResourceBundle rb = FileUtil.loadBundle(RESOURCE_BASE, Locale.getDefault());
+    LocalizationBundle rb = ResourceLocator.getLocalizationBundle(RESOURCE_BASE);
     return getMessageFromRB(rb, key, tokens);
   }
 
@@ -135,7 +138,8 @@ public class PortletRegistryException extends Exception {
   @Override
   public String getLocalizedMessage() {
     // localized resource bundle
-    ResourceBundle rb = FileUtil.loadBundle(RESOURCE_BASE, locale);
+    LocalizationBundle rb =
+        ResourceLocator.getLocalizationBundle(RESOURCE_BASE, locale.getLanguage());
     String msg;
     try {
       msg = getMessageFromRB(rb, key, tokens);

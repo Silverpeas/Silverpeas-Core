@@ -24,8 +24,6 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.StringUtil;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
@@ -34,6 +32,10 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SMTPAppender;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -226,19 +228,18 @@ public class SilverLog {
    */
   static protected void initAll() {
     try {
-      ResourceBundle resource =
-          FileUtil.loadBundle("org.silverpeas.silvertrace.settings.silverLog",
-          new Locale("", ""));
-      logDir = resource.getString("LogDir");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.silvertrace.settings.silverLog");
+      logDir = settings.getString("LogDir");
 
       if (currentLogger != null) {
         currentLogger.getRoot().getLoggerRepository().resetConfiguration();
         // currentLogger.getRoot().getHierarchy().resetConfiguration();
       }
 
-      currentLogger = Logger.getLogger(resource.getString("module.path"));
-      logModule = resource.getString("module.name");
-      initFromBundle(resource);
+      currentLogger = Logger.getLogger(settings.getString("module.path"));
+      logModule = settings.getString("module.name");
+      initFromBundle(settings);
 
     } catch (Exception e) {
       SilverTrace.error("silvertrace", "SilverLog.resetAll()", "silvertrace.ERR_INIT_TRACE", e);
@@ -247,12 +248,12 @@ public class SilverLog {
 
   /**
    * Loads the configuration from the resource given in argument.
-   * @param resource the properties to merge with the current configuration
+   * @param settings the SilverLog settings to merge with the current configuration
    */
-  static public void initFromBundle(ResourceBundle resource) {
+  static public void initFromBundle(SettingBundle settings) {
     try {
       int i = 0;
-      String appenderTypeStr = resource.getString("appender" + i + ".type");
+      String appenderTypeStr = settings.getString("appender" + i + ".type");
       int appenderTypeInt;
       // for each appenders
       while (appenderTypeStr != null) {
@@ -268,16 +269,15 @@ public class SilverLog {
         } else {
           appenderTypeInt = APPENDER_ALL;
         }
-        boolean appenderEnabled =
-            MsgTrace.getBooleanProperty(resource, "appender" + i + ".enabled", true);
+        boolean appenderEnabled = settings.getBoolean("appender" + i + ".enabled", true);
         if ((appenderTypeInt != APPENDER_ALL) && appenderEnabled) {
           // Create the appender and attach it to his module
-          addAppenderFromBundle(resource, i, appenderTypeInt);
+          addAppenderFromBundle(settings, i, appenderTypeInt);
         }
         i++;
 
         try {
-          appenderTypeStr = resource.getString("appender" + i + ".type");
+          appenderTypeStr = settings.getString("appender" + i + ".type");
         } catch (MissingResourceException ex) {
           appenderTypeStr = null;
         }
@@ -290,11 +290,11 @@ public class SilverLog {
 
   /**
    * Read appender information from a property file and attach it to it's module
-   * @param resource
+   * @param settings
    * @param appenderNumber
    * @param appenderType
    */
-  static protected void addAppenderFromBundle(ResourceBundle resource,
+  static protected void addAppenderFromBundle(SettingBundle settings,
       int appenderNumber, int appenderType) {
     String fileName;
     String consoleName;
@@ -309,21 +309,20 @@ public class SilverLog {
     // Retrieve the properties of the current appender and call the function
     // that will create and attach it
 
-    String layout = resource.getString("appender" + appenderNumber + ".layout");
+    String layout = settings.getString("appender" + appenderNumber + ".layout");
     switch (appenderType) {
       case APPENDER_CONSOLE:
-        consoleName = resource.getString("appender" + appenderNumber + ".consoleName");
+        consoleName = settings.getString("appender" + appenderNumber + ".consoleName");
         addAppenderConsole(layout, consoleName);
         break;
       case APPENDER_FILE:
-        fileName = translateFileName(resource.getString("appender" + appenderNumber + ".fileName"));
-        append =
-            MsgTrace.getBooleanProperty(resource, "appender" + appenderNumber + ".append", true);
+        fileName = translateFileName(settings.getString("appender" + appenderNumber + ".fileName"));
+        append = settings.getBoolean("appender" + appenderNumber + ".append", true);
         addAppenderFile(layout, fileName, append);
         break;
       case APPENDER_ROLLING_FILE:
-        fileName = translateFileName(resource.getString("appender" + appenderNumber + ".fileName"));
-        rollingModeName = resource.getString("appender" + appenderNumber + ".rollingMode");
+        fileName = translateFileName(settings.getString("appender" + appenderNumber + ".fileName"));
+        rollingModeName = settings.getString("appender" + appenderNumber + ".rollingMode");
         if (rollingModeName == null) {
           rollingMode = ROLLING_MODE_DAILY;
         } else if ("ROLLING_MODE_MOUNTH".equalsIgnoreCase(rollingModeName)) {
@@ -342,10 +341,10 @@ public class SilverLog {
         addAppenderRollingFile(layout, fileName, rollingMode);
         break;
       case APPENDER_MAIL:
-        mailHost = resource.getString("appender" + appenderNumber + ".mailHost");
-        mailFrom = resource.getString("appender" + appenderNumber + ".mailFrom");
-        mailTo = resource.getString("appender" + appenderNumber + ".mailTo");
-        mailSubject = resource.getString("appender" + appenderNumber + ".mailSubject");
+        mailHost = settings.getString("appender" + appenderNumber + ".mailHost");
+        mailFrom = settings.getString("appender" + appenderNumber + ".mailFrom");
+        mailTo = settings.getString("appender" + appenderNumber + ".mailTo");
+        mailSubject = settings.getString("appender" + appenderNumber + ".mailSubject");
         addAppenderMail(layout, mailHost, mailFrom, mailTo, mailSubject);
         break;
     }

@@ -43,7 +43,6 @@ import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.cache.service.VolatileResourceCacheService;
 import org.silverpeas.upload.UploadSession;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -61,9 +60,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.UUID;
 
 /**
@@ -121,9 +118,9 @@ public class SessionManager implements SessionManagement {
       maxRefreshInterval = (60 + Long.parseLong(rl.getString("IntervalInSec"))) * 1000;
 
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
-      ResourceBundle resources = FileUtil.loadBundle("org.silverpeas.peasCore"
-          + ".SessionManager", new Locale("", ""));
-      String language = resources.getString("language");
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
+      String language = settings.getString("language");
       if (!StringUtil.isDefined(language)) {
         language = I18NHelper.defaultLanguage;
       }
@@ -131,14 +128,12 @@ public class SessionManager implements SessionManagement {
           ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
               language);
       scheduledSessionManagementTimeStamp = convertMinuteInMilliseconds(
-          Long.parseLong(resources.getString("scheduledSessionManagementTimeStamp")));
-      userSessionTimeout = convertMinuteInMilliseconds(
-          Long.parseLong(resources.getString("userSessionTimeout")));
+          settings.getLong("scheduledSessionManagementTimeStamp"));
+      userSessionTimeout = convertMinuteInMilliseconds(settings.getLong("userSessionTimeout"));
       if (scheduledSessionManagementTimeStamp > userSessionTimeout) {
         scheduledSessionManagementTimeStamp = userSessionTimeout;
       }
-      adminSessionTimeout = convertMinuteInMilliseconds(
-          Long.parseLong(resources.getString("adminSessionTimeout")));
+      adminSessionTimeout = convertMinuteInMilliseconds(settings.getLong("adminSessionTimeout"));
       if (scheduledSessionManagementTimeStamp > adminSessionTimeout) {
         scheduledSessionManagementTimeStamp = adminSessionTimeout;
       }

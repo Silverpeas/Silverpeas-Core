@@ -1065,10 +1065,9 @@ public class ImportExport extends AbstractExportProcess {
   public void writeImportToLog(ImportReport importReport, MultiSilverpeasBundle resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
-      ResourceBundle resources = FileUtil
-          .loadBundle("org.silverpeas.silvertrace.settings.silverTrace",
-              new Locale("", ""));
-      String reportLogPath = resources.getString("ErrorDir");
+      SettingBundle silverTraceSettings =
+          ResourceLocator.getSettingBundle("org.silverpeas.silvertrace.settings.silverTrace");
+      String reportLogPath = silverTraceSettings.getString("ErrorDir");
       File file = new File(reportLogPath + separator + reportLogFile);
       Writer fileWriter = null;
       try {

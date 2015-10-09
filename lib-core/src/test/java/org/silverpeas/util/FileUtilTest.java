@@ -144,16 +144,6 @@ public class FileUtilTest {
     assertArrayEquals(expResult, result);
   }
 
-  /**
-   * Test of loadBundle method, of class FileUtil.
-   */
-  @Test
-  public void testLoadBundle() {
-    String name = "com/stratelia/webactiv/multilang/generalMultilang";
-    ResourceBundle result = FileUtil.loadBundle(name, Locale.FRENCH);
-    assertNotNull(result);
-  }
-
   @Test
   public void testIsArchive() {
     assertTrue(FileUtil.isArchive("toto.zip"));

@@ -24,27 +24,22 @@
 
 package org.silverpeas.util.viewGenerator.html.icons;
 
-import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
-import java.util.Properties;
 
 public class MimeTypeIconTag extends TagSupport {
 
   private static final long serialVersionUID = 4375920954086066884L;
   private static final String DEFAULT_STYLE = "unknown";
-  private static final Properties STYLES = new Properties();
-  static {
-    try {
-      FileUtil.loadProperties(STYLES, "org/silverpeas/view/generator/mime_types_styles.properties");
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+  private static final SettingBundle styles =
+      ResourceLocator.getSettingBundle("org.silverpeas.view.generator.mime_types_styles");
+
   private String fileExtension = "";
   private String divId = "";
 
@@ -60,10 +55,10 @@ public class MimeTypeIconTag extends TagSupport {
   public int doStartTag() throws JspException {
     try {
       boolean styleFound = true;
-      String style = STYLES.getProperty(this.fileExtension);
-      if (style == null) {
+      String style = styles.getString(this.fileExtension, "");
+      if (style.isEmpty()) {
         styleFound = false;
-        style = STYLES.getProperty(DEFAULT_STYLE);
+        style = styles.getString(DEFAULT_STYLE);
       }
       pageContext.getOut().print("<div class=\"");
       pageContext.getOut().print(style);

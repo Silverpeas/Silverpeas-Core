@@ -31,7 +31,9 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,17 +50,8 @@ import java.util.ResourceBundle;
  */
 public class SilverStatisticsVolumeAlimentation {
 
-  private static ResourceBundle resources = null;
-
-  static {
-    try {
-      resources = FileUtil.loadBundle("org.silverpeas.silverstatistics.SilverStatistics",
-          Locale.getDefault());
-    } catch (Exception ex) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsVolumeAlimentation",
-          "root.EX_CLASS_NOT_INITIALIZED", ex);
-    }
-  }
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.silverstatistics.SilverStatistics");
 
   /**
    * Method declaration
@@ -166,7 +159,7 @@ public class SilverStatisticsVolumeAlimentation {
     String componentStatisticsClassName;
 
     try {
-      componentStatisticsClassName = resources.getString(componentName);
+      componentStatisticsClassName = settings.getString(componentName);
     } catch (MissingResourceException e) {
       componentStatisticsClassName = null;
       SilverTrace.error("silverstatistics",
