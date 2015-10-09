@@ -177,15 +177,13 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
       String valueFieldType, Collection<String> entries, PagesContext pageContext,
       StringBuilder html) {
     String fieldName = template.getFieldName();
-    int zindex =
-        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex()))
-        * 9000;
+    int zindex = 100;
     html.append("<style type=\"text/css\">\n").append(" #listAutocomplete").append(fieldName).
         append(" {\n");
     html.append("  width:15em;\n");
     html.append("  padding-bottom:2em;\n");
     html.append(" }\n");
-    html.append(" #listAutocomplete").append(fieldName).append(" {\n");
+    html.append(" #container").append(fieldName).append(" {\n");
     html.append("  z-index:").append(zindex).append(
         "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
     html.append(" }\n");
@@ -210,10 +208,10 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
         && !template.isHidden() && pageContext.useMandatory()) {
       html
-          .append("<img src=\"")
-          .append(mandatoryImg)
+          .append("<img src=\"").append(mandatoryImg)
           .append(
-          "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
+              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;" +
+                  "left:16em;top:5px\"/>\n");
     }
 
     html.append("<script type=\"text/javascript\">\n");

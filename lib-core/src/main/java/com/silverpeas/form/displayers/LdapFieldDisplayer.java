@@ -216,11 +216,10 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
     }
     StringBuilder html = new StringBuilder(10000);
     if (listRes != null && !listRes.isEmpty()) {
-      int zindex = (pagesContext.getLastFieldIndex() - Integer.parseInt(pagesContext.
-          getCurrentFieldIndex())) * 9000;
+      int zindex = 100;
       html.append("<style type=\"text/css\">\n").append("	#listAutocomplete").append(fieldName);
       html.append(" {\n").append("		width:15em;\n").append("		padding-bottom:2em;\n");
-      html.append("	}\n").append("	#listAutocomplete").append(fieldName).append(" {\n");
+      html.append("	}\n").append("	#container").append(fieldName).append(" {\n");
       html.append("		z-index:").append(zindex);
       html
           .append("; /* z-index needed on top instance for ie & sf absolute inside relative issue ");
