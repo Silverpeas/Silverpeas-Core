@@ -23,41 +23,50 @@
  */
 package com.silverpeas.workflow.engine.instance;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.silverpeas.attachment.AttachmentServiceProvider;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.form.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.DataRecordUtil;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.fieldType.MultipleUserField;
 import com.silverpeas.form.fieldType.TextField;
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.StringUtil;
+import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.instance.*;
+import com.silverpeas.workflow.api.instance.Actor;
+import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.Participant;
+import com.silverpeas.workflow.api.instance.ProcessInstance;
+import com.silverpeas.workflow.api.instance.Question;
+import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
 import com.silverpeas.workflow.api.model.*;
-import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.LazyProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.StringUtil;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library to
@@ -1785,7 +1794,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
     // Then process related users
     for (int i = 0; i < relatedUsers.length; i++) {
-      User user = null;
+      User[] users = null;
       String relation = relatedUsers[i].getRelation();
 
       if (relatedUsers[i].getParticipant() != null) {
@@ -1793,32 +1802,40 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
         Participant participant = this.getParticipant(resolvedState);
         if (participant != null) {
-          user = participant.getUser();
+          users = ArrayUtil.add(users, participant.getUser());
         }
       } else if (relatedUsers[i].getFolderItem() != null) {
         String fieldName = relatedUsers[i].getFolderItem().getName();
         Field field = getField(fieldName);
-        String userId = field.getStringValue();
-        if (userId != null && userId.length() > 0) {
-          user = userManager.getUser(userId);
+        if (field instanceof UserField) {
+          String userId = field.getStringValue();
+          if (StringUtil.isDefined(userId)) {
+            users = ArrayUtil.add(users, userManager.getUser(userId));
+          }
+        } else if (field instanceof MultipleUserField) {
+          MultipleUserField multipleUserField = (MultipleUserField) field;
+          String[] userIds = multipleUserField.getUserIds();
+          users = ArrayUtil.addAll(users, userManager.getUsers(userIds));
         }
       }
 
-      if (user != null) {
-        if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
-          user = userManager.getRelatedUser(user, relation, modelId);
-        }
+      if (!ArrayUtil.isEmpty(users)) {
+        for (User user : users) {
+          if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
+            user = userManager.getRelatedUser(user, relation, modelId);
+          }
 
-        // Get the role to which affect the user
-        // if no role defined in related user
-        // then get the one defined in qualifiedUser
-        String role = relatedUsers[i].getRole();
-        if (role == null) {
-          role = qualifiedUsers.getRole();
-        }
+          // Get the role to which affect the user
+          // if no role defined in related user
+          // then get the one defined in qualifiedUser
+          String role = relatedUsers[i].getRole();
+          if (role == null) {
+            role = qualifiedUsers.getRole();
+          }
 
-        if (user != null) {
-          actors.add(new ActorImpl(user, role, state));
+          if (user != null) {
+            actors.add(new ActorImpl(user, role, state));
+          }
         }
       }
     }
