@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DBDriver-configuration version="1.O">
+
+  <Drivers-Declaration>
+    <param>
+      <param-name>Drivers</param-name>
+      <param-description>list of available drivers</param-description>
+      <param-value>BD_Silverpeas</param-value>
+      <param-value>SQL_Access_Example</param-value>
+      <param-value>Oracle_Access_Example</param-value>
+      <param-value>BOTA_Access_Example</param-value>
+      <param-value>Postgres_Access_Example</param-value>
+    </param>
+  </Drivers-Declaration>
+
+  <Drivers-Definition>
+    <BD_Silverpeas-configuration>
+      <param>
+        <param-name>DriverName</param-name>
+        <param-description>name of the driver</param-description>
+        <param-value>Accès a la base de donnée SILVERPEAS</param-value>
+      </param>
+      <param>
+        <param-name>ClassName</param-name>
+        <param-description>class name of the driver</param-description>
+        <param-value>com.inet.tds.TdsDriver</param-value>
+      </param>
+      <param>
+        <param-name>Description</param-name>
+        <param-description>description of the driver</param-description>
+        <param-value>Paramétrage d'accès à la base de données Silverpeas</param-value>
+      </param>
+      <param>
+        <param-name>JDBCUrl</param-name>
+        <param-description>Connexion url</param-description>
+        <param-value>jdbc:inetdae7:serveur?database=base&amp;port=1433</param-value>
+      </param>
+    </BD_Silverpeas-configuration>
+
+    <SQL_Access_Example-configuration>
+      <param>
+        <param-name>DriverName</param-name>
+        <param-description>name of the driver</param-description>
+        <param-value>Acces a la base de tests SQL Server</param-value>
+      </param>
+      <param>
+        <param-name>ClassName</param-name>
+        <param-description>class name of the driver</param-description>
+        <param-value>com.inet.tds.TdsDriver</param-value>
+      </param>
+      <param>
+        <param-name>Description</param-name>
+        <param-description>description of the driver</param-description>
+        <param-value>Ceci est un exemple d'acces a une base de donnees SQL Server</param-value>
+      </param>
+      <param>
+        <param-name>JDBCUrl</param-name>
+        <param-description>connexion url</param-description>
+        <param-value>jdbc:inetdae7:silver-fs?database=SilverpeasKMEdition</param-value>
+      </param>
+    </SQL_Access_Example-configuration>
+
+    <Oracle_Access_Example-configuration>
+      <param>
+        <param-name>DriverName</param-name>
+        <param-description>name of the driver</param-description>
+        <param-value>Acces a la base de tests Oracle</param-value>
+      </param>
+      <param>
+        <param-name>ClassName</param-name>
+        <param-description>class name of the driver</param-description>
+        <param-value>com.inet.ora.OraDriver</param-value>
+      </param>
+      <param>
+        <param-name>Description</param-name>
+        <param-description>description of the driver</param-description>
+        <param-value>Ceci est un exemple d'acces a une base de donnees Oracle</param-value>
+      </param>
+      <param>
+        <param-name>JDBCUrl</param-name>
+        <param-description>connexion url</param-description>
+        <param-value>jdbc:inetora:silver-rel:1521:SilverRe</param-value>
+      </param>
+    </Oracle_Access_Example-configuration>
+
+    <BOTA_Access_Example-configuration>
+      <param>
+        <param-name>DriverName</param-name>
+        <param-description>name of the driver</param-description>
+        <param-value>BOTA ACCESS EX</param-value>
+      </param>
+      <param>
+        <param-name>ClassName</param-name>
+        <param-description>class name of the driver</param-description>
+        <param-value>com.inet.tds.TdsDriver</param-value>
+      </param>
+      <param>
+        <param-name>Description</param-name>
+        <param-description>description of the driver</param-description>
+        <param-value>Ceci est un exemple d'acces a une base de donnees SQL Server</param-value>
+      </param>
+      <param>
+        <param-name>JDBCUrl</param-name>
+        <param-description>connexion url</param-description>
+        <param-value>jdbc:inetdae7:silver-nd?database=BDCentrale</param-value>
+      </param>
+    </BOTA_Access_Example-configuration>
+
+    <Postgres_Access_Example-configuration>
+      <param>
+        <param-name>DriverName</param-name>
+        <param-description>name of the driver</param-description>
+        <param-value>Acces a la base de tests Postgres</param-value>
+      </param>
+      <param>
+        <param-name>ClassName</param-name>
+        <param-description>class name of the driver</param-description>
+        <param-value>org.postgresql.Driver</param-value>
+      </param>
+      <param>
+        <param-name>Description</param-name>
+        <param-description>description of the driver</param-description>
+        <param-value>Ceci est un exemple d'acces a une base de donnees Postgres</param-value>
+      </param>
+      <param>
+        <param-name>JDBCUrl</param-name>
+        <param-description>connexion url</param-description>
+        <param-value>jdbc:postgresql://localhost:5432/SilverpeasV5DLE</param-value>
+      </param>
+    </Postgres_Access_Example-configuration>
+  </Drivers-Definition>
+
+  <DataType-Definition>
+    <DataType name="BIGINT" sqlType="java.sql.Types.BIGINT" javaType="java.lang.Long"/>
+    <DataType name="BOOLEAN" sqlType="java.sql.Types.BIT" javaType="java.lang.Boolean"/>
+    <DataType name="CHAR" sqlType="java.sql.Types.CHAR" javaType="java.lang.String" length="true"/>
+    <DataType name="DATE" sqlType="java.sql.Types.DATE" javaType="java.sql.Date"/>
+    <DataType name="DOUBLE" sqlType="java.sql.Types.DOUBLE" javaType="java.lang.Double"/>
+    <DataType name="INTEGER" sqlType="java.sql.Types.INTEGER" javaType="java.lang.Integer"/>
+    <DataType name="NUMERIC" sqlType="java.sql.Types.NUMERIC" javaType="java.math.BigDecimal" length="true"/>
+    <DataType name="REAL" sqlType="java.sql.Types.REAL" javaType="java.lang.Float"/>
+    <DataType name="SMALLINT" sqlType="java.sql.Types.SMALLINT" javaType="java.lang.Short"/>
+    <DataType name="TIME" sqlType="java.sql.Types.TIME" javaType="java.sql.Time"/>
+    <DataType name="TIMESTAMP" sqlType="java.sql.Types.TIMESTAMP" javaType="java.sql.Timestamp"/>
+    <DataType name="VARCHAR" sqlType="java.sql.Types.VARCHAR" javaType="java.lang.String" length="true"/>
+  </DataType-Definition>
+
+</DBDriver-configuration>

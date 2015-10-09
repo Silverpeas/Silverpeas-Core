@@ -23,22 +23,14 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
-
 
 /**
  * The resource locator gives access to the resource bundles (bundles of localized resources and of
@@ -69,17 +61,12 @@ import java.util.logging.Logger;
  */
 public class ResourceLocator implements Serializable {
 
-  private static final long serialVersionUID = -2389291572691404932L;
+  private static final long serialVersionUID = 2122704362993398977L;
   private static final int INITIAL_CACHE_SIZE = 128;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
   private static final ConcurrentMap<String, SilverpeasBundle> bundles =
       new ConcurrentHashMap<>(INITIAL_CACHE_SIZE);
-
-  final static String DEFAULT_EXTENSION = ".properties";
-  private String propertyFile = null;
-  private Locale propertyLocale = null;
-  private ResourceLocator defaultResource = null;
 
   /**
    * Gets the localized resource defined under the specified full qualified name and for the
@@ -126,6 +113,22 @@ public class ResourceLocator implements Serializable {
   public static SettingBundle getSettingBundle(String name) {
     return (SettingBundle) bundles.computeIfAbsent(name,
         n -> new SettingBundle(name, ResourceLocator::loadResourceBundle));
+  }
+
+  /**
+   * Gets setting resource that is defined in an XML bundle under the specified full qualified name.
+   * This resource is set of settings to configure some behaviours of a Silverpeas functionality.
+   * </p>
+   * To have a glance on the schema of the XML bundle, please see
+   * {@code org.silverpeas.util.XmlSettingBundle}.
+   * @param name the full qualified name of the localized resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @return the XML bundle with the asked settings.
+   */
+  public static XmlSettingBundle getXmlSettingBundle(String name) {
+    return (XmlSettingBundle) bundles.computeIfAbsent(name,
+        n -> new XmlSettingBundle(name, ResourceLocator::loadResourceBundleAsStream));
   }
 
   /**
@@ -184,449 +187,4 @@ public class ResourceLocator implements Serializable {
     }
     return inputStream;
   }
-
-
-  // --------------------------------------------------------------------------------------------
-  // METHODS for .properties
-  // --------------------------------------------------------------------------------------------
-
-
-  private ResourceBundle getResourceBundle(String sPropertyFile, Locale locale) {
-    return FileUtil.loadBundle(sPropertyFile, locale);
-  }
-
-  /**
-   * Return the value of the given attribut in the Property created with the ResourceLocator
-   * constructor
-   * @param sAttribut
-   * @return
-   */
-  public String getString(String sAttribut) {
-    ResourceBundle bundle = this.getResourceBundle(propertyFile, propertyLocale);
-    try {
-      if (!bundle.containsKey(sAttribut) && this.defaultResource != null) {
-        return this.defaultResource.getString(sAttribut);
-      }
-      return bundle.getString(sAttribut);
-    } catch (MissingResourceException msrex) {
-      SilverTrace.warn("util", "ResourceLocator.getString", "util.MSG_NO_ATTR_VALUE",
-          "File : " + propertyFile + " | Attribut : " + sAttribut);
-      return null;
-    }
-  }
-
-  /**
-   * Return the value of the given attribut in the Property created with the ResourceLocator
-   * constructor
-   * @param sAttribut
-   * @param defaultValue
-   * @return
-   */
-  public String getString(String sAttribut, String defaultValue) {
-    String sReturn = getString(sAttribut);
-    if (!StringUtil.isDefined(sReturn)) {
-      sReturn = defaultValue;
-    }
-    return sReturn;
-  }
-
-  /**
-   * Return the value of the given attribut in the Property created with the ResourceLocator
-   * constructor
-   * @param sAttribut
-   * @param defaultValue
-   * @return
-   */
-  public boolean getBoolean(String sAttribut, boolean defaultValue) {
-    String value = getString(sAttribut);
-    if (value == null || value.trim().isEmpty()) {
-      return defaultValue;
-    }
-    return StringUtil.getBooleanValue(value);
-  }
-
-  /**
-   * Gets the value as a long of the specified attributes in the resource bundle located by this
-   * ResourceLocator. It no such attribute exists or has no value, then returns the specified
-   * default value.
-   * @param sAttribute the attribute to look up in the resource bundle.
-   * @param defaultValue the default value to return wether no such property exists in the resource
-   * bundle.
-   * @return the value as a long.
-   */
-  public long getLong(final String sAttribute, long defaultValue) {
-    String value = getString(sAttribute);
-    if (value == null || value.trim().isEmpty() && !StringUtil.isLong(value)) {
-      return defaultValue;
-    }
-    return Long.parseLong(value);
-  }
-
-  /**
-   * Gets the value as a float of the specified attributes in the resource bundle located by this
-   * ResourceLocator. It no such attribute exists or has no value, then returns the specified
-   * default value.
-   * @param sAttribute the attribute to look up in the resource bundle.
-   * @param defaultValue the default value to return wether no such property exists in the resource
-   * bundle.
-   * @return the value as a float.
-   */
-  public float getFloat(final String sAttribute, float defaultValue) {
-    String value = getString(sAttribute);
-    if (value == null || value.trim().isEmpty() && !StringUtil.isFloat(value)) {
-      return defaultValue;
-    }
-    return Float.parseFloat(value);
-  }
-
-  /**
-   * Gets the value as an integer of the specified attributes in the resource bundle located by this
-   * ResourceLocator. It no such attribute exists or has no value, then returns the specified
-   * default value.
-   * @param sAttribute the attribute to look up in the resource bundle.
-   * @param defaultValue the default value to return wether no such property exists in the resource
-   * bundle.
-   * @return the value as an integer.
-   */
-  public int getInteger(final String sAttribute, int defaultValue) {
-    String value = getString(sAttribute);
-    if (value == null || value.trim().isEmpty() && !StringUtil.isInteger(value)) {
-      return defaultValue;
-    }
-    return Integer.parseInt(value);
-  }
-
-  public String getStringWithParam(String resName, String param) {
-    String[] params = { param };
-    return getStringWithParams(resName, params);
-  }
-
-  public String getStringWithParams(String resName, String[] params) {
-    String theSt = getString(resName);
-    if (theSt != null) {
-      StringBuilder theResult = new StringBuilder();
-      int theStarIndex = -1;
-      int theParamIndex = 0;
-      int thePreviousIndex = 0;
-
-      theStarIndex = theSt.indexOf('*');
-      while ((theStarIndex >= 0) && (theParamIndex < params.length)) {
-        theResult.append(theSt.substring(thePreviousIndex, theStarIndex));
-        theResult.append(params[theParamIndex++]);
-        thePreviousIndex = theStarIndex + 1;
-        if (thePreviousIndex < theSt.length()) {
-          theStarIndex = theSt.indexOf('*', thePreviousIndex);
-        } else {
-          theStarIndex = -1;
-        }
-      }
-      theResult.append(theSt.substring(thePreviousIndex));
-      return theResult.toString();
-    }
-    return null;
-  }
-
-
-  /**
-   * Return an enumeration of all keys in the property file loaded
-   * @return
-   */
-  public Enumeration<String> getKeys() {
-    ResourceBundle bundle = this.getResourceBundle(propertyFile, propertyLocale);
-    return bundle.getKeys();
-  }
-
-  public ResourceBundle getResourceBundle() {
-    return this.getResourceBundle(propertyFile, propertyLocale);
-  }
-
-  /**
-   * Return the properties *
-   * @return
-   */
-  public Properties getProperties() {
-    ResourceBundle bundle = this.getResourceBundle(propertyFile, propertyLocale);
-    Properties props;
-    if (this.defaultResource != null) {
-      props = new Properties(this.defaultResource.getProperties());
-    } else {
-      props = new Properties();
-    }
-    Enumeration<String> keys = bundle.getKeys();
-    while (keys.hasMoreElements()) {
-      String key = keys.nextElement();
-      props.setProperty(key, bundle.getString(key));
-    }
-    return new PropertiesWrapper(props);
-  }
-
-  public String getLanguage() {
-    return propertyLocale.getLanguage();
-  }
-
-  public static void resetResourceLocator() {
-    SilverTrace.info("util", "ResourceLocator.resetResourceLocator",
-        "root.MSG_GEN_ENTER_METHOD", "Reset Cache Resource Locator");
-    ResourceBundle.clearCache();
-  }
-
-  // --------------------------------------------------------------------------------------------
-  // METHODS for .XML properties
-  // --------------------------------------------------------------------------------------------
-  public static URL getResource(Object object, Locale loc, String configFile, String extension) {
-    String ext = extension;
-    if (ext == null) {
-      ext = DEFAULT_EXTENSION;
-    }
-    if (!ext.startsWith(".")) {
-      ext = '.' + ext;
-    }
-    URL url = locateResource(object, loc, configFile, ext);
-    if (url == null) {
-      if (loc != null) {
-        url = locateResource(object, null, configFile, ext);
-        if (url == null) {
-          if (object != null) {
-            url = object.getClass().getResource(configFile);
-            if (url == null) {
-              url = object.getClass().getResource(configFile + ext);
-            }
-          }
-        }
-      }
-    }
-    return url;
-  }
-
-  public static InputStream getResourceAsStream(Object object, Locale loc, String configFile,
-      String extension) {
-    String fileExtension = extension;
-    if (extension == null) {
-      fileExtension = DEFAULT_EXTENSION;
-    }
-    if (!fileExtension.startsWith(".")) {
-      fileExtension = '.' + fileExtension;
-    }
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "Starting with args:Object = " + object + ", loc=" + loc + ", ConfigFile="
-        + configFile + ", extension=" + fileExtension);
-    InputStream inputStream = locateResourceAsStream(object, loc, configFile, fileExtension);
-    if (inputStream == null) {
-      if (loc != null) {
-        inputStream = locateResourceAsStream(object, null, configFile, fileExtension);
-      }
-      if (inputStream == null) {
-        if (object != null) {
-          SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-              "Calling getClass for object '" + object + "'");
-          Class<?> clazz = object.getClass();
-          SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-              "calling getResourceAsStream(" + configFile + ")");
-          inputStream = clazz.getResourceAsStream(configFile);
-          if (inputStream == null) {
-            String extendedFile = configFile + fileExtension;
-            SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-                "calling getResourceAsStream(" + extendedFile + ")");
-            inputStream = clazz.getResourceAsStream(extendedFile);
-            if (inputStream == null) {
-              inputStream = loadResourceAsStream(configFile, extendedFile, clazz.getClassLoader());
-              if (inputStream == null) {
-                SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-                    "calling getSystemResourceAsStream", extendedFile);
-                inputStream = ClassLoader.getSystemResourceAsStream(extendedFile);
-                if (inputStream == null) {
-                  SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-                      "resource not found. Trying doPriviledged(" + extendedFile + ")"
-                      + inputStream);
-                  inputStream = getPrivileged(clazz.getClassLoader(), extendedFile);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream", "returning " + inputStream);
-    return inputStream;
-  }
-
-  private static InputStream loadResourceAsStream(String configFile, String extendedFile,
-      ClassLoader loader) {
-    InputStream inputStream = loader.getResourceAsStream(configFile);
-    if (inputStream == null) {
-      inputStream = loader.getResourceAsStream(extendedFile);
-    }
-    return inputStream;
-  }
-
-  private static URL locateResource(Object o, Locale loc, String ConfigFile,
-      String Extension) {
-    Locale lloc;
-    if (loc == null) {
-      lloc = Locale.getDefault();
-    } else {
-      lloc = loc;
-    }
-    String lang = lloc.getLanguage();
-    String var = lloc.getVariant();
-    String country = lloc.getCountry();
-    URL u = locateResource(o, ConfigFile, Extension, lang, country, var);
-    return (u);
-  }
-
-  private static InputStream locateResourceAsStream(Object o, Locale loc,
-      String configFile, String extension) {
-    Locale lloc;
-    if (loc == null) {
-      lloc = Locale.getDefault();
-    } else {
-      lloc = loc;
-    }
-    String lang = lloc.getLanguage();
-    String var = lloc.getVariant();
-    String country = lloc.getCountry();
-    InputStream is = locateResourceAsStream(o, configFile, extension, lang, country, var);
-    return (is);
-  }
-
-  /**
-   * This method returns the URL of a resource file. The algorithm to find it is the same as for
-   * getBundle()
-   */
-  private static URL locateResource(Object object, String configFile, String extension,
-      String lang,
-      String country, String var) {
-    URL url = null;
-    boolean vardone = false;
-    if (object != null) {
-      Class<?> clazz = object.getClass();
-      if (clazz != null) {
-        String fileName = configFile + "_" + lang + "_" + country;
-        if (StringUtil.isDefined(var)) {
-          fileName = fileName + "_" + var;
-          vardone = true;
-        }
-        url = clazz.getResource(fileName);
-        if (url == null) {
-          fileName = fileName + extension;
-          url = clazz.getResource(fileName);
-          if (url == null) {
-            if (vardone) {
-              fileName = configFile + "_" + lang + "_" + country;
-              url = clazz.getResource(fileName);
-              if (url == null) {
-                fileName = fileName + extension;
-                url = clazz.getResource(fileName);
-              }
-              if (url != null) {
-                return (url);
-              }
-            }
-            fileName = configFile + "_" + lang;
-            url = clazz.getResource(fileName);
-            if (url == null) {
-              fileName = fileName + extension;
-              url = clazz.getResource(fileName);
-            }
-          }
-        }
-      }
-    }
-    return url;
-
-  }
-
-  /**
-   * This method returns an input stream on a resource file. The algorithm to find it is the same as
-   * for getBundle()
-   */
-  private static InputStream locateResourceAsStream(Object o, String configFile,
-      String fileExtension, String lang, String country, String var) {
-    SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "Starting with args:Object = " + o + ", ConfigFile=" + configFile + ", extension="
-        + fileExtension + ", lang=" + lang + ", country=" + country + ", var =" + var);
-    if (o == null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "o is null. returning immediately.");
-      return null;
-    }
-    Class<?> clazz = o.getClass();
-    if (clazz == null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "getClass() returned null");
-      return null;
-    }
-    boolean vardone = false;
-    String fileName = configFile + "_" + lang;
-    if (StringUtil.isDefined(country)) {
-      fileName += "_" + country;
-      if (StringUtil.isDefined(var)) {
-        fileName = fileName + "_" + var;
-        vardone = true;
-      }
-    } else {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream", "no country specified");
-    }
-
-    if (vardone) {
-      InputStream is = loadResourceAsStream(clazz, fileName, fileExtension);
-      if (is != null) {
-        return is;
-      }
-    }
-
-    fileName = configFile + "_" + lang;
-    SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream", fileName);
-    InputStream is = loadResourceAsStream(clazz, configFile + "_" + lang, fileExtension);
-    if (is != null) {
-      return is;
-    }
-    return loadResourceAsStream(clazz, configFile, fileExtension);
-  }
-
-  private static InputStream loadResourceAsStream(Class<?> clazz, String configFile,
-      String fileExtension) {
-    InputStream is = loadResourceAsStream(clazz, configFile);
-    if (is == null) {
-      String fileName = configFile + fileExtension;
-      is = loadResourceAsStream(clazz, fileName);
-      if (is == null) {
-        fileName = clazz.getPackage().getName().replace('.', '/') + '/' + fileName;
-        is = loadResourceAsStream(clazz, fileName);
-      }
-    }
-    return is;
-  }
-
-  private static InputStream loadResourceAsStream(Class<?> clazz, String fileName) {
-    InputStream is = clazz.getResourceAsStream(fileName);
-    if (is != null) {
-      SilverTrace.debug("util", "ResourceLocator.getFileInputStream", "found resource", fileName);
-      return is;
-    }
-    is = loader.getResourceAsStream(fileName);
-    if (is != null) {
-      SilverTrace.debug("util", "ResourceLocator.getFileInputStream", "found resource", fileName);
-    }
-    return is;
-  }
-
-  private static InputStream getPrivileged(final ClassLoader l, final String s) {
-    InputStream stream =
-        (InputStream) java.security.AccessController
-        .doPrivileged(new java.security.PrivilegedAction<Object>() {
-
-      @Override
-      public Object run() {
-        if (l != null) {
-          return l.getResourceAsStream(s);
-        } else {
-          return ClassLoader.getSystemResourceAsStream(s);
-        }
-        }
-            });
-    return (stream);
-  }
-
 }

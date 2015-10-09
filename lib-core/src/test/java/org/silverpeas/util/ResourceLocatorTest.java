@@ -24,6 +24,7 @@
 package org.silverpeas.util;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
@@ -77,14 +78,14 @@ public class ResourceLocatorTest {
   }
 
   @Test
-  public void testExistanceOfANonexistingSettingBundleShoulReturnFalse() {
+  public void testExistenceOfANonExistingSettingBundleShouldReturnFalse() {
     SettingBundle bundle = ResourceLocator.getSettingBundle("org.silverpeas.tartempion.toto");
     assertThat(bundle, is(notNullValue()));
     assertThat(bundle.exists(), is(false));
   }
 
   @Test
-  public void testExistanceOfAnExistingSettingBundleShouldReturnTrue() {
+  public void testExistenceOfAnExistingSettingBundleShouldReturnTrue() {
     SettingBundle bundle = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");
     assertThat(bundle, is(notNullValue()));
@@ -148,7 +149,7 @@ public class ResourceLocatorTest {
   }
 
   @Test
-  public void testExistanceOfANonexistingLocalizationBundleShouldReturnFalse() {
+  public void testExistenceOfANonexistingLocalizationBundleShouldReturnFalse() {
     LocalizationBundle bundle =
         ResourceLocator.getLocalizationBundle("org.silverpeas.tartempion.multilang.toto");
     assertThat(bundle, is(notNullValue()));
@@ -156,7 +157,7 @@ public class ResourceLocatorTest {
   }
 
   @Test
-  public void testExistanceOfAnExistingLocalizationBundleShouldReturnTue() {
+  public void testExistenceOfAnExistingLocalizationBundleShouldReturnTue() {
     LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.authentication.multilang.authentication");
     assertThat(bundle, is(notNullValue()));
@@ -164,7 +165,7 @@ public class ResourceLocatorTest {
   }
 
   @Test
-  public void testExistanceOfAnExistingLocalizationBundleForAMissingLocaleShouldReturnTrue() {
+  public void testExistenceOfAnExistingLocalizationBundleForAMissingLocaleShouldReturnTrue() {
     LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.authentication.multilang.authentication", "pl");
     // pl doesn't exist, then it is the root bundle that is loaded
@@ -202,5 +203,58 @@ public class ResourceLocatorTest {
         ResourceLocator.getLocalizationBundle("org.silverpeas.titi.grominet");
     assertThat(bundle, is(notNullValue()));
     ResourceLocator.getSettingBundle("org.silverpeas.titi.grominet");
+  }
+
+  @Test
+  public void useAGivenXmlSettingBundleShouldSucceed() {
+    XmlSettingBundle bundle =
+        ResourceLocator.getXmlSettingBundle("org.silverpeas.util.settings.dbDriverSettings");
+    assertThat(bundle, is(notNullValue()));
+    assertThat(bundle.getString("DBDriver-configuration.Drivers-Definition.BD_Silverpeas-configuration.DriverName"),
+        is(notNullValue()));
+  }
+
+  @Test
+  public void getAnExistingOrNonExistingXmlSettingBundleShouldSucceed() {
+    XmlSettingBundle bundle = ResourceLocator.getXmlSettingBundle("org.silverpeas.tartempion.xmlconf");
+    assertThat(bundle, is(notNullValue()));
+  }
+
+  @Test
+  public void testExistenceOfANonExistingXmlSettingBundleShouldReturnFalse() {
+    XmlSettingBundle bundle = ResourceLocator.getXmlSettingBundle("org.silverpeas.tartempion.xmlconf");
+    assertThat(bundle, is(notNullValue()));
+    assertThat(bundle.exists(), is(false));
+  }
+
+  @Test
+  public void testExistenceOfAnExistingXmlSettingBundleShouldReturnTrue() {
+    XmlSettingBundle bundle =
+        ResourceLocator.getXmlSettingBundle("org.silverpeas.util.settings.dbDriverSettings");
+    assertThat(bundle, is(notNullValue()));
+    assertThat(bundle.exists(), is(true));
+  }
+
+  @Test(expected = MissingResourceException.class)
+  public void useANonExistingXmlSettingBundleShouldFail() {
+    XmlSettingBundle bundle = ResourceLocator.getXmlSettingBundle("org.silverpeas.tartempion.xmlconf");
+    assertThat(bundle, is(notNullValue()));
+    bundle.getString("toto");
+  }
+
+  @Test(expected = MissingResourceException.class)
+  public void getAMissingPropertyInAnXmlExistingSettingBundleShouldFail() {
+    XmlSettingBundle bundle =
+        ResourceLocator.getXmlSettingBundle("org.silverpeas.util.settings.dbDriverSettings");
+    assertThat(bundle, is(notNullValue()));
+    bundle.getString("DBDriver-configuration.Toto");
+  }
+
+  @Test(expected = ClassCastException.class)
+  public void getASettingBundleForAXmlBundleShouldFail() {
+    XmlSettingBundle bundle =
+        ResourceLocator.getXmlSettingBundle("org.silverpeas.titi.tutu");
+    assertThat(bundle, is(notNullValue()));
+    ResourceLocator.getSettingBundle("org.silverpeas.titi.tutu");
   }
 }
