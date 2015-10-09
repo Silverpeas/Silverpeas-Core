@@ -97,7 +97,7 @@ public class TestUnitUtil extends AbstractUnitTest {
     assertFormatValue(
         formatValue(new BigDecimal("1048576"), MemoryUnit.B, MemoryUnit.MB), "1 Mo");
     assertFormatValue(formatValue(new BigDecimal("1073741824"), MemoryUnit.B,
-        MemoryUnit.GB), "1 Gb");
+        MemoryUnit.GB), "1 Go");
   }
 
   @Test
@@ -114,7 +114,7 @@ public class TestUnitUtil extends AbstractUnitTest {
   public void testFormatValueFromBigDecimalAroundLimits() {
     assertFormatValue(formatValue(new BigDecimal("1024"), MemoryUnit.KB), "1 Ko");
     assertFormatValue(formatValue(new BigDecimal("1048576"), MemoryUnit.MB), "1 Mo");
-    assertFormatValue(formatValue(new BigDecimal("1073741824"), MemoryUnit.GB), "1 Gb");
+    assertFormatValue(formatValue(new BigDecimal("1073741824"), MemoryUnit.GB), "1 Go");
   }
 
   @Test
@@ -130,14 +130,14 @@ public class TestUnitUtil extends AbstractUnitTest {
     assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.KB), "1 Ko");
     assertFormatValue(formatMemSize(new BigDecimal("2"), MemoryUnit.KB), "2 Ko");
     assertFormatValue(formatMemSize(new BigDecimal("2.4"), MemoryUnit.KB), "2 Ko");
-    assertFormatValue(formatMemSize(new BigDecimal("2.4"), MemoryUnit.GB), "2.4 Gb");
+    assertFormatValue(formatMemSize(new BigDecimal("2.4"), MemoryUnit.GB), "2.4 Go");
     assertFormatValue(formatMemSize(new BigDecimal("1"), MemoryUnit.MB), "1 Mo");
     assertFormatValue(formatMemSize(new BigDecimal("10"), MemoryUnit.MB), "10 Mo");
     assertFormatValue(formatMemSize(new BigDecimal("1024"), MemoryUnit.B), "1 Ko");
     assertFormatValue(formatMemSize(new BigDecimal("1048576"), MemoryUnit.B), "1 Mo");
-    assertFormatValue(formatMemSize(new BigDecimal("1073741824"), MemoryUnit.B), "1 Gb");
-    assertFormatValue(formatMemSize(new BigDecimal("1024"), MemoryUnit.GB), "1 Tb");
-    assertFormatValue(formatMemSize(new BigDecimal("1023"), MemoryUnit.GB), "1023 Gb");
+    assertFormatValue(formatMemSize(new BigDecimal("1073741824"), MemoryUnit.B), "1 Go");
+    assertFormatValue(formatMemSize(new BigDecimal("1024"), MemoryUnit.GB), "1 To");
+    assertFormatValue(formatMemSize(new BigDecimal("1023"), MemoryUnit.GB), "1023 Go");
   }
 
   /**

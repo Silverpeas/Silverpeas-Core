@@ -51,8 +51,6 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
 
   public static final String GENERAL_BUNDLE_NAME = "org.silverpeas.multilang.generalMultilang";
 
-  private ResourceBundle bundle = null;
-  private ResourceBundle parentBundle = null;
   private static final ResourceBundle NONE = new ResourceBundle() {
     @Override
     protected Object handleGetObject(final String key) {
@@ -74,13 +72,6 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
     this.name = name;
     this.locale = locale;
     this.loader = loader;
-  }
-
-  public LocalizationBundle(final ResourceBundle bundle, final ResourceBundle parent) {
-    this.bundle = bundle;
-    this.parentBundle = parent;
-    this.name = bundle.getBaseBundleName();
-    this.locale = bundle.getLocale();
   }
 
   /**
@@ -217,17 +208,11 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   }
 
   private ResourceBundle getWrappedBundle() {
-    if (this.bundle != null) {
-      return this.bundle;
-    }
     return (loader == null ? NONE : loader.apply(this.name, this.locale));
   }
 
   private ResourceBundle getGeneralWrappedBundle() {
     if (!name.equals(GENERAL_BUNDLE_NAME)) {
-      if (this.parentBundle != null) {
-        return this.parentBundle;
-      }
       return (loader == null ? NONE : loader.apply(GENERAL_BUNDLE_NAME, this.locale));
     }
     return NONE;

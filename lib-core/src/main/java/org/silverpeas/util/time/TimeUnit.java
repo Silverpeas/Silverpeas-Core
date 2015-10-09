@@ -44,8 +44,7 @@ public enum TimeUnit {
   /**
    * The complete conversion board.
    */
-  private final static Map<TimeConversionBoardKey, BigDecimal> conversionBoard =
-      new HashMap<TimeConversionBoardKey, BigDecimal>();
+  private final static Map<TimeConversionBoardKey, BigDecimal> conversionBoard = new HashMap<>();
 
   static {
     // From milliseconds
@@ -147,9 +146,9 @@ public enum TimeUnit {
    */
   private static String getStringTranslation(final String key) {
     String language = MessageManager.getLanguage();
-    LocalizationBundle rl =
+    LocalizationBundle localizedUnits =
         ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
-    return rl.getString(key);
+    return localizedUnits.getString(key);
   }
 
 }

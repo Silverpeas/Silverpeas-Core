@@ -36,6 +36,7 @@ import org.silverpeas.upload.UploadSession;
 import org.silverpeas.upload.UploadSessionFile;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.NotifierUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
@@ -243,8 +244,8 @@ public class FileUploadResource extends RESTWebService {
   private void checkMaximumFileSize(final String fileName, long fileSize) {
     long maximumFileSize = FileRepositoryManager.getUploadMaximumFileSize();
     if (fileSize > maximumFileSize) {
-      ResourceLocator bundle =
-          new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment",
+      LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.util.attachment.multilang.attachment",
               getUserPreferences().getLanguage());
       String errorMessage = bundle.getString("attachment.dialog.errorFileSize") +
           " " +

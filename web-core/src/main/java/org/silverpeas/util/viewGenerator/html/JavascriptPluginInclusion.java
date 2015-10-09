@@ -131,13 +131,8 @@ public class JavascriptPluginInclusion {
   private static final String TICKER_CSS = "ticker/ticker-style.css";
 
   static {
-<<<<<<< HEAD
-    ResourceLocator wysiwygSettings =
-        new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
-=======
     SettingBundle wysiwygSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.wysiwyg.settings.wysiwygSettings");
->>>>>>> Second step into the refactoring of ResourceLocator. Refine its API: SilverpeasBundle#getString(String) throws a MissingResourceException if either the bundle doesn't exist or the data in the bundle isn't defined, add some methods from ResourceLocator to SilverpeasBundle (getStringArray) and to LocalizationBundle (getStringWithParams), SettingBundle#getString(String, String) use the default value when the data isn't defined in the bundle, and so on. Refactor some existing codes that used ResourceLocator directly to get data from the bundles so that they use now the new API
     JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor") + "/ckeditor.js";
   }
 

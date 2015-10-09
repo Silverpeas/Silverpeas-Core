@@ -150,11 +150,11 @@ public class TestMemoryData extends AbstractUnitTest {
     expected.put(1048575L, "1023 Ko");
     expected.put(1048576L, "1 Mo");
     expected.put(1073741823L, "1023.99 Mo");
-    expected.put(1073741824L, "1 Gb");
-    expected.put(1099511627775L, "1023.99 Gb");
-    expected.put(1099511627776L, "1 Tb");
-    expected.put(1125899906842623L, "1023.99 Tb");
-    expected.put(1125899906842624L, "1024 Tb");
+    expected.put(1073741824L, "1 Go");
+    expected.put(1099511627775L, "1023.99 Go");
+    expected.put(1099511627776L, "1 To");
+    expected.put(1125899906842623L, "1023.99 To");
+    expected.put(1125899906842624L, "1024 To");
     for (Map.Entry<Long, String> entry : expected.entrySet()) {
       assertFormatValue(new MemoryData(entry.getKey()).getBestDisplayValue(), entry.getValue());
     }
@@ -182,8 +182,8 @@ public class TestMemoryData extends AbstractUnitTest {
     expected.put(MemoryUnit.B, getDefaultMemorySize().toString() + " Octets");
     expected.put(MemoryUnit.KB, "2073775844301 Ko");
     expected.put(MemoryUnit.MB, "2025171722.95 Mo");
-    expected.put(MemoryUnit.GB, "1977706.76 Gb");
-    expected.put(MemoryUnit.TB, "1931.35 Tb");
+    expected.put(MemoryUnit.GB, "1977706.76 Go");
+    expected.put(MemoryUnit.TB, "1931.35 To");
     for (Map.Entry<MemoryUnit, String> entry : expected.entrySet()) {
       assertFormatValue(memoryData.getFormattedValue(entry.getKey()), entry.getValue());
     }
