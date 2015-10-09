@@ -24,6 +24,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.silverpeas.form.fieldType.MultipleUserField;
+import com.silverpeas.form.fieldType.UserField;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -1782,7 +1784,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
     // Then process related users
     for (int i = 0; i < relatedUsers.length; i++) {
-      User user = null;
+      User[] users = null;
       String relation = relatedUsers[i].getRelation();
 
       if (relatedUsers[i].getParticipant() != null) {
@@ -1790,32 +1792,40 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
         Participant participant = this.getParticipant(resolvedState);
         if (participant != null) {
-          user = participant.getUser();
+          users = ArrayUtil.add(users, participant.getUser());
         }
       } else if (relatedUsers[i].getFolderItem() != null) {
         String fieldName = relatedUsers[i].getFolderItem().getName();
         Field field = getField(fieldName);
-        String userId = field.getStringValue();
-        if (userId != null && userId.length() > 0) {
-          user = userManager.getUser(userId);
+        if (field instanceof UserField) {
+          String userId = field.getStringValue();
+          if (StringUtil.isDefined(userId)) {
+            users = ArrayUtil.add(users, userManager.getUser(userId));
+          }
+        } else if (field instanceof MultipleUserField) {
+          MultipleUserField multipleUserField = (MultipleUserField) field;
+          String[] userIds = multipleUserField.getUserIds();
+          users = ArrayUtil.addAll(users, userManager.getUsers(userIds));
         }
       }
 
-      if (user != null) {
-        if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
-          user = userManager.getRelatedUser(user, relation, modelId);
-        }
+      if (!ArrayUtil.isEmpty(users)) {
+        for (User user : users) {
+          if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
+            user = userManager.getRelatedUser(user, relation, modelId);
+          }
 
-        // Get the role to which affect the user
-        // if no role defined in related user
-        // then get the one defined in qualifiedUser
-        String role = relatedUsers[i].getRole();
-        if (role == null) {
-          role = qualifiedUsers.getRole();
-        }
+          // Get the role to which affect the user
+          // if no role defined in related user
+          // then get the one defined in qualifiedUser
+          String role = relatedUsers[i].getRole();
+          if (role == null) {
+            role = qualifiedUsers.getRole();
+          }
 
-        if (user != null) {
-          actors.add(new ActorImpl(user, role, state));
+          if (user != null) {
+            actors.add(new ActorImpl(user, role, state));
+          }
         }
       }
     }
