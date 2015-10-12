@@ -389,7 +389,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (sortValue == 7 && gsr.getHits() >= 0) {
       result.append("<div class=\"popularity\">").append(
-          settings.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits())))
+          settings.getStringWithParams("pdcPeas.popularity", Integer.toString(gsr.getHits())))
           .append(" | </div>");
     }
 

@@ -67,7 +67,7 @@ public class AgendaRssServlet extends RssServlet {
     LocalizationBundle message =
         ResourceLocator.getLocalizationBundle("org.silverpeas.agenda.multilang.agenda",
         preferences.getLanguage());
-    return message.getStringWithParam("agenda.userAgenda", user.getLastName());
+    return message.getStringWithParams("agenda.userAgenda", user.getLastName());
   }
 
   /*

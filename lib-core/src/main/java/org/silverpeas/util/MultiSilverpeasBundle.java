@@ -113,7 +113,7 @@ public class MultiSilverpeasBundle {
     return valret;
   }
 
-  public String getStringWithParam(String key, String param) {
+  public String getStringWithParams(String key, String param) {
     String[] params = {param};
     return getStringWithParams(key, params);
   }

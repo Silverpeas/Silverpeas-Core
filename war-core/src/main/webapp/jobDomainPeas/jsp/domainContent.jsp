@@ -171,7 +171,7 @@ out.println(window.printBefore());
 		<h2 class="principal-content-title sql-domain"> <%=getDomainLabel(domObject, resource)%> </h2>
 		<% if (JobDomainSettings.usersInDomainQuotaActivated && domObject.getUserDomainQuota().exists()) { %>
 			<div class="tag-presentation limited-number-user">
-				<div class="tag-presentation-content"><span><%=resource.getStringWithParam("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
+				<div class="tag-presentation-content"><span><%=resource.getStringWithParams("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
 			</div>
 		<% } %>
 		<div id="number-user-group-domainContent">

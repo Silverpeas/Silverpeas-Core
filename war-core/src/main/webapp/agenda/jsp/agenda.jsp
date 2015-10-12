@@ -330,7 +330,7 @@ function viewCurrentAgenda()
 	</div>
 	<% if (agenda.isOtherAgendaMode()) { %>
 		<div id="others">
-			<%=resources.getStringWithParam("userAgenda", agenda.getAgendaUserDetail().getDisplayedName())%>
+			<%=resources.getStringWithParams("userAgenda", agenda.getAgendaUserDetail().getDisplayedName())%>
 			&nbsp;<a href="<%=link%>"><img src="<%=iconLink%>" border="0" alt="<%=resources.getString("agenda.CopyAgendaLink")%>" title="<%=resources.getString("agenda.CopyAgendaLink")%>"/></a>
 		</div>		
 	<% } %>

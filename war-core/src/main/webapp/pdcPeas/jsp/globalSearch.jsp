@@ -710,8 +710,8 @@ if (activeSelection.booleanValue() || searchType == 2) {%>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol2Header")%><br/><br/>
-		<%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
-		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
+		<%=resource.getStringWithParams("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParams("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
 		<%=resource.getString("pdcPeas.helpCol2Content3")%><br/>
 		<%=resource.getString("pdcPeas.helpCol2Content4")%><br/>
 		<%=resource.getString("pdcPeas.helpCol2Content5")%><br/>

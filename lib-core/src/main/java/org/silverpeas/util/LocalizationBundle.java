@@ -20,6 +20,7 @@
  */
 package org.silverpeas.util;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -162,34 +163,9 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
     }
   }
 
-  public String getStringWithParam(String resName, String param) {
-    String[] params = {param};
-    return getStringWithParams(resName, params);
-  }
-
-  public String getStringWithParams(String resName, String[] params) {
-    String theSt = getString(resName);
-    if (theSt != null) {
-      StringBuilder theResult = new StringBuilder();
-      int theStarIndex = -1;
-      int theParamIndex = 0;
-      int thePreviousIndex = 0;
-
-      theStarIndex = theSt.indexOf('*');
-      while ((theStarIndex >= 0) && (theParamIndex < params.length)) {
-        theResult.append(theSt.substring(thePreviousIndex, theStarIndex));
-        theResult.append(params[theParamIndex++]);
-        thePreviousIndex = theStarIndex + 1;
-        if (thePreviousIndex < theSt.length()) {
-          theStarIndex = theSt.indexOf('*', thePreviousIndex);
-        } else {
-          theStarIndex = -1;
-        }
-      }
-      theResult.append(theSt.substring(thePreviousIndex));
-      return theResult.toString();
-    }
-    return null;
+  public String getStringWithParams(String resName, String... params) {
+    String msgPattern = getString(resName);
+    return MessageFormat.format(msgPattern, params);
   }
 
   @Override

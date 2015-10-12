@@ -86,12 +86,12 @@ void displayFacet(Facet facet, MultiSilverpeasBundle resource, JspWriter out) th
 		      entryClass = "otherEntry";
 		    }
 		    String jsAction = "filterResult('" + entryId + "', '"+facetId+"')";
-		    String linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.enable", entryName);
+		    String linkTitle = resource.getStringWithParams("pdcPeas.facet.tooltip.enable", entryName);
 		    if (entry.isSelected()) {
 		      selectedEntryId = entryId;
 		      lastClass += " selected";
 		      jsAction = "clearFilter('"+facetId+"')";
-		      linkTitle = resource.getStringWithParam("pdcPeas.facet.tooltip.disable", entryName);
+		      linkTitle = resource.getStringWithParams("pdcPeas.facet.tooltip.disable", entryName);
 		    }
 		    out.println("<li class=\""+lastClass+" "+entryClass+"\"><a href=\"javascript:"+jsAction+";\" title=\""+linkTitle+"\">"+displayComp+"</a></li>");
     	}
@@ -670,8 +670,8 @@ function viewFile(target, attachmentId, versioned, componentId) {
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
         <fmt:message key="pdcPeas.helpCol2Header" /><br/><br/>
-        <%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
-		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
+        <%=resource.getStringWithParams("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParams("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
         <fmt:message key="pdcPeas.helpCol2Content3" /><br/>
         <fmt:message key="pdcPeas.helpCol2Content4" /><br/>
         <fmt:message key="pdcPeas.helpCol2Content5" /><br/>

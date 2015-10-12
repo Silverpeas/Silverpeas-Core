@@ -180,10 +180,10 @@ public class FileUploadTag extends TagSupport {
       jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.dragAndDrop.files"));
       jQueryStart.append("\",sendingFile:\"");
       jQueryStart.append(
-          fileUploadContext.generalBundle.getStringWithParam("GML.upload.sending.file", "@name@"));
+          fileUploadContext.generalBundle.getStringWithParams("GML.upload.sending.file", "@name@"));
       jQueryStart.append("\",sendingFiles:\"");
       jQueryStart.append(fileUploadContext.generalBundle
-          .getStringWithParam("GML.upload.sending.files", "@number@"));
+          .getStringWithParams("GML.upload.sending.files", "@number@"));
       jQueryStart.append("\",sendingWaitingWarning:\"");
       jQueryStart.append(fileUploadContext.generalBundle.getString("GML.upload.warning"));
       jQueryStart.append("\",limitFileWarning:\"");
@@ -191,13 +191,13 @@ public class FileUploadTag extends TagSupport {
           .append(fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit"));
       jQueryStart.append("\",limitFilesWarning:\"");
       jQueryStart.append(fileUploadContext.generalBundle
-          .getStringWithParam("GML.upload.warning.files.limit", "@number@"));
+          .getStringWithParams("GML.upload.warning.files.limit", "@number@"));
       jQueryStart.append("\",limitFileReached:\"");
       jQueryStart.append(
           fileUploadContext.generalBundle.getString("GML.upload.warning.file.limit.reached"));
       jQueryStart.append("\",limitFilesReached:\"");
       jQueryStart.append(fileUploadContext.generalBundle
-          .getStringWithParam("GML.upload.warning.files.limit.reached", "@number@"));
+          .getStringWithParams("GML.upload.warning.files.limit.reached", "@number@"));
       jQueryStart.append("\",title:\"");
       jQueryStart.append(fileUploadContext.generalBundle.getString("GML.title"));
       jQueryStart.append("\",description:\"");

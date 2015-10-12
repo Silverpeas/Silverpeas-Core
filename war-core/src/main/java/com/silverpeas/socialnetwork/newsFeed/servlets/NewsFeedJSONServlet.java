@@ -211,7 +211,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
           jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
           jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
           jsonSocialInfo.put("label", multilang
-              .getStringWithParam("newsFeed.relationShip.label", contactUser2.getDisplayedName()));
+              .getStringWithParams("newsFeed.relationShip.label", contactUser2.getDisplayedName()));
         } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
           jsonSocialInfo.put("type", information.getType());
           jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
