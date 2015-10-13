@@ -127,7 +127,7 @@ public class JdbcFieldDisplayerTest {
     instance.display(printer, field, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
     assertThat(display, is(notNullValue()));
-    assertThat(display.length(), is(1390));
+    assertThat(display.length(), is(1381));
   }
 
   /**
