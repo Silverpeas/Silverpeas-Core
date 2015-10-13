@@ -36,6 +36,6 @@ public interface UserSubscriptionNotificationBehavior {
    * HTTP parameter that permits to indicate to the server that the subscription notification
    * sending must be skipped.
    */
-  public static final String SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM =
+  String SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM =
       "SKIP_SUBSCRIPTION_NOTIFICATION_SENDING";
 }
