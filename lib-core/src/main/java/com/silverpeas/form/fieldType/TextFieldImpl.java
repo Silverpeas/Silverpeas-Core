@@ -124,15 +124,13 @@ public class TextFieldImpl extends TextField {
 
   public static void printSuggestionsIncludes(PagesContext pageContext,
       String fieldName, PrintWriter out) {
-    int zindex =
-        (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex()))
-        * 9000;
+    int zindex = 100;
     out.println("<style type=\"text/css\">\n");
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out.println("		width:15em;\n");
     out.println("		padding-bottom:2em;\n");
     out.println("	}\n");
-    out.println("	#listAutocomplete" + fieldName + " {\n");
+    out.println("	#container" + fieldName + " {\n");
     out
         .println("		z-index:"
         + zindex
