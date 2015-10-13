@@ -191,4 +191,13 @@ public class NotificationManagerSettings {
     }
     return mediaIds;
   }
+
+  /**
+   * Indicates if the sender must be removed from the list of receivers of a subscription
+   * notification.
+   * @return true if enabled, false otherwise.
+   */
+  public static boolean isRemoveSenderFromSubscriptionNotificationReceiversEnabled() {
+    return settings.getBoolean("notification.subscription.removeSenderFromReceivers.enabled", true);
+  }
 }
