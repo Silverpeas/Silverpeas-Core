@@ -25,6 +25,7 @@ package org.silverpeas.viewer;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecution.Config;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -49,7 +50,8 @@ public class JsonPdfToolManager {
         try {
           CommandLine commandLine = new CommandLine("pdf2json");
           commandLine.addArgument("-v");
-          ExternalExecution.exec(commandLine, 1);
+          ExternalExecution.exec(commandLine,
+              Config.init().successfulExitStatusValueIs(1).doNotDisplayErrorTrace());
           isActivated = true;
         } catch (final Exception e) {
           // pdf2json is not installed

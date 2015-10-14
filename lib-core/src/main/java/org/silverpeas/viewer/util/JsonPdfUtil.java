@@ -61,7 +61,7 @@ public class JsonPdfUtil extends ExternalExecution {
     File out = new File(destination.getParentFile(),
         destination.getName() + "_%." + JSON_DOCUMENT_EXTENSION);
     try {
-      if (exec(buildJsonPdfCommandLine(pdfFile, out), 0).isEmpty()) {
+      if (exec(buildJsonPdfCommandLine(pdfFile, out)).isEmpty()) {
         throw new ViewerException("pdf2json conversion failed...");
       }
     } catch (ExternalExecutionException e) {

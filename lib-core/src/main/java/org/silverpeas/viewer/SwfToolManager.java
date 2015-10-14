@@ -25,6 +25,7 @@ package org.silverpeas.viewer;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecution.Config;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -56,15 +57,16 @@ public class SwfToolManager {
           // SwfTool is not installed
           System.err.println("pdf2swf is not installed");
         }
-      }
-      try {
-        CommandLine commandLine = new CommandLine("swfrender");
-        commandLine.addArgument("--help");
-        ExternalExecution.exec(commandLine, 1);
-        isSwfRenderActivated = true;
-      } catch (final Exception e) {
-        // SwfTool is not installed
-        System.err.println("swfrender is not installed");
+        try {
+          CommandLine commandLine = new CommandLine("swfrender");
+          commandLine.addArgument("--help");
+          ExternalExecution.exec(commandLine,
+              Config.init().successfulExitStatusValueIs(1).doNotDisplayErrorTrace());
+          isSwfRenderActivated = true;
+        } catch (final Exception e) {
+          // SwfTool is not installed
+          System.err.println("swfrender is not installed");
+        }
       }
     }
   }

@@ -25,6 +25,7 @@ package org.silverpeas.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecution.Config;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -46,7 +47,7 @@ public class FFmpegToolManager {
         try {
           CommandLine commandLine = new CommandLine("ffmpeg");
           commandLine.addArgument("-version");
-          ExternalExecution.exec(commandLine);
+          ExternalExecution.exec(commandLine, Config.init().doNotDisplayErrorTrace());
           isActivated = true;
         } catch (final Exception e) {
           // FFmpeg is not installed
