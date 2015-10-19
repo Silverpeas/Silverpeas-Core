@@ -159,7 +159,7 @@ public class HtmlSearchResultTag extends TagSupport {
    * @throws JspTagException
    */
   private String getHtmlResult() throws JspTagException {
-    // Get settings from ResourcesWrapper
+    // Get settings from MultiSilverpeasBundle
     MultiSilverpeasBundle settings = getSettings();
     // Retrieve result instance identifier
     String instanceId = gsr.getInstanceId();
@@ -427,7 +427,7 @@ public class HtmlSearchResultTag extends TagSupport {
   }
 
   /**
-   * @return a ResourcesWrapper which encapsulate pdcPeas settings and bundles
+   * @return a MultiSilverpeasBundle which encapsulate pdcPeas settings and bundles
    */
   private MultiSilverpeasBundle getSettings() {
     if (settings == null) {

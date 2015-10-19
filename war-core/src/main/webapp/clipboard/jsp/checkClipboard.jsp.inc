@@ -1,6 +1,6 @@
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="org.silverpeas.util.viewGenerator.html.*"%>
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
@@ -16,5 +16,5 @@
 	}
 	
 	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 %>

@@ -41,7 +41,6 @@
                  org.silverpeas.util.MultiSilverpeasBundle,
                  org.silverpeas.util.FileRepositoryManager,
                  org.silverpeas.util.FileServerUtils,
-                 org.silverpeas.util.ResourceLocator,
                  org.silverpeas.util.viewGenerator.html.GraphicElementFactory,
                  org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayCellText,
                  org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayColumn" %>
@@ -53,6 +52,7 @@
 <%@page import="java.net.URLEncoder" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.SettingBundle" %>
 

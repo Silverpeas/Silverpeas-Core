@@ -26,8 +26,9 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController, org.silverpeas.util.ResourceLocator, org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController, org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.admin.OrganizationControllerProvider" %>
+<%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 
 <%

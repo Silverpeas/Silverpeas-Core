@@ -1,3 +1,5 @@
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle" %>
+<%@ page import="com.stratelia.webactiv.agenda.control.AgendaSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,7 +31,7 @@
 <%@ include file="checkAgenda.jsp.inc" %>
 <%!
 
-String getHTMLMonthCalendar(Date date, ResourcesWrapper resource, List holidays, AgendaSessionController agendaSc) {
+String getHTMLMonthCalendar(Date date, MultiSilverpeasBundle resource, List holidays, AgendaSessionController agendaSc) {
 
 		String  weekDayStyle 		= "class=\"txtnav\"";
     	String  selectedDayStyle	= "class=\"intfdcolor5\"";

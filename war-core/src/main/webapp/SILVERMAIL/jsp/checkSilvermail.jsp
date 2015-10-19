@@ -30,6 +30,7 @@
 
 <%@ page import=" org.silverpeas.util.EncodeHelper"%>
 <%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%
       SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) request.getAttribute(
           "SILVERMAIL");

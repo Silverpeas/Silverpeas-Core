@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="org.silverpeas.util.MultiSilverpeasBundle"%>
 <%@ page import="com.stratelia.webactiv.agenda.control.*"%>
 <%@ page import="java.util.*"%>
 <%@ page import="java.io.*"%>
@@ -51,7 +51,7 @@ String arrLeft				= m_context + "/util/icons/arrow/arrowLeft.gif";
 <%
   GraphicElementFactory 	graphicFactory 	= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
   AgendaSessionController 	agenda 			= (AgendaSessionController) request.getAttribute("agenda");
-  ResourcesWrapper 			resources 		= (ResourcesWrapper)request.getAttribute("resources");
+  MultiSilverpeasBundle 			resources 		= (MultiSilverpeasBundle)request.getAttribute("resources");
 
   if (agenda == null)
   {

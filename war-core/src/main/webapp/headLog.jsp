@@ -32,6 +32,7 @@
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.authentication.AuthenticationServiceProvider" %>
+<%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.SettingBundle" %>
 
 <%
