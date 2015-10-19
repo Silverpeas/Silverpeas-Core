@@ -88,7 +88,7 @@ function editLink(id) {
         console.log("Cannot edit link because " + textStatus + ", error :" + errorThrown);
       }
       if (request.status == 403) {
-        notyError("<fmt:message key="GML.security.access" />");
+        // maybe an attack
       }
     }
   });
