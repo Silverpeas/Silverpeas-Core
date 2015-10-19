@@ -33,7 +33,7 @@ messageTriggers = {
       messageTriggers.initialized = true;
       $.i18n.properties({
         name : 'jobStartPagePeasBundle',
-        path : webContext  + '/services/bundles/com/silverpeas/jobStartPagePeas/multilang/',
+        path : webContext  + '/services/bundles/org/silverpeas/jobStartPagePeas/multilang/',
         language : '$$', // by default the language of the user in the current session
         mode : 'map'
       });

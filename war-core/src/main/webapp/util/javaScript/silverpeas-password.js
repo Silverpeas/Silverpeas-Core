@@ -441,7 +441,7 @@
       if (!__i18nInitialized) {
         $.i18n.properties({
           name: 'passwordBundle',
-          path: webContext + '/services/bundles/com/silverpeas/password/multilang/',
+          path: webContext + '/services/bundles/org/silverpeas/password/multilang/',
           language: '$$', /* by default the language of the user in the current session */
           mode: 'map'
         });

@@ -72,7 +72,7 @@ PdcClassifySessionController setComponentSessionController(HttpSession session, 
 
 PdcClassifySessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
 {
-        return new PdcClassifySessionController(mainSessionCtrl, componentContext, "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+        return new PdcClassifySessionController(mainSessionCtrl, componentContext, "org.silverpeas.pdcPeas.multilang.pdcBundle", "org.silverpeas.pdcPeas.settings.pdcPeasIcons");
 }
 
 %>

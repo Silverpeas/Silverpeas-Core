@@ -38,7 +38,7 @@ PdcSearchSessionController setComponentSessionController(HttpSession session, Ma
     //ask to MainSessionController to create the ComponentContext
     ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, null);
     //instanciate a new CSC
-    PdcSearchSessionController component = new PdcSearchSessionController(mainSessionCtrl, componentContext, "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
+    PdcSearchSessionController component = new PdcSearchSessionController(mainSessionCtrl, componentContext, "org.silverpeas.pdcPeas.multilang.pdcBundle", "org.silverpeas.pdcPeas.settings.pdcPeasIcons");
     session.setAttribute("Silverpeas_pdcSearch", component);
     return component;
 }

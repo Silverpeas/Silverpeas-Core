@@ -191,7 +191,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
     try {
       writer.append("property.Number = 5\n");
       writer.
-          append("property.ResourceFile = com.stratelia.silverpeas.domains.multilang" +
+          append("property.ResourceFile = org.silverpeas.domains.multilang" +
               ".templateDomainSQLBundle\n");
 
       writer.append("property_1.Name = title\n");
