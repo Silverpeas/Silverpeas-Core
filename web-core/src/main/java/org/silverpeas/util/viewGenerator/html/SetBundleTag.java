@@ -26,6 +26,8 @@ package org.silverpeas.util.viewGenerator.html;
 
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.SilverpeasBundle;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.jsp.JspException;
@@ -63,8 +65,14 @@ public class SetBundleTag extends TagSupport {
     }
   }
 
-  public void setBundle(ResourceBundle bundle) {
-    this.bundle = bundle;
+  public void setBundle(SilverpeasBundle bundle) {
+    if (bundle instanceof ResourceBundle) {
+      this.bundle = (ResourceBundle) bundle;
+    } else if (bundle instanceof SettingBundle) {
+      this.bundle = ((SettingBundle) bundle).asResourceBundle();
+    } else {
+      throw new IllegalArgumentException("bundle must be of type ResourceBundle or SettingBundle");
+    }
   }
 
   public void setBasename(String basename) {

@@ -188,6 +188,10 @@ public class SettingBundle implements SilverpeasBundle {
     }
   }
 
+  public ResourceBundle asResourceBundle() {
+    return getWrappedBundle();
+  }
+
   private ResourceBundle getWrappedBundle() {
     return loader.apply(this.name);
   }

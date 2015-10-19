@@ -24,7 +24,6 @@
 package org.silverpeas.util;
 
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

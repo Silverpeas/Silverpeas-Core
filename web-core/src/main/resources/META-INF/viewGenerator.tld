@@ -1318,7 +1318,7 @@
       <name>bundle</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>java.util.ResourceBundle</type>
+      <type>org.silverpeas.util.SilverpeasBundle</type>
     </attribute>
     <attribute>
       <description>Basename of the bundle.</description>
