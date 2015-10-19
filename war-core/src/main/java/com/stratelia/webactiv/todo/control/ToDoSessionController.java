@@ -328,8 +328,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     try {
       todo.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.addToDo()",
-          "todo.MSG_CANT_SET_TODO_PRIORITY");
+      SilverTrace.warn("todo", "ToDoSessionController.addToDo()", "todo" +
+          ".MSG_CANT_SET_TODO_PRIORITY");
     }
     try {
       todo.setPercentCompleted(Integer.parseInt(percent));
@@ -664,6 +664,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     if (curTask == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     } else if (!userTodoList.contains(taskId)) {
+      SilverTrace.warn("todo", "ToDoSessionController.verifyCurrentUserIsOwner",
+          "Alert seccurity from user " + getUserId() + " trying to access task :" + taskId);
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

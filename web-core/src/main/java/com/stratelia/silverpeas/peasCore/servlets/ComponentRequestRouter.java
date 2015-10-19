@@ -249,6 +249,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (checkUserAuthorization(function, component)) {
       destination = getDestination(function, component, httpRequest);
     } else {
+      SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination()",
+          "root.MSG_GEN_PARAM_VALUE",
+          "Security alert from user " + component.getUserId() + ", fct:" + function);
       destination = "/admin/jsp/accessForbidden.jsp";
     }
 
