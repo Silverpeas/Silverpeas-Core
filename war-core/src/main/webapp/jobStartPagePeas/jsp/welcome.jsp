@@ -34,7 +34,7 @@
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
+<view:setBundle basename="org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
 
 <c:set var="isUserAdmin" value="${requestScope['isUserAdmin']}" />
 <c:set var="globalMode" value="${requestScope['globalMode']}" />

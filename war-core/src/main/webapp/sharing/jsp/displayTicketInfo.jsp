@@ -33,8 +33,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<view:setBundle basename="com.silverpeas.sharing.multilang.fileSharingBundle"/>
-<view:setBundle basename="com.silverpeas.sharing.settings.fileSharingIcons" var="icons" />
+<view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
+<view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons" />
 
 <c:set var="key" value="${requestScope.Key}" />
 <c:set var="wallpaper" value="${requestScope.wallpaper}"/>

@@ -44,8 +44,8 @@
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle"/>
-<view:setBundle basename="com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons" var="icons" />
+<view:setBundle basename="org.silverpeas.pdcPeas.multilang.pdcBundle"/>
+<view:setBundle basename="org.silverpeas.pdcPeas.settings.pdcPeasIcons" var="icons" />
 
 <%!
 void displayItemsListHeader(String query, Pagination pagination, MultiSilverpeasBundle resource, JspWriter out) throws IOException {

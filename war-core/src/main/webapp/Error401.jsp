@@ -34,8 +34,8 @@
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}"/>
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang"/>
-<view:setBundle basename="com.silverpeas.common.multilang.errors" var="fnf"/>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+<view:setBundle basename="org.silverpeas.common.multilang.errors" var="fnf"/>
 
 <% response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); %>
 

@@ -34,7 +34,7 @@
 
 <!-- Resource bundle configuration -->
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle basename="com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
+<view:setBundle basename="org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
 <!-- Retrieve current space bean -->
 <c:set var="curSpace" value="${requestScope.Space}" />
 <c:set var="spacePositionOption" value="${requestScope.displaySpaceOption}" />

@@ -38,7 +38,7 @@
 %>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang"/>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 <fmt:message key="GML.close" var="close"/>
 <fmt:message key="GML.PDCPositionsPredefinition" var="childNode"/>
 <c:set var="componentId" value="${param.componentId}"/>

@@ -39,7 +39,7 @@
 <%@ include file="header.jsp"%>
 
 <!--Load the resource bundle for the page -->
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle" />
 
 <c:set value="${sessionScope['com.sun.portal.portletcontainer.driver.admin.portletApplications']}" var="list"/>
 <c:if test="${list != null}">

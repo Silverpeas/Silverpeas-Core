@@ -34,7 +34,7 @@
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle"/>
+<view:setBundle basename="org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <view:setBundle basename="org.silverpeas.social.multilang.socialNetworkBundle" var="profile"/>
 

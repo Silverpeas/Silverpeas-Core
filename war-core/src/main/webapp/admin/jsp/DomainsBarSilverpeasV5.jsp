@@ -50,7 +50,7 @@
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
+<view:setBundle basename="org.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
 
 <%
 String          m_sContext      = URLManager.getApplicationURL();

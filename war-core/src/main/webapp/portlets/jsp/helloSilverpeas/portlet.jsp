@@ -32,6 +32,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle"/>
 
 <fmt:message key="portlets.portlet.helloSilverpeas.welcome"/>

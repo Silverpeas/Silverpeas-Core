@@ -11,11 +11,11 @@ INSERT INTO st_domain (id, name, description, propFileName, className, authentic
 VALUES (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '-');
 INSERT INTO st_domain (id, name, description, propFileName, className, authenticationServer)
 VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
-        'com.stratelia.silverpeas.domains.domainSP',
+        'org.silverpeas.domains.domainSP',
         'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP');
 INSERT INTO st_domain (id, name, description, propFileName, className, authenticationServer)
-VALUES (1, 'SILVERPEAS', 'Zimbra Silverpeas', 'com.stratelia.silverpeas.domains.domainSILVERPEAS',
-        'com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver', 'autDomainSILVERPEAS');
+VALUES (1, 'SILVERPEAS', 'Zimbra Silverpeas', 'org.silverpeas.domains.domainSILVERPEAS',
+        'org.silverpeas.domains.ldapdriver.LDAPDriver', 'autDomainSILVERPEAS');
 
 
 /* Components */

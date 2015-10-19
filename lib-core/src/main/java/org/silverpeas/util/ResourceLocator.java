@@ -59,9 +59,8 @@ import java.util.logging.Logger;
  * {@code org.silverpeas.util.SilverpeasBundle} concrete types, please read their corresponding
  * documentation.
  */
-public class ResourceLocator implements Serializable {
+public class ResourceLocator {
 
-  private static final long serialVersionUID = 2122704362993398977L;
   private static final int INITIAL_CACHE_SIZE = 128;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());

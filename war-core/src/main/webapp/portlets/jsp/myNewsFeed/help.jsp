@@ -37,6 +37,6 @@
 
 <portlet:defineObjects/>
 
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle"/>
 
 <fmt:message key="portlets.portlet.myNewsFeed.help"/>

@@ -36,7 +36,7 @@
 
 <!--Load the resource bundle for the page -->
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle" />
 
 <h1 class="portal-content-header" id="modify-window-content"><fmt:message key="portlets.modifyWindow"/></h1>
 

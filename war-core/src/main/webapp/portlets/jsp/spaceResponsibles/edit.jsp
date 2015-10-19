@@ -39,7 +39,7 @@
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle"/>
 
 <%
   RenderRequest pReq = (RenderRequest) request.getAttribute("javax.portlet.request");

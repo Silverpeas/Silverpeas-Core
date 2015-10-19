@@ -40,7 +40,7 @@
 <%@ include file="header.jsp"%>
 
 <!--Load the resource bundle for the page -->
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
+<view:setBundle basename="org.silverpeas.portlets.multilang.portletsBundle" />
 
 <view:board>
 

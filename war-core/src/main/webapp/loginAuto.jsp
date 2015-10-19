@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <fmt:setLocale value="${pageContext.request.locale.language}"/>
-<view:setBundle basename="com.silverpeas.authentication.multilang.authentication"/>
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
 <%@ include file="headLog.jsp" %>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail" %>
