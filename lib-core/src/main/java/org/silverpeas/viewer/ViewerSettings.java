@@ -96,7 +96,7 @@ public class ViewerSettings {
    */
   public static boolean isTimeToLiveEnabled() {
     return isCacheEnabled() &&
-        TemporaryDataManagementSettings.getTimeAfterThatFilesMustBeDeleted() > 0 &&
+        TemporaryDataManagementSettings.getTimeAfterThatFilesMustBeDeleted() >= 0 &&
         settings.getBoolean("viewer.cache.timeToLive.enabled", true);
   }
 }

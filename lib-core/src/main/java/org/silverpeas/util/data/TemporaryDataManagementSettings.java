@@ -37,7 +37,7 @@ public class TemporaryDataManagementSettings {
       new ResourceLocator("org.silverpeas.util.data.temporaryDataManagementSettings", "");
 
   /**
-   * Gets the CRON setting for the scheduler job.
+   * Gets the CRON setting for the scheduler of the cleaning job.
    * @return a string that represents a cron setting.
    */
   public static String getJobCron() {
@@ -46,7 +46,8 @@ public class TemporaryDataManagementSettings {
 
   /**
    * Gets the time after that a file, according to its last modified date, must be deleted.
-   * @return a time in milliseconds, 0 or negative value if not enabled.
+   * @return a time in milliseconds, 0 or negative value if files must be deleted each time the
+   * cleaning job is awaken up by the scheduler.
    */
   public static long getTimeAfterThatFilesMustBeDeleted() {
     return getTimeInMs(settings.getLong("temporaryData.cleaner.job.file.age.hours", 0));
@@ -55,8 +56,8 @@ public class TemporaryDataManagementSettings {
   /**
    * Gets the time after that a file, according to its last modified date, must be deleted at
    * server start.
-   * @return a time in milliseconds, 0 if files must be deleted immediately, negative value if not
-   * enabled.
+   * @return a time in milliseconds, 0 if files must be deleted immediately, -1 if no deletion
+   * at server start.
    */
   public static long getTimeAfterThatFilesMustBeDeletedAtServerStart() {
     return getTimeInMs(settings.getLong("temporaryData.cleaner.job.start.file.age.hours", -1));
