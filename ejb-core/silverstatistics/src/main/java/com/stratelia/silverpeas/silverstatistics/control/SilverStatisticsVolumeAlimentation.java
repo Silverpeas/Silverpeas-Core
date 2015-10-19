@@ -30,18 +30,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 /**
  * This is the alimentation for the statistics on volume. It gets the number of elements from each
@@ -137,10 +134,12 @@ public class SilverStatisticsVolumeAlimentation {
           "silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
           "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
-      String qualifier = ci.getName() + "Statistics";
-      ComponentStatisticsProvider statistics = ServiceProvider.getService(qualifier);
-      Collection<UserIdCountVolumeCouple> v = statistics.getVolume(spaceId, ci.getId());
-      c = agregateUser(v);
+      String qualifier = getComponentStatisticsQualifier(ci.getName());
+      if (StringUtil.isDefined(qualifier)) {
+        ComponentStatisticsProvider statistics = ServiceProvider.getService(qualifier);
+        Collection<UserIdCountVolumeCouple> v = statistics.getVolume(spaceId, ci.getId());
+        c = agregateUser(v);
+      }
     } catch (IllegalStateException ce) {
       SilverTrace.info("silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
@@ -155,20 +154,17 @@ public class SilverStatisticsVolumeAlimentation {
     return c;
   }
 
-  private static String getComponentStatisticsClassName(String componentName) {
-    String componentStatisticsClassName;
-
-    try {
-      componentStatisticsClassName = settings.getString(componentName);
-    } catch (MissingResourceException e) {
-      componentStatisticsClassName = null;
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
-          "No statistic implementation class for component '" + componentName + "'");
-    }
-
-    return componentStatisticsClassName;
+  /**
+   * Gets the component statistics qualifier defined into SilverStatistics.properties file
+   * associated to the component identified by the given name.<br/>
+   * If no qualifier is defined for the component, that is because it does not exist statistics
+   * treatment for the component.
+   * @param componentName the name of the component for which the qualifier is searched.
+   * @return a string that represents the qualifier name of the implementation of the statistic
+   * treatment associated to the aimed component, empty if no qualifier.
+   */
+  private static String getComponentStatisticsQualifier(String componentName) {
+    return settings.getString(componentName, "");
   }
 
   private static Collection<UserIdCountVolumeCouple> agregateUser(
