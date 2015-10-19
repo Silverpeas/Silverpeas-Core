@@ -23,11 +23,14 @@
  */
 package org.silverpeas.viewer;
 
-import java.util.Map;
+import org.apache.commons.exec.CommandLine;
+import org.silverpeas.exec.ExternalExecution;
+import org.silverpeas.exec.ExternalExecution.Config;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -37,6 +40,7 @@ import javax.inject.Singleton;
 public class SwfToolManager {
 
   private static boolean isActivated = false;
+  private static boolean isSwfRenderActivated = false;
 
   @PostConstruct
   public void initialize() throws Exception {
@@ -44,28 +48,42 @@ public class SwfToolManager {
     // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
       if ("path".equals(entry.getKey().toLowerCase())) {
-        Process process = null;
         try {
-          final StringBuilder pdf2SwfCommand = new StringBuilder();
-          pdf2SwfCommand.append("pdf2swf --version");
-          process = Runtime.getRuntime().exec(pdf2SwfCommand.toString());
+          CommandLine commandLine = new CommandLine("pdf2swf");
+          commandLine.addArgument("--version");
+          ExternalExecution.exec(commandLine);
           isActivated = true;
         } catch (final Exception e) {
           // SwfTool is not installed
-        } finally {
-          if (process != null) {
-            process.destroy();
-          }
+          System.err.println("pdf2swf is not installed");
+        }
+        try {
+          CommandLine commandLine = new CommandLine("swfrender");
+          commandLine.addArgument("--help");
+          ExternalExecution.exec(commandLine,
+              Config.init().successfulExitStatusValueIs(1).doNotDisplayErrorTrace());
+          isSwfRenderActivated = true;
+        } catch (final Exception e) {
+          // SwfTool is not installed
+          System.err.println("swfrender is not installed");
         }
       }
     }
   }
 
   /**
-   * Indicates if im4java is actived
+   * Indicates if pdf2swf is activated
    * @return
    */
   public static boolean isActivated() {
     return isActivated;
+  }
+
+  /**
+   * Indicates if swfrender is activated
+   * @return
+   */
+  public static boolean isSwfRenderActivated() {
+    return isSwfRenderActivated;
   }
 }

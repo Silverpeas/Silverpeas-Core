@@ -23,13 +23,13 @@
  */
 package org.silverpeas.viewer.web;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.silverpeas.web.TestResources;
 import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
+import org.silverpeas.viewer.web.mock.DocumentViewServiceMockWrapper;
 import org.silverpeas.viewer.web.mock.PreviewServiceMockWrapper;
 
-import com.silverpeas.web.TestResources;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Resources required by all the unit tests on the comment web resource.
@@ -45,6 +45,10 @@ public class ViewerTestResources extends TestResources {
   @Named("previewService")
   private PreviewServiceMockWrapper previewServiceMockWrapper;
 
+  @Inject
+  @Named("documentViewService")
+  private DocumentViewServiceMockWrapper documentViewServiceMockWrapper;
+
   public static final String JAVA_PACKAGE = "org.silverpeas.viewer.web";
   public static final String SPRING_CONTEXT = "spring-viewer-webservice.xml";
 
@@ -54,5 +58,9 @@ public class ViewerTestResources extends TestResources {
 
   public PreviewServiceMockWrapper getPreviewServiceMockWrapper() {
     return previewServiceMockWrapper;
+  }
+
+  public DocumentViewServiceMockWrapper getDocumentViewServiceMockWrapper() {
+    return documentViewServiceMockWrapper;
   }
 }

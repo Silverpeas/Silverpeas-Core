@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2000 - 2015 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.silverpeas.viewer;
 
 import com.silverpeas.util.ImageUtil;
@@ -24,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-viewer.xml")
-public class PreviewServiceTest extends AbstractViewerTest {
+public class PreviewServiceWithoutSwfrenderTest extends AbstractViewerTest {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -45,6 +68,7 @@ public class PreviewServiceTest extends AbstractViewerTest {
         .thenReturn(false);
     when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
         .thenReturn(false);
+    reflectionRule.setField(SwfToolManager.class, false, "isSwfRenderActivated");
   }
 
   @After
@@ -277,38 +301,37 @@ public class PreviewServiceTest extends AbstractViewerTest {
   }
 
   private void assertPptDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 720, 540, false);
+    assertDocumentPreview(preview, 720, 540, false, "png");
   }
 
   private void assertPptDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 720, 540, true);
+    assertDocumentPreview(preview, 720, 540, true, "png");
   }
 
   private void assertImageDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 1000, 750, false);
+    assertDocumentPreview(preview, 1000, 750, false, "jpg");
   }
 
   private void assertImageDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 1000, 750, true);
+    assertDocumentPreview(preview, 1000, 750, true, "jpg");
   }
 
   private void assertOfficeOrPdfDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 595, 842, false);
+    assertDocumentPreview(preview, 595, 842, false, "png");
   }
 
   private void assertOfficeOrPdfDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 595, 842, true);
+    assertDocumentPreview(preview, 595, 842, true, "png");
   }
 
   private void assertDocumentPreview(Preview preview, int width, int height,
-      final boolean cacheUsed) {
+      final boolean cacheUsed, final String fileExtension) {
     assertThat(preview, notNullValue());
     int nbFilesAtTempRoot = cacheUsed ? 2 : 1;
     assertThat(new File(FileRepositoryManager.getTemporaryPath()).listFiles(),
         arrayWithSize(nbFilesAtTempRoot));
     assertThat(preview.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
-    assertThat(preview.getPhysicalFile().getName(), startsWith("file."));
-    assertThat(preview.getPhysicalFile().getName().length(), is(8));
+    assertThat(preview.getPhysicalFile().getName(), is("file." + fileExtension));
     assertThat(preview.getWidth(), is(String.valueOf(width)));
     assertThat(preview.getHeight(), is(String.valueOf(height)));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());

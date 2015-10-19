@@ -23,15 +23,14 @@
  */
 package org.silverpeas.viewer.web;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.viewer.DocumentView;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.viewer.DocumentView;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
  * The document view entity is a document view instance that is exposed in the web as
@@ -44,28 +43,34 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
   private static final long serialVersionUID = 4270519541076741138L;
 
   @XmlElement(defaultValue = "")
-  private final String displayLicenseKey;
+  private String displayLicenseKey;
 
   @XmlElement(defaultValue = "")
-  private final String displayViewerPath;
+  private String displayViewerPath;
 
   @XmlElement(defaultValue = "")
-  private final String url;
+  private String url;
 
   @XmlElement(defaultValue = "")
-  private final String originalFileName;
+  private String originalFileName;
 
   @XmlElement(defaultValue = "")
-  private final String width;
+  private String width;
 
   @XmlElement(defaultValue = "")
-  private final String height;
+  private String height;
 
   @XmlElement(defaultValue = "")
-  private final String language;
+  private String language;
 
   @XmlElement(defaultValue = "")
-  private final int nbPages;
+  private int nbPages;
+
+  @XmlElement(defaultValue = "")
+  private boolean documentSplit;
+
+  @XmlElement(defaultValue = "")
+  private boolean searchDataComputed;
 
   /**
    * Creates a new document view entity from the specified document view.
@@ -73,7 +78,8 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
    * @param language
    * @return the entity representing the specified document view.
    */
-  public static DocumentViewEntity createFrom(final DocumentView documentView, final String language) {
+  public static DocumentViewEntity createFrom(final DocumentView documentView,
+      final String language) {
     return new DocumentViewEntity(documentView, language);
   }
 
@@ -95,6 +101,11 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
     height = documentView.getHeight();
     this.language = language;
     nbPages = documentView.getNbPages();
+    documentSplit = documentView.isDocumentSplit();
+    searchDataComputed = documentView.areSearchDataComputed();
+  }
+
+  protected DocumentViewEntity() {
   }
 
   /**
@@ -151,5 +162,19 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
    */
   protected int getNbPages() {
     return nbPages;
+  }
+
+  /**
+   * @return the documentSplit
+   */
+  protected boolean getDocumentSplit() {
+    return documentSplit;
+  }
+
+  /**
+   * @return the searchDataComputed
+   */
+  protected boolean getSearchDataComputed() {
+    return searchDataComputed;
   }
 }

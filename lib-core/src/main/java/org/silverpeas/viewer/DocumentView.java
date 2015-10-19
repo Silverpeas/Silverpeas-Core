@@ -33,4 +33,16 @@ public interface DocumentView extends Preview {
    * @return
    */
   int getNbPages();
+
+  /**
+   * Indicates if the document view is split into several pieces.
+   * @return true if the document view is split, false otherwise.
+   */
+  boolean isDocumentSplit();
+
+  /**
+   * Indicates if search data have been computed.
+   * @return true if search data have been computed, false otherwise.
+   */
+  boolean areSearchDataComputed();
 }

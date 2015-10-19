@@ -23,17 +23,16 @@
  */
 package org.silverpeas.viewer;
 
-import java.io.File;
-
 import com.silverpeas.util.ImageUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.FileServerUtils;
+
+import java.io.File;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractPreview implements Preview {
-  protected final ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.viewer.viewer", "");
+  private static final long serialVersionUID = 3597757215012779572L;
 
   private final String originalFileName;
   private final File physicalFile;
@@ -92,6 +91,16 @@ public abstract class AbstractPreview implements Preview {
   @Override
   public String getHeight() {
     return getWidthAndHeight()[1];
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getURLAsString()
+   */
+  @Override
+  public String getURLAsString() {
+    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getParentFile().getName() + "/" +
+        getPhysicalFile().getName());
   }
 
   /**

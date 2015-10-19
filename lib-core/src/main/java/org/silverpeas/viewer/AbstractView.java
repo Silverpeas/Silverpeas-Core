@@ -25,12 +25,17 @@ package org.silverpeas.viewer;
 
 import java.io.File;
 
+import static org.silverpeas.viewer.ViewerSettings.getLicenceKey;
+
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractView extends AbstractPreview implements DocumentView {
+  private static final long serialVersionUID = 7925552492746846823L;
 
   private int nbPages = 0;
+  private boolean documentSplit = false;
+  private boolean searchDataComputed = false;
 
   /**
    * Default constructor
@@ -48,7 +53,7 @@ public abstract class AbstractView extends AbstractPreview implements DocumentVi
    */
   @Override
   public String getDisplayLicenseKey() {
-    return settings.getString("flexpaper.licenseKey", "");
+    return getLicenceKey();
   }
 
   /**
@@ -57,5 +62,23 @@ public abstract class AbstractView extends AbstractPreview implements DocumentVi
   @Override
   public int getNbPages() {
     return nbPages;
+  }
+
+  @Override
+  public boolean isDocumentSplit() {
+    return documentSplit;
+  }
+
+  public void markDocumentSplit(final boolean documentSplit) {
+    this.documentSplit = documentSplit;
+  }
+
+  @Override
+  public boolean areSearchDataComputed() {
+    return searchDataComputed;
+  }
+
+  public void markSearchDataComputed(final boolean searchDataComputed) {
+    this.searchDataComputed = searchDataComputed;
   }
 }

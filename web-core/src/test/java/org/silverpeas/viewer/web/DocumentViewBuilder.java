@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,50 +23,50 @@
  */
 package org.silverpeas.viewer.web;
 
-import java.io.File;
-
-import org.silverpeas.viewer.Preview;
+import org.silverpeas.viewer.DocumentView;
 import org.silverpeas.viewer.exception.ViewerException;
+
+import java.io.File;
 
 /**
  * @author Yohann Chastagnier
  */
-public class PreviewBuilder {
+public class DocumentViewBuilder {
 
-  public static PreviewBuilder getPreviewBuilder() {
-    return new PreviewBuilder();
+  public static DocumentViewBuilder getDocumentViewBuilder() {
+    return new DocumentViewBuilder();
   }
 
-  public Preview buildFileName(final String uriId, final String fileName) {
-    return new PreviewMock(uriId, fileName);
+  public DocumentView buildFileName(final String uriId, final String fileName) {
+    return new DocumentViewMock(uriId, fileName);
   }
 
-  private PreviewBuilder() {
+  private DocumentViewBuilder() {
     // Nothing to do
   }
 
-  protected class PreviewMock implements Preview {
+  protected class DocumentViewMock implements DocumentView {
 
     private final String uriId;
     private final String fileName;
 
-    public PreviewMock(final String uriId, final String fileName) {
+    public DocumentViewMock(final String uriId, final String fileName) {
       this.uriId = uriId;
       this.fileName = fileName;
     }
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+     * @see org.silverpeas.viewer.DocumentView#getDisplayLicenseKey()
      */
     @Override
     public String getDisplayLicenseKey() {
-      return null;
+      return "licenseKey";
     }
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getURLAsString()
+     * @see org.silverpeas.viewer.DocumentView#getURLAsString()
      */
     @Override
     public String getURLAsString() throws ViewerException {
@@ -75,7 +75,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getAttachment()
+     * @see org.silverpeas.viewer.DocumentView#getAttachment()
      */
     @Override
     public File getPhysicalFile() {
@@ -84,7 +84,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getOriginalFileName()
+     * @see org.silverpeas.viewer.DocumentView#getOriginalFileName()
      */
     @Override
     public String getOriginalFileName() {
@@ -93,7 +93,7 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getWidth()
+     * @see org.silverpeas.viewer.DocumentView#getWidth()
      */
     @Override
     public String getWidth() {
@@ -102,11 +102,26 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
-     * @see org.silverpeas.viewer.Preview#getHeight()
+     * @see org.silverpeas.viewer.DocumentView#getHeight()
      */
     @Override
     public String getHeight() {
       return null;
+    }
+
+    @Override
+    public int getNbPages() {
+      return 10;
+    }
+
+    @Override
+    public boolean isDocumentSplit() {
+      return true;
+    }
+
+    @Override
+    public boolean areSearchDataComputed() {
+      return true;
     }
   }
 }

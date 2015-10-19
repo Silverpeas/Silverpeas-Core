@@ -252,11 +252,21 @@
    * Private function that configures FlexPaper plugin.
    */
   function __configureFlexPaper(view) {
+    var viewUrl = decodeURIComponent(view.url);
+    var swfUrl = viewUrl;
+    var jsonUrl = '';
+    if (view.documentSplit) {
+      swfUrl = "{" + viewUrl.replace(/page[.]swf$/g, 'page-[*,0].swf') + "," + view.nbPages + "}";
+      if (view.searchDataComputed) {
+        jsonUrl = viewUrl + "_{page}.js";
+      }
+    }
     $('#documentViewer').FlexPaperViewer({
       config : {
         flashDirectory : view.displayViewerPath,
         jsDirectory : (webContext + '/util/javaScript/flexpaper'),
-        SwfFile : view.url,
+        SwfFile : swfUrl,
+        JSONFile : jsonUrl,
         key : view.displayLicenseKey,
         Scale : 0.6,
         ZoomTransition : 'easeOut',
@@ -265,7 +275,7 @@
         FitPageOnLoad : true,
         FitWidthOnLoad : false,
         FullScreenAsMaxWindow : false,
-        ProgressiveLoading : false,
+        ProgressiveLoading : true,
         MinZoomSize : 0.2,
         MaxZoomSize : 5,
         SearchMatchAll : false,
@@ -276,7 +286,7 @@
         ZoomToolsVisible : true,
         NavToolsVisible : true,
         CursorToolsVisible : true,
-        SearchToolsVisible : true,
+        SearchToolsVisible : (!view.documentSplit || view.searchDataComputed),
 
         BackgroundColor : '#222222',
         PanelColor : '#555555',

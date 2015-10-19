@@ -9,8 +9,9 @@ import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.viewer.DocumentView;
+import org.silverpeas.viewer.ViewerContext;
 import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.exception.ViewerException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,7 +22,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-import java.io.File;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -90,14 +90,13 @@ public class DocumentViewResource extends RESTWebService {
 
       // Checking availability
       if (attachment == null) {
-        throw new PreviewException("ATTACHMENT DOESN'T EXIST");
+        throw new ViewerException("ATTACHMENT DOESN'T EXIST");
       }
 
       // Computing the document view entity
-      return asWebEntity(viewService.getDocumentView(attachment.getFilename(), new File(attachment.
-          getAttachmentPath())));
+      return asWebEntity(viewService.getDocumentView(ViewerContext.from(attachment)));
 
-    } catch (final PreviewException pe) {
+    } catch (final ViewerException pe) {
       throw new WebApplicationException(pe, Status.NOT_FOUND);
     } catch (final WebApplicationException ex) {
       throw ex;

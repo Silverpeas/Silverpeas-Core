@@ -23,34 +23,27 @@
  */
 package org.silverpeas.viewer;
 
-import static com.silverpeas.util.ImageUtil.BMP_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.GIF_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.JPG_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.PCD_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.PNG_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.TGA_IMAGE_EXTENSION;
-import static com.silverpeas.util.ImageUtil.TIF_IMAGE_EXTENSION;
-import static com.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.silverpeas.image.ImageTool;
-import org.silverpeas.image.ImageToolDirective;
-import org.silverpeas.image.option.DimensionOption;
-import org.silverpeas.viewer.exception.PreviewException;
-import org.silverpeas.viewer.util.SwfUtil;
-
 import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.option.PageRangeFilterOption;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
+import org.silverpeas.image.ImageTool;
+import org.silverpeas.image.ImageToolDirective;
+import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.viewer.exception.ViewerException;
+import org.silverpeas.viewer.util.SwfUtil;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.silverpeas.util.ImageUtil.*;
+import static com.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.silverpeas.viewer.ViewerSettings.*;
 
 /**
  * @author Yohann Chastagnier
@@ -58,14 +51,18 @@ import com.silverpeas.util.MimeTypes;
 @Service
 public class DefaultPreviewService extends AbstractViewerService implements PreviewService {
 
+  private static final String PROCESS_NAME = "PREVIEW";
+
+  @Inject
+  private ViewService viewService;
+
   // Extension of pdf document file
   private final static Set<String> imageMimeTypePreviewable = new HashSet<String>();
   static {
     for (final String imageExtension : new String[] { BMP_IMAGE_EXTENSION, GIF_IMAGE_EXTENSION,
         JPG_IMAGE_EXTENSION, PCD_IMAGE_EXTENSION, PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION,
         TIF_IMAGE_EXTENSION }) {
-      imageMimeTypePreviewable.add(FileUtil.getMimeType(new StringBuilder("file.").append(
-          imageExtension).toString()));
+      imageMimeTypePreviewable.add(FileUtil.getMimeType("file." + imageExtension));
     }
     imageMimeTypePreviewable.remove(MimeTypes.DEFAULT_MIME_TYPE);
   }
@@ -93,40 +90,63 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    * @see org.silverpeas.viewer.PreviewService#getPreview(java.lang.String, java.io.File)
    */
   @Override
-  public Preview getPreview(final String originalFileName, final File physicalFile) {
+  public Preview getPreview(final ViewerContext viewerContext) {
+    return process(PROCESS_NAME, new ViewerTreatment<Preview>() {
+      @Override
+      public Preview execute() {
 
-    // Checking
-    if (!isPreviewable(physicalFile)) {
-      throw new PreviewException("IT IS NOT POSSIBLE GETTING DOCUMENT PREVIEW");
-    }
+        // Checking
+        if (!isPreviewable(viewerContext.getOriginalSourceFile())) {
+          throw new ViewerException("IT IS NOT POSSIBLE GETTING DOCUMENT PREVIEW");
+        }
 
-    // Save file instance to an generic local variable
-    final File resultFile;
+        // Save file instance to an generic local variable
+        final File resultFile;
 
-    // If the document is an Open Office one
-    // 1 - converting it into PDF document
-    // 2 - converting the previous result into PNG image
-    if (FileUtil.isOpenOfficeCompatible(physicalFile.getName())) {
-      final File pdfFile = toPdf(physicalFile, generateTmpFile(PDF_DOCUMENT_EXTENSION));
-      resultFile = toImage(pdfFile, changeFileExtension(pdfFile, PNG_IMAGE_EXTENSION));
-      deleteQuietly(pdfFile);
-    }
+        // If the document is an Open Office one
+        // 1 - converting it into PDF document
+        // 2 - converting the previous result into PNG image
+        if (FileUtil.isOpenOfficeCompatible(viewerContext.getOriginalSourceFile().getName())) {
+          final File pdfFile = toPdf(viewerContext.getOriginalSourceFile(),
+              generateTmpFile(viewerContext, PDF_DOCUMENT_EXTENSION));
+          resultFile = toImage(pdfFile, changeFileExtension(pdfFile, PNG_IMAGE_EXTENSION));
+          deleteQuietly(pdfFile);
+        }
 
-    // If the document is a PDF (or plain text)
-    // 1 - convert it into PNG resized image.
-    else if (FileUtil.isPdf(originalFileName) ||
-        PLAIN_TEXT_MIME_TYPE.equals(FileUtil.getMimeType(physicalFile.getPath()))) {
-      resultFile = toImage(physicalFile, generateTmpFile(PNG_IMAGE_EXTENSION));
-    }
+        // If the document is a PDF (or plain text)
+        // 1 - convert it into PNG resized image.
+        else if (FileUtil.isPdf(viewerContext.getOriginalFileName()) || PLAIN_TEXT_MIME_TYPE
+            .equals(FileUtil.getMimeType(viewerContext.getOriginalSourceFile().getPath()))) {
+          resultFile = toImage(viewerContext.getOriginalSourceFile(),
+              generateTmpFile(viewerContext, PNG_IMAGE_EXTENSION));
+        }
 
-    // If the document is an image
-    // 1 - convert it into JPG resized image.
-    else {
-      resultFile = toImage(physicalFile, generateTmpFile(JPG_IMAGE_EXTENSION));
-    }
+        // If the document is an image
+        // 1 - convert it into JPG resized image.
+        else {
+          resultFile = toImage(viewerContext.getOriginalSourceFile(),
+              generateTmpFile(viewerContext, JPG_IMAGE_EXTENSION));
+        }
 
-    // Returning the result
-    return new TemporaryPreview(originalFileName, resultFile);
+        // Returning the result
+        return new TemporaryPreview(viewerContext.getOriginalFileName(), resultFile);
+      }
+
+      @Override
+      public Preview performAfterSuccess(final Preview result) {
+        if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
+            viewService.isViewable(viewerContext.getOriginalSourceFile())) {
+          Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+              viewService.getDocumentView(viewerContext.clone());
+            }
+          });
+          thread.start();
+        }
+        return super.performAfterSuccess(result);
+      }
+    }).execute(viewerContext);
   }
 
   /**
@@ -147,18 +167,16 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    */
   private File toImage(File source, File destination) {
     boolean deleteSource = false;
-    if (SwfUtil.isActivated() && FileUtil.isPdf(source.getPath())) {
+    if (SwfUtil.isPdfToImageActivated() && FileUtil.isPdf(source.getPath())) {
       SwfUtil.fromPdfToImage(source, destination);
       source = destination;
       destination = changeFileExtension(destination, JPG_IMAGE_EXTENSION);
       deleteSource = !source.equals(destination);
     }
-    imageTool.convert(
-        source,
-        destination,
-        DimensionOption.widthAndHeight(settings.getInteger("preview.width.max", 500),
-            settings.getInteger("preview.height.max", 500)), ImageToolDirective.PREVIEW_WORK,
-        ImageToolDirective.GEOMETRY_SHRINK, ImageToolDirective.FIRST_PAGE_ONLY);
+    imageTool.convert(source, destination,
+        DimensionOption.widthAndHeight(getPreviewMaxWidth(), getPreviewMaxHeight()),
+        ImageToolDirective.PREVIEW_WORK, ImageToolDirective.GEOMETRY_SHRINK,
+        ImageToolDirective.FIRST_PAGE_ONLY);
     if (deleteSource) {
       deleteQuietly(source);
     }

@@ -33,6 +33,7 @@ import org.silverpeas.viewer.Preview;
 import org.silverpeas.viewer.PreviewService;
 
 import com.silverpeas.util.Default;
+import org.silverpeas.viewer.ViewerContext;
 
 /**
  * @author Yohann Chastagnier
@@ -65,7 +66,7 @@ public class PreviewServiceMockWrapper implements PreviewService {
    * @see org.silverpeas.viewer.PreviewService#getPreview(java.io.File)
    */
   @Override
-  public Preview getPreview(final String originalFileName, final File physicalFile) {
-    return mock.getPreview(originalFileName, physicalFile);
+  public Preview getPreview(final ViewerContext viewerContext) {
+    return mock.getPreview(viewerContext);
   }
 }

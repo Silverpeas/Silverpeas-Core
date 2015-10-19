@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2015 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,9 +24,7 @@
 package org.silverpeas.viewer.web;
 
 import com.silverpeas.web.ResourceGettingTest;
-import com.stratelia.silverpeas.peasCore.servlets.control.TestWebComponentController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -34,34 +32,33 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.viewer.Preview;
+import org.silverpeas.viewer.DocumentView;
 import org.silverpeas.viewer.ViewerContext;
+
+import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import static org.silverpeas.viewer.web.ViewerTestResources.JAVA_PACKAGE;
 import static org.silverpeas.viewer.web.ViewerTestResources.SPRING_CONTEXT;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
- *
  * @author Yohann Chastagnier
  */
-public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources> {
+public class DocumentViewGettingTest extends ResourceGettingTest<ViewerTestResources> {
 
   private UserDetail user;
   private String sessionKey;
-  private Preview expected;
+  private DocumentView expected;
 
   private static String ATTACHMENT_ID = "7";
   private static String ATTACHMENT_ID_DOESNT_EXISTS = "8";
 
-  public PreviewGettingTest() {
+  public DocumentViewGettingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
   }
 
@@ -69,10 +66,11 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    expected = PreviewBuilder.getPreviewBuilder().buildFileName("previewId", "originalFileName7");
+    expected = DocumentViewBuilder.getDocumentViewBuilder()
+        .buildFileName("documentViewId", "originalFileName7");
 
-    when(getTestResources().getAttachmentServiceMock().searchDocumentById(
-        any(SimpleDocumentPK.class), any(String.class)))
+    when(getTestResources().getAttachmentServiceMock()
+        .searchDocumentById(any(SimpleDocumentPK.class), any(String.class)))
         .thenAnswer(new Answer<SimpleDocument>() {
 
           /*
@@ -94,31 +92,31 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
           }
         });
 
-    when(getTestResources().getPreviewServiceMockWrapper().getPreview(any(ViewerContext.class)))
-        .thenAnswer(new Answer<Preview>() {
+    when(getTestResources().getDocumentViewServiceMockWrapper()
+        .getDocumentView(any(ViewerContext.class))).thenAnswer(new Answer<DocumentView>() {
 
-          /*
-           * (non-Javadoc)
-           * @see org.mockito.stubbing.Answer#answer(org.mockito.invocation.InvocationOnMock)
-           */
-          @Override
-          public Preview answer(final InvocationOnMock invocation) throws Throwable {
-            final ViewerContext viewerContext = (ViewerContext) invocation.getArguments()[0];
-            final String originalFileName = viewerContext.getOriginalFileName();
-            final File physicalFile = viewerContext.getOriginalSourceFile();
-            final Preview preview = mock(Preview.class);
-            when(preview.getOriginalFileName()).thenReturn(originalFileName);
-            when(preview.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
-            return preview;
-          }
-        });
+      /*
+       * (non-Javadoc)
+       * @see org.mockito.stubbing.Answer#answer(org.mockito.invocation.InvocationOnMock)
+       */
+      @Override
+      public DocumentView answer(final InvocationOnMock invocation) throws Throwable {
+        final ViewerContext viewerContext = (ViewerContext) invocation.getArguments()[0];
+        final String originalFileName = viewerContext.getOriginalFileName();
+        final File physicalFile = viewerContext.getOriginalSourceFile();
+        final DocumentView documentView = mock(DocumentView.class);
+        when(documentView.getOriginalFileName()).thenReturn(originalFileName);
+        when(documentView.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
+        return documentView;
+      }
+    });
   }
 
   @Test
-  public void getPreview() {
-    final PreviewEntity entity = getAt(aResourceURI(), PreviewEntity.class);
+  public void getDocumentView() {
+    final DocumentViewEntity entity = getAt(aResourceURI(), DocumentViewEntity.class);
     assertNotNull(entity);
-    assertThat(entity, PreviewEntityMatcher.matches(expected));
+    assertThat(entity, DocumentViewEntityMatcher.matches(expected));
   }
 
   @Override
@@ -127,7 +125,7 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
   }
 
   private String aResourceURI(final String attachmentId) {
-    return "preview/" + getExistingComponentInstances()[0] + "/attachment/" + attachmentId;
+    return "view/" + getExistingComponentInstances()[0] + "/attachment/" + attachmentId;
   }
 
   @Override
@@ -136,7 +134,7 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
   }
 
   @Override
-  public Preview aResource() {
+  public DocumentView aResource() {
     return expected;
   }
 
@@ -147,7 +145,7 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
 
   @Override
   public Class<?> getWebEntityClass() {
-    return PreviewEntity.class;
+    return DocumentViewEntity.class;
   }
 
   @Override

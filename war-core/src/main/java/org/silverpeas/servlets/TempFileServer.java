@@ -20,34 +20,33 @@
  */
 package org.silverpeas.servlets;
 
+import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URLDecoder;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static org.silverpeas.util.data.TemporaryWorkspaceTranslation
+    .startWithTranslationDescriptorPrefix;
 
 /**
  * To get files from temp directory
  *
  * @author neysseri
  */
-public class TempFileServer extends HttpServlet {
+public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 5483484250458795672L;
 
@@ -70,22 +69,18 @@ public class TempFileServer extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("peasUtil", "TempFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
-    String encodedFileName = req.getRequestURI().substring(req.getRequestURI().lastIndexOf('/') + 1);
+    String encodedFileName = req.getPathInfo();
     String fileName = URLDecoder.decode(encodedFileName, "UTF-8");
-    HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.
-        getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if (mainSessionCtrl == null) {
-      SilverTrace.warn("peasUtil", "TempFileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
-          + GeneralPropertiesManager.getString("sessionTimeout"));
-      res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.getString(
-          "sessionTimeout"));
+
+    // Verifying that the path is a valid one (security)
+    if (!isValid(fileName)) {
+      throwHttpForbiddenError();
     }
-    String filePath = FileRepositoryManager.getTemporaryPath() + fileName;
+
+    File requestedFile = new File(FileRepositoryManager.getTemporaryPath(), fileName);
     res.setContentType(FileUtil.getMimeType(fileName));
-    res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + '"');
-    write(res, filePath);
+    res.setHeader("Content-Disposition", "inline; filename=\"" + requestedFile.getName() + '"');
+    write(res, requestedFile);
 
   }
 
@@ -97,12 +92,12 @@ public class TempFileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void write(HttpServletResponse res, String htmlFilePath) throws IOException {
+  private void write(HttpServletResponse res, File htmlFilePath) throws IOException {
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null; // for the html document generated
     SilverTrace.info("peasUtil", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
-        " htmlFilePath " + htmlFilePath);
+        " htmlFilePath " + htmlFilePath.getPath());
     try {
       input = new BufferedInputStream(new FileInputStream(htmlFilePath));
       read = input.read();
@@ -163,5 +158,15 @@ public class TempFileServer extends HttpServlet {
             "root.EX_CANT_READ_FILE", "close failed");
       }
     }
+  }
+
+  /**
+   * Checks the specified path is valid according to some security rules. For example, check there
+   * is no attempt to go up the path to access a forbidden resource.
+   * @param path the patch to check.
+   * @return true if given path is valid, false otherwise.
+   */
+  private static boolean isValid(String path) {
+    return !path.contains("..") && !startWithTranslationDescriptorPrefix(path);
   }
 }

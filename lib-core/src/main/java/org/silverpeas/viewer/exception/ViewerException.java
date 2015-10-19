@@ -21,21 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer;
+package org.silverpeas.viewer.exception;
 
-import java.io.File;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier
  */
-public class TemporaryPreview extends AbstractPreview {
-  private static final long serialVersionUID = -8976465787358834699L;
+public class ViewerException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 2259738068129938704L;
 
   /**
    * Default constructor
-   * @param physicalFile
+   * @param e
    */
-  public TemporaryPreview(final String originalFilename, final File physicalFile) {
-    super(originalFilename, physicalFile);
+  public ViewerException(final Exception e) {
+    super("Viewer", SilverpeasException.ERROR, e.getMessage(), e);
+  }
+
+  /**
+   * Default constructor
+   * @param message
+   */
+  public ViewerException(final String message) {
+    super("Viewer", SilverpeasException.ERROR, message);
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see com.stratelia.webactiv.util.exception.SilverpeasException#getModule()
+   */
+  @Override
+  public String getModule() {
+    return "viewer";
   }
 }
