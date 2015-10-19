@@ -99,19 +99,19 @@ public class TemporaryDataCleanerSchedulerInitializer {
     @Override
     public void execute(final JobExecutionContext context) throws Exception {
 
-      // 1 hour minimum
-      final long nbMilliseconds = getTimeAfterThatFilesMustBeDeleted();
-      if (nbMilliseconds > 0) {
-        // Clean
-        clean(nbMilliseconds);
+      // 1 hour minimum or each time
+      long nbMilliseconds = getTimeAfterThatFilesMustBeDeleted();
+      if (nbMilliseconds < 0) {
+        nbMilliseconds = 0;
       }
+      clean(nbMilliseconds);
     }
 
     /**
      * Cleaning treatment
      * @param nbMilliseconds : age of files that don't have to be deleted (in milliseconds)
      */
-    public synchronized void clean(final long nbMilliseconds) {
+    private synchronized void clean(final long nbMilliseconds) {
 
       // Temporary temp directory
       if (tempPath.exists()) {
