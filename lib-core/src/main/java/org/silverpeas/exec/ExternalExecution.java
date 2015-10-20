@@ -59,11 +59,7 @@ public class ExternalExecution {
         throw new RuntimeException(
             "Exit error status : " + exitStatus + " " + logErrors.getMessage());
       }
-    } catch (final IOException e) {
-      performExternalExecutionException(config, e);
-    } catch (final InterruptedException e) {
-      performExternalExecutionException(config, e);
-    } catch (final RuntimeException e) {
+    } catch (final IOException | InterruptedException | RuntimeException e) {
       performExternalExecutionException(config, e);
     } finally {
       IOUtils.closeQuietly(logErrors);

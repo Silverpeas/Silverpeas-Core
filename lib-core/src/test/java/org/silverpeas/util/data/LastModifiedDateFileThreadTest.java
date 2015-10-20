@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getTemporaryPath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
 
 /**
  * @author Yohann Chastagnier

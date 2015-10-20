@@ -26,7 +26,7 @@ package org.silverpeas.viewer.flexpaper;
 import org.silverpeas.viewer.AbstractView;
 import org.silverpeas.viewer.util.DocumentInfo;
 
-import org.silverpeas.util.FileServerUtils;
+import java.io.File;
 
 /**
  * @author Yohann Chastagnier

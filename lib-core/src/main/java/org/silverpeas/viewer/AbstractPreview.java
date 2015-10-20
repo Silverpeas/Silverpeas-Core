@@ -23,14 +23,10 @@
  */
 package org.silverpeas.viewer;
 
-import com.silverpeas.util.ImageUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.ImageUtil;
 
 import java.io.File;
-
-import org.silverpeas.util.ImageUtil;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier

@@ -23,17 +23,16 @@
  */
 package org.silverpeas.media.video.ffmpeg;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecutionException;
 import org.silverpeas.media.video.VideoThumbnailExtractorException;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class wrapp FFmpeg command line execution.

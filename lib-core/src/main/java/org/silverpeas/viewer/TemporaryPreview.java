@@ -25,8 +25,6 @@ package org.silverpeas.viewer;
 
 import java.io.File;
 
-import org.silverpeas.util.FileServerUtils;
-
 /**
  * @author Yohann Chastagnier
  */

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.viewer;
 
-import com.stratelia.webactiv.util.DateUtil;
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.data.TemporaryDataManagementSettings;
 import org.silverpeas.util.data.TemporaryWorkspaceTranslation;
 
@@ -34,8 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 
-import org.silverpeas.util.FileRepositoryManager;
-import org.silverpeas.util.ResourceLocator;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
 import org.silverpeas.util.SettingBundle;
 
 /**
@@ -44,8 +44,7 @@ import org.silverpeas.util.SettingBundle;
 public abstract class AbstractViewerService {
 
   private static final Object OBJECT_FOR_SYNC = new Object();
-  private static final ConcurrentMap<String, Object> cache =
-      new ConcurrentHashMap<String, Object>();
+  private static final ConcurrentMap<String, Object> cache = new ConcurrentHashMap<>();
 
   // Extension of pdf document file
   public static final String PDF_DOCUMENT_EXTENSION = "pdf";
@@ -85,7 +84,7 @@ public abstract class AbstractViewerService {
    */
   protected <RETURN_VALUE extends Serializable> ViewerProcess<RETURN_VALUE> process(
       String processName, ViewerTreatment<RETURN_VALUE> viewerTreatment) {
-    return new ViewerProcess<RETURN_VALUE>(processName, viewerTreatment);
+    return new ViewerProcess<>(processName, viewerTreatment);
   }
 
   /**

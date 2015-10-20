@@ -34,10 +34,10 @@ import org.junit.Test;
 import java.io.File;
 import java.io.Serializable;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getTemporaryPath;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
 import static org.silverpeas.util.data.TemporaryWorkspaceTranslation
     .startWithTranslationDescriptorPrefix;
 

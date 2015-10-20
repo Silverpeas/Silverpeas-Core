@@ -27,17 +27,16 @@ import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.initialization.Initialization;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.StringUtil;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.util.Collection;
 
@@ -50,7 +49,6 @@ import static org.silverpeas.util.data.TemporaryDataManagementSettings
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
 public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
 
   private static final String JOB_NAME = "TemporayDataCleanerJob";
@@ -68,11 +66,8 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
 
     // Cleaning temporary data at start if requested
-    startTask = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        temporaryDataCleanerJob.clean(getTimeAfterThatFilesMustBeDeletedAtServerStart());
-      }
+    startTask = new Thread(() -> {
+      temporaryDataCleanerJob.clean(getTimeAfterThatFilesMustBeDeletedAtServerStart());
     });
     startTask.start();
 

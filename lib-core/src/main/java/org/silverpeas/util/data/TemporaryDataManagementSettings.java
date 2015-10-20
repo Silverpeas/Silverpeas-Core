@@ -23,7 +23,7 @@
  */
 package org.silverpeas.util.data;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.UnitUtil;
 import org.silverpeas.util.time.TimeUnit;
 

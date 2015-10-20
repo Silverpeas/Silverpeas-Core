@@ -23,10 +23,10 @@
  */
 package org.silverpeas.util.data;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class TemporaryWorkspaceTranslation {
 
   private final File descriptor;
   private File workspace;
-  private Map<String, String> descriptorContent = new HashMap<String, String>();
+  private Map<String, String> descriptorContent = new HashMap<>();
 
   /**
    * Indicates if the given path corresponds to a temporary workspace translation.

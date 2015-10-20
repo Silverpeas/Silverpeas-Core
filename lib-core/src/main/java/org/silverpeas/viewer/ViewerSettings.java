@@ -23,7 +23,7 @@
  */
 package org.silverpeas.viewer;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.data.TemporaryDataManagementSettings;
 
 /**

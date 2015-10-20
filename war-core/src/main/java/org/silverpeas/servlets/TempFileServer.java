@@ -20,11 +20,11 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

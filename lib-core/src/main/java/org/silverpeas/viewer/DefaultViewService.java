@@ -27,15 +27,19 @@ import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.util.FileUtil;
-import org.silverpeas.viewer.exception.PreviewException;
+import org.silverpeas.viewer.exception.ViewerException;
 import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.viewer.util.DocumentInfo;
 import org.silverpeas.viewer.util.JsonPdfUtil;
 import org.silverpeas.viewer.util.SwfUtil;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.IOException;
 
+import static org.silverpeas.viewer.ViewerSettings.isSilentConversionEnabled;
+import static org.silverpeas.viewer.ViewerSettings.isSplitStrategyEnabled;
 import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 
 /**
@@ -45,9 +49,6 @@ import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 public class DefaultViewService extends AbstractViewerService implements ViewService {
 
   private static final String PROCESS_NAME = "VIEW";
-
-  @Inject
-  private PreviewService previewService;
 
   /*
    * (non-Javadoc)
@@ -110,12 +111,9 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       @Override
       public DocumentView performAfterSuccess(final DocumentView result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
-            previewService.isPreviewable(viewerContext.getOriginalSourceFile())) {
-          Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-              previewService.getPreview(viewerContext.clone());
-            }
+            PreviewService.get().isPreviewable(viewerContext.getOriginalSourceFile())) {
+          Thread thread = new Thread(() -> {
+            PreviewService.get().getPreview(viewerContext.clone());
           });
           thread.start();
         }

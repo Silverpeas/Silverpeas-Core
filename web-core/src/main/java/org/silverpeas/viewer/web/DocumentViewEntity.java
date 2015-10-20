@@ -23,19 +23,14 @@
  */
 package org.silverpeas.viewer.web;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.viewer.DocumentView;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.viewer.DocumentView;
-
-import org.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
  * The document view entity is a document view instance that is exposed in the web as

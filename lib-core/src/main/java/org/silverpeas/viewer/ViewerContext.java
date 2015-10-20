@@ -23,8 +23,8 @@
  */
 package org.silverpeas.viewer;
 
-import com.silverpeas.util.StringUtil;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.data.TemporaryWorkspaceTranslation;
 
 import java.io.File;

@@ -23,12 +23,18 @@
  */
 package org.silverpeas.viewer;
 
+import org.silverpeas.util.ServiceProvider;
+
 import java.io.File;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface ViewService {
+
+  static ViewService get() {
+    return ServiceProvider.getService(ViewService.class);
+  }
 
   /**
    * Verifying if it is possible to obtain a view of the given file.

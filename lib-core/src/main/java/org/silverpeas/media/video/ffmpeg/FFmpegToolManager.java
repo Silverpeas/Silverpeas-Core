@@ -24,9 +24,9 @@
 package org.silverpeas.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
-import org.silverpeas.initialization.Initialization;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecution.Config;
+import org.silverpeas.initialization.Initialization;
 
 import java.util.Map;
 
