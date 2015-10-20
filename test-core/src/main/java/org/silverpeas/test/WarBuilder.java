@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,6 +69,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
           "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core"));
 
   protected Collection<String> jarLibForPersistence = new HashSet<>();
+
+  protected Collection<String> webParts = new HashSet<>();
 
   private WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
 
@@ -144,6 +147,18 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     return this;
   }
 
+  /**
+   * Adds web listener.
+   * @param webListenerClass the class of the web listener to add.
+   * @return the instance of the configurator.
+   */
+  @SuppressWarnings("unchecked")
+  public WarBuilder<T> addWebListener(Class<? extends EventListener> webListenerClass) {
+    webParts.add(
+        "<listener><listener-class>" + webListenerClass.getName() + "</listener-class></listener>");
+    return this;
+  }
+
   @Override
   public boolean contains(final Class<?> aClass) throws IllegalArgumentException {
     return war.contains(new BasicPath(PATH_CLASSES, AssetUtil.getFullPathForClassResource(aClass)));
@@ -209,7 +224,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   public final WebArchive build() {
     try {
       if (!jarLibForPersistence.isEmpty()) {
-        String persistenceXmlContent = null;
+        String persistenceXmlContent;
         try (InputStream is = WarBuilder.class
             .getResourceAsStream("/META-INF/test-core-persistence.xml")) {
           persistenceXmlContent = IOUtils.toString(is);
@@ -225,6 +240,21 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
             "Filling '" + persistenceXml.getPath() + "'\nwith content:\n" + persistenceXmlContent);
         logInfo("Adding completed META-INF/persistence.xml");
         addAsResource("META-INF/" + persistenceXml.getName(), "META-INF/persistence.xml");
+      }
+      if (!webParts.isEmpty()) {
+        String webXmlContent;
+        try (InputStream is = WarBuilder.class.getResourceAsStream("/META-INF/test-core-web.xml")) {
+          webXmlContent = IOUtils.toString(is);
+        }
+        File webXml = FileUtils
+            .getFile(classOfTest.getProtectionDomain().getCodeSource().getLocation().getFile(),
+                "META-INF", "dynamic-test-web.xml");
+        logInfo("Setting web xml descriptor: " + webXml.getPath());
+        webXmlContent = webXmlContent.replace("<!-- @WEB_PARTS@ -->", String.join("\n", webParts));
+        FileUtils.writeStringToFile(webXml, webXmlContent);
+        logInfo("Filling '" + webXml.getPath() + "'\nwith content:\n" + webXmlContent);
+        logInfo("Adding completed web.xml");
+        war.setWebXML(webXml);
       }
       File[] libs =
           Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()

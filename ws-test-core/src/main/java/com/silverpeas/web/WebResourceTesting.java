@@ -57,10 +57,10 @@ public interface WebResourceTesting {
   <T> T aResource();
 
   /**
-   * Gets the valid session key to use in tests.
-   * @return a valid session key.
+   * Gets the valid token key to use in tests.
+   * @return a valid token key.
    */
-  String getSessionKey();
+  String getTokenKey();
 
   /**
    * Gets the class of the web entities handled by the REST web service to test.

@@ -27,7 +27,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -44,6 +46,9 @@ import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
  */
 public class LastModifiedDateFileThreadTest {
   private File tempPath;
+
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   @After
   public void cleanTest() {

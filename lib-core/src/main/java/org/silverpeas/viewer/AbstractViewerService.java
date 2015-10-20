@@ -25,7 +25,7 @@ package org.silverpeas.viewer;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.util.DateUtil;
-import org.silverpeas.util.data.TemporaryDataManagementSettings;
+import org.silverpeas.util.data.TemporaryDataManagementSetting;
 import org.silverpeas.util.data.TemporaryWorkspaceTranslation;
 
 import java.io.File;
@@ -148,7 +148,7 @@ public abstract class AbstractViewerService {
               // Handle time to live in cache if necessary
               if (ViewerSettings.isTimeToLiveEnabled()) {
                 long fileAgeThreshold = DateUtil.getNow().getTime() -
-                    ((long) (TemporaryDataManagementSettings.getTimeAfterThatFilesMustBeDeleted() *
+                    ((long) (TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted() *
                         0.25));
                 if (workspace.lastModified() < fileAgeThreshold) {
                   workspace.updateLastModifiedDate();

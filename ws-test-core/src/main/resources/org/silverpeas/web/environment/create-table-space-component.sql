@@ -31,6 +31,10 @@ ALTER TABLE ST_Space ADD CONSTRAINT UN_Space_1 UNIQUE(domainFatherId, name);
 ALTER TABLE ST_Space ADD CONSTRAINT FK_Space_1 FOREIGN KEY (createdBy) REFERENCES ST_User(id);
 ALTER TABLE ST_Space ADD CONSTRAINT FK_Space_2 FOREIGN KEY (domainFatherId) REFERENCES ST_Space(id);
 
+INSERT INTO st_space
+(id,domainfatherid,name                             ,description                                              ,createdby,firstpagetype,firstpageextraparam,ordernum,createtime     ,updatetime     ,removetime,spacestatus,updatedby,removedby,lang,isinheritanceblocked,look,displayspacefirst,ispersonal) VALUES
+(0 ,null          ,'Space for Web Integration Tests','This is a space created automatically at test starting' ,0        ,0            ,''                 ,0       ,'1433237260318','1443423990640',null      ,null       ,0        ,null     ,'fr',0                   ,null,1                ,null      );
+
 CREATE TABLE ST_SpaceI18N(
   id          INT          NOT NULL,
   spaceId     INT          NOT NULL,
@@ -48,6 +52,10 @@ CREATE TABLE ST_Component (
 );
 ALTER TABLE ST_Component ADD CONSTRAINT PK_Component PRIMARY KEY(id);
 ALTER TABLE ST_Component ADD CONSTRAINT UN_ST_Component_1 UNIQUE(componentName);
+
+INSERT INTO st_component
+(id,componentname   ,description) VALUES
+(0 ,'dummyComponent',null       );
 
 CREATE TABLE ST_ComponentInstance(
   id                   INT              NOT NULL,
@@ -68,6 +76,10 @@ CREATE TABLE ST_ComponentInstance(
   lang                 CHAR(2),
   isInheritanceBlocked INT DEFAULT (0)  NOT NULL
 );
+
+INSERT INTO st_componentinstance
+(id,spaceid,name                                              ,componentname    ,description,createdby,ordernum,createtime     ,updatetime     ,removetime,componentstatus,updatedby,removedby,ispublic,ishidden,lang,isinheritanceblocked) VALUES
+(0 ,0      ,'Dummy public component for Web Integration Tests','dummyComponent' ,''         ,1        ,0       ,'1433237280246','1443424995948',null      ,null           ,1        ,null     ,1       ,0       ,'fr',0                   );
 
 CREATE TABLE ST_ComponentInstanceI18N(
   id          INT          NOT NULL,

@@ -25,6 +25,30 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>pdc</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>publication</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>node</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <artifactId>tagcloud</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
@@ -32,24 +56,9 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
   <profiles>
     <profile>
-      <id>ci</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
+      <id>integration-test</id>
       <build>
         <resources>
           <resource>
@@ -59,7 +68,7 @@
         </resources>
         <testResources>
           <testResource>
-            <directory>src/test/resources</directory>
+            <directory>src/integration-test/resources</directory>
             <filtering>true</filtering>
             <excludes>
               <exclude>**/*.rtf</exclude>
@@ -103,34 +112,9 @@
             </includes>
           </testResource>
         </testResources>
-        <filters>
-          <filter>src/test/filters/filters.properties</filter>
-        </filters>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-            <executions>
-              <execution>
-                <id>integration-tests</id>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>test</goal>
-                </goals>
-                <configuration>
-                  <skip>false</skip>
-                  <includes>
-                    <include>**/*Test.java</include>
-                    <include>**/*TestSuite.java</include>
-                  </includes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
+        <!--<filters>-->
+          <!--<filter>src/test/filters/filters.properties</filter>-->
+        <!--</filters>-->
       </build>
     </profile>
   </profiles>

@@ -66,7 +66,7 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
    * @return the response of the post.
    */
   public <C> Response post(final C entity, String atURI) {
-    return post(entity, atURI, withAsSessionKey(getSessionKey()));
+    return post(entity, atURI, withAsSessionKey(getTokenKey()));
   }
 
   @Test

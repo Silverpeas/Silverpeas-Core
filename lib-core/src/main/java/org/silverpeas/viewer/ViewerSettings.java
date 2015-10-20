@@ -24,7 +24,7 @@
 package org.silverpeas.viewer;
 
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.data.TemporaryDataManagementSettings;
+import org.silverpeas.util.data.TemporaryDataManagementSetting;
 
 /**
  * All settings around the viewer services.
@@ -96,7 +96,7 @@ public class ViewerSettings {
    */
   public static boolean isTimeToLiveEnabled() {
     return isCacheEnabled() &&
-        TemporaryDataManagementSettings.getTimeAfterThatFilesMustBeDeleted() >= 0 &&
+        TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted() >= 0 &&
         settings.getBoolean("viewer.cache.timeToLive.enabled", true);
   }
 }

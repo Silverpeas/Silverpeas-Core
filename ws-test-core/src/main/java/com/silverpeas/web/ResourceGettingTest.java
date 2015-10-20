@@ -78,7 +78,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
    * @return the web entity representing the resource at the specified URI.
    */
   public <C> C getAt(String uri, MediaType mediaType, Class<C> c) {
-    return getAt(uri, withAsSessionKey(getSessionKey()), asMediaType(mediaType), c);
+    return getAt(uri, withAsSessionKey(getTokenKey()), asMediaType(mediaType), c);
   }
 
   @Test

@@ -5,6 +5,7 @@ import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
@@ -20,16 +21,15 @@ import java.util.List;
  * A scheduled job to clean up all the resized images for non existent original images.
  * @author mmoquillon
  */
-@Named
-public class ResizedImageCacheCleaner extends Job {
+public class ResizedImageCacheCleaner extends Job implements Initialization {
 
   private static final String CRON_PROPERTY = "image.cleaner.cron";
 
   @Inject
   private Scheduler scheduler;
 
-  @PostConstruct
-  public void scheduleFrequently() throws SchedulerException, ParseException {
+  @Override
+  public void init() throws SchedulerException, ParseException {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
     if (scheduler.isJobScheduled(getName())) {

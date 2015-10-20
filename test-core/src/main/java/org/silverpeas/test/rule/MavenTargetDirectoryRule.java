@@ -27,6 +27,7 @@ package org.silverpeas.test.rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.silverpeas.test.util.SilverProperties;
 
 import java.io.File;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ import static org.junit.Assert.fail;
 public class MavenTargetDirectoryRule implements TestRule {
 
 
-  private Properties mavenProperties;
+  private SilverProperties mavenProperties;
 
   private Class testInstanceClass;
 
@@ -56,7 +57,7 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @return the silverpeas version.
    */
   public String getSilverpeasVersion() {
-    return getMavenProperty("silverpeas.version");
+    return getSilverpeasVersion(getMavenProperties());
   }
 
   /**
@@ -64,7 +65,7 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @return the target directory of the test.
    */
   public File getBuildDirFile() {
-    return getPath("project.build.directory");
+    return getBuildDirFile(getMavenProperties());
   }
 
   /**
@@ -72,7 +73,7 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @return the resource path.
    */
   public File getResourceTestDirFile() {
-    return getPath("test-resources.directory");
+    return getResourceTestDirFile(getMavenProperties());
   }
 
   /**
@@ -108,8 +109,19 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @param key the key from which the path value will be retrieved.
    * @return the aimed {@link File} instance.
    */
-  private File getPath(String key) {
-    return new File(getMavenProperty(key));
+  private static File getPath(Properties mavenProperties, String key) {
+    return new File(getMavenProperty(mavenProperties, key));
+  }
+
+  /**
+   * Gets a property from the maven.properties file.
+   * @return the value related to the given key.
+   */
+  private Properties getMavenProperties() {
+    if (mavenProperties == null) {
+      mavenProperties = loadPropertiesForTestClass(testInstanceClass);
+    }
+    return mavenProperties;
   }
 
   /**
@@ -117,25 +129,53 @@ public class MavenTargetDirectoryRule implements TestRule {
    * @param key the key of the property.
    * @return the value related to the given key.
    */
-  private String getMavenProperty(String key) {
-    if (mavenProperties == null) {
-      mavenProperties = new Properties();
-      try (InputStream is = testInstanceClass.getClassLoader()
-          .getResourceAsStream("maven.properties")) {
-        Logger.getLogger(testInstanceClass.getName())
-            .info("Reading maven properties from " + testInstanceClass);
-        mavenProperties.load(is);
-        Logger.getLogger(testInstanceClass.getName())
-            .info("Content is:\n" + mavenProperties.toString());
-      } catch (Exception ex) {
-        Logger.getLogger(testInstanceClass.getName())
-            .log(Level.SEVERE, "Class " + testInstanceClass, ex);
-      }
-    }
+  private static String getMavenProperty(Properties mavenProperties, String key) {
     String mavenPropertyValue = mavenProperties.getProperty(key, null);
     if (mavenPropertyValue == null) {
       fail("The maven.properties file from resource tests is not complete...");
     }
     return mavenPropertyValue;
+  }
+
+  /**
+   * Loads maven properties from a test class.<br/>
+   * maven.properties has to exist into resources of the project.
+   * @param testClass the test class for which the maven properties are requested.
+   * @return an instance of {@link Properties} that containes requested maven properties.
+   */
+  public static SilverProperties loadPropertiesForTestClass(Class testClass) {
+    SilverProperties mavenProperties = SilverProperties.load(testClass);
+    try (InputStream is = testClass.getClassLoader().getResourceAsStream("maven.properties")) {
+      Logger.getLogger(testClass.getName()).info("Reading maven properties from " + testClass);
+      mavenProperties.load(is);
+      Logger.getLogger(testClass.getName()).info("Content is:\n" + mavenProperties.toString());
+    } catch (Exception ex) {
+      Logger.getLogger(testClass.getName()).log(Level.SEVERE, "Class " + testClass, ex);
+    }
+    return mavenProperties;
+  }
+
+  /**
+   * Gets the silverpeas version.
+   * @return the silverpeas version.
+   */
+  public static String getSilverpeasVersion(Properties mavenProperties) {
+    return getMavenProperty(mavenProperties, "silverpeas.version");
+  }
+
+  /**
+   * Gets the target directory of the test.
+   * @return the target directory of the test.
+   */
+  public static File getBuildDirFile(Properties mavenProperties) {
+    return getPath(mavenProperties, "project.build.directory");
+  }
+
+  /**
+   * Gets the resource path of test execution context.
+   * @return the resource path.
+   */
+  public static File getResourceTestDirFile(Properties mavenProperties) {
+    return getPath(mavenProperties, "test-resources.directory");
   }
 }

@@ -168,7 +168,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
   </listener>
   <listener>
-    <listener-class>org.silverpeas.initialization.SilverpeasServiceInitialization</listener-class>
+    <listener-class>org.silverpeas.initialization.SilverpeasServiceInitializationListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.silverpeas.web.token.SessionSynchronizerTokenSetter</listener-class>

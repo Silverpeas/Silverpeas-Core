@@ -33,7 +33,7 @@ import org.silverpeas.servlet.HttpRequest;
  * definition of common archive part definitions.
  * @author Yohann Chastagnier
  */
-public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
+public class WarBuilder4WebCore extends BasicCoreWarBuilder {
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
@@ -42,6 +42,23 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
    */
   protected <T> WarBuilder4WebCore(final Class<T> test) {
     super(test);
+    addMavenDependencies("org.silverpeas.core:ws-test-core");
+    addMavenDependencies("org.silverpeas.core.ejb-core:silverstatistics");
+    addMavenDependencies("org.silverpeas.core.ejb-core:clipboard");
+    addPackages(true, "com.stratelia.silverpeas.peasCore");
+    addPackages(true, "com.silverpeas.peasUtil");
+    addClasses(AccessForbiddenException.class, SilverpeasSessionOpener.class);
+    addPackages(true, "org.silverpeas.servlet");
+    addPackages(true, "org.silverpeas.subscription");
+    // Bundles & Settings
+    addAsResource("org/silverpeas/publication/publicationSettings.properties");
+    addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
+    addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");
+    addAsResource("org/silverpeas/peasCore/SessionManager.properties");
+    addAsResource("org/silverpeas/search/indexEngine/StopWords.properties");
+    addAsResource("org/silverpeas/searchEngine/searchEngineSettings.properties");
+    addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
+    addAsResource("org/silverpeas/util/attachment/Attachment.properties");
   }
 
   /**
@@ -55,34 +72,7 @@ public class WarBuilder4WebCore extends WarBuilder<WarBuilder4WebCore> {
    * @return the instance of the war archive builder.
    */
   public static <T> WarBuilder4WebCore onWarForTestClass(Class<T> test) {
-    WarBuilder4WebCore warBuilder = new WarBuilder4WebCore(test);
-    warBuilder.addMavenDependencies("org.silverpeas.core:ws-test-core", "javax.jcr:jcr");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:silverstatistics");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:publication");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:clipboard");
-    warBuilder.addMavenDependencies("org.apache.tika:tika-core");
-    warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-    warBuilder.addPackages(true, "com.stratelia.silverpeas.peasCore");
-    warBuilder.addPackages(true, "com.silverpeas.peasUtil");
-    warBuilder.addClasses(AccessForbiddenException.class, SilverpeasSessionOpener.class);
-    warBuilder.addPackages(true, "org.silverpeas.servlet");
-    warBuilder.addPackages(true, "org.silverpeas.subscription");
-    // Bundles & Settings
-    warBuilder.addAsResource("org/silverpeas/publication/publicationSettings.properties");
-    warBuilder.addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
-    warBuilder.addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");
-    warBuilder.addAsResource("org/silverpeas/peasCore/SessionManager.properties");
-    warBuilder.addAsResource("org/silverpeas/search/indexEngine/StopWords.properties");
-    warBuilder.addAsResource("org/silverpeas/searchEngine/searchEngineSettings.properties");
-    warBuilder.addAsResource("org/silverpeas/silverstatistics/SilverStatistics.properties");
-    warBuilder.addAsResource("org/silverpeas/silvertrace/settings/silverLog.properties");
-    warBuilder.addAsResource("org/silverpeas/util/attachment/Attachment.properties");
-    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
-    return warBuilder;
+    return new WarBuilder4WebCore(test);
   }
 
   /**

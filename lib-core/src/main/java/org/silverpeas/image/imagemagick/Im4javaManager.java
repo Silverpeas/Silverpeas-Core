@@ -29,13 +29,11 @@ import org.im4java.process.ProcessStarter;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
 public class Im4javaManager implements Initialization {
 
   @Override

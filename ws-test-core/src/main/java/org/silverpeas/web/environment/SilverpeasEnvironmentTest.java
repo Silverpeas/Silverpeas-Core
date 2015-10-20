@@ -26,6 +26,7 @@ package org.silverpeas.web.environment;
 
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Administration;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
@@ -78,6 +79,7 @@ public class SilverpeasEnvironmentTest {
         tableHandler.createTables();
       }
     }
+    administration.reloadCache();
   }
 
   void clear() {
@@ -104,10 +106,10 @@ public class SilverpeasEnvironmentTest {
   }
 
   /**
-   * Creates a user to use in the test case.
+   * Creates a default user to use in the test case.
    * @return the detail about the user in use in the current test case.
    */
-  public UserDetail createUser() {
+  public UserDetail createDefaultUser() {
     UserDetail user = new UserDetail();
     user.setLogin("toto");
     user.setFirstName("Toto");
@@ -144,5 +146,31 @@ public class SilverpeasEnvironmentTest {
     } catch (TokenException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Gets the dummy component created into database at start of the test.
+   * @return a {@link ComponentInst} instance that represents the dummy component.
+   */
+  public ComponentInst getDummyPublicComponent() {
+    try {
+      return administration.getComponentInst("dummyComponent0");
+    } catch (AdminException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Updates the database with the given component instance.
+   * @param componentInst the {@link ComponentInst} instance
+   * @return the manager of test environment itself.
+   */
+  public SilverpeasEnvironmentTest updateComponent(ComponentInst componentInst) {
+    try {
+      administration.updateComponentInst(componentInst);
+    } catch (AdminException e) {
+      throw new RuntimeException(e);
+    }
+    return this;
   }
 }

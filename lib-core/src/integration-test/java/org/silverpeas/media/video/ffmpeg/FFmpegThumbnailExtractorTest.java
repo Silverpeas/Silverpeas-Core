@@ -37,7 +37,6 @@ public class FFmpegThumbnailExtractorTest {
 
   private VideoThumbnailExtractor videoThumbnailExtractor;
 
-  // Inject the following class in order to call @PostContructor init method
   @Inject
   private FFmpegToolManager ffmpegToolManager;
 
@@ -64,6 +63,10 @@ public class FFmpegThumbnailExtractorTest {
         }).build();
   }
 
+  @Before
+  public void initialize() throws Exception {
+    ffmpegToolManager.init();
+  }
 
   private String getIntegrationTestResourcePath() {
     return mavenTargetDirectoryRule.getResourceTestDirFile().getAbsolutePath();

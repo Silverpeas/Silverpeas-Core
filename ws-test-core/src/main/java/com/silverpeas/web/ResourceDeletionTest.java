@@ -49,7 +49,7 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
    */
   public void deleteAt(String uri) {
     resource().path(uri).request(MediaType.APPLICATION_JSON).
-        header(HTTP_SESSIONKEY, getSessionKey()).
+        header(HTTP_SESSIONKEY, getTokenKey()).
         delete();
   }
 
@@ -62,7 +62,7 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
    */
   public <C> C deleteAt(String uri, Class<C> c) {
     return resource().path(uri).request(MediaType.APPLICATION_JSON)
-        .header(HTTP_SESSIONKEY, getSessionKey()).delete(c);
+        .header(HTTP_SESSIONKEY, getTokenKey()).delete(c);
   }
 
   @Test

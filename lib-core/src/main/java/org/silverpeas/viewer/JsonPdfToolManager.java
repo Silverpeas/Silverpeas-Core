@@ -26,6 +26,7 @@ package org.silverpeas.viewer;
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.exec.ExternalExecution;
 import org.silverpeas.exec.ExternalExecution.Config;
+import org.silverpeas.initialization.Initialization;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -35,14 +36,12 @@ import java.util.Map;
 /**
  * @author Yohann Chastagnier
  */
-@Named("jsonPdfToolManager")
-@Singleton
-public class JsonPdfToolManager {
+public class JsonPdfToolManager implements Initialization {
 
   private static boolean isActivated = false;
 
-  @PostConstruct
-  public void initialize() throws Exception {
+  @Override
+  public void init() throws Exception {
 
     // pdf2json settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {

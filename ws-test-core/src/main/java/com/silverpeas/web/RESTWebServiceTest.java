@@ -23,6 +23,7 @@
  */
 package com.silverpeas.web;
 
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Rule;
@@ -88,30 +89,39 @@ public abstract class RESTWebServiceTest {
   }
 
   /**
-   * Authenticates the user to use in the tests. The user will be added in the context of the mocked
-   * organization controller.
+   * <p>
+   * Gets (and initializes if necessary) the token key of the given user.<br/>
+   * The user must exist into database (use {@link SilverpeasEnvironmentTest#createDefaultUser()}
+   * to add
+   * a user, and use {@link #getSilverpeasEnvironmentTest()} to get the silverpeas environment
+   * manager instance).
+   * </p>
+   * <p>
+   * For example: <pre>getTokenKeyOf(getSilverpeasEnvironmentTest().createUser());</pre>
+   * </p>
    *
    * @param theUser the user to authenticate.
    * @return the key of the opened session.
    */
-  public String authenticate(final UserDetail theUser) {
+  public String getTokenKeyOf(final UserDetail theUser) {
     return getSilverpeasEnvironmentTest().getTokenOf(theUser);
   }
 
   /**
-   * Denies the access to the silverpeas resources to all users.
+   * Denies the access to the silverpeas resources to all users.</br>
+   * TODO For now, the mechanism is about to update the dummy component in order to set it that
+   * it is not public. But this has to be improved in the future.
    */
   public void denieAuthorizationToUsers() {
-    //  getAccessControllerMock().setAuthorization(false);
-    throw new NotImplementedException(
-        "Migration : the implementation of denieAuthorizationToUsers is not yet performed...");
+    ComponentInst component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
+    component.setPublic(false);
+    getSilverpeasEnvironmentTest().updateComponent(component);
   }
 
   /**
    * Denies the access to the silverpeas spaces to all users.
    */
   public void denieSpaceAuthorizationToUsers() {
-    // getMockedSpaceAccessController().setAuthorization(false);
     throw new NotImplementedException(
         "Migration : the implementation of denieSpaceAuthorizationToUsers is not yet performed...");
   }

@@ -41,9 +41,9 @@ import java.io.File;
 import java.util.Collection;
 
 import static org.apache.commons.io.FileUtils.*;
-import static org.silverpeas.util.data.TemporaryDataManagementSettings
+import static org.silverpeas.util.data.TemporaryDataManagementSetting
     .getTimeAfterThatFilesMustBeDeleted;
-import static org.silverpeas.util.data.TemporaryDataManagementSettings
+import static org.silverpeas.util.data.TemporaryDataManagementSetting
     .getTimeAfterThatFilesMustBeDeletedAtServerStart;
 
 /**
@@ -72,7 +72,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     startTask.start();
 
     // Setting CRON
-    final String cron = TemporaryDataManagementSettings.getJobCron();
+    final String cron = TemporaryDataManagementSetting.getJobCron();
     scheduler.unscheduleJob(JOB_NAME);
     if (StringUtil.isDefined(cron)) {
       scheduler.scheduleJob(temporaryDataCleanerJob, JobTrigger.triggerAt(cron));

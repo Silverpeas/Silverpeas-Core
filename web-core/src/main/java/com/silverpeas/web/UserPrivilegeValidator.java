@@ -31,7 +31,6 @@ import com.silverpeas.session.SessionValidationContext;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
 import org.silverpeas.accesscontrol.ComponentAccessControl;
 import org.silverpeas.accesscontrol.SimpleDocumentAccessControl;

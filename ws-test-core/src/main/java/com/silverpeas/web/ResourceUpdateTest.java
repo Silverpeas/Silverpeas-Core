@@ -70,7 +70,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
    * @return
    */
   public <C> C putAt(String uri, C newResourceState) {
-    return put(newResourceState, at(uri), withAsSessionKey(getSessionKey()));
+    return put(newResourceState, at(uri), withAsSessionKey(getTokenKey()));
   }
 
   @Test

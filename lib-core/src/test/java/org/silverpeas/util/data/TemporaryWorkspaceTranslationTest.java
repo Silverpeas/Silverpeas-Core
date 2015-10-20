@@ -29,7 +29,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
 import java.io.Serializable;
@@ -50,6 +52,9 @@ public class TemporaryWorkspaceTranslationTest {
   private static final String SILVERPEAS_TRANSLATION_PREFIX = "__sptrans_";
   private final static String TEST_WORKSPACE_ID = "workspaceId";
   private File tempPath;
+
+  @Rule
+  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   @After
   public void cleanTest() {

@@ -33,6 +33,7 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
    */
   protected <T> BasicWarBuilder(final Class<T> test) {
     super(test);
+    addMavenDependencies("javax.jcr:jcr");
   }
 
   /**
@@ -43,8 +44,6 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
    * @return a basic builder of the war archive.
    */
   public static <T> BasicWarBuilder onWarForTestClass(Class<T> test) {
-    BasicWarBuilder warBuilder = new BasicWarBuilder(test);
-    warBuilder.addMavenDependencies("javax.jcr:jcr");
-    return warBuilder;
+    return new BasicWarBuilder(test);
   }
 }

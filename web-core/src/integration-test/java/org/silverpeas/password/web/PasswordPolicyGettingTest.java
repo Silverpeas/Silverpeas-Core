@@ -63,7 +63,7 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest {
 
   @Before
   public void prepareTestResources() {
-    sessionKey = authenticate(getSilverpeasEnvironmentTest().createUser());
+    sessionKey = getTokenKeyOf(getSilverpeasEnvironmentTest().createDefaultUser());
   }
 
   @Test
@@ -121,7 +121,7 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest {
   }
 
   @Override
-  public String getSessionKey() {
+  public String getTokenKey() {
     return sessionKey;
   }
 
