@@ -147,12 +147,12 @@ public class WebCommonLookAndFeel {
         defaultComponentCSS = getCSSLinkTagWithVersion(contextPath + "/" + genericComponentName
             + "/jsp/styleSheets/" + genericComponentName + ".css");
 
-        String specificStyle = lookSettings.getString("StyleSheet." + componentName);
+        String specificStyle = lookSettings.getString("StyleSheet." + componentName, "");
         if (StringUtil.isDefined(specificStyle)) {
           specificComponentCSS = getCSSLinkTagWithVersion(specificStyle);
         }
 
-        specificJS = lookSettings.getString("JavaScript." + componentName);
+        specificJS = lookSettings.getString("JavaScript." + componentName, "");
       }
     }
 
@@ -162,7 +162,7 @@ public class WebCommonLookAndFeel {
     }
 
     // append specific look CSS
-    String css = lookSettings.getString("StyleSheet");
+    String css = lookSettings.getString("StyleSheet", "");
     if (StringUtil.isDefined(css)) {
       code.append(getCSSLinkTagWithVersion(css));
     }

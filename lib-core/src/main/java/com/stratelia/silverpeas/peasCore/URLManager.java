@@ -178,7 +178,7 @@ public class URLManager {
     if (!isDefined(sureCompName)) {
       sureCompName = getComponentNameFromComponentId(sComponentId);
     }
-    String specialString = settings.getString(sureCompName);
+    String specialString = settings.getString(sureCompName, "");
     if (isDefined(specialString)) {
       return specialString;
     }

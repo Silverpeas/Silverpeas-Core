@@ -200,7 +200,7 @@ public class GraphicElementFactory {
   }
 
   public static String getCSSOfLook(String lookName) {
-    return getLookSettings(lookName).getString("StyleSheet");
+    return getLookSettings(lookName).getString("StyleSheet", null);
   }
 
   public static SettingBundle getLookSettings(String lookName) {
@@ -602,7 +602,7 @@ public class GraphicElementFactory {
   }
 
   public Pagination getPagination() {
-    String paginationClassName = getFavoriteLookSettings().getString("Pagination");
+    String paginationClassName = getFavoriteLookSettings().getString("Pagination", null);
     Pagination pagination;
     if (paginationClassName == null) {
       paginationClassName = "org.silverpeas.util.viewGenerator.html.pagination.PaginationSP";
@@ -619,7 +619,7 @@ public class GraphicElementFactory {
   }
 
   public ProgressMessage getProgressMessage(List<String> messages) {
-    String progressClassName = getFavoriteLookSettings().getString("Progress");
+    String progressClassName = getFavoriteLookSettings().getString("Progress", null);
     ProgressMessage progress;
     if (progressClassName == null) {
       progressClassName =

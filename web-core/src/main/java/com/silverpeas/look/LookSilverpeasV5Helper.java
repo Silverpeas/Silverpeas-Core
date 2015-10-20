@@ -213,7 +213,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     this.defaultMessages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         getMainSessionController().getFavoriteLanguage());
-    if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
+    if (StringUtil.isDefined(resources.getString("MessageBundle", ""))) {
       this.messages = ResourceLocator.getLocalizationBundle(resources.getString("MessageBundle"),
           getMainSessionController().getFavoriteLanguage());
     }
