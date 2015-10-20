@@ -78,7 +78,7 @@
 <% 
 // Add commun code that display the Rules list
 %>
-<%@ include file="paramNotif_Commun.jsp.inc" %>
+<%@ include file="paramNotif_Commun.jsp" %>
 <BR>
 <form name="paramNotifForm" Action="paramNotif.jsp?Action=addPref" Method="POST">        
 <table CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>

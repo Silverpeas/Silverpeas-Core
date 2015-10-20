@@ -55,7 +55,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.agenda.model.*"%>
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
-<%@ include file="checkAgenda.jsp.inc" %>
+<%@ include file="checkAgenda.jsp" %>
 
 <%
 	CalendarImportSettings importSettings = (CalendarImportSettings) request.getAttribute("ImportSettings");

@@ -31,7 +31,7 @@
 <%@ page import="org.silverpeas.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.util.SettingBundle" %>
 <%@ page import="org.silverpeas.util.StringUtil" %>
-<%@ include file="checkAgenda.jsp.inc" %>
+<%@ include file="checkAgenda.jsp" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 

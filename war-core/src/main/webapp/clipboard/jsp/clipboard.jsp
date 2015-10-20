@@ -46,7 +46,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.util.clipboard.*"%>
 <%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 
-<%@ include file="checkClipboard.jsp.inc" %>
+<%@ include file="checkClipboard.jsp" %>
 
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="org.silverpeas.util.clipboard.ClipboardSelection" %>

@@ -372,7 +372,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
             <td align="right" valign="top">
                 <% if (helper.isAnonymousAccess()) {
                     //------------------------------------------------------------------
-                    // domains are used by 'selectDomain.jsp.inc'
+                    // domains are used by 'selectDomain.jsp'
                     // Get a AuthenticationService object
                     AuthenticationService lpAuth = AuthenticationServiceProvider.getService();
                     List<Domain> listDomains = lpAuth.getAllDomains();
@@ -383,7 +383,7 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
                 %>
                     <table border="0" cellpadding="0" cellspacing="2">
                         <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><%@ include file="../../inputLogin.jsp" %></td></tr>
-                        <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><%@ include file="inputPasswordSilverpeasV5.jsp.inc" %></td></tr>
+                        <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><%@ include file="inputPasswordSilverpeasV5.jsp" %></td></tr>
                         <c:choose>
                       		<c:when test="${!pageScope.multipleDomains}">
                             	<tr><td colspan="2"><input type="hidden" name="DomainId" value="<%=listDomains.get(0).getId()%>"/></td></tr>

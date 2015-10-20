@@ -34,7 +34,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ include file="graphicBox.jsp" %>
 <%@ include file="checkSilvermail.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@ include file="tabManager.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="java.util.Date"%>
 <%@page import="com.stratelia.silverpeas.notificationManager.model.SentNotificationDetail"%>

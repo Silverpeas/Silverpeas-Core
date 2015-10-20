@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory" %>
 
-<%@ include file="checkAgenda.jsp.inc" %>
+<%@ include file="checkAgenda.jsp" %>
 <%
   String form 		= request.getParameter("indiceForm");
   String elem 		= request.getParameter("indiceElem");

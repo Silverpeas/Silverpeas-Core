@@ -38,7 +38,7 @@
 %>
 <%@ page import="com.stratelia.webactiv.agenda.model.CalendarImportSettings"%>
 
-<%@ include file="checkAgenda.jsp.inc" %>
+<%@ include file="checkAgenda.jsp" %>
 
 <%
   CalendarImportSettings importSettings = (CalendarImportSettings) request.getAttribute(

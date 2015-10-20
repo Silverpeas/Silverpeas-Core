@@ -81,7 +81,7 @@
 <view:areaOfOperationOfCreation/>
 
 <!-- Add commun code that display the Rules list -->
-<%@ include file="paramNotif_Commun.jsp.inc" %>
+<%@ include file="paramNotif_Commun.jsp" %>
 
 <br/>
 <%

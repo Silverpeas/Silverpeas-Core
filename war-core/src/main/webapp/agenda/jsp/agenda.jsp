@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.util.ResourceLocator" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="checkAgenda.jsp.inc" %>
+<%@ include file="checkAgenda.jsp" %>
 
 <%
   SettingBundle settings = agenda.getSettings();

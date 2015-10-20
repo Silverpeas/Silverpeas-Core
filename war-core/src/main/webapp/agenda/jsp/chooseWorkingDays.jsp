@@ -28,7 +28,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="checkAgenda.jsp.inc" %>
+<%@ include file="checkAgenda.jsp" %>
 <%!
 
 String getHTMLMonthCalendar(Date date, MultiSilverpeasBundle resource, List holidays, AgendaSessionController agendaSc) {
