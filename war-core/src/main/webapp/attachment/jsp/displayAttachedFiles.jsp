@@ -477,7 +477,7 @@
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               <c:if test="${onlineEditingWithCustomProtocol}">
                 // display alert popin
-                showInformationAboutOnlineEditingWithCustomProtocol(url);
+                showInformationAboutOnlineEditingWithCustomProtocol(decodeURIComponent(url));
               </c:if>
               <c:if test="${not onlineEditingWithCustomProtocol}">
                 window.open(url, '_self');
