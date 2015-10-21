@@ -31,7 +31,10 @@ public class PublicationUpdateDateComparator implements Comparator<PublicationDe
   @Override
   public int compare(PublicationDetail o1, PublicationDetail o2) {
     int compareResult = o1.getUpdateDate().compareTo(o2.getUpdateDate());
-    return 0 - compareResult;
+    if (compareResult == 0) {
+      compareResult = Integer.parseInt(o1.getId()) - Integer.parseInt(o2.getId());
+    }
+    return 0-compareResult;
   }
   
 }
