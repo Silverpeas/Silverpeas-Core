@@ -283,6 +283,33 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
       + " lang = ?," + " isInheritanceBlocked = ?" + " where id = ?";
 
   /**
+   * Check if a named component already exists in given space
+   * @param spaceId
+   * @param name
+   * @throws AdminPersistenceException
+   */
+  public boolean isComponentIntoBasket(int spaceId, String name) throws AdminPersistenceException {
+    PreparedStatement statement = null;
+    ResultSet rs = null;
+    try {
+      statement = organization.getStatement(IS_COMPONENT_INTO_BASKET);
+      statement.setString(1, name);
+      statement.setInt(2, spaceId);
+      statement.setString(3, ComponentInst.STATUS_REMOVED);
+      rs = statement.executeQuery();
+      return rs.next();
+    } catch (SQLException e) {
+      throw new AdminPersistenceException("ComponentInstanceTable.isComponentIntoBasket",
+          SilverpeasException.ERROR, "admin.EX_ERR_SELECT", e);
+    } finally {
+      DBUtil.close(rs, statement);
+    }
+  }
+
+  static final private String IS_COMPONENT_INTO_BASKET =
+      "select * from ST_ComponentInstance where name = ? and spaceId = ? and componentStatus = ? ";
+
+  /**
    * Delete the space and all his component instances.
    *
    * @param id
