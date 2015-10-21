@@ -555,15 +555,31 @@ public class SpaceInstManager {
   /*
    * Delete space from Silverpeas
    */
-  public void sendSpaceToBasket(DomainDriverManager ddManager, int spaceLocalId,
-      String newSpaceName, String userId) throws AdminException {
+  public void sendSpaceToBasket(DomainDriverManager ddManager, SpaceInst spaceInst, String userId)
+      throws AdminException {
+    // Find a name which is not in concurrency with a previous deleted space
+    boolean nameOK = false;
+    int retry = 0;
+    String deletedSpaceName = null;
+    while (!nameOK) {
+      deletedSpaceName = spaceInst.getName() + Admin.basketSuffix;
+      if (retry > 0) {
+        deletedSpaceName += " " + retry;
+      }
+      boolean spaceAlreadyExists = ddManager.getOrganization().space
+          .isSpaceIntoBasket(idAsInt(spaceInst.getDomainFatherId()), deletedSpaceName);
+      nameOK = !spaceAlreadyExists;
+      retry++;
+    }
+
+    // Set space into basket with a unique name
     try {
-      ddManager.getOrganization().space.sendSpaceToBasket(spaceLocalId,
-          newSpaceName, userId);
+      ddManager.getOrganization().space
+          .sendSpaceToBasket(idAsInt(spaceInst.getId()), deletedSpaceName, userId);
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.sendSpaceToBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_SEND_SPACE_TO_BASKET",
-          "spaceId = " + spaceLocalId, e);
+          SilverpeasException.ERROR, "admin.EX_ERR_SEND_SPACE_INTO_BASKET",
+          "spaceId = " + spaceInst.getId(), e);
     }
   }
 

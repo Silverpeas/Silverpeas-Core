@@ -411,8 +411,7 @@ class Admin implements Administration {
 
       if (!definitive) {
         // Update the space in tables
-        spaceManager.sendSpaceToBasket(domainDriverManager, driverSpaceId,
-            spaceInst.getName() + Administration.basketSuffix, userId);
+        spaceManager.sendSpaceToBasket(domainDriverManager, spaceInst, userId);
 
         // delete all profiles (space, components and subspaces)
         deleteSpaceProfiles(spaceInst);
@@ -1201,9 +1200,7 @@ class Admin implements Administration {
         for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
           deleteProfileInst(componentInst.getProfileInst(nI).getId(), false);
         }
-
-        componentManager.sendComponentToBasket(domainDriverManager, sDriverComponentId,
-            componentInst.getLabel() + Administration.basketSuffix, userId);
+        componentManager.sendComponentToBasket(domainDriverManager, componentInst, userId);
       } else {
         connectionProd = openConnection(false);
         // Uninstantiate the components

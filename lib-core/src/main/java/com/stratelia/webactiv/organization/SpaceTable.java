@@ -449,6 +449,34 @@ public class SpaceTable extends Table<SpaceRow> {
       "update ST_Space set name = ?, removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
+   * Check if a named space already exists in given space
+   * @param fatherId
+   * @param name
+   * @throws AdminPersistenceException
+   */
+  public boolean isSpaceIntoBasket(int fatherId, String name) throws AdminPersistenceException {
+    PreparedStatement statement = null;
+    ResultSet rs = null;
+    try {
+      statement = organization.getStatement(IS_SPACE_INTO_BASKET);
+      statement.setString(1, name);
+      statement.setInt(2, fatherId);
+      statement.setString(3, SpaceInst.STATUS_REMOVED);
+      rs = statement.executeQuery();
+      return rs.next();
+    } catch (SQLException e) {
+      throw new AdminPersistenceException("SpaceTable.isSpaceIntoBasket",
+          SilverpeasException.ERROR,
+          "admin.EX_ERR_SELECT", e);
+    } finally {
+      DBUtil.close(rs, statement);
+    }
+  }
+
+  static final private String IS_SPACE_INTO_BASKET =
+      "select * from ST_Space where name = ? and domainFatherId = ? and spaceStatus = ? ";
+
+  /**
    * Remove the space from the basket Space will be available again
    * @param id
    * @throws AdminPersistenceException

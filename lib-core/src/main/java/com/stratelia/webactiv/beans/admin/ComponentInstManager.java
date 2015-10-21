@@ -154,15 +154,31 @@ public class ComponentInstManager {
     }
   }
 
-  public void sendComponentToBasket(DomainDriverManager ddManager, int localComponentId,
-      String tempLabel, String userId) throws AdminException {
+  public void sendComponentToBasket(DomainDriverManager ddManager, ComponentInst componentInst,
+      String userId) throws AdminException {
+    // Find a name which is not in concurrency with a previous deleted component
+    boolean nameOK = false;
+    int retry = 0;
+    String deletedComponentName = null;
+    while (!nameOK) {
+      deletedComponentName = componentInst.getLabel() + Admin.basketSuffix;
+      if (retry > 0) {
+        deletedComponentName += " " + retry;
+      }
+      boolean spaceAlreadyExists = ddManager.getOrganization().instance
+          .isComponentIntoBasket(idAsInt(componentInst.getDomainFatherId()), deletedComponentName);
+      nameOK = !spaceAlreadyExists;
+      retry++;
+    }
+
+    // Set component into basket with a unique name
     try {
-      ddManager.getOrganization().instance.sendComponentToBasket(localComponentId, tempLabel,
-          userId);
+      ddManager.getOrganization().instance
+          .sendComponentToBasket(idAsInt(componentInst.getId()), deletedComponentName, userId);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.sendComponentToBasket",
-          SilverpeasException.ERROR, "admin.EX_ERR_SEND_COMPONENT_TO_BASKET",
-          "componentId = " + localComponentId, e);
+          SilverpeasException.ERROR, "admin.EX_ERR_REMOVE_COMPONENT",
+          "component name: '" + componentInst.getName() + "'", e);
     }
   }
 
