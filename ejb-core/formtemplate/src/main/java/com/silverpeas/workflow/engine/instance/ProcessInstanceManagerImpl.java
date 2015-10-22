@@ -81,9 +81,6 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   @Override
   public ProcessInstance[] getProcessInstances(String peasId, User user, String role,
       String[] userRoles, String[] userGroupIds) throws WorkflowException {
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "peasId = " + peasId + ", user = " + user.getUserId() + ", role = " + role);
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -95,6 +92,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       con = DBUtil.openConnection();
 
       if (role.equals("supervisor")) {
+        SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
+            "root.MSG_GEN_ENTER_METHOD", "peasId = " + peasId + ", role = " + role);
         selectQuery.append("SELECT * from SB_Workflow_ProcessInstance instance where modelId = ?");
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
