@@ -37,13 +37,7 @@ ProfileInst m_Profile = (ProfileInst) request.getAttribute("Profile");
 String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
 browseBar.setSpaceId(spaceId);
-			 			
-		 	String profile = m_Profile.getLabel();
-			String labelProfile = resource.getString(profile.replace(' ', '_'));
-			if (labelProfile == null || labelProfile.equals("")) 
-				labelProfile = profile;
-					
-			browseBar.setExtraInformation(m_ComponentName +" > "+ resource.getString("JSPP.roleDescription"));
+browseBar.setExtraInformation(m_ComponentName +" > "+ resource.getString("JSPP.roleDescription"));
 %>
 
 <HTML>
