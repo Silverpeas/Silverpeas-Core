@@ -496,7 +496,7 @@
                 <td class="odd" align="right">
                   <view:icons>
                     <view:icon iconName="${updateIcon}" altText="${updateIconMsg}" action="javascript:updateAttachment(\'${varAttachment.id}\', \'${varAttachment.language}\');"/>
-                    <view:icon iconName="${deleteIcon}" altText="${deleteIconMsg}" action="javascript:deleteAttachment(\'${varAttachment.id}\',\'${varAttachment.filename}\');"/>
+                    <view:icon iconName="${deleteIcon}" altText="${deleteIconMsg}" action="javascript:deleteAttachment(\'${varAttachment.id}\',\'${silfn:escapeJs(varAttachment.filename)}\');"/>
                     <c:choose>
                       <c:when test="${! attachmentIterStatus.last}">
                         <view:icon iconName="${moveDownIcon}" altText="${moveDownIconMsg}" action="javascript:moveAttachmentDown(\'${varAttachment.id}\');"/>
