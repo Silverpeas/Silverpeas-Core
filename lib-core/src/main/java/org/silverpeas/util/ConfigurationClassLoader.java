@@ -102,7 +102,8 @@ public class ConfigurationClassLoader extends ClassLoader {
         try {
           resource = file.toURI().toURL();
         } catch (MalformedURLException ex) {
-          Logger.getLogger(ConfigurationClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(ConfigurationClassLoader.class.getName())
+              .log(Level.SEVERE, "Malformed URL for resource " + name, ex);
         }
       }
     }
@@ -118,7 +119,8 @@ public class ConfigurationClassLoader extends ClassLoader {
         try {
           inputStream = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
-          Logger.getLogger(ConfigurationClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(ConfigurationClassLoader.class.getName())
+              .log(Level.SEVERE, "Resource " + name + " not found", ex);
         }
       }
     }

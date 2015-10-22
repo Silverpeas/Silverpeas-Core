@@ -183,7 +183,7 @@ public abstract class CommentWidget extends TagSupport {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
-  private MultiSilverpeasBundle getSettings() {
+  private MultiSilverpeasBundle getResources() {
     String language = getUserPreferences().getLanguage();
     MultiSilverpeasBundle resources = new MultiSilverpeasBundle(
         ResourceLocator.getLocalizationBundle("org.silverpeas.util.comment.multilang.comment",
@@ -218,7 +218,7 @@ public abstract class CommentWidget extends TagSupport {
     String context = URLManager.getApplicationURL();
 
     OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
-    MultiSilverpeasBundle settings = getSettings();
+    MultiSilverpeasBundle resources = getResources();
     UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());
     final boolean isAdmin;
@@ -227,7 +227,7 @@ public abstract class CommentWidget extends TagSupport {
     } else {
       isAdmin = currentUser.isAccessAdmin();
     }
-    boolean canBeUpdated = settings.getSetting("AdminAllowedToUpdate", true) && isAdmin;
+    boolean canBeUpdated = resources.getSetting("AdminAllowedToUpdate", true) && isAdmin;
 
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
         + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
@@ -236,21 +236,21 @@ public abstract class CommentWidget extends TagSupport {
         + "update: { activated: function( comment ) {"
         + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
         + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
-        + settings.getString("GML.update") + "'},"
+        + resources.getString("GML.update") + "'},"
         + "deletion: {activated: function( comment ) {if (" + canBeUpdated
         + " || (comment.author.id === '" + getUserId() + "')) return true; else return false;},"
-        + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
-        + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
-        + "'}, updateBox: { title: '" + settings.getString("comment.comment")
-        + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
-        + settings.getString("GML.validate")
+        + "confirmation: '" + resources.getString("comment.suppressionConfirmation") + "',"
+        + "icon: '" + getDeletionIconURL() + "',altText: '" + resources.getString("GML.delete")
+        + "'}, updateBox: { title: '" + resources.getString("comment.comment")
+        + "'}, editionBox: { title: '" + resources.getString("comment.add") + "', ok: '"
+        + resources.getString("GML.validate")
         + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { "
         + "alert('"
-        + settings.getString("comment.pleaseFill_single") + "');"
-        + "} else if (!isValidTextArea(text)) { alert('" + settings.getString(
+        + resources.getString("comment.pleaseFill_single") + "');"
+        + "} else if (!isValidTextArea(text)) { alert('" + resources.getString(
             "comment.champsTropLong") + "'); } else { return true; } return false; },"
         + "mandatory: '"
-        + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + settings.getString(
+        + getMandatoryFieldSymbolURL() + "', mandatoryText: '" + resources.getString(
             "GML.requiredField") + "'";
     if (isDefined(getCallback())) {
       script += ",callback: " + getCallback() + "});";

@@ -135,7 +135,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     Pair<String, String> hostComponentName = new Pair<>("", "");
 
     sel.resetAll();
-    sel.setHostSpaceName(this.getString("domainName"));
+    sel.setHostSpaceName("");
     sel.setHostComponentName(hostComponentName);
     sel.setHostPath(null);
 

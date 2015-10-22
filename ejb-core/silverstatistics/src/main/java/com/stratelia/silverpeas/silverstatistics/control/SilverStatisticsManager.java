@@ -192,7 +192,7 @@ public class SilverStatisticsManager {
     try {
       // read the directories
       int i = 0;
-      String directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i));
+      String directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i), null);
       // for each directory
       while (directoryPath != null) {
         // Test existence
@@ -202,11 +202,7 @@ public class SilverStatisticsManager {
         }
         directoryToScan.add(directoryPath);
         i++;
-        try {
-          directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i));
-        } catch (MissingResourceException ex) {
-          directoryPath = null;
-        }
+        directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i), null);
       }
     } catch (Exception e) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManager.initDirectoryToScan()",

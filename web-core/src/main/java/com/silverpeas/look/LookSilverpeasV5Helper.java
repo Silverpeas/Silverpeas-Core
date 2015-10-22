@@ -576,7 +576,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   @Override
   public String getDefaultSpaceId() {
-    String defaultSpaceId = resources.getString("DefaultSpaceId");
+    String defaultSpaceId = resources.getString("DefaultSpaceId", "");
     if (!StringUtil.isDefined(defaultSpaceId)) {
       defaultSpaceId = getMainSessionController().getFavoriteSpace();
     }

@@ -755,25 +755,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     int i = 0;
     SpaceProfileInst m_SpaceProfileInst;
     String name = "";
-    if (i < m_Profile.size()) {// seulement le premier profil (manager)
+    if (i < m_Profile.size()) {// only the first profile (manager)
       m_SpaceProfileInst = m_Profile.get(i);
       name = m_SpaceProfileInst.getLabel();
     }
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.getSpaceProfileName()",
-        "root.MSG_GEN_PARAM_VALUE", "name avant= " + name);
-
-    if (name != null) {
-      if (name.equals("")) {
-        name = getMultilang().getString("Manager");
-      }
-    } else {
-      name = getMultilang().getString("Manager");
-    }
-
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.getSpaceProfileName()",
-        "root.MSG_GEN_PARAM_VALUE", "name après = " + name);
     return name;
   }
 
@@ -851,10 +836,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   // user panel de selection de n groupes et n users
-  public void initUserPanelSpaceForGroupsUsers(String compoURL, String role, List<String> userIds,
+  public void initUserPanelSpaceForGroupsUsers(String compoURL, List<String> userIds,
       List<String> groupIds) throws SelectionException {
     SpaceInst spaceint1 = getSpaceInstById();
-    SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
 
     selection.resetAll();
     selection.setFilterOnDeactivatedState(false);
@@ -873,33 +857,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     selection.setHostComponentName(hostComponentName);
 
-    String nameProfile;
-    if (profile == null) {
-      nameProfile = getMultilang().getString("JSPP." + role);
-    } else {
-      nameProfile = profile.getLabel();
-      if (!StringUtil.isDefined(nameProfile)) {
-        nameProfile = getMultilang().getString("JSPP." + role);
-      }
-    }
     LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(getLanguage());
-    Pair[] hostPath = {new Pair<>(nameProfile + " > " + generalMessage.getString(
-      "GML.selection"), null)};
+    Pair[] hostPath = {new Pair<>(generalMessage.getString("GML.selection"), null)};
     selection.setHostPath(hostPath);
-
-    String hostUrl = compoURL + "EffectiveUpdateSpaceProfile?Role=" + role;
-    if (profile == null) // creation
-    {
-      hostUrl = compoURL + "EffectiveCreateSpaceProfile?Role=" + role;
-    }
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.initUserPanelSpaceForGroupsUsers()",
-        "root.MSG_GEN_PARAM_VALUE", "compoURL = " + compoURL + " hostSpaceName=" + hostSpaceName
-        + " hostComponentName=" + getSpaceInstById().
-        getName() + " hostUrlTest=" + hostUrl);
-    selection.setGoBackURL(hostUrl);
-    //selection.setCancelURL(compoURL + "CancelCreateOrUpdateSpaceProfile?Role=" + role);
-
     selection.setPopupMode(true);
     selection.setHtmlFormElementId("roleItems");
     selection.setHtmlFormName("dummy");
@@ -1395,16 +1355,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       List<String> groupIds) {
     String profileId = getManagedProfile().getId();
     String profile = getManagedProfile().getLabel();
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
-        "root.MSG_GEN_PARAM_VALUE", "profile = " + profile);
-    String labelProfile = getMultilang().getString(profile.replace(' ', '_'));
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
-        "root.MSG_GEN_PARAM_VALUE", "labelProfile = " + labelProfile);
-    if (!StringUtil.isDefined(labelProfile)) {
-      labelProfile = profile;
-    }
 
     selection.resetAll();
     selection.setFilterOnDeactivatedState(false);
@@ -1429,7 +1379,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(getLanguage());
     String compoName = getComponentInst(getManagedInstanceId()).getLabel();
     Pair<String, String>[] hostPath =
-        new Pair[]{new Pair<>(compoName + " > " + labelProfile + " > " + generalMessage.
+        new Pair[]{new Pair<>(compoName + " > " + profile + " > " + generalMessage.
             getString("GML.selection"), null)};
     selection.setHostPath(hostPath);
 

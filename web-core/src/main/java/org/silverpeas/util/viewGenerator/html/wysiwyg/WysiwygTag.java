@@ -158,7 +158,7 @@ public class WysiwygTag extends TagSupport {
 
     SettingBundle settings = gef.getFavoriteLookSettings();
     if (settings != null) {
-      wysiwyg.setCustomCSS(settings.getString("StyleSheet"));
+      wysiwyg.setCustomCSS(settings.getString("StyleSheet", ""));
     }
 
     wysiwyg.setDisplayFileBrowser(getDisplayFileBrowser());

@@ -415,7 +415,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     try {
       wysiwygFile = new File(FileUtil.convertPathToServerOS(wysiwygType.getPath()));
       if (!wysiwygFile.exists() && !wysiwygFile.isFile()) {
-        String baseDir = resources.getString("importRepository");
+        String baseDir = resources.getString("importRepository", "");
         wysiwygFile = new File(
             FileUtil.convertPathToServerOS(baseDir + File.separatorChar + wysiwygType.getPath()));
       }

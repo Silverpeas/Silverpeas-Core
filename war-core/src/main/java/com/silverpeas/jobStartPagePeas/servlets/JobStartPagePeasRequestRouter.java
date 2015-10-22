@@ -685,13 +685,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
       destination = "/jobStartPagePeas/jsp/spaceManager.jsp";
     } else if (function.equals("SelectUsersGroupsSpace")) {
-      String role = request.getParameter("Role");
       List<String> userIds = (List<String>) StringUtil
           .splitString(request.getParameter("UserPanelCurrentUserIds"), ',');
       List<String> groupIds = (List<String>) StringUtil
           .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
       jobStartPageSC
-          .initUserPanelSpaceForGroupsUsers((String) request.getAttribute("myComponentURL"), role,
+          .initUserPanelSpaceForGroupsUsers((String) request.getAttribute("myComponentURL"),
               userIds, groupIds);
       destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
     } else if (function.equals("EffectiveSetSpaceProfile")) {

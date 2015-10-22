@@ -1329,16 +1329,16 @@ public class TestFileHandler extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     touch(file2);
     boolean test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(false));
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "toto");
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(true));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     final Date date = new Date();
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, date);
     assertThat(test, is(false));
@@ -1347,7 +1347,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, time);
     assertThat(test, is(false));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "titi");
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, date);
     assertThat(test, is(true));
@@ -1385,16 +1385,16 @@ public class TestFileHandler extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     touch(file2);
     boolean test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(true));
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "toto");
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(false));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     final Date date = new Date();
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, date);
     assertThat(test, is(true));
@@ -1403,7 +1403,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, time);
     assertThat(test, is(true));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "titi");
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, date);
     assertThat(test, is(false));

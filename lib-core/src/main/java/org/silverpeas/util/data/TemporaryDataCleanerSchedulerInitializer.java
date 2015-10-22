@@ -60,7 +60,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
   private final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.util.data.temporaryDataManagementSettings");
 
-  public static final String JOB_NAME = "TemporayDataCleanerJob";
+  private static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
 
   @Inject
@@ -77,7 +77,8 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
         "temporaryData.cleaner.job.start.file.age.hours", -1));
 
     // Setting CRON
-    final String cron = settings.getString("temporaryData.cleaner.job.cron");
+    final String cron = settings.getString("temporaryData.cleaner.job.cron", "");
+    scheduler.unscheduleJob(JOB_NAME);
     if (StringUtil.isDefined(cron)) {
       scheduler.scheduleJob(temporaryDataCleanerJob, JobTrigger.triggerAt(cron));
     }

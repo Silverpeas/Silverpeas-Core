@@ -51,7 +51,7 @@ public class NotificationManagerSettings {
    */
   public static DelayedNotificationFrequency getDefaultDelayedNotificationFrequency() {
     DelayedNotificationFrequency defaultFrequency = DelayedNotificationFrequency
-        .decode(settings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY"));
+        .decode(settings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY", null));
     if (defaultFrequency == null) {
       defaultFrequency = DelayedNotificationFrequency.NONE;
     }

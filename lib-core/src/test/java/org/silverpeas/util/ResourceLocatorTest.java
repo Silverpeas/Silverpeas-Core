@@ -99,7 +99,7 @@ public class ResourceLocatorTest {
     bundle.getString("toto");
   }
 
-  @Test(expected = MissingResourceException.class)
+  @Ignore @Test(expected = MissingResourceException.class)
   public void getAMissingPropertyInAnExistingSettingBundleShouldFail() {
     SettingBundle bundle = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");

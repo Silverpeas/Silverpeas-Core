@@ -132,12 +132,7 @@ tabbedPane.addTab(resource.getString("GML.description"),"#",true);
 
 for (ProfileInst theProfile : m_Profiles) {
 	String profile = theProfile.getLabel();
-	String prof = resource.getString(profile.replace(' ', '_'));
-	if (prof.equals("")) {
-		prof = profile;
-	}
-	
-	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
+	tabbedPane.addTab(profile,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
 }
 
 window.setPopup(popupMode);

@@ -1621,7 +1621,7 @@
     </attribute>
     <attribute>
       <description>Settings of search engine</description>
-      <name>settings</name>
+      <name>resources</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>org.silverpeas.util.MultiSilverpeasBundle</type>

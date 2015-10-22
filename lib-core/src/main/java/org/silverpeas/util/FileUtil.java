@@ -48,6 +48,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileUtil implements MimeTypes {
 
@@ -82,7 +84,9 @@ public class FileUtil implements MimeTypes {
     if (!StringUtil.isDefined(mimeType)) {
       try {
         if (MIME_TYPES_EXTENSIONS != null) {
-          mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
+          if (!fileExtension.isEmpty()) {
+            mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
+          }
         }
       } catch (final MissingResourceException e) {
         SilverTrace.warn("attachment", "FileUtil",

@@ -376,6 +376,7 @@ public class ComponentDAO {
       while (rs.next()) {
         ComponentInstLight component = new ComponentInstLight();
         component.setLocalId(rs.getInt(1));
+        component.setName(rs.getString(2));
         component.setOrderNum(rs.getInt(3));
         components.add(component);
       }

@@ -64,32 +64,23 @@
 	browseBar.setComponentId(componentInst.getId());
  	
  	String profile = m_Profile.getLabel();
-	String labelProfile = resource.getString(profile.replace(' ', '_'));
-	if (labelProfile == null || labelProfile.equals("")) 
-		labelProfile = profile;
-			
-	browseBar.setExtraInformation(labelProfile);    
+	browseBar.setExtraInformation(profile);
 	
 	//Onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(resource.getString("GML.description"),"GoToCurrentComponent",false);
     Iterator j = m_Profiles.iterator();
 	ProfileInst theProfile = null;
-	String prof = null;
 	String name = null;
 	
 	while (j.hasNext()) {
 		theProfile = (ProfileInst) j.next();
 		name = theProfile.getName();
 		profile = theProfile.getLabel();
-		prof = resource.getString(profile.replace(' ', '_'));
-		if (prof.equals(""))
-			prof = profile;
-			
 		if (name.equals(m_Profile.getName()))
-			tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+name+"&LabelProfile="+theProfile.getLabel(),true);
+			tabbedPane.addTab(profile,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+name+"&LabelProfile="+theProfile.getLabel(),true);
 		else 
-			tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+name+"&LabelProfile="+theProfile.getLabel(),false);
+			tabbedPane.addTab(profile,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+name+"&LabelProfile="+theProfile.getLabel(),false);
 	}
 
   String labelInheritedRights = resource.getString("JSPP.inheritedRights");

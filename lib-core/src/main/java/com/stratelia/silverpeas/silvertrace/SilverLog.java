@@ -253,7 +253,7 @@ public class SilverLog {
   static public void initFromBundle(SettingBundle settings) {
     try {
       int i = 0;
-      String appenderTypeStr = settings.getString("appender" + i + ".type");
+      String appenderTypeStr = settings.getString("appender" + i + ".type", null);
       int appenderTypeInt;
       // for each appenders
       while (appenderTypeStr != null) {
@@ -275,12 +275,7 @@ public class SilverLog {
           addAppenderFromBundle(settings, i, appenderTypeInt);
         }
         i++;
-
-        try {
-          appenderTypeStr = settings.getString("appender" + i + ".type");
-        } catch (MissingResourceException ex) {
-          appenderTypeStr = null;
-        }
+       appenderTypeStr = settings.getString("appender" + i + ".type", null);
       }
     } catch (Exception e) {
       SilverTrace.error("silvertrace", "SilverLog.resetAll()",
@@ -312,16 +307,16 @@ public class SilverLog {
     String layout = settings.getString("appender" + appenderNumber + ".layout");
     switch (appenderType) {
       case APPENDER_CONSOLE:
-        consoleName = settings.getString("appender" + appenderNumber + ".consoleName");
+        consoleName = settings.getString("appender" + appenderNumber + ".consoleName", "");
         addAppenderConsole(layout, consoleName);
         break;
       case APPENDER_FILE:
-        fileName = translateFileName(settings.getString("appender" + appenderNumber + ".fileName"));
+        fileName = translateFileName(settings.getString("appender" + appenderNumber + ".fileName", ""));
         append = settings.getBoolean("appender" + appenderNumber + ".append", true);
         addAppenderFile(layout, fileName, append);
         break;
       case APPENDER_ROLLING_FILE:
-        fileName = translateFileName(settings.getString("appender" + appenderNumber + ".fileName"));
+        fileName = translateFileName(settings.getString("appender" + appenderNumber + ".fileName", ""));
         rollingModeName = settings.getString("appender" + appenderNumber + ".rollingMode");
         if (rollingModeName == null) {
           rollingMode = ROLLING_MODE_DAILY;

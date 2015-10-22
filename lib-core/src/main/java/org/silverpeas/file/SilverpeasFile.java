@@ -54,7 +54,7 @@ public class SilverpeasFile extends File {
     if (StringUtil.isDefined((mimeType))) {
       this.mimeType = mimeType;
     } else {
-      this.mimeType = FileUtil.getMimeType(path);
+      this.mimeType = (path.isEmpty() ? "":FileUtil.getMimeType(path));
     }
   }
 

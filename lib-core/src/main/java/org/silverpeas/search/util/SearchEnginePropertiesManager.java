@@ -55,7 +55,7 @@ public class SearchEnginePropertiesManager {
       fieldsNameList = new ArrayList<>();
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.searchEngine.searchEngineSettings");
-      String property = settings.getString("sorting.formXML.fields");
+      String property = settings.getString("sorting.formXML.fields", "");
       if (StringUtil.isDefined(property)) {
         String[] tokens = property.split(",");
         for (String token: tokens) {

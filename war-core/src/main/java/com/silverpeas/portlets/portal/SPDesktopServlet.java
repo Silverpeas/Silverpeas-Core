@@ -596,7 +596,7 @@ public class SPDesktopServlet extends HttpServlet {
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     SettingBundle settings = gef.getFavoriteLookSettings();
     if (settings != null) {
-      return settings.getString("spaceHomepage");
+      return settings.getString("spaceHomepage", null);
     }
     return null;
   }
@@ -745,7 +745,14 @@ public class SPDesktopServlet extends HttpServlet {
     Collection<Map> listPortlet = new ArrayList<>();//list of HashMap key=portletName, value=title of the portlet
     for(String portletName : portletNames) {
       String shortName = portletName.substring(11); //portletName = silverpeas.LastPublicationsPortlet
-      String defaultTitle = resource.getString("portlet."+shortName+".title"); //shortName = LastPublicationsPortlet, key = portlet.LastPublicationsPortlet.title
+      String defaultTitle;
+      try {
+        defaultTitle = resource.getString("portlet." + shortName +
+            ".title"); //shortName = LastPublicationsPortlet, key = portlet.LastPublicationsPortlet.title
+
+      } catch (MissingResourceException ex) {
+        defaultTitle = "";
+      }
       Map<String, String> hashPortlet = new HashMap<String, String>();//key=portletName, value=title of the portlet
       hashPortlet.put(portletName, defaultTitle);
       listPortlet.add(hashPortlet);

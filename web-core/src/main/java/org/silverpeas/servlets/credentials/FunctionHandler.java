@@ -55,7 +55,7 @@ public abstract class FunctionHandler {
 
   public FunctionHandler() {
     resources = ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
-    String language = resources.getString("language");
+    String language = resources.getString("language", "");
     if (!StringUtil.isDefined(language)) {
       language = "fr";
     }

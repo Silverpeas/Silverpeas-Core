@@ -48,6 +48,7 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MapUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -60,11 +61,6 @@ import java.util.*;
 public class DelayedNotificationDelegate extends AbstractNotification {
 
   private final static String LOCATION_SEPARATOR = " &gt; ";
-
-  /**
-   * Notification server instance
-   */
-  private final NotificationServer notificationServer = new NotificationServer();
 
   /**
    * User details cache
@@ -712,6 +708,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     notificationData.setMessage(notificationData.getMessage().replaceAll("[\r\n\t]", ""));
 
     // Adding the notification
+    NotificationServer notificationServer = ServiceProvider.getService(NotificationServer.class);
     notificationServer.addNotification(notificationData);
   }
 }

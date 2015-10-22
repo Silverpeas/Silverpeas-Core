@@ -50,6 +50,7 @@ public class DelayedNotificationSchedulerInitializer extends AbstractNotificatio
   @Override
   public void init() throws Exception {
     final String cron = getCronOfDelayedNotificationSending();
+    scheduler.unscheduleJob(JOB_NAME);
     if (StringUtils.isNotBlank(cron)) {
       scheduler.scheduleJob(JOB_NAME, JobTrigger.triggerAt(cron), listener);
     }

@@ -27,6 +27,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A bundle settings used to configure some features in Silverpeas or the behaviour of an
@@ -96,7 +98,18 @@ public class SettingBundle implements SilverpeasBundle {
   @Override
   public String getString(String key) {
     ResourceBundle bundle = getWrappedBundle();
-    return VariableResolver.resolve(bundle.getString(key));
+    try {
+      return VariableResolver.resolve(bundle.getString(key));
+    } catch (MissingResourceException ex) {
+      // TODO remove the catch clause once all the code either takes into account of this
+      // exception or fixes the missing settings
+      Logger.getLogger(SettingBundle.class.getSimpleName())
+          .log(Level.SEVERE, "EITHER THE SETTING BUNDLE " + getBaseBundleName() +
+              " DOESN'T EXIST OR THE KEY " + key +
+              " ISN'T DEFINED IN THIS BUNDLE. PLEASE FIX THIS OTHERWISE AN UNEXPECTED BEHAVIOR " +
+              "COULD OCCUR");
+      return null;
+    }
   }
 
   /**
@@ -114,7 +127,10 @@ public class SettingBundle implements SilverpeasBundle {
    */
   public String getString(String key, String defaultValue) throws MissingResourceException {
     try {
-      String value = getString(key);
+      // TODO restore the statement below once getString(key) reactivate the MissingResourceException treatment
+      //String value = getString(key);
+      ResourceBundle bundle = getWrappedBundle();
+      String value = VariableResolver.resolve(bundle.getString(key));
       return (isDefined(value) ? value : defaultValue);
     } catch (MissingResourceException ex) {
       if (isDefined(ex.getKey())) {
@@ -130,7 +146,10 @@ public class SettingBundle implements SilverpeasBundle {
 
   public boolean getBoolean(String key, boolean defaultValue) {
     try {
-      String value = getString(key);
+      // TODO restore the statement below once getString(key) reactivate the MissingResourceException treatment
+      //String value = getString(key);
+      ResourceBundle bundle = getWrappedBundle();
+      String value = VariableResolver.resolve(bundle.getString(key));
       return (isDefined(value) ? asBoolean(value) : defaultValue);
     } catch (MissingResourceException ex) {
       if (isDefined(ex.getKey())) {
@@ -146,7 +165,10 @@ public class SettingBundle implements SilverpeasBundle {
 
   public long getLong(String key, long defaultValue) {
     try {
-      String value = getString(key);
+      // TODO restore the statement below once getString(key) reactivate the MissingResourceException treatment
+      //String value = getString(key);
+      ResourceBundle bundle = getWrappedBundle();
+      String value = VariableResolver.resolve(bundle.getString(key));
       return (isDefined(value) ? Long.parseLong(value) : defaultValue);
     } catch (MissingResourceException ex) {
       if (isDefined(ex.getKey())) {
@@ -162,7 +184,10 @@ public class SettingBundle implements SilverpeasBundle {
 
   public float getFloat(String key, float defaultValue) {
     try {
-      String value = getString(key);
+      // TODO restore the statement below once getString(key) reactivate the MissingResourceException treatment
+      //String value = getString(key);
+      ResourceBundle bundle = getWrappedBundle();
+      String value = VariableResolver.resolve(bundle.getString(key));
       return (isDefined(value) ? Float.parseFloat(value) : defaultValue);
     } catch (MissingResourceException ex) {
       if (isDefined(ex.getKey())) {
@@ -178,7 +203,10 @@ public class SettingBundle implements SilverpeasBundle {
 
   public int getInteger(String key, int defaultValue) {
     try {
-      String value = getString(key);
+      // TODO restore the statement below once getString(key) reactivate the MissingResourceException treatment
+      //String value = getString(key);
+      ResourceBundle bundle = getWrappedBundle();
+      String value = VariableResolver.resolve(bundle.getString(key));
       return (isDefined(value) ? Integer.parseInt(value) : defaultValue);
     } catch (MissingResourceException ex) {
       if (isDefined(ex.getKey())) {
@@ -188,6 +216,11 @@ public class SettingBundle implements SilverpeasBundle {
     }
   }
 
+  /**
+   * Gets this setting bundle as a simply {@code java.util.ResourceBundle} instance. This can be
+   * useful when a ResourceBundle is expected in some codes.
+   * @return a ResourceBundle representation of this setting bundle.
+   */
   public ResourceBundle asResourceBundle() {
     return getWrappedBundle();
   }

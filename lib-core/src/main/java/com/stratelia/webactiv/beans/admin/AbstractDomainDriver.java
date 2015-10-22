@@ -71,7 +71,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
     // Init the domain's users properties
     domainProperties.clear();
     m_PropertiesMultilang = settings.getString("property.ResourceFile");
-    String s = settings.getString("property.Number");
+    String s = settings.getString("property.Number", "");
     if (StringUtil.isDefined(s)) {
       nbProps = Integer.parseInt(s);
     }

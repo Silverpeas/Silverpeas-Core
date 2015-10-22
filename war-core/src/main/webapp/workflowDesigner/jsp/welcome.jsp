@@ -57,7 +57,6 @@ operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.import")
 
 arrayPane = gef.getArrayPane("workflowList", "Main", request, session);
 arrayPane.setVisibleLineNumber(20);
-arrayPane.setTitle(resource.getString("workflowDesigner.workflowList"));
 arrayPane.addArrayColumn(resource.getString("GML.path"));
 column = arrayPane.addArrayColumn(resource.getString("GML.operations"));
 column.setSortable( false );

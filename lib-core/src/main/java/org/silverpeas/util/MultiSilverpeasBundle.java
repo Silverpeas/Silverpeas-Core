@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -208,12 +209,16 @@ public class MultiSilverpeasBundle {
     return DateUtil.stringToDate(date, language);
   }
 
-  private String getValue(String key, SilverpeasBundle resourceLocator) {
+  private String getValue(String key, SilverpeasBundle bundle) {
     String valret = null;
     if (key != null) {
       valret = key;
-      if (resourceLocator != null) {
-        valret = resourceLocator.getString(key);
+      if (bundle != null && bundle.exists()) {
+        try {
+          valret = bundle.getString(key);
+        } catch (MissingResourceException ex) {
+          valret = null;
+        }
       }
     }
     if (valret == null) {

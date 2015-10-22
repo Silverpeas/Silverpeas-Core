@@ -126,7 +126,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
         String deleteImg = Util.getIcon("delete");
         String deleteLab = Util.getString("removeImage", language);
-        String size = settings.getString("image.size.xmlform.thumbnail");
+        String size = settings.getString("image.size.xmlform.thumbnail", null);
         if (!StringUtil.isDefined(size)) {
           size = "x50";
         }
@@ -183,7 +183,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       String width = (parameters.containsKey("width") ? parameters.get("width") : "");
       String size = width + "x" + height;
       if (size.length() <= 1) {
-        size = settings.getString("image.size.xmlform");
+        size = settings.getString("image.size.xmlform", null);
       }
       if (StringUtil.isDefined(size)) {
         imageURL = FileServerUtils.getImageURL(imageURL, size);

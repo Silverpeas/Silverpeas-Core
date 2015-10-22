@@ -330,7 +330,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       stringBuilder.append("toolbarStartupExpanded : ").append("false").append(",\n");
       stringBuilder.append("customConfig : '").append(configFile).append("',\n");
       stringBuilder.append("toolbar : '").append("XMLForm").append("',\n");
-      String skin = settings.getString("skin");
+      String skin = settings.getString("skin", "");
       if (StringUtil.isDefined(skin)) {
         stringBuilder.append("skin : '").append(skin).append("'\n");
       }

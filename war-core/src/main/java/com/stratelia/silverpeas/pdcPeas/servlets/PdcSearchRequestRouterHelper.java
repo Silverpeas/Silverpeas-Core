@@ -262,12 +262,7 @@ public class PdcSearchRequestRouterHelper {
       selectedComponent = queryParameters.getInstanceId();
     }
 
-    SilverTrace.info("pdcPeas",
-        "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
-        "root.MSG_GEN_PARAM_VALUE", "selectedSpace = " + selectedSpace);
-    SilverTrace.info("pdcPeas",
-        "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
-        "root.MSG_GEN_PARAM_VALUE", "selectedComponent = " + selectedComponent);
+    request.setAttribute("ExportEnabled", false);
 
     if (setSpacesAndComponents) {
       request.setAttribute("SpaceList", pdcSC.getAllowedSpaces());
@@ -282,7 +277,7 @@ public class PdcSearchRequestRouterHelper {
     }
 
     // The selection is active ?
-    request.setAttribute("ActiveSelection", Boolean.valueOf(pdcSC.isSelectionActivated()));
+    request.setAttribute("ActiveSelection", pdcSC.isSelectionActivated());
   }
 
   /**

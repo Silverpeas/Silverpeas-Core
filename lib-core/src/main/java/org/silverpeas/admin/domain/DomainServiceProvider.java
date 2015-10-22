@@ -55,7 +55,7 @@ public class DomainServiceProvider {
    * Gets an instance of this DomainServiceFactory class.
    * @return a DomainServiceFactory instance.
    */
-  private static DomainServiceProvider getFactory() {
+  private static DomainServiceProvider getProvider() {
     return ServiceProvider.getService(DomainServiceProvider.class);
   }
 
@@ -66,11 +66,11 @@ public class DomainServiceProvider {
   public static DomainService getDomainService(final DomainType type) {
     switch (type) {
       case EXTERNAL:
-        return getFactory().externalDomainService;
+        return getProvider().externalDomainService;
       case SQL:
-        return getFactory().sqlDomainService;
+        return getProvider().sqlDomainService;
       default:
-        SilverTrace.error("admin", getFactory().getClass().getSimpleName() + ".getDomainService()",
+        SilverTrace.error("admin", getProvider().getClass().getSimpleName() + ".getDomainService()",
             "EX_NO_MESSAGES", "Only SQL and SILVERPEAS Domain Services are implemented");
         return null;
     }
@@ -81,7 +81,7 @@ public class DomainServiceProvider {
    * @return the QuotaService associated to the user in domain quota.
    */
   public static QuotaService<UserDomainQuotaKey> getUserDomainQuotaService() {
-    return getFactory().userDomainQuotaService;
+    return getProvider().userDomainQuotaService;
   }
 
   private DomainServiceProvider() {

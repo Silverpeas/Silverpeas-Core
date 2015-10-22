@@ -552,7 +552,7 @@ public class ImportExport extends AbstractExportProcess {
       // créer le répertoire pour le zip
       FileFolderManager.createFolder(tempDir + thisExportDir + separator + "treeview");
       // le remplir avec le contenu du répertoire "treeview" sur disque
-      String chemin = (settings.getString("mappingDir"));
+      String chemin = settings.getString("mappingDir");
       if (chemin.startsWith("file:")) {
         chemin = chemin.substring(8);
       }

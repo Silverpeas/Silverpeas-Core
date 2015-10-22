@@ -67,9 +67,9 @@ public class HtmlSearchResultTag extends TagSupport {
   private String userId = null;
   private GlobalSilverResult gsr = null;
   private Integer sortValue = null;
-  private Boolean activeSelection = false;
-  private Boolean exportEnabled = false;
-  private MultiSilverpeasBundle settings = null;
+  private boolean activeSelection = false;
+  private boolean exportEnabled = false;
+  private MultiSilverpeasBundle resources = null;
   private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
 
   @Override
@@ -129,28 +129,28 @@ public class HtmlSearchResultTag extends TagSupport {
   /**
    * @return the activeSelection
    */
-  public Boolean getActiveSelection() {
+  public boolean getActiveSelection() {
     return activeSelection;
   }
 
   /**
    * @param activeSelection the activeSelection to set
    */
-  public void setActiveSelection(Boolean activeSelection) {
+  public void setActiveSelection(boolean activeSelection) {
     this.activeSelection = activeSelection;
   }
 
   /**
    * @return the exportEnabled
    */
-  public Boolean getExportEnabled() {
+  public boolean getExportEnabled() {
     return exportEnabled;
   }
 
   /**
    * @param exportEnabled the exportEnabled to set
    */
-  public void setExportEnabled(Boolean exportEnabled) {
+  public void setExportEnabled(boolean exportEnabled) {
     this.exportEnabled = exportEnabled;
   }
 
@@ -160,7 +160,7 @@ public class HtmlSearchResultTag extends TagSupport {
    */
   private String getHtmlResult() throws JspTagException {
     // Get settings from MultiSilverpeasBundle
-    MultiSilverpeasBundle settings = getSettings();
+    MultiSilverpeasBundle settings = getResources();
     // Retrieve result instance identifier
     String instanceId = gsr.getInstanceId();
     String componentName = instanceId;
@@ -211,7 +211,7 @@ public class HtmlSearchResultTag extends TagSupport {
       return cacheResult;
     } else {
       String compConfig = PDC_BUNDLE_PREFIX_KEY + componentName;
-      String listComponent = getSettings().getSetting(compConfig, "");
+      String listComponent = getResources().getSetting(compConfig, "");
       if (StringUtil.isDefined(listComponent)) {
         for (String curInstanceId : listComponent.split(",")) {
           if (curInstanceId.equals(instanceId) || RESULT_TEMPLATE_ALL.equals(curInstanceId)) {
@@ -226,20 +226,20 @@ public class HtmlSearchResultTag extends TagSupport {
   }
 
   /**
-   * @param settings
+   * @param resources
    * @param componentName
    * @param extraInformation
    * @return the default HTML result search of a searched element
    * @throws JspTagException
    */
-  private String generateHTMLSearchResult(MultiSilverpeasBundle settings, String componentName,
+  private String generateHTMLSearchResult(MultiSilverpeasBundle resources, String componentName,
       String extraInformation) {
     // initialize html result
     StringBuilder result = new StringBuilder();
-    String downloadSrc = "<img src=\"" + settings.getIcon("pdcPeas.download") +
-        "\" class=\"fileDownload\" alt=\"" + settings.getString("pdcPeas.DownloadInfo") +
-        "\" title=\"" + settings.getString("pdcPeas.DownloadInfo") + "\"/>";
-    String language = getSettings().getLanguage();
+    String downloadSrc = "<img src=\"" + resources.getIcon("pdcPeas.download") +
+        "\" class=\"fileDownload\" alt=\"" + resources.getString("pdcPeas.DownloadInfo") +
+        "\" title=\"" + resources.getString("pdcPeas.DownloadInfo") + "\"/>";
+    String language = getResources().getLanguage();
     String sName = EncodeHelper.javaStringToHtmlString(gsr.getName(language));
     String sDescription = StringUtil.abbreviate(gsr.getDescription(language), 400);
     String sURL = gsr.getTitleLink();
@@ -249,16 +249,16 @@ public class HtmlSearchResultTag extends TagSupport {
     String sCreationDate;
     try {
       if (sortValue == 4) {
-        sCreationDate = settings.getOutputDate(gsr.getCreationDate());
+        sCreationDate = resources.getOutputDate(gsr.getCreationDate());
       } else {
-        sCreationDate = settings.getOutputDate(gsr.getDate());
+        sCreationDate = resources.getOutputDate(gsr.getDate());
       }
     } catch (Exception e) {
       sCreationDate = null;
     }
 
     String serverName = "";
-    if (settings.getSetting("external.search.enable", false) && gsr.getIndexEntry() != null) {
+    if (resources.getSetting("external.search.enable", false) && gsr.getIndexEntry() != null) {
       serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName()) ?
           gsr.getIndexEntry().getServerName() : "unknown");
     }
@@ -280,7 +280,7 @@ public class HtmlSearchResultTag extends TagSupport {
       }
     }
 
-    if (settings.getSetting("PertinenceVisible", false)) {
+    if (resources.getSetting("PertinenceVisible", false)) {
       result.append("<div class=\"pertinence\">")
           .append(ResultSearchRendererUtil.displayPertinence(gsr.getRawScore())).append("</div>");
     }
@@ -338,7 +338,7 @@ public class HtmlSearchResultTag extends TagSupport {
       }
     }
     if (gsr.getIndexEntry() != null && gsr.getIndexEntry().isAlias()) {
-      result.append(" (").append(settings.getString("GML.alias")).append(")");
+      result.append(" (").append(resources.getString("GML.alias")).append(")");
     }
 
     if (StringUtil.isDefined(sDownloadURL) && gsr.isUserAllowedToDownloadFile()) {
@@ -352,24 +352,24 @@ public class HtmlSearchResultTag extends TagSupport {
       result.append(" <img onclick=\"javascript:previewFile(this, '").append(gsr.getAttachmentId())
           .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"preview-file\" src=\"")
-          .append(settings.getIcon("pdcPeas.file.preview")).append("\" alt=\"")
-          .append(settings.getString("GML.preview")).append("\" title=\"")
-          .append(settings.getString("GML.preview")).append("\"/>");
+          .append(resources.getIcon("pdcPeas.file.preview")).append("\" alt=\"")
+          .append(resources.getString("GML.preview")).append("\" title=\"")
+          .append(resources.getString("GML.preview")).append("\"/>");
     }
     if (gsr.isViewable()) {
       result.append(" <img onclick=\"javascript:viewFile(this, '").append(gsr.getAttachmentId())
           .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
-          .append("');\" class=\"view-file\" src=\"").append(settings.getIcon("pdcPeas.file.view"))
-          .append("\" alt=\"").append(settings.getString("GML.view")).append("\" title=\"")
-          .append(settings.getString("GML.view")).append("\"/>");
+          .append("');\" class=\"view-file\" src=\"").append(resources.getIcon("pdcPeas.file.view"))
+          .append("\" alt=\"").append(resources.getString("GML.view")).append("\" title=\"")
+          .append(resources.getString("GML.view")).append("\"/>");
     }
     if (!gsr.isDownloadAllowedForReaders()) {
       String forbiddenDownloadHelp = "";
       forbiddenDownloadHelp =
-          gsr.isUserAllowedToDownloadFile() ? settings.getString("GML.download.forbidden.readers") :
-              settings.getString("GML.download.forbidden");
+          gsr.isUserAllowedToDownloadFile() ? resources.getString("GML.download.forbidden.readers") :
+              resources.getString("GML.download.forbidden");
       result.append(" <img class=\"forbidden-download-file\" src=\"")
-          .append(settings.getIcon("pdcPeas.file.forbidden-download")).append("\" alt=\"")
+          .append(resources.getIcon("pdcPeas.file.forbidden-download")).append("\" alt=\"")
           .append(forbiddenDownloadHelp).append("\" title=\"").append(forbiddenDownloadHelp)
           .append("\"/>");
     }
@@ -389,7 +389,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     if (sortValue == 7 && gsr.getHits() >= 0) {
       result.append("<div class=\"popularity\">").append(
-          settings.getStringWithParams("pdcPeas.popularity", Integer.toString(gsr.getHits())))
+          resources.getStringWithParams("pdcPeas.popularity", Integer.toString(gsr.getHits())))
           .append(" | </div>");
     }
 
@@ -429,20 +429,20 @@ public class HtmlSearchResultTag extends TagSupport {
   /**
    * @return a MultiSilverpeasBundle which encapsulate pdcPeas settings and bundles
    */
-  private MultiSilverpeasBundle getSettings() {
-    if (settings == null) {
+  private MultiSilverpeasBundle getResources() {
+    if (resources == null) {
       String language = getUserPreferences().getLanguage();
-      settings = new MultiSilverpeasBundle(
+      resources = new MultiSilverpeasBundle(
           ResourceLocator.getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle",
               language),
           ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasIcons"),
           ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings"), language);
     }
-    return settings;
+    return resources;
   }
 
-  public void setSettings(MultiSilverpeasBundle settings) {
-    this.settings = settings;
+  public void setResources(MultiSilverpeasBundle resources) {
+    this.resources = resources;
   }
 
 }

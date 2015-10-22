@@ -178,6 +178,6 @@ public class NotificationManagerSettingsTest {
   }
 
   private void setDefaultDelayedNotificationFrequencyChoiceList(String value) {
-    when(mockedSettings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY")).thenReturn(value);
+    when(mockedSettings.getString("DEFAULT_DELAYED_NOTIFICATION_FREQUENCY", null)).thenReturn(value);
   }
 }

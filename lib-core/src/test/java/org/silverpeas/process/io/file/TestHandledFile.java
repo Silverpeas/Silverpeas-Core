@@ -875,20 +875,20 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     touch(file2);
     boolean test = getHandledFile(real1).isFileNewer(file2);
     assertThat(test, is(false));
     test = getHandledFile(real1).isFileNewer(getHandledFile(file2));
     assertThat(test, is(false));
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "toto");
     test = getHandledFile(real1).isFileNewer(file2);
     assertThat(test, is(true));
     test = getHandledFile(real1).isFileNewer(getHandledFile(file2));
     assertThat(test, is(true));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     final Date date = new Date();
     test = getHandledFile(real1).isFileNewer(date);
     assertThat(test, is(false));
@@ -897,7 +897,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     test = getHandledFile(real1).isFileNewer(time);
     assertThat(test, is(false));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "titi");
     test = getHandledFile(real1).isFileNewer(date);
     assertThat(test, is(true));
@@ -915,20 +915,20 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     touch(file2);
     boolean test = getHandledFile(real1).isFileOlder(file2);
     assertThat(test, is(true));
     test = getHandledFile(real1).isFileOlder(getHandledFile(file2));
+    Thread.sleep(1001);
     assertThat(test, is(true));
-    Thread.sleep(1000);
     writeStringToFile(file1, "toto");
     test = getHandledFile(real1).isFileOlder(file2);
     assertThat(test, is(false));
     test = getHandledFile(real1).isFileOlder(getHandledFile(file2));
     assertThat(test, is(false));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     final Date date = new Date();
     test = getHandledFile(real1).isFileOlder(date);
     assertThat(test, is(true));
@@ -937,7 +937,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     test = getHandledFile(real1).isFileOlder(time);
     assertThat(test, is(true));
 
-    Thread.sleep(1000);
+    Thread.sleep(1001);
     writeStringToFile(file1, "titi");
     test = getHandledFile(real1).isFileOlder(date);
     assertThat(test, is(false));

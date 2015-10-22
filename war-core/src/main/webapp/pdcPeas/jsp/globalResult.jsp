@@ -626,7 +626,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
   <c:if test="${not empty results}">
     <ul id="globalResultListDetails">
       <c:forEach var="result" items="${results}">
-        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}" settings="<%=resource %>"></view:displayResult>
+        <view:displayResult gsr="${result}" sortValue="${sortValue}" userId="0" activeSelection="${activeSelection}" exportEnabled="${exportEnabled}" resources="<%=resource %>"></view:displayResult>
       </c:forEach>
     </ul>
   </c:if>

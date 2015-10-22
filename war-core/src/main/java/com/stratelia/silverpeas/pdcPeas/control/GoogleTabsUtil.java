@@ -66,7 +66,7 @@ public class GoogleTabsUtil {
       String siteURL;
       for (int i = 1; enabled && i <= 20 && !endReached; i++) {
         // get tabs
-        tabLabel = settings.getString("tab" + i + ".label");
+        tabLabel = settings.getString("tab" + i + ".label", "");
         if (StringUtil.isDefined(tabLabel)) {
           tab = new GoogleTab(i, tabLabel);
           tabs.add(tab);
@@ -74,7 +74,7 @@ public class GoogleTabsUtil {
           // get sites of tab
           endSitesReached = false;
           for (int j = 1; j <= 20 && !endSitesReached; j++) {
-            siteLabel = settings.getString("tab" + i + ".site" + j + ".label");
+            siteLabel = settings.getString("tab" + i + ".site" + j + ".label", "");
             if (StringUtil.isDefined(siteLabel)) {
               siteURL = settings.getString("tab" + i + ".site" + j + ".URL");
               site = new GoogleSite(siteLabel, siteURL);

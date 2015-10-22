@@ -38,6 +38,7 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -63,7 +64,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   public final static int ORGANIZER_TODO_VIEW = 2;
   public final static int CLOSED_TODO_VIEW = 3;
   private int viewType = PARTICIPANT_TODO_VIEW;
-  @Inject
   private SilverpeasCalendar calendarBm;
   private ToDoHeader currentToDoHeader = null;
   private Collection<Attendee> currentAttendees = null;
@@ -79,10 +79,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   public ToDoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.todo.multilang.todo");
     setComponentRootName(URLManager.CMP_TODO);
-    if (calendarBm == null) {
-      throw new UtilException("ToDoSessionControl.ToDoSessionControl()", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT");
-    }
+    calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
   }
 
   protected String getComponentInstName() {

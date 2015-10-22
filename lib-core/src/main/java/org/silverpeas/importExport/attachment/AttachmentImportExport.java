@@ -270,7 +270,7 @@ public class AttachmentImportExport {
   public File getAttachmentFile(AttachmentDetail attachment) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(attachment.getAttachmentPath()));
     if (file == null || !file.exists() || !file.isFile()) {
-      String baseDir = settings.getString("importRepository");
+      String baseDir = settings.getString("importRepository", "");
       file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + attachment.
           getPhysicalName()));
     }

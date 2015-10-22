@@ -310,7 +310,7 @@ public class VersioningImportExport {
   InputStream getVersionContent(DocumentVersion version) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(version.getDocumentPath()));
     if (file == null || !file.exists() || !file.isFile()) {
-      String baseDir = settings.getString("importRepository");
+      String baseDir = settings.getString("importRepository", "");
       file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + version.
           getPhysicalName()));
     }

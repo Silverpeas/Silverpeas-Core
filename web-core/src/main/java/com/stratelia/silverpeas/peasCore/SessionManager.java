@@ -120,7 +120,7 @@ public class SessionManager implements SessionManagement {
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.peasCore.SessionManager");
-      String language = settings.getString("language");
+      String language = settings.getString("language", "");
       if (!StringUtil.isDefined(language)) {
         language = I18NHelper.defaultLanguage;
       }

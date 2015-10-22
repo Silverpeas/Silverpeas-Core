@@ -75,7 +75,7 @@ public class SearchCompletion {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
-    int autocompletionMaxResults = Integer.parseInt(settings.getString("autocompletionMaxResults"));
+    int autocompletionMaxResults = settings.getInteger("autocompletionMaxResults");
     try {
       con = DBUtil.openConnection();
       // request pdc

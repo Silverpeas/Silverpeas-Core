@@ -72,7 +72,7 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @param id
+   * @param tt
    */
   public void setTheTimeStamp(String tt) {
     this.theTimeStamp = tt;
@@ -107,28 +107,32 @@ public class Domain implements Serializable {
   }
 
   /**
-   * @return String
+   * Gets the full class name of the domain driver that manages this domain.
+   * @return the full path of the driver class.
    */
   public String getDriverClassName() {
     return driverClassName;
   }
 
   /**
-   * @param className
+   * Sets the full class name of the domain driver that manages this domain.
+   * @param className the full path of the driver class.
    */
   public void setDriverClassName(String className) {
     this.driverClassName = className;
   }
 
   /**
-   * @return String
+   * Gets the full name of the properties file that defines this domain.
+   * @return the full path of the properties file defining this domain.
    */
   public String getPropFileName() {
     return propFileName;
   }
 
   /**
-   * @param propFileName 
+   * Sets the full name of the properties file that defines this domain.
+   * @param propFileName the full path of the properties file defining this domain.
    */
   public void setPropFileName(String propFileName) {
     this.propFileName = propFileName;

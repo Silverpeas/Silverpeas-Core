@@ -430,7 +430,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    */
   @Override
   public String getProcessModelDir() {
-    String dir = FileUtil.convertPathToServerOS(settings.getString("ProcessModelDir"));
+    String dir = FileUtil.convertPathToServerOS(settings.getString("ProcessModelDir", null));
     if (dir != null && !dir.endsWith(File.separator)) {
       dir = dir + File.separatorChar;
     }

@@ -66,12 +66,12 @@ public class SetBundleTag extends TagSupport {
   }
 
   public void setBundle(SilverpeasBundle bundle) {
-    if (bundle instanceof ResourceBundle) {
-      this.bundle = (ResourceBundle) bundle;
+    if (bundle instanceof LocalizationBundle) {
+      this.bundle = (LocalizationBundle) bundle;
     } else if (bundle instanceof SettingBundle) {
       this.bundle = ((SettingBundle) bundle).asResourceBundle();
     } else {
-      throw new IllegalArgumentException("bundle must be of type ResourceBundle or SettingBundle");
+      throw new IllegalArgumentException("bundle must be of type LocalizationBundle or SettingBundle");
     }
   }
 
