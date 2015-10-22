@@ -37,8 +37,8 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="org.multilang.generalMultilang"/>
 <fmt:message key="GML.close" var="close"/>
 <fmt:message key="GML.PDCPositionsPredefinition" var="childNode"/>
 <c:set var="componentId" value="${param.componentId}"/>
