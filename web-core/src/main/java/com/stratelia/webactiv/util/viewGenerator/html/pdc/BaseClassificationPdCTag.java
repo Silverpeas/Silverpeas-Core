@@ -232,6 +232,8 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
         + "', positionLabel: '" + resources.getString("pdcPeas.position")
         + "', positionsLabel: '" + resources.getString("pdcPeas.positions")
         + "', inheritedPositionsLabel: '" + resources.getString("pdcPeas.inheritedPositions")
+        + "', canBeModified: '" + resources.getString("pdcPeas.predefined.update.allowed.true")
+        + "', cannotBeModified: '" + resources.getString("pdcPeas.predefined.update.allowed.false")
         + "'";
     if (operation != PREVIEW_CLASSIFICATION) {
       if (operation != READ_CLASSIFICATION) {
