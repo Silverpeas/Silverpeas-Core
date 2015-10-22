@@ -24,7 +24,6 @@
 package org.silverpeas.util;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.test.rule.CommonAPI4Test;
@@ -99,7 +98,7 @@ public class ResourceLocatorTest {
     bundle.getString("toto");
   }
 
-  @Ignore @Test(expected = MissingResourceException.class)
+  @Test(expected = MissingResourceException.class)
   public void getAMissingPropertyInAnExistingSettingBundleShouldFail() {
     SettingBundle bundle = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");

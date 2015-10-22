@@ -396,7 +396,7 @@ public class SimpleDocumentService implements AttachmentService {
 
       String userId = document.getUpdatedBy();
       if ((userId != null) && (userId.length() > 0) && notify) {
-        notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
+        notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, oldAttachment, document);
       }
       if (indexIt) {
         createIndex(document);
@@ -456,7 +456,7 @@ public class SimpleDocumentService implements AttachmentService {
       String userId = document.getCreatedBy();
       if ((userId != null) && (userId.length() > 0) && notifiy) {
         if (existsOtherContents) {
-          notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
+          notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document, document);
         } else {
           notificationService.notifyEventOn(ResourceEvent.Type.DELETION, document);
         }
@@ -817,7 +817,7 @@ public class SimpleDocumentService implements AttachmentService {
     }
     String userId = document.getCreatedBy();
     if (StringUtil.isDefined(userId) && notify) {
-      notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, document);
+      notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, oldAttachment, document);
     }
     if (indexIt) {
       createIndex(document);
