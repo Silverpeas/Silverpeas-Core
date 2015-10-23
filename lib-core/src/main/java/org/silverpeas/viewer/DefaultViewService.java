@@ -26,6 +26,7 @@ package org.silverpeas.viewer;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.viewer.exception.ViewerException;
 import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
@@ -33,7 +34,6 @@ import org.silverpeas.viewer.util.DocumentInfo;
 import org.silverpeas.viewer.util.JsonPdfUtil;
 import org.silverpeas.viewer.util.SwfUtil;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
@@ -112,10 +112,9 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       public DocumentView performAfterSuccess(final DocumentView result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             PreviewService.get().isPreviewable(viewerContext.getOriginalSourceFile())) {
-          Thread thread = new Thread(() -> {
+          ManagedThreadPool.invoke(() -> {
             PreviewService.get().getPreview(viewerContext.clone());
           });
-          thread.start();
         }
         return super.performAfterSuccess(result);
       }

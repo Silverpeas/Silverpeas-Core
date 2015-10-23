@@ -26,15 +26,16 @@ package org.silverpeas.util.data;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.thread.ManagedThreadPool;
 
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * A thread in order to update asynchronously the last modified date of given file and folders.
+ * A task in order to update asynchronously the last modified date of given file and folders.
  */
-public class LastModifiedDateFileThread extends Thread {
+public class LastModifiedDateFileTask implements Runnable {
 
   private static final Map<File, Long> requestMap = new LinkedHashMap<File, Long>();
 
@@ -42,7 +43,7 @@ public class LastModifiedDateFileThread extends Thread {
    * All the requests are processed by a single background thread. This thread is built and
    * started by the start method.
    */
-  private static LastModifiedDateFileThread lastModifiedDateFileThread = null;
+  private static boolean running = false;
 
   /**
    * Builds and starts the thread which will process all the requests. This method is
@@ -51,8 +52,8 @@ public class LastModifiedDateFileThread extends Thread {
    */
   private static void startIfNotAlreadyDone() {
     if (!isRunning()) {
-      lastModifiedDateFileThread = new LastModifiedDateFileThread();
-      lastModifiedDateFileThread.start();
+      running = true;
+      ManagedThreadPool.invoke(new LastModifiedDateFileTask());
     }
   }
 
@@ -73,7 +74,7 @@ public class LastModifiedDateFileThread extends Thread {
    */
   public static boolean isRunning() {
     synchronized (requestMap) {
-      return (lastModifiedDateFileThread != null);
+      return running;
     }
   }
 
@@ -81,7 +82,7 @@ public class LastModifiedDateFileThread extends Thread {
    * The constructor is private : only one MailSenderThread will be created to process all the
    * request.
    */
-  private LastModifiedDateFileThread() {
+  private LastModifiedDateFileTask() {
   }
 
   /**
@@ -133,7 +134,7 @@ public class LastModifiedDateFileThread extends Thread {
         nextRequest = Pair.of(file, newLastModifiedTime);
       } else {
         nextRequest = null;
-        lastModifiedDateFileThread = null;
+        running = false;
       }
       return nextRequest;
     }

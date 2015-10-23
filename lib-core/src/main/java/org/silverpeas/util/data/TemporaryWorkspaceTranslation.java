@@ -139,8 +139,8 @@ public class TemporaryWorkspaceTranslation {
    * Updates the last modified date of workspace.
    */
   public void updateLastModifiedDate() {
-    LastModifiedDateFileThread.addFile(descriptor);
-    LastModifiedDateFileThread.addFile(workspace);
+    LastModifiedDateFileTask.addFile(descriptor);
+    LastModifiedDateFileTask.addFile(workspace);
   }
 
   /**

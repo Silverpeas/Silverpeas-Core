@@ -60,12 +60,17 @@ public class ManagedThreadPool {
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param runnables the {@link java.lang.Runnable} instances to invoke.
+   * @return the list of threads that have been invoked.
    */
-  public static void invoke(Runnable... runnables) {
+  public static List<Thread> invoke(Runnable... runnables) {
     ManagedThreadPool me = ServiceProvider.getService(ManagedThreadPool.class);
+    List<Thread> threads = new ArrayList<>();
     for (Runnable runnable : runnables) {
-      me.managedThreadFactory.newThread(runnable).start();
+      Thread thread = me.managedThreadFactory.newThread(runnable);
+      threads.add(thread);
+      thread.start();
     }
+    return threads;
   }
 
   /**

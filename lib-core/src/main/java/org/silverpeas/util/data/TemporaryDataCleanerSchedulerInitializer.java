@@ -33,6 +33,7 @@ import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.initialization.Initialization;
+import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.StringUtil;
 
@@ -66,10 +67,9 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
 
     // Cleaning temporary data at start if requested
-    startTask = new Thread(() -> {
+    startTask = ManagedThreadPool.invoke(() -> {
       temporaryDataCleanerJob.clean(getTimeAfterThatFilesMustBeDeletedAtServerStart());
-    });
-    startTask.start();
+    }).iterator().next();
 
     // Setting CRON
     final String cron = TemporaryDataManagementSetting.getJobCron();

@@ -44,7 +44,7 @@ import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
 /**
  * @author Yohann Chastagnier
  */
-public class LastModifiedDateFileThreadTest {
+public class LastModifiedDateFileTaskTest {
   private File tempPath;
 
   @Rule
@@ -59,7 +59,7 @@ public class LastModifiedDateFileThreadTest {
   public void setup() {
     cleanTest();
     tempPath = new File(getTemporaryPath());
-    assertThat(LastModifiedDateFileThread.isRunning(), is(false));
+    assertThat(LastModifiedDateFileTask.isRunning(), is(false));
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -113,11 +113,11 @@ public class LastModifiedDateFileThreadTest {
     File[] tempRootFiles = tempPath.listFiles();
     assertThat(tempRootFiles, arrayWithSize(2));
     for (File tempRootFile : tempRootFiles) {
-      LastModifiedDateFileThread.addFile(tempRootFile);
+      LastModifiedDateFileTask.addFile(tempRootFile);
     }
 
     long l = 0;
-    while (LastModifiedDateFileThread.isRunning()) {
+    while (LastModifiedDateFileTask.isRunning()) {
       l++;
     }
     assertThat("This assertion shows that the thread stops after all the files are performed", l,

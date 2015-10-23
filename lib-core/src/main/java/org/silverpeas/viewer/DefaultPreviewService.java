@@ -29,6 +29,7 @@ import com.silverpeas.converter.option.PageRangeFilterOption;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.ImageToolDirective;
 import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MimeTypes;
 import org.silverpeas.viewer.exception.ViewerException;
@@ -133,10 +134,9 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
       public Preview performAfterSuccess(final Preview result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             ViewService.get().isViewable(viewerContext.getOriginalSourceFile())) {
-          Thread thread = new Thread(() -> {
+          ManagedThreadPool.invoke(() -> {
             ViewService.get().getDocumentView(viewerContext.clone());
           });
-          thread.start();
         }
         return super.performAfterSuccess(result);
       }
