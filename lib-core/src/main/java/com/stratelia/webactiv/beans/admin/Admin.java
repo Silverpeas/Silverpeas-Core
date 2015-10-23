@@ -5720,7 +5720,7 @@ class Admin implements Administration {
     Domain theDomain = domainDriverManager.getDomain(domainId);
     String propDomainFileName = theDomain.getPropFileName();
     SettingBundle propDomainLdap = ResourceLocator.getSettingBundle(propDomainFileName);
-    String nomClasseSynchro = propDomainLdap.getString("synchro.Class");
+    String nomClasseSynchro = propDomainLdap.getString("synchro.Class", null);
     if (StringUtil.isDefined(nomClasseSynchro)) {
       Collection<UserDetail> added = usersAdded;
       Collection<UserDetail> updated = usersUpdated;
