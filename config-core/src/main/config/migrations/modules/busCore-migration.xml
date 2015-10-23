@@ -43,6 +43,7 @@
 
   <upgrade fromVersion="033">
     <script name="update_table.sql" type="sql"/>
+    <script name="domainPropFilePathUpdate.groovy" type="groovy"/>
   </upgrade>
 
 </migration>

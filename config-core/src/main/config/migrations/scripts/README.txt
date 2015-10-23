@@ -3,7 +3,7 @@ datasources.
 In order the migration tool to be able to find them, the scripts must be placed into the
 subdirectory whose path matches the following pattern:
 
-  script/<module>/[<version>|<fromVersion>/
+  scripts/<module>/[<version>|<fromVersion>/
 
 where:
   <module> is the name of the module (see migration descriptor in the modules/ directory) they
