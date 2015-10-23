@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.test.rule.MockByReflectionRule;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
 
@@ -31,8 +31,8 @@ public class ViewServiceTest extends AbstractViewerTest {
   public void setup() throws Exception {
     FileUtils.deleteQuietly(getTemporaryPath());
     getTemporaryPath().mkdirs();
-    final ResourceLocator mockedSettings =
-        reflectionRule.mockField(ViewerSettings.class, ResourceLocator.class, "settings");
+    final SettingBundle mockedSettings =
+        reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
     when(mockedSettings.getInteger(eq("preview.height.max"), anyInt())).thenReturn(1000);
     when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(true);

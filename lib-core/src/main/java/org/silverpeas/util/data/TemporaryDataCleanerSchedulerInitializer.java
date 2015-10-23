@@ -52,7 +52,7 @@ import static org.silverpeas.util.data.TemporaryDataManagementSetting
  */
 public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
 
-  private static final String JOB_NAME = "TemporayDataCleanerJob";
+  protected static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
 
   @Inject

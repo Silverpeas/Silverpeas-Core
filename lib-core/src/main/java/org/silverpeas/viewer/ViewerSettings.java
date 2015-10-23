@@ -24,6 +24,7 @@
 package org.silverpeas.viewer;
 
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.data.TemporaryDataManagementSetting;
 
 /**
@@ -32,8 +33,8 @@ import org.silverpeas.util.data.TemporaryDataManagementSetting;
  */
 public class ViewerSettings {
 
-  protected static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.viewer.viewer", "");
+  protected static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.viewer.viewer");
 
   /**
    * Gets the maximum width the preview can be.

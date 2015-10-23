@@ -1,21 +1,17 @@
 package org.silverpeas.viewer;
 
 import org.apache.commons.io.FileUtils;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.WarBuilder4ItTestCore;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ImageUtil;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -36,8 +32,8 @@ public class PreviewServiceTest extends AbstractViewerTest {
   public void setup() throws Exception {
     FileUtils.deleteQuietly(getTemporaryPath());
     getTemporaryPath().mkdirs();
-    final ResourceLocator mockedSettings =
-        reflectionRule.mockField(ViewerSettings.class, ResourceLocator.class, "settings");
+    final SettingBundle mockedSettings =
+        reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
     when(mockedSettings.getInteger(eq("preview.height.max"), anyInt())).thenReturn(1000);
     when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(true);

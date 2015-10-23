@@ -24,6 +24,7 @@ import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpSer
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 
 import javax.servlet.ServletConfig;
@@ -40,12 +41,6 @@ import java.net.URLDecoder;
 
 import static org.silverpeas.util.data.TemporaryWorkspaceTranslation
     .startWithTranslationDescriptorPrefix;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.net.URLDecoder;
 
 /**
  * To get files from temp directory

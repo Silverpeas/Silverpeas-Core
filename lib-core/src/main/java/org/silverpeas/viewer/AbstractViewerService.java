@@ -36,7 +36,6 @@ import java.util.concurrent.Semaphore;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
-import org.silverpeas.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier
