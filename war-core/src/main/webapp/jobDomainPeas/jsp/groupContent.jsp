@@ -207,7 +207,7 @@ if (showTabs) {
   arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-  arrayPaneUser.addArrayColumn(resource.getString("GML.lastConnection"));
+  arrayPaneUser.addArrayColumn(resource.getString("GML.user.lastConnection"));
 
   if (subUsers != null) {
     for(UserDetail user : subUsers){
