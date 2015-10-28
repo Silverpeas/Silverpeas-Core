@@ -30,6 +30,9 @@ import org.silverpeas.notification.ResourceEvent;
  */
 public class NodeEventNotifier extends CDIResourceEventNotifier<NodeDetail, NodeEvent> {
 
+  private NodeEventNotifier() {
+  }
+
   @Override
   protected NodeEvent createResourceEventFrom(final ResourceEvent.Type type,
       final NodeDetail... resource) {

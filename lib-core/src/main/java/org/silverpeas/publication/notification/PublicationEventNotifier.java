@@ -32,6 +32,9 @@ import org.silverpeas.notification.ResourceEvent;
 public class PublicationEventNotifier
     extends CDIResourceEventNotifier<PublicationDetail, PublicationEvent> {
 
+  private PublicationEventNotifier() {
+  }
+
   @Override
   protected PublicationEvent createResourceEventFrom(final ResourceEvent.Type type,
       final PublicationDetail... resource) {

@@ -51,7 +51,7 @@ public class ComponentInstanceEventNotifier
     return ServiceProvider.getService(ComponentInstanceEventNotifier.class);
   }
 
-  protected ComponentInstanceEventNotifier() {
+  private ComponentInstanceEventNotifier() {
   }
 
   @Override

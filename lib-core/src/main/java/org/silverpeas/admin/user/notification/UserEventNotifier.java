@@ -30,6 +30,9 @@ import org.silverpeas.notification.ResourceEvent;
  */
 public class UserEventNotifier extends CDIResourceEventNotifier<UserDetail, UserEvent> {
 
+  private UserEventNotifier() {
+  }
+
   @Override
   protected UserEvent createResourceEventFrom(final ResourceEvent.Type type,
       final UserDetail... resource) {

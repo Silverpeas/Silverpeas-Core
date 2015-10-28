@@ -30,6 +30,9 @@ import org.silverpeas.notification.ResourceEvent;
  */
 public class GroupEventNotifier extends CDIResourceEventNotifier<Group, GroupEvent> {
 
+  private GroupEventNotifier() {
+  }
+
   @Override
   protected GroupEvent createResourceEventFrom(final ResourceEvent.Type type,
       final Group... resource) {

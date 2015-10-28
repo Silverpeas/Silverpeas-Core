@@ -51,17 +51,17 @@ public class NotificationServer {
 
   @Inject
   private JMSContext context;
+
   @Resource(lookup = "java:/queue/notificationsQueue")
   private Queue queue;
 
-  private Map<String, String> mJmsHeaders;
+  private Map<String, String> mJmsHeaders = new HashMap<>();
 
-  /**
-   * Constructor declaration
-   */
-  public NotificationServer() {
-    mJmsHeaders = new HashMap<>();
-    context = ServiceProvider.getService(JMSContext.class);
+  public static NotificationServer get() {
+    return ServiceProvider.getService(NotificationServer.class);
+  }
+
+  private NotificationServer() {
   }
 
   /**

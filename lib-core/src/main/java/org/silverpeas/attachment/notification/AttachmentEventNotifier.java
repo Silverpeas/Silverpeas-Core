@@ -50,7 +50,7 @@ public class AttachmentEventNotifier
   @Resource(lookup = "java:/topic/attachments")
   private Topic topic;
 
-  protected AttachmentEventNotifier() {
+  private AttachmentEventNotifier() {
   }
 
   @Override

@@ -23,16 +23,12 @@ package org.silverpeas.wysiwyg.notification;
 
 import org.silverpeas.notification.JMSResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
-import org.silverpeas.notification.ResourceEventNotifier;
 import org.silverpeas.wysiwyg.control.WysiwygContent;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jms.Destination;
-import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
-import javax.jms.JMSProducer;
 import javax.jms.Topic;
 
 /**
@@ -49,6 +45,9 @@ public class WysiwygEventNotifier extends JMSResourceEventNotifier<WysiwygConten
 
   @Resource(lookup = "java:/topic/wysiwyg")
   private Topic topic;
+
+  private WysiwygEventNotifier() {
+  }
 
   @Override
   protected Destination getDestination() {

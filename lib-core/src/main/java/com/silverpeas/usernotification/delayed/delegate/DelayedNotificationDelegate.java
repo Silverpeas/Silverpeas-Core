@@ -48,7 +48,6 @@ import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.MapUtil;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -708,7 +707,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     notificationData.setMessage(notificationData.getMessage().replaceAll("[\r\n\t]", ""));
 
     // Adding the notification
-    NotificationServer notificationServer = ServiceProvider.getService(NotificationServer.class);
+    NotificationServer notificationServer = NotificationServer.get();
     notificationServer.addNotification(notificationData);
   }
 }

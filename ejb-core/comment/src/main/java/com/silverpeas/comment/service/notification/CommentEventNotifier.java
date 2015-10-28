@@ -46,6 +46,9 @@ public class CommentEventNotifier extends JMSResourceEventNotifier<Comment, Comm
   @Resource(lookup = "java:/topic/comments")
   private Topic topic;
 
+  private CommentEventNotifier() {
+  }
+
   @Override
   protected Destination getDestination() {
     return topic;

@@ -722,7 +722,7 @@ public class NotificationManager extends AbstractNotification
       throws NotificationManagerException {
     NotifSchema schema = null;
     NotificationData nd = null;
-    NotificationServer ns = new NotificationServer();
+    NotificationServer ns = NotificationServer.get();
     NotificationParameters params = new NotificationParameters();
 
     try {
@@ -829,7 +829,7 @@ public class NotificationManager extends AbstractNotification
     // Force media type for external users
     params.iMediaType = NotificationParameters.ADDRESS_BASIC_SMTP_MAIL;
     NotifSchema schema = null;
-    NotificationServer ns = new NotificationServer();
+    NotificationServer ns = NotificationServer.get();
 
     // First Verify that the title and the message are not too long...
     if (params.sTitle == null) {
