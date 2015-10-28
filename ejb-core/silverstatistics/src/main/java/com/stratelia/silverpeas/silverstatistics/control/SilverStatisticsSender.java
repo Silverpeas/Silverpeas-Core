@@ -26,11 +26,10 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.notification.JMSOperation;
 import org.silverpeas.util.ServiceProvider;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
@@ -47,9 +46,6 @@ import javax.naming.NamingException;
         interfaceName = "javax.jms.Queue",
         destinationName = "queue/statisticsQueue")})
 public final class SilverStatisticsSender {
-
-  @Inject
-  private JMSContext context;
 
   @Resource(lookup = "java:/queue/statisticsQueue")
   private Queue queue;
@@ -68,15 +64,16 @@ public final class SilverStatisticsSender {
    * @throws NamingException
    */
   public void send(StatType typeOfStats, String message) throws JMSException, NamingException {
-    TextMessage textMsg = context.createTextMessage();
-    textMsg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);
-    try {
-      context.createProducer().send(queue, textMsg);
-    } catch (Exception exc) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsSender.send",
-          "SilverStatisticsSender.EX_CANT_SEND_TO_JSM_QUEUE", exc);
-      throw exc;
-    }
+    JMSOperation.realize(context -> {
+      TextMessage textMsg = context.createTextMessage();
+      textMsg.setText(typeOfStats.toString() + SilverStatisticsConstants.SEPARATOR + message);
+      try {
+        context.createProducer().send(queue, textMsg);
+      } catch (Exception exc) {
+        SilverTrace.error("silverstatistics", "SilverStatisticsSender.send",
+            "SilverStatisticsSender.EX_CANT_SEND_TO_JSM_QUEUE", exc);
+        throw exc;
+      }
+    });
   }
-
 }

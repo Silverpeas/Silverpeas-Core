@@ -25,12 +25,11 @@
 package com.stratelia.silverpeas.notificationserver;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.notification.JMSOperation;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.jms.JMSContext;
 import javax.jms.JMSDestinationDefinition;
 import javax.jms.JMSDestinationDefinitions;
 import javax.jms.JMSException;
@@ -48,9 +47,6 @@ import java.util.Map;
 public class NotificationServer {
 
   private static final String JMS_HEADER_CHANNEL = "CHANNEL";
-
-  @Inject
-  private JMSContext context;
 
   @Resource(lookup = "java:/queue/notificationsQueue")
   private Queue queue;
@@ -90,19 +86,21 @@ public class NotificationServer {
    */
   private void jmsSendToQueue(String notificationMessage, Map<String, String> pJmsHeaders)
       throws JMSException, NamingException {
-    // Initialization
-    TextMessage textMsg = context.createTextMessage();
-    textMsg.setText(notificationMessage);
-    // Add property
-    for (Map.Entry<String, String> entry : pJmsHeaders.entrySet()) {
-      textMsg.setStringProperty(entry.getKey(), entry.getValue());
-    }
-    try {
-      context.createProducer().send(queue, textMsg);
-    } catch (Exception exc) {
-      SilverTrace.error("notification", "NotificationServer.jmsSendToQueue",
-          "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE", exc);
-      throw exc;
-    }
+    JMSOperation.realize(context -> {
+      // Initialization
+      TextMessage textMsg = context.createTextMessage();
+      textMsg.setText(notificationMessage);
+      // Add property
+      for (Map.Entry<String, String> entry : pJmsHeaders.entrySet()) {
+        textMsg.setStringProperty(entry.getKey(), entry.getValue());
+      }
+      try {
+        context.createProducer().send(queue, textMsg);
+      } catch (Exception exc) {
+        SilverTrace.error("notification", "NotificationServer.jmsSendToQueue",
+            "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE", exc);
+        throw exc;
+      }
+    });
   }
 }

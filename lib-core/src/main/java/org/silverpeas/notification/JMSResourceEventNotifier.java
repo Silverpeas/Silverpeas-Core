@@ -23,9 +23,7 @@ package org.silverpeas.notification;
 
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 
-import javax.inject.Inject;
 import javax.jms.Destination;
-import javax.jms.JMSContext;
 import javax.jms.JMSProducer;
 import java.io.Serializable;
 
@@ -39,9 +37,6 @@ import java.io.Serializable;
  */
 public abstract class JMSResourceEventNotifier<R extends Serializable, T extends AbstractResourceEvent>
     implements ResourceEventNotifier<R, T> {
-
-  @Inject
-  private JMSContext context;
 
   /**
    * Gets the destination of the notification. It is either a queue or a topic in JMS.
@@ -68,8 +63,10 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
     UserSubscriptionNotificationSendingHandler.setupResourceEvent(event);
 
     // Sending
-    JMSProducer producer = context.createProducer();
-    producer.send(getDestination(), event);
+    JMSOperation.realize(context -> {
+      JMSProducer producer = context.createProducer();
+      producer.send(getDestination(), event);
+    });
   }
 
   @Override
