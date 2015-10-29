@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Defines the frequencey forResourceBundle cache invalidation. The default period is 4 Hours. You
+ * Defines the frequency for ResourceBundle cache invalidation. The default period is 4 Hours. You
  * can specify a period with the System property <code>silverpeas.refresh.configuration</code> and a
  * period in milliseconds.
  * @author ehugonnet

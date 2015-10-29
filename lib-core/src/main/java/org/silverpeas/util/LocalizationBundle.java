@@ -189,7 +189,8 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
 
   private ResourceBundle getGeneralWrappedBundle() {
     if (!name.equals(GENERAL_BUNDLE_NAME)) {
-      return (loader == null ? NONE : loader.apply(GENERAL_BUNDLE_NAME, this.locale));
+      return (loader == null ? NONE :
+          ResourceLocator.getGeneralLocalizationBundle(locale.getLanguage()));
     }
     return NONE;
   }

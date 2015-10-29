@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
+import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
+
 /**
  * The resource locator gives access to the resource bundles (bundles of localized resources and of
  * settings) that are located into a particular directory, the Silverpeas resources home directory.
@@ -63,6 +65,7 @@ public class ResourceLocator {
   private static final int INITIAL_CACHE_SIZE = 128;
   private static ClassLoader loader =
       new ConfigurationClassLoader(ResourceLocator.class.getClassLoader());
+  private static final ConfigurationControl configurationControl = new ConfigurationControl();
   private static final ConcurrentMap<String, SilverpeasBundle> bundles =
       new ConcurrentHashMap<>(INITIAL_CACHE_SIZE);
 
@@ -165,16 +168,33 @@ public class ResourceLocator {
   }
 
   private static ResourceBundle loadResourceBundle(String bundleName, Locale locale) {
-    try {
-      if (!bundleName.startsWith("org.silverpeas.")) {
-        Logger.getLogger(ResourceLocator.class.getSimpleName())
-            .severe("INVALID BUNDLE BASE NAME: " + bundleName);
-      }
-      return ResourceBundle.getBundle(bundleName, locale, loader, new ConfigurationControl());
-    } catch (MissingResourceException mex) {
-      Logger.getLogger(ResourceLocator.class.getName()).severe(mex.getMessage());
-      throw mex;
+    boolean refreshAtEachCall = configurationControl.getTimeToLive(bundleName, locale) <= 0;
+    ResourceBundle resourceBundle = null;
+    String requestCacheKey = null;
+
+    if (refreshAtEachCall) {
+      requestCacheKey = "$rb$key$" + bundleName + "$" + locale.getLanguage();
+      resourceBundle = getRequestCacheService().get(requestCacheKey, ResourceBundle.class);
     }
+
+    if (resourceBundle == null) {
+      try {
+        if (!bundleName.startsWith("org.silverpeas.")) {
+          Logger.getLogger(ResourceLocator.class.getSimpleName())
+              .severe("INVALID BUNDLE BASE NAME: " + bundleName);
+        }
+        resourceBundle = ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
+      } catch (MissingResourceException mex) {
+        Logger.getLogger(ResourceLocator.class.getName()).severe(mex.getMessage());
+        throw mex;
+      }
+
+      if (refreshAtEachCall) {
+        getRequestCacheService().put(requestCacheKey, resourceBundle);
+      }
+    }
+
+    return resourceBundle;
   }
 
   private static InputStream loadResourceBundleAsStream(String bundleName) {

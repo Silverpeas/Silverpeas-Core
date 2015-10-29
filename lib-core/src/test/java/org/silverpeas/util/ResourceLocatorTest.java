@@ -34,6 +34,7 @@ import java.util.MissingResourceException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -108,9 +109,20 @@ public class ResourceLocatorTest {
 
   @Test
   public void useGeneralLocalizationBundleShouldSucceed() {
-    LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle("en");
-    assertThat(bundle, is(notNullValue()));
-    assertThat(bundle.getString("GML.cancel"), is("Cancel"));
+    LocalizationBundle beforeBundleEn = ResourceLocator.getGeneralLocalizationBundle("en");
+    LocalizationBundle beforeBundleFr = ResourceLocator.getGeneralLocalizationBundle("fr");
+    LocalizationBundle bundleEn = ResourceLocator.getGeneralLocalizationBundle("en");
+    LocalizationBundle bundleFr = ResourceLocator.getGeneralLocalizationBundle("fr");
+
+    assertThat(bundleEn, sameInstance(beforeBundleEn));
+    assertThat(bundleFr, sameInstance(beforeBundleFr));
+
+    assertThat(bundleEn, is(notNullValue()));
+    assertThat(bundleEn.getString("GML.cancel"), is("Cancel"));
+    assertThat(bundleEn.getString("GML.cancel"), is("Cancel"));
+    assertThat(bundleFr, is(notNullValue()));
+    assertThat(bundleFr.getString("GML.cancel"), is("Annuler"));
+    assertThat(bundleFr.getString("GML.cancel"), is("Annuler"));
   }
 
   @Test

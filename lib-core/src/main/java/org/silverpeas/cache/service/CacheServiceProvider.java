@@ -33,7 +33,7 @@ public class CacheServiceProvider {
   private static final CacheServiceProvider instance = new CacheServiceProvider();
   private final SimpleCacheService threadCacheService;
   private final SimpleCacheService requestCacheService;
-  private final CacheService cacheService;
+  private CacheService cacheService;
 
   /**
    * Initialization of service instances
@@ -46,13 +46,7 @@ public class CacheServiceProvider {
     // Request cache
     requestCacheService = new ThreadCacheService();
 
-    // Common cache
-    int nbMaxElements = ResourceLocator.getGeneralSettingBundle().
-        getInteger("application.cache.common.nbMaxElements", 0);
-    if (nbMaxElements < 0) {
-      nbMaxElements = 0;
-    }
-    cacheService = new EhCacheService(nbMaxElements);
+    // Common cache is lazily initialized because resource locator need CacheServiceProvider...
   }
 
   /**
@@ -123,6 +117,16 @@ public class CacheServiceProvider {
    * @return an applicative cache service
    */
   public static CacheService getApplicationCacheService() {
-    return getInstance().cacheService;
+    CacheService cacheService = getInstance().cacheService;
+    if (cacheService == null) {
+      int nbMaxElements = ResourceLocator.getGeneralSettingBundle().
+          getInteger("application.cache.common.nbMaxElements", 0);
+      if (nbMaxElements < 0) {
+        nbMaxElements = 0;
+      }
+      cacheService = new EhCacheService(nbMaxElements);
+      getInstance().cacheService = cacheService;
+    }
+    return cacheService;
   }
 }
