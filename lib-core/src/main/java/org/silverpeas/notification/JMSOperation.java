@@ -1,8 +1,10 @@
 package org.silverpeas.notification;
 
-import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.ServiceProvider;
 
+import javax.annotation.Resource;
+import javax.inject.Singleton;
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
 
 /**
@@ -45,19 +47,30 @@ import javax.jms.JMSContext;
  * There is no manual management here concerning the {@link javax.jms.JMSContext} because that is
  * handled by the container.<br/>
  * But to be managed efficiently, a JTA transaction must exist, and also, the following rule must
- * be
- * verified (from documentation of {@link javax.jms.JMSContext}): Applications running in the Java
- * EE web and EJB containers are not permitted to create more than one active session on a
+ * be verified (from documentation of {@link javax.jms.JMSContext}): Applications running in the
+ * Java EE web and EJB containers are not permitted to create more than one active session on a
  * connection so combining them in a single object takes advantage of this restriction to offer a
  * simpler API.
  * </p>
  * <p>
  * So, to get the code the simplest possible in callers, this class provides static method that
- * simplifies the JMS send by observing the different mandatory rules.
+ * simplifies the processing of a JMS operation by observing the different mandatory rules
+ * concerning the {@link JMSContext}.
  * </p>
  * @author Yohann Chastagnier
  */
+@Singleton
 public class JMSOperation {
+
+  @Resource
+  private ConnectionFactory jmsConnectionFactory;
+
+  private static JMSOperation get() {
+    return ServiceProvider.getService(JMSOperation.class);
+  }
+
+  private JMSOperation() {
+  }
 
   /**
    * Realizes a JMS operation with a managed {@link JMSContext}.
@@ -65,11 +78,22 @@ public class JMSOperation {
    * @see org.silverpeas.notification.JMSOperation
    */
   public static void realize(final Operation operation) {
-    Transaction.performInOne(() -> {
-      final JMSContext context = ServiceProvider.getService(JMSContext.class);
-      operation.realize(context);
-      return null;
-    });
+    get()._realize(operation);
+  }
+
+  /**
+   * Realizes a JMS operation with a managed {@link JMSContext}.
+   * @param operation the operation to realize.
+   * @see org.silverpeas.notification.JMSOperation
+   */
+  private void _realize(final Operation operation) {
+    try (JMSContext context = jmsConnectionFactory.createContext()) {
+      try {
+        operation.realize(context);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
 
