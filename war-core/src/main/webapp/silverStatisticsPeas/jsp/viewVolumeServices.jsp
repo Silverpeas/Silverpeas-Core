@@ -1,3 +1,5 @@
+<%@ page import="org.silverpeas.chart.pie.PieChart" %>
+<%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -28,11 +30,12 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 //Recuperation des parametres
-  ChartVO chart = (ChartVO) request.getAttribute("Chart");
+  PieChart chart = (PieChart) request.getAttribute("Chart");
 
   int totalNumberOfInstances = 0;
 
@@ -44,12 +47,13 @@
   tabbedPane.addTab(resources.getString("GML.attachments"), "javascript:displayVolumes();", false);
 %>
 
+<c:set var="pieChart" value="${requestScope.Chart}"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
     <title><%=resources.getString("GML.popupTitle")%></title>
     <view:looknfeel />
-    <view:includePlugin name="chart"/>
     <script type="text/javascript">
       function displayVolumes() {
         $.progressMessage();
@@ -59,54 +63,6 @@
           newPage.close();
         });
       }
-
-      // A custom label formatter used by several of the plots
-      function labelFormatter(label, series) {
-        return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + Math.round(series.percent) + "%</div>";
-      }
-
-      $(function() {
-
-        var data = [
-          <% if (chart != null) {
-            List<String> x = chart.getX();
-            List<Long> y = chart.getY();
-            for (int i = 0; i<x.size(); i++) {
-              out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
-              if (i < x.size()) {
-                out.println(",");
-              }
-            }
-          } %>
-        ];
-
-        $.plot(".chart", data, {
-          series: {
-            pie: {
-              show: true,
-              combine: {
-                color: '#999',
-                threshold: 0.03
-              },
-              radius: 1,
-              label: {
-                show: true,
-                radius: 3/4,
-                formatter: labelFormatter,
-                background: {
-                  opacity: 0.5
-                }
-              }
-            }
-          },
-          legend: {
-            show: true
-          },
-          colors: ["#1c94d4", "#7eb73b", "#ec9c01", "#f7d723", "#11c3d8", "#e03183", "#639784",
-            "#88376", "#8d5788", "#f79992", "#ce6f6f", "#f63333"]
-        });
-
-      });
     </script>
   </head>
   <body class="admin stats volume applications">
@@ -126,13 +82,11 @@
         arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
 
   if (chart != null) {
-    List<String> x = chart.getX();
-    List<Long> y = chart.getY();
-    for (int i=0; i<x.size(); i++) {
+    for (PieChartItem item : chart.getItems()) {
       ArrayLine arrayLine = arrayPane.addArrayLine();
-      arrayLine.addArrayCellText(x.get(i));
+      arrayLine.addArrayCellText(item.getLabel());
 
-      String nb = String.valueOf(y.get(i));
+      String nb = String.valueOf(item.getValue());
       ArrayCellText cellText = arrayLine.addArrayCellText(nb);
       cellText.setCompareOn(Integer.parseInt(nb));
       totalNumberOfInstances += Integer.parseInt(nb);
@@ -141,12 +95,7 @@
     %>
 
     <div class="flex-container">
-      <% if (chart != null) { %>
-      <div class="chart-area">
-        <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
-        <div class="chart"></div>
-      </div>
-      <% } %>
+      <viewTags:displayChart chart="${pieChart}"/>
       <div align="center" id="total">
         <span><span class="number"><%=totalNumberOfInstances%></span> <%=resources.getString(
             "silverStatisticsPeas.sums.applications")%></span>

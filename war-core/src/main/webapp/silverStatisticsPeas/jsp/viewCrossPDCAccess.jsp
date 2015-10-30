@@ -44,10 +44,6 @@
 //Recuperation des parametres
 ArrayLine arrayLine = null;
 
-String monthBegin = "";
-String yearBegin = "";
-String monthEnd = "";
-String yearEnd = "";
 Integer firstAxis = (Integer) request.getAttribute("FirstAxis");
 Integer secondAxis = (Integer) request.getAttribute("SecondAxis");
 CrossStatisticVO crossAxis = (CrossStatisticVO) request.getAttribute("StatsData");
@@ -215,9 +211,9 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 	  <center>
 	  	<view:buttonPane>
 		  	<fmt:message key="GML.validate" var="labelValidate" />
-		  	<fmt:message key="GML.cancel" var="labelCancel" />
+		  	<fmt:message key="GML.reset" var="labelReset" />
 		    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
-		    <view:button label="${labelCancel}" action="javascript:document.cancelAccessForm.submit()"></view:button>
+		    <view:button label="${labelReset}" action="javascript:document.resetAccessForm.submit()"></view:button>
 	  	</view:buttonPane>
 	  </center>
   </div>
@@ -258,7 +254,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 </center>
   </view:frame>
 </view:window>
-<form name="cancelAccessForm" action="ViewCrossPDCAccess" method="post">
+<form name="resetAccessForm" action="ViewCrossPDCAccess" method="post">
 </form>
 <view:progressMessage/>
 </body>

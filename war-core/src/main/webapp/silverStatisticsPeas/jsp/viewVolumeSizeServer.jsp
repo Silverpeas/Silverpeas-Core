@@ -1,4 +1,7 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.util.memory.MemoryUnit" %>
+<%@ page import="org.silverpeas.chart.pie.PieChart" %>
+<%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -29,6 +32,7 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
@@ -36,7 +40,7 @@
 	Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
   Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
   UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
-  ChartVO chart = (ChartVO) request.getAttribute("Chart");
+  PieChart chart = (PieChart) request.getAttribute("Chart");
 
   long totalSize = 0L;
 
@@ -52,28 +56,36 @@
   arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
   arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsSize"));
 
-    if (vStatsData != null) {
-       	for (String[] item : vStatsData) {
-       	  	ArrayLine arrayLine = arrayPane.addArrayLine();
-           	if ("SPACE".equals(item[0])) {
-				arrayLine.addArrayCellLink("<b>"+item[2]+"</b>", "ViewVolumeSizeServer?SpaceId="+item[1]);
-           	} else {
-				arrayLine.addArrayCellText(item[2]);
-           	}
-         	long size = Long.parseLong(item[3]);
-         	totalSize += size;
-			ArrayCellText cellTextCount = arrayLine.addArrayCellText(FileRepositoryManager.formatFileSize(size));
-         	cellTextCount.setCompareOn(new Long(size));
-       	}
+  if (vStatsData != null) {
+    Iterator<PieChartItem> itChartItems = chart.getItems().iterator();
+    for (String[] item : vStatsData) {
+      PieChartItem charItem = itChartItems.next();
+      ArrayLine arrayLine = arrayPane.addArrayLine();
+      if ("SPACE".equals(item[0])) {
+        String url = "ViewVolumeSizeServer?SpaceId=" + item[1];
+        charItem.addExtra("spaceStatisticUrl", url);
+        arrayLine.addArrayCellLink("<b>" + item[2] + "</b>",
+            "javascript:displaySubSpaceStatistics('" + url + "')");
+      } else {
+        arrayLine.addArrayCellText(item[2]);
+      }
+      long size = Long.parseLong(item[3]);
+      totalSize += size;
+      String formattedSize = FileRepositoryManager.formatFileSize(size);
+      ArrayCellText cellTextCount = arrayLine.addArrayCellText(formattedSize);
+      charItem.addExtra("formattedSize", formattedSize);
+      cellTextCount.setCompareOn(size);
     }
+  }
 %>
+
+<c:set var="pieChart" value="${requestScope.Chart}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
-<view:includePlugin name="chart" />
 <script type="text/javascript">
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
@@ -90,37 +102,24 @@
     });
   }
 
-  $(function() {
+  function onItemClickHelp(item) {
+    return item.srcData && item.srcData.extra;
+  }
 
-    var data = [
-      <% if (chart != null) {
-        List<String> x = chart.getX();
-        List<Long> y = chart.getY();
-        for (int i = 0; i<x.size(); i++) {
-          out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
-          if (i < x.size()) {
-            out.println(",");
-          }
-        }
-      } %>
-    ];
+  function onItemClick(item) {
+    if (item.srcData && item.srcData.extra) {
+      displaySubSpaceStatistics(item.srcData.extra.spaceStatisticUrl);
+    }
+  }
 
-    $.plot(".chart", data, {
-      series: {
-        pie: {
-          show: true,
-          combine: {
-            color: '#999',
-            threshold: 0.03
-          }
-        }
-      },
-      legend: {
-        show: false
-      }
-    });
+  function displaySubSpaceStatistics(url) {
+    $.progressMessage();
+    document.location.href = url;
+  }
 
-  });
+  function formatChartToolTipValue(value) {
+    return (value / 1024 / 1024).roundDown(2) + " <%=MemoryUnit.MB.getLabel()%>";
+  }
 </script>
 </head>
 <body class="admin stats volume attachments">
@@ -163,12 +162,7 @@
 
 <% if (vStatsData != null) { %>
    <div class="flex-container">
-     <% if (chart != null) { %>
-     <div class="chart-area">
-       <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
-       <div class="chart"></div>
-     </div>
-     <% } %>
+     <viewTags:displayChart chart="${pieChart}" formatToolTipValue="formatChartToolTipValue" onItemClick="onItemClick" onItemClickHelp="onItemClickHelp"/>
      <div align="center" id="total">
         <span><span class="number"><%=FileRepositoryManager.formatFileSize(totalSize) %></span> <%=resources
             .getString("silverStatisticsPeas.sums.attachments.size") %></span>

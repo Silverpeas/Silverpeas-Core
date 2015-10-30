@@ -1,5 +1,8 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
-<%@ page import="org.apache.commons.lang.time.DateUtils" %>
+<%@ page import="org.silverpeas.chart.period.PeriodChartItem" %>
+<%@ page import="com.silverpeas.calendar.DateTime" %>
+<%@ page import="static java.util.Calendar.getInstance" %>
+<%@ page import="org.silverpeas.chart.period.PeriodChart" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -27,18 +30,22 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="checkSilverStatistics.jsp" %>
 
 <%!
 
-	private String formatDate(ResourcesWrapper resources, String date) 
+	private String formatDate(ResourcesWrapper resources, DateTime date)
 	{//date au format AAAA-MM-jj
+    Calendar calendar = getInstance();
+    calendar.setTime(date);
 	
 		String dateFormate = "";
 		
-		String annee = date.substring(0, 4);
-		int mois = new Integer(date.substring(5, 7)).intValue();
+		int annee = calendar.get(Calendar.YEAR);
+		int mois = calendar.get(Calendar.MONTH) + 1;
 		
 		if(mois == 1) {
 			dateFormate = resources.getString("silverStatisticsPeas.January");
@@ -86,42 +93,16 @@
 	String filterIdUser = (String) request.getAttribute("FilterIdUser");
     String spaceId = (String) request.getAttribute("SpaceId");
 	Vector vPath = (Vector) request.getAttribute("Path");
-	ChartVO chart = (ChartVO) request.getAttribute("Chart");
+	PeriodChart chart = (PeriodChart) request.getAttribute("Chart");
 	UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 %>
+
+<c:set var="periodChart" value="${requestScope.Chart}"/>
 
 <html>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
-<view:includePlugin name="chart"/>
-  <script type="text/javascript">
-    $(function() {
-    var data = [
-        <% if (chart != null) {
-        List<String> x = chart.getX();
-        List<Long> y = chart.getY();
-        for (int i = 0; i<x.size(); i++) {
-          out.print("["+DateUtil.parse(x.get(i).replace('-', '/')).getTime()+", "+y.get(i)+"]");
-          if (i < x.size()) {
-            out.println(",");
-          }
-        }
-      } %>
-      ];
-
-      if (data.length !== 0) {
-        $.plot(".chart", [data], {
-          xaxis : {
-            mode : "time", minTickSize : [1, "month"]
-          }
-        });
-      } else {
-        $(".chart-area").hide();
-      }
-
-    });
-  </script>
 </HEAD>
 <BODY class="admin stats">
 <%
@@ -177,15 +158,9 @@
 
 <BR>
 	
-<% if (chart != null) { %>
-<!-- Graphique -->
 <div class="flex-container">
-  <div class="chart-area">
-    <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
-    <div class="chart"></div>
-  </div>
+  <viewTags:displayChart chart="${periodChart}"/>
 </div>
-<% } %>
 
 <br>
 
@@ -199,17 +174,16 @@
       	
       	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.date"));
         ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.Access"));
-      	
-      	if (chart != null) {
-          List<String> x = chart.getX();
-          List<Long> y = chart.getY();
-        	for (int i=0; i<x.size(); i++) {
-            ArrayLine arrayLine = arrayPane.addArrayLine();
-            ArrayCellText cellText = arrayLine.addArrayCellText(formatDate(resources, x.get(i)));
-            cellText.setCompareOn(x.get(i));
 
-            cellText = arrayLine.addArrayCellText(String.valueOf(y.get(i)));
-            cellText.setCompareOn(y.get(i));
+      	if (chart != null) {
+        	for (PeriodChartItem item : chart.getItems()) {
+            ArrayLine arrayLine = arrayPane.addArrayLine();
+            ArrayCellText cellText = arrayLine.addArrayCellText(formatDate(resources,
+                item.getX().getBeginDatable()));
+            cellText.setCompareOn(item.getX().getBeginDatable().getTime());
+
+            cellText = arrayLine.addArrayCellText(String.valueOf(item.getYValues().iterator().next()));
+            cellText.setCompareOn(Long.valueOf(item.getYValues().iterator().next().toString()));
           }
 			    out.println(arrayPane.print());
         }

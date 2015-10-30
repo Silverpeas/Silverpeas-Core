@@ -28,7 +28,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%
 //Recuperation des parametres
 	ArrayLine  arrayLine = null;
@@ -39,7 +41,6 @@
 	Collection cYearEnd = (Collection)request.getAttribute("YearEnd");
 	Collection cFrequenceDetail = (Collection)request.getAttribute("FrequenceDetail");
   UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
-  ChartVO chart = (ChartVO) request.getAttribute("Chart");
 %>
 
 <%
@@ -53,48 +54,25 @@
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.connectionFrequence"), m_context+"/RsilverStatisticsPeas/jsp/ViewFrequence",true);
 %>
 
+<c:set var="periodChart" value="${requestScope.Chart}"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
-<view:includePlugin name="chart"/>
   <style type="text/css">
-    .chart {
+    .chart-view-frequencies {
       width: 800px;
       height: 400px;
     }
   </style>
-<script type="text/javascript">
-  $(function() {
-
-    var data = [
-      <% if (chart != null) {
-        List<String> x = chart.getX();
-        List<Long> y = chart.getY();
-        for (int i = 0; i<x.size(); i++) {
-          out.print("["+DateUtil.parse(x.get(i).replace('-', '/')).getTime()+", "+y.get(i)+"]");
-          if (i < x.size()) {
-            out.println(",");
-          }
-        }
-      } %>
-    ];
-
-    $.plot(".chart", [data], {
-       bars: {
-          show: true,
-          barWidth: 24 * 60 * 60 * 1000 * 30
-        }
-      ,
-      xaxis: {
-        mode: "time",
-        minTickSize: [1, "month"]
-      }
-    });
-
-  });
-</script>
+  <script type="text/javascript">
+    function validateForm(){
+      $.progressMessage();
+      document.frequenceFormulaire.submit();
+    }
+  </script>
 </head>
 <body class="admin stats">
 <%
@@ -181,26 +159,23 @@
   	out.println(board.printAfter());
   
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:$.progressMessage();document.frequenceFormulaire.submit()", false));
-	  buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:document.cancelFrequenceForm.submit()", false));
+    buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:validateForm()", false));
+	  buttonPane.addButton(gef.getFormButton(resources.getString("GML.reset"), "javascript:document.resetFrequenceForm.submit()", false));
     out.println("<br><center>"+buttonPane.print()+"</center><br>");
   %>
 
-  <% if (chart != null) { %>
   <div class="flex-container">
-    <div class="chart-area">
-      <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
-      <div class="chart"></div>
-    </div>
+    <viewTags:displayChart chart="${periodChart}"
+                           displayAsBars="true"
+                           chartClass="chart-view-frequencies"/>
   </div>
-  <% } %>
 
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 	
-<form name="cancelFrequenceForm" action="ViewFrequence" method="post">
+<form name="resetFrequenceForm" action="ViewFrequence" method="post">
 </form>
 <view:progressMessage/>
 </body>

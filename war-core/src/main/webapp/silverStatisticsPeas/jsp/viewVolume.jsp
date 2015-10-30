@@ -24,13 +24,18 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.chart.pie.PieChart" %>
+<%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%
+
+  PieChart chart = (PieChart) request.getAttribute("Chart");
 	Collection<String[]> cMonthBegin = (Collection<String[]>)request.getAttribute("MonthBegin");
 	String monthBegin = "";
 	Collection<String[]> cYearBegin = (Collection<String[]>)request.getAttribute("YearBegin");
@@ -49,7 +54,6 @@
 	  Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
     Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
     UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
-    ChartVO chart = (ChartVO) request.getAttribute("Chart");
 
     int totalNumberOfContributions = 0;
     int totalNumberOfContributionsByGroup = 0;
@@ -100,10 +104,14 @@
 	}
 
 	if (vStatsData != null) {
+
+    Iterator<PieChartItem> itChartItems = chart.getItems().iterator();
 		for (String[] item : vStatsData) {
 		  	ArrayLine arrayLine = arrayPane.addArrayLine();
 	    	if ("SPACE".equals(item[0])) {
-	  			arrayLine.addArrayCellLink("<b>"+item[2]+"</b>", "ValidateViewVolume?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+item[1]);
+          String url = "ValidateViewVolume?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+item[1];
+          itChartItems.next().addExtra("spaceStatisticUrl", url);
+	  			arrayLine.addArrayCellLink("<b>"+item[2]+"</b>", "javascript:displaySubSpaceStatistics('"+url+"')");
 	    	} else {
 	  			arrayLine.addArrayCellText(item[2]);
 	    	}
@@ -128,12 +136,13 @@
 	}
 %>
 
+<c:set var="pieChart" value="${requestScope.Chart}"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
-<view:includePlugin name="chart"/>
 <script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -157,7 +166,7 @@
 		document.volumePublication.FilterIdUser.value = "";
 	}
 
-	function validerForm(){
+	function validateForm(){
 		$.progressMessage();
 		document.volumePublication.submit()
 	}
@@ -171,38 +180,20 @@
     });
   }
 
-  $(function() {
+  function onItemClickHelp(item) {
+    return item.srcData && item.srcData.extra;
+  }
 
-    var data = [
-      <% if (chart != null) {
-        List<String> x = chart.getX();
-        List<Long> y = chart.getY();
-        for (int i = 0; i<x.size(); i++) {
-          out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
-          if (i < x.size()) {
-            out.println(",");
-          }
-        }
-      } %>
-    ];
+  function onItemClick(item) {
+    if (item.srcData && item.srcData.extra) {
+      displaySubSpaceStatistics(item.srcData.extra.spaceStatisticUrl);
+    }
+  }
 
-    $.plot(".chart", data, {
-      series: {
-        pie: {
-          show: true,
-          combine: {
-            color: '#999',
-            threshold: 0.03
-          }
-        }
-      },
-      legend: {
-        show: false
-      }
-    });
-
-  });
-
+  function displaySubSpaceStatistics(url) {
+    $.progressMessage();
+    document.location.href = url;
+  }
 </script>
 </head>
 <body class="admin stats volume contributions">
@@ -275,21 +266,16 @@
   	out.println(board.printAfter());
 
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:validerForm()", false));
-	buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "ViewVolumePublication", false));
-    out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
+    buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:validateForm()", false));
+    buttonPane.addButton(gef.getFormButton(resources.getString("GML.reset"), "ViewVolumePublication", false));
+    out.println("<div id=\"stats_viewConnectionButton\">"+buttonPane.print()+"</div><br/>");
 
 	//Graphiques
    	if (vStatsData != null) {
   %>
 
     <div class="flex-container">
-      <% if (chart != null) { %>
-      <div class="chart-area">
-        <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
-        <div class="chart"></div>
-      </div>
-      <% } %>
+      <viewTags:displayChart chart="${pieChart}" onItemClick="onItemClick" onItemClickHelp="onItemClickHelp"/>
       <div align="center" id="total">
          <span><span class="number">
           <% if(StringUtil.isDefined(filterIdGroup)) { %>

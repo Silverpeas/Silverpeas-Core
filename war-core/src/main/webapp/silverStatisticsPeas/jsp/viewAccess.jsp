@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
-<%@ page import="com.silverpeas.util.StringUtil" %>
+<%@ page import="org.silverpeas.chart.pie.PieChart" %>
+<%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -35,6 +36,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -46,8 +48,6 @@
 	//Recuperation des parametres
 	ArrayLine arrayLine = null;
 	Iterator   iter1 = null;
-	String monthBegin = "";
-	String yearBegin = "";
 	String filterLibGroup = (String)request.getAttribute("FilterLibGroup");
 	String filterIdGroup = (String) request.getAttribute("FilterIdGroup");
 	String filterLibUser = (String)request.getAttribute("FilterLibUser");
@@ -56,14 +56,15 @@
 	Vector vPath = (Vector) request.getAttribute("Path");
   Vector vStatsData = (Vector)request.getAttribute("StatsData");
   UserAccessLevel userProfile = (UserAccessLevel) request.getAttribute("UserProfile");
-  ChartVO chart = (ChartVO) request.getAttribute("Chart");
+  PieChart chart = (PieChart) request.getAttribute("Chart");
 %>
+
+<c:set var="pieChart" value="${requestScope.Chart}"/>
 
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
 <view:looknfeel/>
-<view:includePlugin name="chart"/>
 <script type="text/javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -95,33 +96,20 @@
 		document.accessFormulaire.submit();
 	}
 
-  $(function() {
+  function onItemClickHelp(item) {
+    return item.srcData && item.srcData.extra;
+  }
 
-    var data = [
-    <% if (chart != null) {
-      List<String> x = chart.getX();
-      List<Long> y = chart.getY();
-      for (int i = 0; i<x.size(); i++) {
-        out.print("{ label: \""+x.get(i)+"\",  data: "+y.get(i)+"}");
-        if (i < x.size()) {
-          out.println(",");
-        }
-      }
-    } %>
-    ];
+  function onItemClick(item) {
+    if (item.srcData && item.srcData.extra) {
+      displaySubSpaceStatistics(item.srcData.extra.spaceStatisticUrl);
+    }
+  }
 
-    $.plot(".chart", data, {
-      series: {
-        pie: {
-          show: true
-        }
-      },
-      legend: {
-        show: false
-      }
-    });
-
-  });
+  function displaySubSpaceStatistics(url) {
+    $.progressMessage();
+    document.location.href = url;
+  }
 
 </script>
 </head>
@@ -236,22 +224,12 @@
   <div id="stats_viewConnectionButton">
 	  	<view:buttonPane>
 		  	<fmt:message key="GML.validate" var="labelValidate" />
-		  	<fmt:message key="GML.cancel" var="labelCancel" />
+		  	<fmt:message key="GML.reset" var="labelReset"/>
 		    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
-		    <view:button label="${labelCancel}" action="javascript:document.cancelAccessForm.submit()"></view:button>
+		    <view:button label="${labelReset}" action="javascript:document.resetAccessForm.submit()"></view:button>
 	  	</view:buttonPane>
   </div>
-
-  <% if (chart != null) { %>
-  <div class="flex-container">
-    <div class="chart-area">
-      <h3 class="txttitrecol"><%=chart.getTitle()%></h3>
-      <div class="chart"></div>
-    </div>
-  </div>
-  <% } %>
-
-  <br>
+  <br/>
   
   <%
  	
@@ -276,6 +254,7 @@
 
         if (vStatsData != null)
         {
+          Iterator<PieChartItem> itChartItems = chart.getItems().iterator();
         	iter1 = vStatsData.iterator();
         	String title;
 
@@ -287,7 +266,9 @@
             	
             	title = resources.getString("silverStatisticsPeas.Historique");
             	if ( "SPACE".equals(item[0]) ) {
-          			arrayLine.addArrayCellLink("<B>"+item[2]+"</B>", "ValidateViewAccess?MonthBegin="+pageContext.getAttribute("monthBegin")+"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+item[1]);
+                String url = "ValidateViewAccess?MonthBegin="+pageContext.getAttribute("monthBegin")+"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+item[1];
+                itChartItems.next().addExtra("spaceStatisticUrl", url);
+          			arrayLine.addArrayCellLink("<B>"+item[2]+"</B>", "javascript:displaySubSpaceStatistics('" + url + "')");
           			title += " ["+item[2]+"]";
           		} else {
           			arrayLine.addArrayCellText(item[2]);
@@ -317,17 +298,24 @@
     	      	
     	      	arrayLine.addArrayCellText("<div align=left><a href=\"ViewEvolutionAccess?Entite="+item[0]+"&Id="+item[1]+"\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoComponent")+"\" align=absmiddle alt=\""+title+"\" border=0 title=\""+title+"\"></a></div>");
 		}
-
-        out.println(arrayPane.print());
-        out.println("");
     }
     %>
+
+  <div class="flex-container">
+    <viewTags:displayChart chart="${pieChart}" onItemClick="onItemClick" onItemClickHelp="onItemClickHelp"/>
+  </div>
+
+  <br>
+  <%
+    out.println(arrayPane.print());
+    out.println("");
+  %>
 </center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<form name="cancelAccessForm" action="ViewAccess" method="post">
+<form name="resetAccessForm" action="ViewAccess" method="post">
 </form>
 <view:progressMessage/>
 </body>
