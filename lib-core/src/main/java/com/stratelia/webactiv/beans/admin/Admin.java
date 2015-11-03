@@ -429,8 +429,7 @@ public final class Admin {
 
       if (!definitive) {
         // Update the space in tables
-        spaceManager.sendSpaceToBasket(domainDriverManager, sDriverSpaceId,
-            spaceInst.getName() + Admin.basketSuffix, userId);
+        spaceManager.sendSpaceToBasket(domainDriverManager, spaceInst, userId);
 
         // delete all profiles (space, components and subspaces)
         deleteSpaceProfiles(spaceInst);
@@ -1411,8 +1410,7 @@ public final class Admin {
           deleteProfileInst(componentInst.getProfileInst(nI).getId(), false);
         }
 
-        componentManager.sendComponentToBasket(domainDriverManager, sDriverComponentId,
-            componentInst.getLabel() + Admin.basketSuffix, userId);
+        componentManager.sendComponentToBasket(domainDriverManager, componentInst, userId);
       } else {
         connectionProd = openConnection(false);
 

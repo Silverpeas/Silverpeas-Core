@@ -284,11 +284,10 @@ public class MainSessionController implements Clipboard {
    * Return the user's favorite language
    */
   public String getFavoriteLanguage() {
+    if (userLanguage == null) {
+      userLanguage = userPreferences.getLanguage();
+    }
     return userLanguage;
-  }
-
-  public void setFavoriteLanguage(String newLanguage) {
-    userLanguage = newLanguage;
   }
 
   /**

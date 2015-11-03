@@ -530,7 +530,7 @@
               <c:if test="${onlineEditingWithCustomProtocol}">
                 var webDavURL = eval("webDav".concat(oldId));
                 // display alert popin
-                showInformationAboutOnlineEditingWithCustomProtocol(webDavURL);
+                showInformationAboutOnlineEditingWithCustomProtocol(decodeURIComponent(webDavURL));
               </c:if>
               <c:if test="${not onlineEditingWithCustomProtocol}">
                 var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));

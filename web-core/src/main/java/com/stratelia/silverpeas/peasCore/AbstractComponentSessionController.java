@@ -277,15 +277,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * The utilization of this method is allowed only for PersonalizationSessionController.
-   * @param newLanguage the favorite user language.
-   */
-  public void setLanguageToMainSessionController(String newLanguage) {
-    // change the language into the mainSessionController
-    controller.setFavoriteLanguage(newLanguage);
-  }
-
-  /**
    * The utilization of this method is allowed only for PersonalizationSessionController
    * @param newSpace the new user favorite space.
    */
