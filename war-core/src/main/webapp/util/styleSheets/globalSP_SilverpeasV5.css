@@ -6241,11 +6241,14 @@ blockquote {
 
 .forms .fields label {
 	display: inline-block;
-    float: inherit;
-    height: 20px;
-    padding-left: 15px;
-    width:180px;
-	float:left;
+  float: inherit;
+  padding-left: 15px;
+  width:180px;
+  white-space: normal;
+}
+
+#richContent .fields {
+  clear:inherit;
 }
 
 .forms .field .fieldInput input,
