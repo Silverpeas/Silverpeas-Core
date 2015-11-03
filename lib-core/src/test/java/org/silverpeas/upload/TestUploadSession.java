@@ -51,7 +51,7 @@ import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
 /**
  * @author Yohann Chastagnier
  */
-public class UploadSessionTest {
+public class TestUploadSession {
 
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();
   private static final String UPLOAD_SESSION_CACHE_KEY_PREFIX = "@@@_instance_for_";

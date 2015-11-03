@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
-public class UploadSessionFileTest {
+public class TestUploadSessionFile {
 
   @Rule
   public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
