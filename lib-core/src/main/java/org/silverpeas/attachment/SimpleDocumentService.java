@@ -750,6 +750,8 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
         webdavRepository.deleteAttachmentNode(session, finalDocument);
         repository.duplicateContent(document, finalDocument);
+        finalDocument.setSize(new File(finalDocument.getAttachmentPath()).length());
+        repository.updateDocument(session, finalDocument);
       } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
           isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, finalDocument);
