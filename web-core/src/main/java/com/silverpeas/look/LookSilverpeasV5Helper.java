@@ -840,38 +840,21 @@ public class LookSilverpeasV5Helper extends LookHelper {
       Collection<PublicationDetail> someNews =
           getPublicationService().getOrphanPublications(new PublicationPK("", appId));
       for (PublicationDetail aNews : someNews) {
-        if (aNews.isValid() || aNews.getCreatorId().equals(getUserId()) ||
-            aNews.getUpdaterId().equals(getUserId())) {
+        if (isVisibleNews(aNews)) {
           news.add(aNews);
         }
       }
     }
 
-    news = filterVisibleNews(news);
     Collections.sort(news, PublicationUpdateDateComparator.comparator);
     
     return news;
   }
-  
-  private List<PublicationDetail> filterVisibleNews(Collection<PublicationDetail> all) {
-    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
-    Date now = new Date();
-    for (PublicationDetail detail : all) {
-      if (detail.getBeginDate() == null && detail.getEndDate() == null){
-        result.add(detail);
-      } else if (detail.getBeginDate() != null && detail.getEndDate() == null) {
-        if (DateUtil.compareTo(detail.getBeginDate(), now, false) <= 0) {
-          result.add(detail);
-        }
-      } else if (detail.getBeginDate() == null && detail.getEndDate() != null) {
-        if (DateUtil.compareTo(detail.getEndDate(), now, false) >= 0) {
-          result.add(detail);
-        }
-      } else if (Period.from(detail.getBeginDate(), detail.getEndDate()).contains(now)) {
-        result.add(detail);
-      }
-    }
-    return result;
+
+  private boolean isVisibleNews(PublicationDetail news) {
+    return news.isValid() &&
+        Period.getPeriodWithUndefinedIfNull(news.getBeginDate(), news.getEndDate())
+            .contains(new Date());
   }
 
   @Override
