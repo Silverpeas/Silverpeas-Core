@@ -57,7 +57,10 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
       PublicationPK pubPk = new PublicationPK(object.getForeignPK().getId(),
           object.getForeignPK().getComponentName());
       PublicationDetail pubDetail = getPublicationBm().getDetail(pubPk);
-      listPubli.add(pubDetail);
+      if (pubDetail != null) {
+        // the publication exists (it wasn't deleted)
+        listPubli.add(pubDetail);
+      }
     }
    
     request.setAttribute("Publications", listPubli);
