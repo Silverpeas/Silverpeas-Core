@@ -174,7 +174,7 @@ public class ComponentInstManager {
     // Set component into basket with a unique name
     try {
       ddManager.getOrganization().instance
-          .sendComponentToBasket(idAsInt(componentInst.getId()), deletedComponentName, userId);
+          .sendComponentToBasket(componentInst.getLocalId(), deletedComponentName, userId);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.sendComponentToBasket",
           SilverpeasException.ERROR, "admin.EX_ERR_REMOVE_COMPONENT",

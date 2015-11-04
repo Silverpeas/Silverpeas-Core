@@ -575,7 +575,7 @@ public class SpaceInstManager {
     // Set space into basket with a unique name
     try {
       ddManager.getOrganization().space
-          .sendSpaceToBasket(idAsInt(spaceInst.getId()), deletedSpaceName, userId);
+          .sendSpaceToBasket(spaceInst.getLocalId(), deletedSpaceName, userId);
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.sendSpaceToBasket",
           SilverpeasException.ERROR, "admin.EX_ERR_SEND_SPACE_INTO_BASKET",
