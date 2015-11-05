@@ -54,17 +54,17 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.util.Link;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.owasp.encoder.Encode;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.util.Link;
 
 /**
  * @author Bensalem Nabil
@@ -162,7 +162,10 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
       // process extra properties
       for (Map.Entry<String, String> property : properties.entrySet()) {
-        theModifiedUser.setValue(property.getKey(), property.getValue());
+        if (theModifiedUser.isPropertyUpdatableByUser(property.getKey()) ||
+            (isAdmin() && theModifiedUser.isPropertyUpdatableByAdmin(property.getKey()))) {
+          theModifiedUser.setValue(property.getKey(), property.getValue());
+        }
       }
       adminCtrl.updateUserFull(theModifiedUser);
 

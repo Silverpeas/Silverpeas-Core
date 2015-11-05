@@ -20,24 +20,7 @@
  */
 package com.stratelia.webactiv.calendar.control;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.util.ArrayUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.model.*;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
@@ -46,6 +29,20 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @Stateless(name = "Calendar", description = "Calendar EJB to manage calendars in Silverpeas")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
@@ -117,6 +114,21 @@ public class CalendarEJB implements SilverpeasCalendar {
       return ToDoDAO.getNotCompletedToDoHeadersForUser(con, userId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getNotCompletedToDosForUser(String userId)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public List<String> getAllToDoForUser(final String userId) {
+    SilverTrace.info("calendar", "CalendarEJB.getAllToDoForUser(userId)",
+        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+    Connection con = getConnection();
+    try {
+      return ToDoDAO.getAllTodoByUser(con, userId);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException("CalendarEJB.getAllToDoForUser(String userId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
     } finally {
       DBUtil.close(con);

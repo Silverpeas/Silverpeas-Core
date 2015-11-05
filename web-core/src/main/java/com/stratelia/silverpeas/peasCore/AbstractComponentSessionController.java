@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.accesscontrol.ComponentAccessController;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardException;
@@ -68,6 +69,9 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   private String iconFile = null;
   private ResourceLocator settings = null;
   private String settingsFile = null;
+
+  private ComponentAccessController componentAccessController =
+      new ComponentAccessController();
 
   /**
    * Constructor declaration
@@ -648,5 +652,9 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   @Override
   public void setClipboardError(String messageId, Exception ex) throws ClipboardException {
     controller.setMessageError(messageId, ex);
+  }
+
+  protected ComponentAccessController getComponentAccessController() {
+    return this.componentAccessController;
   }
 }

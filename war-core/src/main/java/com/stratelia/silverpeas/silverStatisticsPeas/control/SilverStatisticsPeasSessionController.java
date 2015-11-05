@@ -20,17 +20,10 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import java.sql.SQLException;
-import java.util.*;
-
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -38,22 +31,46 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.*;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.peasCore.*;
+import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.*;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.AxisStatsFilter;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisAccessVO;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisStatsFilter;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossStatisticVO;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticAxisVO;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.apache.commons.lang.StringUtils;
 import org.jCharts.axisChart.AxisChart;
 import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class declaration
@@ -139,8 +156,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         "root.MSG_GEN_ENTER_METHOD");
     UserAccessLevel userProfile = getUserDetail().getAccessLevel();
     AdminController ac = new AdminController(getUserId());
+    String[] manageableSpaceRootIds = ac.getUserManageableSpaceRootIds(getUserId());
     if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile)
-        && ac.getUserManageableSpaceRootIds(getUserId()) != null) {
+        && manageableSpaceRootIds != null && manageableSpaceRootIds.length > 0) {
       userProfile = UserAccessLevel.SPACE_ADMINISTRATOR;
     }
     SilverTrace.info("silverStatisticsPeas",

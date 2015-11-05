@@ -1748,8 +1748,7 @@ public class AdminController implements java.io.Serializable {
     SilverTrace.info("admin", "AdminController.synchronizeImportGroup",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return getAdminService().synchronizeImportGroup(domainId, groupName, null, true,
-          false);
+      return getAdminService().synchronizeImportGroup(domainId, groupName, null, true, false);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.synchronizeImportGroup",
           "admin.MSG_ERR_SYNCHRONIZE_GROUP", e);
@@ -1816,6 +1815,18 @@ public class AdminController implements java.io.Serializable {
   public String copyAndPasteSpace(PasteDetail pasteDetail)
       throws AdminException, QuotaException {
     return getAdminService().copyAndPasteSpace(pasteDetail);
+  }
+
+  public boolean isDomainManagerUser(String userId, String domainId) {
+    SilverTrace.info("admin", "AdminController.isDomainManagerUser",
+        "userId = " + userId + ", domainId = " + domainId);
+    try {
+      return getAdminService().isDomainManagerUser(userId, domainId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.isDomainManagerUser",
+          "Error inside admin service", e);
+    }
+    return false;
   }
 
 }

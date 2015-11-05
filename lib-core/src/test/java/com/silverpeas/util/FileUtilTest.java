@@ -262,4 +262,15 @@ public class FileUtilTest {
     File[] foldersAtRoot = FileUtil.moveAllFilesAtRootFolder(null);
     assertThat(foldersAtRoot, arrayWithSize(0));
   }
+
+  @Test
+  public void testValidateFileNameOk() throws Exception {
+    FileUtil.validateFilename("myFileName", ".");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testValidateFileNameKo() throws Exception {
+    FileUtil.validateFilename(".." + File.separator, ".");
+  }
+
 }

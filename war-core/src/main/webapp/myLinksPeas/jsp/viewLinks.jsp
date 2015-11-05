@@ -80,9 +80,18 @@ function editLink(id) {
       $("#descriptionId").val(result.description);
       $("#visibleId").prop('checked', result.visible);
       $("#popupId").prop('checked', result.popup);
+      updateLinkPopup();
+    },
+    error:function(request, textStatus, errorThrown) {
+      if ( window.console && window.console.log ) {
+        console.log("request.status=" + request.status);
+        console.log("Cannot edit link because " + textStatus + ", error :" + errorThrown);
+      }
+      if (request.status == 403) {
+        // maybe an attack
+      }
     }
   });
-  updateLinkPopup();
   $.closeProgressMessage();
 }
 

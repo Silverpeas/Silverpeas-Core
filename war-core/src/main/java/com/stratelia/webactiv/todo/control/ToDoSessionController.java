@@ -20,15 +20,6 @@
  */
 package com.stratelia.webactiv.todo.control;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -51,6 +42,17 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -157,6 +159,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public ToDoHeader getToDoHeader(String todoId) throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.getToDoHeader()", "root.MSG_GEN_ENTER_METHOD");
+    verifyCurrentUserIsOwner(todoId);
     ToDoHeader result = calendarBm.getToDoHeader(todoId);
     SilverTrace.info("todo", "ToDoSessionController.getToDoHeader()", "root.MSG_GEN_EXIT_METHOD");
     return result;
@@ -269,6 +272,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public void closeToDo(String id) throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.closeToDo()", "root.MSG_GEN_ENTER_METHOD");
+    verifyCurrentUserIsOwner(id);
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(new java.util.Date());
     calendarBm.updateToDo(todo);
@@ -286,6 +290,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public void reopenToDo(String id) throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.reopenToDo()", "root.MSG_GEN_ENTER_METHOD");
+    verifyCurrentUserIsOwner(id);
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(null);
     calendarBm.updateToDo(todo);
@@ -320,8 +325,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     try {
       todo.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.addToDo()",
-          "todo.MSG_CANT_SET_TODO_PRIORITY");
+      SilverTrace.warn("todo", "ToDoSessionController.addToDo()", "todo" +
+          ".MSG_CANT_SET_TODO_PRIORITY");
     }
     try {
       todo.setPercentCompleted(Integer.parseInt(percent));
@@ -353,6 +358,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public void removeToDo(String id) throws TodoException {
+    verifyCurrentUserIsOwner(id);
     SilverTrace.info("todo", "ToDoSessionController.removeToDo()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -667,4 +673,21 @@ public class ToDoSessionController extends AbstractComponentSessionController {
           SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
     }
   }
+
+  /**
+   * This method verify that the owner of the task represented by the given id is the current user.
+   * @param taskId
+   */
+  public void verifyCurrentUserIsOwner(String taskId) {
+    List<String> userTodoList = calendarBm.getAllToDoForUser(getUserId());
+    ToDoHeader curTask = calendarBm.getToDoHeader(taskId);
+    if (curTask == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    } else if (!userTodoList.contains(taskId)) {
+      SilverTrace.warn("todo", "ToDoSessionController.verifyCurrentUserIsOwner",
+          "Alert seccurity from user " + getUserId() + " trying to access task :" + taskId);
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
 }

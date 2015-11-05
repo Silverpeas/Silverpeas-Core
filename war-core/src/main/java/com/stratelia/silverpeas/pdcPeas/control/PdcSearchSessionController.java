@@ -92,25 +92,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.StringTokenizer;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -121,6 +102,16 @@ import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.viewer.ViewerFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -2218,6 +2209,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       int id = Integer.parseInt(icId);
       InterestCenter ic = (new InterestCenterUtil()).getICByID(id);
+      if (StringUtil.isDefined(ic.getPeasID()) &&
+          !getComponentAccessController().isUserAuthorized(getUserId(), ic.getPeasID())) {
+        ic.setPeasID(null);
+      }
       getSearchContext().clearCriterias();
       List<? extends Criteria> criterias = ic.getPdcContext();
       for (Criteria criteria : criterias) {

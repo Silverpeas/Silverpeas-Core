@@ -1140,20 +1140,32 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
   }
 
+  /**
+   * @param groupId
+   * @throws JobDomainPeasException
+   */
   public void goIntoGroup(String groupId) throws JobDomainPeasException {
     if (StringUtil.isDefined(groupId)) {
       if (getTargetGroup() == null
           || (getTargetGroup() != null && !getTargetGroup().getId().equals(
               groupId))) {
         Group targetGroup = m_AdminCtrl.getGroupById(groupId);
-        if (GroupNavigationStock.isGroupValid(targetGroup)) {
-          List<String> manageableGroupIds = null;
-          if (isOnlyGroupManager() && !isGroupManagerOnGroup(groupId)) {
-            manageableGroupIds = getUserManageableGroupIds();
+        // Add user access control for security purpose
+        if (UserAccessLevel.ADMINISTRATOR.equals(getUserAccessLevel()) ||
+            m_AdminCtrl.isDomainManagerUser(getUserId(), targetGroup.getDomainId()) ||
+            isGroupManagerOnGroup(groupId)) {
+          if (GroupNavigationStock.isGroupValid(targetGroup)) {
+            List<String> manageableGroupIds = null;
+            if (isOnlyGroupManager() && !isGroupManagerOnGroup(groupId)) {
+              manageableGroupIds = getUserManageableGroupIds();
+            }
+            GroupNavigationStock newSubGroup = new GroupNavigationStock(groupId,
+                m_AdminCtrl, manageableGroupIds);
+            m_GroupsPath.add(newSubGroup);
           }
-          GroupNavigationStock newSubGroup = new GroupNavigationStock(groupId,
-              m_AdminCtrl, manageableGroupIds);
-          m_GroupsPath.add(newSubGroup);
+        } else {
+          SilverTrace.warn("jobDomainPeas", "JobDomainPeasSessionController.goIntoGroup()",
+              "Security alert", "user id=" + getUserId() + " is trying to access group " + groupId);
         }
       }
     } else {

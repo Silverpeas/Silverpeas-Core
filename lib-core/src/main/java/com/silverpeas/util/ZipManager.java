@@ -239,6 +239,7 @@ public class ZipManager {
       ArchiveEntry archiveEntry;
       while ((archiveEntry = archiveStream.getNextEntry()) != null) {
         File currentFile = new File(dest, archiveEntry.getName());
+        FileUtil.validateFilename(currentFile.getCanonicalPath(), dest.getCanonicalPath());
         try {
           currentFile.getParentFile().mkdirs();
           if (archiveEntry.isDirectory()) {
@@ -294,4 +295,5 @@ public class ZipManager {
     }
     return nbFiles;
   }
+
 }
