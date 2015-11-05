@@ -330,9 +330,7 @@ public class LDAPDriver extends AbstractDomainDriver {
       ld = LDAPUtility.openConnection(driverSettings);
       LDAPConnection connection = LDAPUtility.getConnection(ld);
 
-      LDAPEntry theEntry = LDAPUtility.getFirstEntryFromSearch(ld,
-          driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
-          driverSettings.getUsersIdFilter(user.getSpecificId()), driverSettings.getUserAttributes());
+      LDAPEntry theEntry = getUserLDAPEntry(ld, user.getSpecificId());
 
       if (theEntry == null) {
         throw new AuthenticationBadCredentialException("LDAPDriver.updateUserFull()",
@@ -358,7 +356,21 @@ public class LDAPDriver extends AbstractDomainDriver {
       for (String propertyName : user.getPropertiesNames()) {
         DomainProperty property = user.getProperty(propertyName);
         if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser()) {
-          attribute = getLDAPAttribute(property.getMapParameter(), user.getValue(propertyName));
+          if (property.getType().equals(DomainProperty.PROPERTY_TYPE_USERID)) {
+            // setting user's DN
+            String anotherUserId = user.getValue(propertyName);
+            String anotherUserDN = null;
+            if (StringUtil.isDefined(anotherUserId)) {
+              UserDetail anotherUser = UserDetail.getById(anotherUserId);
+              LDAPEntry anotherUserEntry = getUserLDAPEntry(ld, anotherUser.getSpecificId());
+              if (anotherUserEntry != null) {
+                anotherUserDN = anotherUserEntry.getDN();
+              }
+            }
+            attribute = getLDAPAttribute(property.getMapParameter(), anotherUserDN);
+          } else {
+            attribute = getLDAPAttribute(property.getMapParameter(), user.getValue(propertyName));
+          }
           modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
         }
       }
@@ -381,6 +393,14 @@ public class LDAPDriver extends AbstractDomainDriver {
             "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
       }
     }
+  }
+
+  private LDAPEntry getUserLDAPEntry(String connection, String id) throws AdminException {
+    LDAPEntry userEntry = LDAPUtility
+        .getFirstEntryFromSearch(connection, driverSettings.getLDAPUserBaseDN(),
+            driverSettings.getScope(), driverSettings.getUsersIdFilter(id),
+            driverSettings.getUserAttributes());
+    return userEntry;
   }
   
   private LDAPAttribute getLDAPAttribute(String name, String value) {
@@ -408,7 +428,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     SilverTrace.info("admin", "LDAPDriver.getUser", "root.MSG_GEN_ENTER_METHOD",
         "UserId = " + userId);
     try {
-      return userTranslator.getUserFull(ld, userId);
+      return userTranslator.getUserFull(ld, userId, this.domainId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }

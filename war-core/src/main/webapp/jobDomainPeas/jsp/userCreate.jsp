@@ -57,11 +57,10 @@
   Domain domObject = (Domain) request.getAttribute("domainObject");
   String action = (String) request.getAttribute("action");
   String groupsPath = (String) request.getAttribute("groupsPath");
-  Boolean userRW = (Boolean) request.getAttribute("isUserRW");
   Integer minLengthLogin = (Integer) request.getAttribute("minLengthLogin");
   List<Group> groups = (List) request.getAttribute("GroupsManagedByCurrentUser");
 
-  boolean bUserRW = (userRW != null) ? userRW : false;
+  boolean extraInfosUpdatable = "userCreate".equals(action) || "userModify".equals(action);
 
   browseBar.setComponentName(getDomainLabel(domObject, resource),
       "domainContent?Iddomain=" + domObject.getId());
@@ -399,67 +398,7 @@ out.println(window.printBefore());
     
     <fieldset id="identity-extra" class="skinFieldset">
       <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-      <div class="fields">
-        <%
-          String[] properties = userObject.getPropertiesNames();
-          for (final String property : properties) {
-         	// Not display the password !
-            if (!property.startsWith("password")) {
-        %>
-      <c:set var="propertyName" value="<%=property%>"/>
-      <c:set var="domainProperty" value="<%=userObject.getProperty(property)%>"/>
-      <c:set var="propertyValue" value="<%=userObject.getValue(property)%>"/>
-      	<!--Specific Info-->
-      	<div class="field" id="form-row-<%=property%>">
-			<label class="txtlibform">
-			<%=EncodeHelper.javaStringToHtmlString(userObject.
-	        		    getSpecificLabel(resource.getLanguage(),
-	        		        property))%>
-			</label>
-			<div class="champs">
-				<% if (bUserRW || userObject.isPropertyUpdatableByAdmin(property)) { %>
-		          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
-		              "USERID".equals(userObject.getPropertyType(property))) { %>
-		          <c:choose>
-		            <c:when test="${domainProperty.maxLength gt 100}">
-		              <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
-		            </c:when>
-		            <c:otherwise>
-		              <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
-		            </c:otherwise>
-		          </c:choose>
-		          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) { %>
-		          <input type="radio" name="prop_<%=property%>" value="1" <%
-		            if (userObject.getValue(property) != null &&
-		                "1".equals(userObject.getValue(property))) {
-		              out.print("checked");
-		            } %>/><fmt:message key="GML.yes"/>
-		          <input type="radio" name="prop_<%=property%>" value="0" <%
-		            if (userObject.getValue(property) == null ||
-		                "".equals(userObject.getValue(property)) ||
-		                "0".equals(userObject.getValue(property))) {
-		              out.print("checked");
-		            } %>/><fmt:message key="GML.no"/>
-		          <% } %>
-		          <% } else { %>
-		          <% if ("STRING".equals(userObject.getPropertyType(property)) ||
-		              "USERID".equals(userObject.getPropertyType(property))) { %>
-		          <%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
-		          <% } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-		            if (StringUtil.getBooleanValue(userObject.getValue(property))) {
-		              out.print(resource.getString("GML.yes"));
-		            } else {
-		              out.print(resource.getString("GML.no"));
-		            }
-		          } %>
-          		<% } %>
-			</div>
-		</div>
-		<%
-          	  } //if
-        	} //for
-        %>
-      </div>
+      <viewTags:displayUserExtraProperties user="${userObject}" allFieldsUpdatable="<%=extraInfosUpdatable%>" readOnly="false" includeEmail="false"/>
     </fieldset>
     
     <div class="legend">
