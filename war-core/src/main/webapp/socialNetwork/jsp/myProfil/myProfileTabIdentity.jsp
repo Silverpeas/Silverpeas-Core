@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.beans.admin.DomainProperty"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
@@ -32,10 +31,8 @@
 <%@page import="org.silverpeas.util.LocalizationBundle"%>
 <%@page import="org.silverpeas.util.SettingBundle"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
-<%@page import="org.silverpeas.util.EncodeHelper"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.buttons.Button"%>
-<%@page import="org.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
@@ -45,7 +42,6 @@
   SettingBundle general = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
   boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
-  boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
   boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
 
   String fieldAttribute = " disabled=\"disabled\" ";
@@ -61,7 +57,6 @@
 
 <c:set var="messageOK" value="${requestScope.MessageOK}"/>
 <c:set var="messageNOK" value="${requestScope.MessageNOK}"/>
-<c:set var="action" value="${requestScope.Action}"/>
 <c:set var="displayInfosLDAP" value="<%=displayInfosLDAP%>"/>
 
 <style type="text/css">
@@ -88,7 +83,7 @@
 <div id="identity">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
 <fieldset id="identity-main" class="skinFieldset">
-<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" /></legend>
+<legend><fmt:message key="myProfile.identity.fieldset.main" /></legend>
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
@@ -177,45 +172,10 @@
 %>
 </table>
 </fieldset>
-  <c:if test="${displayInfosLDAP and action eq 'userModify'}">
+  <c:if test="${displayInfosLDAP}">
     <fieldset id="identity-extra" class="skinFieldset">
       <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
-      <table border="0" cellspacing="0" cellpadding="5" width="100%">
-        <%
-          //rajout des champs Silverpeas custom complémentaires
-          String[] properties = userFull.getPropertiesNames();
-          for (String propertyName : properties) {
-            if (!propertyName.startsWith("password")) {
-        %>
-        <c:set var="propertyName" value="<%=propertyName%>"/>
-        <c:set var="domainProperty" value="<%=userFull.getProperty(propertyName)%>"/>
-        <c:set var="propertyValue" value="<%=userFull.getValue(propertyName)%>"/>
-        <tr id="${propertyName}">
-          <td class="txtlibform"><%=userFull
-              .getSpecificLabel(resource.getLanguage(), propertyName) %>
-            :
-          </td>
-          <% if (userFull.isPropertyUpdatableByUser(propertyName) ||
-              (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName))) { %>
-          <td>
-            <c:choose>
-              <c:when test="${domainProperty.maxLength gt 100}">
-                <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
-              </c:when>
-              <c:otherwise>
-                <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
-              </c:otherwise>
-            </c:choose>
-          </td>
-          <% } else { %>
-          <td>${silfn:escapeHtml(propertyValue)}</td>
-          <% } %>
-        </tr>
-        <%
-            }
-          }
-        %>
-      </table>
+      <viewTags:displayUserExtraProperties user="<%=userFull%>" readOnly="false" includeEmail="false"/>
     </fieldset>
   </c:if>
  </form>

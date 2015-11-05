@@ -30,10 +30,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
-<%@ page import="org.silverpeas.util.StringUtil"%>
-<%@ page import="org.silverpeas.util.ResourceLocator"%>
 <%@page import="org.silverpeas.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="org.silverpeas.util.MultiSilverpeasBundle"%>
@@ -104,38 +102,16 @@
 	</div><!-- /sousNav  --> 
 
 	<div class="tab-content">
-	<table width="100%" cellspacing="0" cellpadding="5" border="0">
+    <viewTags:displayUserExtraProperties user="<%=userFull%>" readOnly="true" includeEmail="true"/>
+  </div>
 	<%
-		if (userFull != null) {
-        	//  récupérer toutes les propriétés de ce User
-            String[] properties = userFull.getPropertiesNames();
-
-            String property = null;
-            for (int p = 0; p < properties.length; p++) {
-	            property = properties[p];
-                if (StringUtil.isDefined(userFull.getValue(property)) && resource.getSetting(property, true)) {
-            %>
-                <tr id="<%=property%>">
-                  <td class="txtlibform" width="30%"><%= userFull.getSpecificLabel(resource.getLanguage(), property)%></td>
-                  <td >
-                    <%=userFull.getValue(property)%>
-                  </td>
-                </tr>
-    		<%
-                }
-            }
-		}
-	%>
-	</table>
-	<% 
 		  ButtonPane buttonPane = gef.getButtonPane();
 		  Button button = gef.getFormButton(resource.getString("GML.back"), "javascript:history.back()", false);
 		  buttonPane.addButton(button);
 		  out.print(buttonPane.print());
 	%>
 	
-	</div>
-</div><!-- /publicProfileContenu  -->   
+</div><!-- /publicProfileContenu  -->
 </view:window>
-  </body>
+</body>
 </html>

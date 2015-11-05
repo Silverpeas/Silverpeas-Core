@@ -75,6 +75,7 @@ public class SelectionPeasWrapper extends
         List<String> roles = getRoles(request.getParameter("roles"));
 
         session.setSelectable(request.getParameter("selectable"));
+        session.setDomainIdFilter(request.getParameter("domainIdFilter"));
 
         if (session.isGroupSelectable()) {
           if (selectionMultiple) {

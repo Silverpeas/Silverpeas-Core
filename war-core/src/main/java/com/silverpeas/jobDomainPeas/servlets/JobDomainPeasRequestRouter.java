@@ -566,9 +566,6 @@ public class JobDomainPeasRequestRouter extends
           destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute(
               "myComponentURL"));
         } else if (function.startsWith("displayUserCreate")) {
-          long domainRight = jobDomainSC.getDomainActions();
-          request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
-
           DomainDriverManager domainDriverManager = new DomainDriverManager();
           DomainDriver domainDriver = domainDriverManager.getDomainDriver(
               Integer.parseInt(jobDomainSC.getTargetDomain().getId()));
@@ -594,10 +591,6 @@ public class JobDomainPeasRequestRouter extends
               "myComponentURL"), jobDomainSC.getString("JDP.csvImport") + "..."));
           destination = "usersCsvImport.jsp";
         } else if (function.startsWith("displayUserModify")) {
-          long domainRight = jobDomainSC.getDomainActions();
-
-          request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_UPDATE_USER) != 0);
-
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userModify");
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
