@@ -24,6 +24,7 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
@@ -32,6 +33,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,7 +138,7 @@ public class LDAPUser {
    * @return the user object
    * @throws AdminException if an error occur during LDAP operations or if the user is not found
    */
-  public UserFull getUserFull(String lds, String id) throws AdminException {
+  public UserFull getUserFull(String lds, String id, int domainId) throws AdminException {
     List<String> lAttrs = new ArrayList<String>();
     String[] userAttributes = driverSettings.getUserAttributes();
     if (userAttributes != null && userAttributes.length > 0) {
@@ -151,7 +153,7 @@ public class LDAPUser {
     LDAPEntry theEntry = LDAPUtility.getFirstEntryFromSearch(lds,
         driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
         driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs.size()]));
-    return translateUserFull(lds, theEntry);
+    return translateUserFull(lds, theEntry, domainId);
   }
 
   /**
@@ -253,7 +255,7 @@ public class LDAPUser {
    * @throws AdminException if an error occur during LDAP operations or if there is no userEntry
    * object
    */
-  private UserFull translateUserFull(String lds, LDAPEntry userEntry)
+  private UserFull translateUserFull(String lds, LDAPEntry userEntry, int domainId)
       throws AdminException {
     UserFull userInfos = new UserFull(driverParent);
     String subUserDN = null;
@@ -282,12 +284,11 @@ public class LDAPUser {
             subUserEntry = null;
           }
           if (subUserEntry != null) {
-            userInfos.setValue(curProp.getName(), LDAPUtility
-                .getFirstAttributeValue(subUserEntry, driverSettings
-                .getUsersFirstNameField())
-                + " "
-                + LDAPUtility.getFirstAttributeValue(subUserEntry,
-                driverSettings.getUsersLastNameField()));
+            String login = LDAPUtility
+                .getFirstAttributeValue(subUserEntry, driverSettings.getUsersLoginField());
+            AdminController admin = new AdminController(null);
+            String anotherUserId = admin.getUserIdByLoginAndDomain(login, String.valueOf(domainId));
+            userInfos.setValue(curProp.getName(), anotherUserId);
           }
         }
       } else if (StringUtil.isDefined(curProp.getRedirectOU())
