@@ -656,9 +656,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
       Set<String> performedIds = new HashSet<String>(nbObjects * 2);
       while (rs.next() && performedIds.size() < nbObjects) {
         String componentId = rs.getString("componentId");
-        //If id is already performed, then it is skiped
-        if (performedIds.add(componentId)) {
-          ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId); //componentId = kmelia12 for example
+        //If id is already performed, then it is skipped
+        if (orgaController.isComponentExist(componentId) && performedIds.add(componentId)) {
+          ComponentInstLight compoDetail = orgaController.getComponentInstLight(componentId);
           compoDetail.setPath(adminController.getPathToComponent(componentId));
           result.add(compoDetail);
         }
