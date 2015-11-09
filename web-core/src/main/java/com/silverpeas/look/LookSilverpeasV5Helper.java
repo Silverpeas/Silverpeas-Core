@@ -35,7 +35,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -46,7 +45,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.date.Period;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
@@ -872,9 +870,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   private boolean isVisibleNews(PublicationDetail news) {
-    return news.isValid() &&
-        Period.getPeriodWithUndefinedIfNull(news.getBeginDate(), news.getEndDate())
-            .contains(new Date());
+    return news.isValid() && news.getVisibilityPeriod().contains(new Date());
   }
 
   public TickerSettings getTickerSettings() {
