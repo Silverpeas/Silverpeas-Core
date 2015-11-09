@@ -854,6 +854,7 @@ public class SimpleDocumentService implements AttachmentService {
         String workerId = document.getEditedBy();
         document.setUpdated(new Date());
         document.setUpdatedBy(workerId);
+
         invokeCallback = true;
       }
       document.setPublicDocument(context.isPublicVersion());
@@ -863,6 +864,8 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
         webdavRepository.deleteAttachmentNode(session, finalDocument);
         repository.duplicateContent(document, finalDocument);
+        finalDocument.setSize(new File(finalDocument.getAttachmentPath()).length());
+        repository.updateDocument(session, finalDocument);
       } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
           isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, finalDocument);

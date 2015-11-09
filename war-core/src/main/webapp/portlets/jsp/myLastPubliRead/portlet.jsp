@@ -66,7 +66,10 @@ if (publications.isEmpty()) { %>
 <% } else {
 	boolean first = true;
 	for (PublicationDetail pub : publications) {
-		UserDetail pubUpdater = m_MainSessionCtrl.getOrganisationController().getUserDetail(pub.getUpdaterId());
+		UserDetail pubUpdater = null;
+    if (StringUtil.isDefined(pub.getUpdaterId())) {
+      pubUpdater = m_MainSessionCtrl.getOrganisationController().getUserDetail(pub.getUpdaterId());
+    }
 		String url = m_sContext + URLManager.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.getURL();
 		if (!first) {
 %>			
