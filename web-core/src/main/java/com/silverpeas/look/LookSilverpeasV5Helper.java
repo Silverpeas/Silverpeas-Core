@@ -35,7 +35,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -46,7 +45,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.date.Period;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
@@ -860,40 +858,21 @@ public class LookSilverpeasV5Helper implements LookHelper {
       Collection<PublicationDetail> someNews =
           getPublicationBm().getOrphanPublications(new PublicationPK("", appId));
       for (PublicationDetail aNews : someNews) {
-        if (aNews.isValid() || aNews.getCreatorId().equals(getUserId()) ||
-            aNews.getUpdaterId().equals(getUserId())) {
+        if (isVisibleNews(aNews)) {
           news.add(aNews);
         }
       }
     }
 
-    news = filterVisibleNews(news);
     Collections.sort(news, PublicationUpdateDateComparator.comparator);
     
     return news;
   }
-  
-  private List<PublicationDetail> filterVisibleNews(Collection<PublicationDetail> all) {
-    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
-    Date now = new Date();
-    for (PublicationDetail detail : all) {
-      if (detail.getBeginDate() == null && detail.getEndDate() == null){
-        result.add(detail);
-      } else if (detail.getBeginDate() != null && detail.getEndDate() == null) {
-        if (DateUtil.compareTo(detail.getBeginDate(), now, false) <= 0) {
-          result.add(detail);
-        }
-      } else if (detail.getBeginDate() == null && detail.getEndDate() != null) {
-        if (DateUtil.compareTo(detail.getEndDate(), now, false) >= 0) {
-          result.add(detail);
-        }
-      } else if (Period.from(detail.getBeginDate(), detail.getEndDate()).contains(now)) {
-        result.add(detail);
-      }
-    }
-    return result;
+
+  private boolean isVisibleNews(PublicationDetail news) {
+    return news.isValid() && news.getVisibilityPeriod().contains(new Date());
   }
-  
+
   public TickerSettings getTickerSettings() {
     TickerSettings tickerSettings = new TickerSettings(resources);
     String labelParam = getSettings("ticker.label", "");
