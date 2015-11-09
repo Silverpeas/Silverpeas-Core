@@ -39,7 +39,6 @@ import com.stratelia.webactiv.publication.model.PublicationDetail;
 import com.stratelia.webactiv.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
-import org.silverpeas.date.Period;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
@@ -852,9 +851,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   }
 
   private boolean isVisibleNews(PublicationDetail news) {
-    return news.isValid() &&
-        Period.getPeriodWithUndefinedIfNull(news.getBeginDate(), news.getEndDate())
-            .contains(new Date());
+    return news.isValid() && news.getVisibilityPeriod().contains(new Date());
   }
 
   @Override
