@@ -96,7 +96,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private int currentDirectory = DIRECTORY_DEFAULT;
   private UserDetail commonUserDetail;
   private UserDetail otherUserDetail;
-  private Group currentGroup;
+  private List<Group> currentGroups;
   private List<Domain> currentDomains;
   private SpaceInstLight currentSpace;
   private RelationShipService relationShipService;
@@ -306,7 +306,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
-    currentGroup = getOrganisationController().getGroup(groupId);
+    currentGroups = new ArrayList<Group>();
+    currentGroups.add(getOrganisationController().getGroup(groupId));
     lastAllListUsersCalled = new DirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
@@ -324,9 +325,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     DirectoryItemList tmpList = new DirectoryItemList();
 
+    currentGroups = new ArrayList<Group>();
     for (String groupId : groupIds) {
       mergeUsersIntoDirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId),
           tmpList);
+      currentGroups.add(getOrganisationController().getGroup(groupId));
     }
 
     lastAllListUsersCalled = tmpList;
@@ -629,8 +632,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return otherUserDetail;
   }
 
-  public Group getCurrentGroup() {
-    return currentGroup;
+  public List<Group> getCurrentGroups() {
+    return currentGroups;
   }
 
   public List<Domain> getCurrentDomains() {

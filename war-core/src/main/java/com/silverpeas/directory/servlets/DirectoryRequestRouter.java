@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Domain;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.util.viewGenerator.html.pagination.Pagination;
+import com.stratelia.webactiv.beans.admin.Group;
 import org.silverpeas.servlet.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -218,7 +219,15 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         break;
 
       case DirectorySessionController.DIRECTORY_GROUP:
-        breadCrumb += " " + directorySC.getCurrentGroup().getName();
+        breadCrumb += " ";
+        boolean firstGroup = true;
+        for (Group group : directorySC.getCurrentGroups()) {
+          if (!firstGroup) {
+            breadCrumb += " & ";
+          }
+          breadCrumb += group.getName();
+          firstGroup = false;
+        }
         break;
 
       case DirectorySessionController.DIRECTORY_DOMAIN:
