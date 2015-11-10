@@ -175,7 +175,7 @@ public class ImportReport {
     sb.append(", ").append(resource.getString("GML.error")).append(" : ");
     sb.append(resource.getString("importExportPeas.ImportError" + unitReport.getError()));
     sb.append(", ").append(resource.getString("importExportPeas.Status")).append(" : ");
-    sb.append(resource.getString("importExportPeas.ImportStatus" + unitReport.getStatus()));
+    sb.append(unitReport.getStatus());
     sb.append("\n");
     return sb.toString();
   }
