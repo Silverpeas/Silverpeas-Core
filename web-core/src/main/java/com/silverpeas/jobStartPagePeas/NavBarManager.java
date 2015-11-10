@@ -414,7 +414,7 @@ public class NavBarManager {
           spaceName = space.name;
         }
         for (int i = 0; i < space.deep - 1; i++) {
-          spacesSpaces.append("&nbsp&nbsp");
+          spacesSpaces.append("&nbsp;&nbsp;");
         }
         space.htmlLine = spacesSpaces.toString()
             + "<a name=\""
@@ -583,7 +583,7 @@ public class NavBarManager {
     }
     String safeLabelLinked = Encode.forHtml(labelLinked);
     result.append("<a href=\"").append(link).append("\" ").append(target)
-        .append(">").append(imageLinked).append("&nbsp</a>");
+        .append(">").append(imageLinked).append("&nbsp;</a>");
     result.append("<a href=\"").append(link).append("\" ").append(target)
         .append(">").append(boldStart).append(safeLabelLinked).append(boldEnd)
         .append("</a><br/>");
