@@ -23,8 +23,6 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@page import="org.silverpeas.web.token.SynchronizerTokenServiceFactory"%>
-<%@page import="org.silverpeas.web.token.SynchronizerTokenService"%>
 <%@ page import="com.stratelia.silverpeas.notificationManager.NotificationManagerSettings" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -146,13 +144,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="popup"/>
   <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
   <script type="text/javascript">
     function ConfirmAndSend(textToDisplay, userId) {
-      if (window.confirm(textToDisplay)) {
+      jQuery.popup.confirm(textToDisplay, function() {
         jQuery('#Iduser').val(userId);
         jQuery('#deletionForm').submit();
-      }
+      });
     }
   </script>
 </head>
@@ -206,7 +205,7 @@ out.println(window.printBefore());
 		</div>
    		</li>
    		<!---State-->
-		<li id="form-row-rights" class="field">
+		<li id="form-row-state" class="field">
      		<label class="txtlibform"><fmt:message key="JDP.userState"/></label>
      		<div class="champs"><fmt:message key="GML.user.account.state.${userInfos.state.name}"/></div>
    		</li>
@@ -268,50 +267,7 @@ out.println(window.printBefore());
 
 <fieldset id="identity-extra" class="skinFieldset">
 	<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-	<ul class="fields">
-      <%
-        String[] properties = userObject.getPropertiesNames();
-        for (final String property : properties) {
-       	  // Not display the password !
-          if (!property.startsWith("password")) {
-      %>
-      	<!--Specific Info-->
-		<li id="form-row-<%=property%>" class="field">
-			<label class="txtlibform">
-			<%=EncodeHelper.javaStringToHtmlString(userObject.
-	        		    getSpecificLabel(resource.getLanguage(),
-	        		        property))%>
-		 	</label>
-			<div class="champs">
-				<%
-	            if ("STRING".equals(userObject.getPropertyType(property)) ||
-	                "USERID".equals(userObject.getPropertyType(property))) {
-				%>
-				<%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
-				<%
-	            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-	
-	              if (userObject.getValue(property) != null &&
-	                  "1".equals(userObject.getValue(property))) {
-	            %>
-	            	<fmt:message key="GML.yes"/>
-	            <%
-	              } else if (userObject.getValue(property) == null ||
-	                  "".equals(userObject.getValue(property)) ||
-	                  "0".equals(userObject.getValue(property))) {
-	            %>
-	            	<fmt:message key="GML.no"/>
-	           <%
-	              }
-	            }
-	           %>
-			</div>
-        </li>
-      <%
-          }
-        }
-      %>
-	</ul>
+  <viewTags:displayUserExtraProperties user="<%=userObject%>" readOnly="true" includeEmail="false"/>
 </fieldset>
   <form id="deletionForm" action="userDelete" method="POST">
     <input id="Iduser" type="hidden" name="Iduser"/>

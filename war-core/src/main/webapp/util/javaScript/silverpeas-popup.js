@@ -65,6 +65,16 @@
       if ($waiting.size() > 0) {
         $waiting.dialog("close");
       }
+    },
+    confirm: function(message, params) {
+      var options = params;
+      var $confirm = $('<div>').append(message);
+      if (typeof params === 'function') {
+        options = {
+          callback: params
+        }
+      }
+      $confirm.popup('confirmation', options);
     }
   };
 

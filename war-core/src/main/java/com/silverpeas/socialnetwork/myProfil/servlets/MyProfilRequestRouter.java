@@ -96,18 +96,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
 
-        boolean updateIsAllowed = domainRW && (myProfilSC.isPasswordChangeAllowed() || (snUserFull.
+        boolean updateIsAllowed = domainRW && ((myProfilSC.isPasswordChangeAllowed() || (snUserFull.
             getUserFull().isPasswordValid() && snUserFull.getUserFull().isPasswordAvailable())
-            || myProfilSC.updatablePropertyExists());
+            || myProfilSC.updatablePropertyExists()));
 
-        if (updateIsAllowed) {
-          request.setAttribute("Action", "userModify");
-        } else {
-          request.setAttribute("Action", "userMS");
-        }
         request.setAttribute("userObject", snUserFull.getUserFull());
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
-        request.setAttribute("isAdmin", myProfilSC.isAdmin());
         request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
         request.setAttribute("View", "MyInfos");
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";

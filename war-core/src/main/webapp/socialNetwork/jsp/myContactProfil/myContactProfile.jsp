@@ -68,6 +68,7 @@
 <html>
 <head>
 <view:looknfeel />
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <view:includePlugin name="messageme"/>
 </head>
 <body id="myProfile">
