@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.stratelia.webactiv.beans.admin.DomainProperty"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
@@ -38,12 +37,11 @@
 
 <%
   ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-  ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", resource.getLanguage());
-  ResourceLocator authRs = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", resource.getLanguage());
-  ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", resource.getLanguage());
+  ResourceLocator rs = new ResourceLocator("org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", resource.getLanguage());
+  ResourceLocator authRs = new ResourceLocator("org.silverpeas.authentication.multilang.authentication", resource.getLanguage());
+  ResourceLocator general = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", resource.getLanguage());
 
   boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
-  boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
   boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
 
   String fieldAttribute = " disabled=\"disabled\" ";
@@ -177,43 +175,8 @@
 </fieldset>
   <c:if test="${displayInfosLDAP and action eq 'userModify'}">
     <fieldset id="identity-extra" class="skinFieldset">
-      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
-      <table border="0" cellspacing="0" cellpadding="5" width="100%">
-        <%
-          //rajout des champs Silverpeas custom complémentaires
-          String[] properties = userFull.getPropertiesNames();
-          for (String propertyName : properties) {
-            if (!propertyName.startsWith("password")) {
-        %>
-        <c:set var="propertyName" value="<%=propertyName%>"/>
-        <c:set var="domainProperty" value="<%=userFull.getProperty(propertyName)%>"/>
-        <c:set var="propertyValue" value="<%=userFull.getValue(propertyName)%>"/>
-        <tr id="${propertyName}">
-          <td class="txtlibform"><%=userFull
-              .getSpecificLabel(resource.getLanguage(), propertyName) %>
-            :
-          </td>
-          <% if (userFull.isPropertyUpdatableByUser(propertyName) ||
-              (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName))) { %>
-          <td>
-            <c:choose>
-              <c:when test="${domainProperty.maxLength gt 100}">
-                <textarea rows="3" cols="50" name="prop_${propertyName}">${silfn:escapeHtml(propertyValue)}</textarea>
-              </c:when>
-              <c:otherwise>
-                <input type="text" name="prop_${propertyName}" size="50" maxlength="${domainProperty.maxLength}" value="${silfn:escapeHtml(propertyValue)}">
-              </c:otherwise>
-            </c:choose>
-          </td>
-          <% } else { %>
-          <td>${silfn:escapeHtml(propertyValue)}</td>
-          <% } %>
-        </tr>
-        <%
-            }
-          }
-        %>
-      </table>
+      <legend><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
+      <viewTags:displayUserExtraProperties user="<%=userFull%>" readOnly="false" includeEmail="false"/>
     </fieldset>
   </c:if>
  </form>

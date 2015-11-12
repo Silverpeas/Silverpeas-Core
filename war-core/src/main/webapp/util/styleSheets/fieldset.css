@@ -104,6 +104,7 @@ fieldset.skinFieldset {
 	margin-left:180px;
 }
 
+.oneFieldPerLine,
 .fields {
 	margin: 10px 15px 0;
 	position:relative;
@@ -121,6 +122,7 @@ fieldset.skinFieldset {
 	padding:5px 3% 5px 0px;
 }
 
+.oneFieldPerLine .field,
 .field.entireWidth {
 	width:97%;
 }

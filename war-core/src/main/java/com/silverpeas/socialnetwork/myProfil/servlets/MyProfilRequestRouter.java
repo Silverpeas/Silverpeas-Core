@@ -107,7 +107,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         }
         request.setAttribute("userObject", snUserFull.getUserFull());
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
-        request.setAttribute("isAdmin", myProfilSC.isAdmin());
         request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
         request.setAttribute("View", "MyInfos");
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
