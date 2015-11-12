@@ -29,10 +29,8 @@
 
 <%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
@@ -57,7 +55,6 @@
 
 <c:set var="messageOK" value="${requestScope.MessageOK}"/>
 <c:set var="messageNOK" value="${requestScope.MessageNOK}"/>
-<c:set var="action" value="${requestScope.Action}"/>
 <c:set var="displayInfosLDAP" value="<%=displayInfosLDAP%>"/>
 
 <style type="text/css">
@@ -84,7 +81,7 @@
 <div id="identity">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
 <fieldset id="identity-main" class="skinFieldset">
-<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" /></legend>
+<legend><fmt:message key="myProfile.identity.fieldset.main" /></legend>
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
@@ -173,9 +170,9 @@
 %>
 </table>
 </fieldset>
-  <c:if test="${displayInfosLDAP and action eq 'userModify'}">
+  <c:if test="${displayInfosLDAP}">
     <fieldset id="identity-extra" class="skinFieldset">
-      <legend><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
+      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra"/></legend>
       <viewTags:displayUserExtraProperties user="<%=userFull%>" readOnly="false" includeEmail="false"/>
     </fieldset>
   </c:if>

@@ -80,7 +80,7 @@
 </script>
 
 <div class="${listStyle}">
-  <c:if test="${silfn:isDefined(user.eMail) && includeEmail}">
+  <c:if test="${silfn:isDefined(user.eMail) and includeEmail}">
     <div class="field" id="email">
       <label class="txtlibform">${labelEmail}</label>
       <div class="champs">${user.eMail}</div>
@@ -119,7 +119,7 @@
                 <jsp:useBean id="propertyValue" type="java.lang.String"/>
                 <c:set var="anotherUser" value="<%=UserDetail.getById(propertyValue)%>"/>
                 <input type="text" disabled="disabled" readonly="readonly" id="user_${propertyName}" size="50" value="${empty anotherUser ? "" : anotherUser.displayedName}"/>
-                <a href="#" onclick="javascript:SP_openWindow('/silverpeas/RselectionPeasWrapper/jsp/open?elementId=prop_${propertyName}&elementName=user_${propertyName}&selectedUser=${silfn:escapeHtml(propertyValue)}','selectUser',800,600,'');return false;"/>
+                <a href="#" onclick="javascript:SP_openWindow('/silverpeas/RselectionPeasWrapper/jsp/open?elementId=prop_${propertyName}&elementName=user_${propertyName}&selectedUser=${silfn:escapeHtml(propertyValue)}&domainIdFilter=${user.domainId}','selectUser',800,600,'');return false;"/>
                 <img src="${iconUser}" width="15" height="15" border="0" alt="${labelUser}" align="top" title="${labelUser}"/></a>
                 <a href="#" onclick="javascript:removeRelatedUser('${propertyName}');return false;"/>
                 <img src="${iconDelete}" width="15" height="15" border="0" alt="${labelDelete}" align="top" title="${labelDelete}"/></a>

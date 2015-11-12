@@ -31,6 +31,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
@@ -44,6 +45,7 @@ import java.util.StringTokenizer;
  */
 public class SelectionPeasWrapperSessionController extends AbstractComponentSessionController {
 
+  private String domainIdFilter = "";
   private String[] selectedUserIds;
   private String[] selectedGroupIds;
   private int selectable = SelectionUsersGroups.USER;
@@ -153,6 +155,22 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   }
 
   /**
+   * Gets the identifier of the domain on which the user selection must be filtered.
+   * @return an identifier of domain as string, empty if none.
+   */
+  public String getDomainIdFilter() {
+    return domainIdFilter;
+  }
+
+  /**
+   * Sets the identifier of the domain in order to filter user selection on it.
+   * @param domainIdFilter the identifier of domain as string.
+   */
+  public void setDomainIdFilter(final String domainIdFilter) {
+    this.domainIdFilter = StringUtil.defaultStringIfNotDefined(domainIdFilter);
+  }
+
+  /**
    * Init the user panel.
    */
   public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles) {
@@ -175,12 +193,17 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     sel.setElementSelectable(isUserSelectable());
     sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
 
+    SelectionUsersGroups sug = new SelectionUsersGroups();
     if (StringUtil.isDefined(instanceId)) {
-      SelectionUsersGroups sug = new SelectionUsersGroups();
       sug.setComponentId(instanceId);
       if (roles != null && !roles.isEmpty()) {
         sug.setProfileNames(roles);
       }
+      sel.setExtraParams(sug);
+    }
+    if (StringUtil.isDefined(getDomainIdFilter()) &&
+        !Domain.MIXED_DOMAIN_ID.equals(getDomainIdFilter())) {
+      sug.setDomainId(getDomainIdFilter());
       sel.setExtraParams(sug);
     }
 

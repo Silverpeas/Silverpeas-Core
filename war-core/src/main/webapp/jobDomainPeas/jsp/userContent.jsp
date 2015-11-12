@@ -144,13 +144,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="popup"/>
   <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
   <script type="text/javascript">
     function ConfirmAndSend(textToDisplay, userId) {
-      if (window.confirm(textToDisplay)) {
+      jQuery.popup.confirm(textToDisplay, function() {
         jQuery('#Iduser').val(userId);
         jQuery('#deletionForm').submit();
-      }
+      });
     }
   </script>
 </head>
