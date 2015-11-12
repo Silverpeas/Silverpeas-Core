@@ -169,5 +169,9 @@ public enum SupportedJavaScriptPlugins {
    * loads dynamically and is not loaded several times if the plugin already exists in the
    * current html page.
    */
-  dragAndDropUpload
+  dragAndDropUpload,
+  /**
+   * External plugin to display various charts on client-side
+   */
+  chart
 }

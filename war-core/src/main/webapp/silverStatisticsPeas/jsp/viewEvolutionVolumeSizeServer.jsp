@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.util.memory.MemoryUnit" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -28,8 +29,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%!
 
 	private String formatDate(ResourcesWrapper resources, String date)
@@ -73,8 +75,8 @@
 %>
 
 <%
-    Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
-    UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+  Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+  UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
@@ -83,6 +85,8 @@
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
 	tabbedPane.addTab(resources.getString("GML.attachments"), "javascript:displayVolumes();",true);
 %>
+
+<c:set var="periodChart" value="${requestScope.Chart}"/>
 
 <html>
 <head>
@@ -98,9 +102,13 @@
     $.progressMessage();
     location.href = '<c:url value="/RsilverStatisticsPeas/jsp/ViewVolumeServer" />';
   }
+
+  function formatChartToolTipValue(value) {
+    return value + " <%=MemoryUnit.MB.getLabel()%>";
+  }
 </script>
 </head>
-<body>
+<body class="admin stats">
 <form name="volumeServerFormulaire" action="ViewEvolutionVolumeSizeServer" method="post">
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes"));
@@ -125,9 +133,9 @@
 		</select>
 	</div>
 <% if (vStatsData != null) { %>
-<div align="center" id="chart">
-	<img src="<%=m_context%>/ChartServlet/?chart=EVOLUTION_DOCSIZE_CHART&random=<%=new Date().getTime()%>"/>
-</div>
+  <div class="flex-container">
+    <viewTags:displayChart chart="${periodChart}" formatToolTipValue="formatChartToolTipValue"/>
+  </div>
 <% } %>
 <br/>
 <%

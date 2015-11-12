@@ -31,10 +31,9 @@ import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.chart.pie.PieChart;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +46,7 @@ import java.util.Vector;
  */
 public abstract class AbstractPieChartBuilder {
 
-  private static final int LEGEND_MAX_LENGTH = 20;
+  private static final int LEGEND_MAX_LENGTH = 100;
   private Map<String, StatItem> statsByInstance = null;
   protected static final String FINESSE_TOUS = "FINESSE_TOUS";
   protected static final String FINESSE_GROUPE = "FINESSE_GROUPE";
@@ -133,15 +132,13 @@ public abstract class AbstractPieChartBuilder {
    * @param currentStats list of current statistics
    * @return a PieChart in 2D
    */
-  public PieChart2D getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
-    PieChart2D pieChart = null;
+  public PieChart getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
+    PieChart pieChart = null;
     try {
       // Get statistics
       if (statsByInstance == null) {
         buildStatsByInstance();
       }
-      
-      
 
       // Get subspaces ids and components
       String[] tabSpaceIds = null; // de type WA123
@@ -216,9 +213,7 @@ public abstract class AbstractPieChartBuilder {
           counts.add(String.valueOf(count3));
         }
 
-        legend.add("[" +
-            ((space.getName().length() > LEGEND_MAX_LENGTH) ? space.getName().substring(
-            0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
+        legend.add(StringUtil.truncate(space.getName(), LEGEND_MAX_LENGTH));
         currentStats.add(new String[] { "SPACE", tabSpaceId, space.getName(),
             String.valueOf(count1),
             String.valueOf(count2), String.valueOf(count3) });
@@ -239,17 +234,14 @@ public abstract class AbstractPieChartBuilder {
           } else if (FINESSE_USER.equals(niveauFinesse)) {
             counts.add(String.valueOf(count3));
           }
-          legend.add((item.getName().length() > LEGEND_MAX_LENGTH) ? item.getName().substring(0,
-              LEGEND_MAX_LENGTH) : item.getName());
+          legend.add(StringUtil.truncate(item.getName(), LEGEND_MAX_LENGTH));
           currentStats.add(new String[] { "CMP", componentId, item.getName(),
               String.valueOf(count1),
               String.valueOf(count2), String.valueOf(count3) });
         }
       }
 
-      pieChart = ChartUtil.buildPieChart(getChartTitle(),
-          buildDoubleArrayFromStringCollection(counts),
-          legend.toArray(new String[legend.size()]));
+      pieChart = getPieChartFrom(legend, counts).withTitle(getChartTitle());
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
           "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);
@@ -258,18 +250,15 @@ public abstract class AbstractPieChartBuilder {
     return pieChart;
   }
 
-  /**
-   * @param collection
-   * @return
-   */
-  private double[] buildDoubleArrayFromStringCollection(Collection<String> collection) {
-    double[] result = new double[collection.size()];
-    int i = 0;
-    for (String value : collection) {
-      result[i++] = Double.parseDouble(value);
+  @SuppressWarnings("unchecked")
+  protected PieChart getPieChartFrom(List<String> labels, List values) {
+    PieChart chart = PieChart.withoutTitle();
+    Iterator<String> itLabels = labels.iterator();
+    Iterator<Object> itValues = values.iterator();
+    while (itLabels.hasNext()) {
+      chart.add(itLabels.next(), Long.valueOf(String.valueOf(itValues.next())));
     }
-
-    return result;
+    return chart;
   }
   
   protected void setScope(String scope) {

@@ -481,10 +481,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.SilverStatisticsPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>ChartServlet</servlet-name>
-    <servlet-class>com.stratelia.silverpeas.silverStatisticsPeas.servlets.ChartServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>FormTemplateRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.formTemplate.servlets.FormTemplateRequestRouter</servlet-class>
   </servlet>
@@ -902,10 +898,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
     <url-pattern>/RsilverStatisticsPeas/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>ChartServlet</servlet-name>
-    <url-pattern>/ChartServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>FormTemplateRequestRouter</servlet-name>

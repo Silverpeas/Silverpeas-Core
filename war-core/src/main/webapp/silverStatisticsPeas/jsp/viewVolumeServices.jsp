@@ -1,3 +1,5 @@
+<%@ page import="org.silverpeas.chart.pie.PieChart" %>
+<%@ page import="org.silverpeas.chart.pie.PieChartItem" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -28,11 +30,12 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 //Recuperation des parametres
-  Vector<String[]> vStatsData = (Vector<String[]>) request.getAttribute("StatsData");
+  PieChart chart = (PieChart) request.getAttribute("Chart");
 
   int totalNumberOfInstances = 0;
 
@@ -43,6 +46,8 @@
         m_context + "/RsilverStatisticsPeas/jsp/ViewVolumePublication", false);
   tabbedPane.addTab(resources.getString("GML.attachments"), "javascript:displayVolumes();", false);
 %>
+
+<c:set var="pieChart" value="${requestScope.Chart}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -76,27 +81,30 @@
       arrayPane.addArrayColumn(resources.getString("GML.jobPeas"));
         arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
 
-  if (vStatsData != null) {
-      for (String[] item : vStatsData) {
-        ArrayLine arrayLine = arrayPane.addArrayLine();
-        arrayLine.addArrayCellText(item[0]);
-        ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[1]);
-        Integer nbInstances = new Integer(item[1]);
-        totalNumberOfInstances += nbInstances;
-        cellTextCount.setCompareOn(nbInstances);
-      }
+  if (chart != null) {
+    for (PieChartItem item : chart.getItems()) {
+      ArrayLine arrayLine = arrayPane.addArrayLine();
+      arrayLine.addArrayCellText(item.getLabel());
+
+      String nb = String.valueOf(item.getValue());
+      ArrayCellText cellText = arrayLine.addArrayCellText(nb);
+      cellText.setCompareOn(Integer.parseInt(nb));
+      totalNumberOfInstances += Integer.parseInt(nb);
     }
+  }
     %>
 
-    <div align="center" id="chart">
-      <img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=new Date().getTime()%>"/>
-    </div>
-    <div align="center" id="total">
-      <span><span class="number"><%=totalNumberOfInstances%></span> <%=resources.getString("silverStatisticsPeas.sums.applications")%></span>
+    <div class="flex-container">
+      <viewTags:displayChart chart="${pieChart}"/>
+      <div align="center" id="total">
+        <span><span class="number"><%=totalNumberOfInstances%></span> <%=resources.getString(
+            "silverStatisticsPeas.sums.applications")%></span>
+      </div>
     </div>
 
+
       <%
-      if (vStatsData != null) {
+      if (chart != null) {
         out.println(arrayPane.print());
       }
 

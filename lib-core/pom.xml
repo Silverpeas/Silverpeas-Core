@@ -367,6 +367,11 @@
       <groupId>com.sleepycat</groupId>
       <artifactId>je</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.metaparadigm</groupId>
+      <artifactId>json-rpc</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.im4java</groupId>
