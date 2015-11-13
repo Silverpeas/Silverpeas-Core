@@ -30,6 +30,8 @@ import org.silverpeas.process.io.file.TestFileHandler;
 import org.silverpeas.process.io.file.TestHandledFile;
 import org.silverpeas.upload.TestUploadSession;
 import org.silverpeas.upload.TestUploadSessionFile;
+import org.silverpeas.util.data.TestLastModifiedDateFileTask;
+import org.silverpeas.util.data.TestTemporaryWorkspaceTranslation;
 
 /**
  * This test suite is to sequence unit tests that includes access to the filesystem and that could
@@ -44,6 +46,9 @@ import org.silverpeas.upload.TestUploadSessionFile;
     TestAbstractFileHandler.class,
     TestHandledFile.class,
     TestFileHandler.class,
+    TestLastModifiedDateFileTask.class,
+    TestTemporaryWorkspaceTranslation.class
+
 })
 public class FilesIncludingTestSuite {
 }

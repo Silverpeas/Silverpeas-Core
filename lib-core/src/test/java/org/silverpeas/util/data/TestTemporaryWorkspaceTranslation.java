@@ -46,7 +46,7 @@ import static org.silverpeas.util.data.TemporaryWorkspaceTranslation
 /**
  * @author Yohann Chastagnier
  */
-public class TemporaryWorkspaceTranslationTest {
+public class TestTemporaryWorkspaceTranslation {
 
   private static final String TRANSLATION_ID_KEY = "__sptrans_id=";
   private static final String SILVERPEAS_TRANSLATION_PREFIX = "__sptrans_";

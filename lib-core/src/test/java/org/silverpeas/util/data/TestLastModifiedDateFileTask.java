@@ -44,7 +44,7 @@ import static org.silverpeas.util.FileRepositoryManager.getTemporaryPath;
 /**
  * @author Yohann Chastagnier
  */
-public class LastModifiedDateFileTaskTest {
+public class TestLastModifiedDateFileTask {
   private File tempPath;
 
   @Rule
