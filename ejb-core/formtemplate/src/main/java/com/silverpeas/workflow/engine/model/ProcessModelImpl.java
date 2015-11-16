@@ -1,23 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * <p/>
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -65,6 +65,7 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.model.States;
 import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.engine.WorkflowHub;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Class implementing the representation of the main &lt;processModel&gt; element of a Process
@@ -146,8 +147,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return presentation configuration if not empty, otherwise <code>null</code>
    */
   public Presentation getPresentationForCastor() {
-    if (presentation.iterateColumns().hasNext()
-        || presentation.getTitles().iterateContextualDesignation().hasNext()) {
+    if (presentation.iterateColumns().hasNext() ||
+        presentation.getTitles().iterateContextualDesignation().hasNext()) {
       return presentation;
     } else {
       return null;
@@ -324,6 +325,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return the wanted action
    */
   public Action getAction(String name) throws WorkflowException {
+    SilverTrace.debug("workflowEngine", "ProcessModelImpl.getAction", "name:" + name +
+        ", model id: " +getModelId());
     if (actions == null) {
       return null;
     }
@@ -575,8 +578,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       idTemplate = (IdentifiedRecordTemplate) recordSet.getRecordTemplate();
       templateId = idTemplate.getInternalId();
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_UNKNOWN_RECORD_SET", getFolderRecordSetName(), e);
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_UNKNOWN_RECORD_SET",
+          getFolderRecordSetName(), e);
     }
 
     RecordTemplate template = dataFolder.toRecordTemplate(null, null, false);
@@ -600,16 +603,13 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       if (recordSet instanceof DummyRecordSet) {
         Form form = getForm(formName);
         RecordTemplate template = form.toRecordTemplate(null, null);
-        getGenericRecordSetManager().createRecordSet(getFormRecordSetName(formName),
-            template);
+        getGenericRecordSetManager().createRecordSet(getFormRecordSetName(formName), template);
         recordSet = getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
       }
 
-      IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) recordSet
-          .getRecordTemplate();
+      IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) recordSet.getRecordTemplate();
 
-      GenericRecordTemplate wrapped = (GenericRecordTemplate) template
-          .getWrappedTemplate();
+      GenericRecordTemplate wrapped = (GenericRecordTemplate) template.getWrappedTemplate();
 
       GenericFieldTemplate fieldTemplate = null;
       String fieldName;
@@ -618,8 +618,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       boolean isReadOnly;
       boolean isHidden;
       FormImpl form = (FormImpl) getForm(formName);
-      FieldTemplate[] fields = form.toRecordTemplate(null, null)
-          .getFieldTemplates();
+      FieldTemplate[] fields = form.toRecordTemplate(null, null).getFieldTemplates();
 
       for (int i = 0; i < fields.length; i++) {
         fieldName = fields[i].getFieldName();
@@ -638,8 +637,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
 
       return recordSet;
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_UNKNOWN_RECORD_SET",
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_UNKNOWN_RECORD_SET",
           getFormRecordSetName(formName), e);
     }
   }
@@ -682,8 +680,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * action. Returns null if the action has no form. Throws a WorkflowException if the action is
    * unknown.
    */
-  public com.silverpeas.form.Form getPublicationForm(String actionName,
-      String roleName, String lang) throws WorkflowException {
+  public com.silverpeas.form.Form getPublicationForm(String actionName, String roleName,
+      String lang) throws WorkflowException {
     Action action = getAction(actionName);
     if (action == null || action.getForm() == null) {
       return null;
@@ -698,15 +696,14 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
         form.setTitle(action.getForm().getTitle(roleName, lang));
         return form;
       } else {
-        XmlForm xmlForm = new XmlForm(action.getForm().toRecordTemplate(roleName,
-            lang));
+        XmlForm xmlForm = new XmlForm(action.getForm().toRecordTemplate(roleName, lang));
         xmlForm.setName(action.getForm().getName());
         xmlForm.setTitle(action.getForm().getTitle(roleName, lang));
         return xmlForm;
       }
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_ILL_FORMED_FORM", action.getForm().getName(), e);
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
+          action.getForm().getName(), e);
     }
   }
 
@@ -714,14 +711,16 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * Returns the com.silverpeas.form.Form which be used to publish the form associated to the named
    * action or form. Returns null if the action has no form.
    */
-  public com.silverpeas.form.Form getPresentationForm(String name,
-      String roleName, String lang) throws WorkflowException {
+  public com.silverpeas.form.Form getPresentationForm(String name, String roleName, String lang)
+      throws WorkflowException {
     Action action = null;
     Form form = null;
 
-    try {
-      action = getAction(name);
-    } catch (WorkflowException ignoredAtThisStep) {
+    if (!name.equalsIgnoreCase("presentationForm")) {
+      try {
+        action = getAction(name);
+      } catch (WorkflowException ignoredAtThisStep) {
+      }
     }
 
     if (action != null) {
@@ -742,8 +741,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       xmlForm.setTitle(form.getTitle(roleName, lang));
       return xmlForm;
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_ILL_FORMED_FORM", action.getForm().getName(), e);
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
+          action.getForm().getName(), e);
     }
   }
 
@@ -752,8 +751,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * named action. Returns null if no form is required to process this action. Throws a
    * WorkflowException if the action is unknown.
    */
-  public DataRecord getNewActionRecord(String actionName, String roleName,
-      String lang, DataRecord data) throws WorkflowException {
+  public DataRecord getNewActionRecord(String actionName, String roleName, String lang,
+      DataRecord data) throws WorkflowException {
     Action action = getAction(actionName);
     if (action == null || action.getForm() == null) {
       return null;
@@ -761,8 +760,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     try {
       return action.getForm().getDefaultRecord(roleName, lang, data);
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_ILL_FORMED_FORM", action.getForm().getName(), e);
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
+          action.getForm().getName(), e);
     }
   }
 
@@ -770,14 +769,12 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * Returns an empty com.silverpeas.form.DataRecord which must be filled in order to fill the user
    * information Throws a WorkflowException if problem encountered.
    */
-  public DataRecord getNewUserInfosRecord(String roleName, String lang)
-      throws WorkflowException {
+  public DataRecord getNewUserInfosRecord(String roleName, String lang) throws WorkflowException {
     try {
-      return this.getUserInfos().toRecordTemplate(roleName, lang, false)
-          .getEmptyRecord();
+      return this.getUserInfos().toRecordTemplate(roleName, lang, false).getEmptyRecord();
     } catch (FormException e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_ILL_FORMED_FORM", "User Infos", e);
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_ILL_FORMED_FORM",
+          "User Infos", e);
     }
   }
 
@@ -806,8 +803,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
 
       return roles.toArray(new String[roles.size()]);
     } catch (Exception e) {
-      throw new WorkflowException("ProcessModel",
-          "workflowEngine.EXP_FAIL_GET_CREATION_ROLES", this.name, e);
+      throw new WorkflowException("ProcessModel", "workflowEngine.EXP_FAIL_GET_CREATION_ROLES",
+          this.name, e);
     }
   }
 
@@ -819,8 +816,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     RecordTemplate template = instanceDataTemplates.get(role + "\n" + lang);
 
     if (template == null) {
-      template = new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRecordTemplate(
-          this, role, lang);
+      template =
+          new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRecordTemplate(this, role,
+              lang);
       instanceDataTemplates.put(role + "\n" + lang, template);
     }
     return template;
@@ -837,8 +835,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     RecordTemplate template = rowTemplates.get(role + "\n" + lang);
 
     if (template == null) {
-      template = new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowTemplate(
-          this, role, lang);
+      template =
+          new com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowTemplate(this, role,
+              lang);
       rowTemplates.put(role + "\n" + lang, template);
     }
     return template;

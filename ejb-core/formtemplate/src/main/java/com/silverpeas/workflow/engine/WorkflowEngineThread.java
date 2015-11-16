@@ -80,7 +80,7 @@ public class WorkflowEngineThread extends Thread {
   static public void starts() {
     synchronized (requestList) {
       if (wfEngineThread == null) {
-        SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+        SilverTrace.info("workflowEngine", "WorkflowEngineThread.starts",
             "workflowEngine.INFO_STARTS_WORKFLOWENGINE_THREAD");
         wfEngineThread = new WorkflowEngineThread();
         wfEngineThread.start();
@@ -94,7 +94,7 @@ public class WorkflowEngineThread extends Thread {
   static public void addTaskDoneRequest(TaskDoneEvent event) {
     synchronized (requestList) {
       TaskDoneRequest request = new TaskDoneRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread.addTaskDoneRequest",
           "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
       requestList.add(request);
       requestList.notify();
@@ -107,7 +107,7 @@ public class WorkflowEngineThread extends Thread {
   public static void addTaskSavedRequest(TaskSavedEvent event) {
     synchronized (requestList) {
       TaskSavedRequest request = new TaskSavedRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread.addTaskSavedRequest",
           "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
       requestList.add(request);
       requestList.notify();
@@ -120,7 +120,7 @@ public class WorkflowEngineThread extends Thread {
   static public void addQuestionRequest(QuestionEvent event) {
     synchronized (requestList) {
       QuestionRequest request = new QuestionRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread.addQuestionRequest",
           "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
       requestList.add(request);
       requestList.notify();
@@ -133,7 +133,7 @@ public class WorkflowEngineThread extends Thread {
   static public void addResponseRequest(ResponseEvent event) {
     synchronized (requestList) {
       ResponseRequest request = new ResponseRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread.addResponseRequest",
           "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
       requestList.add(request);
       requestList.notify();
@@ -146,7 +146,7 @@ public class WorkflowEngineThread extends Thread {
   static public void addTimeoutRequest(TimeoutEvent event) {
     synchronized (requestList) {
       TimeoutRequest request = new TimeoutRequest(event);
-      SilverTrace.info("workflowEngine", "WorkflowEngineThread",
+      SilverTrace.info("workflowEngine", "WorkflowEngineThread.addTimeoutRequest",
           "workflowEngine.INFO_ADDS_ADD_REQUEST", request.toString());
       requestList.add(request);
       requestList.notify();

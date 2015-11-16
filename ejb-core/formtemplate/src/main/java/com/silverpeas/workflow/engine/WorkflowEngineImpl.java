@@ -24,11 +24,6 @@
 
 package com.silverpeas.workflow.engine;
 
-import java.util.Date;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
-
 import com.silverpeas.workflow.api.ProcessInstanceManager;
 import com.silverpeas.workflow.api.TaskManager;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
@@ -51,6 +46,11 @@ import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.PersistenceException;
+
+import java.util.Date;
 
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
@@ -90,6 +90,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
         UpdatableProcessInstanceManager instanceManager =
             (UpdatableProcessInstanceManager) WorkflowHub
             .getProcessInstanceManager();
+        SilverTrace.debug("workflowEngine", "WorkflowEngineImpl.process(taskDoneEvent)",
+            "create process instance for model " + model.getModelId());
         instance = (UpdatableProcessInstance) instanceManager
             .createProcessInstance(model.getModelId());
         event.setProcessInstance(instance);
@@ -166,6 +168,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       UpdatableProcessInstanceManager instanceManager =
           (UpdatableProcessInstanceManager) WorkflowHub
           .getProcessInstanceManager();
+      SilverTrace.debug("workflowEngine", "WorkflowEngineImpl.process(taskSavedEvent)",
+          "create process instance for model " + model.getModelId());
       instance = (UpdatableProcessInstance) instanceManager
           .createProcessInstance(model.getModelId());
       event.setProcessInstance(instance);
