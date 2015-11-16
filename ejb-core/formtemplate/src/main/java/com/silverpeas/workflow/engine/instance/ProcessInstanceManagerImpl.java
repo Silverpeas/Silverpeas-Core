@@ -355,10 +355,14 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @throws WorkflowException
    */
   @Override
-  public ProcessInstance createProcessInstance(String modelId) throws WorkflowException {
+  public synchronized ProcessInstance createProcessInstance(String modelId) throws WorkflowException {
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.createProcessInstance",
+        "root.MSG_GEN_ENTER_METHOD", "modelId=" + modelId);
     ProcessInstanceImpl instance = new ProcessInstanceImpl();
     instance.setModelId(modelId);
     instance.create();
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.createProcessInstance",
+        "instance created", "modelId=" + modelId + " instanceid=" + instance.getInstanceId());
     return (ProcessInstance) instance;
   }
 
