@@ -183,6 +183,7 @@
     </c:otherwise>
   </c:choose>
   <c:set var="componentId" value="${param.ComponentId}" />
+  <c:set var="_isI18nHandled" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
@@ -236,7 +237,7 @@
               <c:if test="${showIcon}">
                 <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
               </c:if>
-              <c:if test="${silfn:isI18n()}">
+              <c:if test="${_isI18nHandled}">
                 <span class="">[${currentAttachment.language}]</span>
               </c:if>
               <c:choose>
@@ -523,7 +524,7 @@
     }
 
     function checkin(id, oldId, webdav, forceRelease, isVersioned, webdavContentLanguageLabel) {
-      <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
+      <c:if test="${_isI18nHandled}">
       var $checkinWebdavLanguageBlock = $('#webdav-attachment-checkin-language');
       if (webdav === true) {
         $checkinWebdavLanguageBlock.show();
@@ -701,7 +702,7 @@
       open:function() {
         var filename = $(this).data("filename");
         $("#button-delete-all").hide();
-      <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+      <c:if test="${_isI18nHandled && not isVersionActive}">
         var translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
           url: translationsUrl,
@@ -739,7 +740,7 @@
           click: function() {
             var attachmentId = $(this).data("id");
             <c:choose>
-              <c:when test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+              <c:when test="${_isI18nHandled && not isVersionActive}">
                 $("input[name='languagesToDelete']").filter(':checked').each(function() {
                   var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
                   $.ajax({
@@ -878,7 +879,7 @@
               $('#update-attachment-form').submit();
             }
           },
-          <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+          <c:if test="${_isI18nHandled && not isVersionActive}">
           '<fmt:message key="attachment.dialog.delete.lang"/>' : function() {
             if (confirm('<fmt:message key="attachment.suppressionConfirmation" />')) {
               $.ajax({
@@ -1152,7 +1153,7 @@
 <div id="dialog-attachment-update" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
-        <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
+        <c:if test="${_isI18nHandled}">
           <label class="label-ui-dialog" id="translationWarningLabel" for="translationWarning"><fmt:message key="attachment.warning.translations.label"/></label>
           <span class="champ-ui-dialog warning" id="translationWarning"><fmt:message key="attachment.warning.translations"/></span>
           <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
@@ -1186,7 +1187,7 @@
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
+    <c:if test="${_isI18nHandled}">
       <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
@@ -1209,7 +1210,7 @@
 
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
+    <c:if test="${_isI18nHandled}">
       <div id="attachment-delete-select-lang" style="display:none">
         <div id="languages">
           <c:forEach items="<%=I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
@@ -1242,7 +1243,7 @@
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
-    <c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n)}">
+    <c:if test="${_isI18nHandled}">
       <div id="webdav-attachment-checkin-language" style="display: none">
         <fmt:message var="tmpLabel" key="attachment.dialog.checkin.webdav.multilang.language.help"/>
         <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
