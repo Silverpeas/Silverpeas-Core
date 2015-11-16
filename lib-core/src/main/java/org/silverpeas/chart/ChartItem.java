@@ -23,7 +23,9 @@
  */
 package org.silverpeas.chart;
 
-import java.util.List;
+import org.silverpeas.util.JSONCodec.JSONObject;
+
+import java.util.function.Function;
 
 /**
  * Representation of a chart item.

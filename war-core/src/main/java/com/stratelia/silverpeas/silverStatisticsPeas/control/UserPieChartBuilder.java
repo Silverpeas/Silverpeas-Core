@@ -31,7 +31,6 @@ import org.silverpeas.chart.pie.PieChart;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
 import java.sql.SQLException;
@@ -103,7 +102,7 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
    */
   Map<String, String[]> getCmpStats() {
 
-    Hashtable<String, String[]> cmpStats = new Hashtable<String, String[]>();
+    Hashtable<String, String[]> cmpStats = new Hashtable<>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume.getStatsUserVentil(
           dateStat, filterIdGroup, filterIdUser));

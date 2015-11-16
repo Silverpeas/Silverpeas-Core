@@ -23,27 +23,61 @@
  */
 package org.silverpeas.chart.pie;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.JSONCodec.JSONObject;
+
+import java.util.function.Function;
 
 /**
  * @author Yohann Chastagnier
  */
 public class AbstractPieChartTest {
 
-  protected JSONObject expJsChart(String title, JSONObject... expectedData) {
-    JSONArray jsonArray = new JSONArray();
-    for (JSONObject data : expectedData) {
-      jsonArray.put(data);
-    }
-    return new JSONObject().put("title", title).put("chartType", "pie").put("items", jsonArray);
+  @SuppressWarnings("unchecked")
+  protected String expJsChart(String title, Function<JSONObject, JSONObject>... expectedData) {
+    return expJsChartWithExtra(title, null, expectedData);
   }
 
-  protected JSONObject expJsItem(String title, String label, Number value) {
-    return new JSONObject().put("title", title).put("label", label).put("value", value);
+  @SuppressWarnings("unchecked")
+  protected String expJsChartWithExtra(String title, Function<JSONObject, JSONObject> extra,
+      Function<JSONObject, JSONObject>... expectedData) {
+    return JSONCodec.encodeObject(jsonObject -> {
+      jsonObject.put("chartType", "pie");
+      jsonObject.put("title", title);
+      jsonObject.putJSONArray("items", jsonArray -> {
+        for (Function<JSONObject, JSONObject> data : expectedData) {
+          jsonArray.addJSONObject(data);
+        }
+        return jsonArray;
+      });
+      if (extra != null) {
+        jsonObject.putJSONObject("extra", extra);
+      }
+      return jsonObject;
+    });
   }
 
-  protected JSONObject expJsItem(String title) {
-    return expJsItem(title, "", null);
+  protected Function<JSONObject, JSONObject> expItemAsJs(String title, String label,
+      Function<JSONObject, JSONObject> extra, Number value) {
+    return (jsonObject -> {
+      jsonObject.put("title", title).put("label", label).put("value", value);
+      if (extra != null) {
+        jsonObject.putJSONObject("extra", extra);
+      }
+      return jsonObject;
+    });
+  }
+
+  protected Function<JSONObject, JSONObject> expItemAsJs(String title, String label, Number value) {
+    return expItemAsJs(title, label, null, value);
+  }
+
+  protected Function<JSONObject, JSONObject> expItemAsJs(String title) {
+    return expItemAsJs(title, "", null, null);
+  }
+
+  protected Function<JSONObject, JSONObject> expItemAsJs(String title,
+      Function<JSONObject, JSONObject> extra) {
+    return expItemAsJs(title, "", extra, null);
   }
 }

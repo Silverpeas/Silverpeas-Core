@@ -23,7 +23,6 @@
  */
 package org.silverpeas.chart.pie;
 
-import org.json.JSONObject;
 import org.junit.Test;
 import org.silverpeas.chart.ChartType;
 
@@ -41,18 +40,18 @@ public class PieChartTest extends AbstractPieChartTest {
     assertThat(chartWithoutTitle.getType(), is(ChartType.pie));
     assertThat(chartWithoutTitle.getTitle(), isEmptyString());
     assertThat(chartWithoutTitle.getItems(), empty());
-    assertThat(chartWithoutTitle.asJson(), is(expJsChart("").toString()));
+    assertThat(chartWithoutTitle.asJson(), is(expJsChart("")));
   }
 
   @Test
   public void emptyPieChartWithTitle() {
     PieChart chartWithTitle =
-        PieChart.fromTitle("Pie chart title").addExtra("youpi", "tralala").addExtra("26", 98);
+        PieChart.fromTitle("Pie chart title").addExtra("youpi", "tralala").addExtra("26", "98");
     assertThat(chartWithTitle.getType(), is(ChartType.pie));
     assertThat(chartWithTitle.getTitle(), is("Pie chart title"));
     assertThat(chartWithTitle.getItems(), empty());
-    assertThat(chartWithTitle.asJson(), is(expJsChart("Pie chart title")
-        .put("extra", new JSONObject().put("youpi", "tralala").put("26", 98)).toString()));
+    assertThat(chartWithTitle.asJson(), is(expJsChartWithExtra("Pie chart title",
+            extra -> extra.put("youpi", "tralala").put("26", "98"))));
   }
 
   @Test
@@ -61,8 +60,7 @@ public class PieChartTest extends AbstractPieChartTest {
     chart.withTitle("Pie Chart");
     chart.add("Label 1", 26);
     assertThat(chart.getItems(), hasSize(1));
-    assertThat(chart.asJson(),
-        is(expJsChart("Pie Chart", expJsItem("", "Label 1", 26)).toString()));
+    assertThat(chart.asJson(), is(expJsChart("Pie Chart", expItemAsJs("", "Label 1", 26))));
   }
 
   @Test
@@ -71,7 +69,7 @@ public class PieChartTest extends AbstractPieChartTest {
     chart.add("Label 1", 26);
     chart.add("Label 2", 38).withTitle("Second attempt");
     assertThat(chart.getItems(), hasSize(2));
-    assertThat(chart.asJson(), is(expJsChart("", expJsItem("", "Label 1", 26),
-        expJsItem("Second attempt", "Label 2", 38)).toString()));
+    assertThat(chart.asJson(), is(expJsChart("", expItemAsJs("", "Label 1", 26),
+        expItemAsJs("Second attempt", "Label 2", 38))));
   }
 }

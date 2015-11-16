@@ -56,12 +56,17 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.chart.period.PeriodChart;
+import org.silverpeas.chart.pie.PieChart;
+import org.silverpeas.date.PeriodType;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.Pair;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.UnitUtil;
+import org.silverpeas.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -73,7 +78,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Vector;
 
-import static com.stratelia.webactiv.util.GeneralPropertiesManager.getGeneralMultilang;
+import static org.silverpeas.util.ResourceLocator.getGeneralLocalizationBundle;
 
 /**
  * Class declaration
@@ -107,8 +112,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private Collection<String> yearsConnection = null;
   private Collection<String> yearsAccess = null;
   private Collection<String> yearsVolume = null;
-  private LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle(
-      getLanguage());
   private PdcManager pdcManager = null;
 
   // init attributes
@@ -266,7 +269,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       axisChart = getMonthPeriodChartFrom((List<String>) statsUsers[0], (List) statsUsers[1])
           .withTitle(title);
-      axisChart.getAxisY().setTitle(getGeneralMultilang(getLanguage()).getString("GML.users"));
+      axisChart.getAxisY()
+          .setTitle(getGeneralLocalizationBundle(getLanguage()).getString("GML.users"));
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
           "SilverStatisticsPeasSessionController.getDistinctUserConnectionsChart()",
@@ -657,7 +661,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       axisChart = getMonthPeriodChartFrom((List<String>) statsUsersFq[0], (List) statsUsersFq[1])
           .withTitle(title);
-      axisChart.getAxisY().setTitle(getGeneralMultilang(getLanguage()).getString("GML.users"));
+      axisChart.getAxisY().setTitle(getGeneralLocalizationBundle(getLanguage()).getString("GML.users"));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
@@ -762,9 +766,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   public PieChart getUserVentilChart(String dateStat, String filterIdGroup,
       String filterIdUser, String spaceId) {
-    UserPieChartBuilder userBuilder = new UserPieChartBuilder(dateStat,
-        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, this.getMultilang(), getOrganisationController());
+    UserPieChartBuilder userBuilder =
+        new UserPieChartBuilder(dateStat, formatDate(dateStat), filterIdGroup, filterIdUser,
+            spaceId, this.getMultilang());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, currentStats);
   }
@@ -891,9 +895,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public PieChart getPubliVentilChart(String dateStat, String filterIdGroup,
       String filterIdUser, String spaceId) {
-    PubliPieChartBuilder publiBuilder = new PubliPieChartBuilder(dateStat,
-        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, getOrganisationController(), this.getMultilang());
+    PubliPieChartBuilder publiBuilder =
+        new PubliPieChartBuilder(dateStat, formatDate(dateStat), filterIdGroup, filterIdUser,
+            spaceId, this.getMultilang());
     resetPath(spaceId);
     return publiBuilder.getChart(spaceId, currentStats);
   }
@@ -941,8 +945,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       axisChart = getMonthPeriodChartFrom(dates, size)
           .withTitle(getString("silverStatisticsPeas.EvolutionAttachmentsTotalSize"));
-      axisChart.getAxisY().setTitle(getGeneralMultilang(getLanguage()).getString("GML.size") +
-          "(" + MemoryUnit.MB.getLabel() + ")");
+      axisChart.getAxisY()
+          .setTitle(getGeneralLocalizationBundle(getLanguage()).getString("GML.size") +
+              "(" + MemoryUnit.MB.getLabel() + ")");
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",

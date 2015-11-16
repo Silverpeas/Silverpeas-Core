@@ -106,7 +106,7 @@ ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverS
   }
 
   function onItemClick(item) {
-    if (item.srcData && item.srcData.extra) {
+    if (onItemClickHelp(item)) {
       displaySubSpaceStatistics(item.srcData.extra.spaceStatisticUrl);
     }
   }

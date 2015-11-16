@@ -23,14 +23,16 @@
  */
 package org.silverpeas.chart;
 
-import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * @author Yohann Chastagnier
  */
 public class ChartSettings {
 
-  protected static ResourceLocator settings = new ResourceLocator("org.silverpeas.chart.chart", "");
+  protected static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.chart.chart");
 
   /**
    * Gets the JSON representation of default color set of pie chart.

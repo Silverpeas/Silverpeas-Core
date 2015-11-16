@@ -26,11 +26,13 @@ package org.silverpeas.chart.period;
 import org.junit.Test;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
+import org.silverpeas.util.JSONCodec;
 
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.silverpeas.util.JSONCodec.encodeObject;
 
 /**
  * @author Yohann Chastagnier
@@ -43,7 +45,7 @@ public class PeriodChartItemTest extends AbstractPeriodChartTest {
     long expectedTime = Period.UNDEFINED.getBeginDatable().getTime();
     long duration = Period.UNDEFINED.getElapsedTimeData().getTimeAsLong();
     assertThat(item.asJson(),
-        is(expJsItem("", expectedTime, duration, false, "unknown").toString()));
+        is(encodeObject(expItemAsJs("", expectedTime, duration, false, "unknown"))));
   }
 
   @Test
@@ -52,7 +54,7 @@ public class PeriodChartItemTest extends AbstractPeriodChartTest {
     long expectedTime = Period.UNDEFINED.getBeginDatable().getTime();
     long duration = Period.UNDEFINED.getElapsedTimeData().getTimeAsLong();
     assertThat(item.asJson(),
-        is(expJsItem("A title", expectedTime, duration, false, "unknown").toString()));
+        is(encodeObject(expItemAsJs("A title", expectedTime, duration, false, "unknown"))));
   }
 
   @Test
@@ -62,7 +64,7 @@ public class PeriodChartItemTest extends AbstractPeriodChartTest {
     long duration = 24L * 60 * 60 * 1000;
     PeriodChartItem item = new PeriodChartItem(Period.from(date, PeriodType.day)).add(26);
     assertThat(item.asJson(),
-        is(expJsItem("", expectedTime, duration, false, "day", 26).toString()));
+        is(encodeObject(expItemAsJs("", expectedTime, duration, false, "day", 26))));
   }
 
   @Test
@@ -74,6 +76,6 @@ public class PeriodChartItemTest extends AbstractPeriodChartTest {
         new PeriodChartItem(Period.from(date, PeriodType.month)).withTitle("A " + "title");
     item.add(26).add(38);
     assertThat(item.asJson(),
-        is(expJsItem("A title", expectedTime, duration, false, "month", 26, 38).toString()));
+        is(encodeObject(expItemAsJs("A title", expectedTime, duration, false, "month", 26, 38))));
   }
 }

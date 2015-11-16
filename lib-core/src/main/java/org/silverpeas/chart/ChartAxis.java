@@ -23,7 +23,9 @@
  */
 package org.silverpeas.chart;
 
-import org.json.JSONObject;
+import org.silverpeas.util.JSONCodec.JSONObject;
+
+import java.util.function.Function;
 
 /**
  * @author Yohann Chastagnier
@@ -57,7 +59,7 @@ public class ChartAxis {
    * Gets the JSON representation of the axis.
    * @return the {@link JSONObject} instance that represents teh axis.
    */
-  JSONObject asJson() {
-    return new JSONObject().put("title", getTitle());
+  Function<JSONObject, JSONObject> asJson() {
+    return (json -> json.put("title", getTitle()));
   }
 }

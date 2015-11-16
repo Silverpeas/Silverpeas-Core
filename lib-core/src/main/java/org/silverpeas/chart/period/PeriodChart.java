@@ -23,11 +23,11 @@
  */
 package org.silverpeas.chart.period;
 
-import org.json.JSONObject;
 import org.silverpeas.chart.AbstractAxisChart;
 import org.silverpeas.chart.ChartType;
 import org.silverpeas.date.Period;
 import org.silverpeas.date.PeriodType;
+import org.silverpeas.util.JSONCodec.JSONObject;
 
 import java.util.Date;
 

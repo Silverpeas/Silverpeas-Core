@@ -23,14 +23,14 @@
  */
 package org.silverpeas.chart.pie;
 
-import org.json.JSONObject;
 import org.junit.Test;
+import org.silverpeas.util.JSONCodec;
 
-import java.io.File;
 import java.math.BigDecimal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.silverpeas.util.JSONCodec.encodeObject;
 
 /**
  * @author Yohann Chastagnier
@@ -40,51 +40,51 @@ public class PieChartItemTest extends AbstractPieChartTest {
   @Test
   public void withoutTitleAndWithoutData() {
     PieChartItem item = new PieChartItem("", null);
-    assertThat(item.asJson(), is(expJsItem("").toString()));
+    assertThat(item.asJson(), is(encodeObject(expItemAsJs(""))));
   }
 
   @Test
   public void withoutTitleAndWithoutDataButWithExtraInformation() {
-    PieChartItem item = new PieChartItem("", null).addExtra("youpi", "tralala").addExtra("26", 98);
+    PieChartItem item =
+        new PieChartItem("", null).addExtra("youpi", "tralala").addExtra("26", "98");
     assertThat(item.asJson(),
-        is(expJsItem("").put("extra", new JSONObject().put("youpi", "tralala").put("26", 98))
-            .toString()));
+        is(encodeObject(expItemAsJs("", extra -> extra.put("youpi", "tralala").put("26", "98")))));
   }
 
   @Test
   public void withTitleButWithoutData() {
     PieChartItem item = new PieChartItem("", null).withTitle("A title");
-    assertThat(item.asJson(), is(expJsItem("A title").toString()));
+    assertThat(item.asJson(), is(encodeObject(expItemAsJs("A title"))));
   }
 
   @Test
   public void withoutTitleAndIntData() {
     PieChartItem item = new PieChartItem("Part 1", 26);
-    assertThat(item.asJson(), is(expJsItem("", "Part 1", 26).toString()));
+    assertThat(item.asJson(), is(encodeObject(expItemAsJs("", "Part 1", 26))));
   }
 
   @Test
   public void withoutTitleAndLongData() {
     PieChartItem item = new PieChartItem("Part 1", 564654564l);
-    assertThat(item.asJson(), is(expJsItem("", "Part 1", 564654564l).toString()));
+    assertThat(item.asJson(), is(encodeObject(expItemAsJs("", "Part 1", 564654564l))));
   }
 
   @Test
   public void withoutTitleAndDoubleData() {
     PieChartItem item = new PieChartItem("Part 2", 38.26d);
-    assertThat(item.asJson(), is(expJsItem("", "Part 2", 38.26d).toString()));
+    assertThat(item.asJson(), is(encodeObject(expItemAsJs("", "Part 2", 38.26d))));
   }
 
   @Test
   public void withTitleAndFloatData() {
     PieChartItem item = new PieChartItem("Part 1", 36.5998f).withTitle("Float");
-    assertThat(item.asJson(), is(expJsItem("Float", "Part 1", 36.5998f).toString()));
+    assertThat(item.asJson(), is(encodeObject(expItemAsJs("Float", "Part 1", 36.5998f))));
   }
 
   @Test
   public void withTitleAndTwoDataComposedOfOneFloatAndOneBigDecimal() {
     PieChartItem item = new PieChartItem("Part 2", new BigDecimal("2.8")).withTitle("BigDecimal");
     assertThat(item.asJson(),
-        is(expJsItem("BigDecimal", "Part 2", new BigDecimal("2.8")).toString()));
+        is(encodeObject(expItemAsJs("BigDecimal", "Part 2", new BigDecimal("2.8")))));
   }
 }

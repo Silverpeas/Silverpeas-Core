@@ -23,7 +23,7 @@
  */
 package org.silverpeas.chart;
 
-import org.json.JSONObject;
+import org.silverpeas.util.JSONCodec.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
@@ -39,8 +39,7 @@ public abstract class AbstractAxisChart<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_T
 
   private ChartAxis x = new ChartAxis();
   private ChartAxis y = new ChartAxis();
-  private Map<XAXIS_DATA_TYPE, ITEM_TYPE> itemIndexedByX =
-      new HashMap<XAXIS_DATA_TYPE, ITEM_TYPE>();
+  private Map<XAXIS_DATA_TYPE, ITEM_TYPE> itemIndexedByX = new HashMap<>();
 
   /**
    * Gets the {@link ChartAxis} that represents the x axis.
@@ -61,8 +60,11 @@ public abstract class AbstractAxisChart<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_T
   @Override
   protected void computeExtraDataAsJson(final JSONObject jsonChart) {
     super.computeExtraDataAsJson(jsonChart);
-    jsonChart
-        .put("axis", new JSONObject().put("x", getAxisX().asJson()).put("y", getAxisY().asJson()));
+    jsonChart.putJSONObject("axis", axes -> {
+      axes.putJSONObject("x", getAxisX().asJson());
+      axes.putJSONObject("y", getAxisY().asJson());
+      return axes;
+    });
   }
 
   /**

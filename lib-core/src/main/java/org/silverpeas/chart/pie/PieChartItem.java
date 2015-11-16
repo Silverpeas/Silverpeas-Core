@@ -23,8 +23,8 @@
  */
 package org.silverpeas.chart.pie;
 
-import org.json.JSONObject;
 import org.silverpeas.chart.AbstractChartItem;
+import org.silverpeas.util.JSONCodec.JSONObject;
 
 /**
  * @author Yohann Chastagnier
@@ -48,7 +48,7 @@ public class PieChartItem extends AbstractChartItem<PieChartItem> {
   }
 
   @Override
-  protected void computeDataAsJson(JSONObject itemAsJson) {
+  protected void completeJsonData(JSONObject itemAsJson) {
     itemAsJson.put("label", getLabel()).put("value", getValue());
   }
 }

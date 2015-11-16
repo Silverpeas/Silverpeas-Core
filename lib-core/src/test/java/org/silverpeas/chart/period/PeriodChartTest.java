@@ -65,7 +65,7 @@ public class PeriodChartTest extends AbstractPeriodChartTest {
     chart.forX(Period.from(date, PeriodType.year)).add(26);
     assertThat(chart.getItems(), hasSize(1));
     assertThat(chart.asJson(), is(expJsChart("", "year", "", "",
-        expJsItem("", expectedTime, duration, true, "year", 26))));
+        expItemAsJs("", expectedTime, duration, true, "year", 26))));
   }
 
   @Test
@@ -78,7 +78,7 @@ public class PeriodChartTest extends AbstractPeriodChartTest {
     chart.forX(Period.from(date, PeriodType.month)).add(38);
     assertThat(chart.getItems(), hasSize(1));
     assertThat(chart.asJson(), is(expJsChart("", "month", "", "",
-        expJsItem("", expectedTime, duration, true, "month", 26, 38))));
+        expItemAsJs("", expectedTime, duration, true, "month", 26, 38))));
   }
 
   @Test
@@ -97,7 +97,7 @@ public class PeriodChartTest extends AbstractPeriodChartTest {
     chart.forX(date2, PeriodType.month).add(38).withTitle("Item 2");
     assertThat(chart.getItems(), hasSize(2));
     assertThat(chart.asJson(), is(expJsChart("Chart title", "day", "X axis", "Y axis",
-        expJsItem("Item 1", expectedTime1, duration1, false, "day", 26),
-        expJsItem("Item 2", expectedTime2, duration2, true, "month", 38))));
+        expItemAsJs("Item 1", expectedTime1, duration1, false, "day", 26),
+        expItemAsJs("Item 2", expectedTime2, duration2, true, "month", 38))));
   }
 }

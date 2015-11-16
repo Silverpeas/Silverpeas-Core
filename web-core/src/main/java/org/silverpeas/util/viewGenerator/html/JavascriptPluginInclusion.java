@@ -29,20 +29,19 @@ import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.notification.message.MessageManager;
 import org.silverpeas.subscription.SubscriptionSettings;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 
 import java.text.MessageFormat;
 
-import static org.silverpeas.cache.service.CacheServiceFactory.getRequestCacheService;
+import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.chart.ChartSettings.getThresholdOfPieCombination;
 

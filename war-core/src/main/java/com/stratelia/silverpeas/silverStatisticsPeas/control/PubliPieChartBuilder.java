@@ -27,12 +27,10 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.chart.pie.PieChart;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.LocalizationBundle;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 
 import java.sql.SQLException;

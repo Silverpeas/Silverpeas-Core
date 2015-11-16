@@ -23,14 +23,14 @@
  */
 package org.silverpeas.chart;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.JSONCodec.JSONObject;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
-import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -38,7 +38,7 @@ import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
 
   private String title = "";
-  private Map<String, Object> extra = null;
+  private Map<String, String> extra = null;
 
   @Override
   public String getTitle() {
@@ -54,9 +54,9 @@ public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
    * @return the instance of the chart itself.
    */
   @SuppressWarnings("unchecked")
-  public <T extends AbstractChartItem<DATA_TYPE>> T addExtra(final String key, Object value) {
+  public <T extends AbstractChartItem<DATA_TYPE>> T addExtra(final String key, String value) {
     if (extra == null) {
-      extra = new LinkedHashMap<String, Object>();
+      extra = new LinkedHashMap<>();
     }
     extra.put(key, value);
     return (T) this;
@@ -90,21 +90,32 @@ public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
    */
   @Override
   public final String asJson() {
-    JSONObject itemAsJson = new JSONObject();
-    itemAsJson.put("title", getTitle());
-    if (extra != null) {
-      JSONObject jsonExtra = new JSONObject();
-      for (Map.Entry<String, Object> entry : extra.entrySet()) {
-        jsonExtra.put(entry.getKey(), entry.getValue());
-      }
-      itemAsJson.put("extra", jsonExtra);
-    }
-    computeDataAsJson(itemAsJson);
-    return itemAsJson.toString();
+    return JSONCodec.encodeObject(getJsonProducer());
   }
 
   /**
-   * Computes the data of the item into a JSON representation.
+   * Gets the json representation of the item.
+   * @return a string that represents the item as a json array.
    */
-  abstract protected void computeDataAsJson(JSONObject itemAsJson);
+  protected final Function<JSONObject, JSONObject> getJsonProducer() {
+    return (itemAsJson -> {
+      itemAsJson.put("title", getTitle());
+      completeJsonData(itemAsJson);
+      if (extra != null) {
+        itemAsJson.putJSONObject("extra", jsonExtra -> {
+          for (Map.Entry<String, String> entry : extra.entrySet()) {
+            jsonExtra.put(entry.getKey(), entry.getValue());
+          }
+          return jsonExtra;
+        });
+      }
+      return itemAsJson;
+    });
+  }
+
+  /**
+   * Completes the given json object with the data of specific implementations.
+   * @param itemAsJson the json object to complete.
+   */
+  abstract protected void completeJsonData(JSONObject itemAsJson);
 }

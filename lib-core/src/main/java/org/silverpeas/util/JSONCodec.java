@@ -179,6 +179,25 @@ public class JSONCodec {
       return this;
     }
 
+    public JSONObject put(final String fieldName, final Number v) {
+      if (v instanceof Short) {
+        put(fieldName, (Short) v);
+      } else if (v instanceof Integer) {
+        put(fieldName, (Integer) v);
+      } else if (v instanceof Long) {
+        put(fieldName, (Long) v);
+      } else if (v instanceof Float) {
+        put(fieldName, (Float) v);
+      } else if (v instanceof Double) {
+        put(fieldName, (Double) v);
+      } else if (v instanceof BigDecimal) {
+        put(fieldName, (BigDecimal) v);
+      } else {
+        put(fieldName, encode(v));
+      }
+      return this;
+    }
+
     public JSONObject put(final String fieldName, final Short v) {
       objectNode.put(fieldName, v);
       return this;
@@ -224,8 +243,23 @@ public class JSONCodec {
       return this;
     }
 
+    /**
+     * @deprecated use instead {@link #putJSONArray(String, Function)}
+     */
+    @Deprecated
     public JSONObject put(final String fieldName, Function<JSONArray, JSONArray> arrayBuilder) {
+      return putJSONArray(fieldName, arrayBuilder);
+    }
+
+    public JSONObject putJSONArray(final String fieldName,
+        Function<JSONArray, JSONArray> arrayBuilder) {
       arrayBuilder.apply(new JSONArray(objectNode.putArray(fieldName)));
+      return this;
+    }
+
+    public JSONObject putJSONObject(final String fieldName,
+        Function<JSONObject, JSONObject> arrayBuilder) {
+      arrayBuilder.apply(new JSONObject(objectNode.putObject(fieldName)));
       return this;
     }
   }
@@ -240,6 +274,70 @@ public class JSONCodec {
 
     protected ArrayNode getJsonArray() {
       return this.jsonArray;
+    }
+
+    public JSONArray add(final Number v) {
+      if (v instanceof Short) {
+        add((Short) v);
+      } else if (v instanceof Integer) {
+        add((Integer) v);
+      } else if (v instanceof Long) {
+        add((Long) v);
+      } else if (v instanceof Float) {
+        add((Float) v);
+      } else if (v instanceof Double) {
+        add((Double) v);
+      } else if (v instanceof BigDecimal) {
+        add((BigDecimal) v);
+      } else {
+        add(encode(v));
+      }
+      return this;
+    }
+
+    public JSONArray add(final Short v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final Integer v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final Long v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final Float v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final Double v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final BigDecimal v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final String v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final Boolean v) {
+      jsonArray.add(v);
+      return this;
+    }
+
+    public JSONArray add(final byte[] v) {
+      jsonArray.add(v);
+      return this;
     }
 
     public JSONArray addJSONObject(Function<JSONObject, JSONObject> beanBuilder) {

@@ -23,9 +23,12 @@
  */
 package org.silverpeas.chart.period;
 
-import org.json.JSONObject;
 import org.silverpeas.chart.AbstractAxisChartItem;
 import org.silverpeas.date.Period;
+import org.silverpeas.util.JSONCodec.JSONArray;
+import org.silverpeas.util.JSONCodec.JSONObject;
+
+import java.util.function.Function;
 
 /**
  * @author Yohann Chastagnier
@@ -37,16 +40,14 @@ public class PeriodChartItem extends AbstractAxisChartItem<Period, Number, Perio
   }
 
   @Override
-  protected JSONObject computeXAsJson(final Period period) {
-    JSONObject dataAsJson = new JSONObject();
-    dataAsJson.put("duration", period.getElapsedTimeData().getTimeAsLong());
-    dataAsJson.put("periodType", period.getPeriodType().getName());
-    dataAsJson.put("startTime", period.getBeginDatable().getTime());
-    return dataAsJson;
+  protected void performXValue(final JSONObject jsonObject, final Period period) {
+    jsonObject.put("periodType", period.getPeriodType().getName());
+    jsonObject.put("startTime", period.getBeginDatable().getTime());
+    jsonObject.put("duration", period.getElapsedTimeData().getTimeAsLong());
   }
 
   @Override
-  protected Number computeYValueAsJson(final Number yValue) {
-    return yValue;
+  protected void performYValue(JSONArray jsonArray, final Number yValue) {
+    jsonArray.add(yValue);
   }
 }

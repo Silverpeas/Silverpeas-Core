@@ -23,8 +23,8 @@
  */
 package org.silverpeas.chart;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.silverpeas.util.JSONCodec.JSONArray;
+import org.silverpeas.util.JSONCodec.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,24 +71,30 @@ public abstract class AbstractAxisChartItem<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, IT
   }
 
   @Override
-  protected void computeDataAsJson(JSONObject itemAsJson) {
-    JSONArray datasetsAsJson = new JSONArray();
-    itemAsJson.put("x", computeXAsJson(getX()));
-    for (YAXIS_DATA_TYPE yValue : getYValues()) {
-      datasetsAsJson.put(computeYValueAsJson(yValue));
-    }
-    itemAsJson.put("y", datasetsAsJson);
+  protected void completeJsonData(JSONObject itemAsJson) {
+    itemAsJson.putJSONObject("x", jsonObject -> {
+      performXValue(jsonObject, getX());
+      return jsonObject;
+    });
+    itemAsJson.putJSONArray("y", datasetsAsJson -> {
+      for (YAXIS_DATA_TYPE yValue : getYValues()) {
+        performYValue(datasetsAsJson, yValue);
+      }
+      return datasetsAsJson;
+    });
   }
 
   /**
-   * Computes the data of the x value into a JSON representation.
+   * Complete the given json object with the given X value.
+   * @param jsonObject the json object to complete.
    * @param xValue the value on x axis.
    */
-  abstract protected JSONObject computeXAsJson(XAXIS_DATA_TYPE xValue);
+  abstract protected void performXValue(JSONObject jsonObject, XAXIS_DATA_TYPE xValue);
 
   /**
-   * Computes the data of a y value into a JSON representation.
+   * Complete the given json array with the given Y value associated to the X one.
+   * @param jsonArray the json array to complete.
    * @param yValue a y value from {@link #getYValues()}.
    */
-  abstract protected <T> T computeYValueAsJson(YAXIS_DATA_TYPE yValue);
+  abstract protected void performYValue(JSONArray jsonArray, YAXIS_DATA_TYPE yValue);
 }

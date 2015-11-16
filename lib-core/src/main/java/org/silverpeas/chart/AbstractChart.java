@@ -23,28 +23,26 @@
  */
 package org.silverpeas.chart;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.silverpeas.util.JSONCodec;
+import org.silverpeas.util.JSONCodec.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Common implementation between each chart.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractChart<CHART_ITEM_TYPE extends ChartItem>
+public abstract class AbstractChart<CHART_ITEM_TYPE extends AbstractChartItem>
     implements Chart<CHART_ITEM_TYPE> {
 
   private String title = "";
-  private List<CHART_ITEM_TYPE> items = new ArrayList<CHART_ITEM_TYPE>();
-  private Map<String, Object> extra = null;
+  private List<CHART_ITEM_TYPE> items = new ArrayList<>();
+  private Map<String, String> extra = null;
 
   @Override
   public String getTitle() {
@@ -60,9 +58,9 @@ public abstract class AbstractChart<CHART_ITEM_TYPE extends ChartItem>
    * @return the instance of the chart itself.
    */
   @SuppressWarnings("unchecked")
-  public <T extends AbstractChart<CHART_ITEM_TYPE>> T addExtra(final String key, Object value) {
+  public <T extends AbstractChart<CHART_ITEM_TYPE>> T addExtra(final String key, String value) {
     if (extra == null) {
-      extra = new LinkedHashMap<String, Object>();
+      extra = new LinkedHashMap<>();
     }
     extra.put(key, value);
     return (T) this;
@@ -89,28 +87,29 @@ public abstract class AbstractChart<CHART_ITEM_TYPE extends ChartItem>
     return (T) this;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public final String asJson() {
-    JSONArray dataAsJson = new JSONArray();
-    for (ChartItem data : getItems()) {
-      try {
-        dataAsJson.put(new JSONObject(new JSONTokener(data.asJson())));
-      } catch (ParseException ignore) {
+    return JSONCodec.encodeObject(jsonChart -> {
+      jsonChart.put("chartType", getType().name());
+      jsonChart.put("title", getTitle());
+      computeExtraDataAsJson(jsonChart);
+      jsonChart.putJSONArray("items", dataAsJson -> {
+        for (AbstractChartItem data : getItems()) {
+          dataAsJson.addJSONObject(data.getJsonProducer());
+        }
+        return dataAsJson;
+      });
+      if (extra != null) {
+        jsonChart.putJSONObject("extra", jsonExtra -> {
+          for (Map.Entry<String, String> entry : extra.entrySet()) {
+            jsonExtra.put(entry.getKey(), entry.getValue());
+          }
+          return jsonExtra;
+        });
       }
-    }
-    JSONObject jsonChart = new JSONObject();
-    jsonChart.put("chartType", getType().name());
-    jsonChart.put("title", getTitle());
-    jsonChart.put("items", dataAsJson);
-    if (extra != null) {
-      JSONObject jsonExtra = new JSONObject();
-      for (Map.Entry<String, Object> entry : extra.entrySet()) {
-        jsonExtra.put(entry.getKey(), entry.getValue());
-      }
-      jsonChart.put("extra", jsonExtra);
-    }
-    computeExtraDataAsJson(jsonChart);
-    return jsonChart.toString();
+      return jsonChart;
+    });
   }
 
   /**

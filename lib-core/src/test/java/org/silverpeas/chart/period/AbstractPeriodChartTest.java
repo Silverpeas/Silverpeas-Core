@@ -23,38 +23,55 @@
  */
 package org.silverpeas.chart.period;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.silverpeas.util.JSONCodec;
+
+import java.util.function.Function;
 
 /**
  * @author Yohann Chastagnier
  */
 public class AbstractPeriodChartTest {
 
+  @SuppressWarnings("unchecked")
   protected String expJsChart(String title, String defaultPeriodType, String xLabel, String yLabel,
-      JSONObject... expectedData) {
-    JSONArray jsonArray = new JSONArray();
-    for (JSONObject data : expectedData) {
-      jsonArray.put(data);
-    }
-    return new JSONObject().put("title", title).put("chartType", "period")
-        .put("defaultPeriodType", defaultPeriodType).put("items", jsonArray)
-        .put("axis", new JSONObject().put("x", new JSONObject().put("title", xLabel))
-            .put("y", new JSONObject().put("title", yLabel))).toString();
+      Function<JSONCodec.JSONObject, JSONCodec.JSONObject>... expectedData) {
+    return JSONCodec.encodeObject(jsonObject -> {
+      jsonObject.put("chartType", "period");
+      jsonObject.put("title", title);
+      jsonObject.putJSONObject("axis",
+          axis -> axis.putJSONObject("x", xAxis -> xAxis.put("title", xLabel))
+              .putJSONObject("y", yAxis -> yAxis.put("title", yLabel)));
+      jsonObject.put("defaultPeriodType", defaultPeriodType);
+      jsonObject.putJSONArray("items", jsonArray -> {
+        for (Function<JSONCodec.JSONObject, JSONCodec.JSONObject> data : expectedData) {
+          jsonArray.addJSONObject(data);
+        }
+        return jsonArray;
+      });
+      return jsonObject;
+    });
   }
 
-  protected JSONObject expJsItem(String title, long expectedTime, long duration,
-      final boolean durationAsPrimitive, String periodType, Number... values) {
-    JSONObject x = new JSONObject().put("startTime", expectedTime).put("periodType", periodType);
-    if (durationAsPrimitive) {
-      x.put("duration", duration);
-    } else {
-      x.put("duration", Long.valueOf(duration));
-    }
-    JSONArray jsonArray = new JSONArray();
-    for (Number value : values) {
-      jsonArray.put(value);
-    }
-    return new JSONObject().put("title", title).put("x", x).put("y", jsonArray);
+  protected Function<JSONCodec.JSONObject, JSONCodec.JSONObject> expItemAsJs(String title,
+      long expectedTime, long duration, final boolean durationAsPrimitive, String periodType,
+      Number... values) {
+    return (jsonObject -> {
+      jsonObject.put("title", title).putJSONObject("x", xJson -> {
+        xJson.put("periodType", periodType);
+        xJson.put("startTime", expectedTime);
+        if (durationAsPrimitive) {
+          xJson.put("duration", duration);
+        } else {
+          xJson.put("duration", Long.valueOf(duration));
+        }
+        return xJson;
+      }).putJSONArray("y", jsonArray -> {
+        for (Number value : values) {
+          jsonArray.add(value);
+        }
+        return jsonArray;
+      });
+      return jsonObject;
+    });
   }
 }
