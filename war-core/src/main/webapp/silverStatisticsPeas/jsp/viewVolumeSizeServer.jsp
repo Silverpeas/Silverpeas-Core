@@ -103,11 +103,11 @@
   }
 
   function onItemClickHelp(item) {
-    return item.srcData && item.srcData.extra;
+    return (item.srcData && item.srcData.extra && (typeof item.srcData.extra.spaceStatisticUrl === 'string'));
   }
 
   function onItemClick(item) {
-    if (item.srcData && item.srcData.extra) {
+    if (onItemClickHelp(item)) {
       displaySubSpaceStatistics(item.srcData.extra.spaceStatisticUrl);
     }
   }
