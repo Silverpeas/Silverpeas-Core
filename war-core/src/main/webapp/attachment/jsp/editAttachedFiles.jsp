@@ -74,8 +74,7 @@
   </c:otherwise>
 </c:choose>
 <c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
-<c:set var="i18n"><%=com.silverpeas.util.i18n.I18NHelper.isI18nContentActivated%></c:set>
-<c:set var="i18n" value="${view:booleanValue(i18n) && !view:booleanValue(param.notI18n)}" />
+<c:set var="_isI18nHandled" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
@@ -87,7 +86,7 @@
 <c:url var="ArrayPnoColorPix" value="/util/icons/colorPix/15px.gif" />
 
 <c:choose>
-  <c:when test="${i18n}">
+  <c:when test="${_isI18nHandled}">
     <c:set var="winAddHeight" value="270" />
     <c:set var="winHeight" value="240" />
   </c:when>
