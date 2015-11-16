@@ -6312,7 +6312,7 @@ blockquote {
 
 .forms .fields label {
 	display: inline-block;
-  float: inherit;
+  float: left;
   padding-left: 15px;
   width:180px;
   white-space: normal;
