@@ -62,6 +62,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
@@ -89,8 +90,6 @@ import static java.io.File.separator;
  * @author sdevolder
  */
 public class PublicationsTypeManager {
-
-  final static MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
 
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
@@ -183,7 +182,7 @@ public class PublicationsTypeManager {
         if (wysiwygContent != null) {
           wysiwygText = exportWysiwygContent(pubId, publicationDetail.getInstanceId(), gedIE,
               exportPublicationRelativePath, exportPublicationPath, wysiwygContent, publicationType.
-              getPublicationDetail().getLanguage());
+                  getPublicationDetail().getLanguage());
         } else if (xmlModel != null) {
           exportXmlForm(new PublicationPK(pubId, publicationDetail.getInstanceId()),
               exportPublicationRelativePath, exportPublicationPath, xmlModel);
@@ -747,9 +746,11 @@ public class PublicationsTypeManager {
                     unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                   } else {
                     MetaData metaData = null;
-                    if (settings.isPoiUsed()) {
+                    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+                        settings.isPoiUsed()) {
                       // extract title, subject and keywords
-                      metaData = metadataExtractor.extractMetadata(attdetail.getAttachmentPath());
+                      metaData = MetadataExtractor.getInstance()
+                          .extractMetadata(attdetail.getAttachmentPath());
                       if (!StringUtil.isDefined(attdetail.getTitle()) && StringUtil.isDefined(
                           metaData.getTitle())) {
                         attdetail.setTitle(metaData.getTitle());
@@ -759,10 +760,12 @@ public class PublicationsTypeManager {
                         attdetail.setInfo(metaData.getSubject());
                       }
                     }
-                    if (settings.useFileDates()) {
+                    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+                        settings.useFileDates()) {
                       // extract creation date
                       if (metaData == null) {
-                        metaData = metadataExtractor.extractMetadata(attdetail.getAttachmentPath());
+                        metaData = MetadataExtractor.getInstance()
+                            .extractMetadata(attdetail.getAttachmentPath());
                       }
                       if (metaData.getCreationDate() != null) {
                         attdetail.setCreationDate(metaData.getCreationDate());

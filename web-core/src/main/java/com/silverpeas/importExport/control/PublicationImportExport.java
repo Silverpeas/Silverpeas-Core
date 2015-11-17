@@ -53,7 +53,6 @@ import org.apache.commons.lang.StringUtils;
 
 public class PublicationImportExport {
 
-  final static MetadataExtractor metadataExtractor = MetadataExtractor.getInstance();
   final static ResourceLocator multilang = new ResourceLocator(
       "org.silverpeas.importExport.multilang.importExportBundle", "fr");
 
@@ -116,7 +115,7 @@ public class PublicationImportExport {
         MetaData metaData = null;
         if (settings.isPoiUsed()) {
           // extract title, subject and keywords
-          metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+          metaData = MetadataExtractor.getInstance().extractMetadata(file.getAbsolutePath());
           if (StringUtil.isDefined(metaData.getTitle())) {
             nomPub = metaData.getTitle();
           }
@@ -131,7 +130,7 @@ public class PublicationImportExport {
         if (settings.useFileDates()) {
           // extract creation and last modification dates
           if (metaData == null) {
-            metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
+            metaData = MetadataExtractor.getInstance().extractMetadata(file.getAbsolutePath());
           }
           if (metaData.getCreationDate() != null) {
             creationDate = metaData.getCreationDate();

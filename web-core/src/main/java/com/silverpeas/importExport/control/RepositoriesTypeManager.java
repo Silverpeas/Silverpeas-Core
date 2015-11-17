@@ -55,6 +55,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
@@ -304,9 +305,8 @@ public class RepositoriesTypeManager {
                 currentUser.getId(), creationDate, null));
       }
       document.setDocumentType(documentType);
+      setMetadata(document, file);
     }
-
-    setMetadata(document, file);
 
     if (needCreation) {
       boolean notifying = !document.isVersioned() || publicVersion;
@@ -338,11 +338,13 @@ public class RepositoriesTypeManager {
    * @param file the physical file.
    */
   private static void setMetadata(SimpleDocument document, File file) {
-    final MetadataExtractor extractor = MetadataExtractor.getInstance();
-    final MetaData metadata = extractor.extractMetadata(file);
-    document.setSize(file.length());
-    document.setTitle(metadata.getTitle());
-    document.setDescription(metadata.getSubject());
+    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled()) {
+      final MetadataExtractor extractor = MetadataExtractor.getInstance();
+      final MetaData metadata = extractor.extractMetadata(file);
+      document.setSize(file.length());
+      document.setTitle(metadata.getTitle());
+      document.setDescription(metadata.getSubject());
+    }
   }
 
   private void processMailContent(PublicationDetail pubDetail, File file,

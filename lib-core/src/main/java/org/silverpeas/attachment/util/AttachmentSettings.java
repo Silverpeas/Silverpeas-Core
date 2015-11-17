@@ -23,75 +23,23 @@
  */
 package org.silverpeas.attachment.util;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-import javax.inject.Inject;
-
 /**
- * The aim of this class is to expose at the rest of application the settings around attachments.
- * Its implementation allows to manage the attachment parameters easily into unit tests. It assures
- * also less problems around setting regressions.
+ * Handled the settings around the attachments.
  * @author: Yohann Chastagnier
  */
 public class AttachmentSettings {
 
-  private static final AttachmentSettings instance = new AttachmentSettings();
-
-  @Inject
-  private Provider provider;
+  private static ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
 
   /**
-   * Indicates if obsolete wysiwyg content must be ignored.
-   * This method returns always false if {@link #getObsoleteWysiwygContentIgnoredMark()} returns
-   * a not defined value.
-   * False by default (attachment.wysiwyg.content.inspection.obsolete.ignore).
-   * @return true if wysiwyg content must be ignored, false otherwise.
+   * Indicates if metadata of a file, if any, can be used to fill data (title & description) of an
+   * attachment. (defined in properties by attachment.data.fromMetadata)
+   * @return true if they must be used, false otherwise.
    */
-  public static boolean isObsoleteWysiwygContentIgnored() {
-    return getInstance().getProvider()
-        .getBoolean("attachment.wysiwyg.content.inspection.obsolete.ignore", false) &&
-        StringUtil.isDefined(getObsoleteWysiwygContentIgnoredMark());
-  }
-
-  /**
-   * Gets the strict mark to fill at start of a wysiwyg file to mark it as ignored.
-   * If the mark exists into the file, but not at beginning, it is not taken into account.
-   * (defined in properties by attachment.wysiwyg.content.inspection.obsolete.ignore.mark)
-   * @return the mark if defined, empty string otherwise.
-   */
-  public static String getObsoleteWysiwygContentIgnoredMark() {
-    return getInstance().getProvider()
-        .getString("attachment.wysiwyg.content.inspection.obsolete.ignore.mark", "");
-  }
-
-  /**
-   * Gets the provider.
-   * @return
-   */
-  private ResourceLocator getProvider() {
-    if (provider == null) {
-      provider = new Provider();
-    }
-    return provider;
-  }
-
-  /**
-   * @return a AttachmentSettings instance.
-   */
-  public static AttachmentSettings getInstance() {
-    return instance;
-  }
-
-  /**
-   * This internal class provides the settings.
-   * Implementing by this way the settings access is very useful for maintenance and unit tests.
-   */
-  public static class Provider extends ResourceLocator {
-    private static final long serialVersionUID = -2626681960886868011L;
-
-    public Provider() {
-      super("org.silverpeas.util.attachment.Attachment", "");
-    }
+  public static boolean isUseFileMetadataForAttachmentDataEnabled() {
+    return settings.getBoolean("attachment.data.fromMetadata", false);
   }
 }

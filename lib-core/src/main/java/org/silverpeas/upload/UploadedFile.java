@@ -32,16 +32,17 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.AttachmentSettings;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 import static com.silverpeas.util.StringUtil.getBooleanValue;
 import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
@@ -184,24 +185,19 @@ public class UploadedFile {
     String lang = I18NHelper.checkLanguage(contributionLanguage);
 
     // Title and description
-    String title = getTitle();
-    String description = getDescription();
-    if (!StringUtil.isDefined(title)) {
+    String title = defaultStringIfNotDefined(getTitle());
+    String description = defaultStringIfNotDefined(getDescription());
+    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+        !StringUtil.isDefined(title)) {
       MetadataExtractor extractor = MetadataExtractor.getInstance();
       MetaData metadata = extractor.extractMetadata(getFile());
       if (StringUtil.isDefined(metadata.getTitle())) {
         title = metadata.getTitle();
-      } else {
-        title = "";
       }
       if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
         description = metadata.getSubject();
       }
     }
-    if (!StringUtil.isDefined(description)) {
-      description = "";
-    }
-
     // Simple document PK
     SimpleDocumentPK pk = new SimpleDocumentPK(null, resourcePk);
 
