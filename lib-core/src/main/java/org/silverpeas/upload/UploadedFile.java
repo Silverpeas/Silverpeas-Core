@@ -34,12 +34,17 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+
+import static com.silverpeas.util.StringUtil.getBooleanValue;
+import static org.silverpeas.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 /**
  * Representation of an uploaded file.<br/>
@@ -203,8 +208,14 @@ public class UploadedFile {
     // Simple document
     SimpleDocument document = new SimpleDocument(pk, resourcePk.getId(), 0, false, null,
         new SimpleAttachment(getFile().getName(), lang, title, description, getFile().length(),
-            FileUtil.getMimeType(getFile().getPath()), uploader, DateUtil.getNow(), null)
-    );
+            FileUtil.getMimeType(getFile().getPath()), uploader, DateUtil.getNow(), null));
+
+    boolean versioningActive = getBooleanValue(getOrganisationController().
+        getComponentParameterValue(resourcePk.getComponentName(), VERSION_MODE));
+    if (versioningActive) {
+      document = new HistorisedDocument(document);
+      document.setPublicDocument(true);
+    }
 
     // Simple document details
     document.setLanguage(lang);
