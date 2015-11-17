@@ -42,6 +42,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.RequestParameterDecoder;
 
@@ -61,6 +62,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
@@ -140,21 +142,17 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         checkUploadedFile(tempFile);
 
         String lang = I18NHelper.checkLanguage(uploadData.getLanguage());
-        String title = uploadData.getTitle();
-        String description = uploadData.getDescription();
-        if (!StringUtil.isDefined(title)) {
+        String title = defaultStringIfNotDefined(uploadData.getTitle());
+        String description = defaultStringIfNotDefined(uploadData.getDescription());
+        if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+            !StringUtil.isDefined(title)) {
           MetaData metadata = metadataExtractor.extractMetadata(tempFile);
           if (StringUtil.isDefined(metadata.getTitle())) {
             title = metadata.getTitle();
-          } else {
-            title = "";
           }
           if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
             description = metadata.getSubject();
           }
-        }
-        if (!StringUtil.isDefined(description)) {
-          description = "";
         }
 
         DocumentType attachmentContext;

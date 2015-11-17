@@ -745,9 +745,11 @@ public class PublicationsTypeManager {
                     unitReport.setError(UnitReport.ERROR_FILE_SIZE_EXCEEDS_LIMIT);
                   } else {
                     MetaData metaData = null;
-                    if (settings.isPoiUsed()) {
+                    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+                        settings.isPoiUsed()) {
                       // extract title, subject and keywords
-                      metaData = metadataExtractor.extractMetadata(attdetail.getAttachmentPath());
+                      metaData = MetadataExtractor.getInstance()
+                          .extractMetadata(attdetail.getAttachmentPath());
                       if (!StringUtil.isDefined(attdetail.getTitle()) &&
                           StringUtil.isDefined(metaData.getTitle())) {
                         attdetail.setTitle(metaData.getTitle());
@@ -757,10 +759,12 @@ public class PublicationsTypeManager {
                         attdetail.setInfo(metaData.getSubject());
                       }
                     }
-                    if (settings.useFileDates()) {
+                    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+                        settings.useFileDates()) {
                       // extract creation date
                       if (metaData == null) {
-                        metaData = metadataExtractor.extractMetadata(attdetail.getAttachmentPath());
+                        metaData = MetadataExtractor.getInstance()
+                            .extractMetadata(attdetail.getAttachmentPath());
                       }
                       if (metaData.getCreationDate() != null) {
                         attdetail.setCreationDate(metaData.getCreationDate());

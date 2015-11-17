@@ -314,9 +314,8 @@ public class RepositoriesTypeManager {
                 currentUser.getId(), creationDate, null));
       }
       document.setDocumentType(documentType);
+      setMetadata(document, file);
     }
-
-    setMetadata(document, file);
 
     if (needCreation) {
       boolean notifying = !document.isVersioned() || publicVersion;
@@ -348,10 +347,13 @@ public class RepositoriesTypeManager {
    * @param file the physical file.
    */
   private static void setMetadata(SimpleDocument document, File file) {
-    final MetaData metadata = getMetadataExtractor().extractMetadata(file);
-    document.setSize(file.length());
-    document.setTitle(metadata.getTitle());
-    document.setDescription(metadata.getSubject());
+    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled()) {
+      final MetadataExtractor extractor = MetadataExtractor.getInstance();
+      final MetaData metadata = extractor.extractMetadata(file);
+      document.setSize(file.length());
+      document.setTitle(metadata.getTitle());
+      document.setDescription(metadata.getSubject());
+    }
   }
 
   private static MetadataExtractor getMetadataExtractor() {

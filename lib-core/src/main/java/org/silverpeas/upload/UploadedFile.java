@@ -179,24 +179,19 @@ public class UploadedFile {
     String lang = I18NHelper.checkLanguage(contributionLanguage);
 
     // Title and description
-    String title = getTitle();
-    String description = getDescription();
-    if (!StringUtil.isDefined(title)) {
+    String title = defaultStringIfNotDefined(getTitle());
+    String description = defaultStringIfNotDefined(getDescription());
+    if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
+        !StringUtil.isDefined(title)) {
       MetadataExtractor extractor = ServiceProvider.getService(MetadataExtractor.class);
       MetaData metadata = extractor.extractMetadata(getFile());
       if (StringUtil.isDefined(metadata.getTitle())) {
         title = metadata.getTitle();
-      } else {
-        title = "";
       }
       if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
         description = metadata.getSubject();
       }
     }
-    if (!StringUtil.isDefined(description)) {
-      description = "";
-    }
-
     // Simple document PK
     SimpleDocumentPK pk = new SimpleDocumentPK(null, resourcePk);
 

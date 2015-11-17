@@ -111,7 +111,7 @@ public class PublicationImportExport {
         MetaData metaData = null;
         if (settings.isPoiUsed()) {
           // extract title, subject and keywords
-          metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
+          metaData = MetadataExtractor.getInstance().extractMetadata(file.getAbsolutePath());
           if (StringUtil.isDefined(metaData.getTitle())) {
             nomPub = metaData.getTitle();
           }
@@ -126,7 +126,7 @@ public class PublicationImportExport {
         if (settings.useFileDates()) {
           // extract creation and last modification dates
           if (metaData == null) {
-            metaData = getMetadataExtractor().extractMetadata(file.getAbsolutePath());
+            metaData = MetadataExtractor.getInstance().extractMetadata(file.getAbsolutePath());
           }
           if (metaData.getCreationDate() != null) {
             creationDate = metaData.getCreationDate();
