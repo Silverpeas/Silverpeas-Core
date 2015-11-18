@@ -79,4 +79,21 @@ public class WebDavDocumentService implements WebdavService {
       BasicDaoFactory.logout(session);
     }
   }
+
+  @Override
+  public long getContentEditionSize(final SimpleDocument document) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      return webdavRepository.getContentEditionSize(session, document);
+    } catch (RepositoryException ex) {
+      SilverTrace
+          .error("attachment", "WebDavDocumentService", "attachment.jcr.node.notFound.exception",
+              ex);
+      throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
+          "attachment.jcr.node.notFound.exception", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
 }

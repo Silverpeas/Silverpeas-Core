@@ -63,6 +63,7 @@ var dragAndDropUploadEnabled = window.File;
         return Promise.resolve();
       },
       onCompletedUrl : null,
+      onCompletedUrlHeaders : {},
       onCompletedUrlSuccess : null,
       isFileApi : window.File,
       currentUploadSession : false,
@@ -316,10 +317,17 @@ var dragAndDropUploadEnabled = window.File;
       if (uploadInstance.context.onCompletedUrl) {
         __logDebug("performUploadEnd - performing ajax call on '" +
             uploadInstance.context.onCompletedUrl + "'");
+        var onCompletedUrlHeaders = {
+          "X-UPLOAD-SESSION" : this.id
+        };
+        if (typeof uploadInstance.context.onCompletedUrlHeaders === 'object') {
+          onCompletedUrlHeaders =
+              extendsObject(onCompletedUrlHeaders, uploadInstance.context.onCompletedUrlHeaders);
+        }
         silverpeasAjax({
-          method : 'POST', url : uploadInstance.context.onCompletedUrl, headers : {
-            "X-UPLOAD-SESSION" : this.id
-          }
+          method : 'POST',
+          url : uploadInstance.context.onCompletedUrl,
+          headers : onCompletedUrlHeaders
         }).then(function(request) {
           if (typeof uploadInstance.context.onCompletedUrlSuccess === 'function') {
             __logDebug("performUploadEnd - calling onCompletedUrlSuccess callback");

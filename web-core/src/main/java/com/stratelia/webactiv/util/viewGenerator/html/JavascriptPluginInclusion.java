@@ -27,6 +27,7 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -36,7 +37,6 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.notification.message.MessageManager;
-import org.silverpeas.subscription.SubscriptionSettings;
 import org.silverpeas.util.security.SecuritySettings;
 
 import java.text.MessageFormat;
@@ -397,6 +397,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includePreview(final ElementContainer xhtml) {
+    includePopup(xhtml);
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PREVIEW));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_VIEW));
     xhtml.addElement(script(flexPaperPath + FLEXPAPER_FLASH));
@@ -408,6 +409,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOP));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_TOPCENTER));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER));
+    xhtml.addElement(script(jqueryNotifierPath + "layouts/centerLeft.js"));
     xhtml.addElement(script(jqueryNotifierPath + JQUERY_NOTIFIER_THEME));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_NOTIFIER));
     StringBuilder script = new StringBuilder();
@@ -547,7 +549,7 @@ public class JavascriptPluginInclusion {
     String subscriptionLoad =
         generateDynamicPluginLoading(javascriptPath + SILVERPEAS_SUBSCRIPTION, "subscription",
             "jQuery.subscription.parameters.confirmNotificationSendingOnUpdateEnabled = " +
-                SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() + ";",
+                NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled() + ";",
             jsCallback);
     return getDynamicPopupJavascriptLoadContent(subscriptionLoad);
   }

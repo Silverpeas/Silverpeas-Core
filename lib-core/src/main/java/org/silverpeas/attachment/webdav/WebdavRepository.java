@@ -114,4 +114,17 @@ public interface WebdavRepository {
    */
   String getContentEditionLanguage(Session session, SimpleDocument attachment)
       throws RepositoryException;
+
+  /**
+   * Gets the current content edition size of the specified attachment.
+   * If several webdav document exists (several content languages), then the one which has the
+   * highest modified date is taken into account.
+   * @param session the JCR session.
+   * @param attachment the attachment.
+   * @return the content edition size if the specified attachment exists in the webdav
+   * repository, -1 otherwise.
+   * @throws RepositoryException
+   */
+  long getContentEditionSize(Session session, SimpleDocument attachment)
+      throws RepositoryException;
 }

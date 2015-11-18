@@ -23,6 +23,7 @@ package org.silverpeas.attachment.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -98,6 +99,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteDocument() {
+    UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(null);
     AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
   }
@@ -111,6 +113,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("content/{lang}")
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteContent(final @PathParam("lang") String lang) {
+    UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(lang);
     AttachmentServiceFactory.getAttachmentService().removeContent(document, lang, false);
   }
@@ -164,6 +167,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   protected SimpleDocumentEntity updateSimpleDocument(SimpleDocumentUploadData uploadData,
       String filename) throws IOException {
     try {
+
+      UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+
       SimpleDocument document = getSimpleDocument(uploadData.getLanguage());
       boolean isPublic = false;
       if (uploadData.getVersionType() != null) {
@@ -401,6 +407,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public String unlockDocument(@FormParam("force") final boolean force,
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
+    UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(defaultLanguage);
     UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUserDetail().getId(),
         defaultLanguage, comment);

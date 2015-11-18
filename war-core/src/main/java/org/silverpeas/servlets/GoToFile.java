@@ -23,9 +23,9 @@ package org.silverpeas.servlets;
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
 import org.apache.commons.codec.CharEncoding;
-import org.silverpeas.accesscontrol.SimpleDocumentAccessController;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -51,10 +51,8 @@ public class GoToFile extends GoTo {
     String foreignId = attachment.getForeignId();
 
     if (isUserLogin(req)) {
-      // L'utilisateur a-t-il le droit de consulter le fichier
-      SimpleDocumentAccessController accessController = new SimpleDocumentAccessController();
-      boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), attachment);
-      if (isAccessAuthorized) {
+      // Has the user access rights
+      if (attachment.canBeAccessedBy(UserDetail.getCurrentRequester())) {
         res.setCharacterEncoding(CharEncoding.UTF_8);
         res.setContentType("text/html; charset=utf-8");
         String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());

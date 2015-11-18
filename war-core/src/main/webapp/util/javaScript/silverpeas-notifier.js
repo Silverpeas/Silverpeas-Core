@@ -89,6 +89,24 @@ function notyError(text, customOptions) {
 }
 
 /**
+ * Helper to display a Silverpeas debug notification.
+ * @param text
+ */
+function notyDebug(text, customOptions) {
+  var options = {
+    layout: 'centerLeft',
+    text: text,
+    //timeout: false,
+    //closeWith: ['button'], // ['click', 'button', 'hover']
+    type: 'warning'
+  };
+  if (customOptions) {
+    $.extend(options, customOptions);
+  }
+  return __noty(options);
+}
+
+/**
  * Helper.
  * @param text
  */

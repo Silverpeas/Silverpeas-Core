@@ -78,6 +78,7 @@ public class SimpleDocument implements Serializable {
   private int order;
   private boolean versioned;
   private String webdavContentEditionLanguage;
+  private long webdavContentEditionSize = -1;
   private String editedBy;
   private Date reservation;
   private Date alert;
@@ -181,8 +182,6 @@ public class SimpleDocument implements Serializable {
     this.foreignId = simpleDocument.getForeignId();
     this.order = simpleDocument.getOrder();
     this.versioned = simpleDocument.isVersioned();
-    // This below instruction is commented because of the lazy behavior of the get method.
-    // this.webdavContentEditionLanguage = simpleDocument.getWebdavContentEditionLanguage();
     this.editedBy = simpleDocument.getEditedBy();
     this.reservation = simpleDocument.getReservation();
     this.alert = simpleDocument.getAlert();
@@ -362,8 +361,9 @@ public class SimpleDocument implements Serializable {
     this.comment = comment;
   }
 
-  protected void setWebdavContentEditionLanguage(final String webdavContentEditionLanguage) {
-    this.webdavContentEditionLanguage = webdavContentEditionLanguage;
+  protected void resetWebdavContentEditionContext() {
+    this.webdavContentEditionLanguage = null;
+    this.webdavContentEditionSize = -1;
   }
 
   /**
@@ -390,12 +390,36 @@ public class SimpleDocument implements Serializable {
     return webdavContentEditionLanguage;
   }
 
+  /**
+   * Gets the content size handled into webdav for the document.
+   * @return the content size if the document is currently handled into the webdav repository,
+   * a value less than zero otherwise.
+   */
+  public long getWebdavContentEditionSize() {
+    if (webdavContentEditionSize < 0) {
+      // To be handled into webdav repository, the document must be an open office compatible,
+      // and it must also be read only (reservation)
+      if (isOpenOfficeCompatible() && isReadOnly()) {
+        // The method has not been called yet.
+        // Firstly searching through Webdav services the information.
+        webdavContentEditionSize =
+            WebdavServiceFactory.getWebdavService().getContentEditionSize(getVersionMaster());
+      }
+      // If null, it indicates that the document does not exists into webdav repository.
+      // The class attribute is initialized to empty value.
+      if (webdavContentEditionSize < 0) {
+        webdavContentEditionSize = 0;
+      }
+    }
+    return webdavContentEditionSize;
+  }
+
   public String getEditedBy() {
     return editedBy;
   }
 
   public void edit(String currentEditor) {
-    setWebdavContentEditionLanguage(null);
+    resetWebdavContentEditionContext();
     this.editedBy = currentEditor;
     setReservation(new Date());
     String day =
@@ -421,7 +445,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public void release() {
-    setWebdavContentEditionLanguage(null);
+    resetWebdavContentEditionContext();
     this.editedBy = null;
     setReservation(null);
     setExpiry(null);
@@ -508,7 +532,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public void unlock() {
-    setWebdavContentEditionLanguage(null);
+    resetWebdavContentEditionContext();
     this.editedBy = null;
     setExpiry(null);
     setAlert(null);

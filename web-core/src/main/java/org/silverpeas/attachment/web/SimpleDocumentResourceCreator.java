@@ -26,6 +26,7 @@ package org.silverpeas.attachment.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MetaData;
@@ -125,6 +126,9 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
       if (uploadData.getRequestFile() == null) {
         return null;
       }
+
+      UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+
       String uploadedFilename = filename;
       if (StringUtil.isNotDefined(filename)) {
         uploadedFilename = uploadData.getRequestFile().getName();
