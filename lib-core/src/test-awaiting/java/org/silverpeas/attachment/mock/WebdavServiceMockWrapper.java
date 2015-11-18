@@ -50,4 +50,9 @@ public class WebdavServiceMockWrapper implements WebdavService {
   public String getContentEditionLanguage(final SimpleDocument document) {
     return mock.getContentEditionLanguage(document);
   }
+
+  @Override
+  public long getContentEditionSize(final SimpleDocument document) {
+    return mock.getContentEditionSize(document);
+  }
 }

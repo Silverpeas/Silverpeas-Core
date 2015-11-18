@@ -86,6 +86,11 @@
   <c:set var="dndDisabledLocally" value="${silfn:isDefined(param.dnd) and not silfn:booleanValue(param.dnd)}" scope="page"/>
   <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable && not dndDisabledLocally}" />
 
+  <c:set var="handledSubscriptionType" value="${param.HandledSubscriptionType}"/>
+  <c:set var="handledSubscriptionResourceId" value="${param.HandledSubscriptionResourceId}"/>
+  <c:set var="isHandledSubscriptionConfirmation"
+         value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
+
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="greatestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
@@ -99,7 +104,7 @@
     </c:otherwise>
   </c:choose>
   <c:choose>
-    <c:when test="${param.AttachmentPosition != null}">
+    <c:when test="${silfn:isDefined(param.AttachmentPosition)}">
       <c:set var="attachmentPosition" scope="page" value="${param.AttachmentPosition}" />
     </c:when>
     <c:otherwise>
@@ -124,7 +129,7 @@
     </c:otherwise>
   </c:choose>
   <c:choose>
-    <c:when test="${param.ShowTitle != null}">
+    <c:when test="${silfn:isDefined(param.ShowTitle)}">
       <c:set var="showTitle" scope="page" value="${silfn:booleanValue(param.ShowTitle)}" />
     </c:when>
     <c:otherwise>
@@ -132,7 +137,7 @@
     </c:otherwise>
   </c:choose>
   <c:choose>
-    <c:when test="${param.ShowFileSize != null}">
+    <c:when test="${silfn:isDefined(param.ShowFileSize)}">
       <c:set var="showFileSize" scope="page" value="${silfn:booleanValue(param.ShowFileSize)}" />
     </c:when>
     <c:otherwise>
@@ -140,7 +145,7 @@
     </c:otherwise>
   </c:choose>
   <c:choose>
-    <c:when test="${param.ShowInfo != null}">
+    <c:when test="${silfn:isDefined(param.ShowInfo)}">
       <c:set var="showInfo" scope="page" value="${silfn:booleanValue(param.ShowInfo)}" />
     </c:when>
     <c:otherwise>
@@ -148,7 +153,7 @@
     </c:otherwise>
   </c:choose>
   <c:choose>
-    <c:when test="${param.ShowIcon != null}">
+    <c:when test="${silfn:isDefined(param.ShowIcon)}">
       <c:set var="showIcon" scope="page" value="${silfn:booleanValue(param.ShowIcon)}" />
     </c:when>
     <c:otherwise>
@@ -668,6 +673,51 @@
         });
     });
 
+    function verifyVersionType(domRadioSelector) {
+      var lastVersionType = 'public';
+      if (domRadioSelector) {
+        var $radio = $(domRadioSelector);
+        if ($radio.length === 2 && $radio.parent().parent().css('display') !== 'none') {
+          var value = $radio.filter(':checked').val();
+          lastVersionType = (!value || value === 'false' || value === '0') ? 'public' : 'work';
+        }
+      }
+      return lastVersionType;
+    }
+
+    function _performActionWithPotentialNotification(callback, options) {
+      <c:choose>
+      <c:when test="${isHandledSubscriptionConfirmation}">
+      var params = typeof options === 'object' ? options : {};
+      var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
+      if (verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav) {
+        $.subscription.confirmNotificationSendingOnUpdate({
+          subscription : {
+            componentInstanceId : '${componentId}',
+            type : '${handledSubscriptionType}',
+            resourceId : '${handledSubscriptionResourceId}'
+          }, callback : function(userResponse) {
+            callback.call(this, userResponse);
+          }
+        });
+      } else {
+        callback.call(this, {
+          applyOnAjaxOptions : function(ajaxOptions) {
+            return ajaxOptions;
+          }
+        });
+      }
+      </c:when>
+      <c:otherwise>
+      callback.call(this, {
+        applyOnAjaxOptions : function(ajaxOptions) {
+          return ajaxOptions;
+        }
+      });
+      </c:otherwise>
+      </c:choose>
+    }
+
     var iframeSendComplete = function() {
       reloadIncludingPage();
     };
@@ -738,60 +788,86 @@
           id: "button-delete-content",
           text: "<fmt:message key="GML.delete"/>",
           click: function() {
-            var attachmentId = $(this).data("id");
+            var $this = $(this);
+            $.progressMessage();
+            var attachmentId = $this.data("id");
             <c:choose>
               <c:when test="${_isI18nHandled && not isVersionActive}">
-                $("input[name='languagesToDelete']").filter(':checked').each(function() {
-                  var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
-                  $.ajax({
-                    url: deleteUrl,
-                    type: "DELETE",
-                    cache: false,
-                    async: false,
-                    success: function(data) {},
-                    error: function(jqXHR, textStatus, errorThrown) {
-                      alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
-                    }
-                  });
-                });
-                reloadIncludingPage();
-                $("#dialog-attachment-delete").dialog("close");
-              </c:when>
-              <c:otherwise>
-                  var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
-                  $.ajax({
-                    url: deleteUrl,
-                    type: "DELETE",
-                    cache: false,
-                    async: false,
-                    success: function(data) {
-                      reloadIncludingPage();
-                      $(this).dialog("close");
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                      alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
-                    }
-                  });
-                </c:otherwise>
-              </c:choose>
-           }
-        },
-        '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
-          id: "button-delete-all",
-          text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
-          click: function() {
-            var attachmentId = $(this).data("id");
-            var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+            var deleteOperations = [];
+            $("input[name='languagesToDelete']").filter(':checked').each(function() {
+              var me = this;
+              deleteOperations.push(function($deferred){
+                var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + me.value;
                 $.ajax({
                   url: deleteUrl,
                   type: "DELETE",
                   cache: false,
                   async: false,
                   success: function(data) {
-                    reloadIncludingPage();
-                    $(this).dialog("close");
+                    $deferred.resolve();
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+                    $deferred.reject();
                   }
                 });
+              });
+            });
+            var _consumeDeleteOperations = function() {
+              if (deleteOperations.length) {
+                var $deferred = $.Deferred();
+                deleteOperations.shift().call(this, $deferred);
+                $deferred.always(function() {
+                  _consumeDeleteOperations();
+                });
+              } else {
+                reloadIncludingPage();
+              }
+            };
+            _consumeDeleteOperations();
+            $("#dialog-attachment-delete").dialog("close");
+              </c:when>
+              <c:otherwise>
+            _performActionWithPotentialNotification(function(userResponse) {
+              var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+              $.ajax(userResponse.applyOnAjaxOptions({
+                url: deleteUrl,
+                type: "DELETE",
+                cache: false,
+                async: false,
+                success: function(data) {
+                  reloadIncludingPage();
+                  $this.dialog("close");
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                  alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+                }
+              }));
+            });
+              </c:otherwise>
+            </c:choose>
+          }
+        },
+        '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
+          id: "button-delete-all",
+          text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
+          click: function() {
+            var $this = $(this);
+            _performActionWithPotentialNotification(function(userResponse) {
+              $.progressMessage();
+              var attachmentId = $this.data("id");
+              var deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+              $.ajax(userResponse.applyOnAjaxOptions({
+                url: deleteUrl,
+                type: "DELETE",
+                cache: false,
+                async: false,
+                success: function(data) {
+                  reloadIncludingPage();
+                  $this.dialog("close");
+                }
+              }));
+            });
           }
         },
         '<fmt:message key="GML.cancel"/>': function() {
@@ -820,23 +896,27 @@
             }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
             submitUrl = submitUrl + '/' + encodeURIComponent(filename);
-            $.progressMessage();
-            if ("FormData" in window) {
-              var formData = new FormData($("#add-attachment-form")[0]);
-              $.ajax(submitUrl, {
-                processData : false,
-                contentType : false,
-                type : 'POST',
-                dataType : "json",
-                data : formData,
-                success : function(data) {
-                  reloadIncludingPage();
-                }
-              });
-            } else {
-              $('#add-attachment-form').attr('action', submitUrl);
-              $('#add-attachment-form').submit();
-            }
+            _performActionWithPotentialNotification(function() {
+              $.progressMessage();
+              if ("FormData" in window) {
+                var formData = new FormData($("#add-attachment-form")[0]);
+                $.ajax(submitUrl, {
+                  processData : false,
+                  contentType : false,
+                  type : 'POST',
+                  dataType : "json",
+                  data : formData,
+                  success : function(data) {
+                    reloadIncludingPage();
+                  }
+                });
+              } else {
+                $('#add-attachment-form').attr('action', submitUrl);
+                $('#add-attachment-form').submit();
+              }
+            }, {
+              versionTypeDomRadioSelector : '#dialog-attachment-add input[name="versionType"]'
+            });
           },
           '<fmt:message key="GML.cancel"/>' : function() {
             $(this).dialog("close");
@@ -861,40 +941,46 @@
             } else {
               submitUrl = submitUrl + '/no_file';
             }
-            $.progressMessage();
-            if ("FormData" in window) {
-              var formData = new FormData($("#update-attachment-form")[0]);
-              $.ajax(submitUrl, {
-                processData : false,
-                contentType : false,
-                type : 'POST',
-                dataType : "json",
-                data : formData,
-                success : function(data) {
-                  reloadIncludingPage();
-                }
-              });
-            } else {
-              $('#update-attachment-form').attr('action', submitUrl);
-              $('#update-attachment-form').submit();
-            }
+            _performActionWithPotentialNotification(function() {
+              $.progressMessage();
+              if ("FormData" in window) {
+                var formData = new FormData($("#update-attachment-form")[0]);
+                $.ajax(submitUrl, {
+                  processData : false,
+                  contentType : false,
+                  type : 'POST',
+                  dataType : "json",
+                  data : formData,
+                  success : function(data) {
+                    reloadIncludingPage();
+                  }
+                });
+              } else {
+                $('#update-attachment-form').attr('action', submitUrl);
+                $('#update-attachment-form').submit();
+              }
+            }, {
+              versionTypeDomRadioSelector : '#dialog-attachment-update input[name="versionType"]'
+            });
           },
           <c:if test="${_isI18nHandled && not isVersionActive}">
           '<fmt:message key="attachment.dialog.delete.lang"/>' : function() {
             if (confirm('<fmt:message key="attachment.suppressionConfirmation" />')) {
+              var $this = $(this);
+              $.progressMessage();
               $.ajax({
                 url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
-                    $(this).data('attachmentId') + '/content/' + $("#fileLang").val(),
+                    $this.data('attachmentId') + '/content/' + $("#fileLang").val(),
                 type : "DELETE",
                 contentType : "application/json",
                 dataType : "json",
                 cache : false,
                 success : function(data) {
                   reloadIncludingPage();
-                  $(this).dialog("close");
+                  $this.dialog("close");
                 }
               });
-              $(this).dialog("close");
+              $this.dialog("close");
             }
           },
           </c:if>
@@ -916,18 +1002,20 @@
         });
 
         function submitCheckin(submitUrl) {
-            $.ajax(submitUrl, {
-              type: 'POST',
-              dataType: "json",
-              data: $("#checkin-attachment-form").serialize(),
-              success:function(result) {
-                reloadIncludingPage();
-                $(this).dialog("close");
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
-              }
-            });
+          $.progressMessage();
+          var $this = $(this);
+          $.ajax(submitUrl, {
+            type : 'POST',
+            dataType : "json",
+            data : $("#checkin-attachment-form").serialize(),
+            success : function(result) {
+              reloadIncludingPage();
+              $this.dialog("close");
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+              alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+            }
+          });
         }
 
         $("#dialog-attachment-switch").dialog({
@@ -938,16 +1026,18 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
+            var $this = $(this);
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $("#dialog-attachment-switch").data('id') + '/switchState';
+            $.progressMessage();
             $.ajax(submitUrl, {
-              type: 'PUT',
-              dataType: "json",
-              data: $("#attachment-switch-form").serialize(),
-              success:function(result) {
+              type : 'PUT',
+              dataType : "json",
+              data : $("#attachment-switch-form").serialize(),
+              success : function(result) {
                 reloadIncludingPage();
-                $(this).dialog("close");
+                $this.dialog("close");
               },
-              error: function(jqXHR, textStatus, errorThrown) {
+              error : function(jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
               }
             });
@@ -966,21 +1056,30 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
+            var $webDav = $('#webdav');
+            $webDav.val($("#dialog-attachment-checkin").data('webdav'));
             $('#force').val($("#dialog-attachment-checkin").data('forceRelease'));
-            $('#webdav').val($("#dialog-attachment-checkin").data('webdav'));
             $('#checkin_oldId').val($("#dialog-attachment-checkin").data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-            submitCheckin(submitUrl);
+            var $this = $(this);
+            _performActionWithPotentialNotification(function() {
+              submitCheckin.call($this, submitUrl);
+            }, {
+              versionTypeDomRadioSelector : '#dialog-attachment-checkin input[name="private"]',
+              checkInWebDav : $webDav.val() === 'true'
+            });
           },
           '<fmt:message key="attachment.revert"/>': function() {
               $('#force').val('true');
               $('#webdav').val('false');
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-              submitCheckin(submitUrl);
+              var $this = $(this);
+              submitCheckin.call($this, submitUrl);
             },
             '<fmt:message key="GML.cancel"/>': function() {
+              var $this = $(this);
               clearCheckin();
-              $(this).dialog("close");
+              $this.dialog("close");
             }
           },
           close: function() {
@@ -1278,5 +1377,7 @@
                                   resourceId="${param.Id}"
                                   contentLanguage="${contentLanguage}"
                                   hasToBeIndexed="${indexIt}"
-                                  documentType="${param.Context}"/>
+                                  documentType="${param.Context}"
+                                  handledSubscriptionType="${handledSubscriptionType}"
+                                  handledSubscriptionResourceId="${handledSubscriptionResourceId}"/>
 </c:if>

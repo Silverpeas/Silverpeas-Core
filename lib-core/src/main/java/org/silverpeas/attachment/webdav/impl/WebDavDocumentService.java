@@ -29,7 +29,6 @@ import org.silverpeas.jcr.JcrSession;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import java.io.IOException;
 
@@ -45,12 +44,7 @@ public class WebDavDocumentService implements WebdavService {
     try(JcrSession session = openSystemSession()) {
       webdavRepository.updateAttachmentBinaryContent(session, document);
       session.save();
-    } catch (RepositoryException ex) {
-      SilverTrace
-          .error("attachment", "WebDavDocumentService", "attachment.jcr.create.exception", ex);
-      throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
-          "attachment.jcr.create.exception", ex);
-    } catch (IOException ex) {
+    } catch (RepositoryException | IOException ex) {
       SilverTrace
           .error("attachment", "WebDavDocumentService", "attachment.jcr.create.exception", ex);
       throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
@@ -62,6 +56,19 @@ public class WebDavDocumentService implements WebdavService {
   public String getContentEditionLanguage(final SimpleDocument document) {
     try(JcrSession session = openSystemSession()) {
       return webdavRepository.getContentEditionLanguage(session, document);
+    } catch (RepositoryException ex) {
+      SilverTrace
+          .error("attachment", "WebDavDocumentService", "attachment.jcr.node.notFound.exception",
+              ex);
+      throw new AttachmentException("WebDavDocumentService", SilverpeasRuntimeException.ERROR,
+          "attachment.jcr.node.notFound.exception", ex);
+    }
+  }
+
+  @Override
+  public long getContentEditionSize(final SimpleDocument document) {
+    try(JcrSession session = openSystemSession()) {
+      return webdavRepository.getContentEditionSize(session, document);
     } catch (RepositoryException ex) {
       SilverTrace
           .error("attachment", "WebDavDocumentService", "attachment.jcr.node.notFound.exception",

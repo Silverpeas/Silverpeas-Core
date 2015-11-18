@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -95,6 +96,8 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       if (!uploadSession.isUserAuthorized(componentId)) {
         throwHttpForbiddenError();
       }
+
+      UserSubscriptionNotificationSendingHandler.verifyRequest(req);
 
       final String resourceId = request.getParameter("ResourceId");
       final String contentLanguage = checkLanguage(request.getParameter("ContentLanguage"));
