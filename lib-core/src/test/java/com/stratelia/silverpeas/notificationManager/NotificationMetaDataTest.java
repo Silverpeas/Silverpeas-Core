@@ -216,8 +216,9 @@ public class NotificationMetaDataTest {
     current.addGroupRecipient(new GroupRecipient("GU"));
 
     assertThat(current.getAllUserRecipients(),
-        containsInAnyOrder(new UserRecipient("26"), new UserRecipient("38"),
-            new UserRecipient("GU_1"), new UserRecipient("GU_2"), new UserRecipient("GU_3")));
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26"),
+            new UserRecipient("38"), new UserRecipient("GU_1"), new UserRecipient("GU_2"),
+            new UserRecipient("GU_3")));
     assertThat(current.getUserRecipientsToExclude(), empty());
   }
 
@@ -232,9 +233,10 @@ public class NotificationMetaDataTest {
     current.addGroupRecipient(new GroupRecipient("GU"));
 
     assertThat(current.getAllUserRecipients(true),
-        containsInAnyOrder(new UserRecipient("26"), new UserRecipient("38"),
-            new UserRecipient("GU_1"), new UserRecipient("GU_2"), new UserRecipient("GU_3")));
-    assertThat(current.getUserRecipientsToExclude(), contains(new UserRecipient(USER_SENDER)));
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26"),
+            new UserRecipient("38"), new UserRecipient("GU_1"), new UserRecipient("GU_2"),
+            new UserRecipient("GU_3")));
+    assertThat(current.getUserRecipientsToExclude(), empty());
   }
 
   @Test
@@ -248,8 +250,9 @@ public class NotificationMetaDataTest {
     current.addGroupRecipient(new GroupRecipient("GU"));
 
     assertThat(current.getAllUserRecipients(),
-        containsInAnyOrder(new UserRecipient("26"), new UserRecipient("38"),
-            new UserRecipient("GU_1"), new UserRecipient("GU_2"), new UserRecipient("GU_3")));
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26"),
+            new UserRecipient("38"), new UserRecipient("GU_1"), new UserRecipient("GU_2"),
+            new UserRecipient("GU_3")));
     assertThat(current.getUserRecipientsToExclude(), contains(new UserRecipient("Excluded")));
   }
 
@@ -265,10 +268,68 @@ public class NotificationMetaDataTest {
     current.addGroupRecipient(new GroupRecipient("GU"));
 
     assertThat(current.getAllUserRecipients(true),
-        containsInAnyOrder(new UserRecipient("26"), new UserRecipient("38"),
-            new UserRecipient("GU_1"), new UserRecipient("GU_2"), new UserRecipient("GU_3")));
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26"),
+            new UserRecipient("38"), new UserRecipient("GU_1"), new UserRecipient("GU_2"),
+            new UserRecipient("GU_3")));
     assertThat(current.getUserRecipientsToExclude(),
-        containsInAnyOrder(new UserRecipient("Excluded"), new UserRecipient(USER_SENDER)));
+        containsInAnyOrder(new UserRecipient("Excluded")));
+  }
+
+  @Test
+  public void getAllUserRecipientsInSendContextForVerifyingExclusionWithDefaultSettings()
+      throws Exception {
+    current.setSender(USER_SENDER);
+    current.addUserRecipientToExclude(new UserRecipient("Excluded"));
+    current.addUserRecipient(new UserRecipient(USER_SENDER));
+    current.addUserRecipient(new UserRecipient("26"));
+
+    assertThat(current.getAllUserRecipients(true),
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26")));
+    assertThat(current.getUserRecipientsToExclude(),
+        containsInAnyOrder(new UserRecipient("Excluded")));
+  }
+
+  @Test
+  public void getAllUserRecipientsInSendContextForVerifyingSenderExclusion()
+      throws Exception {
+    current.setSender(USER_SENDER);
+    current.addUserRecipientToExclude(new UserRecipient("Excluded"));
+    current.addUserRecipient(new UserRecipient(USER_SENDER));
+    current.addUserRecipient(new UserRecipient("26"));
+
+    assertThat(current.getAllUserRecipients(true),
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26")));
+    assertThat(current.getUserRecipientsToExclude(),
+        containsInAnyOrder(new UserRecipient("Excluded")));
+  }
+
+  @Test
+  public void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithForceKeepingSender()
+      throws Exception {
+    current.setSender(USER_SENDER);
+    current.addUserRecipientToExclude(new UserRecipient("Excluded"));
+    current.addUserRecipient(new UserRecipient(USER_SENDER));
+    current.addUserRecipient(new UserRecipient("26"));
+
+    assertThat(current.getAllUserRecipients(true),
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26")));
+    assertThat(current.getUserRecipientsToExclude(),
+        containsInAnyOrder(new UserRecipient("Excluded")));
+  }
+
+  @Test
+  public void getAllUserRecipientsInSendContextForVerifyingSenderExclusionWithManualNotification()
+      throws Exception {
+    current.setSender(USER_SENDER);
+    current.addUserRecipientToExclude(new UserRecipient("Excluded"));
+    current.addUserRecipient(new UserRecipient(USER_SENDER));
+    current.addUserRecipient(new UserRecipient("26"));
+    current.manualUserNotification();
+
+    assertThat(current.getAllUserRecipients(true),
+        containsInAnyOrder(new UserRecipient(USER_SENDER), new UserRecipient("26")));
+    assertThat(current.getUserRecipientsToExclude(),
+        containsInAnyOrder(new UserRecipient("Excluded")));
   }
 
   /*

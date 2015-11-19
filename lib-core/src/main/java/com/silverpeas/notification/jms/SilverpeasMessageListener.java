@@ -29,7 +29,6 @@ import com.silverpeas.notification.NotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.silverpeas.notification.builder.UserSubscriptionNotificationBehavior;
 import com.silverpeas.notification.builder.UserSubscriptionNotificationSendingHandler;
 
 /**

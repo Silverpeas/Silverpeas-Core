@@ -24,9 +24,11 @@
 package com.silverpeas.notification.builder;
 
 import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.ExternalRecipient;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -36,7 +38,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -196,6 +197,13 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
       for (final String userId : userIdsToExcludeFromNotifying) {
         getNotificationMetaData().addUserRecipientToExclude(new UserRecipient(userId));
       }
+    }
+    if (this instanceof UserSubscriptionNotificationBehavior &&
+        NotificationManagerSettings.isRemoveSenderFromSubscriptionNotificationReceiversEnabled() &&
+        StringUtil.isInteger(getSender())) {
+      // The sender must be excluded from receivers when the notification concerns a subscription
+      // and if it is enabled from the global parameter.
+      getNotificationMetaData().addUserRecipientToExclude(new UserRecipient(getSender()));
     }
 
     if (CollectionUtil.isNotEmpty(groupIdsToNotify)) {

@@ -708,15 +708,6 @@ public class NotificationMetaData implements java.io.Serializable {
         updateInternalUserRecipientsToExclude ? getUserRecipientsToExclude() :
             new HashSet<UserRecipient>(getUserRecipientsToExclude());
 
-    if (!isManualUserOne()) {
-      // If sender exists, it is excluded
-      String senderId = getSender();
-      if (StringUtil.isInteger(senderId) && Integer.parseInt(senderId) > 0) {
-        UserRecipient senderUserRecipient = new UserRecipient(senderId);
-        userRecipientsToExclude.add(senderUserRecipient);
-      }
-    }
-
     // First get direct users
     allUniqueUserRecipients.addAll(userRecipients);
 
