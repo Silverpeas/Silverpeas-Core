@@ -25,7 +25,8 @@ import com.stratelia.webactiv.beans.admin.Group;
 import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 
-/** A notifier of an event concerning the life-cycle of a user group in Silverpeas.
+/**
+ * A notifier of an event concerning the life-cycle of a user group in Silverpeas.
  * @author mmoquillon
  */
 public class GroupEventNotifier extends CDIResourceEventNotifier<Group, GroupEvent> {
