@@ -67,7 +67,7 @@ public class PersonalSpaceController {
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");
       throw new AdminException(MessageFormat.format(errorText, componentName), false);
     }
-    List<Parameter> parameters = baseComponent.getParameters();
+    List<Parameter> parameters = baseComponent.getAllParameters();
 
     // set specific parameter values for personal space context
     for (Parameter parameter : parameters) {
