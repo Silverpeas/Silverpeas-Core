@@ -30,6 +30,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import com.silverpeas.util.StringUtil;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -85,8 +86,10 @@ public class ContactBmEJB implements ContactBm {
       
       if (contact instanceof CompleteContact) {
         CompleteContact fullContact = (CompleteContact) contact;
-        fullContact.saveForm();
-        createInfoModel(contact.getPK(), fullContact.getModelId());
+        if (fullContact.isFormDefined()) {
+          fullContact.saveForm();
+          createInfoModel(contact.getPK(), fullContact.getModelId());
+        }
       }
       
       createIndex(contact);

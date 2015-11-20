@@ -177,7 +177,7 @@ public class CompleteContact implements Contact, Serializable {
     return getForm(false);
   }
 
-  private boolean isFormDefined() {
+  public boolean isFormDefined() {
     return StringUtil.isDefined(modelId) && modelId.endsWith(".xml");
   }
 
