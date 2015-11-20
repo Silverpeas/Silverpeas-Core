@@ -144,7 +144,7 @@
               <ul id="user_list">
                 <li ng-repeat="user in users" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
-                  <span class="name_user">{{ user.lastName + ' ' + user.firstName }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
+                  <span class="name_user">{{ userFullName(user) }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
                   <span class="mail_user">{{ user.eMail }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a href="#" ng-show="isUserSelectable(user)" ng-click="selectUser(user)" id="{{ 'add_user_' + user.id }}" title="<fmt:message key='selection.AddToSelection'/>" class="add user"><fmt:message key="selection.AddToSelection"/></a>
@@ -191,7 +191,7 @@
               <ul id="selected_user_list">
                 <li ng-repeat="user in selectedUsers.currentpage()" ng-class="user.deactivatedState ? 'state-deactivated' : ''" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
-                  <span class="name_user">{{ user.lastName + ' ' + user.firstName }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
+                  <span class="name_user">{{ userFullName(user) }}<span ng-show="user.deactivatedState"> (${DEACTIVATED_SHORT_LABEL})</span> </span>
                   <span class="mail_user">{{ user.eMail }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
                   <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
@@ -503,6 +503,11 @@
            $scope.$watch('userNameFilter', searchUsers);
 
            /* Functions provided by the scope in order to be used in GUI */
+
+          /* The full name of a user by starting with its last name */
+          $scope.userFullName = function(user) {
+            return user.lastName + ' ' + user.firstName;
+          }
 
           /* Indicates if the information of domain has to be displayed */
           $scope.showDomainData = function() {
