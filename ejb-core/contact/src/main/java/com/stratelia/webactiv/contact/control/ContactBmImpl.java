@@ -81,8 +81,10 @@ public class ContactBmImpl implements ContactBm {
       
       if (contact instanceof CompleteContact) {
         CompleteContact fullContact = (CompleteContact) contact;
-        fullContact.saveForm();
-        createInfoModel(contact.getPK(), fullContact.getModelId());
+        if (fullContact.isFormDefined()) {
+          fullContact.saveForm();
+          createInfoModel(contact.getPK(), fullContact.getModelId());
+        }
       }
       
       createIndex(contact);
