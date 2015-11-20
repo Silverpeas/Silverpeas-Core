@@ -154,13 +154,13 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   @Override
   @XmlElement(required = true)
   public String getFirstName() {
-    return Encode.forHtml(this.user.getFirstName());
+    return this.user.getFirstName();
   }
 
   @Override
   @XmlElement(required = true)
   public String getLastName() {
-    return Encode.forHtml(this.user.getLastName());
+    return this.user.getLastName();
   }
 
   @Override
