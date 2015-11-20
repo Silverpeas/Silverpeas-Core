@@ -194,17 +194,38 @@
       }
     };
 
+    var userResponse = {
+      sendNotification : true,
+      applyOnAjaxOptions : function(ajaxOptions) {
+        var notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
+        if (!userResponse.sendNotification) {
+          extendsObject(notEmptyAjaxOptions, {
+            headers : {
+              'SKIP_SUBSCRIPTION_NOTIFICATION_SENDING' : true
+            }
+          });
+        }
+        return notEmptyAjaxOptions;
+      }
+    };
+
     var confirmSubscriptionNotificationSending = function() {
       var urlOfDialogMessage = $settings.subscription.context +
           '/subscription/jsp/messages/confirmSubscriptionNotificationSending.jsp';
       displaySingleConfirmationPopupFrom(urlOfDialogMessage, {
         callback : function() {
           setSubscriptionNotificationSendingParameter.call(this, true);
-          $settings.callback.call(this);
+          $settings.callback.call(this, userResponse);
           return true;
-        }, alternativeCallback : function() {
+        },
+        alternativeCallback : function() {
           setSubscriptionNotificationSendingParameter.call(this, false);
-          $settings.callback.call(this);
+          $settings.callback.call(this, extendsObject(userResponse, {sendNotification : false}));
+        },
+        callbackOnClose : function() {
+          if (typeof $settings.callbackOnClose === 'function') {
+            $settings.callbackOnClose.call(this);
+          }
         }
       });
     };
@@ -215,7 +236,7 @@
         confirmSubscriptionNotificationSending();
       } else {
         // In this case, no subscribers exists, so the callback is performed immediately.
-        $settings.callback.call(this);
+        $settings.callback.call(this, userResponse);
       }
     });
   }

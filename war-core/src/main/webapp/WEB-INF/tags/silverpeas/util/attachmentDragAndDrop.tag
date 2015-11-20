@@ -64,6 +64,14 @@
 <c:if test="${empty helpCoverClass}">
   <c:set var="helpCoverClass" value="droparea-cover-help-attachment"/>
 </c:if>
+<%@ attribute name="handledSubscriptionType" required="false"
+              type="java.lang.String"
+              description="The the subscription notification type to manage, if any." %>
+<%@ attribute name="handledSubscriptionResourceId" required="false"
+              type="java.lang.String"
+              description="The the resource id of subscription notification to manage, if any." %>
+<c:set var="isHandledSubscriptionConfirmation"
+       value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
 <view:setConstant var="writerRole" constant="com.stratelia.webactiv.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="com.stratelia.webactiv.SilverpeasRole"/>
@@ -138,17 +146,50 @@
         helpCoverClass : "${helpCoverClass}"
       };
 
-      <c:if test="${_ddIsI18n or isVersionActive}">
+      var _performDdWithPotentialNotification = function (fileUpload, resolve, reject) {
+        <c:choose>
+        <c:when test="${isHandledSubscriptionConfirmation}">
+        var rejectOnClose = true;
+        $.subscription.confirmNotificationSendingOnUpdate({
+          subscription : {
+            componentInstanceId : '${componentInstanceId}',
+            type : '${handledSubscriptionType}',
+            resourceId : '${handledSubscriptionResourceId}'
+          },
+          callback : function(userResponse) {
+            rejectOnClose = false;
+            var ajaxOptions = userResponse.applyOnAjaxOptions();
+            fileUpload.uploadSession.uploadInstance.context.onCompletedUrlHeaders =
+                ajaxOptions.headers;
+            resolve();
+          },
+          callbackOnClose : function() {
+            if (rejectOnClose) {
+              reject();
+            }
+          }
+        });
+        </c:when>
+        <c:otherwise>
+        resolve();
+        </c:otherwise>
+        </c:choose>
+      };
+
+      <c:choose>
+      <c:when test="${_ddIsI18n or isVersionActive}">
       options.beforeSend = function(fileUpload) {
         if (fileUpload.uploadSession.id) {
           return Promise.resolve();
         }
         return new Promise(function(resolve, reject) {
+          var rejectOnClose = true;
           jQuery('#validationDialog${domIdSuffix}').popup('validation', {
             title : '<fmt:message key="attachment.dragAndDrop.title" />',
             buttonDisplayed : true,
             isMaxWidth : true,
             callback : function() {
+              rejectOnClose = false;
               var uploadCompletedUrl = '${uploadCompletedUrl}';
               <c:if test="${_ddIsI18n}">
               var contentLanguage = jQuery('select[name=ddLangCreate${domIdSuffix}]', this).val();
@@ -159,16 +200,29 @@
               uploadCompletedUrl += '&Type=' + version;
               </c:if>
               fileUpload.uploadSession.uploadInstance.context.onCompletedUrl = uploadCompletedUrl;
-              resolve();
+              _performDdWithPotentialNotification.call(this, fileUpload, resolve, reject);
               return true;
             },
             callbackOnClose : function() {
-              reject();
+              if (rejectOnClose) {
+                reject();
+              }
             }
           });
         });
       };
-      </c:if>
+      </c:when>
+      <c:otherwise>
+      options.beforeSend = function(fileUpload) {
+        if (fileUpload.uploadSession.id) {
+          return Promise.resolve();
+        }
+        return new Promise(function(resolve, reject) {
+          _performDdWithPotentialNotification.call(this, fileUpload, resolve, reject);
+        });
+      };
+      </c:otherwise>
+      </c:choose>
 
       initDragAndDropUploadAndReload(options);
     })();

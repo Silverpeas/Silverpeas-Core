@@ -239,7 +239,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
 
     // Verifying the subscription notification sending parameters
-    UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
 
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page

@@ -495,7 +495,7 @@ public class WebdavDocumentRepositoryTest {
   }
 
   @Test
-  public void testGetContentEditionLanguage() throws Exception {
+  public void testGetContentEditionLanguageAndSize() throws Exception {
     new JcrWebdavRepositoryTest() {
       @Override
       public void run(Session session, final WebdavDocumentRepository webdavRepository)
@@ -510,13 +510,16 @@ public class WebdavDocumentRepositoryTest {
         frDocumentFromEnCopy.setLanguage("fr");
         assertThat(webdavRepository.getContentEditionLanguage(session, frDocumentFromEnCopy),
             nullValue());
+        assertThat(webdavRepository.getContentEditionSize(session, frDocumentFromEnCopy), is(-1l));
         frDocumentFromEnCopy.setPK(frDocumentFromEnCopy.getPk().clone());
         frDocumentFromEnCopy.setId(null);
         assertThat(webdavRepository.getContentEditionLanguage(session, frDocumentFromEnCopy),
             nullValue());
+        assertThat(webdavRepository.getContentEditionSize(session, frDocumentFromEnCopy), is(-1l));
         frDocumentFromEnCopy.setLanguage("de");
         assertThat(webdavRepository.getContentEditionLanguage(session, frDocumentFromEnCopy),
             nullValue());
+        assertThat(webdavRepository.getContentEditionSize(session, frDocumentFromEnCopy), is(-1l));
 
 
         Node webdavNode = getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
@@ -528,8 +531,10 @@ public class WebdavDocumentRepositoryTest {
             "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
 
         assertThat(webdavRepository.getContentEditionLanguage(session, document), is("en"));
+        assertThat(webdavRepository.getContentEditionSize(session, document), is(10l));
         document.setLanguage("fr");
         assertThat(webdavRepository.getContentEditionLanguage(session, document), is("en"));
+        assertThat(webdavRepository.getContentEditionSize(session, document), is(10l));
         String documentId = document.getId();
         document.setId(null);
         assertThat(webdavRepository.getContentEditionLanguage(session, document), nullValue());
@@ -545,7 +550,9 @@ public class WebdavDocumentRepositoryTest {
         assertThat(listPathesFrom(webdavNode), contains(
             "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content"));
         assertThat(webdavRepository.getContentEditionLanguage(session, frDocument), is("fr"));
+        assertThat(webdavRepository.getContentEditionSize(session, frDocument), is(10l));
         assertThat(webdavRepository.getContentEditionLanguage(session, enDocument), is("fr"));
+        assertThat(webdavRepository.getContentEditionSize(session, enDocument), is(10l));
 
         document.setAttachment(defaultENContent());
         updateAttachmentForTest(document, "en", "EN content updated");
@@ -553,7 +560,9 @@ public class WebdavDocumentRepositoryTest {
         assertThat(listPathesFrom(webdavNode), contains(
             "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
         assertThat(webdavRepository.getContentEditionLanguage(session, frDocument), is("en"));
+        assertThat(webdavRepository.getContentEditionSize(session, frDocument), is(18l));
         assertThat(webdavRepository.getContentEditionLanguage(session, enDocument), is("en"));
+        assertThat(webdavRepository.getContentEditionSize(session, enDocument), is(18l));
       }
     }.execute();
   }

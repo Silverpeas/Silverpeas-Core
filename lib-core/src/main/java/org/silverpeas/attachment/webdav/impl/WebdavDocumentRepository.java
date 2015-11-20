@@ -350,4 +350,28 @@ public class WebdavDocumentRepository implements WebdavRepository {
     }
     return contentEditionLanguage;
   }
+
+  @Override
+  public long getContentEditionSize(final Session session, final SimpleDocument attachment)
+      throws RepositoryException {
+    String currentLanguage = attachment.getLanguage();
+    String webDavJcrPath = attachment.getWebdavJcrPath().replaceFirst("/[^/]+$", "");
+    String languageInWebDav = getContentEditionLanguage(session, attachment);
+    if (languageInWebDav != null) {
+      if (!currentLanguage.equals(languageInWebDav)) {
+        String before = attachment.getId() + "/" + currentLanguage;
+        String after = attachment.getId() + "/" + languageInWebDav;
+        webDavJcrPath = webDavJcrPath.replace(before, after);
+      }
+      try {
+        Node rootNode = session.getRootNode();
+        Node webdavFileNode = rootNode.getNode(webDavJcrPath).getNodes().nextNode();
+        Binary webdavBinary = webdavFileNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
+        return webdavBinary.getSize();
+      } catch (PathNotFoundException pex) {
+        // Node does not exist.
+      }
+    }
+    return -1;
+  }
 }

@@ -37,6 +37,9 @@ import static org.mockito.Mockito.when;
 
 public class UserSubscriptionNotificationSendingHandlerTest {
 
+  private static final String SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM =
+      "SKIP_SUBSCRIPTION_NOTIFICATION_SENDING";
+
   private HttpServletRequest request;
   private SilverpeasNotification notification;
 
@@ -50,36 +53,58 @@ public class UserSubscriptionNotificationSendingHandlerTest {
 
   @Test
   public void enabledByDefault() {
-    UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
     UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpParameterIsNotEqualToTrueOrFalse() {
-    when(request.getParameter(
-        UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
+    when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
         .thenReturn("toto");
-    UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpParameterIsNotEqualToFalse() {
-    when(request.getParameter(
-        UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
+    when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
         .thenReturn("false");
-    UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void notEnabledIfSkipHttpParameterIsNotEqualToFalse() {
-    when(request.getParameter(
-        UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
+    when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
         .thenReturn("true");
-    UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
+    CacheServiceFactory.getThreadCacheService().clear();
+    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
+    CacheServiceFactory.getRequestCacheService().clear();
+    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+  }
+
+  @Test
+  public void enabledIfSkipHttpHeaderIsNotEqualToTrueOrFalse() {
+    when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("toto");
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+  }
+
+  @Test
+  public void enabledIfSkipHttpHeaderIsNotEqualToFalse() {
+    when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("false");
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+  }
+
+  @Test
+  public void notEnabledIfSkipHttpHeaderIsNotEqualToFalse() {
+    when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("true");
+    UserSubscriptionNotificationSendingHandler.verifyRequest(request);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
     CacheServiceFactory.getThreadCacheService().clear();
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
@@ -89,27 +114,21 @@ public class UserSubscriptionNotificationSendingHandlerTest {
 
   @Test
   public void enabledIfSkipHttpParameterFromNotificationIsNotEqualToTrueOrFalse() {
-    notification.addParameter(
-        UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
-        "toto");
+    notification.addParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "toto");
     UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpParameterFromNotificationIsNotEqualToFalse() {
-    notification.addParameter(
-        UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
-        "false");
+    notification.addParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "false");
     UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void notEnabledIfSkipHttpFromNotificationParameterIsNotEqualToFalse() {
-    notification.addParameter(
-        UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
-        "true");
+    notification.addParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "true");
     UserSubscriptionNotificationSendingHandler.verifySilverpeasNotification(notification);
     assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
     CacheServiceFactory.getRequestCacheService().clear();
