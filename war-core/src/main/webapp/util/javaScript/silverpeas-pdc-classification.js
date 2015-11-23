@@ -23,9 +23,9 @@
  */
 
 /**
- * A JQuery plugin providing some functionalities on the classification of the Silverpeas
+ * A JQuery plugin providing some features on the classification of the Silverpeas
  * resources (publication, comments, ...) on the classification plan (named PdC).
- * The supported functionalities are:
+ * The supported features are:
  * - preview the classification positions on the PdC of a given content.
  * - render the classification on the PdC of a given content in two modes: edition or view mode. In
  * edition mode, a position on the PdC can be added, deleted or modified in the classification.
@@ -48,12 +48,12 @@
  * Each value on a PdC's axis is represented in JSON as:
  * {
  *  id: the unique identifier of the value in the form of an absolute path of node identifier in
- *      the sementic tree representing the axis,
- *  treeId: the unique identifier of the sementic tree to which the value belongs (an empty value
+ *      the semantic tree representing the axis,
+ *  treeId: the unique identifier of the semantic tree to which the value belongs (an empty value
  *          means the value is a single one (no hierarchic value representation),
  *  axisId: the unique identifier of the axis to which the value belongs,
- *  meaning: the meaning vehiculed by the value. It is either a path of terms in a hierarchic
- *           sementic tree or a single term (for a single value),
+ *  meaning: the meaning carried by the value. It is either a path of terms in a hierarchic
+ *           semantic tree or a single term (for a single value),
  *  synonyms: [ the synonyms of the value term as strings ]
  * }
  *
@@ -79,12 +79,12 @@
  * Each value of an axis should be described in JSON as:
  * {
  *  id: the unique identifier of the value in the form of an absolute path of node identifier in
- *      the sementic tree representing the axis,
- *  treeId: the unique identifier of the sementic tree to which the value belongs (an empty value
+ *      the semantic tree representing the axis,
+ *  treeId: the unique identifier of the semantic tree to which the value belongs (an empty value
  *          means the value is a single one (no hierarchic value representation),
  *  axisId: the unique identifier of the axis to which the value belongs,
  *  term: the localized name of the value,
- *  level: the level of this value in the hierarchic sementic tree from the axis root,
+ *  level: the level of this value in the hierarchic semantic tree from the axis root,
  *  ascendant: is the value an ascendant one from the axis origin that was configured for the
  *             component instance,
  *  origin: is this value the configured (or the default one) axis origin,
@@ -290,10 +290,10 @@
     /**
      * Renders an area within which the different axis of the PdC configured for the specified
      * Silverpeas component are presented in order to create a new classification on the PdC for a
-     * not yet published resource content. The positions then can be retreived with the plugin's
+     * not yet published resource content. The positions then can be retrieved with the plugin's
      * function 'positions' and they can be validated by calling the plugin's function
      * 'isClassificationValid' before processing them. As the resource content isn't yet created,
-     * it is the responsability of the client to take into account of the creation of the positions
+     * it is the responsibility of the client to take into account of the creation of the positions
      * on the PdC added through the plugin.
      */
     create: function(options) {
