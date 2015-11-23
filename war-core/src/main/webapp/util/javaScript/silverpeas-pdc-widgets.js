@@ -162,7 +162,7 @@ function uriOfPredefinedClassification(resource) {
 /**************************************************************************************************/
 
 /**
- * Loads the PdC parameterized for the resource located at the specified URI.
+ * Loads the PdC parametrized for the resource located at the specified URI.
  * If the PdC is correctly get, the function onSuccess is then performed, otherwise the function
  * onError is invoked.
  * Both of the functions should accept as parameter the loaded PdC. The onError callback function
@@ -193,12 +193,12 @@ function uriOfPredefinedClassification(resource) {
  * Each axis's value is an object of type:
  * {
  *  id: the unique identifier of the value in the form of an absolute path of node identifier in
- *      the sementic tree representing the axis,
- *  treeId: the unique identifier of the sementic tree to which the value belongs (an empty value
+ *      the semantic tree representing the axis,
+ *  treeId: the unique identifier of the semantic tree to which the value belongs (an empty value
  *          means the value is a single one (no hierarchic value representation),
  *  axisId: the unique identifier of the axis to which the value belongs,
  *  term: the localized name of the value,
- *  level: the level of this value in the hierarchic sementic tree from the axis root,
+ *  level: the level of this value in the hierarchic semantic tree from the axis root,
  *  ascendant: is the value an ascendant one from the axis origin that was configured for the
  *             component instance,
  *  origin: is this value the configured (or the default one) axis origin,
@@ -254,12 +254,12 @@ function loadPdC(uri, onSuccess, onError, synchronously) {
  * Each value on a PdC's axis is an object of type:
  * {
  *  id: the unique identifier of the value in the form of an absolute path of node identifier in
- *      the sementic tree representing the axis,
- *  treeId: the unique identifier of the sementic tree to which the value belongs (an empty value
+ *      the semantic tree representing the axis,
+ *  treeId: the unique identifier of the semantic tree to which the value belongs (an empty value
  *          means the value is a single one (no hierarchic value representation),
  *  axisId: the unique identifier of the axis to which the value belongs,
- *  meaning: the meaning vehiculed by the value. It is either a path of terms in a hierarchic
- *           sementic tree or a single term (for a single value),
+ *  meaning: the meaning carried by the value. It is either a path of terms in a hierarchic
+ *           semantic tree or a single term (for a single value),
  *  synonyms: [ the synonyms of the value term as strings ]
  * }
  */
@@ -292,7 +292,7 @@ function loadClassification(uri, onSuccess, onError) {
  * If the position is successfully deleted, then the onSuccess callback function is invoked without
  * any parameters. Otherwise, the optional onError callback function
  * is invoked with as parameters the error coming from the server. If no onError callback
- * is passed then an error message is displayed to the user. The rror is an object of type:
+ * is passed then an error message is displayed to the user. The error is an object of type:
  * {
  *   status: the error status,
  *   message: the error message
@@ -405,7 +405,7 @@ function updatePosition(uri, position, onSuccess, onError) {
 /**************************************************************************************************/
 
 /**
- * Finds in the specifieds array of positions a position having the specified values on the axis of
+ * Finds in the specified array of positions a position having the specified values on the axis of
  * the PdC.
  * It is expected the values in each position are correctly sorted (that is sorted by the identifier
  * of the axis they belong to), so two positions are equals if they have the same values at same
@@ -773,7 +773,7 @@ function removePosition(position, positions) {
 
   function SelectedPositions(fromValues) {
     var axisprefix = 'axis:';
-    // the values at index 0 serves as the referencial position. Values at other indexes will be
+    // the values at index 0 serves as the referential position. Values at other indexes will be
     // only for multiple values of a given single axis and they will produce each of them another
     // position
     this.matrix = [];
@@ -1089,9 +1089,6 @@ function removePosition(position, positions) {
     var option = $('<option>').attr('value', '-1').html('&nbsp;').appendTo(axisValuesSelection);
 
     // browse the values of the current axis and for each of them print out an option XHTML element
-    // take care of the selected values to preselect the corresponding options
-    if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
-      selectedPositions.put(0, anAxis.id, anAxis.values[anAxis.values.length - 1]);
     renderValues(anAxis, axisValuesSelection, settings, selectedPositions);
 
     if (anAxis.mandatory) {

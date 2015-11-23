@@ -92,7 +92,7 @@ public class PdcClassificationResource extends RESTWebService {
 
   /**
    * Gets classification on the PdC of the resource identified by the requested URI. The PdC
-   * classification is sent back in JSON. If the user isn't authentified, a 401 HTTP code is
+   * classification is sent back in JSON. If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to access the requested resource, a 403 is returned. If
    * a problem occurs when processing the request, a 503 HTTP code is returned.
    *
@@ -116,8 +116,8 @@ public class PdcClassificationResource extends RESTWebService {
 
   /**
    * Deletes the specified existing position by its unique identifier. If the PdC position doesn't
-   * exist, nothing is done, so that the HTTP DELETE request remains indempotent as defined in the
-   * HTTP specification. If the user isn't authentified, a 401 HTTP code is returned. If the user
+   * exist, nothing is done, so that the HTTP DELETE request remains idempotent as defined in the
+   * HTTP specification. If the user isn't authenticated, a 401 HTTP code is returned. If the user
    * isn't authorized to access the resource PdC classification, a 403 is returned. If the position
    * is the single one for the content on the PdC and the PdC contains at least one mandatory axis,
    * a 409 is returned. If a problem occurs when processing the request, a 503 HTTP code is
@@ -147,7 +147,7 @@ public class PdcClassificationResource extends RESTWebService {
   /**
    * Adds a new position on the PdC into the classification of the resource identified by the
    * requested URI. If the JSON representation of the position isn't correct (no values), then a 400
-   * HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the user
+   * HTTP code is returned. If the user isn't authenticated, a 401 HTTP code is returned. If the user
    * isn't authorized to access the comment, a 403 is returned. If a problem occurs when processing
    * the request, a 503 HTTP code is returned.
    *
@@ -187,7 +187,7 @@ public class PdcClassificationResource extends RESTWebService {
   /**
    * Updates an existing position on the PdC into the classification of the resource identified by
    * the requested URI. If the JSON representation of the position isn't correct (no values), then a
-   * 400 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the
+   * 400 HTTP code is returned. If the user isn't authenticated, a 401 HTTP code is returned. If the
    * user isn't authorized to access the comment, a 403 is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
    *
