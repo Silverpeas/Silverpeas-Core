@@ -586,7 +586,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public List<GlobalSilverResult> getResultsToDisplay() throws Exception {
     return getSortedResultsToDisplay(getSortValue(), getSortOrder(), getXmlFormSortValue(),
-        getSortImplemtor(), null);
+        getSortImplemtor(), getSelectedFacetEntries());
   }
 
   /**
