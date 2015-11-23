@@ -27,6 +27,8 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -36,8 +38,11 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import static com.silverpeas.subscribe.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * User: Yohann Chastagnier
@@ -144,5 +149,39 @@ public class SubscriptionUtilTest {
     assertThat(subscriberIdsByType.size(), is(SubscriberType.getValidValues().size()));
     assertThat(subscriberIdsByType.get(SubscriberType.USER), hasSize(2));
     assertThat(subscriberIdsByType.get(SubscriberType.GROUP), hasSize(1));
+  }
+
+  @Test
+  public void isUserSameVisibilityAsTheCurrentRequester() {
+    UserDetail requester = mock(UserDetail.class);
+    when(requester.getDomainId()).thenReturn("0");
+    UserDetail user = mock(UserDetail.class);
+    when(user.getDomainId()).thenReturn("0");
+    assertThat(isSameVisibilityAsTheCurrentRequester(user, requester), is(true));
+
+    // Not same domainId but no domain isolation
+    when(user.getDomainId()).thenReturn("1");
+    assertThat(isSameVisibilityAsTheCurrentRequester(user, requester), is(true));
+
+    // Not same domainId but no domain isolation
+    when(requester.isDomainRestricted()).thenReturn(true);
+    assertThat(isSameVisibilityAsTheCurrentRequester(user, requester), is(false));
+  }
+
+  @Test
+  public void isGroupSameVisibilityAsTheCurrentRequester() {
+    UserDetail requester = mock(UserDetail.class);
+    when(requester.getDomainId()).thenReturn("0");
+    Group group = mock(Group.class);
+    when(group.getDomainId()).thenReturn("0");
+    assertThat(isSameVisibilityAsTheCurrentRequester(group, requester), is(true));
+
+    // Not same domainId but no domain isolation
+    when(group.getDomainId()).thenReturn("1");
+    assertThat(isSameVisibilityAsTheCurrentRequester(group, requester), is(true));
+
+    // Not same domainId but no domain isolation
+    when(requester.isDomainRestricted()).thenReturn(true);
+    assertThat(isSameVisibilityAsTheCurrentRequester(group, requester), is(false));
   }
 }

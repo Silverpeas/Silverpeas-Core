@@ -34,7 +34,6 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -49,6 +48,8 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.silverpeas.subscribe.util.SubscriptionUtil.filterSubscribersOnDomainVisibility;
+import static com.silverpeas.subscribe.util.SubscriptionUtil.filterSubscriptionsOnDomainVisibility;
 import static com.silverpeas.subscribe.web.SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI;
 import static com.silverpeas.subscribe.web.SubscriptionResourceURIs
     .SUBSCRIPTION_SUBSCRIBER_URI_PART;
@@ -95,8 +96,6 @@ public class SubscriptionResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriptionEntity> getSubscriptions(@PathParam("id") String resourceId) {
     try {
-      final SubscriptionSubscriber userSubscriber =
-          UserSubscriptionSubscriber.from(getUserDetail().getId());
       final Collection<Subscription> subscriptions;
       if (StringUtil.isDefined(resourceId)) {
         subscriptions = SubscriptionServiceFactory.getFactory().getSubscribeService()
@@ -166,6 +165,7 @@ public class SubscriptionResource extends RESTWebService {
   protected Collection<SubscriptionEntity> asWebEntities(Collection<Subscription> subscriptions) {
     Collection<SubscriptionEntity> entities =
         new ArrayList<SubscriptionEntity>(subscriptions.size());
+    filterSubscriptionsOnDomainVisibility(subscriptions, getUserDetail());
     for (Subscription subscription : subscriptions) {
       entities.add(asWebEntity(subscription));
     }
@@ -189,6 +189,7 @@ public class SubscriptionResource extends RESTWebService {
   protected Collection<SubscriberEntity> asSubscriberWebEntities(
       Collection<SubscriptionSubscriber> subscribers) {
     Collection<SubscriberEntity> entities = new ArrayList<SubscriberEntity>(subscribers.size());
+    filterSubscribersOnDomainVisibility(subscribers, getUserDetail());
     for (SubscriptionSubscriber subscriber : subscribers) {
       entities.add(asSubscriberWebEntity(subscriber));
     }
