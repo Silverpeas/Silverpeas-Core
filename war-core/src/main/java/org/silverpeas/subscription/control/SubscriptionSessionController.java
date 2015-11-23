@@ -24,14 +24,17 @@
 package org.silverpeas.subscription.control;
 
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceProvider;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -39,13 +42,22 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import org.silverpeas.subscription.SubscriptionContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static com.silverpeas.subscribe.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 
 /**
  * User: Yohann Chastagnier
@@ -92,9 +104,11 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     sel.setPopupMode(false);
 
     // Subscribers
+    SubscriptionResource resource = getContext().getResource();
     SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes = getSubscriptionService()
-        .getSubscribers(getContext().getResource(), SubscriptionMethod.FORCED)
-        .indexBySubscriberType();
+        .getSubscribers(resource, SubscriptionMethod.FORCED)
+        .indexBySubscriberType().filterOnDomainVisibilityFrom(getUserDetail());
+
     // Users
     sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER).getAllIds());
     // Groups
@@ -105,6 +119,19 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     } else {
       sel.setFirstPage(Selection.FIRST_PAGE_CART);
     }
+
+    // Add extra params
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(resource.getInstanceId());
+    if (resource.getType() == SubscriptionResourceType.NODE &&
+        getComponentAccessController().isRightOnTopicsEnabled(sug.getComponentId())) {
+      NodeDetail node =
+          getNodeService().getHeader(new NodePK(resource.getId(), resource.getInstanceId()));
+      if (node.haveRights()) {
+        sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
+      }
+    }
+    sel.setExtraParams(sug);
 
     // Returning the destination
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
@@ -121,38 +148,46 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
 
     // Initializing necessary subscriptions
+    SubscriptionResource resource = getContext().getResource();
     Collection<Subscription> subscriptions =
         new ArrayList<Subscription>(users.length + groups.length);
     for (UserDetail user : users) {
-      switch (getContext().getResource().getType()) {
+      if (!isSameVisibilityAsTheCurrentRequester(user, getUserDetail())) {
+        continue;
+      }
+      switch (resource.getType()) {
         case NODE:
           subscriptions.add(new NodeSubscription(UserSubscriptionSubscriber.from(user.getId()),
-              (NodePK) getContext().getResource().getPK(), getUserId()));
+              (NodePK) resource.getPK(), getUserId()));
           break;
         case COMPONENT:
           subscriptions.add(new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()),
-              getContext().getResource().getInstanceId(), getUserId()));
+              resource.getInstanceId(), getUserId()));
           break;
       }
     }
     for (Group group : groups) {
-      switch (getContext().getResource().getType()) {
+      if (!isSameVisibilityAsTheCurrentRequester(group, getUserDetail())) {
+        continue;
+      }
+      switch (resource.getType()) {
         case NODE:
           subscriptions.add(new NodeSubscription(GroupSubscriptionSubscriber.from(group.getId()),
-              (NodePK) getContext().getResource().getPK(), getUserId()));
+              (NodePK) resource.getPK(), getUserId()));
           break;
         case COMPONENT:
           subscriptions.add(
               new ComponentSubscription(GroupSubscriptionSubscriber.from(group.getId()),
-                  getContext().getResource().getInstanceId(), getUserId()));
+                  resource.getInstanceId(), getUserId()));
           break;
       }
     }
 
     // Getting all existing subscriptions and selecting those that have to be deleted
-    Collection<Subscription> subscriptionsToDelete = getSubscriptionService()
-        .getByResource(getContext().getResource(), SubscriptionMethod.FORCED);
+    SubscriptionList subscriptionsToDelete = getSubscriptionService()
+        .getByResource(resource, SubscriptionMethod.FORCED);
     subscriptionsToDelete.removeAll(subscriptions);
+    subscriptionsToDelete.filterOnDomainVisibilityFrom(getUserDetail());
 
     // Deleting
     getSubscriptionService().unsubscribe(subscriptionsToDelete);
@@ -163,12 +198,23 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
 
   /**
    * Gets the subscription service.
-   * @return
    */
   private SubscriptionService getSubscriptionService() {
     if (subscriptionService == null) {
       subscriptionService = SubscriptionServiceProvider.getSubscribeService();
     }
     return subscriptionService;
+  }
+
+  /**
+   * Gets the node service.
+   */
+  private NodeBm getNodeService() {
+    try {
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+    } catch (Exception e) {
+      throw new NodeRuntimeException("SubscriptionSessionController.getNodeService()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
   }
 }

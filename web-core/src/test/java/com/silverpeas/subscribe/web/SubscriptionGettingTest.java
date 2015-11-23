@@ -31,6 +31,7 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberMapBySubscriberType;
 import com.silverpeas.util.CollectionUtil;
@@ -116,7 +117,8 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
-    Collection<Subscription> subscriptions = CollectionUtil.asList((Subscription) subscription);
+    SubscriptionList subscriptions = new SubscriptionList();
+    subscriptions.add(subscription);
     when(mockedSubscriptionService.
         getByResource(ComponentSubscriptionResource.from(COMPONENT_ID))).thenReturn(subscriptions);
     getTestResources().getMockableSubscriptionService()

@@ -61,7 +61,7 @@ if (!String.prototype.isNotDefined) {
   };
 }
 
-if (!Number.prototype.round) {
+if (!Number.prototype.roundDown) {
   Number.prototype.roundDown = function(digit) {
     if (digit || digit === 0) {
       var digitCoef = Math.pow(10, digit);
@@ -70,6 +70,8 @@ if (!Number.prototype.round) {
     }
     return this;
   };
+}
+if (!Number.prototype.roundHalfDown) {
   Number.prototype.roundHalfDown = function(digit) {
     if (digit || digit === 0) {
       var digitCoef = Math.pow(10, digit);
@@ -83,6 +85,8 @@ if (!Number.prototype.round) {
     }
     return this;
   };
+}
+if (!Number.prototype.roundHalfUp) {
   Number.prototype.roundHalfUp = function(digit) {
     if (digit || digit === 0) {
       var digitCoef = Math.pow(10, digit);
@@ -96,6 +100,8 @@ if (!Number.prototype.round) {
     }
     return this;
   };
+}
+if (!Number.prototype.roundUp) {
   Number.prototype.roundUp = function(digit) {
     if (digit || digit === 0) {
       var digitCoef = Math.pow(10, digit);
