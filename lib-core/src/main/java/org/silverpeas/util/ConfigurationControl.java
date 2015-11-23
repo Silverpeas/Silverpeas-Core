@@ -24,8 +24,6 @@
 
 package org.silverpeas.util;
 
-import org.silverpeas.util.StringUtil;
-
 import java.util.Locale;
 import java.util.ResourceBundle;
 

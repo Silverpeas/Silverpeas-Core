@@ -31,8 +31,11 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static com.silverpeas.subscribe.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 
 /**
  * @author Yohann Chastagnier
@@ -105,5 +108,24 @@ public class SubscriptionSubscriberList extends ArrayList<SubscriptionSubscriber
    */
   public SubscriptionSubscriberMapBySubscriberType indexBySubscriberType() {
     return new SubscriptionSubscriberMapBySubscriberType(this);
+  }
+
+  /**
+   * Removes from this list the subscribers that have not the same domain visibility as the one
+   * of the given user.
+   * @param user the user that represents the visibility to verify.
+   * @return itself.
+   */
+  public SubscriptionSubscriberList filterOnDomainVisibilityFrom(final UserDetail user) {
+    if (user.isDomainRestricted()) {
+      Iterator<SubscriptionSubscriber> itOfSubscribers = this.iterator();
+      while (itOfSubscribers.hasNext()) {
+        SubscriptionSubscriber subscriber = itOfSubscribers.next();
+        if (!isSameVisibilityAsTheCurrentRequester(subscriber, user)) {
+          itOfSubscribers.remove();
+        }
+      }
+    }
+    return this;
   }
 }

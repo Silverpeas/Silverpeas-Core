@@ -36,6 +36,7 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.ResourceSubscriptionProvider;
 import com.silverpeas.subscribe.service.SubscribeRuntimeException;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.node.model.NodePK;
@@ -99,7 +100,7 @@ public class SubscriptionResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriptionEntity> getSubscriptions(@PathParam("id") String resourceId) {
     try {
-      final Collection<Subscription> subscriptions;
+      final SubscriptionList subscriptions;
       if (StringUtil.isDefined(resourceId)) {
         subscriptions = SubscriptionServiceProvider.getSubscribeService()
             .getByResource(NodeSubscriptionResource.from(new NodePK(resourceId, componentId)));
@@ -107,7 +108,7 @@ public class SubscriptionResource extends RESTWebService {
         subscriptions = SubscriptionServiceProvider.
             getSubscribeService().getByResource(ComponentSubscriptionResource.from(componentId));
       }
-      return asWebEntities(subscriptions);
+      return asWebEntities(subscriptions.filterOnDomainVisibilityFrom(getUserDetail()));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -152,7 +153,8 @@ public class SubscriptionResource extends RESTWebService {
         subscriptionResource = ComponentSubscriptionResource.from(componentId);
       }
       return asSubscriberWebEntities(SubscriptionServiceProvider.
-          getSubscribeService().getSubscribers(subscriptionResource));
+          getSubscribeService().getSubscribers(subscriptionResource)
+          .filterOnDomainVisibilityFrom(getUserDetail()));
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {

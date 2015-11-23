@@ -26,6 +26,7 @@ package com.silverpeas.subscribe.util;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import org.silverpeas.util.CollectionUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -118,5 +120,19 @@ public class SubscriptionSubscriberMapBySubscriberType
       userIds.addAll(subscriptionSubscribers.getAllUserIds());
     }
     return new ArrayList<>(userIds);
+  }
+
+  /**
+   * Removes from this map the subscribers that have not the same domain visibility as the one
+   * of the given user.
+   * @param user the user that represents the visibility to verify.
+   * @return itself.
+   */
+  public SubscriptionSubscriberMapBySubscriberType filterOnDomainVisibilityFrom(
+      final UserDetail user) {
+    for (final Map.Entry<SubscriberType, SubscriptionSubscriberList> entry : entrySet()) {
+      entry.getValue().filterOnDomainVisibilityFrom(user);
+    }
+    return this;
   }
 }

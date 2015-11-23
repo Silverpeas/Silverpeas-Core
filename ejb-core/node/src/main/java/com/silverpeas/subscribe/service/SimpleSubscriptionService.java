@@ -29,6 +29,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
@@ -181,12 +182,12 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getByResource(final SubscriptionResource resource) {
+  public SubscriptionList getByResource(final SubscriptionResource resource) {
     return getByResource(resource, SubscriptionMethod.UNKNOWN);
   }
 
   @Override
-  public Collection<Subscription> getByResource(final SubscriptionResource resource,
+  public SubscriptionList getByResource(final SubscriptionResource resource,
       final SubscriptionMethod method) {
     SilverTrace.info("subscribe", "SubscriptionService.getByResource", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
@@ -203,10 +204,10 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getByUserSubscriber(final String userId) {
+  public SubscriptionList getByUserSubscriber(final String userId) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getByUserSubscriber", "root.MSG_GEN_ENTER_METHOD");
-    Collection<Subscription> subscriptions =
+    SubscriptionList subscriptions =
         getBySubscriber(UserSubscriptionSubscriber.from(userId));
     for (String groupId : organisationController.getAllGroupIdsOfUser(userId)) {
       subscriptions.addAll(getBySubscriber(GroupSubscriptionSubscriber.from(groupId)));
@@ -215,7 +216,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getBySubscriber(SubscriptionSubscriber subscriber) {
+  public SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getBySubscriber", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
@@ -231,8 +232,8 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndComponent(
-      final SubscriptionSubscriber subscriber, final String instanceId) {
+  public SubscriptionList getBySubscriberAndComponent(final SubscriptionSubscriber subscriber,
+      final String instanceId) {
     SilverTrace.info("subscribe", "SubscriptionService.getBySubscriberAndComponent",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
@@ -249,7 +250,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public Collection<Subscription> getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+  public SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
       SubscriptionResource resource) {
     SilverTrace.info("subscribe", "SubscriptionService.getBySubscriberAndResource",
         "root.MSG_GEN_ENTER_METHOD");

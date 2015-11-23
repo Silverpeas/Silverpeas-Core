@@ -61,6 +61,57 @@ if (!String.prototype.isNotDefined) {
   };
 }
 
+if (!Number.prototype.roundDown) {
+  Number.prototype.roundDown = function(digit) {
+    if (digit || digit === 0) {
+      var digitCoef = Math.pow(10, digit);
+      var result = Math.floor(this * digitCoef);
+      return result / digitCoef;
+    }
+    return this;
+  };
+}
+if (!Number.prototype.roundHalfDown) {
+  Number.prototype.roundHalfDown = function(digit) {
+    if (digit || digit === 0) {
+      var digitCoef = Math.pow(10, digit);
+      var result = Math.floor(this * digitCoef);
+      var half = Math.floor((this * (digitCoef * 10))) % 10;
+      if (5 < half && half <= 9) {
+        result++;
+      }
+
+      return result / digitCoef;
+    }
+    return this;
+  };
+}
+if (!Number.prototype.roundHalfUp) {
+  Number.prototype.roundHalfUp = function(digit) {
+    if (digit || digit === 0) {
+      var digitCoef = Math.pow(10, digit);
+      var result = Math.floor(this * digitCoef);
+      var half = Math.floor((this * (digitCoef * 10))) % 10;
+      if (5 <= half && half <= 9) {
+        result++;
+      }
+
+      return result / digitCoef;
+    }
+    return this;
+  };
+}
+if (!Number.prototype.roundUp) {
+  Number.prototype.roundUp = function(digit) {
+    if (digit || digit === 0) {
+      var digitCoef = Math.pow(10, digit);
+      var result = Math.ceil(this * digitCoef);
+      return result / digitCoef;
+    }
+    return this;
+  };
+}
+
 if (!window.StringUtil) {
   window.StringUtil = new function() {
     var _self = this;

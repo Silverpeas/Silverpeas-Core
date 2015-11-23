@@ -282,7 +282,7 @@ public class SilverTrace {
    * @param classe the short name of the classe that call this function (ex : "MyFavoriteClass")
    * Could be followed by the function name (ex : "MyFavoriteClass.myFunction()")
    * @param messageID the name of the message to display (ex : "root.MSG_GEN_FILE_NOT_FOUND")
-   * @param ex the exception to trace
+   * @param ex the exception to tracer
    */
   public static void info(String module, String classe, String messageID, Throwable ex) {
     info(module, classe, messageID, null, ex);

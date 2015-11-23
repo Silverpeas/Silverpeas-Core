@@ -22,7 +22,6 @@ package org.silverpeas.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
@@ -450,7 +449,7 @@ public class StringUtil extends StringUtils {
   public static byte[] fromHex(String hexText) throws ParseException {
     try {
       return Hex.decodeHex(hexText.toCharArray());
-    } catch (DecoderException ex) {
+    } catch (Exception ex) {
       throw new ParseException(ex.getMessage(), -1);
     }
   }
