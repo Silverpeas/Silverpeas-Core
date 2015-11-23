@@ -114,8 +114,6 @@ public class AdminCache {
    * Reset data stored in cache
    */
   public void resetCache() {
-    SilverTrace.debug("admin", "AdminCache.resetCache",
-        "root.MSG_GEN_ENTER_METHOD");
     m_hSpaceInstCache.clear();
     m_hComponentInstCache.clear();
     m_hProfileInstCache.clear();
@@ -130,16 +128,12 @@ public class AdminCache {
    */
   public void resetSpaceInst() {
     if (m_bUseCache && m_bUseSpaceInstCache) {
-      SilverTrace.debug("admin", "AdminCache.resetSpaceInst",
-          "root.MSG_GEN_ENTER_METHOD");
       m_hSpaceInstCache.clear();
     }
   }
 
   public void putSpaceInst(SpaceInst spaceInst) {
     if (m_bUseCache && m_bUseSpaceInstCache) {
-      SilverTrace.debug("admin", "AdminCache.putSpaceInst",
-          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceInst.getId());
       m_hSpaceInstCache.put(spaceInst.getLocalId(), spaceInst);
     }
   }
@@ -205,26 +199,18 @@ public class AdminCache {
    */
   public void resetComponentInst() {
     if (m_bUseCache && m_bUseComponentInstCache) {
-      SilverTrace.debug("admin", "AdminCache.resetComponentInst",
-          "root.MSG_GEN_ENTER_METHOD");
       m_hComponentInstCache.clear();
     }
   }
 
   public void putComponentInst(ComponentInst componentInst) {
     if (m_bUseCache && m_bUseComponentInstCache) {
-      SilverTrace.debug("admin", "AdminCache.putComponentInst",
-          "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
-          + componentInst.getId());
       m_hComponentInstCache.put(componentInst.getLocalId(), componentInst);
     }
   }
 
   public void removeComponentInst(ComponentInst componentInst) {
     if (m_bUseCache && m_bUseComponentInstCache) {
-      SilverTrace.debug("admin", "AdminCache.removeComponentInst",
-          "root.MSG_GEN_ENTER_METHOD", "ComponentId = "
-          + componentInst.getId());
       m_hComponentInstCache.remove(componentInst.getLocalId());
     }
   }
@@ -279,24 +265,18 @@ public class AdminCache {
    */
   public void resetProfileInst() {
     if (m_bUseCache && m_bUseProfileInstCache) {
-      SilverTrace.debug("admin", "AdminCache.resetProfileInst",
-          "root.MSG_GEN_ENTER_METHOD");
       m_hProfileInstCache.clear();
     }
   }
 
   public void putProfileInst(ProfileInst profileInst) {
     if (m_bUseCache && m_bUseProfileInstCache) {
-      SilverTrace.debug("admin", "AdminCache.putProfileInst",
-          "root.MSG_GEN_ENTER_METHOD", "ProfileId = " + profileInst.getId());
       m_hProfileInstCache.put(profileInst.getId(), profileInst);
     }
   }
 
   public void removeProfileInst(ProfileInst profileInst) {
     if (m_bUseCache && m_bUseProfileInstCache) {
-      SilverTrace.debug("admin", "AdminCache.removeProfileInst",
-          "root.MSG_GEN_ENTER_METHOD", "ProfileId = " + profileInst.getId());
       m_hProfileInstCache.remove(profileInst.getId());
     }
   }
@@ -344,23 +324,17 @@ public class AdminCache {
    * Store the UserDetail by user
    */
   public void resetUserDetail() {
-    SilverTrace.debug("admin", "AdminCache.resetUserDetail",
-        "root.MSG_GEN_ENTER_METHOD");
     m_hUserDetailCache.clear();
   }
 
   public void putUserDetail(String userId, UserDetail userDetail) {
     if (m_bUseCache && m_bUseUserDetailCache) {
-      SilverTrace.debug("admin", "AdminCache.putUserDetail",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hUserDetailCache.put(userId, userDetail);
     }
   }
 
   public void removeUserDetail(String userId) {
     if (m_bUseCache && m_bUseUserDetailCache) {
-      SilverTrace.debug("admin", "AdminCache.removeUserDetail",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hUserDetailCache.remove(userId);
     }
   }
@@ -377,23 +351,17 @@ public class AdminCache {
    * Store the ManageableSpaceIds by user
    */
   public void resetManageableSpaceIds() {
-    SilverTrace.debug("admin", "AdminCache.resetManageableSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
     m_hManageableSpaceIdsCache.clear();
   }
 
   public void putManageableSpaceIds(String userId, Integer[] spaceIds) {
     if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.putManageableSpaceIds",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hManageableSpaceIdsCache.put(userId, spaceIds);
     }
   }
 
   public void removeManageableSpaceIds(String userId) {
     if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.removeManageableSpaceIds",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hManageableSpaceIdsCache.remove(userId);
     }
   }
@@ -410,16 +378,11 @@ public class AdminCache {
    * Store the AvailCompoIds by space and user
    */
   public void resetAvailCompoIds() {
-    SilverTrace.debug("admin", "AdminCache.resetAvailCompoIds",
-        "root.MSG_GEN_ENTER_METHOD");
     m_hAvailCompoIdsCache.clear();
   }
 
   public void putAvailCompoIds(String spaceId, String userId, String[] compoIds) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.putAvailCompoIds",
-          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
-          + userId);
       Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable == null) {
         spaceTable = new ConcurrentHashMap<String, String[]>();
@@ -431,9 +394,6 @@ public class AdminCache {
 
   public void removeAvailCompoIds(String spaceId, String userId) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.removeAvailCompoIds",
-          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + " userId = "
-          + userId);
       Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable != null) {
         spaceTable.remove(userId);
@@ -443,8 +403,6 @@ public class AdminCache {
 
   public void removeAvailCompoIdsForUser(String userId) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForUser",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       for (Map<String, String[]> spaceTable : m_hAvailCompoIdsCache.values()) {
         spaceTable.remove(userId);
       }
@@ -453,8 +411,6 @@ public class AdminCache {
 
   public void removeAvailCompoIdsForSpace(String spaceId) {
     if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.removeAvailCompoIdsForSpace",
-          "root.MSG_GEN_ENTER_METHOD", "spaceUserId = " + spaceId);
       m_hAvailCompoIdsCache.remove(spaceId);
     }
   }
@@ -473,31 +429,23 @@ public class AdminCache {
    * Store the ProfileIds by space and user
    */
   public void resetProfileIds() {
-    SilverTrace.debug("admin", "AdminCache.resetProfileIds",
-        "root.MSG_GEN_ENTER_METHOD");
     m_hProfileIdsCache.clear();
   }
 
   public void putProfileIds(String userId, String[] profileIds) {
     if (m_bUseCache && m_bUseProfileIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.putProfileIds",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hProfileIdsCache.put(userId, profileIds);
     }
   }
   
   public void putNodeProfileIds(String userId, String[] profileIds) {
     if (m_bUseCache && m_bUseNodeProfileIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.putNodeProfileIds",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hNodeProfileIdsCache.put(userId, profileIds);
     }
   }
 
   public void removeProfileIds(String userId) {
     if (m_bUseCache && m_bUseProfileIdsCache) {
-      SilverTrace.debug("admin", "AdminCache.removeProfileIds",
-          "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
       m_hProfileIdsCache.remove(userId);
     }
   }

@@ -256,9 +256,6 @@ public class LDAPUtility {
     LDAPSearchConstraints sc = connection.getSearchConstraints();
     sc.setBatchSize(1);
     sc.setMaxResults(1);
-    SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
-        "LDAP query", "BaseDN=" + baseDN + " scope=" + Integer.toString(scope) + " Filter="
-        + sureFilter);
     // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
     // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
@@ -270,8 +267,6 @@ public class LDAPUtility {
         LDAPSearchResults res = connection.search(baseDN1, scope, sureFilter, attrs, false, sc);
         if (res.hasMore()) {
           theEntry = res.next();
-          SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()", "Entry Founded : ",
-              theEntry.getDN());
           break;
         }
       } catch (LDAPReferralException re) {
@@ -304,8 +299,6 @@ public class LDAPUtility {
    * @return the attribute's values as string
    */
   static public String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName) {
-    SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
-        "root.MSG_GEN_ENTER_METHOD", "theAttributeName = " + theAttributeName);
     LDAPAttribute theAttr;
 
     if (theEntry == null || !StringUtil.isDefined(theAttributeName)) {
@@ -313,14 +306,8 @@ public class LDAPUtility {
     } else {
       theAttr = theEntry.getAttribute(theAttributeName);
       if (theAttr == null) {
-        SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
-            "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
-            + " is null !!!");
         return ArrayUtil.EMPTY_STRING_ARRAY;
       } else {
-        SilverTrace.debug("admin", "LDAPUtility.getAttributeValues()",
-            "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
-            + " size = " + Integer.toString(theAttr.size()));
         if (isAGuid(theAttributeName)) {
           byte[][] allBytes = theAttr.getByteValueArray();
           byte[] asBytes;
@@ -501,9 +488,6 @@ public class LDAPUtility {
       for (String baseDN1 : baseDNs) {
         theFullFilter = filter;
         while (theFullFilter != null) {
-          SilverTrace.
-              debug("admin", "LDAPUtility.search1000Plus()", "LDAP query",
-              "BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter=" + theFullFilter);
           SynchroReport.debug("LDAPUtility.search1000Plus()",
               "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion()
               + "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter="
@@ -519,8 +503,6 @@ public class LDAPUtility {
               } else {
                 SynchroReport.debug("LDAPUtility.search1000Plus()", "élément #" + nbReaded + " : "
                     + entry.getDN(), null);
-                SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-                    "root.MSG_GEN_PARAM_VALUE", "élément #" + nbReaded + " : " + entry.getDN());
                 entriesVector.add(entry);
                 nbReaded++;
               }
@@ -529,16 +511,12 @@ public class LDAPUtility {
             if (le.getResultCode() == LDAPException.SIZE_LIMIT_EXCEEDED) {
               sizeLimitReached = true;
               SynchroReport.debug("LDAPUtility.search1000Plus()", "Size Limit Reached...", null);
-              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
-                  "Size Limit Reached...");
             } else if (le.getResultCode() == LDAPException.TIME_LIMIT_EXCEEDED) {
               timeLimitReached = true;
               nbRetryTimeLimit++;
               lastException = le;
               SynchroReport.debug("LDAPUtility.search1000Plus()", "Time Limit Reached (#"
                   + nbRetryTimeLimit + ")", null);
-              SilverTrace.debug("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
-                  "Time Limit Reached (#" + nbRetryTimeLimit + ")");
             } else {
               SilverTrace.error("admin", "LDAPUtility.search1000Plus", "admin.EX_ERR_LDAP_REFERRAL",
                   "#" + Integer.toString(le.getResultCode()) + " " + le.getLDAPErrorMessage(), le);
@@ -572,9 +550,6 @@ public class LDAPUtility {
       SynchroReport.debug("LDAPUtility.search1000Plus()",
           "Une exception générale est survenue : #" + e.getResultCode() + " "
           + e.getLDAPErrorMessage(), null);
-      SilverTrace.debug("admin", "LDAPUtility.search1000Plus()",
-          "Une exception générale est survenue : #" + e.getResultCode() + " "
-          + e.getLDAPErrorMessage());
       if (LDAPUtility.recoverConnection(lds, e)) {
         return search1000Plus(lds, baseDN, scope, filter, varToSort, args);
       } else {

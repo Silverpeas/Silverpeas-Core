@@ -303,14 +303,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   // 2 => action
   // 3 => acteur
   public JobManagerService[] getServices(int level) {
-    SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
-        "root.MSG_GEN_PARAM_VALUE", "ENTER level=" + level);
     List<JobManagerService> listServices = new ArrayList<JobManagerService>(services.size());
     for (JobManagerService jms : services.values()) {
       if (jms.getLevel() == level) {
-        SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
-            "root.MSG_GEN_PARAM_VALUE",
-            " jms id=" + jms.getId() + "  jms label=" + jms.getLabel());
         listServices.add(jms);
       }
     }
@@ -318,19 +313,11 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   }
 
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
-    SilverTrace.debug("jobManagerPeas",
-        "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-        "root.MSG_GEN_PARAM_VALUE", "ENTER jmsParent id=" + jmsParent.getId() + " jmsParent label="
-        + jmsParent.getLabel());
-    String[] idSubServices = jmsParent.getIdSubServices();    
+    String[] idSubServices = jmsParent.getIdSubServices();
     List<JobManagerService> listChild = new ArrayList<JobManagerService>(idSubServices.length);
     for (String idSubService : idSubServices) {
       JobManagerService jmsChild = services.get(idSubService);
       if (jmsChild != null) {
-        SilverTrace.debug("jobManagerPeas", 
-            "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-            "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id=" + jmsChild.getId() 
-            + " jmsChild label=" + jmsChild.getLabel());
         listChild.add(jmsChild);
       }
     }
@@ -347,10 +334,6 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   public void changeServiceActif(String idNewService) {
     // mise a jour de l'id actif et de l'objet correspondant
-    SilverTrace.debug("jobManagerPeas",
-        "jobManagerPeasSessionController.changeServiceActif(String idNewService)",
-        "root.MSG_GEN_PARAM_VALUE", "ENTER idCurrentServiceActif="
-        + idCurrentServiceActif + " idNewService=" + idNewService);
     if (this.idCurrentServiceActif != null) {// si = null, nous sommes dans la
       // première initialisation de idCurrentServiceActif reset du flag actif du service courant
       services.get(this.idCurrentServiceActif).setActif(false);
@@ -382,13 +365,6 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       currentOperation.setActif(true);
       this.idCurrentOperationActif = newService.getDefautIdSubService();
     }
-
-    SilverTrace.debug(
-        "jobManagerPeas",
-        "jobManagerPeasSessionController.changeServiceActif(String idNewService)",
-        "root.MSG_GEN_PARAM_VALUE", "END idCurrentServiceActif="
-        + idCurrentServiceActif + " idNewService=" + idNewService);
-
   }
 
   public String getIdServiceActif() {
@@ -401,11 +377,6 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   public void changeOperationActif(String idNewOperation) {
     services.get(idCurrentOperationActif).setActif(false);
-    SilverTrace.debug(
-        "jobManagerPeas",
-        "jobManagerPeasSessionController.changeOperationActif(String idNewOperation)",
-        "root.MSG_GEN_PARAM_VALUE", "END idNewOperation=" + idNewOperation);
-
     services.get(idNewOperation).setActif(true);
     this.idCurrentOperationActif = idNewOperation;
   }

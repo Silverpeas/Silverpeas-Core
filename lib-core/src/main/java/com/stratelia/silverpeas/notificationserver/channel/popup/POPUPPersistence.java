@@ -55,9 +55,6 @@ public class POPUPPersistence {
         smb.setSource(popupMsg.getSource());
         smb.setMsgDate(popupMsg.getDate());
         smb.setMsgTime(popupMsg.getTime());
-        SilverTrace.debug("popup", "POPUPPersistence.getMessage()",
-            "Date et time", DateUtil.date2SQLDate(new Date()) + "-"
-            + DateUtil.getFormattedTime(new Date()));
         Transaction.performInOne(() -> getRepository().save(smb));
       } catch (Exception e) {
         throw new POPUPException("POPUPPersistence.addMessage()",
@@ -89,9 +86,6 @@ public class POPUPPersistence {
           longTextId = Integer.parseInt(smb.getBody());
           body = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace.debug("popup", "POPUPListener.getMessage()",
-              "PB converting body id to LongText", "Message Body = "
-              + smb.getBody());
           body = smb.getBody();
         }
         result.setBody(body);
@@ -119,8 +113,6 @@ public class POPUPPersistence {
             int longTextId = Integer.parseInt(toDel.getBody());
             LongText.removeLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace.debug("popup", "POPUPListener.deleteMessage()",
-                "PB converting body id to LongText", "Message Body = " + msgId);
           }
           repository.delete(toDel);
         }

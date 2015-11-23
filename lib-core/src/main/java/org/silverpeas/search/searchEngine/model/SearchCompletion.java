@@ -63,9 +63,6 @@ public class SearchCompletion {
    */
   public Set<String> getSuggestions(String query) {
     query = query.toLowerCase();
-    SilverTrace
-        .debug("searchEngine", "SearchCompletion.getSuggestions()", "root.MSG_GEN_PARAM_VALUE",
-            "query = " + query);
     // local variable instantiation
     TreeSet<String> set = new TreeSet<>();
     Connection con = null;

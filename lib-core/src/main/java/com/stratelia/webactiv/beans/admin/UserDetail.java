@@ -719,12 +719,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
           AVATAR_PROPERTY.substring(1);
       Method getter = getClass().getMethod(getterName);
       propertyValue = getter.invoke(this).toString();
-    } catch (IllegalAccessException e) {
-      SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
-    } catch (NoSuchMethodException e) {
-      SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
-    } catch (InvocationTargetException e) {
-      SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
+    } catch (IllegalAccessException|NoSuchMethodException|InvocationTargetException e) {
     }
     return propertyValue + "." + AVATAR_EXTENSION;
   }

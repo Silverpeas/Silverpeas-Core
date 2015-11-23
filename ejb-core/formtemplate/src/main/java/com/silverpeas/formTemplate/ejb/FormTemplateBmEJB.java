@@ -82,18 +82,12 @@ public class FormTemplateBmEJB implements FormTemplateBm {
     DataRecord data = getRecord(id, template, language);
     List<XMLField> fields = new ArrayList<>();
     if (data != null) {
-      SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_PARAM_VALUE",
-          "data != null");
       try {
         String[] fieldNames = template.getRecordTemplate().getFieldNames();
         for (int f = 0; fieldNames != null && f < fieldNames.length; f++) {
           String fieldName = fieldNames[f];
-          SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_PARAM_VALUE",
-              "fieldName = " + fieldName);
           Field field = data.getField(fieldName);
           if (field != null) {
-            SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_PARAM_VALUE",
-                "field != null");
             String fieldValue = field.getStringValue();
             if (field.getTypeName().equals(FileField.TYPE)) {
               FieldTemplate fieldTemplate =

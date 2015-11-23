@@ -57,7 +57,6 @@ public class ExportServlet extends HttpServlet {
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    SilverTrace.debug("Export", ExportServlet.class.getName(), "service() enter method");
     // Prepare response
     response.setContentType("text/csv");
     response.setCharacterEncoding(exportEncoding);
@@ -82,7 +81,6 @@ public class ExportServlet extends HttpServlet {
         int lastIndex = columns.size() - 1;
         for (ArrayColumn curCol : columns) {
           String str = curCol.toString();
-          SilverTrace.debug("Export", ExportServlet.class.getName(), "column =" + str);
           listColumns.append("\"").append(formatCSVCell(curCol.getTitle())).append("\"");
           if (columns.indexOf(curCol) != lastIndex) {
             listColumns.append(FIELD_SEPARATOR);
@@ -92,9 +90,6 @@ public class ExportServlet extends HttpServlet {
 
         @SuppressWarnings("unchecked")
         List<ArrayLine> lines = (List<ArrayLine>) session.getAttribute(name + "_lines");
-        SilverTrace.debug("Export", ExportServlet.class.getName(), "number of exported lines" +
-            lines.size());
-
         for (ArrayLine curLine : lines) {
           // String str = curLine.toString();
           listColumns = new StringBuilder();

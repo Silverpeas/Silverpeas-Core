@@ -135,10 +135,6 @@ public final class WebComponentRequestRouter<
   public final String getDestination(final String path, final T componentSC,
       final HttpRequest request) {
     String destination;
-    SilverTrace
-        .debug("peasCore", "WebComponentRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "User=" + componentSC.getUserId() + " Path=" + path);
-
     try {
 
       // Performing the request.
@@ -148,10 +144,6 @@ public final class WebComponentRequestRouter<
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-
-    SilverTrace
-        .debug("peasCore", "WebComponentRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "Destination=" + destination);
     return destination;
   }
 }

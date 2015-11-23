@@ -149,16 +149,11 @@ public class FileServerUtils {
   public static String getAttachmentURL(String componentId, String logicalName, String attachmentId,
       String lang) {
     String newLogicalName = URLUtils.encodePathSegment(logicalName);
-    SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL", "root.MSG_GEN_ENTER_METHOD",
-        "componentId = " + componentId + ", logicalName = " + newLogicalName + ", attachmentId = "
-        + attachmentId + ", lang = " + lang);
     StringBuilder url = new StringBuilder();
     String language = lang;
     if (language == null) {
       language = I18NHelper.defaultLanguage;
     }
-    SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL",
-        "root.MSG_GEN_PARAM_VALUE", "language = " + language);
     url.append("/attached_file/").append("componentId/").append(URLUtils.encodePathSegment(
         componentId)).append("/attachmentId/").append(URLUtils.encodePathSegment(attachmentId)).
         append("/lang/").append(URLUtils.encodePathSegment(language)).append("/name/").

@@ -79,8 +79,6 @@ public class ImportIcalManager {
    * @throws Exception
    */
   public String importIcalAgenda(File file) throws Exception {
-    SilverTrace
-        .debug("agenda", "ImportIcalManager.importIcalAgenda()", "root.MSG_GEN_ENTER_METHOD");
     String returnCode = AgendaSessionController.IMPORT_FAILED;
     InputStreamReader inputStream = null;
     XmlReader xr = null;
@@ -92,8 +90,6 @@ public class ImportIcalManager {
 
       // File Encoding detection
       xr = new XmlReader(file);
-      SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()", "Encoding = " + xr.
-          getEncoding());
       if (StringUtil.isDefined(xr.getEncoding())) {
         charsetUsed = xr.getEncoding();
       }
@@ -180,16 +176,10 @@ public class ImportIcalManager {
             String idEvent = isExist(eventIcal, startDay, endDay, startHour);
             // update if event already exists, create if does not exist
             if (StringUtil.isDefined(idEvent)) {
-              SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-                  "root.MSG_GEN_PARAM_VALUE" + "Update event: " + DateUtil.date2SQLDate(startDay) +
-                      " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
               agendaSessionController
                   .updateJournal(idEvent, name, description, priority, classification, startDay,
                       startHour, endDay, endHour);
             } else {
-              SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()",
-                  "root.MSG_GEN_PARAM_VALUE" + "Create event: " + DateUtil.date2SQLDate(startDay) +
-                      " " + startHour + " to " + DateUtil.date2SQLDate(endDay) + " " + endHour);
               idEvent = agendaSessionController
                   .addJournal(name, description, priority, classification, startDay, startHour,
                       endDay, endHour);
@@ -207,7 +197,6 @@ public class ImportIcalManager {
       IOUtils.closeQuietly(inputStream);
       IOUtils.closeQuietly(xr);
     }
-    SilverTrace.debug("agenda", "ImportIcalManager.importIcalAgenda()", "root.MSG_GEN_EXIT_METHOD");
     return returnCode;
   }
 
@@ -229,7 +218,6 @@ public class ImportIcalManager {
    */
   private String isExist(Component eventIcal, Date startDateReccurent, Date endDateReccurent,
       String startHourReccurent) throws Exception {
-    SilverTrace.debug("agenda", "ImportIcalManager.isExist()", "root.MSG_GEN_ENTER_METHOD");
     String name = getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
     String description = null;
     if (StringUtil.isDefined(getFieldEvent(eventIcal.getProperty(Property.DESCRIPTION)))) {

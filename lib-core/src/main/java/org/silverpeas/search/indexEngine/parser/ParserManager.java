@@ -94,8 +94,6 @@ public final class ParserManager {
           Object[] parameters = getParameters(newCall);
           Parser parser = (Parser) constructor.newInstance(parameters);
           parserMap.put(name, parser);
-          SilverTrace.debug("indexEngine", "ParserManager", "indexEngine.MSG_INIT_PARSER",
-            name + ", " + newCall);
         } catch (ClassNotFoundException e) {
           SilverTrace.error("indexEngine", "ParserManager", "indexEngine.MSG_UNKNOWN_PARSER_CLASS",
             name + ", " + className);

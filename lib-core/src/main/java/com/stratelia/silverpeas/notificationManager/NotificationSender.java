@@ -185,8 +185,6 @@ public class NotificationSender implements java.io.Serializable {
     int u = 0;
     while (languages.hasNext()) {
       language = languages.next();
-      SilverTrace.debug("notificationManager", "NotificationSender.getUserIds()",
-          "root.MSG_GEN_PARAM_VALUE", "language = " + language);
       if (lang.equalsIgnoreCase(language)) {
         result.add(userIds.get(u));
       }

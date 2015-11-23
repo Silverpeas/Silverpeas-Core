@@ -117,25 +117,16 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
     } finally {
       Date endDate = new Date();
       long delay = (endDate.getTime() - beginDate.getTime()) / 1000;
-      SilverTrace.debug("workflowEngine",
-          "TimeoutManagerImpl.doTimeoutManagement", "Duree de traitement : "
-          + delay + " seconds.");
     }
   }
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("workflowEngine",
-        "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doTimeoutManagement();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("workflowEngine",
-        "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

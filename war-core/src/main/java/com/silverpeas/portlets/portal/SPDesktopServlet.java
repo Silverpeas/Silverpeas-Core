@@ -129,11 +129,7 @@ public class SPDesktopServlet extends HttpServlet {
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
       DesktopMessages.init(currentUser.getUserPreferences().getLanguage());
-      SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
-          "DesktopMessages initialized !");
       DriverUtil.init(request);
-      SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
-          "DriverUtil initialized !");
       response.setContentType(SERVLET_HTML_CONTENT_TYPE);
 
       // Get the list of visible portlets(sorted by the row number)
@@ -141,8 +137,6 @@ public class SPDesktopServlet extends HttpServlet {
         ServletContextThreadLocalizer.set(context);
         PortletRegistryContext portletRegistryContext =
             DriverUtil.getPortletRegistryContext(spContext);
-        SilverTrace.debug("portlet", "SPDesktopServlet.service", "root.MSG_GEN_PARAM_VALUE",
-            "portletRegistryContext retrieved !");
         String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
         PortletContent portletContent =
             getPortletContentObject(portletWindowName, context, request, response);
@@ -532,8 +526,6 @@ public class SPDesktopServlet extends HttpServlet {
       final HttpServletRequest request) {
     request.setAttribute("SpaceId", spaceId);
     request.setAttribute("UserId", userId);
-    SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest",
-        "userId = " + UserDetail.getCurrentRequester().getId());
   }
 
   private String prefixSpaceId(String spaceId) {

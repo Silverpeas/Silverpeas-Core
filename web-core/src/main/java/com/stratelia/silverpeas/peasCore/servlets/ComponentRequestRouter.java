@@ -134,7 +134,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
     String destination = computeDestination(request);
-    SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE", "response = " + response);
     if (!StringUtil.isDefined(destination)) {
       throwHttpNotFoundError();
     }
@@ -155,11 +154,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     MainSessionController mainSessionCtrl = getMainSessionController(request);
 
     // App in Maintenance ?
-    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "appInMaintenance = " + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
-    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
     if (mainSessionCtrl.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
         isAccessAdmin()) {
       return ResourceLocator.getGeneralSettingBundle().getString("redirectAppInMaintenance");
@@ -171,17 +165,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     String componentId = context[1];
     String function = context[2];
 
-    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId= " + spaceId);
-    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
-
     // Set gef space space identifier for dynamic look purpose
     setGefSpaceId(request, componentId, spaceId);
 
     boolean isSpaceInMaintenance = mainSessionCtrl.isSpaceInMaintenance(spaceId);
-    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceIsMaintenance = " + isSpaceInMaintenance);
 
     // Space in Maintenance ?
     if (isSpaceInMaintenance && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {

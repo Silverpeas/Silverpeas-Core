@@ -597,12 +597,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setFilterId(theUser);
       setFilterLib(getOrganisationController().getUserDetail(theUser).getLastName());
     }
-    SilverTrace
-        .debug("silverStatisticsPeas", "SilverStatisticsPeasSessionController.retourUserPanel()",
-            "filterType=" + filterType);
-    SilverTrace
-        .debug("silverStatisticsPeas", "SilverStatisticsPeasSessionController.retourUserPanel()",
-            "filterId=" + filterId);
   }
 
   /**
@@ -691,9 +685,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterIdGroup(theGroup);
       setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
-        "accessFilterIdGroup=" + accessFilterIdGroup);
   }
 
   public String initAccessUserPanelUser() {
@@ -713,9 +704,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterIdUser(theUser);
       setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
-        "accessFilterIdUser=" + accessFilterIdUser);
   }
 
   public String initVolumeUserPanelGroup() {
@@ -737,9 +725,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterIdGroup(theGroup);
       setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.retourVolumeUserPanelGroup()",
-        "accessFilterIdGroup=" + accessFilterIdGroup);
   }
 
   public String initVolumeUserPanelUser() {
@@ -759,9 +744,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterIdUser(theUser);
       setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.retourVolumeUserPanelUser()",
-        "accessFilterIdUser=" + accessFilterIdUser);
   }
 
   public PieChart getUserVentilChart(String dateStat, String filterIdGroup,
@@ -990,9 +972,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     List<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
 
-    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getYear()",
-        "yearValue=" + yearValue);
-
     if (years != null) {
       for (String indice : years) {
         stat = new String[2];
@@ -1013,8 +992,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     ArrayList<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
 
-    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getMonth()",
-        "monthValue=" + monthValue);
     for (int i = 0; i < 12; i++) {
       stat = new String[2];
       stat[INDICE_VALUE] = Integer.toString(i);

@@ -58,8 +58,6 @@ public class SQLGroupUserRelTable {
             " where " + drvSettings.getRelGIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.getDirectUserIdsOfGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       rs = statement.executeQuery();
@@ -87,8 +85,6 @@ public class SQLGroupUserRelTable {
             " where " + drvSettings.getRelUIDColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupUserRelTable.getDirectGroupIdsOfUser", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
       rs = statement.executeQuery();
@@ -114,8 +110,6 @@ public class SQLGroupUserRelTable {
             "," + drvSettings.getRelUIDColumnName() + ") " + " values (?,?)";
 
     try {
-      SilverTrace
-          .debug("admin", "SQLGroupUserRelTable.createGroupUserRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.setInt(2, userId);
@@ -138,8 +132,6 @@ public class SQLGroupUserRelTable {
         " = ?";
 
     try {
-      SilverTrace
-          .debug("admin", "SQLGroupUserRelTable.removeGroupUserRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.setInt(2, userId);
@@ -161,8 +153,6 @@ public class SQLGroupUserRelTable {
         drvSettings.getRelUIDColumnName() + " = ?";
 
     try {
-      SilverTrace
-          .debug("admin", "SQLGroupUserRelTable.removeAllUserRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
       return statement.executeUpdate();
@@ -183,8 +173,6 @@ public class SQLGroupUserRelTable {
         drvSettings.getRelGIDColumnName() + " = ?";
 
     try {
-      SilverTrace
-          .debug("admin", "SQLGroupUserRelTable.removeAllGroupRel", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       return statement.executeUpdate();
@@ -209,8 +197,6 @@ public class SQLGroupUserRelTable {
             drvSettings.getRelUIDColumnName() + " = ?";
 
     try {
-      SilverTrace
-          .debug("admin", "SQLGroupUserRelTable.isUserDirectlyInGroup", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.setInt(2, userId);

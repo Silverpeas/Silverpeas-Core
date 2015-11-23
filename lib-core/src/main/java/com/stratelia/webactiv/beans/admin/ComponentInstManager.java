@@ -453,10 +453,6 @@ public class ComponentInstManager {
       ComponentInstanceRow old = ddManager.getOrganization().instance.getComponentInstance(
           changedInstance.id);
 
-      SilverTrace.debug("admin", this.getClass().getName() + ".updateComponentInst",
-          "root.MSG_GEN_PARAM_VALUE", "remove = " + compoInstNew.isRemoveTranslation()
-          + ", translationId = " + compoInstNew.getTranslationId());
-
       if (compoInstNew.isRemoveTranslation()) {
         // Remove of a translation is required
         if (old.lang.equalsIgnoreCase(compoInstNew.getLanguage())) {

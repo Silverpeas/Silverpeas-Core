@@ -403,17 +403,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   @Override
   public void removeTimeout(State state) throws WorkflowException {
-    SilverTrace
-        .debug("workflowEngine", "ProcessInstanceImpl.removeTimeout", "root.MSG_GEN_ENTER_METHOD",
-            "instanceid:" + getInstanceId() + ", state =" + state.getName());
     boolean found = false;
     if (activeStates == null || activeStates.isEmpty()) {
       return;
     }
     for (ActiveState activeState : activeStates) {
-      SilverTrace
-          .debug("workflowEngine", "ProcessInstanceImpl.removeTimeout", "root.MSG_GEN_ENTER_METHOD",
-              "instanceid:" + getInstanceId() + ", activeState =" + activeState.getState());
       if (activeState.getState().equals(state.getName())) {
         activeState.setTimeoutStatus(0);
       } else if (activeState.getTimeoutStatus() > 0) {
@@ -655,17 +649,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     Database db = null;
     try {
       db = WorkflowJDOManager.getDatabase();
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
-          "instance id is not yet retrieve " + this.getInstanceId() + " for " +
-              this.getModelId());
       db.begin();
       db.create(this);
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
-          "instance id has been created " + this.getInstanceId() + " for " + this.getModelId());
       db.commit();
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
-          "instance id after commit " + this.getInstanceId() + " for " + this.getModelId());
-
       return this.getInstanceId();
     } catch (PersistenceException pe) {
       throw new WorkflowException("ProcessInstanceImpl.create",
@@ -1165,19 +1151,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   public HistoryStep getSavedStep(String userId) throws WorkflowException {
     HistoryStep savedStep = null;
     HistoryStep step = null;
-
-    SilverTrace
-        .debug("workflowEngine", "ProcessInstanceImpl.getSavedStep", "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getInstanceId() + ", userId =" + userId);
-
     for (int i = 0; i < historySteps.size(); i++) {
       step = historySteps.get(i);
 
       // if step matches the searched action, tests if the step is most recent
       if ((step.getActionStatus() == 3) && (step.getUser().getUserId().equals(userId))) {
-        SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getSavedStep",
-            "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getInstanceId() + ", step found, action = " + step.getAction());
         savedStep = step;
         break;
       }
@@ -1302,10 +1280,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   public String[] getActiveStates() {
     String[] states = null;
 
-    SilverTrace
-        .debug("workflowEngine", "ProcessInstanceImpl.getActiveStates", "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getInstanceId());
-
     if (activeStates == null || activeStates.isEmpty()) {
       states = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
@@ -1314,10 +1288,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
         states[i] = activeStates.get(i).getState();
       }
     }
-
-    SilverTrace
-        .debug("workflowEngine", "ProcessInstanceImpl.getActiveStates", "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getInstanceId() + ", nb active states founds : " + states.length);
 
     return states;
   }
@@ -1435,11 +1405,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     String userId = user.getUserId();
 
     for (WorkingUser wkUser : workingUsers) {
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
-          "root.MSG_GEN_PARAM_VALUE",
-          "instanceid=" + getInstanceId() + ", processing working user : " + wkUser.getId() + ", " +
-              "role:" + wkUser.getRole());
-
       boolean userMatch = wkUser.getUserId() != null && wkUser.getUserId().equals(userId);
       boolean usersRoleMatch =
           wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
@@ -1450,15 +1415,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
         }
       }
-
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
-          "root.MSG_GEN_PARAM_VALUE", "User match ? : " + userMatch);
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
-          "root.MSG_GEN_PARAM_VALUE", "usersRole match ? : " + usersRoleMatch);
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
-          "root.MSG_GEN_PARAM_VALUE", "userGroups match ? : " + userGroupsMatch);
       boolean wkUserMatch = userMatch || usersRoleMatch || userGroupsMatch;
-
       if (wkUserMatch) {
         for (String role : wkUser.getRole().split(",")) {
           if (role.equals(roleName)) {
@@ -1477,10 +1434,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return LockingUser
    */
   public LockingUser getLockingUser(String state) throws WorkflowException {
-    SilverTrace
-        .debug("workflowEngine", "ProcessInstanceImpl.getLockingUser", "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getInstanceId() + ", state : " + state);
-
     // Constructs a new LockingUser to proceed search
     LockingUser searchedUser = new LockingUser();
     searchedUser.setState(state);
@@ -1488,15 +1441,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     int indexUser = lockingUsers.indexOf(searchedUser);
     if (indexUser != -1) {
       LockingUser foundUser = lockingUsers.get(indexUser);
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
-          "root.MSG_GEN_ENTER_METHOD",
-          "instanceid=" + getInstanceId() + ", locking user found for state : " + state +
-              ", userId = " + foundUser.getUserId());
       return foundUser;
-    } else {
-      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
-          "root.MSG_GEN_ENTER_METHOD",
-          "instanceid=" + getInstanceId() + ", no locking user for state : " + state);
     }
     return null;
   }

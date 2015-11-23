@@ -58,9 +58,6 @@ public class SilverMessageFactory {
           int longTextId = Integer.parseInt(smb.getBody());
           msg = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace.debug("server", "SilverMessageFactory.read()",
-              "PB converting body id to LongText", "Message Body = "
-              + smb.getBody());
           msg = smb.getBody();
         }
         if (msg != null) {
@@ -93,9 +90,6 @@ public class SilverMessageFactory {
             int longTextId = Integer.parseInt(toDel.getBody());
             LongText.removeLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace
-                .debug("server", "SilverMessageFactory.del()", "PB converting body id to LongText",
-                    "Message Body = " + msgId);
           }
           repository.delete(toDel);
         }

@@ -86,8 +86,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
           "ORDER BY dateStat DESC, countAccess DESC";
 
   public static Collection<String> getVolumeYears() throws SQLException, UtilException {
-    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getVolumeYears",
-        "selectQuery=" + SELECT_VOLUME_YEARS);
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -110,8 +108,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
   }
 
   public static Collection<String> getAccessYears() throws SQLException, UtilException {
-    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getAccessYears",
-        "selectQuery=" + SELECT_ACCESS_YEARS);
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -223,9 +219,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectAccessEvolutionForSpace(String spaceId)
       throws SQLException, ParseException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.selectAccessEvolutionForSpace",
-        "selectQuery=" + SELECT_ACCESS_EVOL_FOR_SPACE);
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -243,9 +236,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectUserAccessEvolutionForSpace(String spaceId, String userId)
       throws SQLException, ParseException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.selectUserAccessEvolutionForSpace",
-        "selectQuery=" + SELECT_ACCESS_EVOL_FOR_SPACE_BY_USER);
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -289,9 +279,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectAccessEvolutionForComponent(String componentId)
       throws SQLException, ParseException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.selectAccessEvolutionForComponent",
-        "selectQuery=" + SELECT_ACCESS_EVOL_FOR_COMPONENT);
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -309,9 +296,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
   public static List<String[]> selectUserAccessEvolutionForComponent(String componentId,
       String userId) throws SQLException, ParseException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.selectAccessEvolutionForComponent",
-        "selectQuery=" + SELECT_ACCESS_EVOL_FOR_COMPONENT_BY_USER);
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     Connection myCon = null;

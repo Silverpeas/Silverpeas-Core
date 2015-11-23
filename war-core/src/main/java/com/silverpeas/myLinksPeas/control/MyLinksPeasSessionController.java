@@ -69,8 +69,6 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByUser(getUserId());
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByUser()",
-          "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size());
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByUser",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
@@ -82,9 +80,6 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByInstance(instanceId);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByInstance()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "nombre de liens = " + links.size() + " instanceId = " + instanceId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByInstance",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
@@ -96,8 +91,6 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     Collection<LinkDetail> links;
     try {
       links = getMyLinksBm().getAllLinksByObject(instanceId, objectId);
-      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByObject()",
-          "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size());
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByObject",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
@@ -109,9 +102,6 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     LinkDetail link;
     try {
       link = getMyLinksBm().getLink(linkId);
-      SilverTrace
-          .debug("myLinks", "MyLinksPeasSessionController.getLink()", "root.MSG_GEN_PARAM_VALUE",
-              "linkId = " + linkId);
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksPeasSessionController.getLink",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);

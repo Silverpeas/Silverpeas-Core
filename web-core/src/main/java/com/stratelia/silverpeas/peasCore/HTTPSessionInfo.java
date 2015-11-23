@@ -88,17 +88,13 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
       for (Object element : controllers) {
         String elementName = element.getClass().getSimpleName();
         try {
-          SilverTrace.debug("peasCore", "SessionInfo.cleanSession()", "Cleaning " + elementName);
           if (element instanceof AbstractComponentSessionController) {
             AbstractComponentSessionController controller
                 = (AbstractComponentSessionController) element;
             controller.close();
-            SilverTrace.debug("peasCore", "SessionManager.cleanSession()", controller.getClass().
-                getName());
           } else if (element instanceof MainSessionController) {
             MainSessionController controller = (MainSessionController) element;
             controller.clear();
-            SilverTrace.debug("peasCore", "SessionManager.cleanSession()", "MainSessionController");
           }
         } catch (Exception ex) {
           SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",

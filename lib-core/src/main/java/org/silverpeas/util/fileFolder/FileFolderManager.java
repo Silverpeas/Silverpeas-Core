@@ -333,8 +333,6 @@ public class FileFolderManager {
         File file = new File(directory, nomFichier);
         return FileUtils.readFileToString(file, "UTF-8");
       } catch (IOException e) {
-        SilverTrace.debug("util", "FileFolderManager.getCode",
-            "result = null, fichier absent", e);
         return null;
       }
     } else {

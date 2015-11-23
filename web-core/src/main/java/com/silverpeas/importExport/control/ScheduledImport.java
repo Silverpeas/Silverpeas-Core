@@ -121,15 +121,11 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) {
-    SilverTrace.debug("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledImport();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

@@ -273,15 +273,11 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
     doScheduledReservedFile();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successful");
   }
 
   @Override

@@ -211,9 +211,6 @@ public class AuthenticationLDAP extends Authentication {
     }
 
     // Calculate nb days before password expiration
-    SilverTrace.debug(module, "AuthenticationLDAP.doAuthentication()",
-        "root.MSG_GEN_PARAM_VALUE", "m_MustAlertPasswordExpiration="
-        + m_MustAlertPasswordExpiration);
     if (m_MustAlertPasswordExpiration) {
       nbDaysBeforeExpiration = calculateDaysBeforeExpiration(fe);
       if (nbDaysBeforeExpiration < 0) {
@@ -256,14 +253,10 @@ public class AuthenticationLDAP extends Authentication {
    */
   private int calculateDaysBeforeExpiration(LDAPEntry fe) throws
       AuthenticationPasswordMustBeChangedAtNextLogon {
-    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_ENTER_METHOD");
     LDAPAttribute pwdLastSetAttr = fe.getAttribute(m_PwdLastSetFieldName);
 
     // if password last set attribute is not found, return max value : user
     // won't be notified
-    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? " + (pwdLastSetAttr == null));
     if (pwdLastSetAttr == null) {
       return Integer.MAX_VALUE;
     }
@@ -278,14 +271,8 @@ public class AuthenticationLDAP extends Authentication {
         if (lastSetValue == 0) {
           throw new AuthenticationPasswordMustBeChangedAtNextLogon("user=" + fe.getDN());
         }
-        SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-            "root.MSG_GEN_PARAM_VALUE", "lastSetValue = " + lastSetValue);
         lastSetValue = lastSetValue / INTERVALS_PER_MILLISECOND;
-        SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-            "root.MSG_GEN_PARAM_VALUE", "lastSetValue = " + lastSetValue);
         lastSetValue -= MILLISECONDS_BETWEEN_1601_AND_1970;
-        SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-            "root.MSG_GEN_PARAM_VALUE", "lastSetValue = " + lastSetValue);
         pwdLastSet = new Date(lastSetValue);
         break;
 
@@ -312,17 +299,9 @@ public class AuthenticationLDAP extends Authentication {
             "authentication.EX_BAD_DATE_FORMAT", e);
       }
     }
-    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = " + DateUtil
-        .getOutputDateAndHour(pwdLastSet, "fr"));
-
     Date now = new Date();
     long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();
-    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "delayInMilliseconds = " + delayInMilliseconds);
     int delayInDays = Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
-    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_EXIT_METHOD", "delayInDays = " + delayInDays);
     return delayInDays;
   }
 

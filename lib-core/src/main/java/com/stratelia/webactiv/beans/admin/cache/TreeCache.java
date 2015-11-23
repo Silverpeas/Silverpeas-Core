@@ -75,26 +75,18 @@ public class TreeCache {
   }
 
   public static List<ComponentInstLight> getComponents(int spaceId) {
-    SilverTrace.debug("admin", "TreeCache.getComponents()", "root.MSG_GEN_ENTER_METHOD",
-        "spaceId = " + spaceId);
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getComponents();
     }
-    SilverTrace.debug("admin", "TreeCache.getComponents()", "root.MSG_GEN_EXIT_METHOD",
-        "spaceId = " + spaceId);
     return new ArrayList<ComponentInstLight>();
   }
 
   public static List<String> getComponentIds(int spaceId) {
-    SilverTrace.debug("admin", "TreeCache.getComponentIds()", "root.MSG_GEN_ENTER_METHOD",
-        "spaceId = " + spaceId);
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getComponentIds();
     }
-    SilverTrace.debug("admin", "TreeCache.getComponentIds()", "root.MSG_GEN_EXIT_METHOD",
-        "spaceId = " + spaceId);
     return new ArrayList<String>();
   }
 

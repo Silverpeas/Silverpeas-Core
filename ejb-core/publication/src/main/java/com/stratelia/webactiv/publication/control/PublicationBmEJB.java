@@ -289,21 +289,15 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private int getIndexOfPublication(String pubId, List<PublicationDetail> publications) {
-    SilverTrace.debug("publication", "PublicationBmEJB.getIndexOfPublication()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
     int index = 0;
     if (publications != null) {
       for (PublicationDetail publi : publications) {
         if (pubId.equals(publi.getPK().getId())) {
-          SilverTrace.debug("publication", "PublicationBmEJB.getIndexOfPublication()",
-              "root.MSG_GEN_EXIT_METHOD", "index = " + index);
           return index;
         }
         index++;
       }
     }
-    SilverTrace.debug("publication", "PublicationBmEJB.getIndexOfPublication()",
-        "root.MSG_GEN_EXIT_METHOD", "index = " + index);
     return index;
   }
 
@@ -1540,9 +1534,6 @@ public class PublicationBmEJB implements PublicationBm {
       if (publicationDetail != null) {
         return publicationDetail;
       } else {
-        SilverTrace
-            .debug("publication", "PublicationEJB.ejbFindByName()", "root.EX_CANT_FIND_ENTITY",
-                "name = " + pubName);
         throw new PublicationRuntimeException("PublicationBmEJB.getDetailByName()",
             SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
             "pubPK = " + pubPK + ", pubName = " + pubName);
@@ -1569,8 +1560,6 @@ public class PublicationBmEJB implements PublicationBm {
       if (publicationDetail != null) {
         return publicationDetail;
       } else {
-        SilverTrace.debug("publication", "PublicationEJB.getDetailByNameAndNodeId()",
-            "root.EX_CANT_FIND_ENTITY", "name=" + pubName + ", nodeId=" + nodeId);
         throw new PublicationRuntimeException("PublicationBmEJB.getDetailByNameAndNodeId()",
             SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
             "pubPK = " + pubPK + ", pubName = " + pubName + ", nodeId=" + nodeId);

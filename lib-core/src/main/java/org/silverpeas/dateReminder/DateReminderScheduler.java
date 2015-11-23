@@ -130,15 +130,11 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("dateReminder", "ScheduledDateReminderService.triggerFired",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
     doScheduledDateReminder();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("dateReminder", "ScheduledDateReminderService.jobSucceeded",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successful");
   }
 
   @Override

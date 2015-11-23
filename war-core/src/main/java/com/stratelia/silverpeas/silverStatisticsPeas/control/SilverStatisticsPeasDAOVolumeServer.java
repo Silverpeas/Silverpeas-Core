@@ -61,8 +61,6 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @see
    */
   public static Collection<String[]> getStatsVolumeServer() throws SQLException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer", "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;

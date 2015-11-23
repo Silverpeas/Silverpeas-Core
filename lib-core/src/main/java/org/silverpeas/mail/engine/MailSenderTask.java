@@ -76,9 +76,6 @@ public class MailSenderTask implements Runnable {
     AddMailToSendRequest addMailToSendRequest = new AddMailToSendRequest(mailToSend);
     if (mailToSend.isAsynchronous()) {
       synchronized (requestList) {
-        SilverTrace
-            .debug("mailSenderEngine", "MailSenderThread", "mailSenderEngine.INFO_ADDS_ADD_REQUEST",
-                mailToSend.toString());
         requestList.add(addMailToSendRequest);
         startIfNotAlreadyDone();
       }

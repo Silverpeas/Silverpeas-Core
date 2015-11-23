@@ -80,14 +80,10 @@ public class FileRepositoryManager {
    */
   @Deprecated
   public static String getAbsolutePath(String sSpaceId, String sComponentId) {
-    SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-        "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
     return getUploadPath() + sComponentId + separatorChar;
   }
 
   public static String getAbsolutePath(String sComponentId) {
-    SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-        " sComponentId= " + sComponentId);
     return getUploadPath() + sComponentId + separatorChar;
   }
 
@@ -130,8 +126,6 @@ public class FileRepositoryManager {
     int lg = directoryName.length;
     String path = getAbsolutePath(componentId);
     for (int k = 0; k < lg; k++) {
-      SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
-          ("concat: path = " + path + " sDirectoryName[" + k + "]=" + directoryName[k]));
       path = path + directoryName[k] + separatorChar;
     }
     return path;

@@ -72,9 +72,6 @@ public class SilverMessageFactory {
 
           msg = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace
-              .debug("popup", "SilverMessageFactory.read()", "PB converting body id to LongText",
-                  "Message Body = " + pmb.getBody());
           msg = pmb.getBody();
         }
         if (msg != null) {
@@ -121,9 +118,6 @@ public class SilverMessageFactory {
             // CBO : FIN UPDATE
             LongText.removeLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace
-                .debug("popup", "SilverMessageFactory.del()", "PB converting body id to LongText",
-                    "Message Body = " + msgId);
           }
           repository.delete(toDel);
         }
@@ -155,10 +149,6 @@ public class SilverMessageFactory {
     Transaction.performInOne(() -> {
       POPUPMessageBean pmb = new POPUPMessageBean();
       try {
-        SilverTrace
-            .debug("popup", "SilverMessageFactory.push()", "Message = " + notifMsg.toString());
-        SilverTrace.debug("popup", "SilverMessageFactory.push()",
-            "Message.isAnswerAllowed = " + notifMsg.isAnswerAllowed());
         pmb.setUserId(Long.parseLong(userId));
 
         // CBO : UPDATE

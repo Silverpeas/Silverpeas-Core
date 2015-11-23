@@ -96,17 +96,11 @@ public class OOParser implements Parser {
   }
 
   public String parse(Object file) {
-    SilverTrace.debug("indexEngine", "OOParser.parse()", "root.MSG_PARAM_VALUE", "file=" + file.
-        toString());
     StringBuilder parsingResult = new StringBuilder();
     try {
       List files = (List) file;
       SAXBuilder builder = new SAXBuilder();
       builder.setValidation(false);
-      SilverTrace.debug("indexEngine", "OOParser.parse()()", "root.MSG_PARAM_VALUE", "file0 = "
-          + files.get(0));
-      SilverTrace.debug("indexEngine", "OOParser.parse()()", "root.MSG_PARAM_VALUE", "file1 = "
-          + files.get(1));
       org.jdom.Document xmlDocContent = builder.build(new File((String) files.get(0)));
       org.jdom.Document xmlMeta = builder.build(new File((String) files.get(1)));
       // Process Content file
@@ -116,8 +110,6 @@ public class OOParser implements Parser {
         Iterator childrenElements = body.getDescendants(new ElementFilter(NS_OOTEXT));
         while (childrenElements.hasNext()) {
           Element currentElement = (Element) childrenElements.next();
-          SilverTrace.debug("indexEngine", "OOParser.parse()", "Current Element = "
-              + currentElement.getName() + " - " + currentElement.getText());
           parsingResult.append(' ').append(currentElement.getText());
         }
       }
@@ -154,8 +146,6 @@ public class OOParser implements Parser {
           e);
       deleteTmp((File) file);
     }
-    SilverTrace.debug("indexEngine", "OOParser.parse()",
-        "parsingResult = " + parsingResult.toString());
     return parsingResult.toString();
   }
 
@@ -170,14 +160,10 @@ public class OOParser implements Parser {
   }
 
   private List<String> unzip(String zip, String destination) {
-    SilverTrace.debug("indexEngine", "OOParser.unzip()()", "root.MSG_PARAM_VALUE", "zip = " + zip
-        + " destination=" + destination);
     List<String> destLs = new ArrayList<>();
     ZipFile zipFile;
     File dest = new File(destination);
     try {
-      SilverTrace.debug("indexEngine", "OOParser.unzip()()", "root.MSG_PARAM_VALUE",
-          "tempFolder = " + tempFolder);
       dest.mkdirs();
       if (dest.isDirectory()) {
         zipFile = new ZipFile(zip);

@@ -265,8 +265,6 @@ public class AuthenticationServlet extends HttpServlet {
   private void storePassword(HttpServletResponse response, String shoudStorePasword,
       boolean newEncryptMode, String clearPassword, boolean secured) {
     if (StringUtil.getBooleanValue(shoudStorePasword)) {
-      SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
-          "root.MSG_GEN_ENTER_METHOD", "Ok");
       if (newEncryptMode) {
         writeCookie(response, "var2", credentialEncryption.encode(clearPassword), -1, secured);
         writeCookie(response, "var2", credentialEncryption.encode(clearPassword), 31536000,

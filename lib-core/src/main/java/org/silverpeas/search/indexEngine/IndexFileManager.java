@@ -46,8 +46,6 @@ public class IndexFileManager {
       ResourceLocator.getGeneralSettingBundle().getString("uploadsIndexPath");
 
   static public String getAbsoluteIndexPath(String particularSpace, String sComponentId) {
-    SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",
-            "particularSpace = " + particularSpace + " sComponentId= " + sComponentId);
     if (particularSpace != null && (particularSpace.startsWith("user@")
             || "transverse".equals(particularSpace))) {
       return getIndexUpLoadPath() + particularSpace + separatorChar + sComponentId + separatorChar

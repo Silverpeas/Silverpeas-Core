@@ -223,9 +223,6 @@ public class SentNotificationDAO {
       longTextId = rs.getInt("body");
       body = LongText.getLongText(longTextId);
     } catch (Exception e) {
-      SilverTrace.debug("popup", "POPUPListener.recupNotif()",
-          "PB converting body id to LongText", "Message Body = "
-          + rs.getInt("body"));
     }
     notif.setBody(body);
     return notif;

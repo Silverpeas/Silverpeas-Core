@@ -127,9 +127,6 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   }
 
   public String initSelectionPeas(String paramValues) {
-    SilverTrace.debug("notificationUser", "NotificationUsersessionController.initSelectionPeas()",
-        "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
-
     String m_context = URLManager.getApplicationURL();
     String hostUrl = m_context
         + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"

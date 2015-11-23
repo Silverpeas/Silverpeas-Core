@@ -325,8 +325,6 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    * @return the wanted action
    */
   public Action getAction(String name) throws WorkflowException {
-    SilverTrace.debug("workflowEngine", "ProcessModelImpl.getAction", "name:" + name +
-        ", model id: " +getModelId());
     if (actions == null) {
       return null;
     }

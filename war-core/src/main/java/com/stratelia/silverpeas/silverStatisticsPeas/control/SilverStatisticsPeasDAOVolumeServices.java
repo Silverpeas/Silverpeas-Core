@@ -102,9 +102,6 @@ public class SilverStatisticsPeasDAOVolumeServices {
    */
   private static Collection[] getCollectionArrayFromQuery(String selectQuery)
       throws SQLException, UtilException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOVolumeServices.getCollectionArrayFromQuery",
-        "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;

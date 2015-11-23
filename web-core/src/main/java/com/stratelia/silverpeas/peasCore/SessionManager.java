@@ -188,8 +188,6 @@ public class SessionManager implements SessionManagement {
    */
   private void initSchedulerTimeStamp() throws SchedulerException {
     int minute = (int) convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp);
-    SilverTrace.debug("peasCore", "SessionManager.initSchedulerTimeStamp",
-        "scheduledSessionManagementTimeStamp in minutes=" + minute);
     if (minute < 0 || minute > 59) {
       throw new SchedulerException("SchedulerMethodJob.setParameter: minute value is out of range");
     }
@@ -208,15 +206,9 @@ public class SessionManager implements SessionManagement {
 
   @Override
   public synchronized void closeSession(String sessionId) {
-    SilverTrace.debug("peasCore", "SessionManager.closeSession", "sessionId=" + sessionId);
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
       removeSession(si);
-    } else {
-      SilverTrace.debug("peasCore", "SessionManager.removeSession",
-          "L'objet de session n'a pas ete " +
-              "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
-
     }
   }
 
@@ -405,8 +397,6 @@ public class SessionManager implements SessionManagement {
    */
   private void notifyEndOfSession(String userId, long endOfSession, String sessionId)
       throws NotificationManagerException {
-    SilverTrace.debug("peasCore", "SessionManager.notifyEndOfSession", "userId=" + userId
-        + " sessionId=" + sessionId);
     UserDetail user = UserDetail.getById(userId);
     String userLanguage = DisplayI18NHelper.getDefaultLanguage();
     if (user != null) {

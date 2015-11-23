@@ -222,8 +222,6 @@ public class SilverpeasSessionOpener {
 
     // Retrieve personal workspace
     String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
-        "user personal workspace=" + personalWs);
 
     // Put a graphicElementFactory in the session
     GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
@@ -234,12 +232,6 @@ public class SilverpeasSessionOpener {
     session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
 
     String favoriteFrame = gef.getLookFrame();
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
-        "root.MSG_GEN_PARAM_VALUE",
-        "controller.getUserAccessLevel()=" + controller.getUserAccessLevel());
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
-        "root.MSG_GEN_PARAM_VALUE",
-        "controller.isAppInMaintenance()=" + controller.isAppInMaintenance());
     String sDirectAccessSpace = request.getParameter("DirectAccessSpace");
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
     if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {

@@ -59,9 +59,6 @@ public class SQLUserTable {
         + getColumns() + ") values (?,?,?,?,?)";
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.createUser", "root.MSG_QUERY",
-          theQuery);
-      statement = c.prepareStatement(theQuery);
       nextId = DBUtil.getNextId(drvSettings.getUserTableName(), drvSettings
           .getUserSpecificIdColumnName());
       statement.setInt(1, nextId);
@@ -86,8 +83,6 @@ public class SQLUserTable {
         + " where " + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.deleteUser", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
       statement.executeUpdate();
@@ -110,8 +105,6 @@ public class SQLUserTable {
         + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.updateUser", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setString(1, drvSettings.trunc(ud.getFirstName(), 100));
       statement.setString(2, drvSettings.trunc(ud.getLastName(), 100));
@@ -139,8 +132,6 @@ public class SQLUserTable {
         + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.updateUserSpecificProperty",
-          "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       if (DomainProperty.PROPERTY_TYPE_BOOLEAN.equals(dp.getType())) {
         statement.setInt(1, Integer.parseInt(value));
@@ -170,8 +161,6 @@ public class SQLUserTable {
           + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
       try {
-        SilverTrace.debug("admin", "SQLUserTable.updateUserPassword",
-            "root.MSG_QUERY", theQuery);
         statement = c.prepareStatement(theQuery);
         statement.setString(1, value);
         statement.setInt(2, userId);
@@ -198,8 +187,6 @@ public class SQLUserTable {
           + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
       try {
-        SilverTrace.debug("admin", "SQLUserTable.updateUserPasswordValid",
-            "root.MSG_QUERY", theQuery);
         statement = c.prepareStatement(theQuery);
         statement.setString(1, (value) ? "Y" : "N");
         statement.setInt(2, userId);
@@ -233,8 +220,6 @@ public class SQLUserTable {
         + " from " + drvSettings.getUserTableName();
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.getDirectGroupIdsOfUser",
-          "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       rs = statement.executeQuery();
       while (rs.next()) {
@@ -261,7 +246,6 @@ public class SQLUserTable {
         + drvSettings.getUserTableName();
 
     try {
-      SilverTrace.debug("admin", "getAllUsers", "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       rs = statement.executeQuery();
       while (rs.next()) {
@@ -289,8 +273,6 @@ public class SQLUserTable {
     theQuery += " where " + propertyName + " = ? ";
 
     try {
-      SilverTrace.debug("admin", "getUsersBySpecificProperty",
-          "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setString(1, value);
       rs = statement.executeQuery();
@@ -317,8 +299,6 @@ public class SQLUserTable {
         + drvSettings.getUserTableName() + " where id = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.getUser", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
       rs = statement.executeQuery();
@@ -347,8 +327,6 @@ public class SQLUserTable {
         + drvSettings.getUserTableName() + " where id = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLUserTable.getUserSpecificProperty",
-          "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, userId);
       rs = statement.executeQuery();
@@ -377,8 +355,6 @@ public class SQLUserTable {
           + " from " + drvSettings.getUserTableName() + " where id = ?";
 
       try {
-        SilverTrace.debug("admin", "SQLUserTable.getUserPassword",
-            "root.MSG_QUERY", theQuery);
         statement = c.prepareStatement(theQuery);
         statement.setInt(1, userId);
         rs = statement.executeQuery();
@@ -412,8 +388,6 @@ public class SQLUserTable {
           + drvSettings.getUserTableName() + " where id = ?";
 
       try {
-        SilverTrace.debug("admin", "SQLUserTable.getUserPasswordValid",
-            "root.MSG_QUERY", theQuery);
         statement = c.prepareStatement(theQuery);
         statement.setInt(1, userId);
         rs = statement.executeQuery();

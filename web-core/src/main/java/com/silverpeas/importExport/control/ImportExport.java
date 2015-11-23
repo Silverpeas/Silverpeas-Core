@@ -175,9 +175,6 @@ public class ImportExport extends AbstractExportProcess {
    * @throws ImportExportException
    */
   SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName) throws ImportExportException {
-    SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-        "root.MSG_GEN_ENTER_METHOD", "xmlFileName = " + xmlFileName);
-
     try {
       InputSource xmlInputSource = new InputSource(xmlFileName);
       String xsdPublicId = settings.getString("xsdPublicId");
@@ -206,10 +203,6 @@ public class ImportExport extends AbstractExportProcess {
         xmlReader.parse(xmlInputSource);
 
       } catch (SAXException ex) {
-        SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName).
-                append(" is not valid according to default schema").toString());
-
         // If case the default schema is not the one specified by the XML import file,
         // try to get the right XML-schema and namespace (this is done by parsing without
         // validation)
@@ -237,12 +230,6 @@ public class ImportExport extends AbstractExportProcess {
         if ((altXsdSystemId == null) || (altXsdSystemId.equals(xsdSystemId))) {
           throw ex;
         }
-
-        SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE",
-            (new StringBuilder("Trying again using schema specification located at "))
-                .append(altXsdSystemId).toString());
-
         // Try again to load, parse and validate the XML import file,
         // using the new schema specification
         schema = schemaFactory.newSchema(new StreamSource(altXsdSystemId));
@@ -252,9 +239,6 @@ public class ImportExport extends AbstractExportProcess {
         xmlReader.setErrorHandler(errorHandler);
         xmlReader.parse(xmlInputSource);
       }
-
-      SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-          "root.MSG_GEN_PARAM_VALUE", "XML Validation complete");
 
       // Mapping file for Castor
       String mappingDir = settings.getString("mappingDir");
@@ -271,8 +255,6 @@ public class ImportExport extends AbstractExportProcess {
       // Unmarshall the process model
       SilverPeasExchangeType silverpeasExchange =
           (SilverPeasExchangeType) unmar.unmarshal(xmlInputSource);
-      SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-          "root.MSG_GEN_PARAM_VALUE", "Unmarshalling complete");
       return silverpeasExchange;
 
     } catch (MappingException | IOException me) {
@@ -954,8 +936,6 @@ public class ImportExport extends AbstractExportProcess {
             try {
               fileWriter.close();
             } catch (Exception ex) {
-              SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-                  "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
             }
           }
         }
@@ -1020,10 +1000,6 @@ public class ImportExport extends AbstractExportProcess {
 
           publicationType.getCoordinatesPositionsType()
               .setCoordinatesPositions(listCoordinatesPositions);
-          SilverTrace
-              .debug("importExport", "ImportExport.processExportKmax", "root.MSG_GEN_PARAM_VALUE",
-                  "coordinatePositions added");
-
           publicationFileNameRelativePath =
               componentLabel + separator + pubId + separator + "index.html";
           int nbThemes = pubTypMgr.getNbThemes(gedIE, publicationType, null);
@@ -1034,9 +1010,6 @@ public class ImportExport extends AbstractExportProcess {
 
           for (String filePositions : filesPositionsHTMLToFill) {
             fileHTML = new File(exportSummaryPath + separator + filePositions);
-            SilverTrace
-                .debug("importExport", "ImportExport.processExportKmax", "root.MSG_GEN_PARAM_VALUE",
-                    "pubId = " + pubId);
             fileWriter = null;
             try {
               if (fileHTML.exists()) {

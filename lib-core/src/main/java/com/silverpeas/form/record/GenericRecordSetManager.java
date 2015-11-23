@@ -158,10 +158,6 @@ public class GenericRecordSetManager {
    * @throws FormException when the id is unknown.
    */
   public RecordSet getRecordSet(String externalId) throws FormException {
-
-    SilverTrace.debug("form", "GenericRecordSetManager.getRecordSet",
-        "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId);
-
     GenericRecordSet cachedSet = getCachedRecordSet(externalId);
     if (cachedSet != null) {
       return cachedSet;
@@ -245,9 +241,6 @@ public class GenericRecordSetManager {
   }
 
   public void removeTemplateFromCache(String templateName) {
-    SilverTrace.debug("form", "GenericRecordSetManager.removeTemplateFromCache",
-        "root.MSG_GEN_ENTER_METHOD", "templateName = " + templateName);
-
     // getting cached recordsets managed by given template
     List<String> ids = new ArrayList<>();
     for (String id : cache.keySet()) {
@@ -257,9 +250,6 @@ public class GenericRecordSetManager {
         ids.add(id);
       }
     }
-    SilverTrace.debug("form", "GenericRecordSetManager.removeTemplateFromCache",
-        "root.MSG_GEN_PARAM_VALUE", "externalIds to remove = " + ids.toString());
-
     // removing recordsets from cache
     ids.forEach(this::removeCachedRecordSet);
   }
@@ -278,10 +268,6 @@ public class GenericRecordSetManager {
 
   public DataRecord getRecord(IdentifiedRecordTemplate template,
       String objectId, String language) throws FormException {
-
-    SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
-        "root.MSG_GEN_PARAM_VALUE", "objectId = " + objectId + ", language = "
-        + language);
 
     Connection con = null;
     GenericDataRecord record = null;
@@ -309,9 +295,6 @@ public class GenericRecordSetManager {
 
   public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
       String externalId) throws FormException {
-    SilverTrace.debug("form", "GenericRecordSetManager.getLanguagesOfRecord",
-        "root.MSG_GEN_PARAM_VALUE", "externalId = " + externalId);
-
     Connection con = null;
     try {
       con = getConnection();
@@ -358,10 +341,6 @@ public class GenericRecordSetManager {
   public void cloneRecord(IdentifiedRecordTemplate templateFrom,
       String objectIdFrom, IdentifiedRecordTemplate templateTo,
       String objectIdTo, Map<String, String> fileIds) throws FormException {
-    SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
-        "root.MSG_GEN_ENTER_METHOD", "objectIdFrom = " + objectIdFrom
-        + ", objectIdTo = " + objectIdTo);
-
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
       String language = languages.next();
@@ -399,9 +378,6 @@ public class GenericRecordSetManager {
 
   public void moveRecord(int recordId, IdentifiedRecordTemplate templateTo)
       throws FormException {
-    SilverTrace.debug("form", "GenericRecordSetManager.moveRecord",
-        "root.MSG_GEN_ENTER_METHOD", "recordId = " + recordId+", toInstanceId = "+templateTo.getInternalId());
-
     Connection con = null;
 
     try {
@@ -859,12 +835,6 @@ public class GenericRecordSetManager {
       record.setInternalId(internalId);
       int templateId = template.getInternalId();
       String externalId = record.getId();
-
-      SilverTrace.debug("form", "GenericRecordSetManager.insertRecordRow",
-          "root.MSG_GEN_PARAM_VALUE", "internalId = " + internalId
-          + ", templateId = " + templateId + ", externalId = " + externalId
-          + ", language = " + record.getLanguage());
-
       insert = con.prepareStatement(INSERT_RECORD);
       insert.setInt(1, internalId);
       insert.setInt(2, templateId);
@@ -919,9 +889,6 @@ public class GenericRecordSetManager {
   private GenericDataRecord selectRecordRow(Connection con,
       IdentifiedRecordTemplate template, String externalId, String language)
       throws SQLException, FormException {
-    SilverTrace.debug("form", "GenericRecordSetManager.selectRecordRow",
-        "root.MSG_GEN_ENTER_METHOD", "templateId = " + template.getInternalId()
-        + ", externalId = " + externalId + ", language = " + language);
     PreparedStatement select = null;
     ResultSet rs = null;
 
@@ -996,8 +963,6 @@ public class GenericRecordSetManager {
         Field field = record.getField(fieldName, fieldValueIndex);
         String fieldValue = rows.get(fieldNameIndexed);
         if (field != null) {// We found a field corresponding to the fieldName
-          SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
-              "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
           field.setStringValue(fieldValue);
         }
       }
@@ -1080,11 +1045,6 @@ public class GenericRecordSetManager {
     for (Field field : record.getFields()) {
       String fieldNameIndexed = field.getName()+SEPARATOR+field.getOccurrence();
       rows.put(fieldNameIndexed, field.getStringValue());
-      
-      SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
-          "root.MSG_GEN_PARAM_VALUE", "fieldNameIndexed = " + fieldNameIndexed
-          + ", fieldValue = " + field.getStringValue()
-          + ", recordId = " + record.getInternalId());
     }
     if (crypt) {
       rows = getEncryptionService().encryptContent(rows);

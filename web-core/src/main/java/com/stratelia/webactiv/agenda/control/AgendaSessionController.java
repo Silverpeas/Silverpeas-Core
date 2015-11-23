@@ -291,10 +291,6 @@ public class AgendaSessionController extends AbstractComponentSessionController 
         }
       }
     }
-
-    SilverTrace
-        .debug("agenda", "AgendaSessionController.eventHasChanged", "root.MSG_GEN_EXIT_METHOD",
-            "dates have changed = " + hasChanged);
     return hasChanged;
   }
 
@@ -1442,11 +1438,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws Exception
    */
   public String exportIcalAgenda(String startDate, String endDate) throws Exception {
-    SilverTrace
-        .debug("agenda", "AgendaSessionController.exportIcalAgenda()", "root.MSG_GEN_ENTER_METHOD");
     String returnCode = new ExportIcalManager(this).exportIcalAgenda(startDate, endDate);
-    SilverTrace
-        .debug("agenda", "AgendaSessionController.exportIcalAgenda()", "root.MSG_GEN_EXIT_METHOD");
     return returnCode;
   }
 
@@ -1455,11 +1447,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   public String importIcalAgenda(File fileCalendar) throws Exception {
-    SilverTrace
-        .debug("agenda", "AgendaSessionController.importIcalAgenda()", "root.MSG_GEN_ENTER_METHOD");
     String returnCode = new ImportIcalManager(this).importIcalAgenda(fileCalendar);
-    SilverTrace
-        .debug("agenda", "AgendaSessionController.importIcalAgenda()", "root.MSG_GEN_EXIT_METHOD");
     return returnCode;
   }
 
@@ -1473,13 +1461,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public String synchroIcalAgenda(String urlICalendar, String loginIcalendar, String pwdIcalendar)
       throws Exception {
-    SilverTrace.debug("agenda", "AgendaSessionController.synchroIcalAgenda()",
-        "root.MSG_GEN_ENTER_METHOD");
     URL iCalendarServerUrl = new URL(urlICalendar);
     String returnCodeSynchro = new SynchroIcalManager(this)
         .synchroIcalAgenda(iCalendarServerUrl, getIcalendarFile(), loginIcalendar, pwdIcalendar);
-    SilverTrace
-        .debug("agenda", "AgendaSessionController.synchroIcalAgenda()", "root.MSG_GEN_EXIT_METHOD");
     return returnCodeSynchro;
   }
 

@@ -134,9 +134,6 @@ public class DynamicValueReplacement {
             "root.EX_SQL_QUERY_FAILED", e);
       }
     }
-    SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
-        "content after  key replacement by value : " + updatedString);
-
     return updatedString;
   }
 
@@ -157,33 +154,22 @@ public class DynamicValueReplacement {
 
     String escapementStr = "";
 
-    SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
-        " character matching " + matcher.toString());
-    SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(), " complete tag : " +
-        matcher.group());
     // get the dynamic value corresponding to a key
-    SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
-        " key to use to get the dynamic value : " +
-        EncodeHelper.htmlStringToJavaString(matcher.group(1)));
     DynamicValue value =
         DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher
         .group(1)));
 
     if (value != null) {
-      SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(), "key : " +
-          value.getKey() + "  value :" + value.getValue());
       // escape the first brace in the key string because it's a reserved character in regular
       // expression
       escapementStr = matcher.group().replaceAll("\\\\", "\\\\\\\\");
       escapementStr = escapementStr.replaceAll("\\(", "\\\\(");
       escapementStr = escapementStr.replaceAll("\\)", "\\\\)");
-      SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
-          " result after escaping special characters : " + escapementStr);
       // replace all the occurrences of current key in HTML code
       updatedString = wysiwygText.replaceAll(escapementStr, value.getValue());
 
     } else {
-      SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
+      SilverTrace.warn("wysiwyg", DynamicValueReplacement.class.toString(),
           " key not found in database : " + EncodeHelper.htmlStringToJavaString(matcher.group(1)));
     }
 

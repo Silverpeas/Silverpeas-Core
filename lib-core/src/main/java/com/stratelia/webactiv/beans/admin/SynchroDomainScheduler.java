@@ -83,17 +83,11 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) {
-    String jobName = anEvent.getJobExecutionContext().getJobName();
-    SilverTrace.debug("admin", "SynchroDomainScheduler.triggerFired()", "The job '" + jobName +
-        "' is executed");
     doSynchro();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    String jobName = anEvent.getJobExecutionContext().getJobName();
-    SilverTrace.debug("admin", "SynchroDomainScheduler.jobSucceeded()", "The job '" + jobName +
-        "' was successfull");
   }
 
   @Override

@@ -73,12 +73,6 @@ public class SilverStatisticsVolumeAlimentation {
 
           if (collectionUserIdCountVolume != null) {
             for (UserIdCountVolumeCouple currentUserIdCountVolume : collectionUserIdCountVolume) {
-              SilverTrace.debug("silverstatistics",
-                  "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
-                  "userId= " + currentUserIdCountVolume.getUserId() + " countVolume=  "
-                  + currentUserIdCountVolume.getCountVolume() + " name= " + ci.getName()
-                  + " spaceId= " + currentSpaceId + " compoId= " + currentComponentsId);
-
               // notify statistics
               SilverStatisticsManager.getInstance().addStatVolume(
                   currentUserIdCountVolume.getUserId(),
@@ -181,18 +175,10 @@ public class SilverStatisticsVolumeAlimentation {
       // s'il n'existe pas dans la collection finale alors on l'ajoute
       // sinon on modifie le countVolume et on passe au suivant
       UserIdCountVolumeCouple eltOut = getCouple(myArrayList, eltIn);
-      SilverTrace.debug("silverstatistics", "SilverStatisticsVolumeAlimentation.agregateUser)",
-          "eltIn.getUserId() = " + eltIn.getUserId() + "eltIn.getCountVolume() = " + eltIn.
-          getCountVolume());
       if (eltOut == null) {
         myArrayList.add(eltIn);
-        SilverTrace.debug("silverstatistics", "SilverStatisticsVolumeAlimentation.agregateUser)",
-            "add eltIn");
       } else {
         eltOut.setCountVolume(eltIn.getCountVolume() + eltOut.getCountVolume());
-        SilverTrace.debug("silverstatistics", "SilverStatisticsVolumeAlimentation.agregateUser)",
-            "eltOut.getUserId() = " + eltOut.getUserId() + "eltOut.getCountVolume() = " + eltOut.
-            getCountVolume());
       }
     }
     return myArrayList;

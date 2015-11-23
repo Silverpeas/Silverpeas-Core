@@ -73,8 +73,6 @@ public class RestRequest {
     elements = new HashMap<String, String[]>(10);
 
     String pathInfo = getPathInfo(request, componentId);
-    SilverTrace.debug("util", "RestRequest()",
-        "root.MSG_GEN_ENTER_METHOD", "Parsing:" + pathInfo);
     String[] pathItems = pathInfo.split("/");
     if (pathItems.length > 0) {
       // first, parse the path for optionally an action and for an identifier

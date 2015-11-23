@@ -67,10 +67,6 @@ public class RtfParser extends PipedParser {
       } catch (Exception e) {
         SilverTrace.warn("indexEngine", "RtfParser.outPutContent()", "", e);
       }
-
-      SilverTrace.debug("indexEngine", "RtfParser.outPutContent",
-          "root.MSG_GEN_EXIT_METHOD", result);
-
       out.write(result);
     } finally {
       IOUtils.closeQuietly(in);

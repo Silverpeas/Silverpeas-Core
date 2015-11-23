@@ -73,8 +73,6 @@
   String indexIt = "";
 
   String actionWysiwyg = request.getParameter("actionWysiwyg");
-  SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "actionWysiwyg=" + actionWysiwyg);
-
   if (actionWysiwyg == null) {
     actionWysiwyg = "Load";
   }
@@ -134,8 +132,6 @@
         collectionPages = WysiwygController.getWebsitePages(path, componentId);
         SilverTrace.info("wysiwyg", "Wysiwyg.htmlEditorJSP", "root.MSG_GEN_PARAM_VALUE",
             "nb collectionPages = " + collectionPages.length);
-      } else {
-        SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId=" + objectId);
       }
     }
     if ("SaveHtmlAndExit".equals(actionWysiwyg)) {
@@ -147,40 +143,32 @@
     if (spaceId == null) {
       spaceId = (String) request.getAttribute("SpaceId");
     }
-    SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "spaceId = " + spaceId);
 
     spaceName = request.getParameter("SpaceName");
     if (spaceName == null) {
       spaceName = (String) request.getAttribute("SpaceName");
     }
-    SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "spaceName = " + spaceName);
 
     componentId = request.getParameter("ComponentId");
     if (componentId == null) {
       componentId = (String) request.getAttribute("ComponentId");
     }
-    SilverTrace
-        .debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "componentId = " + componentId);
 
     componentName = request.getParameter("ComponentName");
     if (componentName == null) {
       componentName = (String) request.getAttribute("ComponentName");
     }
-    SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite",
-        "componentName = " + componentName);
 
     objectId = request.getParameter("ObjectId");
     if (objectId == null) {
       objectId = (String) request.getAttribute("ObjectId");
     }
-    SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "ObjectId = " + objectId);
 
     returnUrl = request.getParameter("ReturnUrl");
     if (returnUrl == null) {
       returnUrl = (String) request.getAttribute("ReturnUrl");
     }
     session.setAttribute("WYSIWYG_ReturnUrl", returnUrl);
-    SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite", "return Url= " + returnUrl);
 
     browseInformation = request.getParameter("BrowseInfo");
     if (browseInformation == null) {
@@ -205,8 +193,6 @@
       path = WysiwygController.getWebsiteRepository() + path;
     }
     session.setAttribute("WYSIWYG_Path", path);
-    SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite",
-        "fileName= " + fileName + " Path=" + path);
 
     language = request.getParameter("Language");
     if (language == null) {

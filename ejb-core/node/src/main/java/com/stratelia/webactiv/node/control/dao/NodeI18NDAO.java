@@ -198,8 +198,6 @@ public class NodeI18NDAO {
   public static List<NodeI18NDetail> getTranslations(Connection con, int nodeId) throws SQLException {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
-    SilverTrace.debug("node", "NodeI18NDAO.getTranslations", "root.MSG_QUERY",
-        SELECT_TRANSLATIONS + "  nodeId: " + nodeId);
     List<NodeI18NDetail> result = new ArrayList<>();
     try {
       prepStmt = con.prepareStatement(SELECT_TRANSLATIONS);

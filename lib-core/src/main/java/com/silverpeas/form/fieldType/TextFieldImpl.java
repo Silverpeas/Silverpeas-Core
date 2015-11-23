@@ -94,11 +94,6 @@ public class TextFieldImpl extends TextField {
       statement.setString(1, fieldName);
       statement.setString(2, componentId + ":" + templateName);
 
-      SilverTrace.debug("formTemplate", "TextFieldImpl.getSuggestions",
-          "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-          + ", componentId = " + componentId + ", templateName = "
-          + templateName);
-
       rs = statement.executeQuery();
 
       String oneSuggestion;

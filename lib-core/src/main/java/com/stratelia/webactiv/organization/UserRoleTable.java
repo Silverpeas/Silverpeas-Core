@@ -404,9 +404,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
     int[] ids = new int[] { groupId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_GROUP_REL, ids);
 
-    SilverTrace.debug("admin", "UserRoleTable.isGroupDirectlyInRole()",
-        "Le groupe d'ID " + groupId + " et le role d'ID " + userRoleId
-        + " ont un nb de lien = " + result);
     return result != null && result >= 1;
   }
 

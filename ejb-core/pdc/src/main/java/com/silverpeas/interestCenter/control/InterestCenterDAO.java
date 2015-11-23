@@ -476,10 +476,6 @@ public class InterestCenterDAO {
       prepStmt.setInt(1, icId);
 
       int result = prepStmt.executeUpdate();
-
-      SilverTrace.debug("InterestCenter", "InterestCenterDAO.removePdcContext",
-          "Number of deleted rows = ", String.valueOf(result));
-
     } finally {
       DBUtil.close(prepStmt);
     }

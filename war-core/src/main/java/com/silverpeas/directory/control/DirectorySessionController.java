@@ -480,8 +480,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
     int priorityId = 0;
-    SilverTrace.debug("directory", "DirectorySessionController.sendMessage()",
-        "root.MSG_GEN_PARAM_VALUE", " AVANT CONTROLE priorityId=" + priorityId);
     NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
