@@ -24,6 +24,8 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
 import com.silverpeas.accesscontrol.ComponentAccessController;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
@@ -69,9 +71,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   private String iconFile = null;
   private ResourceLocator settings = null;
   private String settingsFile = null;
-
-  private ComponentAccessController componentAccessController =
-      new ComponentAccessController();
 
   /**
    * Constructor declaration
@@ -655,6 +654,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   protected ComponentAccessController getComponentAccessController() {
-    return this.componentAccessController;
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController("componentAccessController");
+    return (ComponentAccessController) accessController;
   }
 }

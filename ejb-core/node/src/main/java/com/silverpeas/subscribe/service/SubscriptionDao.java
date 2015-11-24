@@ -30,6 +30,7 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -43,12 +44,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -234,7 +233,7 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public Collection<Subscription> getSubscriptionsBySubscriber(Connection con,
+  public SubscriptionList getSubscriptionsBySubscriber(Connection con,
       SubscriptionSubscriber subscriber) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriber",
         "root.MSG_GEN_ENTER_METHOD");
@@ -259,7 +258,7 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public Collection<Subscription> getSubscriptionsBySubscriberAndComponent(Connection con,
+  public SubscriptionList getSubscriptionsBySubscriberAndComponent(Connection con,
       SubscriptionSubscriber subscriber, String instanceId) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriberAndComponent",
         "root.MSG_GEN_ENTER_METHOD");
@@ -286,7 +285,7 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public Collection<Subscription> getSubscriptionsByResource(Connection con,
+  public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsByResource",
         "root.MSG_GEN_ENTER_METHOD");
@@ -320,7 +319,7 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public Collection<Subscription> getSubscriptionsBySubscriberAndResource(Connection con,
+  public SubscriptionList getSubscriptionsBySubscriberAndResource(Connection con,
       SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriberAndResource",
         "root.MSG_GEN_ENTER_METHOD");
@@ -374,7 +373,7 @@ public class SubscriptionDao {
   }
 
   /**
-   * Centralied method.
+   * Centralized method.
    * @param con
    * @param resource
    * @param result
@@ -417,8 +416,8 @@ public class SubscriptionDao {
    * @return
    * @throws SQLException
    */
-  private Collection<Subscription> toList(ResultSet rs) throws SQLException {
-    List<Subscription> list = new ArrayList<Subscription>();
+  private SubscriptionList toList(ResultSet rs) throws SQLException {
+    SubscriptionList list = new SubscriptionList();
     Subscription subscription;
     while (rs.next()) {
       subscription = createSubscriptionInstance(rs);

@@ -25,6 +25,7 @@
 package com.silverpeas.subscribe;
 
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.util.SubscriptionList;
 import com.silverpeas.subscribe.util.SubscriptionSubscriberList;
 
 import java.util.Collection;
@@ -107,7 +108,7 @@ public interface SubscriptionService {
    * @param resource
    * @return list of subscriptions
    */
-  public Collection<Subscription> getByResource(SubscriptionResource resource);
+  public SubscriptionList getByResource(SubscriptionResource resource);
 
   /**
    * Gets all subscriptions in relation to the given resource.
@@ -115,8 +116,7 @@ public interface SubscriptionService {
    * @param method
    * @return list of subscriptions
    */
-  public Collection<Subscription> getByResource(SubscriptionResource resource,
-      SubscriptionMethod method);
+  public SubscriptionList getByResource(SubscriptionResource resource, SubscriptionMethod method);
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a user.
@@ -125,14 +125,14 @@ public interface SubscriptionService {
    *         of users that are subscribed through a subscribed group and of users that have been
    *         subscribed by an other user
    */
-  public Collection<Subscription> getByUserSubscriber(String userId);
+  public SubscriptionList getByUserSubscriber(String userId);
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber.
    * @param subscriber
    * @return list of subscriptions
    */
-  public Collection<Subscription> getBySubscriber(SubscriptionSubscriber subscriber);
+  public SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber);
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber
@@ -141,7 +141,7 @@ public interface SubscriptionService {
    * @param instanceId
    * @return list of subscriptions
    */
-  public Collection<Subscription> getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
+  public SubscriptionList getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
       String instanceId);
 
   /**
@@ -151,7 +151,7 @@ public interface SubscriptionService {
    * @param resource
    * @return list of subscriptions
    */
-  public Collection<Subscription> getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+  public SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
       SubscriptionResource resource);
 
   /**
