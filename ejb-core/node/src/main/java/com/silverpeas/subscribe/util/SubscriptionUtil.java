@@ -23,12 +23,17 @@
  */
 package com.silverpeas.subscribe.util;
 
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.util.MapUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -105,5 +110,91 @@ public class SubscriptionUtil {
 
     // Returning indexed subscribers
     return indexedSubscribers;
+  }
+
+  /**
+   * Removes from the given collection the subscription that the linked subscriber has not the same
+   * domain visibility as the current requester one.
+   * @param subscriptions a list of subscription to filter.
+   * @param currentRequester the current user requester.
+   */
+  public static void filterSubscriptionsOnDomainVisibility(Collection<Subscription> subscriptions,
+      UserDetail currentRequester) {
+    if (currentRequester.isDomainRestricted()) {
+      Iterator<Subscription> itOfSubscriptions = subscriptions.iterator();
+      while (itOfSubscriptions.hasNext()) {
+        Subscription subscription = itOfSubscriptions.next();
+        if (!isSameVisibilityAsTheCurrentRequester(subscription.getSubscriber(),
+            currentRequester)) {
+          itOfSubscriptions.remove();
+        }
+      }
+    }
+  }
+
+  /**
+   * Removes from the given collection the subscribers that have not the same domain visibility as
+   * the current requester one.
+   * @param subscribers the subscribers to filter.
+   * @param currentRequester the current user requester.
+   */
+  public static void filterSubscribersOnDomainVisibility(
+      final Collection<SubscriptionSubscriber> subscribers, UserDetail currentRequester) {
+    if (currentRequester.isDomainRestricted()) {
+      Iterator<SubscriptionSubscriber> itOfSubscribers = subscribers.iterator();
+      while (itOfSubscribers.hasNext()) {
+        SubscriptionSubscriber subscriber = itOfSubscribers.next();
+        if (!isSameVisibilityAsTheCurrentRequester(subscriber, currentRequester)) {
+          itOfSubscribers.remove();
+        }
+      }
+    }
+  }
+
+  /**
+   * Indicates if the given subscription subscriber has same domain visibility as the current
+   * requester.
+   * @param subscriber the subscriber to verify.
+   * @param currentRequester the current user requester.
+   * @return true if same domain visibility, false otherwise.
+   */
+  public static boolean isSameVisibilityAsTheCurrentRequester(
+      final SubscriptionSubscriber subscriber, UserDetail currentRequester) {
+    if (currentRequester.isDomainRestricted()) {
+      switch (subscriber.getType()) {
+        case USER:
+          return isSameVisibilityAsTheCurrentRequester(UserDetail.getById(subscriber.getId()),
+              currentRequester);
+        case GROUP:
+          return isSameVisibilityAsTheCurrentRequester(Group.getById(subscriber.getId()),
+              currentRequester);
+      }
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Indicates if the given user has same domain visibility as the current requester.
+   * @param user the user to verify.
+   * @param currentRequester the current user requester.
+   * @return true if same domain visibility, false otherwise.
+   */
+  public static boolean isSameVisibilityAsTheCurrentRequester(final UserDetail user,
+      UserDetail currentRequester) {
+    return !currentRequester.isDomainRestricted() ||
+        user.getDomainId().equals(currentRequester.getDomainId());
+  }
+
+  /**
+   * Indicates if the given group has same domain visibility as the current requester.
+   * @param group the group to verify.
+   * @param currentRequester the current user requester.
+   * @return true if same domain visibility, false otherwise.
+   */
+  public static boolean isSameVisibilityAsTheCurrentRequester(final Group group,
+      UserDetail currentRequester) {
+    return !currentRequester.isDomainRestricted() || StringUtil.isNotDefined(group.getDomainId()) ||
+        group.getDomainId().equals(currentRequester.getDomainId());
   }
 }
