@@ -57,11 +57,11 @@ import javax.ws.rs.*;
  * A predefined classification associated with a given node or with a given component instance
  * follows the hierarchical structure of the node tree; it is also applicable to all contents in the
  * children of the given node (or of all nodes in the component instance) in the case they aren't
- * associated explictly with a predefined classification. So, when classifying on the PdC of a
+ * associated explicitly with a predefined classification. So, when classifying on the PdC of a
  * content published in a given node, a predefined classification is then looked for backward in the
- * hierarchical tree of nodes, from the given node upto the component instance itself; once found,
+ * hierarchical tree of nodes, from the given node up to the component instance itself; once found,
  * this predefined classification will be used to classify the content. Similarly, when editing a
- * predefined classification associated with a node, it is seeked backward in the hierarchical tree
+ * predefined classification associated with a node, it is sought backward in the hierarchical tree
  * of nodes but the predefined classification found will be modified only for the given node.
  *
  * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
@@ -97,14 +97,14 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   /**
    * Gets the predefined classification on the PdC that is set for the contents in the node
    * identified by the query part of the request URI. If no node identifier is provided in the URI,
-   * the predefined classification set for the whole component instance is seeked.
+   * the predefined classification set for the whole component instance is sought.
    *
    * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
    * contents of the component instance. If no predefined classification on the PdC is defined for
    * the requested node, a predefined one is then looked backward among the parent nodes up to the
    * component instance itself.
    *
-   * The PdC classification is sent back in JSON. If the user isn't authentified, a 401 HTTP code is
+   * The PdC classification is sent back in JSON. If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to access the requested resource, a 403 is returned. If
    * a problem occurs when processing the request, a 503 HTTP code is returned.
    *
@@ -128,11 +128,11 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   /**
-   * Creates a new predefined classification
+   * Creates a new predefined classification for the specified node.
    *
    * If the JSON representation of the classification isn't correct (no values), then a 400 HTTP
-   * code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the user
-   * isn't authorized to access the classification, a 403 is returned. If the resource refered by
+   * code is returned. If the user isn't authenticated, a 401 HTTP code is returned. If the user
+   * isn't authorized to access the classification, a 403 is returned. If the resource referred by
    * the URI already exists, a 409 HTTP core is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    *
@@ -170,8 +170,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   /**
-   * Updates an existing position on the PdC in the predefined classification refered by the
-   * requested URI.
+   * Updates the predefined classification for the specified node.
    *
    * If no predefined classification is associated with the specified node, it inherits of the
    * predefined classification of its closest parent node. So, as the updated predefined position on
@@ -180,11 +179,12 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * parent node.
    *
    * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
-   * returned. If the user isn't authentified, a 401 HTTP code is returned. If the user isn't
+   * returned. If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
    * authorized to access the comment, a 403 is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    *
-   * @param modifiedPosition a web entity representing the new state of the PdC position to update.
+   * @param nodeId the unique identifier of a node.
+   * @param classification a web entity representing the new state of the PdC position to update.
    * The entity is passed within the request and it is serialized in JSON.
    * @return the response with the status of the position update and, in the case of a successful
    * operation, the new PdC classification of the resource resulting of the position update.

@@ -64,7 +64,7 @@ public class FilteredPdcResource extends RESTWebService {
    * values with which they have to be classified. The version of the returned PdC indicates, for
    * each axis's value, the count of contents that are classified with this value. According to the
    * query parameters, it can contain also the secondary axis of the PdC. The PdC is sent back in
-   * JSON. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs when
+   * JSON. If the user isn't authenticated, a 401 HTTP code is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
    *
    * @param workspaceId optionally the unique identifier of the workspace in which the classified

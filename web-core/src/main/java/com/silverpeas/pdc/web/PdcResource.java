@@ -45,14 +45,14 @@ import static com.silverpeas.util.StringUtil.isDefined;
 /**
  * A REST Web resource that represents the classification plan (named PdC).
  *
- * The PdC is defined by a set of semantic axis that vehicule the business concepts and the
+ * The PdC is defined by a set of semantic axis that vehicle the business concepts and the
  * structures on which is based a given organization that uses the Silverpeas collaborative portal.
  * The values of an axis is thus made either of single terms (of the inherent concept or structure)
  * or of hierarchic semantic trees in which each branch carries an exactness about the value of a
  * concept. It exists two kinds of PdC: the model (or the referent) in which all the axis to be used
- * in the whole portail are defined, and the instances of the model that represent a PdC configured
+ * in the whole portal are defined, and the instances of the model that represent a PdC configured
  * for a given Silverpeas component instance. The instances of the model can be just a clone of the
- * model or a modified version by taking only some of the model's axis and by setting a diffent
+ * model or a modified version by taking only some of the model's axis and by setting a different
  * origin value (among the possible values of the axis) for each chosen axis. Such PdCs are
  * identified by an unique URI in which the identifier of the Silverpeas component instance is
  * referenced.
@@ -70,11 +70,11 @@ public class PdcResource extends RESTWebService {
   /**
    * Gets the PdC configured for the Silverpeas component instance identified by the requested URI.
    * The PdC that is sent back is adapted for classifying or updating the classification of the
-   * resource content refered by the specified request query parameter. In that case, all the
+   * resource content referred by the specified request query parameter. In that case, all the
    * invariant axis of the PdC will have an invariant value set with the one coming from the
    * classification of the resource. In effect, an invariant axis means that no other values are
    * possible when one was already set in a position of the content on the axis. The PdC is sent
-   * back in JSON. If the user isn't authentified, a 401 HTTP code is returned. If the user isn't
+   * back in JSON. If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
    * authorized to access the requested component instance, a 403 is returned. If the resource
    * content isn't indicated as query parameter, a 400 HTTP code is returned. If a problem occurs
    * when processing the request, a 503 HTTP code is returned.
@@ -119,7 +119,7 @@ public class PdcResource extends RESTWebService {
   }
 
   /**
-   * Gets the PdC. The PdC is sent back in JSON. If the user isn't authentified, a 401 HTTP code is
+   * Gets the PdC. The PdC is sent back in JSON. If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to access the requested component instance, a 403 is
    * returned. If the resource content isn't indicated as query parameter, a 400 HTTP code is
    * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
