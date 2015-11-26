@@ -80,6 +80,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.*"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 
 
