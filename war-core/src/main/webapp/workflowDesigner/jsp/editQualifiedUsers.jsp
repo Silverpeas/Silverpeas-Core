@@ -46,8 +46,7 @@
 
 <html>
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
     function sendData() 

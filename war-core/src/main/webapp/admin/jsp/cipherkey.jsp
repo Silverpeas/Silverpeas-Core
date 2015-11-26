@@ -43,8 +43,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <view:looknfeel/>
-  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css"/>" rel="stylesheet" />
+  <view:looknfeel withFieldsetStyle="true"/>
   <style type="text/css">
   	input#cipherKey {
   		width: 100%;

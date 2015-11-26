@@ -54,8 +54,7 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
 	var currentLanguage = "<%=value.getLanguage()%>";
 	

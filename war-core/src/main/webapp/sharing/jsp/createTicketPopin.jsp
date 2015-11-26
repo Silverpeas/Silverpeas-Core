@@ -46,8 +46,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:set var="mandatoryIcon"><fmt:message key='sharing.obligatoire' bundle='${fsIcons}'/></c:set>
 
 <view:includePlugin name="datepicker"/>
-<link href="<c:url value='/util/styleSheets/fieldset.css'/>" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
+<view:link href="/util/styleSheets/fieldset.css"/>
+<view:script src="/util/javaScript/checkForm.js"/>
 
 <script type="text/javascript">
 function createSharingTicketPopup(sharingParam) {

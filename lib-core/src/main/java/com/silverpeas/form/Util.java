@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
+import static com.stratelia.silverpeas.peasCore.URLManager.appendVersion;
+
 public class Util {
 
   private static final ResourceLocator formIcons = new ResourceLocator(
@@ -91,19 +93,19 @@ public class Util {
   }
 
   private static void addSilverpeasScript(StringBuilder includes, String script) {
-    includes.append("<script type=\"text/javascript\" src=\"").append(path);
-    includes.append(script).append("\"></script>\n");
+    includes.append("<script type=\"text/javascript\" src=\"").append(appendVersion(path + script))
+        .append("\"></script>\n");
   }
 
   private static void addExternalStyleSheet(StringBuilder includes, String webContext,
       String styleSheet) {
-    includes.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(webContext);
-    includes.append(styleSheet).append("\" />\n");
+    includes.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"")
+        .append(appendVersion(webContext + styleSheet)).append("\" />\n");
   }
 
   private static void addExternalScript(StringBuilder includes, String webContext, String script) {
-    includes.append("<script type=\"text/javascript\" src=\"").append(webContext);
-    includes.append(script).append("\"></script>\n");
+    includes.append("<script type=\"text/javascript\" src=\"")
+        .append(appendVersion(webContext + script)).append("\"></script>\n");
   }
 
   public static void getJavascriptChecker(String fieldName,

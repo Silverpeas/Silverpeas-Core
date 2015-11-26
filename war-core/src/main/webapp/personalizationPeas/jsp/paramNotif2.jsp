@@ -31,8 +31,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script>
   function validate() {
     var comp = stripInitialWhitespace(document.paramNotifForm.componentId.value);

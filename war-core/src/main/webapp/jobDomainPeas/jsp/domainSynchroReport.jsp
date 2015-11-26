@@ -37,8 +37,7 @@
 %>
 <html>
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 </head>
 <body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 

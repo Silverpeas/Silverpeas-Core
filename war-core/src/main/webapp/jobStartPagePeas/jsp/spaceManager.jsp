@@ -34,8 +34,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
-
 <c:set var="m_SpaceExtraInfos" value="${requestScope['SpaceExtraInfos']}"/>
 
 <%
@@ -80,8 +78,7 @@
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 </head>
 <body id="admin-role">
 <%

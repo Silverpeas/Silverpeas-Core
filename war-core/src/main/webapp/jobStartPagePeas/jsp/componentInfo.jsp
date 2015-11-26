@@ -145,11 +145,9 @@ window.setPopup(popupMode);
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<link type="text/css" href="/silverpeas/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
 <view:includePlugin name="qtip"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript">
 var currentLanguage = "<%=compoInst.getLanguage()%>";

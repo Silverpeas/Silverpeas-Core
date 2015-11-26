@@ -55,8 +55,7 @@ List vStatsData = (List)request.getAttribute("StatsData");
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>
-<view:looknfeel />
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
 	function validerForm(){
 		openAxisStats(0);
