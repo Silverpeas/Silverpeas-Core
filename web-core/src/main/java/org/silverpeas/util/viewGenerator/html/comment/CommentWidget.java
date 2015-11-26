@@ -25,6 +25,8 @@ import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
@@ -93,9 +95,8 @@ public abstract class CommentWidget extends TagSupport {
     div comments = new div();
     comments.setID(COMMENT_WIDGET_DIV_ID);
     comments.setClass(COMMENT_WIDGET_DIV_CLASS);
-    script checkForm = new script().setType("text/javascript").
-        setSrc(context + "/util/javaScript/checkForm.js");
-    script initCommentPlugin = new script().setType("text/javascript").
+    Element checkForm = JavascriptPluginInclusion.script(context + "/util/javaScript/checkForm.js");
+    Element initCommentPlugin = new script().setType("text/javascript").
         addElement(setUpJQueryCommentPlugin());
 
     xhtmlcontainer.addElement(comments).addElement(checkForm);

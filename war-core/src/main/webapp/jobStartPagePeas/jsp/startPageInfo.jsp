@@ -155,14 +155,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="popup"/>
 <style type="text/css">
 .txtlibform {
 	white-space: nowrap;
 }
 </style>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 //<!--
 var currentLanguage = "<%=space.getLanguage()%>";

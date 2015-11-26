@@ -39,8 +39,7 @@
 %>
 <html>
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script language="JavaScript">
 function SubmitWithVerif(verifParams)
 {

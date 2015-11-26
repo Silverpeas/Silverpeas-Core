@@ -25,6 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -54,7 +55,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <HTML>
 <HEAD>
-<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/checkForm.js"></script>
+<view:script src="/util/javaScript/checkForm.js"/>
 
 
 <TITLE><%=scc.getString("GML.popupTitle")%></TITLE>

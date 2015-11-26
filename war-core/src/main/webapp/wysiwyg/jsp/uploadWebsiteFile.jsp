@@ -26,6 +26,7 @@
 
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -80,7 +81,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	    }
     }
 %>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:script src="/util/javaScript/checkForm.js"/>
 	<script type="text/javascript">
 		function isCorrect(nom) {
 	    	if (nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||

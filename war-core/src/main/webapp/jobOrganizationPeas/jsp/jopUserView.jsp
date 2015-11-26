@@ -84,13 +84,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<view:looknfeel />
+	<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <title><fmt:message key="GML.popupTitle"/></title>
-	<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 	<view:includePlugin name="jquery"/>
 	<view:includePlugin name="qtip"/>
-	<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-	
+
     <script type="text/javascript">
     <!--
     function MM_reloadPage(init) {  //reloads the window if Nav4 resized

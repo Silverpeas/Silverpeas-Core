@@ -63,7 +63,7 @@ browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <style type="text/css">
 .inlineMessage {
 	text-align: left;
@@ -84,7 +84,6 @@ browseBar.setExtraInformation(resource.getString("JSPP.updateHomePage"));
 	border: 0px;
 }
 </style>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {
 	var errorMsg = "";

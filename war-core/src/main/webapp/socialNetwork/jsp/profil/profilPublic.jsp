@@ -53,7 +53,7 @@
 
 <html>
   <head>
-    <view:looknfeel />
+    <view:looknfeel withFieldsetStyle="true"/>
     <view:includePlugin name="invitme"/>
     <view:includePlugin name="messageme"/>
   </head>
@@ -107,7 +107,7 @@
 	<table width="100%" cellspacing="0" cellpadding="5" border="0">
 	<%
 		if (userFull != null) {
-        	//  rÃ©cupÃ©rer toutes les propriÃ©tÃ©s de ce User
+        	//  récupérer toutes les propriétés de ce User
             String[] properties = userFull.getPropertiesNames();
 
             String property = null;

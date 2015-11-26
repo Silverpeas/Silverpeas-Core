@@ -52,9 +52,8 @@ if(category == null) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel />
+<view:looknfeel withCheckFormScript="true"/>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {
 	 var errorMsg = "";

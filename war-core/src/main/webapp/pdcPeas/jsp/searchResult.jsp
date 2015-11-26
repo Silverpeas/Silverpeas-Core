@@ -105,8 +105,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
 <html>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script language="JavaScript">
 	// this method opens a pop-up which warns the user
 	function areYouSure(){

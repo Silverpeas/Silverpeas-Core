@@ -120,4 +120,4 @@ String openBorder = "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" wid
 String closeBorder = "</td></tr></table></td></tr></table>";
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:script src="/util/javaScript/checkForm.js"/>

@@ -115,8 +115,7 @@
 <html>
 <head>
   <title><%=resource.getString("GML.popupTitle")%></title>
-  <view:looknfeel/>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <view:looknfeel withCheckFormScript="true"/>
   <script language="JavaScript">
     function popupZoomToItem(theHref) {
       var theWindow = SP_openWindow('about:blank', 'OpenZoomSelection', '500', '500',

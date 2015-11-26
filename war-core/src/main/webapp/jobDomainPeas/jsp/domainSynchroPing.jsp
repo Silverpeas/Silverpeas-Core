@@ -37,8 +37,7 @@
 %>
 <html>
 <head>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <Script language="JavaScript">
 ID = window.setTimeout ("DoIdle(10);", 10000);
 function DoIdle()
