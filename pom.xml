@@ -233,8 +233,8 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Properties used in the site generation -->
-    <installer_stable_version>5.14</installer_stable_version>
-    <installer_izpack_version>5.14</installer_izpack_version>
+    <installer_stable_version>5.15</installer_stable_version>
+    <installer_izpack_version>5.15</installer_izpack_version>
     <installer_version>${project.version}</installer_version>
   </properties>
 
