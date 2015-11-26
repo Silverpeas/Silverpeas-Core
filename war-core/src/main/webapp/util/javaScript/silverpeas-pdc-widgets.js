@@ -650,6 +650,7 @@ function removePosition(position, positions) {
         if (settings.update.activated) {
           positionLabel.append(
                   $('<a>', {
+            href: 'javascript:return false;',
             title: settings.update.title + ' ' + (posindex + 1)
           }).addClass('edit').
                   append($('<img>', {
@@ -662,6 +663,7 @@ function removePosition(position, positions) {
 
         if (settings.deletion.activated) {
           positionLabel.append($('<a>', {
+            href: 'javascript:return false;',
             title: settings.deletion.title + ' ' + (posindex + 1)
           }).addClass('delete').
                   append($('<img>', {
@@ -679,7 +681,9 @@ function removePosition(position, positions) {
       $('label[for="' + settings.id + '_allpositions"]').hide();
     }
     if (settings.addition.activated) {
-      $('<a>').addClass('add_position').html(settings.addition.title).click(function() {
+      $('<a>', {
+        href: 'javascript:return false;'
+      }).addClass('add_position').html(settings.addition.title).click(function() {
         settings.onAddition();
       }).appendTo($("#" + settings.id + '_allpositions'));
     }
@@ -1076,7 +1080,7 @@ function removePosition(position, positions) {
     // the same axis
     if (settings.multiValuation) {
       $('<a>', {
-        href: '#',
+        href: 'javascript:return false;',
         title: settings.anotherValueLegend
       }).addClass('another-value').click(function() {
         duplicateAxis($axisDiv, settings, selectedPositions, anAxis);
@@ -1177,11 +1181,12 @@ function removePosition(position, positions) {
       });
 
       if (!settings.dialogBox && settings.onValuesSelected) {
-        $thisPdcAxisValuesSelector.append($('<a>').attr('href', '#').
-                addClass('valid_position').
-                addClass('milieuBoutonV5').
-                html(settings.labelOk).click(function() {
-          informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
+        $thisPdcAxisValuesSelector.append($('<a>', {
+          href: 'javascript:return false;'
+        }).addClass('valid_position').
+           addClass('milieuBoutonV5').
+           html(settings.labelOk).click(function() {
+            informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
         }));
       } else if (!settings.onValueChange) {
         $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
