@@ -73,12 +73,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
 	<title></title>
-    <view:looknfeel/>
+    <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <link href="<c:url value='/sharing/jsp/styleSheets/tickets.css'/>" type="text/css" rel="stylesheet"/>
-    <link href="<c:url value='/util/styleSheets/fieldset.css'/>" type="text/css" rel="stylesheet" />
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="tags"/>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
     <script type="text/javascript">
 var continuousTicket = !<c:out value="${ticket.continuous}" />;
 $(window).load(function () {

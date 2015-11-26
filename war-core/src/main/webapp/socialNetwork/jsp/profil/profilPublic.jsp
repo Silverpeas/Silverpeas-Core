@@ -51,8 +51,7 @@
 
 <html>
   <head>
-    <view:looknfeel />
-    <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
+    <view:looknfeel withFieldsetStyle="true"/>
     <view:includePlugin name="invitme"/>
     <view:includePlugin name="messageme"/>
   </head>

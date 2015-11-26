@@ -90,8 +90,7 @@ if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
 <!-- searchContext.jsp -->
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 
 <script language="JavaScript">

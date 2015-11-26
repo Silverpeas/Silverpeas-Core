@@ -69,8 +69,7 @@ if (valueToCreate != null){
 <html>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script language="javascript">

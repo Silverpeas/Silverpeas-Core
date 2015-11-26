@@ -39,10 +39,8 @@ PagesContext		context	= (PagesContext) request.getAttribute("context");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel/>
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="popup"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <% formUpdate.displayScripts(out, context); %>
 <script type="text/javascript">
 function deleteField(fieldName) {

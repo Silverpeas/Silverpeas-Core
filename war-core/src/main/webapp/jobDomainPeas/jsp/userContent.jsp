@@ -143,9 +143,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <view:looknfeel/>
+  <view:looknfeel withFieldsetStyle="true"/>
   <view:includePlugin name="popup"/>
-  <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
   <script type="text/javascript">
     function ConfirmAndSend(textToDisplay, userId) {
       jQuery.popup.confirm(textToDisplay, function() {

@@ -78,9 +78,8 @@ Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "Main
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel/>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="tags" />
-<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <style type="text/css">
 .txtlibform {
 	width: 250px;
@@ -110,7 +109,6 @@ ul.tagit {
 	padding: 1px 2px 0px 0px;
 }
 </style>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function sendData() {
 	if (isCorrectForm()) {

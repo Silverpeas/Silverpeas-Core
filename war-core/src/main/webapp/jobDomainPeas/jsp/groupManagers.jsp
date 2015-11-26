@@ -33,8 +33,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
-
 <%@ include file="check.jsp" %>
 <%
 	Domain  domObject 		= (Domain)request.getAttribute("domainObject");
@@ -53,8 +51,7 @@
 %>
 <html>
 <head>
-<view:looknfeel/>
-<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 </head>
 <body>
 <%

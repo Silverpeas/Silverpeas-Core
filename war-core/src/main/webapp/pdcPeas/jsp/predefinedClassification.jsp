@@ -48,8 +48,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title><fmt:message key="GML.PDCPredefinePositions"/></title>
-    <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-    <view:looknfeel />
+    <view:looknfeel withFieldsetStyle="true"/>
   </head>
   <body>
     <view:browseBar clickable="false" path="${childNode}"/>

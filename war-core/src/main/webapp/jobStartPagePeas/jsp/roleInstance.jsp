@@ -36,8 +36,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<c:url var="cssFieldset" value="/util/styleSheets/fieldset.css"/>
-
 <%@ include file="check.jsp" %>
 <%
 	ComponentInst componentInst 	= (ComponentInst) request.getAttribute("ComponentInst");
@@ -100,8 +98,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<link type="text/css" href="${cssFieldset}" rel="stylesheet" />
+<view:looknfeel withFieldsetStyle="true"/>
 </head>
 <body id="admin-role">
 <%

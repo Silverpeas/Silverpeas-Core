@@ -1,3 +1,4 @@
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 FieldTemplate 	field 		= (FieldTemplate) request.getAttribute("Field");
@@ -56,10 +57,7 @@ if (field != null) {
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel withCheckFormScript="true"/>
 <% } else { %>
 <view:includePlugin name="tkn"/>
 <% } %>

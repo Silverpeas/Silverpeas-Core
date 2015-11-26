@@ -42,9 +42,8 @@ boolean emptyBin = true;
 
 <HTML>
 <HEAD>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="qtip"/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <!--
 function removeItem(id) {	
