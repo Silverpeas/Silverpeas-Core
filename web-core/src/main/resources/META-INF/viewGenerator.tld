@@ -609,6 +609,20 @@
       org.silverpeas.util.viewGenerator.html.LookAndStyleTag
     </tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>Include fieldset automatically</description>
+      <name>withFieldsetStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Include checkform automatically</description>
+      <name>withCheckFormScript</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to display a list of icons.</description>
@@ -2084,6 +2098,52 @@
     </attribute>
     <attribute>
       <name>onClick</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>SCRIPT HTML TAG OVERRIDE</description>
+    <name>script</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.ScriptTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        Specify the script src without the webContext. The webContext is automatically
+        added to the src. If already filled, the webContext is not added again.
+        If the webContext is not the default one, it can be set by applicationContext attribute.
+      </description>
+      <name>src</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>applicationContext</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>LINK HTML TAG OVERRIDE</description>
+    <name>link</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.override.LinkTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>
+        Specify the script href without the webContext. The webContext is automatically
+        added to the href. If already filled, the webContext is not added again.
+        If the webContext is not the default one, it can be set by applicationContext attribute.
+      </description>
+      <name>href</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>applicationContext</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>

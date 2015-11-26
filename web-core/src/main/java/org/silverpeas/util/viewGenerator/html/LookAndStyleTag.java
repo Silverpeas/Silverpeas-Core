@@ -24,6 +24,9 @@
 
 package org.silverpeas.util.viewGenerator.html;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.apache.ecs.ElementContainer;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -33,11 +36,34 @@ public class LookAndStyleTag extends TagSupport {
 
   private static final long serialVersionUID = 1L;
 
+  private boolean withFieldsetStyle;
+  private boolean withCheckFormScript;
+
+  public void setWithFieldsetStyle(final boolean withFieldsetStyle) {
+    this.withFieldsetStyle = withFieldsetStyle;
+  }
+
+  public void setWithCheckFormScript(final boolean withCheckFormScript) {
+    this.withCheckFormScript = withCheckFormScript;
+  }
+
   @Override
   public int doStartTag() throws JspException {
     try {
       pageContext.getOut().println(WebCommonLookAndFeel.getInstance()
           .getCommonHeader((HttpServletRequest) pageContext.getRequest()));
+
+
+      ElementContainer elements = new ElementContainer();
+      if (withFieldsetStyle) {
+        elements.addElement(JavascriptPluginInclusion
+            .link(URLManager.getApplicationURL() + "/util/styleSheets/fieldset.css"));
+      }
+      if (withCheckFormScript) {
+        elements.addElement(JavascriptPluginInclusion
+            .script(URLManager.getApplicationURL() + "/util/javaScript/checkForm.js"));
+      }
+      elements.output(pageContext.getOut());
     } catch (IOException e) {
       throw new JspException("LookAndStyle Tag", e);
     }

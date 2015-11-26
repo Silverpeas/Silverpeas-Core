@@ -157,7 +157,7 @@ public class JavascriptPluginInclusion {
    * @param src
    * @return
    */
-  private static Element script(String src) {
+  public static Element script(String src) {
     String key = "$jsPlugin$script$" + src;
     if (getRequestCacheService().get(key) == null) {
       getRequestCacheService().put(key, true);
@@ -229,7 +229,7 @@ public class JavascriptPluginInclusion {
    * @param href
    * @return
    */
-  private static Element link(String href) {
+  public static Element link(String href) {
     String key = "$jsPlugin$css$" + href;
     if (getRequestCacheService().get(key) == null) {
       getRequestCacheService().put(key, true);

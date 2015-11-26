@@ -68,12 +68,12 @@
   versioningSC.setProfile(request.getParameter("profile"));
   %>
 </c:if>
-<script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
-<script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
-<script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
-<script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
-<script type="text/javascript" src='<c:url value="/util/javaScript/jquery/jquery.cookie.js" />' ></script>
-<link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
+<view:script src="/util/yui/yahoo-dom-event/yahoo-dom-event.js"/>
+<view:script src="/util/yui/container/container_core-min.js"/>
+<view:script src="/util/yui/animation/animation-min.js"/>
+<view:script src="/util/yui/menu/menu-min.js"/>
+<view:script src="/util/javaScript/jquery/jquery.cookie.js"/>
+<view:link href="/util/yui/menu/assets/menu.css"/>
 
   <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
   <view:setConstant var="spinfire" constant="org.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
