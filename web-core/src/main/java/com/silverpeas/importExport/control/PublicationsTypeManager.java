@@ -54,6 +54,7 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
@@ -90,8 +91,6 @@ import static java.io.File.separator;
  */
 public class PublicationsTypeManager {
 
-  @Inject
-  private MetadataExtractor metadataExtractor;
   @Inject
   private CoordinateImportExport coordinateImportExport;
   @Inject
@@ -748,7 +747,7 @@ public class PublicationsTypeManager {
                     if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
                         settings.isPoiUsed()) {
                       // extract title, subject and keywords
-                      metaData = MetadataExtractor.getInstance()
+                      metaData = MetadataExtractor.get()
                           .extractMetadata(attdetail.getAttachmentPath());
                       if (!StringUtil.isDefined(attdetail.getTitle()) &&
                           StringUtil.isDefined(metaData.getTitle())) {
@@ -763,7 +762,7 @@ public class PublicationsTypeManager {
                         settings.useFileDates()) {
                       // extract creation date
                       if (metaData == null) {
-                        metaData = MetadataExtractor.getInstance()
+                        metaData = MetadataExtractor.get()
                             .extractMetadata(attdetail.getAttachmentPath());
                       }
                       if (metaData.getCreationDate() != null) {

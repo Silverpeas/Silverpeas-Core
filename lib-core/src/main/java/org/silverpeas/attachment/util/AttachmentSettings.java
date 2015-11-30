@@ -23,18 +23,17 @@
  */
 package org.silverpeas.attachment.util;
 
-import org.silverpeas.util.SettingBundle;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
 
 /**
  * Handled the settings around the attachments.
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class AttachmentSettings {
 
-  private static ResourceLocator settings =
-      new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
+  private static SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
 
   /**
    * Indicates if metadata of a file, if any, can be used to fill data (title & description) of an

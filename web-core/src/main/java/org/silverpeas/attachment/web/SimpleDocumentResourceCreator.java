@@ -46,7 +46,6 @@ import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.RequestParameterDecoder;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -62,7 +61,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 
-import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 
 /**
@@ -73,9 +72,6 @@ import static org.silverpeas.web.util.IFrameAjaxTransportUtil.*;
 @Path("documents/{componentId}/document/create")
 @Authorized
 public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResource {
-
-  @Inject
-  private MetadataExtractor metadataExtractor;
 
   /**
    * Create the document identified by the requested URI and from the content and some additional
@@ -146,7 +142,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         String description = defaultStringIfNotDefined(uploadData.getDescription());
         if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
             !StringUtil.isDefined(title)) {
-          MetaData metadata = metadataExtractor.extractMetadata(tempFile);
+          MetadataExtractor extractor = MetadataExtractor.get();
+          MetaData metadata = extractor.extractMetadata(tempFile);
           if (StringUtil.isDefined(metadata.getTitle())) {
             title = metadata.getTitle();
           }

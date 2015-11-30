@@ -47,6 +47,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
@@ -59,7 +60,6 @@ import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.util.i18n.I18NHelper;
@@ -348,16 +348,12 @@ public class RepositoriesTypeManager {
    */
   private static void setMetadata(SimpleDocument document, File file) {
     if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled()) {
-      final MetadataExtractor extractor = MetadataExtractor.getInstance();
+      final MetadataExtractor extractor = MetadataExtractor.get();
       final MetaData metadata = extractor.extractMetadata(file);
       document.setSize(file.length());
       document.setTitle(metadata.getTitle());
       document.setDescription(metadata.getSubject());
     }
-  }
-
-  private static MetadataExtractor getMetadataExtractor() {
-    return ServiceProvider.getService(MetadataExtractor.class);
   }
 
   private void processMailContent(PublicationDetail pubDetail, File file,

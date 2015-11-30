@@ -30,7 +30,6 @@ import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
 import org.silverpeas.util.time.TimeData;
 
-import javax.inject.Inject;
 import java.io.File;
 
 /**
@@ -38,9 +37,6 @@ import java.io.File;
  * @author ebonnet
  */
 public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
-
-  @Inject
-  private MetadataExtractor metadataExtractor;
 
   @Override
   public boolean isActivated() {
@@ -50,7 +46,7 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
   @Override
   public void generateThumbnailsFrom(File video) {
     if (video.exists() && video.isFile()) {
-      MetaData metadata = metadataExtractor.extractMetadata(video);
+      MetaData metadata = MetadataExtractor.get().extractMetadata(video);
       TimeData timeData = metadata.getDuration();
       if (timeData != null) {
         File thumbnailDir = video.getParentFile();

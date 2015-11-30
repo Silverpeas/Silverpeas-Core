@@ -42,6 +42,10 @@ import java.util.Set;
  */
 public class MetadataExtractor {
 
+  public static MetadataExtractor get() {
+    return ServiceProvider.getService(MetadataExtractor.class);
+  }
+
   private static Set<MediaType> mp4ParserSupportedTypes =
       new MP4Parser().getSupportedTypes(new ParseContext());
 

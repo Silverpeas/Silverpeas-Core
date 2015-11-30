@@ -111,7 +111,7 @@ public class PublicationImportExport {
         MetaData metaData = null;
         if (settings.isPoiUsed()) {
           // extract title, subject and keywords
-          metaData = MetadataExtractor.getInstance().extractMetadata(file.getAbsolutePath());
+          metaData = MetadataExtractor.get().extractMetadata(file.getAbsolutePath());
           if (StringUtil.isDefined(metaData.getTitle())) {
             nomPub = metaData.getTitle();
           }
@@ -126,7 +126,7 @@ public class PublicationImportExport {
         if (settings.useFileDates()) {
           // extract creation and last modification dates
           if (metaData == null) {
-            metaData = MetadataExtractor.getInstance().extractMetadata(file.getAbsolutePath());
+            metaData = MetadataExtractor.get().extractMetadata(file.getAbsolutePath());
           }
           if (metaData.getCreationDate() != null) {
             creationDate = metaData.getCreationDate();
@@ -179,9 +179,5 @@ public class PublicationImportExport {
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
     return new ArrayList<>(getPublicationBm().getOrphanPublications(
         new PublicationPK("useless", componentId)));
-  }
-
-  private static MetadataExtractor getMetadataExtractor() {
-    return ServiceProvider.getService(MetadataExtractor.class);
   }
 }

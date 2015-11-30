@@ -28,18 +28,20 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Representation of an uploaded file.<br/>
@@ -183,7 +185,7 @@ public class UploadedFile {
     String description = defaultStringIfNotDefined(getDescription());
     if (AttachmentSettings.isUseFileMetadataForAttachmentDataEnabled() &&
         !StringUtil.isDefined(title)) {
-      MetadataExtractor extractor = ServiceProvider.getService(MetadataExtractor.class);
+      MetadataExtractor extractor = MetadataExtractor.get();
       MetaData metadata = extractor.extractMetadata(getFile());
       if (StringUtil.isDefined(metadata.getTitle())) {
         title = metadata.getTitle();
