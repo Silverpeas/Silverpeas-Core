@@ -197,6 +197,7 @@
 
   function __periodChartDataToPlotChartData(params) {
     var chartItems = params.chart.items;
+    var noChartItems = chartItems.length === 0;
     var plotData = [];
     var plotOptions = {
       legend : {
@@ -265,6 +266,12 @@
         }
       }
     });
+
+    if (noChartItems) {
+      extendsObject(plotOptions.xaxis, {
+        min : new Date().getTime()
+      });
+    }
 
     extendsObject(plotOptions.xaxis, {
       minTickSize : [1, params.chart.defaultPeriodType]
