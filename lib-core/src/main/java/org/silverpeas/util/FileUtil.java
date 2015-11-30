@@ -31,7 +31,6 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.tika.Tika;
 import org.silverpeas.util.exception.RelativeFileAccessException;
 import org.silverpeas.util.mail.Mail;
 
@@ -48,8 +47,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
 
 public class FileUtil implements MimeTypes {
 
@@ -58,6 +57,7 @@ public class FileUtil implements MimeTypes {
   public static final String CONTEXT_TOKEN = ",";
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
+  private static final String MIME_TYPE_CACHE_KEY_PREFIX = "FileUtil.getMimeType$$";
 
   /**
    * Detects the mime-type of the specified file.
@@ -69,13 +69,20 @@ public class FileUtil implements MimeTypes {
    * @return the mime-type of the specified file.
    */
   public static String getMimeType(final String fileName) {
+
+    // Request caching in order to increase significantly the performance about file parsing
+    String cacheKey = MIME_TYPE_CACHE_KEY_PREFIX + fileName;
+    String cachedMimeType = getRequestCacheService().get(cacheKey, String.class);
+    if (StringUtil.isDefined(cachedMimeType)) {
+      return cachedMimeType;
+    }
+
     String mimeType = null;
     final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
     File file = new File(fileName);
     if (file.exists()) {
       try {
-        Tika tika = new Tika();
-        mimeType = tika.detect(file);
+        mimeType = MetadataExtractor.get().detectMimeType(file);
       } catch (Exception ex) {
         SilverTrace.warn("attachment", "FileUtil",
             "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", ex.getMessage(), ex);
@@ -117,6 +124,9 @@ public class FileUtil implements MimeTypes {
     if (mimeType == null) {
       mimeType = DEFAULT_MIME_TYPE;
     }
+
+    // The computed mime type is put into the request cache (performance)
+    getRequestCacheService().put(cacheKey, mimeType);
     return mimeType;
   }
 

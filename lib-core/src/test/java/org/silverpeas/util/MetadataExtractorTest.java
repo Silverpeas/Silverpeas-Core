@@ -23,11 +23,13 @@
  */
 package org.silverpeas.util;
 
+import org.apache.tika.Tika;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.media.Definition;
 import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.MockByReflectionRule;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -42,6 +44,8 @@ import static org.junit.Assert.assertThat;
  */
 public class MetadataExtractorTest {
 
+  private final static Tika tika = new Tika();
+
   private static final File docFile = getDocumentNamed("/Liste_ECCA.doc");
   private static final File docxFile = getDocumentNamed("/Test.docx");
   private static final File ooFile = getDocumentNamed("/LibreOffice.odt");
@@ -55,11 +59,15 @@ public class MetadataExtractorTest {
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
+  @Rule
+  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+
   private MetadataExtractor instance;
 
   @Before
   public void setup() {
     instance = new MetadataExtractor();
+    reflectionRule.setField(instance, tika, "tika");
   }
 
   /**

@@ -31,7 +31,10 @@ import org.apache.tika.parser.mp4.MP4Parser;
 import org.silverpeas.util.time.TimeData;
 import org.silverpeas.util.time.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Set;
@@ -40,7 +43,10 @@ import java.util.Set;
  * This tool is kind of interface between the Silverpeas callers which needs to get metadata from
  * files and the API used to extract them.
  */
+@Singleton
 public class MetadataExtractor {
+
+  private Tika tika;
 
   public static MetadataExtractor get() {
     return ServiceProvider.getService(MetadataExtractor.class);
@@ -50,6 +56,11 @@ public class MetadataExtractor {
       new MP4Parser().getSupportedTypes(new ParseContext());
 
   MetadataExtractor() {
+  }
+
+  @PostConstruct
+  private void initialize() {
+    tika = new Tika();
   }
 
   /**
@@ -70,7 +81,7 @@ public class MetadataExtractor {
   public MetaData extractMetadata(File file) {
     Metadata metadata = new Metadata();
     try (InputStream inputStream = TikaInputStream.get(file, metadata)) {
-      new Tika().parse(inputStream, metadata).close();
+      getTikaService().parse(inputStream, metadata).close();
       return adjust(file, metadata);
     } catch (Exception ex) {
       SilverTrace.warn("MetadataExtractor.getMetadata()", "SilverpeasException.WARNING",
@@ -109,5 +120,20 @@ public class MetadataExtractor {
       } catch (Exception ignore) {
       }
     }
+  }
+
+  /**
+   * Detects the media type of the given file. The type detection is
+   * based on the document content and a potential known file extension.
+   * @param file the file
+   * @return detected media type
+   * @throws IOException if the file can not be read
+   */
+  public String detectMimeType(final File file) throws IOException {
+    return getTikaService().detect(file);
+  }
+
+  private Tika getTikaService() {
+    return tika;
   }
 }
