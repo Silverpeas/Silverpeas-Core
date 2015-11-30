@@ -21,12 +21,30 @@
 package org.silverpeas.authentication;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.initialization.Initialization;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.EventListener;
 
+/**
+ * This event listener is fired when a user has just been logged in.<br/>
+ * Each implementation of this listener has to be registered by calling {@link
+ * UserAuthenticationListenerRegistration#register(UserAuthenticationListener)}.<br/>
+ * A tip to perform the registration is to implement {@link Initialization} interface. Indeed, each
+ * class, that implements it, is called one time at server start.<br/>
+ * (See QuickInfoUserAuthenticationListener for example)
+ */
 public interface UserAuthenticationListener extends EventListener {
 
+  /**
+   * This method is called just before redirecting the user to the home page, after a successful
+   * authentication.<br/>
+   * If it is necessary, the redirection can be overridden...
+   * @param request the current user request.
+   * @param user the current user.
+   * @param finalURL the initial URL of user redirection, just after a successful authentication.
+   * @return the overridden url redirection, or null if no override.
+   */
   String firstHomepageAccessAfterAuthentication(HttpServletRequest request, UserDetail user,
       String finalURL);
 }
