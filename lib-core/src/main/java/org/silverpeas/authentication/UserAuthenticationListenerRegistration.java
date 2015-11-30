@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Registering <code>UserAuthenticationListener</code> implementations. Registered <code>UserAuthenticationListener</code> are used by
+ * Registering <code>UserAuthenticationListener</code> implementations.<br/>
+ * Registered <code>UserAuthenticationListener</code> are used by
  * <code>SilverpeasSessionOpener</code>.
  * @author Nicolas Eysseric
  * @see UserAuthenticationListener
@@ -38,16 +39,16 @@ public class UserAuthenticationListenerRegistration {
   private static final Collection<UserAuthenticationListener> listeners = new ArrayList<UserAuthenticationListener>();
 
   /**
-   * Register a check
-   * @param check
+   * Register a listener.
+   * @param listener
    */
   public static synchronized void register(final UserAuthenticationListener listener) {
     listeners.add(listener);
   }
 
   /**
-   * Unregister a check
-   * @param check
+   * Unregister a listener.
+   * @param listener
    */
   public static synchronized void unregister(final UserAuthenticationListener listener) {
     listeners.remove(listener);
