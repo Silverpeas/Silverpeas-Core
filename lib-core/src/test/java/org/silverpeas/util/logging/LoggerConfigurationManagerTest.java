@@ -23,8 +23,6 @@
  */
 package org.silverpeas.util.logging;
 
-import org.apache.commons.lang3.text.WordUtils;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +31,7 @@ import org.silverpeas.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
