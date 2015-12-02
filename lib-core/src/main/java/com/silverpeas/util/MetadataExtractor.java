@@ -48,7 +48,10 @@ public class MetadataExtractor {
 
   private static final MetadataExtractor instance = new MetadataExtractor();
 
+  private Tika tika;
+
   private MetadataExtractor() {
+    tika = new Tika();
   }
 
   private static final Pattern VIDEO_ADDITIONAL_METADATA_PATTERN =
@@ -76,7 +79,7 @@ public class MetadataExtractor {
     try {
       Metadata metadata = new Metadata();
       inputStream = TikaInputStream.get(file, metadata);
-      new Tika().parse(inputStream, metadata).close();
+      getTikaService().parse(inputStream, metadata).close();
       additionalExtractions(file, metadata);
       return new MetaData(file, metadata);
     } catch (IOException ex) {
@@ -178,5 +181,20 @@ public class MetadataExtractor {
       }
     }
     return result;
+  }
+
+  /**
+   * Detects the media type of the given file. The type detection is
+   * based on the document content and a potential known file extension.
+   * @param file the file
+   * @return detected media type
+   * @throws IOException if the file can not be read
+   */
+  public String detectMimeType(final File file) throws IOException {
+    return getTikaService().detect(file);
+  }
+
+  private Tika getTikaService() {
+    return tika;
   }
 }
