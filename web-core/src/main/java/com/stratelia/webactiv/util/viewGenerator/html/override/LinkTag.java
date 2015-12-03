@@ -25,11 +25,10 @@
 package com.stratelia.webactiv.util.viewGenerator.html.override;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion;
 import org.apache.ecs.ElementContainer;
+import org.silverpeas.util.viewGenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class LinkTag extends TagSupport {
