@@ -23,6 +23,8 @@
  */
 package org.silverpeas.util.logging;
 
+import org.silverpeas.util.SilverpeasModule;
+
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
@@ -41,7 +43,7 @@ import java.util.function.Supplier;
  * @{code org.silverpeas.util.logging.LoggerFactory} factory.
  * @author miguel
  */
-public interface Logger {
+public interface SilverLogger {
 
   /**
    * Gets the logger that is defined for the specified Silverpeas module.
@@ -66,13 +68,13 @@ public interface Logger {
    * @param module the name of a Silverpeas module.
    * @return a logger instance, manufactured by the first LoggerFactory instance found.
    */
-  static Logger getLogger(String module) {
-    Iterator<LoggerFactory> iterator = ServiceLoader.load(LoggerFactory.class).iterator();
+  static SilverLogger getLogger(String module) {
+    Iterator<SilverLoggerFactory> iterator = ServiceLoader.load(SilverLoggerFactory.class).iterator();
     if (iterator.hasNext()) {
-      LoggerFactory factory = iterator.next();
+      SilverLoggerFactory factory = iterator.next();
       LoggerConfigurationManager.LoggerConfiguration configuration =
           LoggerConfigurationManager.get().getLoggerConfiguration(module);
-      Logger logger = factory.getLogger(configuration.getNamespace());
+      SilverLogger logger = factory.getLogger(configuration.getNamespace());
       if (configuration.getLevel() != null) {
         logger.setLevel(configuration.getLevel());
       }
@@ -82,6 +84,15 @@ public interface Logger {
           "No Silverpeas logger factory detected! At least one Silverpeas logger factory should " +
               "be available!");
     }
+  }
+
+  /**
+   * Gets the logger for the specified object. The logger that is returned is the one mapped with
+   * the Silverpeas module into which the object belongs.
+   * @see SilverLogger#getLogger(String)
+   */
+  static SilverLogger getLogger(Object object) {
+    return getLogger(SilverpeasModule.getModuleName(object));
   }
 
   /**

@@ -21,8 +21,7 @@
 
 package org.silverpeas.notification;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * A resource event listener. This interface defines the common properties all listeners should
@@ -48,7 +47,7 @@ public interface ResourceEventListener<T extends ResourceEvent> {
    * @param event the event on the deletion of a resource.
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  public default void onDeletion(final T event) throws Exception {
+  default void onDeletion(final T event) throws Exception {
   }
 
   /**
@@ -57,7 +56,7 @@ public interface ResourceEventListener<T extends ResourceEvent> {
    * @param event the event on the removing of a resource.
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  public default void onRemoving(final T event) throws Exception {
+  default void onRemoving(final T event) throws Exception {
   }
 
   /**
@@ -65,7 +64,7 @@ public interface ResourceEventListener<T extends ResourceEvent> {
    * @param event the event on the update of a resource.
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  public default void onUpdate(final T event) throws Exception {
+  default void onUpdate(final T event) throws Exception {
   }
 
   /**
@@ -73,7 +72,7 @@ public interface ResourceEventListener<T extends ResourceEvent> {
    * @param event the event on the creation of a resource.
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  public default void onCreation(final T event) throws Exception {
+  default void onCreation(final T event) throws Exception {
   }
 
   /**
@@ -94,7 +93,7 @@ public interface ResourceEventListener<T extends ResourceEvent> {
    * @param event the event to dispatch.
    * @throws java.lang.Exception if an error occurs while treating the event.
    */
-  public default void dispatchEvent(final T event) throws Exception {
+  default void dispatchEvent(final T event) throws Exception {
     switch (event.getType()) {
       case CREATION:
         onCreation(event);
@@ -109,8 +108,8 @@ public interface ResourceEventListener<T extends ResourceEvent> {
         onDeletion(event);
         break;
       default:
-        Logger.getLogger(getClass().getSimpleName())
-            .log(Level.WARNING, "Event type {0} not yet supported", event.getType());
+        SilverLogger.getLogger(this).
+            warn("Event type {0} not yet supported", event.getType().toString());
         break;
     }
   }

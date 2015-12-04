@@ -25,10 +25,9 @@ import com.stratelia.silverpeas.notificationManager.model.NotifSchema;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.admin.user.notification.UserEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A listener of events about a given user account in Silverpeas.
@@ -37,7 +36,7 @@ import java.util.logging.Logger;
 @Singleton
 public class NotificationUserEventListener extends CDIResourceEventListener<UserEvent> {
 
-  private Logger logger = Logger.getLogger("notificationManager");
+  private SilverLogger logger = SilverLogger.getLogger(this);
 
   @Override
   public void onDeletion(final UserEvent event) throws Exception {
@@ -55,13 +54,13 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
       schema.notifAddress.dereferenceUserId(userId);
       schema.commit();
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage(), e);
+      logger.error(e.getMessage(), e);
       try {
         if (schema != null) {
           schema.rollback();
         }
       } catch (Exception ex) {
-        logger.log(Level.WARNING, ex.getMessage(), ex);
+        logger.warn(ex.getMessage());
       }
     } finally {
       try {
@@ -69,7 +68,7 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
           schema.close();
         }
       } catch (Exception e) {
-        logger.log(Level.WARNING, e.getMessage(), e);
+        logger.warn(e.getMessage());
       }
     }
   }

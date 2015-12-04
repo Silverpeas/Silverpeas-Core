@@ -24,11 +24,9 @@
 package org.silverpeas.initialization;
 
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
-import javax.servlet.ServletContextEvent;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class provides the method to initialize all the services that implement the
@@ -37,37 +35,35 @@ import java.util.logging.Logger;
  */
 public class SilverpeasServiceInitialization {
 
-  private static Logger logger =
-      Logger.getLogger(SilverpeasServiceInitialization.class.getSimpleName());
+  private static SilverLogger logger = SilverLogger.getLogger(SilverpeasServiceInitialization.class);
 
   public static void start() {
-    logger.log(Level.INFO, "Silverpeas Service Initialization...");
+    logger.info("Silverpeas Service Initialization...");
     Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
     initializations.stream().forEach(initialization -> {
       String simpleClassName = initialization.getClass().getSimpleName();
       try {
-        logger.log(Level.INFO, " -> {0} initialization...", simpleClassName);
+        logger.info(" -> {0} initialization...", simpleClassName);
         initialization.init();
-        logger.log(Level.INFO, "    {0} initialization done.", simpleClassName);
+        logger.info("    {0} initialization done.", simpleClassName);
       } catch (Exception e) {
-        logger.log(Level.SEVERE, "    {0} initialization failure!",
-            initialization.getClass().getName());
+        logger.error("    {0} initialization failure!", initialization.getClass().getName());
         throw new RuntimeException(e.getMessage(), e);
       }
     });
-    logger.log(Level.INFO, "Silverpeas Service Initialization done.");
+    logger.info("Silverpeas Service Initialization done.");
   }
 
   public static void stop() {
-    logger.log(Level.INFO, "Silverpeas Service Release...");
+    logger.info("Silverpeas Service Release...");
     Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
     for (Initialization initialization : initializations) {
       try {
         initialization.release();
       } catch (Exception ex) {
-        logger.log(Level.WARNING, ex.getMessage(), ex);
+        logger.warn(ex.getMessage());
       }
     }
-    logger.log(Level.INFO, "Silverpeas Service Release done.");
+    logger.info("Silverpeas Service Release done.");
   }
 }

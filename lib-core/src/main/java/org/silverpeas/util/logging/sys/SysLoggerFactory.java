@@ -23,12 +23,11 @@
  */
 package org.silverpeas.util.logging.sys;
 
-import org.silverpeas.util.logging.Logger;
-import org.silverpeas.util.logging.LoggerFactory;
+import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.util.logging.SilverLoggerFactory;
 
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -36,11 +35,9 @@ import java.util.Map;
  * a logger wrapping the default Java logger.
  * @author miguel
  */
-public class SysLoggerFactory implements LoggerFactory {
+public class SysLoggerFactory implements SilverLoggerFactory {
 
-  private static LoggerManager loggerManager = new LoggerManager();
-  private static Map<String, WeakLoggerReference> loggers = new HashMap<>();
-  private static ReferenceQueue<Logger> refQueue = new ReferenceQueue<>();
+  private static Map<String, WeakLoggerReference> loggers = new Hashtable<>();
 
   /**
    * Get a {@code org.silverpeas.util.logging.Logger} instance for the specified namespace.
@@ -54,31 +51,20 @@ public class SysLoggerFactory implements LoggerFactory {
    * @return a Silverpeas logger instance.
    */
   @Override
-  public Logger getLogger(final String namespace) {
-    WeakLoggerReference weakRef = loggerManager.findLogger(namespace);
+  public SilverLogger getLogger(final String namespace) {
+    WeakLoggerReference weakRef = loggers.get(namespace);
     if (weakRef == null || weakRef.get() == null) {
-      WeakLoggerReference cleanRef;
-      while ((cleanRef = (WeakLoggerReference) refQueue.poll()) != null) {
-        loggers.remove(cleanRef.getNamespace());
+      if (weakRef != null) {
+        loggers.remove(weakRef.getNamespace());
       }
-      weakRef = loggerManager.createLogger(namespace);
+
+      weakRef = loggers.computeIfAbsent(namespace,
+          n -> new WeakLoggerReference(new SysLogger(namespace)));
     }
     return weakRef.get();
   }
 
-  private static class LoggerManager {
-
-    public synchronized WeakLoggerReference findLogger(String namespace) {
-      return loggers.get(namespace);
-    }
-
-    public synchronized WeakLoggerReference createLogger(String namespace) {
-      return loggers.computeIfAbsent(namespace,
-          n -> new WeakLoggerReference(new SysLogger(namespace)));
-    }
-  }
-
-  private static class WeakLoggerReference extends WeakReference<Logger> {
+  private static class WeakLoggerReference extends WeakReference<SilverLogger> {
 
     private final String namespace;
 
@@ -87,8 +73,8 @@ public class SysLoggerFactory implements LoggerFactory {
      * reference is not registered with any queue.
      * @param referent object the new weak reference will refer to
      */
-    public WeakLoggerReference(final Logger referent) {
-      super(referent, refQueue);
+    public WeakLoggerReference(final SilverLogger referent) {
+      super(referent);
       this.namespace = referent.getNamespace();
     }
 

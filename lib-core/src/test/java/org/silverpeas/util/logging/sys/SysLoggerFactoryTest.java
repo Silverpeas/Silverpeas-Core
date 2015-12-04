@@ -24,8 +24,8 @@
 package org.silverpeas.util.logging.sys;
 
 import org.junit.Test;
-import org.silverpeas.util.logging.Logger;
-import org.silverpeas.util.logging.LoggerFactory;
+import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.util.logging.SilverLoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,8 +47,8 @@ public class SysLoggerFactoryTest {
 
   @Test
   public void getALogger() {
-    LoggerFactory loggerFactory = new SysLoggerFactory();
-    Logger logger = loggerFactory.getLogger(LOGGER_NAMESPACE);
+    SilverLoggerFactory loggerFactory = new SysLoggerFactory();
+    SilverLogger logger = loggerFactory.getLogger(LOGGER_NAMESPACE);
     assertThat(logger, is(notNullValue()));
     assertThat(logger instanceof SysLogger, is(true));
     assertThat(logger.getNamespace(), is(LOGGER_NAMESPACE));
@@ -58,8 +58,8 @@ public class SysLoggerFactoryTest {
   public void getDifferentLoggersFromDifferentThreads() throws Exception {
     final int maxThreads = 100;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
-    final Set<Logger> loggers = new HashSet<>(maxThreads);
-    LoggerFactory loggerFactory = new SysLoggerFactory();
+    final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
+    SilverLoggerFactory loggerFactory = new SysLoggerFactory();
 
     for (int i = 0; i < maxThreads; i++) {
       final int nb = i;
@@ -78,8 +78,8 @@ public class SysLoggerFactoryTest {
   public void getTheSameLoggerFromDifferentThreads() throws Exception {
     final int maxThreads = 100;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
-    final Set<Logger> loggers = new HashSet<>(maxThreads);
-    LoggerFactory loggerFactory = new SysLoggerFactory();
+    final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
+    SilverLoggerFactory loggerFactory = new SysLoggerFactory();
 
     for (int i = 0; i < maxThreads; i++) {
       executor.execute(() -> loggers.add(loggerFactory.getLogger(LOGGER_NAMESPACE)));

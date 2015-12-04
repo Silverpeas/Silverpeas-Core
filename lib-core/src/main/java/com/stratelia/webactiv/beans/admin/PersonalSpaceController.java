@@ -31,10 +31,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
@@ -134,7 +133,7 @@ public class PersonalSpaceController {
     try {
       return getAdminService().getPersonalSpace(userId);
     } catch (AdminException e) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, e.getMessage(), e);
+      SilverLogger.getLogger("admin").warn(e.getMessage());
       return null;
     }
   }

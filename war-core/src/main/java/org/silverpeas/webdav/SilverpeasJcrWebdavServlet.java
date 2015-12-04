@@ -23,6 +23,7 @@ package org.silverpeas.webdav;
 
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.jcr.Repository;
@@ -30,8 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A servlet taking in charge the access of the content in the JCR repository by WebDAV.
@@ -39,7 +38,7 @@ import java.util.logging.Logger;
  */
 public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
 
-  private static Logger logger = Logger.getLogger(SilverpeasJcrWebdavServlet.class.getSimpleName());
+  private static SilverLogger logger = SilverLogger.getLogger("jcr");
 
   @Inject
   private Repository repository;
@@ -69,7 +68,7 @@ public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
     try {
       super.service(request, response);
     } catch (Exception ex) {
-      logger.log(Level.SEVERE, ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw ex;
     }
   }

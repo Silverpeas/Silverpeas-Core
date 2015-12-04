@@ -20,8 +20,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * A WEB resource representing the cipher key used in Silverpeas to encrypt and decrypt content.
@@ -104,6 +104,6 @@ public class CipherKeyResource extends RESTWebService {
   }
 
   private static void logError(final Throwable ex) {
-    Logger.getLogger(CipherKeyResource.class.getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+    getLogger(CipherKeyResource.class).error(ex.getMessage(), ex);
   }
 }

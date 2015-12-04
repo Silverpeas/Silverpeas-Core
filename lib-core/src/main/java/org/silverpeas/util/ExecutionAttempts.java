@@ -23,8 +23,7 @@
  */
 package org.silverpeas.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * This class embeds a logic of reattempting the execution of jobs when an exception is thrown
@@ -48,8 +47,8 @@ public class ExecutionAttempts {
         break;
       } catch (Exception ex) {
         attempts++;
-        Logger.getLogger(ExecutionAttempts.class.getName()).log(Level.WARNING,
-                "Execution of job {0} failed. Try once more", aJob.getClass().getSimpleName());
+        SilverLogger.getLogger(ExecutionAttempts.class).warn("Execution of job {0} failed. Try once more",
+            aJob.getClass().getSimpleName());
         if (attempts > maxAttempts) {
           throw ex;
         }
@@ -60,12 +59,12 @@ public class ExecutionAttempts {
   /**
    * The interface a job within a retry mechanism should implements.
    */
-  public static interface Job {
+  public interface Job {
 
     /**
      * Executes the job.
      * @throws Exception if an error occurs while executing the job.
      */
-    public void execute() throws Exception;
+    void execute() throws Exception;
   }
 }

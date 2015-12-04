@@ -5,12 +5,11 @@ import org.silverpeas.image.option.DimensionOption;
 import org.silverpeas.util.FileRepositoryManager;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A processor dedicated to resize an image on the demand. If the image is already resized, then
@@ -73,9 +72,9 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
     List<String> resizedImagePaths = ImageCache.getImages(originaImage.getAbsolutePath());
     for (String resizedImage : resizedImagePaths) {
       if (!(new File(resizedImage)).delete()) {
-        Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING,
+        SilverLogger.getLogger(this).warn(
             "The resized image {0} for the in deletion original image {1} cannot be deleted!",
-            new String[]{resizedImage, originaImage.getAbsolutePath()});
+            resizedImage, originaImage.getAbsolutePath());
       }
     }
   }

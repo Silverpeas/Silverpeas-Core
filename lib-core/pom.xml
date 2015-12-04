@@ -236,14 +236,14 @@
       <testResource>
         <directory>src/test/resources</directory>
         <includes>
-          <include>*.properties</include>
+          <include>maven.properties</include>
         </includes>
         <filtering>true</filtering>
       </testResource>
       <testResource>
         <directory>src/test/resources</directory>
         <excludes>
-          <exclude>*.properties</exclude>
+          <exclude>maven.properties</exclude>
         </excludes>
         <filtering>false</filtering>
       </testResource>
@@ -293,4 +293,31 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>integration-test</id>
+      <activation>
+        <property>
+          <name>context</name>
+          <value>ci</value>
+        </property>
+      </activation>
+      <build>
+        <testResources>
+          <testResource>
+            <directory>src/integration-test/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*.properties</include>
+            </includes>
+          </testResource>
+          <testResource>
+            <directory>src/test/resources</directory>
+            <filtering>false</filtering>
+          </testResource>
+        </testResources>
+      </build>
+    </profile>
+  </profiles>
 </project>

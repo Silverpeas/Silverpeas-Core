@@ -21,31 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.logging;
+package org.silverpeas.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A factory of logger instances. It wraps the implementation of the
- * {@code org.silverpeas.util.logging.Logger} interface.
+ * This annotation has to be used to the packages to define at which Silverpeas module the package
+ * belongs to.
  * </p>
- * The bind between the {@code org.silverpeas.util.logging.LoggerFactory}
- * interface and its implementation is performed by the Java SPI (Java Service Provider Interface).
- * Only the first available logger factory implementation is loaded by the
- * {@code org.silverpeas.util.logging.Logger} when a logger object has to be get.
+ * Silverpeas is made up of several modules, each of them defining either a service or an
+ * application. A module is uniquely identified by a simple name. Each module in Silverpeas
+ * provides a set of interfaces that can be used by others modules to realize their
+ * responsibilities; codes in modules shouldn't use the classes in others modules but the
+ * interfaces.
+ * </p>
+ * The annotation can be used by some transverse services to perform some dedicated operations
+ * based upon the module a code belongs to. For example, the Silverpeas Logging API uses this
+ * annotation to figure out the module a given object or class belongs to.
  * @author miguel
  */
-public interface LoggerFactory {
+@Target(ElementType.PACKAGE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Module {
 
-  /**
-   * Get a {@code org.silverpeas.util.logging.Logger} instance for the specified namespace.
-   * If a logger has already been created with the given namespace it is returned, otherwise a new
-   * logger is manufactured.
-   * </p>
-   * This method should not be invoked directly. It is dedicated to be used by the
-   * {@code org.silverpeas.util.logging.Logger#getLogger(String)} method.
-   * @param namespace the hierarchical dot-separated namespace of the logger mapping the
-   * hierachical relationships between the loggers from the root one.
-   * @return a Silverpeas logger instance.
-   */
-  Logger getLogger(String namespace);
-
+  String value();
 }

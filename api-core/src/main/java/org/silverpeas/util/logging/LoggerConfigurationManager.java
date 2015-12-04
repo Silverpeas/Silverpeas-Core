@@ -55,7 +55,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * be located in the <code>SILVERPEAS_HOME/properties/org/silverpeas/util/logging</code> directory.
  * @author miguel
  */
-@Singleton
 public class LoggerConfigurationManager {
 
   private static final String THIS_LOGGER_NAMESPACE = "Silverpeas.Core.Logging";
@@ -66,8 +65,11 @@ public class LoggerConfigurationManager {
   private static final String DEFAULT_NAMESPACE = "Silverpeas.Util.{0}";
   private static final String NO_SUCH_LOGGER_CONFIGURATION =
       "No such logger {0} defined for Silverpeas module {1}";
+  private static final int INITIAL_CAPACITY = 128;
 
-  private static Map<String, Properties> configurations;
+  private static Map<String, Properties> configurations = new ConcurrentHashMap<>(INITIAL_CAPACITY);
+
+  private static LoggerConfigurationManager instance;
 
   private static File getConfigurationHome() {
     Path path =
@@ -76,21 +78,20 @@ public class LoggerConfigurationManager {
     return path.toFile();
   }
 
+  private LoggerConfigurationManager() {
+
+  }
+
   protected Map<String, Properties> getLoggerConfigurations() {
     return configurations;
   }
 
-  @PostConstruct
   protected void loadAllConfigurationFiles() {
     File configurationHome = getConfigurationHome();
     File[] configurationFiles =
         configurationHome.listFiles((dir, name) -> name.endsWith(".properties"));
+    configurations.clear();
     if (configurationFiles != null) {
-      if (configurations != null) {
-        configurations.clear();
-      } else {
-        configurations = new ConcurrentHashMap<>(configurationFiles.length);
-      }
       for (File aConfigurationFile : configurationFiles) {
         Properties properties = new Properties();
         try {
@@ -106,7 +107,11 @@ public class LoggerConfigurationManager {
   }
 
   public static LoggerConfigurationManager get() {
-    return ServiceProvider.getService(LoggerConfigurationManager.class);
+    if (instance == null) {
+      instance = new LoggerConfigurationManager();
+      instance.loadAllConfigurationFiles();
+    }
+    return instance;
   }
 
   /**
@@ -168,10 +173,6 @@ public class LoggerConfigurationManager {
           .log(java.util.logging.Level.WARNING, NO_SUCH_LOGGER_CONFIGURATION,
               new String[] {configuration.getNamespace(), configuration.getModuleName()});
     }
-  }
-
-  protected LoggerConfigurationManager() {
-
   }
 
   public static class LoggerConfiguration {

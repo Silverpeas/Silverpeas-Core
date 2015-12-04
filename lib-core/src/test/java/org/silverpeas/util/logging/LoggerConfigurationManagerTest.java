@@ -48,7 +48,7 @@ public class LoggerConfigurationManagerTest {
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
 
-  private LoggerConfigurationManager manager = new LoggerConfigurationManager();
+  private LoggerConfigurationManager manager;
 
   @Before
   public void initEnvVariables() {
@@ -58,15 +58,15 @@ public class LoggerConfigurationManagerTest {
   }
 
   @Test
-  public void loadAllConfigurationFiles() {
-    manager.loadAllConfigurationFiles();
+  public void allConfigurationFilesAreLoaded() {
+    manager = LoggerConfigurationManager.get();
     assertThat(manager.getLoggerConfigurations().size(), is(4));
   }
 
   @Test
   public void getLoggerConfigurationWithoutLevelOfAnExistingModule() {
     final String module = "attachment";
-    manager.loadAllConfigurationFiles();
+    manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getModuleName(), is(module));
@@ -77,7 +77,7 @@ public class LoggerConfigurationManagerTest {
   @Test
   public void getLoggerConfigurationWithLevelOfAnExistingModule() {
     final String module = "authentication";
-    manager.loadAllConfigurationFiles();
+    manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getModuleName(), is(module));
@@ -88,7 +88,7 @@ public class LoggerConfigurationManagerTest {
   @Test
   public void getLoggerConfigurationOfANonExistingModule() {
     final String module = "toto";
-    manager.loadAllConfigurationFiles();
+    manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getModuleName(), is(module));
@@ -100,7 +100,7 @@ public class LoggerConfigurationManagerTest {
   public void updateLoggerConfigurationOfAnExistingModulePersistsTheChange() {
     final String module = "calendar";
     final Level level = Level.DEBUG;
-    manager.loadAllConfigurationFiles();
+    manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration, not(nullValue()));
 
@@ -120,7 +120,7 @@ public class LoggerConfigurationManagerTest {
   public void updateLoggerConfigurationOfAnUnexistingModuleDoesNothing() {
     final String module = "toto";
     final Level level = Level.DEBUG;
-    manager.loadAllConfigurationFiles();
+    manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getLevel(), is(nullValue()));

@@ -24,16 +24,12 @@ package org.silverpeas.notification.asynchronous;
 import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
-import org.silverpeas.util.exception.DecodingException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author mmoquillon
@@ -55,25 +51,25 @@ public class JMSTopicTestResourceEventListener2 extends JMSResourceEventListener
 
   @Override
   public void onDeletion(final TestResourceEvent event) throws Exception {
-    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Deletion event reception...");
+    SilverLogger.getLogger(this).info("Deletion event reception...");
     this.bucket.pour(event);
   }
 
   @Override
   public void onRemoving(final TestResourceEvent event) throws Exception {
-    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Removing event reception...");
+    SilverLogger.getLogger(this).info("Removing event reception...");
     this.bucket.pour(event);
   }
 
   @Override
   public void onUpdate(final TestResourceEvent event) throws Exception {
-    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Update event reception...");
+    SilverLogger.getLogger(this).info("Update event reception...");
     this.bucket.pour(event);
   }
 
   @Override
   public void onCreation(final TestResourceEvent event) throws Exception {
-    Logger.getLogger(getClass().getSimpleName()).log(Level.INFO, "Creation event reception...");
+    SilverLogger.getLogger(this).info("Creation event reception...");
     this.bucket.pour(event);
   }
 

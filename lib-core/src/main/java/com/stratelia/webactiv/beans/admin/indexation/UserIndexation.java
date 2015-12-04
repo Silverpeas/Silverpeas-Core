@@ -31,11 +31,11 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.logging.SilverLogger;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Indexation of the users in Silverpeas. It uses the indexer and searcher API to provide a way to
@@ -82,7 +82,7 @@ public class UserIndexation {
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception ex) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+      SilverLogger.getLogger("admin").error(ex.getMessage(), ex);
     }
   }
 
@@ -111,7 +111,7 @@ public class UserIndexation {
       }
       return foundUsers;
     } catch (ParseException ex) {
-      Logger.getLogger(UserIndexation.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger("admin").error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }

@@ -25,12 +25,11 @@ package org.silverpeas.look.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriInfo;
 
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * Base URIs from which the REST-based ressources representing look entities are defined.
@@ -63,7 +62,7 @@ public final class LookResourceURIs {
     try {
       return new URI(buildStringURI(uriBase, uriPathParts));
     } catch (final URISyntaxException ex) {
-      Logger.getLogger(LookResourceURIs.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(LookResourceURIs.class).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }

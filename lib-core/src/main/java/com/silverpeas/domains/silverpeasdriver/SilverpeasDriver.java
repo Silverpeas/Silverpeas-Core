@@ -33,11 +33,11 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionProvider;
 import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,8 +49,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Singleton
 @Transactional
@@ -113,7 +111,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       user = userManager.saveAndFlush(user);
       return user.getId();
     } catch (Exception ex) {
-      Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return "-1";
   }
@@ -312,7 +310,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
       spGroup = groupManager.saveAndFlush(spGroup);
       return String.valueOf(spGroup.getId());
     } catch (SQLException ex) {
-      Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return "";
   }

@@ -24,7 +24,7 @@
 package org.silverpeas.util.logging.sys;
 
 import org.silverpeas.util.logging.Level;
-import org.silverpeas.util.logging.Logger;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
 import java.util.function.Supplier;
@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * This logger implementation uses the Java logging system to log actually the messages.
  * @author miguel
  */
-public class SysLogger implements Logger {
+public class SysLogger implements SilverLogger {
 
   private final java.util.logging.Logger logger;
 

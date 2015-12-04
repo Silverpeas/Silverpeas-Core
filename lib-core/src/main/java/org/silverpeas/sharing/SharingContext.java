@@ -23,16 +23,14 @@
  */
 package org.silverpeas.sharing;
 
-import org.silverpeas.util.ArrayUtil;
-import org.silverpeas.util.StringUtil;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.ArrayUtil;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,11 +107,8 @@ public class SharingContext {
           URI.create(getBaseURI() + "sharing/attachments/" + attachment.getInstanceId() + "/" +
               getToken() + "/" + attachment.getId() + "/" +
               URLEncoder.encode(attachment.getFilename(), CharEncoding.UTF_8));
-    } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(SharingContext.class.getName()).log(Level.SEVERE, null, ex);
-      throw new RuntimeException(ex.getMessage(), ex);
     } catch (Exception ex) {
-      Logger.getLogger(SharingContext.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
     return sharedUri;

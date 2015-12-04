@@ -1,6 +1,7 @@
 package org.silverpeas.file;
 
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * It represents a cache of the images that were resized by the
@@ -43,8 +42,8 @@ class ImageCache {
       lines.add(resizedImagePath);
       FileUtils.writeLines(entry, lines, true);
     } catch (IOException ex) {
-      Logger.getLogger(ImageCache.class.getSimpleName())
-          .log(Level.SEVERE, "Cannot write the cache entry {0} with value {1}. Cause: {2}",
+      SilverLogger.getLogger(ImageCache.class)
+          .error("Cannot write the cache entry {0} with value {1}. Cause: {2}",
               new String[]{entry.getAbsolutePath(), resizedImagePath, ex.getMessage()});
     }
   }
@@ -66,18 +65,18 @@ class ImageCache {
             File resizedImage = new File(resizedImagePath);
             if (resizedImage.exists()) {
               if (!resizedImage.delete()) {
-                Logger.getLogger(ImageCache.class.getSimpleName())
-                    .log(Level.WARNING, "Cannot remove {0} from the cache entry {1}",
-                        new String[]{resizedImage.getAbsolutePath(), entry.getAbsolutePath()});
+                SilverLogger.getLogger(ImageCache.class)
+                    .warn("Cannot remove {0} from the cache entry {1}",
+                        resizedImage.getAbsolutePath(), entry.getAbsolutePath());
               }
             }
           }
           if (!entry.delete()) {
-            Logger.getLogger(ImageCache.class.getSimpleName())
-                .log(Level.WARNING, "Cannot delete the cache entry {0}", entry.getAbsolutePath());
+            SilverLogger.getLogger(ImageCache.class)
+                .warn("Cannot delete the cache entry {0}", entry.getAbsolutePath());
           }
         } catch (IOException ex) {
-          Logger.getLogger(ImageCache.class.getSimpleName()).log(Level.SEVERE, ex.getMessage());
+          SilverLogger.getLogger(ImageCache.class).error(ex.getMessage(), ex.getMessage());
         }
       }
     }
@@ -98,7 +97,7 @@ class ImageCache {
           return lines.subList(1, lines.size());
         }
       } catch (IOException ex) {
-        Logger.getLogger(ImageCache.class.getSimpleName()).log(Level.SEVERE, ex.getMessage());
+        SilverLogger.getLogger(ImageCache.class).error(ex.getMessage());
       }
     }
     return Collections.EMPTY_LIST;
@@ -117,7 +116,7 @@ class ImageCache {
         List<String> resizedImagePaths = FileUtils.readLines(anEntry);
         originalImagePaths.add(resizedImagePaths.get(0));
       } catch (IOException ex) {
-        Logger.getLogger(ImageCache.class.getSimpleName()).log(Level.SEVERE, ex.getMessage());
+        SilverLogger.getLogger(ImageCache.class).error(ex.getMessage());
       }
     }
     return originalImagePaths;
@@ -130,7 +129,7 @@ class ImageCache {
       m.update(name.getBytes(), 0, name.length());
       return new BigInteger(1, m.digest()).toString(16);
     } catch (NoSuchAlgorithmException e) {
-      Logger.getLogger(ImageCache.class.getSimpleName()).log(Level.WARNING, e.getMessage());
+      SilverLogger.getLogger(ImageCache.class).warn(e.getMessage());
       return String.valueOf(name.hashCode());
     }
   }

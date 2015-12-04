@@ -22,11 +22,10 @@
 package org.silverpeas.notification;
 
 import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An asynchronous event listener. Asynchronous events are carried by JMS and are collected by this
@@ -58,8 +57,6 @@ import java.util.logging.Logger;
  */
 public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
     extends AbstractResourceEventListener<T> implements MessageListener {
-
-  protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
 
   /**
    * Gets the class of the resource events listened by this listener.
@@ -101,7 +98,7 @@ public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
       if (retryAtFailure()) {
         throw new RuntimeException(e);
       } else {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }

@@ -35,6 +35,7 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
+import org.silverpeas.test.WarBuilder4LibCore;
 import org.silverpeas.util.BeanContainer;
 import org.silverpeas.util.CDIContainer;
 import org.silverpeas.util.ServiceProvider;
@@ -64,15 +65,10 @@ public class SynchronousNotificationIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            DecodingException.class, EncodingException.class, StateTransition.class)
-        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
-            SynchronousTestResourceEventNotifier.class, SynchronousTestResourceEventListener.class)
-        .addPackage("org.silverpeas.notification")
-        .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "services/org.silverpeas.util.BeanContainer")
-        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    return WarBuilder4LibCore.onWarForTestClass(SynchronousNotificationIntegrationTest.class)
+        .addSynchAndAsynchResourceEventFeatures()
+        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class)
+        .build();
   }
 
   @Before

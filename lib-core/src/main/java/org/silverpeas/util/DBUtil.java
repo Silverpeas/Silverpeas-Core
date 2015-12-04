@@ -21,6 +21,7 @@
 package org.silverpeas.util;
 
 import org.silverpeas.persistence.Transaction;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.pool.ConnectionPool;
 
 import java.sql.Connection;
@@ -34,8 +35,6 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DBUtil {
 
@@ -91,8 +90,6 @@ public class DBUtil {
   public String toString() {
     return super.toString();
   }
-
-  private static final Logger logger = Logger.getLogger(DBUtil.class.getSimpleName());
 
   /**
    * fabrique une nouvelle connection
@@ -202,7 +199,7 @@ public class DBUtil {
             } else {
               // Another server process has just updated the next unique identifier value, so the
               // returned value indicates to the caller to retry to compute one
-              Logger.getLogger(DBUtil.class.getSimpleName()).info(
+              SilverLogger.getLogger(DBUtil.class.getSimpleName()).info(
                   "The next unique identifier value '" + nextUniqueValue + "' for identifier '" +
                       identifierNameLowerCase +
                       "' has been computed by another server process call at the same time, " +
@@ -264,15 +261,15 @@ public class DBUtil {
             registerIdentifierStmt.executeUpdate();
           }
 
-          Logger.getLogger(DBUtil.class.getSimpleName())
+          SilverLogger.getLogger(DBUtil.class)
               .info("A new entry has been registered into UniqueId table for '" +
                   identifierNameLowerCase + "' table");
         }
         return null;
       });
     } catch (Exception e) {
-      Logger.getLogger(DBUtil.class.getSimpleName())
-          .info("The unique identifier '" + identifierNameLowerCase +
+      SilverLogger.getLogger(DBUtil.class)
+          .warn("The unique identifier '" + identifierNameLowerCase +
               "' has not been registered because another server process has just done the " +
               "same " +
               "operation for the same resource.");
@@ -285,14 +282,14 @@ public class DBUtil {
       try {
         rs.close();
       } catch (SQLException e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        SilverLogger.getLogger(DBUtil.class).error(e.getMessage(), e);
       }
     }
     if (st != null) {
       try {
         st.close();
       } catch (SQLException e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        SilverLogger.getLogger(DBUtil.class).error(e.getMessage(), e);
       }
     }
   }
@@ -312,7 +309,7 @@ public class DBUtil {
       try {
         connection.close();
       } catch (SQLException e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        SilverLogger.getLogger(DBUtil.class).error(e.getMessage(), e);
       }
     }
   }
@@ -324,7 +321,7 @@ public class DBUtil {
           connection.rollback();
         }
       } catch (SQLException e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        SilverLogger.getLogger(DBUtil.class).error(e.getMessage(), e);
       }
     }
   }

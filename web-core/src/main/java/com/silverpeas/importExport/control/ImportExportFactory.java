@@ -32,8 +32,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * @author ehugonnet
@@ -53,7 +53,7 @@ public class ImportExportFactory {
     } catch (InstantiationException | ClassNotFoundException | SecurityException |
         NoSuchMethodException | InvocationTargetException | IllegalArgumentException |
         IllegalAccessException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
+      getLogger(ImportExportFactory.class).error(ex.getMessage(), ex);
     }
     return null;
   }

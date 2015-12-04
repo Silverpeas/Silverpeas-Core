@@ -74,8 +74,11 @@ public class MassiveAsynchronousNotificationIntegrationTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore
-        .onWarForTestClass(MassiveAsynchronousNotificationIntegrationTest.class).addCacheFeatures()
-        .addSubscriptionFeatures().addJdbcPersistenceFeatures().testFocusedOn((war) -> {
+        .onWarForTestClass(MassiveAsynchronousNotificationIntegrationTest.class)
+        .addCacheFeatures()
+        .addSubscriptionFeatures()
+        .addJdbcPersistenceFeatures()
+        .testFocusedOn((war) -> {
           WarBuilder4LibCore warBuilder = ((WarBuilder4LibCore) war);
           warBuilder.addSynchAndAsynchResourceEventFeatures();
           warBuilder.addClasses(TestResource.class, TestResourceEvent.class,

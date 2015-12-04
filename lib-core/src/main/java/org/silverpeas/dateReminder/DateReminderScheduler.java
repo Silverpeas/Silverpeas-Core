@@ -26,7 +26,6 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerProvider;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.EntityReference;
@@ -37,13 +36,12 @@ import org.silverpeas.dateReminder.persistent.service.DateReminderServiceProvide
 import org.silverpeas.dateReminder.provider.DateReminderProcess;
 import org.silverpeas.dateReminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Scheduler for processing <code>DateReminderProcess</code> instances.
@@ -60,15 +58,13 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
     try {
       SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.dateReminder.settings.dateReminderSettings");
       String cron = settings.getString("cronScheduledDateReminder");
-      Logger.getLogger(getClass().getSimpleName())
-          .log(Level.INFO, "Date reminder Processor scheduled with cron ''{0}''", cron);
+      SilverLogger.getLogger(this).info("Date reminder Processor scheduled with cron ''{0}''", cron);
       Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(DATEREMINDER_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(DATEREMINDER_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("dateReminder", "ScheduledDateReminderService.initialize()",
-          "dateReminder.EX_CANT_INIT_SCHEDULED_DATEREMINDER", e);
+      SilverLogger.getLogger(this).error("Cannot schedule date reminder", e);
     }
   }
 
@@ -76,23 +72,14 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
    * Schedule the date reminder process
    */
   public void doScheduledDateReminder() throws DateReminderException {
-    SilverTrace.info("dateReminder", "ScheduledDateReminderService.doScheduledDateReminder()",
-        "root.MSG_GEN_ENTER_METHOD");
-
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
     calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
     calendar.set(java.util.Calendar.MINUTE, 0);
     calendar.set(java.util.Calendar.SECOND, 0);
     calendar.set(java.util.Calendar.MILLISECOND, 0);
     Date deadLine = calendar.getTime();
-    SilverTrace.info("dateReminder", "ScheduledDateReminderService.doScheduledDateReminder()",
-        "root.MSG_GEN_PARAM_VALUE", "deadLine = " + deadLine.toString());
-
     Collection<PersistentResourceDateReminder> listResourceDateReminder =
         DateReminderServiceProvider.getDateReminderService().listAllDateReminderMaturing(deadLine);
-    SilverTrace.info("dateReminder", "ScheduledDateReminderService.doScheduledDateReminder()",
-        "root.MSG_GEN_PARAM_VALUE", "ResourceDateReminder = " + listResourceDateReminder.size());
-
     boolean performed = false;
     EntityReference entityReference = null;
     for (PersistentResourceDateReminder resourceDateReminder : listResourceDateReminder) {
@@ -106,11 +93,9 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
           entityReference = dateReminderProcess.perform(resourceDateReminder);
           performed = true;
         } catch (NotificationManagerException e) {
-          SilverTrace
-              .error("dateReminder", "ScheduledDateReminderService.doScheduledDateReminder()",
-                  "dateReminder.EX_ERROR_WHILE_PERFORMING_DATEREMINDER",
-                  "Type = " + resourceDateReminder.getResourceType() + ", ResourceId = " +
-                      resourceDateReminder.getId());
+          SilverLogger.getLogger(this).error("Date reminder failure for type = {0}, resource = {1}",
+              new String[] {resourceDateReminder.getResourceType(), resourceDateReminder.getId()},
+              e);
           performed = false;
         }
 
@@ -124,8 +109,6 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
       }
     }
 
-    SilverTrace.info("dateReminder", "ScheduledDateReminderService.doScheduledDateReminder()",
-        "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override
@@ -139,7 +122,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("dateReminder", "ScheduledDateReminderService.jobFailed",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' failed");
+    SilverLogger.getLogger(this).error("The job {0} failed",
+        anEvent.getJobExecutionContext().getJobName());
   }
 }

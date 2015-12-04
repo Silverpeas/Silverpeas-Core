@@ -21,37 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.util.logging.sys;
-
-import org.junit.Test;
-import org.silverpeas.util.logging.Level;
-import org.silverpeas.util.logging.SilverLogger;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+package org.silverpeas.util.logging;
 
 /**
- * Unit test on the SysLogger implementation of Logger.
+ * A factory of logger instances. It wraps the implementation of the
+ * {@code org.silverpeas.util.logging.Logger} interface.
+ * </p>
+ * The bind between the {@code org.silverpeas.util.logging.LoggerFactory}
+ * interface and its implementation is performed by the Java SPI (Java Service Provider Interface).
+ * Only the first available logger factory implementation is loaded by the
+ * {@code org.silverpeas.util.logging.Logger} when a logger object has to be get.
  * @author miguel
  */
-public class SysLoggerTest {
+public interface SilverLoggerFactory {
 
-  private static String LOGGER_NAMESPACE = "Silverpeas.Test";
+  /**
+   * Get a {@code org.silverpeas.util.logging.Logger} instance for the specified namespace.
+   * If a logger has already been created with the given namespace it is returned, otherwise a new
+   * logger is manufactured.
+   * </p>
+   * This method should not be invoked directly. It is dedicated to be used by the
+   * {@code org.silverpeas.util.logging.Logger#getLogger(String)} method.
+   * @param namespace the hierarchical dot-separated namespace of the logger mapping the
+   * hierachical relationships between the loggers from the root one.
+   * @return a Silverpeas logger instance.
+   */
+  SilverLogger getLogger(String namespace);
 
-  @Test
-  public void getALogger() {
-    SilverLogger logger = new SysLogger(LOGGER_NAMESPACE);
-    assertThat(logger.getNamespace(), is(LOGGER_NAMESPACE));
-    assertThat(logger.getLevel(), notNullValue());
-    assertThat(logger.getLevel(), is(Level.INFO));
-  }
-
-  @Test
-  public void changeLoggerLevel() {
-    SilverLogger logger = new SysLogger(LOGGER_NAMESPACE);
-    assertThat(logger.getNamespace(), is(LOGGER_NAMESPACE));
-    logger.setLevel(Level.DEBUG);
-    assertThat(logger.getLevel(), is(Level.DEBUG));
-  }
 }

@@ -21,12 +21,12 @@
 package com.silverpeas.servlets.upload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.silverpeas.util.StringUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.util.StringUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -41,8 +41,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * Sample servlet to upload file in an ajax way.
@@ -144,7 +144,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
         }
       }
     } catch (Exception e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
+      getLogger("upload").warn(e.getMessage());
       session.setAttribute(UPLOAD_FATAL_ERROR,
           "Could not process uploaded file. Please see log for details.");
     } finally {

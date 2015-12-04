@@ -28,16 +28,12 @@ import org.silverpeas.admin.space.notification.SpaceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
 
 import javax.inject.Singleton;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author mmoquillon
  */
 @Singleton
 public class PortletSpaceEventListener extends CDIResourceEventListener<SpaceEvent> {
-
-  private Logger logger = Logger.getLogger("portlet");
 
   @Override
   public void onDeletion(final SpaceEvent event) throws Exception {
@@ -56,13 +52,13 @@ public class PortletSpaceEventListener extends CDIResourceEventListener<SpaceEve
       }
       schema.commit();
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage(), e);
+      logger.error(e.getMessage(), e);
       try {
         if (schema != null) {
           schema.rollback();
         }
       } catch (Exception ex) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        logger.error(e.getMessage(), e);
       }
     } finally {
       try {
@@ -70,7 +66,7 @@ public class PortletSpaceEventListener extends CDIResourceEventListener<SpaceEve
           schema.close();
         }
       } catch (Exception e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
+        logger.error(e.getMessage(), e);
       }
     }
   }

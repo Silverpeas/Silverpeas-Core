@@ -21,9 +21,9 @@
 
 package org.silverpeas.notification;
 
+import org.silverpeas.util.logging.SilverLogger;
+
 import javax.enterprise.event.Observes;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A synchronous event listener using the notification bus of CDI. This bus is based on the
@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 public abstract class CDIResourceEventListener<T extends ResourceEvent>
     implements ResourceEventListener<T> {
 
-  protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
+  protected final SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * Listens for events related to a resource managed in Silverpeas.

@@ -12,14 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Named;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
 import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * It is the default implementation of the {@link ContentEncryptionService} interface in Silverpeas.
@@ -165,7 +164,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
               FileUtil.forceDeletion(backupedDeprecatedKeyFile);
             }
           } catch (IOException ex) {
-            Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+            SilverLogger.getLogger(this).error(ex.getMessage(), ex);
           }
         }
       }
@@ -374,7 +373,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
           .execute(CryptographicTask.renewEncryptionOf(iterators).inPrivilegedMode());
     } catch (CryptoException ex) {
       if (ex.getCause() instanceof FileNotFoundException) {
-        Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, ex.getMessage());
+        SilverLogger.getLogger(this).warn(ex.getMessage());
         return;
       }
       throw ex;
@@ -495,8 +494,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       try {
         Runtime.getRuntime().exec("attrib +H " + file);
       } catch (IOException ex) {
-        Logger.getLogger(DefaultContentEncryptionService.class.getSimpleName()).log(Level.WARNING,
-            ex.getMessage(), ex);
+        SilverLogger.getLogger(DefaultContentEncryptionService.class).warn(ex.getMessage());
       }
     }
   }

@@ -32,7 +32,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.util.Link;
@@ -41,13 +40,12 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ScheduledReservedFile implements SchedulerEventListener, Initialization {
 
@@ -61,22 +59,17 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
   public void init() {
     try {
       String cron = settings.getString("cronScheduledReservedFile");
-      Logger.getLogger(getClass().getSimpleName())
-          .log(Level.INFO, "Reserved File Processor scheduled with cron ''{0}''", cron);
+      SilverLogger.getLogger(this).info("Reserved File Processor scheduled with cron ''{0}''", cron);
       Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("attachment", "ScheduledReservedFile.initialize()",
-          "attachment.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
+      SilverLogger.getLogger(this).error("Reservation file scheduling failure", e);
     }
   }
 
   public void doScheduledReservedFile() throws AttachmentException {
-    SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-        "root.MSG_GEN_ENTER_METHOD");
-
     try {
       LocalizationBundle message = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.attachment.multilang.attachment",
@@ -90,22 +83,14 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
       calendar.add(Calendar.DATE, 1);
       expiryDate = calendar.getTime();
 
-      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
-
       Collection<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
           listExpiringDocuments(expiryDate, null);
-      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "Attachments = " + documents.size());
-
       for (SimpleDocument document : documents) {
         String date = getExpiryDate(document);
         String subject = createMessageSubject(message, false, false);
         messageBody.append(message.getString("attachment.notifName")).append(" '")
             .append(document.
                 getFilename()).append("'");
-        SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
-            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         String body = createMessageBody(message, messageBody, date, false, false);
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
@@ -119,14 +104,8 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
       calendar = Calendar.getInstance(Locale.FRENCH);
       alertDate = calendar.getTime();
 
-      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "alertDate = " + alertDate.toString());
-
       documents = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsRequiringWarning(alertDate, null);
-      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
-
       messageBody = new StringBuilder();
 
       for (SimpleDocument document : documents) {
@@ -135,8 +114,6 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
         messageBody.append(message.getString("attachment.notifName")).append(" '")
             .append(document.
                 getFilename()).append("'");
-        SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
-            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         String body = createMessageBody(message, messageBody, date, true, false);
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
@@ -150,15 +127,8 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
       calendar = Calendar.getInstance(Locale.FRENCH);
       libDate = calendar.getTime();
 
-      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "libDate = " + libDate.toString());
-
       documents =
           AttachmentServiceProvider.getAttachmentService().listDocumentsToUnlock(libDate, null);
-      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-          "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
-
-
       messageBody = new StringBuilder();
 
       for (SimpleDocument document : documents) {
@@ -167,8 +137,6 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
         messageBody.append(message.getString("attachment.notifName")).append(" '")
             .append(document.
                 getFilename()).append("'");
-        SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
-            "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         String body = createMessageBody(message, messageBody, date, false, true);
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
@@ -184,8 +152,6 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
-    SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
-        "root.MSG_GEN_EXIT_METHOD");
   }
 
   private String getExpiryDate(SimpleDocument document) {
@@ -218,9 +184,6 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
   private void createMessage(String date,
       NotificationMetaData notifMetaData, SimpleDocument document,
       boolean alert, boolean lib) throws AttachmentException {
-    SilverTrace
-        .info("attachment", "ScheduledReservedFile.createMessage()", "root.MSG_GEN_EXIT_METHOD");
-
     String url = URLManager.getURL(null, null, document.getInstanceId()) + "GoToFilesTab?Id=" +
         document.getForeignId();
 
@@ -256,10 +219,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
 
   public void notifyUser(NotificationMetaData notifMetaData, String senderId, String componentId)
       throws AttachmentException {
-    SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()", "root.MSG_GEN_EXIT_METHOD");
     try {
-      SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()", "root.MSG_GEN_EXIT_METHOD",
-          " senderId = " + senderId + " componentId = " + componentId);
       if (!StringUtil.isDefined(notifMetaData.getSender())) {
         notifMetaData.setSender(senderId);
       }
@@ -282,7 +242,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successful");
+    SilverLogger.getLogger(this).error("The job {0} wasn't successful",
+        anEvent.getJobExecutionContext().getJobName());
   }
 }
