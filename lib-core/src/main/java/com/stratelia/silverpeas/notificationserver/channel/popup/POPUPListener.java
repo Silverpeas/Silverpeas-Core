@@ -26,6 +26,7 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.Date;
 import javax.ejb.ActivationConfigProperty;
@@ -54,12 +55,10 @@ public class POPUPListener extends AbstractListener implements MessageListener {
    */
   @Override
   public void onMessage(Message msg) {
-    SilverTrace.info("popup", "POPUPListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
-        "JMS message = " + msg);
     try {
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace.error("popup", "POPUPListener.onMessage()", "popup.EX_CANT_PROCESS_MSG", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

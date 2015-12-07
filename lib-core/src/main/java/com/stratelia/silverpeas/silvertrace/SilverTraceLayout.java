@@ -29,8 +29,10 @@ import org.apache.log4j.PatternLayout;
 
 /**
  * Layouts available for Silvertrace.
+ * This class is deprecated as the Silver Trace API is now replaced by the Silverpeas Logger API.
  * @author ehugonnet
  */
+@Deprecated
 public enum SilverTraceLayout {
   /**
    * Short layout : Display "Time / Priority / Message"

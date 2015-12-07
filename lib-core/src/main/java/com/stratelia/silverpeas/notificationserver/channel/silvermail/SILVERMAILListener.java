@@ -23,8 +23,8 @@ package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.Date;
 import java.util.Map;
@@ -56,13 +56,9 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
   @Override
   public void onMessage(Message msg) {
     try {
-      SilverTrace.info("silvermail", "SILVERMAILListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
-          "JMS Message = " + msg.toString());
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace
-          .error("silvermail", "SILVERMAILListener.onMessage()", "silvermail.EX_CANT_PROCESS_MSG",
-              "JMS Message = " + msg.toString(), e);
+      SilverLogger.getLogger(this).error("Server notification processing failure", e);
     }
   }
 

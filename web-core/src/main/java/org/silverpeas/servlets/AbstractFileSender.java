@@ -51,7 +51,7 @@ public abstract class AbstractFileSender extends HttpServlet {
         FileUtils.copyFile(file, response.getOutputStream());
         response.getOutputStream().flush();
       } catch (IOException e) {
-        SilverTrace.error("peasUtil", "AbstractFileSender.sendFile", "root.EX_CANT_READ_FILE",
+        SilverTrace.error("util", "AbstractFileSender.sendFile", "root.EX_CANT_READ_FILE",
             " file: " + file.getAbsolutePath(), e);
         displayWarningHtmlCode(response);
       }
@@ -73,7 +73,7 @@ public abstract class AbstractFileSender extends HttpServlet {
       IOUtils.copy(sr, out);
       out.flush();
     } catch (IOException e) {
-      SilverTrace.warn("peasUtil", "AbstractFileSender.displayWarningHtmlCode",
+      SilverTrace.warn("util", "AbstractFileSender.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties", e);
     } finally {
       IOUtils.closeQuietly(sr);

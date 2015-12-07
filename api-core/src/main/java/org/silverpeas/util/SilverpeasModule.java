@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
  */
 public class SilverpeasModule {
 
-  private static final Pattern pattern = java.util.regex.Pattern.compile(
-      "(org\\.silverpeas|com\\.silverpeas|com\\.stratelia\\.webactiv|com\\.stratelia\\" +
-          ".silverpeas)\\.(\\w*)\\..*");
+  private static final Pattern pattern = Pattern.compile(
+      "(org\\.silverpeas|com\\.silverpeas|com\\.stratelia\\.webactiv|com\\.stratelia" +
+          "\\.silverpeas)\\.(\\w+).*");
 
   /**
    * Gets the name of the module to which the specified object belongs. The module name is first
@@ -51,7 +51,8 @@ public class SilverpeasModule {
    */
   public static String getModuleName(Object anObject) {
     String module;
-    Package p = anObject.getClass().getPackage();
+    Package p = (anObject instanceof Class ? ((Class) anObject).getPackage() :
+        anObject.getClass().getPackage());
     Module m = p.getAnnotation(Module.class);
     if (m == null) {
       Matcher matcher = pattern.matcher(p.getName());

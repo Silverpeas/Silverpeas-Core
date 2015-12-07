@@ -60,11 +60,11 @@ public abstract class GoTo extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("peasUtil", "GoTo.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "GoTo.doPost", "root.MSG_GEN_ENTER_METHOD");
     String id = getObjectId(req);
 
     try {
-      SilverTrace.info("peasUtil", "GoTo.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+      SilverTrace.info("util", "GoTo.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
 
       String redirect = getDestination(id, req, res);
       if (!StringUtil.isDefined(redirect)) {
@@ -131,7 +131,7 @@ public abstract class GoTo extends HttpServlet {
   }
 
   public void displayError(HttpServletResponse res) {
-    SilverTrace.info("peasUtil", "GoToFile.displayError()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "GoToFile.displayError()", "root.MSG_GEN_ENTER_METHOD");
 
     res.setContentType("text/html");
     OutputStream out = null;
@@ -142,7 +142,7 @@ public abstract class GoTo extends HttpServlet {
       // writes bytes into the response
       out.write(message.toString().getBytes(Charsets.UTF_8));
     } catch (IOException e) {
-      SilverTrace.warn("peasUtil", "GoToFile.displayError", "root.EX_CANT_READ_FILE");
+      SilverTrace.warn("util", "GoToFile.displayError", "root.EX_CANT_READ_FILE");
     } finally {
       IOUtils.closeQuietly(out);
     }

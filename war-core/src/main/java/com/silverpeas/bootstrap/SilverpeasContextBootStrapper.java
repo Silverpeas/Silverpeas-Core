@@ -46,6 +46,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
    */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
+    SilverLogger.getLogger("silverpeas").info("Silverpeas System Initialization...");
     SettingBundle systemSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.systemSettings");
     try {
@@ -56,7 +57,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         }
       }
     } catch (GeneralSecurityException e) {
-      SilverLogger.getLogger("core").error("Unable to configure the keystore/truststore.");
+      SilverLogger.getLogger("silverpeas").error("Unable to configure the keystore/truststore.");
     }
 
     URLManager.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));

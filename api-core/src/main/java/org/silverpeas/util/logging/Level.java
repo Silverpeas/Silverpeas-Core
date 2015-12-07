@@ -32,8 +32,18 @@ package org.silverpeas.util.logging;
  * @author miguel
  */
 public enum Level {
-  DEBUG,
-  INFO,
-  WARNING,
-  ERROR
+  DEBUG(500),
+  INFO(700),
+  WARNING(800),
+  ERROR(900);
+
+  private final int value;
+
+  Level(int order) {
+    this.value = order;
+  }
+
+  public int value() {
+    return this.value;
+  }
 }

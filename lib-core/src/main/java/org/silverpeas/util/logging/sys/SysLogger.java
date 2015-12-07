@@ -110,7 +110,7 @@ public class SysLogger implements SilverLogger {
    * @param error an error to log with the message.
    */
   @Override
-  public void log(final Level level, final String message, final String[] parameters,
+  public void log(final Level level, final String message, final Object[] parameters,
       final Throwable error) {
     String text = (parameters != null && parameters.length > 0 ?
         MessageFormat.format(message, parameters) : message);
@@ -124,7 +124,7 @@ public class SysLogger implements SilverLogger {
    * @param parameters zero, one or more parameters to the message.
    */
   @Override
-  public void log(final Level level, final String message, final String... parameters) {
+  public void log(final Level level, final String message, final Object... parameters) {
     this.logger.log(fromLoggingLevel(level), message, parameters);
   }
 

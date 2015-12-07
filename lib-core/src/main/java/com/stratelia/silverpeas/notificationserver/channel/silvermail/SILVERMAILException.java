@@ -90,6 +90,6 @@ public class SILVERMAILException extends SilverpeasException {
    */
   @Override
   public String getModule() {
-    return "silvermail";
+    return "notificationserver";
   }
 }

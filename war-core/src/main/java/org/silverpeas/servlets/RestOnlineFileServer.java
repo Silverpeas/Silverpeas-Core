@@ -69,7 +69,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("peasUtil", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace.fatal("util", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
@@ -77,7 +77,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
   public void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(req, "");
-    SilverTrace.info("peasUtil", "RestOnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "RestOnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     try {
       SilverpeasFile file = getWantedFile(restRequest);
       if (file != null) {

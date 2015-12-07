@@ -35,7 +35,6 @@ import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.token.Token;
@@ -44,6 +43,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.web.token.SynchronizerTokenService;
@@ -180,10 +180,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       // isUserStateValid that the user has an access to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
-        SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
-            "peasCore.MSG_USER_NOT_ALLOWED",
-            "User=" + mainSessionCtrl.getUserId() + " | componentId=" + componentId +
-                " | spaceId=" + spaceId);
+        SilverLogger.getLogger(this)
+            .warn("User {0} not allowed to access application {1} in space {2}",
+                mainSessionCtrl.getUserId(), componentId, spaceId);
         destination = ResourceLocator.getGeneralSettingBundle()
             .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
         return destination;
@@ -236,9 +235,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (checkUserAuthorization(function, component)) {
       destination = getDestination(function, component, httpRequest);
     } else {
-      SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "Security alert from user " + component.getUserId() + ", fct:" + function);
+      SilverLogger.getLogger(this)
+          .warn("User {0} not allowed to invoke {1} for application {2}",
+              component.getUserId(), function, componentId);
       destination = "/admin/jsp/accessForbidden.jsp";
     }
 
@@ -254,10 +253,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
     }
 
-    SilverTrace
-        .info("couverture", "ComponentRequestRouter.computeDestination()", "couverture.MSG_RR_JSP",
-            "destination = '" + destination + "'");
-
     // Update last accessed time depending on destination
     // see ClipboardRequestRouter
     // Except for notifications
@@ -272,8 +267,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   }
 
   public void updateSessionManagement(HttpSession session, String destination) {
-    SilverTrace.info("peasCore", "ComponentRequestRouter.updateSessionManagement",
-        "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.validateSession(session.getId());
   }
@@ -287,9 +280,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   private void redirectService(HttpServletRequest request, HttpServletResponse response,
       String destination) {
     // Open the destination page
-    SilverTrace
-        .info("peasCore", "ComponentRequestRouter.redirectService", "root.MSG_GEN_PARAM_VALUE",
-            "dest=" + destination);
     try {
       if (destination.startsWith("http") || destination.startsWith("ftp")) {
         response.sendRedirect(destination);
@@ -306,9 +296,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
         } else {
-          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
-              "peasCore.EX_REDIRECT_SERVICE_FAILED",
-              "Destination '" + destination + "' not found !");
+          SilverLogger.getLogger(this)
+              .warn("Web page dispatching failure: destination {0} not found!", destination);
         }
       }
     } catch (Exception e) {
@@ -320,19 +309,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpageMain.jsp")
             .forward(request, response);
       } catch (Exception ex) {
-        if ((e.getMessage() != null) &&
-            (e.getMessage().contains("Connection reset by peer: socket write error")) &&
-            (!e.getMessage().contains("SQL"))) { // This is a
-          // "Connection reset by peer" exception due to user quick clicks -> Forget
-          // it unless we are in Info Mode
-          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
-              "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination=" + destination, e);
-        } else {
-          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
-              "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination=" + destination, e);
-          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
-              "peasCore.EX_REDIRECT_ERROR_PAGE_FAILED", "/admin/jsp/errorpage.jsp", ex);
-        }
+        SilverLogger.getLogger(this)
+            .error("Web page dispatching to {0} failed: {1}",
+                new String[]{destination, e.getMessage()}, e);
       }
     }
   }
@@ -376,9 +355,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       session
           .setAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId, component);
     }
-    SilverTrace.info("peasCore", "ComponentRequestRouter.setComponentSessionController",
-        "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED",
-        "spaceId=" + spaceId + " | componentId=" + componentId);
     return component;
   }
 

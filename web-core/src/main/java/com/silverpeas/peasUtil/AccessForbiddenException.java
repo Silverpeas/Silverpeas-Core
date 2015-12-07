@@ -36,6 +36,6 @@ public class AccessForbiddenException extends SilverpeasException {
 
   @Override
   public String getModule() {
-    return "peasUtil";
+    return "util";
   }
 }

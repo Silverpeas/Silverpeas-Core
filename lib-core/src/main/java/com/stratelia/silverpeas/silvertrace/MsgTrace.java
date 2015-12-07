@@ -37,10 +37,11 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
- * Class declaration
+ * This class is deprecated as the Silver Trace API is now replaced by the Silverpeas Logger API.
  * @author Thierry Leroi
  * @version %I%, %G%
  */
+@Deprecated
 final class MsgTrace {
   private Properties allMessages = new Properties();
   private String languageMessages = "";

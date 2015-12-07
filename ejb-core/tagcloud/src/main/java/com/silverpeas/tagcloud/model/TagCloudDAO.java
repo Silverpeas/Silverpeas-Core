@@ -65,7 +65,7 @@ public class TagCloudDAO {
     try {
       newId = DBUtil.getNextId(TABLE_NAME, COLUMN_ID);
     } catch (Exception e) {
-      SilverTrace.warn("tagCloud", "TagCloudDAO.createTagCloud",
+      SilverTrace.warn("tagcloud", "TagCloudDAO.createTagCloud",
           "root.EX_PK_GENERATION_FAILED", e);
     }
 

@@ -72,7 +72,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    SilverTrace.info("peasUtil", "RssServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "RssServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
     String instanceId = getObjectId(req);
     String userId = getUserId(req);
     String login = getLogin(req);
@@ -80,7 +80,7 @@ public abstract class RssServlet<T> extends HttpServlet {
     // rechercher si le composant a bien le flux RSS autorisé
     if (isComponentRss(instanceId)) {
       try {
-        SilverTrace.info("peasUtil", "RssServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.info("util", "RssServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
             "InstanceId = " + instanceId);
 
         // Vérification que le user a droit d'accès au composant

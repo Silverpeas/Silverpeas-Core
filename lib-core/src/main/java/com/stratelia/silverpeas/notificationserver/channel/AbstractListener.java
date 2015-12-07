@@ -55,7 +55,7 @@ public abstract class AbstractListener implements INotificationServerChannel {
     extractData(msg);
     NotificationData nd = NotificationServerUtil.convertXMLToNotificationData(payLoad);
     if (nd != null) {
-      SilverTrace.info("notificationServer", "AbstractListener.processMessage()",
+      SilverTrace.info("notificationserver", "AbstractListener.processMessage()",
           "notificationServer.INFO_PROCESS_MESSAGE");
       nd.traceObject();
     }

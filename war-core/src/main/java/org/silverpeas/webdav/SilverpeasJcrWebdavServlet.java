@@ -38,8 +38,6 @@ import java.io.IOException;
  */
 public class SilverpeasJcrWebdavServlet extends SimpleWebdavServlet {
 
-  private static SilverLogger logger = SilverLogger.getLogger("jcr");
-
   @Inject
   private Repository repository;
 

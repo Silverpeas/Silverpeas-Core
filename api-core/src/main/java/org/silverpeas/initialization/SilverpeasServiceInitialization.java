@@ -35,10 +35,9 @@ import java.util.Set;
  */
 public class SilverpeasServiceInitialization {
 
-  private static SilverLogger logger = SilverLogger.getLogger(SilverpeasServiceInitialization.class);
-
   public static void start() {
-    logger.info("Silverpeas Service Initialization...");
+    SilverLogger logger = SilverLogger.getLogger("silverpeas");
+    logger.info("Silverpeas Services Initialization...");
     Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
     initializations.stream().forEach(initialization -> {
       String simpleClassName = initialization.getClass().getSimpleName();
@@ -51,11 +50,11 @@ public class SilverpeasServiceInitialization {
         throw new RuntimeException(e.getMessage(), e);
       }
     });
-    logger.info("Silverpeas Service Initialization done.");
   }
 
   public static void stop() {
-    logger.info("Silverpeas Service Release...");
+    SilverLogger logger = SilverLogger.getLogger("silverpeas");
+    logger.info("Silverpeas Services Release...");
     Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
     for (Initialization initialization : initializations) {
       try {
@@ -64,6 +63,5 @@ public class SilverpeasServiceInitialization {
         logger.warn(ex.getMessage());
       }
     }
-    logger.info("Silverpeas Service Release done.");
   }
 }

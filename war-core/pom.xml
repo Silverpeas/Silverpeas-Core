@@ -223,6 +223,9 @@
               <filtering>true</filtering>
             </webResource>
           </webResources>
+          <archive>
+            <manifestFile>${basedir}/src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
         </configuration>
       </plugin>
     </plugins>

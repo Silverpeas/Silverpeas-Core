@@ -24,7 +24,6 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
@@ -32,6 +31,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
@@ -63,8 +63,8 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
         }
       }
     } catch (PersistenceException e) {
-      SilverTrace.error("server", "UserFavoriteSpaceDAO.getListUserFavoriteSpace()",
-          "server.EX_CANT_GET_FAVORITE_SPACES", "userid=" + userId, e);
+      SilverLogger.getLogger(this)
+          .error("Cannot get user favorite space for user {0}", new String[] {userId}, e);
     }
 
     return listUserFavoriteSpaces;
@@ -84,8 +84,8 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
         result = true;
       }
     } catch (PersistenceException e) {
-      SilverTrace.error("server", "UserFavoriteSpaceDAO.addUserFavoriteSpace", "", "userid= " +
-          ufsVO.getUserId() + ", spaceid=" + ufsVO.getSpaceId(), e);
+      SilverLogger.getLogger(this)
+          .error("User Favorite space error for user {0}", new Integer[] {ufsVO.getUserId()}, e);
     }
     return result;
   }
@@ -107,8 +107,8 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
         exist = true;
       }
     } catch (PersistenceException e) {
-      SilverTrace.error("server", "UserFavoriteSpaceDAO.getListUserFavoriteSpace()",
-          "server.EX_CANT_GET_FAVORITE_SPACES", "userid=" + userId, e);
+      SilverLogger.getLogger(this)
+          .error("User Favorite space error for user {0}", new Integer[] {userId}, e);
     }
     return exist;
   }
@@ -141,8 +141,9 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
       dao.removeWhere(new IdPK(), whereBuff.toString());
       result = true;
     } catch (PersistenceException e) {
-      SilverTrace.error("server", "UserFavoriteSpaceDAO.addUserFavoriteSpace", "", "userid= " +
-          ufsVO.getUserId() + ", spaceid=" + ufsVO.getSpaceId(), e);
+      SilverLogger.getLogger(this)
+          .error("Cannot remove user favorite space for user {0}",
+              new Integer[] {ufsVO.getUserId()}, e);
     }
     return result;
   }

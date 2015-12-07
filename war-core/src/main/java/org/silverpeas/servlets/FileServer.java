@@ -69,14 +69,14 @@ public class FileServer extends AbstractFileSender {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("peasUtil", "FileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "FileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
 
     HttpSession session = req.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
-      SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
+      SilverTrace.warn("util", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
               ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
       res.sendRedirect(URLManager.getApplicationURL() +
@@ -122,7 +122,7 @@ public class FileServer extends AbstractFileSender {
         StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
         statisticService.addStat(userId, pubPK, 1, "Publication");
       } catch (Exception ex) {
-        SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
+        SilverTrace.warn("util", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
             "pubPK = " + pubPK + " and nodeId = " + nodeId, ex);
       }
     }

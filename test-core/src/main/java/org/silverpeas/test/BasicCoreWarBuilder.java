@@ -44,7 +44,6 @@ public class BasicCoreWarBuilder extends BasicWarBuilder {
     addMavenDependencies("org.apache.tika:tika-core");
     addMavenDependencies("org.apache.tika:tika-parsers");
     // Bundles & Settings
-    addAsResource("org/silverpeas/silvertrace/settings/silverLog.properties");
     addAsResource("org/silverpeas/util/attachment/mime_types.properties");
     addAsResource("org/silverpeas/general.properties");
     addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");

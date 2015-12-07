@@ -83,7 +83,7 @@ public class SimpleDocumentServer extends GoTo {
           ComponentSecurity security = (ComponentSecurity) Class.forName(KMELIA_SECURITY_CLASS).newInstance();
           isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
         } catch (Exception e) {
-          SilverTrace.error("peasUtil", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
+          SilverTrace.error("util", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
               "com.stratelia.webactiv.kmelia.KmeliaSecurity", e);
           return null;
         }

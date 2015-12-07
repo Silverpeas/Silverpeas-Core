@@ -23,11 +23,8 @@
  */
 package org.silverpeas.util.logging;
 
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.lang.SystemWrapper;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -62,7 +59,7 @@ public class LoggerConfigurationManager {
   private static final String LOGGER_NAMESPACE = "module.logger";
   private static final String LOGGER_LEVEL = "module.level";
   private static final String CONFIGURATION_PATH = "configuration.path";
-  private static final String DEFAULT_NAMESPACE = "Silverpeas.Util.{0}";
+  private static final String DEFAULT_NAMESPACE = "Silverpeas.Other.{0}";
   private static final String NO_SUCH_LOGGER_CONFIGURATION =
       "No such logger {0} defined for Silverpeas module {1}";
   private static final int INITIAL_CAPACITY = 128;
@@ -103,11 +100,17 @@ public class LoggerConfigurationManager {
               .log(java.util.logging.Level.WARNING, e.getMessage());
         }
       }
+    } else {
+      java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
+          .log(java.util.logging.Level.WARNING,
+              "No logging configuration files found for Silverpeas");
     }
   }
 
   public static LoggerConfigurationManager get() {
     if (instance == null) {
+      java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
+          .log(java.util.logging.Level.INFO, "Silverpeas Logging Engine initialization...");
       instance = new LoggerConfigurationManager();
       instance.loadAllConfigurationFiles();
     }
@@ -128,8 +131,7 @@ public class LoggerConfigurationManager {
       Properties properties = loggerConfigurations.get(module);
       namespace = properties.getProperty(LOGGER_NAMESPACE);
       if (namespace == null || namespace.trim().isEmpty()) {
-        String suffix = Character.toUpperCase(module.charAt(0)) + module.substring(1);
-        namespace = MessageFormat.format(DEFAULT_NAMESPACE, suffix);
+        namespace = MessageFormat.format(DEFAULT_NAMESPACE, module);
       }
       String strLevel = properties.getProperty(LOGGER_LEVEL);
       if (strLevel != null && !strLevel.trim().isEmpty()) {
@@ -141,8 +143,7 @@ public class LoggerConfigurationManager {
         }
       }
     } else {
-      String suffix = Character.toUpperCase(module.charAt(0)) + module.substring(1);
-      namespace = MessageFormat.format(DEFAULT_NAMESPACE, suffix);
+      namespace = MessageFormat.format(DEFAULT_NAMESPACE, module);
     }
     return new LoggerConfiguration(module, namespace).withLevel(level);
   }

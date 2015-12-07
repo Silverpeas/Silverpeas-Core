@@ -135,7 +135,7 @@ public interface SilverLogger {
    * @param parameters zero, one or more parameters to the message. Shouldn't be null.
    * @param error an error to log with the message.
    */
-  void log(Level level, String message, String[] parameters, Throwable error);
+  void log(Level level, String message, Object[] parameters, Throwable error);
 
   /**
    * Logs a message at the specified level, with the specified parameters if any.
@@ -143,14 +143,14 @@ public interface SilverLogger {
    * @param message the message to log.
    * @param parameters zero, one or more parameters to the message.
    */
-  void log(Level level, String message, String... parameters);
+  void log(Level level, String message, Object... parameters);
 
   /**
    * Logs an error message with the specified parameters.
    * @param message the message to log.
    * @param parameters zero, one or more parameters to set to the message
    */
-  default void error(String message, String... parameters) {
+  default void error(String message, Object... parameters) {
     log(Level.ERROR, message, parameters);
   }
 
@@ -169,8 +169,8 @@ public interface SilverLogger {
    * @param parameters zero, one or more parameters to set to the message
    * @param error the cause of the error.
    */
-  default void error(String message, String[] parameters, Throwable error) {
-    log(Level.ERROR, message, new String[0], error);
+  default void error(String message, Object[] parameters, Throwable error) {
+    log(Level.ERROR, message, parameters, error);
   }
 
   /**
@@ -178,7 +178,7 @@ public interface SilverLogger {
    * @param message the message to log.
    * @param parameters zero, one or more parameters to set to the message
    */
-  default void warn(String message, String... parameters) {
+  default void warn(String message, Object... parameters) {
     log(Level.WARNING, message, parameters);
   }
 
@@ -187,7 +187,7 @@ public interface SilverLogger {
    * @param message the message to log.
    * @param parameters zero, one or more parameters to set to the message
    */
-  default void info(String message, String... parameters) {
+  default void info(String message, Object... parameters) {
     log(Level.INFO, message, parameters);
   }
 
@@ -196,7 +196,7 @@ public interface SilverLogger {
    * @param message the message to log.
    * @param parameters zero, one or more parameters to set to the message
    */
-  default void debug(String message, String... parameters) {
+  default void debug(String message, Object... parameters) {
     log(Level.DEBUG, message, parameters);
   }
 
