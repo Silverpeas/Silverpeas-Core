@@ -39,7 +39,7 @@ import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
 
-  private static String SETTINGS_FILE = "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings";
+  private static String SETTINGS_FILE = "org.silverpeas.pdcPeas.settings.pdcPeasSettings";
 
   private String currentView = "P";
   private Axis currentAxis = null;
