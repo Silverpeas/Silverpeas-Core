@@ -935,7 +935,7 @@ background-repeat:no-repeat;
 
 }
 
-.ArrayColumn, .ArrayCell,  
+.ArrayColumn, .ArrayCell, .ArrayCellHot,
 #classifieds .tableFrame #categories .categoryTitle{
 background-image:none;
 padding-left:8px;
@@ -943,9 +943,13 @@ padding-right:8px;
 }
 
 .ArrayColumn .ArrayColumn,
-.ArrayCell .ArrayCell {
+.ArrayCell .ArrayCell, .ArrayCellHot .ArrayCellHot {
 padding-left:0;
 padding-right:0;
+}
+
+.ArrayCellHot {
+  color: #FF6000;
 }
 
 .pageNav , .pageNav .ArrayNavigation, .pageNav .pageOff {

@@ -1724,12 +1724,16 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   background-color: transparent;
 }
 
-.ArrayCell {
+.ArrayCell, .ArrayCellHot {
   text-align: left;
 }
 
 .ArrayCell img {
   border: 0;
+}
+
+.ArrayCellHot {
+  color: #FF6000;
 }
 
 .ArrayNavigation {
