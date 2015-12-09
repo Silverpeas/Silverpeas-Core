@@ -92,7 +92,7 @@ public class LoggerConfigurationManagerTest {
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getModuleName(), is(module));
-    assertThat(configuration.getNamespace(), is("Silverpeas.Util.Toto"));
+    assertThat(configuration.getNamespace(), is("Silverpeas.Other.toto"));
     assertThat(configuration.getLevel(), is(nullValue()));
   }
 
@@ -106,7 +106,7 @@ public class LoggerConfigurationManagerTest {
 
     // update configuration and ensures the change is done
     configuration.setLevel(level);
-    manager.updateLoggerConfiguration(configuration);
+    manager.saveLoggerConfiguration(configuration);
     configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration.getLevel(), is(level));
 
@@ -128,7 +128,7 @@ public class LoggerConfigurationManagerTest {
     // the configuration cannot be persisted as no such module exist and hence no change can be
     // done.
     configuration.setLevel(level);
-    manager.updateLoggerConfiguration(configuration);
+    manager.saveLoggerConfiguration(configuration);
     configuration = manager.getLoggerConfiguration(module);
     assertThat(configuration.getLevel(), is(nullValue()));
   }

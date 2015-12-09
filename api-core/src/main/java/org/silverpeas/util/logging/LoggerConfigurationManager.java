@@ -32,14 +32,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * There is a single global LoggerConfigurationManager object that is used to manage a set of
- * configuration about the different Loggers available in Silverpeas. The
- * LoggerConfigurationManager single instance is managed by the underlying IoD container.
+ * configuration about the different Loggers available in Silverpeas.
  * </p>
  * Each logger in Silverpeas is usually mapped to a given Silverpeas module. A Silverpeas module
  * is either a component of Silverpeas Core or an application in Silverpeas Components. By defining
@@ -149,26 +151,34 @@ public class LoggerConfigurationManager {
   }
 
   /**
-   * Updates the configuration of the logger referred by the specified configuration instance.
+   * Saves the configuration of the logger referred by the specified configuration instance.
+   * Disclaimer: the change of the configuration isn't applied to the concerned logger, it has
+   * to be done explicitly.
    * <p>
    * If no configuration exists for the logger referred by the configuration object, then nothing
    * is done.
    * @param configuration the new configuration of the logger defined for the specified Silverpeas
    * module.
    */
-  public void updateLoggerConfiguration(LoggerConfiguration configuration) {
+  public void saveLoggerConfiguration(LoggerConfiguration configuration) {
     Map<String, Properties> loggerConfigurations = getLoggerConfigurations();
     if (loggerConfigurations.containsKey(configuration.getModuleName())) {
       Properties properties = loggerConfigurations.get(configuration.getModuleName());
-      String configurationPath = (String) properties.remove(CONFIGURATION_PATH);
-      properties.setProperty(LOGGER_LEVEL, configuration.getLevel().name());
+      String configurationPath = properties.getProperty(CONFIGURATION_PATH);
+      if (configuration.getLevel() == null) {
+        properties.remove(LOGGER_LEVEL);
+      } else {
+        properties.setProperty(LOGGER_LEVEL, configuration.getLevel().name());
+      }
+      properties.remove(CONFIGURATION_PATH);
       try {
         properties.store(new FileOutputStream(new File(configurationPath)), null);
       } catch (IOException e) {
         java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
             .log(java.util.logging.Level.WARNING, e.getMessage());
+      } finally {
+        properties.setProperty(CONFIGURATION_PATH, configurationPath);
       }
-      properties.setProperty(CONFIGURATION_PATH, configurationPath);
     } else {
       java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
           .log(java.util.logging.Level.WARNING, NO_SUCH_LOGGER_CONFIGURATION,
@@ -176,7 +186,22 @@ public class LoggerConfigurationManager {
     }
   }
 
-  public static class LoggerConfiguration {
+  /**
+   * Gets the available configuration of all the Silverpeas loggers. If a logger has no
+   * defined configuration, then it is'nt taken into account.
+   * @return a set of logger configurations sorted by the logger's namespace.
+   */
+  public Set<LoggerConfiguration> getAvailableLoggerConfigurations() {
+    Set<String> moduleNames = getLoggerConfigurations().keySet();
+    Set<LoggerConfiguration> availableConfigurations = new TreeSet<>();
+    for (String module: moduleNames) {
+      LoggerConfiguration configuration = getLoggerConfiguration(module);
+      availableConfigurations.add(configuration);
+    }
+    return availableConfigurations;
+  }
+
+  public static class LoggerConfiguration implements Comparable<LoggerConfiguration> {
     private final String module;
     private final String namespace;
     private Level level;
@@ -207,5 +232,9 @@ public class LoggerConfigurationManager {
       this.level = level;
     }
 
+    @Override
+    public int compareTo(final LoggerConfiguration other) {
+      return this.getNamespace().compareTo(other.getNamespace());
+    }
   }
 }

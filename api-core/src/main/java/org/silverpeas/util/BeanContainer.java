@@ -42,7 +42,7 @@ public interface BeanContainer {
    * @return the bean matching the specified name.
    * @throws java.lang.IllegalStateException if no bean can be found with the specified name.
    */
-  public <T> T getBeanByName(String name) throws IllegalStateException;
+  <T> T getBeanByName(String name) throws IllegalStateException;
 
   /**
    * Gets a bean managed in this container by its type and optionnaly by some qualifiers.
@@ -55,7 +55,7 @@ public interface BeanContainer {
    * @throws java.lang.IllegalStateException if no bean of the specified type and with the
    * specified qualifiers can be found.
    */
-  public <T> T getBeanByType(Class<T> type, Annotation... qualifiers) throws IllegalStateException;
+  <T> T getBeanByType(Class<T> type, Annotation... qualifiers) throws IllegalStateException;
 
   /**
    * Gets a bean managed in this container by its name. If no such bean exists in the bean
@@ -66,5 +66,5 @@ public interface BeanContainer {
    * @return a set of beans satisfying the expected type and, if any, the expected qualifiers, or
    * an empty set otherwise.
    */
-  public <T> Set<T> getAllBeansByType(Class<T> type, Annotation... qualifiers);
+  <T> Set<T> getAllBeansByType(Class<T> type, Annotation... qualifiers);
 }

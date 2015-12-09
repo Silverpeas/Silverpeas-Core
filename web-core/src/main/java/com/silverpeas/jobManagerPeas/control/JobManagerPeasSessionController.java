@@ -108,7 +108,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     JobManagerService portletDeployer = new JobManagerService("46", "portlets", LEVEL_OPERATION,
         webContext + "/portletDeployer", null, false);
     JobManagerService jst = new JobManagerService("47", "JST", LEVEL_OPERATION, webContext
-        + "/admin/jsp/ExploitationSilverTrace.jsp", null, false);
+        + "/admin/jsp/SilverLoggerAdmin.jsp", null, false);
     JobManagerService jindex =
         new JobManagerService("48", "reindexation", LEVEL_OPERATION, webContext
         + "/applicationIndexer/jsp/applicationIndexer.jsp", null, false);
