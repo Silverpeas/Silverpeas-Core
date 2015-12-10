@@ -114,9 +114,6 @@ class Admin implements Administration {
   private static int m_nEntrepriseClientSpaceId = 0;
   private static String administratorMail = null;
   private static String m_sDAPIGeneralAdminId = null;
-  // User Logs
-  private static Map<String, UserLog> loggedUsers = Collections.synchronizedMap(new HashMap<>(100));
-  private static FastDateFormat formatter = FastDateFormat.getInstance("dd/MM/yyyy HH:mm:ss:S");
   // Cache management
   private static final AdminCache cache = new AdminCache();
   private static SynchroGroupScheduler groupSynchroScheduler = null;
@@ -3579,24 +3576,6 @@ class Admin implements Administration {
         }
       }
 
-      // Check that the user is not already in the pool
-      UserLog userLog = loggedUsers.get(sUserId);
-      if (userLog != null) {
-        // The user is already logged, remove it
-        loggedUsers.remove(sUserId);
-        SilverTrace.info("admin", "Admin.authenticate",
-            "admin.MSG_USER_ALREADY_LOGGED", "user id: '" + sUserId + "', log time: "
-            + formatter.format(userLog.getLogDate()));
-      }
-
-      // Add the user in the pool of UserLog
-      userLog = new UserLog();
-      userLog.setSessionId(sSessionId);
-      userLog.setUserId(sUserId);
-      userLog.setUserLogin(sLogin);
-      userLog.setLogDate(new Date());
-      loggedUsers.put(sUserId, userLog);
-
       return sUserId;
     } catch (Exception e) {
       throw new AdminException("Admin.authenticate",
@@ -4626,16 +4605,6 @@ class Admin implements Administration {
   @Override
   public String getDAPIGeneralAdminId() {
     return "0";
-  }
-
-  @Override
-  public UserLog[] getUserConnected() {
-    UserLog[] userLogs = new UserLog[loggedUsers.size()];
-    int nI = 0;
-    for (String user : loggedUsers.keySet()) {
-      userLogs[nI++] = loggedUsers.get(user);
-    }
-    return userLogs;
   }
 
   // -------------------------------------------------------------------------

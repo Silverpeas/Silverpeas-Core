@@ -24,60 +24,59 @@
 package org.silverpeas.util.logging.web;
 
 import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPrivilegeValidation;
-import org.silverpeas.util.logging.LoggerConfigurationManager;
-import org.silverpeas.util.logging.LoggerConfigurationManager.LoggerConfiguration;
+import org.silverpeas.util.logging.LogsAccessor;
 import org.silverpeas.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
- * A Web resource representing the configuration of a given logger. It is a REST-based Web service.
+ * A Web resource representing a given log used by Silverpeas. It is a REST-based Web service.
  * @author mmoquillon
  */
 @Service
 @RequestScoped
-@Path("logging/{module}/configuration")
-@Authenticated
-public class SilverLoggerConfigurationResource extends RESTWebService {
+@Authorized
+@Path("logging/logs/{logName}")
+public class LogResource extends RESTWebService {
 
-  @PathParam("module")
-  private String silverpeasModule;
+  @Inject
+  private LogsAccessor logsAccessor;
 
-  @PUT
-  @Produces(MediaType.APPLICATION_JSON)
+  @PathParam("logName")
+  private String logName;
+
+  @GET
   @Consumes(MediaType.APPLICATION_JSON)
-  public LoggerConfigurationEntity changeLoggerConfiguration(LoggerConfigurationEntity config) {
-    LoggerConfigurationManager configManager = LoggerConfigurationManager.get();
-    if (silverpeasModule.equals(config.getModule())) {
-      LoggerConfiguration loggerConfig = config.toLoggerConfiguration();
-      /* save the logger configuration */
-      configManager.saveLoggerConfiguration(loggerConfig);
-      /* and now apply the change to the existing logger */
-      SilverLogger.getLogger(silverpeasModule).setLevel(loggerConfig.getLevel());
-    } else {
-      throw new WebApplicationException(
-          "The module name of the configuration doesn't match with the URI",
-          Response.Status.BAD_REQUEST);
+  public String[] getLastLogRecords(@QueryParam("count")int count) {
+    try {
+      return logsAccessor.getLastLogRecords(logName, count);
+    } catch (FileNotFoundException ex) {
+      SilverLogger.getLogger("core").error(ex.getMessage(), ex);
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    } catch (IOException ex) {
+      SilverLogger.getLogger("core").error(ex.getMessage(), ex);
+      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
-    return LoggerConfigurationEntity.toWebEntity(
-        configManager.getLoggerConfiguration(silverpeasModule))
-        .withAsURi(getUriInfo().getRequestUri());
   }
 
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation)
-      throws WebApplicationException {
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
+      WebApplicationException {
     if (!getUserDetail().isAccessAdmin()) {
       throw new WebApplicationException("Only administrators can play with logger configurations!",
           Response.Status.FORBIDDEN);

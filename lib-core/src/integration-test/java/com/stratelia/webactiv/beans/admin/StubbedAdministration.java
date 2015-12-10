@@ -1005,11 +1005,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public UserLog[] getUserConnected() {
-    return new UserLog[0];
-  }
-
-  @Override
   public String[] getAllSpaceIds(final String sUserId) throws Exception {
     return new String[0];
   }

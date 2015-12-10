@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.util.logging.Level" %>
 <%@ page import="org.silverpeas.util.logging.LoggerConfigurationManager" %>
+<%@ page import="org.silverpeas.util.logging.LogsAccessor" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
 <%--
@@ -44,6 +45,7 @@
   pageContext.setAttribute("loggingLevels", loggingLevels, PageContext.PAGE_SCOPE);
   pageContext.setAttribute("configurations",
       LoggerConfigurationManager.get().getAvailableLoggerConfigurations(), PageContext.PAGE_SCOPE);
+  pageContext.setAttribute("logs", LogsAccessor.get().getAllLogs(), PageContext.PAGE_SCOPE);
 %>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="org.silverpeas.util.logging.multilang.loggingAdmin"/>
@@ -76,7 +78,7 @@
       }
     };
 
-    function submitForm() {
+    function changeLoggingLevel() {
       var module = $('#logger').val();
       var config = loggerCongigurations.configurationOf(module);
       config.level = $('#level').val();
@@ -100,38 +102,75 @@
       });
       return false;
     }
+
+    function fetchLastLogRecords() {
+      var log = $('#log').val();
+      var count = $('#record-count').val();
+      $.ajax({
+        url : webContext + '/services/logging/logs/' + log + '?count=' + count,
+        type : 'GET',
+        dataType : 'json',
+        success : function(records) {
+          var size = records.length > 50 ? 50:records.length;
+          $('#log-content').attr('rows', '' + size).text(records.join('\n'));
+        },
+        error : function(xhr, status, error) {
+          notyError("<fmt:message key='logging.admin.LogError'/>" + ' ' + error);
+        }
+      });
+      return false;
+    }
   </script>
 </head>
 <body>
 <view:window>
   <view:frame>
     <form id="logger-level-setting">
-      <div id="logger-configurations">
-        <label for="logger"><fmt:message key="logging.admin.Loggers"/></label>
-        <select id="logger" size="20">
-          <c:forEach var="configuration" items="${configurations}">
-            <c:set var="level"><fmt:message key="logging.admin.level"/> ${configuration.level}
-            </c:set>
-            <c:if test="${configuration.level == null}">
-              <c:set var="level"><fmt:message key="logging.admin.DefaultLevel"/></c:set>
-            </c:if>
-            <option value="${configuration.moduleName}">${configuration.namespace} (${level})
-            </option>
-          </c:forEach>
-        </select>
-      </div>
-      <br/>
+      <fieldset>
+        <legend><fmt:message key="logging.admin.LoggingLevelChange"/></legend>
+        <div id="logger-configurations">
+          <label for="logger"><fmt:message key="logging.admin.Loggers"/></label>
+          <select id="logger" size="20">
+            <c:forEach var="configuration" items="${configurations}">
+              <c:set var="level"><fmt:message key="logging.admin.level"/> ${configuration.level}
+              </c:set>
+              <c:if test="${configuration.level == null}">
+                <c:set var="level"><fmt:message key="logging.admin.DefaultLevel"/></c:set>
+              </c:if>
+              <option value="${configuration.moduleName}">${configuration.namespace} (${level})
+              </option>
+            </c:forEach>
+          </select>
+        </div>
+        <br/>
 
-      <div id="logging-level">
-        <label for="level"><fmt:message key="logging.admin.LoggingLevel"/></label>
-        <select id="level">
-          <option value="DEFAULT"><fmt:message key="logging.admin.DefaultLevel"/></option>
-          <c:forEach var="levelValue" items="${loggingLevels}">
-            <option value="${levelValue}">${levelValue}</option>
+        <div id="logging-level">
+          <label for="level"><fmt:message key="logging.admin.LoggingLevel"/></label>
+          <select id="level">
+            <option value="DEFAULT"><fmt:message key="logging.admin.DefaultLevel"/></option>
+            <c:forEach var="levelValue" items="${loggingLevels}">
+              <option value="${levelValue}">${levelValue}</option>
+            </c:forEach>
+          </select>
+          <view:button label="${validate}" action="javascript:changeLoggingLevel();"/>
+        </div>
+      </fieldset>
+    </form>
+
+    <form id="logging-content">
+      <fieldset>
+        <legend><fmt:message key="logging.admin.LogContent"/></legend>
+        <label for="log"><fmt:message key="logging.admin.Logs"/></label>
+        <select id="log">
+          <c:forEach var="log" items="${logs}">
+            <option value="${log}">${log}</option>
           </c:forEach>
         </select>
-        <view:button label="${validate}" action="javascript:submitForm();"/>
-      </div>
+        <label for="record-count"><fmt:message key="logging.admin.LogRecordCount"/></label>
+        <input id="record-count" type="number" min="0" value="100">
+        <view:button label="${validate}" action="javascript:fetchLastLogRecords();"/>
+        <textarea id="log-content" readonly="readonly" rows="10" cols="200"></textarea>
+      </fieldset>
     </form>
   </view:frame>
 </view:window>

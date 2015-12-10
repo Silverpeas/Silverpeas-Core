@@ -34,7 +34,7 @@ import javax.ws.rs.WebApplicationException;
  */
 public interface UserPrivilegeValidation {
 
-  public static UserPrivilegeValidation get() {
+  static UserPrivilegeValidation get() {
     return ServiceProvider.getService(UserPrivilegeValidation.class);
   }
 

@@ -1633,15 +1633,6 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  // ----------------------------------------------
-  // Exploitation related functions
-  // ----------------------------------------------
-  public UserLog[] getUserConnected() {
-    SilverTrace.info("admin", "AdminController.getUserConnected",
-        "root.MSG_GEN_ENTER_METHOD");
-    return admin.getUserConnected();
-  }
-
   // //////////////////////////////////////////////////////////
   // Synchronization tools
   // //////////////////////////////////////////////////////////
