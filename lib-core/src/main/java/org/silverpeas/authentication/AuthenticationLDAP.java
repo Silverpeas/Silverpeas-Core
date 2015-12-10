@@ -90,10 +90,10 @@ public class AuthenticationLDAP extends Authentication {
       configuration.setLdapPort(settings.getInteger(serverName + ".LDAPPort", 389));
     }
     configuration.setTimeout(settings.getInteger(serverName + ".Timeout", 0));
-    ldapImpl = settings.getString(serverName + ".LDAPImpl");
+    ldapImpl = settings.getString(serverName + ".LDAPImpl", "unknown");
     configuration.setUsername(settings.getString(serverName + ".LDAPAccessLogin"));
     configuration.setPassword(settings.getString(serverName + ".LDAPAccessPasswd").getBytes(UTF_8));
-    m_UserBaseDN = settings.getString(serverName + ".LDAPUserBaseDN");
+    m_UserBaseDN = settings.getString(serverName + ".LDAPUserBaseDN", "");
     m_UserLoginFieldName = settings.getString(serverName + ".LDAPUserLoginFieldName");
 
     // get parameters about user alert if password is about to expire or is already expired
