@@ -101,12 +101,15 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     NotificationMetaData notifMetaData = notification.toNotificationMetaData();
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
-    if (sel.getSelectedUserLimit() > 0) {
-      // A limitation has been set when the selection screen has been initialized.
+    if (StringUtil.isDefined(sel.getFirstSelectedElement()) ||
+        StringUtil.isDefined(sel.getFirstSelectedSet())) {
+      // The selection container has been set from the user panel, so the notification must be
+      // tagged as a manuel one.
       notifMetaData.manualUserNotification();
     } else {
-      // The user panel has not been displayed, so the notification is not tagged as a manual one
-      // in order to skip centralized verifications.
+      // The user panel has not been displayed and the receiver container has been set
+      // automatically, so the notification is not tagged as a manual one (and centralized
+      // verifications will be skipped).
     }
 
     notifSender.notifyUser(notification.getChannel(), notifMetaData);
