@@ -346,6 +346,12 @@ public class JSONCodec {
       return this;
     }
 
+    public JSONArray addJSONArray(Function<JSONArray, JSONArray> arrayBuilder) {
+      ArrayNode node = jsonArray.addArray();
+      arrayBuilder.apply(new JSONArray(node));
+      return this;
+    }
+
     public JSONArray addJSONArray(List<String> elements) {
       for (String element : elements) {
         jsonArray.add(element);

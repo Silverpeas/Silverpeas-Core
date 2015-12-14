@@ -42,7 +42,6 @@
 <div id="myprofile-socialnetworks">
 <form name="NetworksForm" action="#" method="post">
 	<fmt:message key="myProfile.networks.linkToMySilverpeasAccount" var="linktoSVP" />
-	<fmt:message key="myProfile.networks.unlinkFromMySilverpeasAccount" var="unlinkFromSVP" />
 
 	<c:if test="${not empty errorMessage}">
 		<div id="socialNetworkErrorMessage" class="inlineMessage-nok">

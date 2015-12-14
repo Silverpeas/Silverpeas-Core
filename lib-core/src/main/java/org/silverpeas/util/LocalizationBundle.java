@@ -178,7 +178,15 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
     } catch (MissingResourceException mrex) {
     }
     if (result == null && generalBundle != NONE) {
-      result = generalBundle.getObject(key);
+      try {
+        result = generalBundle.getObject(key);
+      } catch (MissingResourceException mrex) {
+        throw new MissingResourceException("Can't find resource for bundle "
+            +getBaseBundleName()+"_"+this.locale.getLanguage()
+            +", key "+key,
+            this.getClass().getName(),
+            key);
+      }
     }
     return VariableResolver.resolve(result);
   }

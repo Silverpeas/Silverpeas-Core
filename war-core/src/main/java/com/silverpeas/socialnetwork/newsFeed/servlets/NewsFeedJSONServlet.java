@@ -31,6 +31,7 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.EncodeHelper;
 import org.silverpeas.util.JSONCodec;
@@ -48,11 +49,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -196,27 +197,32 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param information the social information to convert
    * @return JSONObject
    */
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONSocialInfo(
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getJSONSocialInfo(
       SocialInformation information, LocalizationBundle multilang) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
-    return jsonSocialInfoA -> {
-      jsonSocialInfoA.addJSONObject(jsonSocialInfo -> {
+    return jsonSocialInfo -> {
+
+        jsonSocialInfo.put("type", information.getType());
         UserDetail contactUser1 = UserDetail.getById(information.getAuthor());
+        jsonSocialInfo.putJSONObject("author", userDetailToJSON(contactUser1));
+        jsonSocialInfo.put("title", information.getTitle());
+        jsonSocialInfo.put("description",
+            EncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
+        // if time not identified display string empty
+        if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
+          jsonSocialInfo.put("hour", "");
+        } else {
+          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
+        }
+        jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
+
         if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
           UserDetail contactUser2 = UserDetail.getById(information.getTitle());
-          jsonSocialInfo.put("type", information.getType());
-          jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
-          jsonSocialInfo.put("title", userDetailToJSON(contactUser2));
-          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
-          jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
+          jsonSocialInfo.putJSONObject("title", userDetailToJSON(contactUser2));
           jsonSocialInfo.put("label", multilang
               .getStringWithParams("newsFeed.relationShip.label", contactUser2.getDisplayedName()));
         } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
-          jsonSocialInfo.put("type", information.getType());
-          jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
-          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
-          jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
           if (!information.isUpdated() &&
               information.getIcon().startsWith(information.getType() + "_private")) {
             jsonSocialInfo.put("title", multilang.getString("profil.icon.private.event"));
@@ -228,33 +234,16 @@ public class NewsFeedJSONServlet extends HttpServlet {
           jsonSocialInfo
               .put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
                   ".label"));
-          return jsonSocialInfo;
-        }
-        jsonSocialInfo.put("type", information.getType());
-        jsonSocialInfo.put("author", userDetailToJSON(contactUser1));
-
-        jsonSocialInfo.put("description",
-            EncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
-
-        if (information.getType().equals(SocialInformationType.STATUS.toString())) {
+        } else if (information.getType().equals(SocialInformationType.STATUS.toString())) {
           jsonSocialInfo.put("title", multilang.getString("newsFeed.status.suffix"));
         } else {
-          jsonSocialInfo.put("title", information.getTitle());
+          jsonSocialInfo
+              .put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
+                  ".updated." + information.isUpdated()));
         }
-        // if time not identified display string empty
-        if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
-          jsonSocialInfo.put("hour", "");
-        } else {
-          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
-        }
-        jsonSocialInfo.put("url", URLManager.getApplicationURL() + information.getUrl());
-        jsonSocialInfo
-            .put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
-                ".updated." + information.isUpdated()));
+
         return jsonSocialInfo;
-      });
-      return jsonSocialInfoA;
-    };
+      };
   }
 
   /**
@@ -265,18 +254,23 @@ public class NewsFeedJSONServlet extends HttpServlet {
   private String toJsonS(Map<Date, List<SocialInformation>> map, LocalizationBundle multilang) {
     SimpleDateFormat formatDate =
         new SimpleDateFormat("EEEE dd MMMM yyyy", multilang.getLocale());
-    return JSONCodec.encodeArray(jsonElt -> {
+    return JSONCodec.encodeArray(jsonRoot -> {
       for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
-        jsonElt.addJSONObject(jsonDate -> {
-          jsonDate.put("day", formatDate.format(entry.getKey()));
-          for (SocialInformation si : entry.getValue()) {
-            jsonDate.put("socialInfo", getJSONSocialInfo(si, multilang));
-          }
-          return jsonDate;
+        jsonRoot.addJSONArray(json -> {
+          json.addJSONObject(jsonDate -> {
+            jsonDate.put("day", formatDate.format(entry.getKey()));
+            return jsonDate;
+          });
+          json.addJSONArray(listElt -> {
+            for (SocialInformation si : entry.getValue()) {
+              listElt.addJSONObject(getJSONSocialInfo(si, multilang));
+            }
+            return listElt;
+          });
+          return json;
         });
-
       }
-      return jsonElt;
+      return jsonRoot;
     });
 
   }
@@ -286,15 +280,12 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param user the user detail
    * @return JSONObject
    */
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> userDetailToJSON(UserDetail user) {
-    return jsonAuthor -> {
-      jsonAuthor.addJSONObject(jsonUser -> {
+  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> userDetailToJSON(UserDetail user) {
+    return jsonUser -> {
         jsonUser.put("id", user.getId());
         jsonUser.put("displayedName", user.getDisplayedName());
         jsonUser.put("profilPhoto", URLManager.getApplicationURL() + user.getSmallAvatar());
         return jsonUser;
-      });
-      return jsonAuthor;
-    };
+      };
   }
 }
