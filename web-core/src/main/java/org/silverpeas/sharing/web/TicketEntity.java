@@ -416,11 +416,6 @@ public class TicketEntity implements WebEntity {
     return Collections.unmodifiableList(downloads);
   }
 
-  public void setDownloads(Collection<DownloadDetail> downloads) {
-    this.downloads.clear();
-    this.downloads.addAll(downloads);
-  }
-
   public boolean isValid() {
     if (StringUtil.isDefined(getToken())) {
       boolean isValid = true;
