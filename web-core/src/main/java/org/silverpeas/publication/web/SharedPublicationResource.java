@@ -56,18 +56,24 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   private String token;
   
   private Ticket ticket;
+
+  @Override
+  public String getComponentId() {
+    return this.ticket.getComponentId();
+  }
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public PublicationEntity getPublication() {
-    ticket = checkTicket(token);
+
+    this.ticket = checkTicket(token);
     
     PublicationPK pk =
-        new PublicationPK(String.valueOf(ticket.getSharedObjectId()), ticket.getComponentId());
+        new PublicationPK(String.valueOf(this.ticket.getSharedObjectId()), getComponentId());
     
-    PublicationDetail publication = getPublicationBm().getDetail(pk);
+    PublicationDetail publication = super.getPublicationBm().getDetail(pk);
     
-    String baseUri = getUriInfo().getBaseUri().toString();
+    String baseUri = super.getUriInfo().getBaseUri().toString();
     SharingContext context = new SharingContext(baseUri, token);
     PublicationEntity entity = super.getPublicationEntity(publication, true).withSharedContent(
         context);
@@ -104,20 +110,17 @@ public class SharedPublicationResource extends AbstractPublicationResource {
       }
     }
   }
-    
-  @SuppressWarnings("unchecked")
+
+  @Override
   protected boolean isNodeReadable(NodePK nodePK) {
-    nodePK.setComponentName(ticket.getComponentId());
-    NodeDetail node = getNodeBm().getDetail(nodePK);
+    nodePK.setComponentName(getComponentId());
+    NodeDetail node = super.getNodeBm().getDetail(nodePK);
     ShareableNode nodeResource = new ShareableNode(token, node);
-    return ticket.getAccessControl().isReadable(nodeResource);
+    return this.ticket.getAccessControl().isReadable(nodeResource);
   }
   
   private Ticket checkTicket(String token) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
-    if (ticket != null) {
-      componentId = ticket.getComponentId();
-    }
     if (ticket == null || !ticket.isValid()) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }

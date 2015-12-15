@@ -115,6 +115,8 @@ public abstract class RESTWebService implements WebResource {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }
 
+  public abstract String getComponentId();
+
   /**
    * Gets information about the URI with which this web service was invoked.
    *

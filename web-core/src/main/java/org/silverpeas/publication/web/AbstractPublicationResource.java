@@ -46,14 +46,6 @@ import java.util.logging.Logger;
  * A REST Web resource providing access to publications.
  */
 public abstract class AbstractPublicationResource extends RESTWebService {
-
-  @PathParam("componentId")
-  protected String componentId;
-  
-  @Override
-  public String getComponentId() {
-    return componentId;
-  }
   
   /**
    * Gets the nodes that are children of a parent node.
@@ -64,7 +56,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
    */
   protected List<PublicationEntity> getPublications(String nodeId, boolean withAttachments) {
 
-    NodePK nodePK = getNodePK(nodeId);
+    NodePK nodePK = new NodePK(nodeId, getComponentId());
     if (!isNodeReadable(nodePK)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
@@ -103,12 +95,8 @@ public abstract class AbstractPublicationResource extends RESTWebService {
   
   protected abstract boolean isNodeReadable(NodePK nodePK);
   
-  private NodePK getNodePK(String nodeId) {
-    return new NodePK(nodeId, getComponentId());
-  }
-  
   private URI getURI(PublicationDetail publication) {
-    String baseUri = getUriInfo().getAbsolutePath().toString();
+    String baseUri = super.getUriInfo().getAbsolutePath().toString();
     URI uri;
     try {
       uri = new URI(baseUri + "/publication/" + publication.getPK().getId());

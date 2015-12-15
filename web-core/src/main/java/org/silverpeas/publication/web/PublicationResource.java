@@ -33,6 +33,7 @@ import org.silverpeas.accesscontrol.NodeAccessController;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -47,6 +48,14 @@ import java.util.List;
 @Path("private/publications/{componentId}")
 @Authorized
 public class PublicationResource extends AbstractPublicationResource {
+
+  @PathParam("componentId")
+  protected String componentId;
+
+  @Override
+  public String getComponentId() {
+    return componentId;
+  }
 
   @Inject
   private NodeAccessController nodeAccessController;
@@ -75,7 +84,7 @@ public class PublicationResource extends AbstractPublicationResource {
   
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
-    return nodeAccessController.isUserAuthorized(getUserDetail().getId(), nodePK);
+    return nodeAccessController.isUserAuthorized(super.getUserDetail().getId(), nodePK);
   }
   
   protected URI identifiedBy(URI uri) {
