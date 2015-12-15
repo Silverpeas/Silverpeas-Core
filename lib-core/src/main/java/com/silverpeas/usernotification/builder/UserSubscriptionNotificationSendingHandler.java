@@ -23,12 +23,14 @@
  */
 package com.silverpeas.usernotification.builder;
 
+import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import org.silverpeas.notification.AbstractResourceEvent;
-import org.silverpeas.subscription.SubscriptionSettings;
 import org.silverpeas.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.silverpeas.usernotification.builder.UserSubscriptionNotificationBehavior
+    .SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM;
 import static org.silverpeas.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.cache.service.CacheServiceProvider.getThreadCacheService;
 
@@ -52,9 +54,7 @@ public class UserSubscriptionNotificationSendingHandler {
    */
   public static void setupResourceEvent(AbstractResourceEvent resourceEvent) {
     if (!isEnabledForCurrentRequest()) {
-      resourceEvent.putParameter(
-          UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM,
-          "true");
+      resourceEvent.putParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM, "true");
     }
   }
 
@@ -64,10 +64,9 @@ public class UserSubscriptionNotificationSendingHandler {
    * @param resourceEvent the resource event sent on JMS.
    */
   public static void verifyResourceEvent(AbstractResourceEvent resourceEvent) {
-    if (SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() && StringUtil
-        .getBooleanValue(resourceEvent.getParameterValue(
-            UserSubscriptionNotificationBehavior
-                .SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))) {
+    if (NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled() && StringUtil
+        .getBooleanValue(
+            resourceEvent.getParameterValue(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))) {
       getThreadCacheService().put(SENDING_NOT_ENABLED_JMS_WAY_KEY, true);
     } else {
       getThreadCacheService().remove(SENDING_NOT_ENABLED_JMS_WAY_KEY);
@@ -76,15 +75,18 @@ public class UserSubscriptionNotificationSendingHandler {
 
   /**
    * Verifies from a request if it is indicated that subscription notification sending must be
-   * skipped for the current request.
+   * skipped for the current request (from request parameters or request headers).
    * @param request the current HTTP request.
    */
-  public static void verifyRequestParameters(HttpServletRequest request) {
-    if (SubscriptionSettings.isSubscriptionNotificationSendingConfirmationEnabled() && StringUtil
-        .getBooleanValue(request.getParameter(
-            UserSubscriptionNotificationBehavior
-                .SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))) {
-      getRequestCacheService().put(SENDING_NOT_ENABLED_KEY, true);
+  public static void verifyRequest(HttpServletRequest request) {
+    if (NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled()) {
+      boolean fromParameters = StringUtil
+          .getBooleanValue(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM));
+      boolean fromHeaders = StringUtil
+          .getBooleanValue(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM));
+      if (fromParameters || fromHeaders) {
+        getRequestCacheService().put(SENDING_NOT_ENABLED_KEY, true);
+      }
     }
   }
 

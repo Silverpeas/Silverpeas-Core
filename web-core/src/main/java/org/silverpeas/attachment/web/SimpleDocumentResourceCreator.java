@@ -26,12 +26,7 @@ package org.silverpeas.attachment.web;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import org.silverpeas.util.FileUtil;
-import org.silverpeas.util.ForeignPK;
-import org.silverpeas.util.MetaData;
-import org.silverpeas.util.MetadataExtractor;
-import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.ActifyDocumentProcessor;
 import org.silverpeas.attachment.AttachmentServiceProvider;
@@ -45,6 +40,12 @@ import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.attachment.util.AttachmentSettings;
 import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.servlet.RequestParameterDecoder;
+import org.silverpeas.util.FileUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.MetaData;
+import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -125,6 +126,9 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
       if (uploadData.getRequestFile() == null) {
         return null;
       }
+
+      UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
+
       String uploadedFilename = filename;
       if (StringUtil.isNotDefined(filename)) {
         uploadedFilename = uploadData.getRequestFile().getName();

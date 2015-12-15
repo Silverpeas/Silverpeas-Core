@@ -79,7 +79,7 @@
     actionWysiwyg = "Load";
   }
 
-  UserSubscriptionNotificationSendingHandler.verifyRequestParameters(request);
+  UserSubscriptionNotificationSendingHandler.verifyRequest(request);
 
   if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) ||
       "SaveHtml".equals(actionWysiwyg)) {

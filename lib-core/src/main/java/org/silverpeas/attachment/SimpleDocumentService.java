@@ -713,7 +713,9 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocument docBeforeUpdate =
           repository.findDocumentById(session, document.getPk(), contentLanguage);
       contentLanguage = document.getLanguage();
-      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
+      boolean updateOfficeContentFromWebDav =
+          document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav();
+      if (updateOfficeContentFromWebDav) {
         // Verifying if the content language handled in WEBDAV repository is the same as the
         // content language took from the context.
         if (!contentLanguage.equals(StringUtil
@@ -745,13 +747,14 @@ public class SimpleDocumentService implements AttachmentService {
       }
       document.setPublicDocument(context.isPublicVersion());
       document.setComment(context.getComment());
+      if (updateOfficeContentFromWebDav) {
+        document.setSize(document.getWebdavContentEditionSize());
+      }
       SimpleDocument finalDocument = repository.unlock(session, document, context.isForce());
-      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
+      if (updateOfficeContentFromWebDav) {
         webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
         webdavRepository.deleteAttachmentNode(session, finalDocument);
         repository.duplicateContent(document, finalDocument);
-        finalDocument.setSize(new File(finalDocument.getAttachmentPath()).length());
-        repository.updateDocument(session, finalDocument);
       } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
           isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, finalDocument);

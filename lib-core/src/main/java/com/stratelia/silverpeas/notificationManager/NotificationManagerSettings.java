@@ -200,4 +200,13 @@ public class NotificationManagerSettings {
   public static boolean isRemoveSenderFromSubscriptionNotificationReceiversEnabled() {
     return settings.getBoolean("notification.subscription.removeSenderFromReceivers.enabled", true);
   }
+
+  /**
+   * Indicates if the the confirmation of subscription notification is enabled.
+   * @return true if enabled (default value), false otherwise.
+   */
+  public static boolean isSubscriptionNotificationConfirmationEnabled() {
+    return settings.getBoolean("notification.subscription.confirmation.enabled", true);
+
+  }
 }
