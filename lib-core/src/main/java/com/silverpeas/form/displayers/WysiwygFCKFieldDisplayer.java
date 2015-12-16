@@ -129,7 +129,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         out.println(
             " if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
         out.println(" errorMsg+=\" - '" + template.getLabel(language) + "' "
-            + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+            + Util.getString("GML.MustBeFilled", language) + "\\n\";");
         out.println(" errorNb++;");
         out.println(" }");
       }

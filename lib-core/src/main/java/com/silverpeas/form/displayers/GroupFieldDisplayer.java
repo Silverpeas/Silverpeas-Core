@@ -87,7 +87,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
       out.println("      errorMsg+=\"  - '"
           + EncodeHelper.javaStringToJsString(template.getLabel(language))
           + "' " + Util.getString("GML.MustBeFilled", language)
-          + "\\n \";");
+          + "\\n\";");
       out.println("      errorNb++;");
       out.println("   }");
     }

@@ -89,7 +89,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("			errorMsg+=\"  - '"
           + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
-          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+          + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("			errorNb++;");
       out.println("		}");
     }
@@ -99,14 +99,14 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
         + "'))) {");
     out.println("				errorMsg+=\"  - '"
         + EncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
-        + Util.getString("GML.MustContainsCorrectDate", language) + "\\n \";");
+        + Util.getString("GML.MustContainsCorrectDate", language) + "\\n\";");
     out.println("				errorNb++;");
     out.println("		}}");
 
     out.println("		if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
     out.println("			errorMsg+=\"  - '" + template.getLabel(language) + "' "
         + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
-        + Util.getString("Characters", language) + "\\n \";");
+        + Util.getString("Characters", language) + "\\n\";");
     out.println("			errorNb++;");
     out.println("		}");
 

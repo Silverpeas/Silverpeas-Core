@@ -88,7 +88,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (" + template.getFieldName() + "Empty) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+          + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("		errorNb++;");
       out.println("	}");
     }

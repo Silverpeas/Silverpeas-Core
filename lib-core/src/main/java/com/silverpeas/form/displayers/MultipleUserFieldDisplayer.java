@@ -89,8 +89,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
       html.append("      errorMsg+=\"  - '")
           .append(EncodeHelper.javaStringToJsString(template.getLabel(language)))
           .append("' ").append(Util.getString("GML.MustBeFilled", language))
-          .append("\\n \";");
-
+          .append("\\n\";");
       html.append("      errorNb++;");
       html.append("   }");
 
