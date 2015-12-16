@@ -42,15 +42,8 @@ import java.util.Collection;
  */
 public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTicket, R> {
 
-  private NodeService nodeService;
-
   NodeAccessControl() {
     super();
-  }
-
-  @PostConstruct
-  void init() {
-    nodeService = NodeService.get();
   }
 
   @Override
@@ -112,6 +105,6 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
   }
 
   private NodeService getNodeService() {
-    return nodeService;
+    return NodeService.get();
   }
 }

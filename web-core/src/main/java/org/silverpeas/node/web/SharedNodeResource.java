@@ -70,7 +70,6 @@ public class SharedNodeResource extends AbstractNodeResource {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected boolean isNodeReadable(NodeDetail node) {
     ShareableNode nodeResource = new ShareableNode(token, node);
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);

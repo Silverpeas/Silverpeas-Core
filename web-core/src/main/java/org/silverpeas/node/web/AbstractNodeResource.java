@@ -40,7 +40,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
 
   @PathParam("componentId")
   protected String componentId;
-  
+
   @Override
   public String getComponentId() {
     return componentId;
@@ -57,9 +57,9 @@ public abstract class AbstractNodeResource extends RESTWebService {
     if (!isNodeReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    URI uri = getUriInfo().getRequestUriBuilder().path(node.getNodePK().getId()).build();
-    if (getUriInfo().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
-      uri = getUriInfo().getRequestUri();
+    URI uri = super.getUriInfo().getRequestUriBuilder().path(node.getNodePK().getId()).build();
+    if (super.getUriInfo().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
+      uri = super.getUriInfo().getRequestUri();
     }
     NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
     entity.setState("open");
@@ -82,7 +82,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
       if (!isNodeReadable(node)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
-      URI uri = getUriInfo().getRequestUri();
+      URI uri = super.getUriInfo().getRequestUri();
       return NodeEntity.fromNodeDetail(node, uri);
     }
   }
@@ -99,7 +99,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
     if (!isNodeReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    String requestUri = getUriInfo().getRequestUri().toString();
+    String requestUri = super.getUriInfo().getRequestUri().toString();
     String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
     NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {
