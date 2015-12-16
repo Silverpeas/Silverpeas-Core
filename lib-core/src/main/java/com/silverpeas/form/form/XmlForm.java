@@ -24,10 +24,12 @@
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.*;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.i18n.I18NHelper;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
@@ -153,6 +155,10 @@ public class XmlForm extends AbstractForm {
         boolean displayField = true;
         if (viewForm && !Util.isEmptyFieldsDisplayed()) {
           displayField = StringUtil.isDefined(field.getStringValue());
+          if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+            // special case about WYSIWYG field
+            displayField = isWYSIWYGFieldDefined(fieldName, pageContext);
+          }
         }
 
         if (displayField && (record == null || (record != null && field != null))) {
@@ -320,5 +326,12 @@ public class XmlForm extends AbstractForm {
 
   private TypeManager getTypeManager() {
     return TypeManager.getInstance();
+  }
+
+  private boolean isWYSIWYGFieldDefined(String fieldName, PagesContext pc) {
+    String contentLanguage = I18NHelper.checkLanguage(pc.getContentLanguage());
+    String content = WysiwygFCKFieldDisplayer
+        .getContentFromFile(pc.getComponentId(), pc.getObjectId(), fieldName, contentLanguage);
+    return StringUtil.isDefined(content);
   }
 }
