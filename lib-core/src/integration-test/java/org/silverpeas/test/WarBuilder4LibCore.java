@@ -35,6 +35,7 @@ import com.silverpeas.session.SessionInfo;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.notificationManager.constant.NotifChannel;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -464,6 +465,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addSubscriptionFeatures() {
     addPackages(true, "org.silverpeas.subscription");
+    addClasses(NotificationManagerSettings.class);
     addAsResource(
         "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties");
     return this;
@@ -475,6 +477,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addSynchAndAsynchResourceEventFeatures() {
     addClasses(DecodingException.class, EncodingException.class, StateTransition.class);
+    addClasses(NotificationManagerSettings.class);
     addPackages(false, "org.silverpeas.notification");
     addAsResource(
         "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties");
