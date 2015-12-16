@@ -451,7 +451,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
             setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
                 template.getFieldName(), newValue, contentLanguage);
 
-        field.setValue(dbKey + fileName, pageContext.getLanguage());
+        field.setValue(dbKey + fileName, contentLanguage);
       } catch (FormException e) {
         throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", e);
       }
