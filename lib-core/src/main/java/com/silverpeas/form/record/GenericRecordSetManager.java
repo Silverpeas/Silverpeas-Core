@@ -266,16 +266,34 @@ public class GenericRecordSetManager {
     return getRecord(template, objectId, null);
   }
 
-  public DataRecord getRecord(IdentifiedRecordTemplate template,
-      String objectId, String language) throws FormException {
-
+  /**
+   * Return the DataRecord registered by the tuple (templateId, objectId, language). If language
+   * does not match, fallback to other languages is done.
+   * @param template the definition of the form template the record belongs to.
+   * @param objectId the ID of the resource attached to form record.
+   * @return the form record in given language or in next language or <code>null</code> if not
+   * found.
+   * @throws FormException if the (templateId, recordId) pair is unknown.
+   */
+  public DataRecord getRecord(IdentifiedRecordTemplate template, String objectId, String language)
+      throws FormException {
     Connection con = null;
-    GenericDataRecord record = null;
-
     try {
       con = getConnection();
-      record = selectRecordRow(con, template, objectId, language);
-
+      GenericDataRecord record = selectRecordRow(con, template, objectId, language);
+      if (record != null) {
+        record.setLanguage(language);
+      } else if (I18NHelper.isI18nContentEnabled()) {
+        List<String> languages = new ArrayList<String>(I18NHelper.getAllSupportedLanguages());
+        languages.remove(language);
+        for (String lang : languages) {
+          record = selectRecordRow(con, template, objectId, lang);
+          if (record != null) {
+            record.setLanguage(lang);
+            break;
+          }
+        }
+      }
       if (record != null) {
         try {
           selectFieldRows(con, template, record);
