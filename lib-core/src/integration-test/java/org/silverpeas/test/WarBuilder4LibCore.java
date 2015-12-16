@@ -464,7 +464,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addSubscriptionFeatures() {
     addPackages(true, "org.silverpeas.subscription");
-    addAsResource("org/silverpeas/subscription/settings/subscriptionSettings.properties");
+    addAsResource(
+        "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties");
     return this;
   }
 
@@ -475,6 +476,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addSynchAndAsynchResourceEventFeatures() {
     addClasses(DecodingException.class, EncodingException.class, StateTransition.class);
     addPackages(false, "org.silverpeas.notification");
+    addAsResource(
+        "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties");
     applyManually(war -> war.addAsManifestResource("META-INF/test-MANIFEST.MF", "MANIFEST.MF"));
     return this;
   }
