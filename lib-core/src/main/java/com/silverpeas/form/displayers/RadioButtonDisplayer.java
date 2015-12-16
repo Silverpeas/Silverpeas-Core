@@ -89,7 +89,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
           + "]:checked').length == 1;\n");
       out.println(" if(checked == false) {");
       out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
-          "GML.MustBeFilled", language) + "\";");
+          "GML.MustBeFilled", language) + "\\n\";\n");
       out.println("   errorNb++;");
       out.println(" }");
     }

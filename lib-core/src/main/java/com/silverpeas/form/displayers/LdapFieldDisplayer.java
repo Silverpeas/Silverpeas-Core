@@ -96,7 +96,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
-          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
+          + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("		errorNb++;");
       out.println("	}");
     }

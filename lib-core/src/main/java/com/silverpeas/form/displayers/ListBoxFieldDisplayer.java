@@ -84,7 +84,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
-          "GML.MustBeFilled", language) + "\\n \";");
+          "GML.MustBeFilled", language) + "\\n\";");
       out.println("		errorNb++;");
       out.println("	}");
     }
