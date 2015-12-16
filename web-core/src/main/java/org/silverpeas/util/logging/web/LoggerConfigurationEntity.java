@@ -42,7 +42,7 @@ public class LoggerConfigurationEntity implements WebEntity {
    * Constant that defines the level of a logger is the one of one of its parent. It is defaulted
    * to one of its parent logger.
    */
-  public static String PARENT_LEVEL = "DEFAULT";
+  public static String PARENT_LEVEL = "PARENT";
 
   @XmlElement(defaultValue = "")
   private URI uri;

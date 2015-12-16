@@ -7286,3 +7286,35 @@ a.navigation-button {
   display: flex;
   justify-content: center;
 }
+
+option.default {
+  color:#333;
+}
+
+/* styles for the Silverpeas logging admin console in the backoffice */
+#logging-level label,
+#logger-configurations label{
+  float:none;
+  width:auto
+}
+#logging-level .champs,
+#logger-configurations .champs{
+  margin:1em  0 0 0;
+}
+
+#choice-record-count,
+#btn-show-log-content{
+  clear:left;
+}
+#show-log-content{
+  float:right;
+}
+#log-content{
+  width:48%;
+  height:auto;
+  display:none;
+}
+
+#logging-content legend {
+  background: transparent url('../icons/publication.png') 11px 0px no-repeat;
+}
