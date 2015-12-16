@@ -234,10 +234,10 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     while (iter.hasNext()) {
       FileItem item = iter.next();
       if (parameterName.equals(item.getFieldName())) {
-        value += item.getString();
-        if (iter.hasNext()) {
+        if (StringUtil.isDefined(value)) {
           value += "##";
         }
+        value += item.getString();
       }
     }
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
