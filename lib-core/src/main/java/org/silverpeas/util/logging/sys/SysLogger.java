@@ -104,13 +104,15 @@ public class SysLogger implements SilverLogger {
   public void setLevel(final Level level) {
     this.logger.setLevel(fromLoggingLevel(level));
     if (!this.getNamespace().equals(ROOT_NAMESPACE)) {
-      this.logger.setUseParentHandlers(level == null);
-      Handler[] silverpeasRootHandlers = ROOT_LOGGER.getHandlers();
-      if (level == null) {
+      if (level == null && this.logger.getHandlers().length > 0) {
+        this.logger.setUseParentHandlers(true);
+        Handler[] silverpeasRootHandlers = ROOT_LOGGER.getHandlers();
         for (Handler handler : silverpeasRootHandlers) {
           this.logger.removeHandler(handler);
         }
-      } else {
+      } else if (level != null && this.logger.getHandlers().length == 0) {
+        this.logger.setUseParentHandlers(false);
+        Handler[] silverpeasRootHandlers = ROOT_LOGGER.getHandlers();
         for (Handler handler : silverpeasRootHandlers) {
           this.logger.addHandler(handler);
         }
