@@ -60,7 +60,8 @@ public class LoggerConfigurationManagerTest {
   @Test
   public void allConfigurationFilesAreLoaded() {
     manager = LoggerConfigurationManager.get();
-    assertThat(manager.getLoggerConfigurations().size(), is(4));
+    assertThat(manager.getLoggerConfigurationsByModule().size(), is(4));
+    assertThat(manager.getLoggerConfigurationsByLogger().size(), is(4));
   }
 
   @Test
@@ -71,6 +72,17 @@ public class LoggerConfigurationManagerTest {
     assertThat(configuration, not(nullValue()));
     assertThat(configuration.getModuleName(), is(module));
     assertThat(configuration.getNamespace(), is("Silverpeas.Bus.attachment"));
+    assertThat(configuration.getLevel(), is(nullValue()));
+  }
+
+  @Test
+  public void getLoggerConfigurationWithoutLevelOfAnExistingNamespace() {
+    final String namespace = "Silverpeas.Bus.attachment";
+    manager = LoggerConfigurationManager.get();
+    LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
+    assertThat(configuration, not(nullValue()));
+    assertThat(configuration.getModuleName(), is("attachment"));
+    assertThat(configuration.getNamespace(), is(namespace));
     assertThat(configuration.getLevel(), is(nullValue()));
   }
 
@@ -86,7 +98,7 @@ public class LoggerConfigurationManagerTest {
   }
 
   @Test
-  public void getLoggerConfigurationOfANonExistingModule() {
+  public void getLoggerConfigurationOfANonExistingModuleOrNamespace() {
     final String module = "toto";
     manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(module);

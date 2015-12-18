@@ -46,6 +46,12 @@ import java.util.function.Supplier;
 public interface SilverLogger {
 
   /**
+   * The namespace of the root logger in Silverpeas. This namespace is predefined and each logger
+   * taken in charge by the Logging Engine should be a descendant of its logger.
+   */
+  public static final String ROOT_NAMESPACE = "Silverpeas";
+
+  /**
    * Gets the logger that is defined for the specified Silverpeas module.
    * </p>
    * Each module should have a logging configuration that is managed by an instance of the
@@ -63,8 +69,10 @@ public interface SilverLogger {
    *  </p>
    * The logging level of the returned logger will be set according to the logging configuration
    * found for the given module. If no level setting is found from the configuration or if there is
-   * no configuration found for the specified module, then the logging level of the parent logger
-   * will be taken into account, and so on up to the root logger.
+   * no configuration found for the specified module, then the logger level is set to null meaning
+   * it should inherit its level from its nearest ancestor with a specific (non-null)
+   * level value. It is the responsibility of the implementation of the logger to take care of the
+   * logging level inheritance and of the default log handlers/adapters used by Silverpeas.
    * @param module the name of a Silverpeas module.
    * @return a logger instance, manufactured by the first LoggerFactory instance found.
    */
@@ -75,7 +83,9 @@ public interface SilverLogger {
       LoggerConfigurationManager.LoggerConfiguration configuration =
           LoggerConfigurationManager.get().getLoggerConfiguration(module);
       SilverLogger logger = factory.getLogger(configuration.getNamespace());
-      if (configuration.getLevel() != null) {
+      if (!configuration.getNamespace().equals(ROOT_NAMESPACE) ||
+          configuration.getLevel() != null) {
+        // we take care to not erase the root logger level
         logger.setLevel(configuration.getLevel());
       }
       return logger;

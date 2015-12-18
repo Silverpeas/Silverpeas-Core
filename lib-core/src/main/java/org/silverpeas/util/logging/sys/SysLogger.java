@@ -34,14 +34,31 @@ import java.util.logging.Logger;
 
 /**
  * This logger implementation uses the Java logging system to log actually the messages.
- * @author miguel
+ * @author mmoquillon
  */
 public class SysLogger implements SilverLogger {
 
-  private final java.util.logging.Logger logger;
+  private static final Logger ROOT_LOGGER = Logger.getLogger(ROOT_NAMESPACE);
+
+  private final Logger logger;
+  private volatile SilverLogger parent; // to keep strong ref to the parent and then its config
+                                        // with logging level and handlers
+
+  /**
+   * Delegates the logger constructions and then, more important, the initialization of the logger
+   * to the SilverLogger class itself (recursive invocation).
+   * @param namespace the namespace of a logger (used to get the logger's parent).
+   * @return the SilverLogger with the specified namespace.
+   */
+  private static SilverLogger getLoggerByNamespace(String namespace) {
+    return SilverLogger.getLogger(namespace);
+  }
 
   protected SysLogger(String namespace) {
-    this.logger = java.util.logging.Logger.getLogger(namespace);
+    this.logger = Logger.getLogger(namespace);
+    if (this.logger.getParent() != null && !namespace.equals(ROOT_NAMESPACE)) {
+      this.parent = getLoggerByNamespace(this.logger.getParent().getName());
+    }
   }
 
   /**
@@ -61,12 +78,9 @@ public class SysLogger implements SilverLogger {
   @Override
   public Level getLevel() {
     java.util.logging.Level level = this.logger.getLevel();
-    java.util.logging.Logger parent = this.logger.getParent();
-    while(level == null) {
-      level = parent.getLevel();
-      parent = parent.getParent();
+    if (level == null && this.parent != null) {
+      return this.parent.getLevel();
     }
-
     if (level == java.util.logging.Level.FINE || level == java.util.logging.Level.FINEST ||
         level == java.util.logging.Level.FINER) {
       return Level.DEBUG;
@@ -89,9 +103,9 @@ public class SysLogger implements SilverLogger {
   @Override
   public void setLevel(final Level level) {
     this.logger.setLevel(fromLoggingLevel(level));
-    if (!this.getNamespace().equals("Silverpeas")) {
+    if (!this.getNamespace().equals(ROOT_NAMESPACE)) {
       this.logger.setUseParentHandlers(level == null);
-      Handler[] silverpeasRootHandlers = Logger.getLogger("Silverpeas").getHandlers();
+      Handler[] silverpeasRootHandlers = ROOT_LOGGER.getHandlers();
       if (level == null) {
         for (Handler handler : silverpeasRootHandlers) {
           this.logger.removeHandler(handler);

@@ -23,12 +23,27 @@
  * @author miguel
  */
 /**
- * The custom logging solution for Silverpeas.
+ * The Silverpeas Logging Engine.
  * </p>
  * The Java ecosystem is rich in logging solutions as it was no standard solution provided by
  * Java until Java 1.5. In order to be agnostic to any logging solutions and to be able to change
  * in the time, Silverpeas has defined its own solution with the goal to wrap any possible logging
- * subsystem.
- * @author miguel
+ * subsystem and to offer logging capabilities specific to Silverpeas.
+ * </p>
+ * The Silverpeas Logging Engine is based upon a set of well-defined loggers, each of them mapped
+ * to a specific Silverpeas module (a business set of features) that can be a Silverpeas component
+ * as well as a Silverpeas Core's engine/API. Each logger is defined by a namespace that defines
+ * a dot-separated logger hierarchy and a level that filters the kind of messages to record into
+ * the Silverpeas logs. If the level of a logger isn't set explicitly, then its level will be its
+ * nearest ancestor with a non-null logging level. It will be the first ancestor with a non-null
+ * logging level that will take in charge of the recording of the messages from its child loggers
+ * to the logs.
+ * </p>
+ * Silverpeas defines by configuration at least two logs: one for all traces and another for only
+ * errors. For those logs, the Logging Engine provides two handlers/adapters that are set to the
+ * Silverpeas root logger, <code>Silverpeas</code>. This mechanism is set up by the Silverpeas
+ * installer. It is the responsibility to the logging engine implementation to take care of the
+ * handlers/adapters for each logger that have their level set (and hence not inherited).
+ * @author mmoquillon
  */
 package org.silverpeas.util.logging;

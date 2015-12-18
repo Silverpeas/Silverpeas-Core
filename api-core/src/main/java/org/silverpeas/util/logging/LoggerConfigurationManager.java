@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -66,7 +65,8 @@ public class LoggerConfigurationManager {
       "No such logger {0} defined for Silverpeas module {1}";
   private static final int INITIAL_CAPACITY = 128;
 
-  private static Map<String, Properties> configurations = new ConcurrentHashMap<>(INITIAL_CAPACITY);
+  private static Map<String, Properties> confByModule = new ConcurrentHashMap<>(INITIAL_CAPACITY);
+  private static Map<String, Properties> confByLogger = new ConcurrentHashMap<>(INITIAL_CAPACITY);
 
   private static LoggerConfigurationManager instance;
 
@@ -81,22 +81,28 @@ public class LoggerConfigurationManager {
 
   }
 
-  protected Map<String, Properties> getLoggerConfigurations() {
-    return configurations;
+  protected Map<String, Properties> getLoggerConfigurationsByModule() {
+    return confByModule;
+  }
+
+  protected Map<String, Properties> getLoggerConfigurationsByLogger() {
+    return confByLogger;
   }
 
   protected void loadAllConfigurationFiles() {
     File configurationHome = getConfigurationHome();
     File[] configurationFiles =
         configurationHome.listFiles((dir, name) -> name.endsWith(".properties"));
-    configurations.clear();
+    confByModule.clear();
+    confByLogger.clear();
     if (configurationFiles != null) {
       for (File aConfigurationFile : configurationFiles) {
         Properties properties = new Properties();
         try {
           properties.load(new FileInputStream(aConfigurationFile));
           properties.setProperty(CONFIGURATION_PATH, aConfigurationFile.getAbsolutePath());
-          configurations.put(properties.getProperty(SILVERPEAS_MODULE), properties);
+          confByModule.put(properties.getProperty(SILVERPEAS_MODULE), properties);
+          confByLogger.put(properties.getProperty(LOGGER_NAMESPACE), properties);
         } catch (IOException e) {
           java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
               .log(java.util.logging.Level.WARNING, e.getMessage());
@@ -120,18 +126,24 @@ public class LoggerConfigurationManager {
   }
 
   /**
-   * Gets the configuration parameters for the logger mapped with the specified Silverpeas module.
-   * @param module the name of the Silverpeas module. A Silverpeas module is either a component of
-   * Silverpeas Core or an application in Silverpeas Components.
-   * @return the configuration of the logger defined for the specified Silverpeas module.
+   * Gets the configuration parameters for the logger with the specified namespace or mapped with
+   * the specified Silverpeas module.
+   * @param moduleOrNamespace either a logger namespace or the name of a Silverpeas module. A Silverpeas
+   * module is either a component of Silverpeas Core or an application in Silverpeas Components.
+   * @return the configuration of the logger defined for the specified Silverpeas module or by
+   * the specified namespace.
    */
-  public LoggerConfiguration getLoggerConfiguration(String module) {
-    String namespace;
-    Map<String, Properties> loggerConfigurations = getLoggerConfigurations();
+  public LoggerConfiguration getLoggerConfiguration(String moduleOrNamespace) {
+    String namespace = moduleOrNamespace;
+    String module = moduleOrNamespace;
     Level level = null;
-    if (loggerConfigurations.containsKey(module)) {
-      Properties properties = loggerConfigurations.get(module);
+    Properties properties = getLoggerConfigurationsByModule().get(moduleOrNamespace);
+    if (properties == null) {
+      properties = getLoggerConfigurationsByLogger().get(moduleOrNamespace);
+    }
+    if (properties != null) {
       namespace = properties.getProperty(LOGGER_NAMESPACE);
+      module = properties.getProperty(SILVERPEAS_MODULE);
       if (namespace == null || namespace.trim().isEmpty()) {
         namespace = MessageFormat.format(DEFAULT_NAMESPACE, module);
       }
@@ -144,8 +156,9 @@ public class LoggerConfigurationManager {
               .log(java.util.logging.Level.SEVERE, t.getMessage(), t);
         }
       }
-    } else {
-      namespace = MessageFormat.format(DEFAULT_NAMESPACE, module);
+    } else if (!moduleOrNamespace.startsWith(SilverLogger.ROOT_NAMESPACE)) {
+      // in the case it isn't a namespace dedicated to Silverpeas or it is a module name
+      namespace = MessageFormat.format(DEFAULT_NAMESPACE, moduleOrNamespace);
     }
     return new LoggerConfiguration(module, namespace).withLevel(level);
   }
@@ -161,7 +174,7 @@ public class LoggerConfigurationManager {
    * module.
    */
   public void saveLoggerConfiguration(LoggerConfiguration configuration) {
-    Map<String, Properties> loggerConfigurations = getLoggerConfigurations();
+    Map<String, Properties> loggerConfigurations = getLoggerConfigurationsByModule();
     if (loggerConfigurations.containsKey(configuration.getModuleName())) {
       Properties properties = loggerConfigurations.get(configuration.getModuleName());
       String configurationPath = properties.getProperty(CONFIGURATION_PATH);
@@ -192,7 +205,7 @@ public class LoggerConfigurationManager {
    * @return a set of logger configurations sorted by the logger's namespace.
    */
   public Set<LoggerConfiguration> getAvailableLoggerConfigurations() {
-    Set<String> moduleNames = getLoggerConfigurations().keySet();
+    Set<String> moduleNames = getLoggerConfigurationsByModule().keySet();
     Set<LoggerConfiguration> availableConfigurations = new TreeSet<>();
     for (String module: moduleNames) {
       LoggerConfiguration configuration = getLoggerConfiguration(module);
