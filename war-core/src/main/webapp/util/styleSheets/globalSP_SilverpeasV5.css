@@ -7287,10 +7287,6 @@ a.navigation-button {
   justify-content: center;
 }
 
-option.default {
-  color:#333;
-}
-
 /* styles for the Silverpeas logging admin console in the backoffice */
 #logging-level label,
 #logger-configurations label{
@@ -7317,4 +7313,12 @@ option.default {
 
 #logging-content legend {
   background: transparent url('../icons/publication.png') 11px 0px no-repeat;
+}
+
+#logger option.default {
+  background-color: transparent;
+}
+#logger option {
+  font-size: inherit;
+  background-color: #DDD;
 }

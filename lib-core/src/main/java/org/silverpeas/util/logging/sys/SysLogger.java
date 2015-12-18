@@ -27,7 +27,10 @@ import org.silverpeas.util.logging.Level;
 import org.silverpeas.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.function.Supplier;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 /**
  * This logger implementation uses the Java logging system to log actually the messages.
@@ -86,6 +89,19 @@ public class SysLogger implements SilverLogger {
   @Override
   public void setLevel(final Level level) {
     this.logger.setLevel(fromLoggingLevel(level));
+    if (!this.getNamespace().equals("Silverpeas")) {
+      this.logger.setUseParentHandlers(level == null);
+      Handler[] silverpeasRootHandlers = Logger.getLogger("Silverpeas").getHandlers();
+      if (level == null) {
+        for (Handler handler : silverpeasRootHandlers) {
+          this.logger.removeHandler(handler);
+        }
+      } else {
+        for (Handler handler : silverpeasRootHandlers) {
+          this.logger.addHandler(handler);
+        }
+      }
+    }
   }
 
   /**
@@ -146,19 +162,21 @@ public class SysLogger implements SilverLogger {
 
   private java.util.logging.Level fromLoggingLevel(Level level) {
     java.util.logging.Level sysLevel = null;
-    switch (level) {
-      case INFO:
-        sysLevel = java.util.logging.Level.INFO;
-        break;
-      case DEBUG:
-        sysLevel = java.util.logging.Level.FINE;
-        break;
-      case WARNING:
-        sysLevel = java.util.logging.Level.WARNING;
-        break;
-      case ERROR:
-        sysLevel = java.util.logging.Level.SEVERE;
-        break;
+    if (level != null) {
+      switch (level) {
+        case INFO:
+          sysLevel = java.util.logging.Level.INFO;
+          break;
+        case DEBUG:
+          sysLevel = java.util.logging.Level.FINE;
+          break;
+        case WARNING:
+          sysLevel = java.util.logging.Level.WARNING;
+          break;
+        case ERROR:
+          sysLevel = java.util.logging.Level.SEVERE;
+          break;
+      }
     }
     return sysLevel;
   }

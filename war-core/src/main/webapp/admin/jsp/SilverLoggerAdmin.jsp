@@ -91,11 +91,17 @@
         contentType : 'application/json',
         dataType : 'json',
         success : function(configuration) {
+          var $item = $('#logger option[value="' + module + '"]');
           loggerCongigurations[module] = configuration;
-          var level = (configuration.level === 'PARENT' ? DEFAULT_LEVEL_TEXT :
-          LEVEL_TEXT + configuration.level);
-          $('#logger option[value="' + module + '"]').text(configuration.logger + ' (' + level +
-              ')');
+          var level;
+          if (configuration.level === 'PARENT') {
+            level = DEFAULT_LEVEL_TEXT;
+            $item.addClass('default');
+          } else {
+            level = LEVEL_TEXT + configuration.level;
+            $item.removeClass('default');
+          }
+          $item.text(configuration.logger + ' (' + level + ')');
           notySuccess("<fmt:message key='logging.admin.updateSuccess'/>");
         },
         error : function(xhr, status, error) {
