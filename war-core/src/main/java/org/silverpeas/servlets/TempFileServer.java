@@ -56,7 +56,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("peasUtil", "TempFileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace.fatal("util", "TempFileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
@@ -69,7 +69,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    SilverTrace.info("peasUtil", "TempFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("util", "TempFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     String encodedFileName = req.getPathInfo();
     String fileName = URLDecoder.decode(encodedFileName, "UTF-8");
 
@@ -97,12 +97,12 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null; // for the html document generated
-    SilverTrace.info("peasUtil", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("util", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
         " htmlFilePath " + htmlFilePath.getPath());
     try {
       input = new BufferedInputStream(new FileInputStream(htmlFilePath));
       read = input.read();
-      SilverTrace.info("peasUtil", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
+      SilverTrace.info("util", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
           " BufferedInputStream read " + read);
       if (read == -1) {
         writeWarningMessage(res);
@@ -113,7 +113,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "TempFileServer.write", "root.EX_CANT_READ_FILE", "file name="
+      SilverTrace.warn("util", "TempFileServer.write", "root.EX_CANT_READ_FILE", "file name="
           + htmlFilePath);
       writeWarningMessage(res);
     } finally {
@@ -124,7 +124,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
         }
         out2.close();
       } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "TempFileServer.write", "root.EX_CANT_READ_FILE",
+        SilverTrace.warn("util", "TempFileServer.write", "root.EX_CANT_READ_FILE",
             "close failed");
       }
     }
@@ -145,7 +145,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
         read = sr.read();
       }
     } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "TempFileServer.displayWarningMessage",
+      SilverTrace.warn("util", "TempFileServer.displayWarningMessage",
           "root.EX_CANT_READ_FILE",
           "warning properties");
     } finally {
@@ -155,7 +155,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
         }
         out2.close();
       } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "TempFileServer.displayWarningMessage",
+        SilverTrace.warn("util", "TempFileServer.displayWarningMessage",
             "root.EX_CANT_READ_FILE", "close failed");
       }
     }

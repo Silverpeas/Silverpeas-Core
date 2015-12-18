@@ -39,8 +39,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource providing access to publications.
@@ -100,9 +100,9 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     URI uri;
     try {
       uri = new URI(baseUri + "/publication/" + publication.getPK().getId());
-    } catch (URISyntaxException e) {
-      Logger.getLogger(AbstractPublicationResource.class.getName()).log(Level.SEVERE, null, e);
-      throw new RuntimeException(e.getMessage(), e);
+    } catch (URISyntaxException ex) {
+      getLogger(this).error(ex.getMessage(), ex);
+      throw new RuntimeException(ex.getMessage(), ex);
     }
     return uri;
   }

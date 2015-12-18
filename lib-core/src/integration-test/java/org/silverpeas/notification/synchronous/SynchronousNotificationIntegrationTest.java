@@ -24,9 +24,6 @@ package org.silverpeas.notification.synchronous;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +32,7 @@ import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.notification.util.TestResource;
 import org.silverpeas.notification.util.TestResourceEvent;
 import org.silverpeas.notification.util.TestResourceEventBucket;
-import org.silverpeas.util.BeanContainer;
-import org.silverpeas.util.CDIContainer;
-import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StateTransition;
-import org.silverpeas.util.exception.DecodingException;
-import org.silverpeas.util.exception.EncodingException;
+import org.silverpeas.test.WarBuilder4LibCore;
 
 import javax.inject.Inject;
 import java.time.Instant;
@@ -64,15 +56,10 @@ public class SynchronousNotificationIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return ShrinkWrap.create(JavaArchive.class, "test.jar")
-        .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            DecodingException.class, EncodingException.class, StateTransition.class)
-        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class,
-            SynchronousTestResourceEventNotifier.class, SynchronousTestResourceEventListener.class)
-        .addPackage("org.silverpeas.notification")
-        .addAsManifestResource("META-INF/services/test-org.silverpeas.util.BeanContainer",
-            "services/org.silverpeas.util.BeanContainer")
-        .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    return WarBuilder4LibCore.onWarForTestClass(SynchronousNotificationIntegrationTest.class)
+        .addSynchAndAsynchResourceEventFeatures()
+        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class)
+        .build();
   }
 
   @Before

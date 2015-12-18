@@ -80,15 +80,11 @@ public class ScheduledDBReset implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) {
-    SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
     doDBReset();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override

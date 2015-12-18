@@ -501,9 +501,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         destination = getDestinationForResults(pdcSC);
       } else if (function.startsWith("AdvancedSearch")) {
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
-            "root.MSG_GEN_ENTER_METHOD");
-
         String mode = request.getParameter("mode");
         if ("clear".equals(mode)) {
           clearUserChoices(pdcSC);
@@ -578,8 +575,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           // query settings
           alSilverContentIds = searchAllSilverContentId(pdcSC, searchParameters);
         }
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
-            "root.MSG_GEN_PARAM_VALUE", "avant search");
         // the query string contains something
         if (searchParameters.isDefined()
             || (StringUtil.isDefined(searchParameters.getSpaceId()) && !pdcUsedDuringSearch)
@@ -618,9 +613,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.setResults(alSilverContents);
           pdcSC.processResultsToDisplay(alSilverContents);
         }
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
-            "root.MSG_GEN_PARAM_VALUE", "après search");
-
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")
             && !pdcSC.getResultPage().equals("pdaResult.jsp")) {
@@ -725,28 +717,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           SilverTrace.warn("pdcPeas", "PdcPeasRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function
-            + "=> destination=" + destination);
       } else if (function.startsWith("FromUserPanel")) {// récupération des valeurs de userPanel
         // par userPanelPeas
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "FromUserPanel:");
         Selection sel = pdcSC.getSelection();
         // Get user selected in User Panel
         String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "userIds:" + userIds.toString());
         if (userIds.length != 0) {
-          SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userIds.length():" + userIds.length);
-
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
-          SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userDetails:" + userDetails.toString());
           if (userDetails != null) {
-            SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "userDetails[0].getId():" + userDetails[0].getId());
             request.setAttribute("UserDetail", pdcSC.getUserDetail(userDetails[0].getId()));
           }
         }
@@ -852,8 +830,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           // query settings
           alSilverContentIds = searchAllSilverContentId(pdcSC, searchParameters);
         }
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
-            "root.MSG_GEN_PARAM_VALUE", "avant search");
         // the query string contains something
         if (searchParameters.isDefined()
             || (StringUtil.isDefined(searchParameters.getSpaceId()) && !pdcUsedDuringSearch)) {
@@ -880,9 +856,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.setResults(alSilverContents);
           pdcSC.processResultsToDisplay(alSilverContents);
         }
-        SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.AdvancedSearch",
-            "root.MSG_GEN_PARAM_VALUE", "après search");
-
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")
             && !pdcSC.getResultPage().equals("pdaResult.jsp")) {

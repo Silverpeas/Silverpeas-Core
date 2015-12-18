@@ -477,7 +477,6 @@ public class DateUtil {
 
   public static String getFormattedTime(Date date) {
     String time = formatTime(date);
-    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " + time);
     return time;
   }
 

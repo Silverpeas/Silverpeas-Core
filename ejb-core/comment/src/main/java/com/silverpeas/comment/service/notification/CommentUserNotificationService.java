@@ -36,18 +36,16 @@ import org.silverpeas.notification.JMSResourceEventListener;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -77,8 +75,6 @@ public class CommentUserNotificationService extends JMSResourceEventListener<Com
    * must be defined with the subject of the notification.
    */
   private static String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
-
-  private static Logger logger = Logger.getLogger("comment");
 
   private Map<String, ApplicationService> services = new ConcurrentHashMap<>();
 
@@ -113,7 +109,7 @@ public class CommentUserNotificationService extends JMSResourceEventListener<Com
             notifyUsers(notification);
           }
         } catch (Exception ex) {
-          Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+          SilverLogger.getLogger(this).error(ex.getMessage(), ex);
         }
       }
     }

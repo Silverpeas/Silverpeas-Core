@@ -31,6 +31,7 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -47,8 +48,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.PdcServiceProvider.forContentOfId;
@@ -133,12 +132,12 @@ public class PdcClassificationResource extends RESTWebService {
       pdcServiceProvider().deletePosition(positionId, forContentOfId(getContentId()),
           inComponentOfId(getComponentId()));
     } catch (ContentManagerException ex) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
+      SilverLogger.getLogger(this).warn(ex.getMessage());
     } catch (PdcPositionDeletionException ex) {
-      Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage());
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new WebApplicationException(Status.CONFLICT);
     } catch (PdcException ex) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
+      SilverLogger.getLogger(this).warn(ex.getMessage());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }

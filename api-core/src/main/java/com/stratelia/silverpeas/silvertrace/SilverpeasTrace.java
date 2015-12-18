@@ -29,88 +29,129 @@ import org.silverpeas.util.ServiceProvider;
 import java.util.Properties;
 
 /**
- * @author Yohann Chastagnier
+ * This class is deprecated. It is now replaced by the Silverpeas Logging API.
+ * @see org.silverpeas.util.logging.SilverLogger
+ * @deprecated
  */
+@Deprecated
 public interface SilverpeasTrace {
 
-  public static SilverpeasTrace get() {
+  @Deprecated
+  static SilverpeasTrace get() {
     return ServiceProvider.getService(SilverpeasTrace.class);
   }
 
+  @Deprecated
   void debug(String module, String classe, String message);
 
+  @Deprecated
   void debug(String module, String classe, String message, String extraInfos);
 
+  @Deprecated
   void debug(String module, String classe, String message, Throwable ex);
 
+  @Deprecated
   void debug(String module, String classe, String message, String extraInfos, Throwable ex);
 
+  @Deprecated
   void info(String module, String classe, String messageID);
 
+  @Deprecated
   void info(String module, String classe, String messageID, String extraInfos);
 
+  @Deprecated
   void info(String module, String classe, String messageID, Throwable ex);
 
+  @Deprecated
   void info(String module, String classe, String messageID, String extraInfos, Throwable ex);
 
+  @Deprecated
   void warn(String module, String classe, String messageID);
 
+  @Deprecated
   void warn(String module, String classe, String messageID, String extraInfos);
 
+  @Deprecated
   void warn(String module, String classe, String messageID, Throwable ex);
 
+  @Deprecated
   void warn(String module, String classe, String messageID, String extraInfos, Throwable ex);
 
+  @Deprecated
   void error(String module, String classe, String messageID);
 
+  @Deprecated
   void error(String module, String classe, String messageID, String extraInfos);
 
+  @Deprecated
   void error(String module, String classe, String messageID, Throwable ex);
 
+  @Deprecated
   void error(String module, String classe, String messageID, String extraInfos, Throwable ex);
 
+  @Deprecated
   void fatal(String module, String classe, String messageID);
 
+  @Deprecated
   void fatal(String module, String classe, String messageID, String extraInfos);
 
+  @Deprecated
   void fatal(String module, String classe, String messageID, Throwable ex);
 
+  @Deprecated
   void fatal(String module, String classe, String messageID, String extraInfos, Throwable ex);
 
+  @Deprecated
   void spy(String module, String classe, String spaceId, String instanceId, String objectId,
       String userId, String actionId);
 
+  @Deprecated
   void resetAll();
 
+  @Deprecated
   void applyProperties(String filePath);
 
+  @Deprecated
   void initFromProperties(Properties fileProperties);
 
+  @Deprecated
   void setTraceLevel(String module, int val);
 
+  @Deprecated
   int getTraceLevel(String module, boolean chained);
 
+  @Deprecated
   void addAppenderConsole(String module, String patternLayout, String consoleName);
 
+  @Deprecated
   void addAppenderFile(String module, String patternLayout, String fileName, boolean appendOnFile);
 
+  @Deprecated
   void addAppenderRollingFile(String module, String patternLayout, String fileName,
       String rollingMode);
 
+  @Deprecated
   void addAppenderMail(String module, String patternLayout, String mailHost, String mailFrom,
       String mailTo, String mailSubject);
 
+  @Deprecated
   void removeAppender(String module, int typeOfAppender);
 
+  @Deprecated
   Properties getModuleList();
 
+  @Deprecated
   int getAvailableAppenders(String module);
 
+  @Deprecated
   Properties getAppender(String module, int typeOfAppender);
 
+  @Deprecated
   String getTraceMessage(String messageId);
 
+  @Deprecated
   String[] getEndFileTrace(String nbLines);
 
+  @Deprecated
   String getTraceMessage(String messageId, String language);
 }

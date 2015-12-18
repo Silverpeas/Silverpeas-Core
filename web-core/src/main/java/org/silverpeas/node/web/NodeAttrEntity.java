@@ -22,17 +22,18 @@ package org.silverpeas.node.web;
 
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.DateUtil;
 import com.stratelia.webactiv.node.model.NodeDetail;
+import org.owasp.encoder.Encode;
+import org.silverpeas.util.DateUtil;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.owasp.encoder.Encode;
+
+import static org.silverpeas.util.logging.SilverLogger.getLogger;
 
 @XmlRootElement
 public class NodeAttrEntity {
@@ -106,7 +107,7 @@ public class NodeAttrEntity {
     try {
       return new URI(uri);
     } catch (URISyntaxException ex) {
-      Logger.getLogger(NodeAttrEntity.class.getName()).log(Level.SEVERE, null, ex);
+      getLogger(NodeAttrEntity.class).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }

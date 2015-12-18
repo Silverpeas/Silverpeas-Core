@@ -25,8 +25,6 @@ package org.silverpeas.dateReminder.persistent;
 
 import org.silverpeas.util.StringUtil;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -39,6 +37,7 @@ import org.silverpeas.EntityReference;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.model.jpa.AbstractJpaEntity;
 import org.silverpeas.dateReminder.exception.DateReminderValidationException;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * A persistent date reminder used to identify uniquely a resource.
@@ -141,7 +140,7 @@ public class PersistentResourceDateReminder
           ref = null;
         }
       } catch (Exception ex) {
-        Logger.getLogger(PersistentResourceDateReminder.class.getName()).log(Level.SEVERE, null, ex);
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       }
     }
     return ref;

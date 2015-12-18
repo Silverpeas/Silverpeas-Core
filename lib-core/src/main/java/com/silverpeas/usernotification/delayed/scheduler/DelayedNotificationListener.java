@@ -42,9 +42,6 @@ public class DelayedNotificationListener implements SchedulerEventListener {
    */
   @Override
   public void triggerFired(final SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("notification", "DelayedNotificationListener.handleSchedulerEvent", "The job '" +
-        anEvent.getJobExecutionContext().getJobName() + "' is executing");
-
     DelayedNotificationDelegate.executeDelayedNotificationsSending(anEvent.getJobExecutionContext().getFireTime());
   }
 
@@ -54,8 +51,6 @@ public class DelayedNotificationListener implements SchedulerEventListener {
    */
   @Override
   public void jobSucceeded(final SchedulerEvent anEvent) {
-    SilverTrace.debug("notification", "DelayedNotificationListener.handleSchedulerEvent", "The job '" +
-        anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   /*

@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.node.web.NodeEntity;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,8 +39,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author ehugonnet
@@ -121,7 +119,7 @@ public class AttachmentEntity implements WebEntity {
           + token + "/" + id + "/"
           + URLEncoder.encode(logicalName, CharEncoding.UTF_8));
     } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
     this.sharedUri = sharedUri;
@@ -133,7 +131,7 @@ public class AttachmentEntity implements WebEntity {
       privateUri = string2URI(baseURI + "private/attachments/" + instanceId + "/"
           + id + "/" + URLEncoder.encode(logicalName, CharEncoding.UTF_8));
     } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
     this.uri = privateUri;
@@ -144,7 +142,7 @@ public class AttachmentEntity implements WebEntity {
     try {
       uri = new URI(str);
     } catch (URISyntaxException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
     return uri;

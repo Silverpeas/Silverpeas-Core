@@ -2,8 +2,8 @@ package org.silverpeas.util.crypto;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * A factory of the ciphers supported by Silverpeas.
@@ -19,7 +19,7 @@ public class CipherFactory {
     try {
       ciphers.put(CryptographicAlgorithmName.Blowfish, new BlowfishCipher());
     } catch (Exception ex) {
-      Logger.getLogger(CipherFactory.class.getSimpleName()).log(Level.SEVERE, ex.getMessage());
+      getLogger(CipherFactory.class).error(ex.getMessage(), ex);
     }
     ciphers.put(CryptographicAlgorithmName.CMS, new CMSCipher());
     ciphers.put(CryptographicAlgorithmName.CAST5, new CAST5Cipher());

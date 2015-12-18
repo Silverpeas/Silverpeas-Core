@@ -28,6 +28,7 @@ import org.silverpeas.persistence.model.EntityIdentifier;
 import org.silverpeas.persistence.model.ExternalEntityIdentifier;
 import org.silverpeas.persistence.model.IdentifiableEntity;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Inheritance;
@@ -38,8 +39,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.logging.Logger;
 
 import static org.silverpeas.util.annotation.AnnotationUtil.searchClassThatDeclaresAnnotation;
 
@@ -153,8 +152,8 @@ public abstract class AbstractJpaCustomEntity<ENTITY extends IdentifiableEntity,
         ExternalEntityIdentifier.class.isAssignableFrom(getEntityIdentifierClass());
     if (!isExternalIdentifier) {
       if (this.id != null && StringUtil.isDefined(this.id.asString())) {
-        Logger.getLogger(this.getClass().getName())
-            .warning("As the entity identifier is not a ForeignEntityIdentifier one, " +
+        SilverLogger.getLogger(this)
+            .warn("As the entity identifier is not a ForeignEntityIdentifier one, " +
                 "identifier value should not exist on a persist operation... (ID=" + getId() +
                 ")");
       }

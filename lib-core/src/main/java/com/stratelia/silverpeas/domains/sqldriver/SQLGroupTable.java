@@ -80,8 +80,6 @@ public class SQLGroupTable {
         + getColumns() + ") values (?,?,?,?)";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupTable.createGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       nextId = DBUtil.getNextId(drvSettings.getGroupTableName(), drvSettings
           .getGroupSpecificIdColumnName());
@@ -110,8 +108,6 @@ public class SQLGroupTable {
         + " where " + drvSettings.getGroupSpecificIdColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupTable.deleteGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       statement.executeUpdate();
@@ -132,8 +128,6 @@ public class SQLGroupTable {
         + drvSettings.getGroupSpecificIdColumnName() + " = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupTable.updateGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setString(1, drvSettings.trunc(g.getName(), 100));
       statement.setString(2, drvSettings.trunc(g.getDescription(), 400));
@@ -158,8 +152,6 @@ public class SQLGroupTable {
         + drvSettings.getGroupTableName() + " where id = ?";
 
     try {
-      SilverTrace.debug("admin", "SQLGroupTable.getGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setInt(1, groupId);
       rs = statement.executeQuery();
@@ -187,8 +179,6 @@ public class SQLGroupTable {
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getGroupTableName() + " where name = ?";
     try {
-      SilverTrace.debug("admin", "SQLGroupTable.getGroupByName",
-          "root.MSG_QUERY", theQuery);
       statement = c.prepareStatement(theQuery);
       statement.setString(1, groupName);
       rs = statement.executeQuery();
@@ -217,8 +207,6 @@ public class SQLGroupTable {
         + drvSettings.getGroupTableName();
 
     try {
-      SilverTrace.debug("admin", "SQLGroupTable.getGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       rs = statement.executeQuery();
       while (rs.next()) {
@@ -252,8 +240,6 @@ public class SQLGroupTable {
       } else {
         theQuery = theQuery + " = ?";
       }
-      SilverTrace.debug("admin", "SQLGroupTable.getGroup", "root.MSG_QUERY",
-          theQuery);
       statement = c.prepareStatement(theQuery);
       if (groupId != -1) {
         statement.setInt(1, groupId);

@@ -31,7 +31,7 @@ public class TagCloudRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -1257445104199066209L;
 
   public String getModule() {
-    return "tagCloud";
+    return "tagcloud";
   }
 
   public TagCloudRuntimeException(String callingClass, int errorLevel,

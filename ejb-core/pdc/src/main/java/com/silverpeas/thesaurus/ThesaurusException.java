@@ -66,7 +66,7 @@ public class ThesaurusException extends SilverpeasException {
    * @return the name of this module
    */
   public String getModule() {
-    return "Thesaurus";
+    return "thesaurus";
   }
 
 }

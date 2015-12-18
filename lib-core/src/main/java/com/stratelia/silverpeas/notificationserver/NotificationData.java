@@ -312,43 +312,43 @@ public class NotificationData implements Serializable {
   }
 
   public void traceObject() {
-    if (SilverTrace.getTraceLevel("notificationServer", true) <= SilverTrace.TRACE_LEVEL_INFO) {
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+    if (SilverTrace.getTraceLevel("notificationserver", true) <= SilverTrace.TRACE_LEVEL_INFO) {
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "LoginUser : " + mLoginUser);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Message : " + mMessage);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "NotificationId : " + Long.toString(mNotificationId));
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderId : " + mSenderId);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Answer allowed : " + mAnswerAllowed);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderName : " + mSenderName);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "Comment : " + mComment);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetChannel : " + mTargetChannel);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetReceipt : " + mTargetReceipt);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetName : " + mTargetName);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "PrioritySpeed : " + mPrioritySpeed);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "ReportToSenderStatus : " + mReportToSenderStatus);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "ReportToSenderTargetChannel : " + mReportToSenderTargetChannel);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "ReportToSenderTargetReceipt : " + mReportToSenderTargetReceipt);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA",
           "ReportToSenderTargetParam : " + mReportToSenderTargetParam);
-      SilverTrace.info("notificationServer", "NotificationData.traceObject",
+      SilverTrace.info("notificationserver", "NotificationData.traceObject",
           "notificationServer.INFO_DUMP_NOTIF_DATA", "ReportToLogStatus : " + mReportToLogStatus);
     }
   }

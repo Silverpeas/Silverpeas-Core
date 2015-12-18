@@ -107,8 +107,6 @@ public class PdcSearchRequestRouterHelper {
       authorSearch = authorSearch.trim();
     }
 
-    SilverTrace.debug("pdcPeas", "PdcPeasRequestRouterHelper.saveFavoriteRequest()",
-        "root.MSG_GEN_PARAM_VALUE", "authorSearch = " + authorSearch);
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     queryParameters.setKeywords(query);
     queryParameters.setSpaceIdAndInstanceId(spaceId, componentId);

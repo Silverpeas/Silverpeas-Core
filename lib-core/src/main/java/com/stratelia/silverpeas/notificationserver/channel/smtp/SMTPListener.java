@@ -25,7 +25,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Administration;
 import org.silverpeas.mail.MailAddress;
 import org.silverpeas.mail.MailSending;
@@ -35,6 +34,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
 
@@ -47,8 +47,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
 import static org.silverpeas.mail.MailAddress.eMail;
@@ -76,12 +74,10 @@ public class SMTPListener extends AbstractListener implements MessageListener {
   @Override
   public void onMessage(javax.jms.Message msg) {
     try {
-      SilverTrace.info("smtp", "SMTPListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
-          "JMS Message = " + msg);
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace.error("smtp", "SMTPListener.onMessage()", "smtp.EX_CANT_PROCESS_MSG",
-          "JMS Message = " + msg + ", Payload = " + (payLoad == null ? "" : payLoad), e);
+      SilverLogger.getLogger(this).error("JMS message processing error: message = {0}, Payload = {1}",
+          new String[]{msg.toString(), payLoad}, e);
     }
   }
 
@@ -207,7 +203,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
       mail.sendSynchronously();
 
     } catch (MessagingException | UnsupportedEncodingException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     } catch (Exception e) {
       throw new NotificationServerException("SMTPListener.sendEmail()", SilverpeasException.ERROR,
           "smtp.EX_CANT_SEND_SMTP_MESSAGE", e);

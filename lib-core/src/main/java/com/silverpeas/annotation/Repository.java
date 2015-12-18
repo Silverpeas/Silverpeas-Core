@@ -34,11 +34,11 @@ import java.lang.annotation.Target;
  * object aimed to store and to retrieve objects in a given data source. It wraps the type of the
  * used data source and the mechanism to access them.
  *
- * Beans annoted with this annotation are marked to be managed by the underlying IoC container.
+ * Beans annotated with this annotation are marked to be managed by the underlying IoC container.
  *
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
- * annnotation to those specific at this IoC implementation without impacting the annotated IoC
+ * annotation to those specific at this IoC implementation without impacting the annotated IoC
  * managed beans.
  */
 @Target(ElementType.TYPE)

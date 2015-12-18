@@ -66,8 +66,6 @@ public class CoordinateImportExport {
   public int addPositions(String componentId, String axisPath)
       throws CoordinateRuntimeException {
     List<String> combination = getArrayCombination(axisPath);
-    SilverTrace.debug("coordinates", "CoordinateImportExport.addPositions",
-        "root.MSG_GEN_PARAM_VALUE", "combination = " + combination);
     int coordinateId = 0;
     NodePK axisPK = new NodePK("toDefine", componentId);
     CoordinatePK coordinatePK = new CoordinatePK("unknown", axisPK);
@@ -104,8 +102,6 @@ public class CoordinateImportExport {
       throw new CoordinateRuntimeException("CoordinateImportExport.addPositions()",
           SilverpeasRuntimeException.ERROR, "coordinates.ADDING_COORDINATES_COMBINATION_FAILED", e);
     }
-    SilverTrace.debug("coordinates", "CoordinateImportExport.addPositions()",
-        "root.MSG_GEN_PARAM_VALUE", "coordinateId = " + coordinateId);
     return coordinateId;
   }
 
@@ -118,9 +114,6 @@ public class CoordinateImportExport {
    * @return
    */
   public NodeDetail getNodeDetailByName(String name, int nodeRootId, String componentId) {
-    SilverTrace.debug("coordinates", "CoordinateImportExport.getNodeDetailByName()",
-        "root.MSG_GEN_PARAM_VALUE", "name = " + name + " nodeRootId=" + nodeRootId
-        + " componentId=" + componentId);
     try {
       NodeDetail nodeDetail = getNodeService().getDetailByNameAndFatherId(
           new NodePK("useless", componentId), name, nodeRootId);

@@ -21,20 +21,20 @@
 package org.silverpeas.node.web;
 
 import com.silverpeas.web.WebEntity;
-import org.silverpeas.util.i18n.Translation;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.node.model.NodePK;
+import org.owasp.encoder.Encode;
+import org.silverpeas.util.i18n.Translation;
+import org.silverpeas.util.logging.SilverLogger;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.owasp.encoder.Encode;
 
 @XmlRootElement
 public class NodeEntity implements WebEntity {
@@ -122,7 +122,7 @@ public class NodeEntity implements WebEntity {
     try {
       return new URI(parentURI + "/" + childId);
     } catch (URISyntaxException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
@@ -131,7 +131,7 @@ public class NodeEntity implements WebEntity {
     try {
       return new URI(uri);
     } catch (URISyntaxException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(NodeEntity.class).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
@@ -177,7 +177,7 @@ public class NodeEntity implements WebEntity {
     try {
       return new URI(uri + "/children");
     } catch (URISyntaxException ex) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }

@@ -20,7 +20,10 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import java.util.Map;
+import com.stratelia.silverpeas.notificationserver.NotificationData;
+import com.stratelia.silverpeas.notificationserver.NotificationServerException;
+import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
@@ -28,11 +31,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-
-import com.stratelia.silverpeas.notificationserver.NotificationData;
-import com.stratelia.silverpeas.notificationserver.NotificationServerException;
-import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.Map;
 
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -49,12 +48,10 @@ public class SERVERListener extends AbstractListener implements MessageListener 
 
   @Override
   public void onMessage(Message msg) {
-    SilverTrace.info("server", "SERVERListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
-        "JMS message = " + msg);
     try {
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace.error("popup", "POPUPListener.onMessage()", "popup.EX_CANT_PROCESS_MSG", "", e);
+      SilverLogger.getLogger(this).error("Processing server notification error!", e);
     }
   }
 

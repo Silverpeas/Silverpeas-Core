@@ -183,8 +183,6 @@ public class RepositoriesTypeManager {
   private PublicationDetail importFile(final PublicationDetail previousSavedPublication, File file,
       ImportReportManager reportManager, MassiveReport massiveReport, GEDImportExport gedIE,
       PdcImportExport pdcIE, ImportSettings settings) {
-    SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-        "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
     String componentId = gedIE.getCurrentComponentId();
     UserDetail userDetail = gedIE.getCurrentUserDetail();
     PublicationDetail pubDetailToSave = null;
@@ -217,18 +215,10 @@ public class RepositoriesTypeManager {
           pubDetailToSave.setStatus(PublicationDetail.DRAFT);
           pubDetailToSave.setStatusMustBeChecked(false);
         }
-        SilverTrace
-            .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
-                "pubDetailToCreate.status = " + pubDetailToSave.getStatus());
-
         // Création de la publication
         pubDetailToSave =
             gedIE.createPublicationForMassiveImport(unitReport, pubDetailToSave, settings);
         unitReport.setLabel(pubDetailToSave.getPK().getId());
-
-        SilverTrace
-            .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
-                "pubDetailToCreate created");
       } else {
         pubDetailToSave = previousSavedPublication;
       }
@@ -521,8 +511,6 @@ public class RepositoriesTypeManager {
   }
 
   private Iterator<File> getPathContent(File path) {
-    SilverTrace.debug("importExport", "RepositoriesTypeManager.getPathContent",
-        "root.MSG_GEN_ENTER_METHOD", "path = " + path.getPath());
     // Récupération du contenu du dossier
     String[] listContenuStringPath = path.list();
 

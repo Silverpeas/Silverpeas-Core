@@ -37,7 +37,6 @@ import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPSessionCon
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.servlet.HttpRequest;
 
 /**
@@ -73,9 +72,6 @@ public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionContr
   public String getDestination(String function, POPUPSessionController popupSC,
       HttpRequest request) {
     String destination = "/POPUP/jsp/" + function;
-    SilverTrace.info("popup", "POPUPRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function=" + function);
-
     if (function.startsWith("Main")) {
       destination = "/POPUP/jsp/main.jsp";
     } else if (function.startsWith("ReadMessage")) {
@@ -83,9 +79,6 @@ public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionContr
       popupSC.setCurrentMessageId(messageId);
       destination = "/POPUP/jsp/readMessage.jsp";
     } else if (function.startsWith("ToAlert")) {
-      SilverTrace.info("popup", "POPUPRequestRouter.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "request.getParameter(theUserId)="
-          + request.getParameter("theUserId"));
       popupSC.notifySession(request.getParameter("theUserId"), request
           .getParameter("messageAux"));
       request.setAttribute("action", "Close");

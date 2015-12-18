@@ -380,9 +380,6 @@ public class SilverStatisticsPeasDAOConnexion {
 
   static Collection<String[]> getStatsConnexionGroupUser(String dateBegin, String dateEnd,
       Group group) throws SQLException, UtilException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser",
-        "selectQuery=" + SELECT_COUNTS_FOR_USER);
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -461,10 +458,6 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection<String[]> getStatsConnexionUserUser(String dateBegin, String dateEnd,
       int userId) throws SQLException, UtilException {
-    SilverTrace.debug("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserGroup",
-        "selectQuery=" + SELECT_STATISTICS_FOR_USER);
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -496,8 +489,6 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection<String> getYears() throws SQLException {
     String selectQuery = "SELECT DISTINCT dateStat FROM SB_Stat_ConnectionCumul ORDER BY dateStat";
-    SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getYearsFromQuery",
-        "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;

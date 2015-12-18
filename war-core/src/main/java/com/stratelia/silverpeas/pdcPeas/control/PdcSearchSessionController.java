@@ -927,9 +927,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<GlobalSilverResult> sortedResults = new ArrayList<GlobalSilverResult>();
     List<GlobalSilverResult> sortedResultsToDisplay;
 
-    SilverTrace.debug("pdcPeas", "PdcSearchSessionController.filterResult",
-        "root.MSG_GEN_ENTER_METHOD", "filter = " + filter.toString());
-
     String authorFilter = filter.getAuthorId();
     boolean filterAuthor = StringUtil.isDefined(authorFilter);
 
@@ -993,9 +990,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               for (Map.Entry<String, String> facet : theSelectedFacetEntries.entrySet()) {
                 // get stored value relative to given facet
                 String resultFieldValue = gsrFormFieldsForFacets.get(facet.getKey());
-                SilverTrace.debug("pdcPeas", "PdcSearchSessionController.filterResult",
-                    "root.MSG_GEN_PARAM_VALUE", "For '" + gsResult.getName() + "' and facet '"
-                    + facet.getKey() + "', result stored " + resultFieldValue);
                 // visible if stored value is equals to selected facet entry
                 visible = facet.getValue().equalsIgnoreCase(resultFieldValue);
               }
@@ -1654,9 +1648,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String componentId;
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
       componentId = componentList.get(i);
-      SilverTrace.debug("pdcPeas",
-          "PdcSearchSessionController.setCurrentComponentIds()",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
     }
     this.componentList = componentList;
   }

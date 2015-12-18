@@ -124,16 +124,8 @@ public class PublicationsTypeManager {
     List<PublicationType> listPubType = new ArrayList<>();
     String wysiwygText = null;
 
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.processExport", "root.MSG_GEN_PARAM_VALUE",
-            "useNameForFolders = " + useNameForFolders);
-
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
-      SilverTrace
-          .debug("importExport", "PublicationTypeManager.processExport", "root.MSG_GEN_PARAM_VALUE",
-              "objectId = " + attValue.getName() + ", instanceId = " + attValue.getValue());
-
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
       ComponentInstLight componentInst = OrganizationControllerProvider.getOrganisationController()
@@ -141,9 +133,6 @@ public class PublicationsTypeManager {
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
       // Récupération du PublicationType
       PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
-      SilverTrace
-          .debug("importExport", "PublicationTypeManager.processExport", "root.MSG_GEN_PARAM_VALUE",
-              "publicationType retrieved");
       PublicationDetail publicationDetail = publicationType.getPublicationDetail();
       listPubType.add(publicationType);
 
@@ -158,9 +147,6 @@ public class PublicationsTypeManager {
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       } else {
         fillPublicationType(gedIE, publicationType, rootPK);
-        SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-            "root.MSG_GEN_PARAM_VALUE", "nodePositions added");
-
         // Création de l'arborescence de dossiers pour la création de l'export de publication
         NodePositionType nodePositionType = publicationType.getNodePositionsType().
             getListNodePositionType().get(0);
@@ -247,9 +233,6 @@ public class PublicationsTypeManager {
             exportPublicationRelativePath + separator + htmlNameIndex, nbThemes);
     exportReport.addHtmlIndex(pubId, s);
     File fileHTML = new File(exportPublicationPath + separator + htmlNameIndex);
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.processExport", "root.MSG_GEN_PARAM_VALUE",
-            "pubId = " + pubId);
     try {
       fileHTML.createNewFile();
       FileUtils.write(fileHTML, s.toHtml(), Charsets.UTF_8);
@@ -379,10 +362,6 @@ public class PublicationsTypeManager {
 
   private String createASCIIPath(String path) throws IOException {
     String pathToCreateAscii = FileServerUtils.replaceAccentChars(path);
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.createASCIIPath", "root.MSG_GEN_PARAM_VALUE",
-            "pathToCreateAscii = " + pathToCreateAscii);
-
     File dir = new File(pathToCreateAscii);
     if (!dir.exists()) {
       boolean creationOK = dir.mkdirs();
@@ -438,10 +417,6 @@ public class PublicationsTypeManager {
     // ZIP API manage only ASCII characters. So directories are created in ASCII too.
     String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath.
         toString());
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.createPathDirectoryForPublicationExport",
-            "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
-
     createASCIIPath(pathToCreate.toString());
 
     return relativeExportPathAscii;
@@ -459,10 +434,6 @@ public class PublicationsTypeManager {
 
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
-      SilverTrace.debug("importExport", "PublicationTypeManager.processExportOfFilesOnly",
-          "root.MSG_GEN_PARAM_VALUE",
-          "objectId = " + attValue.getName() + ", instanceId = " + attValue.getValue());
-
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
       PublicationPK pk = new PublicationPK(pubId, componentId);
@@ -553,10 +524,6 @@ public class PublicationsTypeManager {
     // ZIP API manage only ASCII characters. So directories are created in ASCII too.
     String relativeExportPathAscii = FileServerUtils.replaceAccentChars(
         componentLabelForm + separator + pubNameForm);
-    SilverTrace
-        .debug("importExport", "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
-            "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
-
     createASCIIPath(exportPath + File.separatorChar + componentLabelForm + separator + pubNameForm);
 
     return relativeExportPathAscii;
@@ -661,8 +628,6 @@ public class PublicationsTypeManager {
                         NodeDetail nodeDetail = coordinateImportExport
                             .getNodeDetailByName(coordinatePointType.getValue(),
                                 coordinatePointType.getAxisId(), componentId);
-                        SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                            "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
                         if (nodeDetail == null && createCoordinateAllowed) {
                           NodeDetail position =
                               new NodeDetail("toDefine", coordinatePointType.getValue(), "", null,
@@ -670,9 +635,6 @@ public class PublicationsTypeManager {
                                   String.valueOf(coordinatePointType.getAxisId()), null);
                           nodeDetail = coordinateImportExport.addPosition(position,
                               String.valueOf(coordinatePointType.getAxisId()), componentId);
-                          SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                              "root.MSG_GEN_PARAM_VALUE",
-                              "nodeDetail apres création= " + nodeDetail);
                         }
                         if (nodeDetail != null) {
                           if (first) {
@@ -686,9 +648,6 @@ public class PublicationsTypeManager {
                         }
                       }
                     }
-                    SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                        "root.MSG_GEN_PARAM_VALUE",
-                        "coordinatePointsPath = " + coordinatePointsPath);
                     // Add coordinate (set of coordinatePoints)
                     int coordinateId =
                         coordinateImportExport.addPositions(componentId, coordinatePointsPath.
@@ -702,8 +661,6 @@ public class PublicationsTypeManager {
                 }
               }
             }
-            SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                "root.MSG_GEN_PARAM_VALUE", "TOTAL List coordinatesId = " + nodesKmax);
           } else // récupère les thèmes dans lesquels la publication doit être créée
           {
             nodes = pubType.getNodePositionsType().getListNodePositionType();

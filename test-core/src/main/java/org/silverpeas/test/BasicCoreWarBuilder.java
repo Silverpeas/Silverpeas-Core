@@ -39,11 +39,11 @@ public class BasicCoreWarBuilder extends BasicWarBuilder {
     addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:publication");
     addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
     addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+    addMavenDependencies("org.silverpeas.core:api-core");
     addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
     addMavenDependencies("org.apache.tika:tika-core");
     addMavenDependencies("org.apache.tika:tika-parsers");
     // Bundles & Settings
-    addAsResource("org/silverpeas/silvertrace/settings/silverLog.properties");
     addAsResource("org/silverpeas/util/attachment/mime_types.properties");
     addAsResource("org/silverpeas/general.properties");
     addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");

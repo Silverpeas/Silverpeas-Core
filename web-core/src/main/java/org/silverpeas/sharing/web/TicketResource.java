@@ -23,13 +23,17 @@
  */
 package org.silverpeas.sharing.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.services.SharingServiceProvider;
+import com.silverpeas.sharing.services.SharingTicketService;
+import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPrivilegeValidation;
+import org.silverpeas.sharing.bean.SharingNotificationVO;
+import org.silverpeas.sharing.notification.FileSharingUserNotification;
+import org.silverpeas.util.CollectionUtil;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -41,19 +45,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.silverpeas.sharing.services.SharingServiceProvider;
-import org.silverpeas.sharing.bean.SharingNotificationVO;
-import org.silverpeas.sharing.notification.FileSharingUserNotification;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingTicketService;
-import org.silverpeas.util.CollectionUtil;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPrivilegeValidation;
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 @Service
 @RequestScoped
@@ -121,9 +119,9 @@ public class TicketResource extends RESTWebService {
     URI uri;
     try {
       uri = new URI(baseUri + "mytickets/" + ticketId);
-    } catch (URISyntaxException e) {
-      Logger.getLogger(TicketResource.class.getName()).log(Level.SEVERE, null, e);
-      throw new RuntimeException(e.getMessage(), e);
+    } catch (URISyntaxException ex) {
+      getLogger(this).error(ex.getMessage(), ex);
+      throw new RuntimeException(ex.getMessage(), ex);
     }
     return uri;
   }

@@ -114,9 +114,6 @@ class Admin implements Administration {
   private static int m_nEntrepriseClientSpaceId = 0;
   private static String administratorMail = null;
   private static String m_sDAPIGeneralAdminId = null;
-  // User Logs
-  private static Map<String, UserLog> loggedUsers = Collections.synchronizedMap(new HashMap<>(100));
-  private static FastDateFormat formatter = FastDateFormat.getInstance("dd/MM/yyyy HH:mm:ss:S");
   // Cache management
   private static final AdminCache cache = new AdminCache();
   private static SynchroGroupScheduler groupSynchroScheduler = null;
@@ -598,8 +595,6 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllSubSpaceIds(String domainFatherId) throws AdminException {
-    SilverTrace.debug(MODULE_ADMIN, "Admin.getAllSubSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD", "father space id: '" + domainFatherId + "'");
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       // get all sub space ids
@@ -623,9 +618,6 @@ class Admin implements Administration {
     try {
       SpaceInst oldSpace = getSpaceInstById(spaceInstNew.getId());
       // Open the connections with auto-commit to false
-      SilverTrace.debug(MODULE_ADMIN, "Admin.updateSpaceInst",
-          "root.MSG_GEN_ENTER_METHOD", "Before id: '" + spaceInstNew.getId() + "' after Id: "
-          + getDriverSpaceId(spaceInstNew.getId()));
       // Update the space in tables
       spaceManager.updateSpaceInst(domainDriverManager, spaceInstNew);
       if (useProfileInheritance && (oldSpace.isInheritanceBlocked() != spaceInstNew.
@@ -661,8 +653,6 @@ class Admin implements Administration {
   public void updateSpaceOrderNum(String spaceId, int orderNum) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
-      SilverTrace.debug(MODULE_ADMIN, "Admin.updateSpaceOrderNum", "root.MSG_GEN_ENTER_METHOD",
-          "Space id: '" + spaceId + "' New Order num: " + Integer.toString(orderNum));
       int driverSpaceId = getDriverSpaceId(spaceId);
       // Open the connections with auto-commit to false
       domainDriverManager.startTransaction(false);
@@ -742,7 +732,6 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllRootSpaceIds() throws AdminException {
-    SilverTrace.debug(MODULE_ADMIN, "Admin.getAllSpaceIds", "root.MSG_GEN_ENTER_METHOD");
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       String[] driverSpaceIds = spaceManager.getAllRootSpaceIds(domainDriverManager);
@@ -786,7 +775,6 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllSpaceIds() throws AdminException {
-    SilverTrace.debug(MODULE_ADMIN, "Admin.getAllSpaceIds", "root.MSG_GEN_ENTER_METHOD");
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       String[] driverSpaceIds = spaceManager.getAllSpaceIds(domainDriverManager);
@@ -801,7 +789,6 @@ class Admin implements Administration {
 
   @Override
   public List<SpaceInstLight> getRemovedSpaces() throws AdminException {
-    SilverTrace.debug(MODULE_ADMIN, "Admin.getRemovedSpaces", "root.MSG_GEN_ENTER_METHOD");
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       return spaceManager.getRemovedSpaces(domainDriverManager);
@@ -813,7 +800,6 @@ class Admin implements Administration {
 
   @Override
   public List<ComponentInstLight> getRemovedComponents() throws AdminException {
-    SilverTrace.debug(MODULE_ADMIN, "Admin.getRemovedComponents", "root.MSG_GEN_ENTER_METHOD");
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
       return componentManager.getRemovedComponents(domainDriverManager);
@@ -856,13 +842,7 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   @Override
   public Map<String, String> getAllComponentsNames() {
-    SilverTrace.debug(MODULE_ADMIN, "Admin.getAllComponentsNames", "root.MSG_GEN_ENTER_METHOD");
-    Map<String, String> components = Instanciateur.getAllComponentsNames();
-    for (Map.Entry<String, String> entry : components.entrySet()) {
-      SilverTrace.debug(MODULE_ADMIN, "Admin.getAllComponentsNames",
-          "admin.MSG_INFO_COMPONENT_FOUND", entry.getKey() + ": " + entry.getValue());
-    }
-    return components;
+    return Instanciateur.getAllComponentsNames();
   }
 
   @Override
@@ -1008,10 +988,6 @@ class Admin implements Administration {
   public void createComponentIndex(ComponentInstLight componentInst) {
     if (componentInst != null) {
       // Index the component
-      SilverTrace.debug(MODULE_ADMIN, "Admin.createComponentIndex", "root.MSG_GEN_ENTER_METHOD",
-          "componentInst.getName() = " + componentInst.getName() + "' componentInst.getId() = "
-          + componentInst.getId() + " componentInst.getLabel() = " + componentInst.getLabel());
-
       String componentId = componentInst.getId();
       FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
       indexEntry.setTitle(componentInst.getLabel());
@@ -1276,8 +1252,6 @@ class Admin implements Administration {
   public void updateComponentOrderNum(String componentId, int orderNum) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
     try {
-      SilverTrace.debug(MODULE_ADMIN, "Admin.updateComponentOrderNum", "root.MSG_GEN_ENTER_METHOD",
-          "Component id: '" + componentId + "' New Order num: " + orderNum);
       int driverComponentId = getDriverComponentId(componentId);
       // Open the connections with auto-commit to false
       domainDriverManager.startTransaction(false);
@@ -3195,10 +3169,6 @@ class Admin implements Administration {
       throws AdminException {
     try {
       for (int nI = 0; nI < asComponentIds.length; nI++) {
-        SilverTrace.debug("admin", "Admin.instantiateComponents",
-            "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId + " and component "
-            + asComponentIds[nI]);
-
         componentInstanciator.setConnection(connectionProd);
         componentInstanciator.setSpaceId(sSpaceId);
         componentInstanciator.setComponentId(asComponentIds[nI]);
@@ -3219,10 +3189,6 @@ class Admin implements Administration {
 
     for (int nI = 0; nI < asComponentIds.length; nI++) {
       try {
-        SilverTrace.debug("admin", "Admin.instantiateComponents",
-            "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId + " and component "
-            + asComponentIds[nI]);
-
         componentInstanciator.setConnection(connectionProd);
         componentInstanciator.setSpaceId(sSpaceId);
         componentInstanciator.setComponentId(asComponentIds[nI]);
@@ -3272,8 +3238,6 @@ class Admin implements Administration {
   }
 
   private Integer getDriverComponentId(String sClientComponentId) {
-    SilverTrace.debug("admin", "Admin.getDriverComponentId",
-        "root.MSG_GEN_ENTER_METHOD", "component id: " + sClientComponentId);
     if (sClientComponentId == null) {
       return null;
     }
@@ -3612,24 +3576,6 @@ class Admin implements Administration {
         }
       }
 
-      // Check that the user is not already in the pool
-      UserLog userLog = loggedUsers.get(sUserId);
-      if (userLog != null) {
-        // The user is already logged, remove it
-        loggedUsers.remove(sUserId);
-        SilverTrace.info("admin", "Admin.authenticate",
-            "admin.MSG_USER_ALREADY_LOGGED", "user id: '" + sUserId + "', log time: "
-            + formatter.format(userLog.getLogDate()));
-      }
-
-      // Add the user in the pool of UserLog
-      userLog = new UserLog();
-      userLog.setSessionId(sSessionId);
-      userLog.setUserId(sUserId);
-      userLog.setUserLogin(sLogin);
-      userLog.setLogDate(new Date());
-      loggedUsers.put(sUserId, userLog);
-
       return sUserId;
     } catch (Exception e) {
       throw new AdminException("Admin.authenticate",
@@ -3936,8 +3882,6 @@ class Admin implements Administration {
 
   void addAuthorizedSpaceToTree(List<SpaceInstLight> treeview, Set<Integer> authorizedIds,
       int spaceId, int level) {
-    SilverTrace.debug("admin", "Admin.addAuthorizedSpaceToTree", "root.MSG_GEN_ENTER_METHOD",
-        "size of treeview = " + treeview.size());
     List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
     for (SpaceInstLight space : subSpaces) {
       int subSpaceId = space.getLocalId();
@@ -3955,12 +3899,8 @@ class Admin implements Administration {
    * @param space a space candidate to be in authorized spaces list
    */
   void addAuthorizedSpace(Set<Integer> spaces, Set<String> componentsId, SpaceInstLight space) {
-    SilverTrace.debug("admin", "Admin.addAuthorizedSpace", "root.MSG_GEN_ENTER_METHOD",
-        "#componentIds = " + componentsId.size());
     if (space != null && !SpaceInst.STATUS_REMOVED.equals(space.getStatus()) &&
         !spaces.contains(space.getLocalId())) {
-      SilverTrace.debug("admin", "Admin.addAuthorizedSpace", PARAM_MSG_KEY,
-          "space = " + space.getId());
       int spaceId = space.getLocalId();
       spaces.add(spaceId);
       componentsId.removeAll(TreeCache.getComponentIds(spaceId));
@@ -3975,8 +3915,6 @@ class Admin implements Administration {
   }
 
   void filterSpaceFromComponents(Set<Integer> spaces, Set<String> componentsId, String componentId) {
-    SilverTrace.debug("admin", "Admin.filterSpaceFromComponents", "root.MSG_GEN_ENTER_METHOD",
-        "#componentIds = " + componentsId.size() + ", componentId = " + componentId);
     SpaceInstLight space = TreeCache.getSpaceContainingComponent(componentId);
     addAuthorizedSpace(spaces, componentsId, space);
     if (!componentsId.isEmpty()) {
@@ -4667,16 +4605,6 @@ class Admin implements Administration {
   @Override
   public String getDAPIGeneralAdminId() {
     return "0";
-  }
-
-  @Override
-  public UserLog[] getUserConnected() {
-    UserLog[] userLogs = new UserLog[loggedUsers.size()];
-    int nI = 0;
-    for (String user : loggedUsers.keySet()) {
-      userLogs[nI++] = loggedUsers.get(user);
-    }
-    return userLogs;
   }
 
   // -------------------------------------------------------------------------

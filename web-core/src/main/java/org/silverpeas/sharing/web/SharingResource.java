@@ -23,10 +23,11 @@
  */
 package org.silverpeas.sharing.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.sharing.model.Ticket;
+import com.silverpeas.sharing.services.SharingServiceProvider;
+import com.silverpeas.web.RESTWebService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -35,12 +36,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.sharing.model.Ticket;
-import com.silverpeas.sharing.services.SharingServiceProvider;
-import com.silverpeas.web.RESTWebService;
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 @Service
 @RequestScoped
@@ -72,9 +71,9 @@ public class SharingResource extends RESTWebService {
     URI uri;
     try {
       uri = new URI(baseUri + "sharing/nodes/" + componentId + "/" + token + "/" + nodeId);
-    } catch (URISyntaxException e) {
-      Logger.getLogger(SharingResource.class.getName()).log(Level.SEVERE, null, e);
-      throw new RuntimeException(e.getMessage(), e);
+    } catch (URISyntaxException ex) {
+      getLogger(this).error(ex.getMessage(), ex);
+      throw new RuntimeException(ex.getMessage(), ex);
     }
     return uri;
   }

@@ -245,10 +245,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       // Send a notification to alert people about a new relationship ask.
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       String subject = getString("myProfile.invitations.notification.send.subject");
-      SilverTrace.debug("MyProfilSessionController",
-          MyProfilSessionController.class.getName() + ".getAlertNotificationMetaData()",
-          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
-
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
               "sendInvitation");
@@ -330,10 +326,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       String subject =
           displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
-
-      SilverTrace.debug("MyProfilSessionController",
-          MyProfilSessionController.class.getName() + ".getAlertNotificationMetaData()",
-          "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,

@@ -423,12 +423,8 @@ public abstract class AbstractForm implements Form {
    */
   private String getParameterValue(List<FileItem> items, String parameterName, String encoding)
       throws UnsupportedEncodingException {
-    SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_ENTER_METHOD",
-        "parameterName = " + parameterName);
     FileItem item = getParameter(items, parameterName);
     if (item != null && item.isFormField()) {
-      SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_EXIT_METHOD",
-          "parameterValue = " + item.getString());
       return item.getString(encoding);
     }
     return null;

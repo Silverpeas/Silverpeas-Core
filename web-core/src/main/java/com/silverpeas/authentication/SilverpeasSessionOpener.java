@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.authentication.Authentication;
@@ -44,6 +43,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.web.token.SynchronizerTokenService;
 
@@ -94,8 +94,6 @@ public class SilverpeasSessionOpener {
     // a session should exists: it could be either an authentication session opened for the
     // authentication process or an already opened user specific session.
     try {
-      SilverTrace.info("peasCore", "SilverpeasSessionOpenener.openSession()",
-          "peasCore.MSG_START_OF_HTTPSESSION");
       SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       // is the current session is valid? If it is valid, then the information about the session
       // is updated with, for example, the timestamp of the last access (this one), and then it
@@ -140,9 +138,7 @@ public class SilverpeasSessionOpener {
       // Put the main session controller in the session
       return getHomePageUrl(request, redirectURL);
     } catch (Exception e) {
-      SilverTrace.error("peasCore", "SilverpeasSessionOpenener.openSession()",
-          "peasCore.EX_LOGIN_SERVLET_CANT_CREATE_MAIN_SESSION_CTRL",
-          "session id=" + session.getId(), e);
+      SilverLogger.getLogger(this).error("Session opening failure!", e);
     }
 
     return getErrorPageUrl(request, authKey);
@@ -186,8 +182,7 @@ public class SilverpeasSessionOpener {
    * @return the URL of an error page.
    */
   protected String getErrorPageUrl(HttpRequest request, String authKey) {
-    SilverTrace.error("peasCore", "SilverpeasSessionOpenener.openSession()",
-        "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + authKey);
+    SilverLogger.getLogger(this).error("Not user found with the authentication key {0}", authKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
     if (absoluteUrl.charAt(absoluteUrl.length() - 1) != '/') {
       absoluteUrl.append('/');
@@ -222,8 +217,6 @@ public class SilverpeasSessionOpener {
 
     // Retrieve personal workspace
     String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
-        "user personal workspace=" + personalWs);
 
     // Put a graphicElementFactory in the session
     GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
@@ -234,12 +227,6 @@ public class SilverpeasSessionOpener {
     session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
 
     String favoriteFrame = gef.getLookFrame();
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
-        "root.MSG_GEN_PARAM_VALUE",
-        "controller.getUserAccessLevel()=" + controller.getUserAccessLevel());
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
-        "root.MSG_GEN_PARAM_VALUE",
-        "controller.isAppInMaintenance()=" + controller.isAppInMaintenance());
     String sDirectAccessSpace = request.getParameter("DirectAccessSpace");
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
     if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
@@ -299,8 +286,8 @@ public class SilverpeasSessionOpener {
       }
       return passwordChangeURL;
     } catch (NotificationManagerException e) {
-      SilverTrace.warn("peasCore", "SilverpeasSessionOpenener.alertUserAboutPwdExpiration",
-          "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = " + userId, e);
+      SilverLogger.getLogger(this)
+          .error("Cannot send the password expiration alert for user {0}", new String[]{userId}, e);
       return null;
     }
   }

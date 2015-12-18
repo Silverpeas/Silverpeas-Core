@@ -25,14 +25,12 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SilverpeasSSLSocketFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.security.GeneralSecurityException;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
 
@@ -48,6 +46,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
    */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
+    SilverLogger.getLogger("silverpeas").info("Silverpeas System Initialization...");
     SettingBundle systemSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.systemSettings");
     try {
@@ -58,7 +57,7 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         }
       }
     } catch (GeneralSecurityException e) {
-      Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the keystore/trustore.");
+      SilverLogger.getLogger("silverpeas").error("Unable to configure the keystore/truststore.");
     }
 
     URLManager.setSilverpeasVersion(sce.getServletContext().getInitParameter("SILVERPEAS_VERSION"));

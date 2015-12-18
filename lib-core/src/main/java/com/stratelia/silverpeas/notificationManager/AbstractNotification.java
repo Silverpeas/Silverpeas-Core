@@ -24,10 +24,9 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * Class declaration
@@ -61,9 +60,9 @@ public class AbstractNotification {
       }
       return url;
     } catch (final Exception e) {
-      SilverTrace.error("peasCore", "URLManager.getUserAutoRedirectURL(userId, target)",
-          "admin.EX_ERR_GET_USER_DETAILS", "user id: '" + userId + "', target: '" + target + "'",
-          e);
+      SilverLogger.getLogger(this)
+          .error("Error while getting user auto redirect url {0} for user {1}",
+              new String[]{target, userId}, e);
       return "ErrorGettingDomainServer" + encodedTarget;
     }
   }

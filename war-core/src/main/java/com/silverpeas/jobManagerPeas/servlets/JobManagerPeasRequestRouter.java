@@ -101,8 +101,6 @@ public class JobManagerPeasRequestRouter extends
         String idOperation = request.getParameter("Id");
         if ("15".equals(idOperation)) {
           Boolean mode = jobManagerSC.isAppInMaintenance();
-          SilverTrace.debug("jobManagerPeas", "ChangeOperation",
-              "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
           request.setAttribute("mode", mode.toString());
         }
         // changer l'id représentant l'opération active
@@ -117,8 +115,6 @@ public class JobManagerPeasRequestRouter extends
             request);
       } else if (function.startsWith("ManageMaintenanceMode")) {
         Boolean mode = jobManagerSC.isAppInMaintenance();
-        SilverTrace.debug("jobManagerPeas", "getDestination",
-            "root.MSG_GEN_PARAM_VALUE", "mode=" + mode.toString());
         request.setAttribute("mode", mode.toString());
         destination = "/jobManagerPeas/jsp/manageMaintenance.jsp";
       }

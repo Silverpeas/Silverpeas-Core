@@ -104,10 +104,6 @@ public class AuthenticationParameters {
       cryptedPassword = request.getParameter("cryptedPassword");
     }
 
-    SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
-        "root.MSG_GEN_PARAM_VALUE", "sCryptedPassword = "
-        + cryptedPassword);
-
     decodePassword(cookieEnabled, stringKey, useNewEncryptionMode);
   }
 

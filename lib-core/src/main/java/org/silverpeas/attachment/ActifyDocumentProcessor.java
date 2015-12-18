@@ -31,12 +31,11 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A processor of documents with 3D images or CAD for the Actify tool.
@@ -51,8 +50,7 @@ public class ActifyDocumentProcessor {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
-  private static final Logger logger = Logger.getLogger(ActifyDocumentProcessScheduler.class.
-      getSimpleName());
+  private SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * Is the support of CAD documents processing is enabled? If it is enabled, the Actify tool must
@@ -176,7 +174,7 @@ public class ActifyDocumentProcessor {
       String id = document.getForeignId();
       String fileName = document.getFilename();
       if (isCADDocumentSupported(fileName)) {
-        logger.log(Level.INFO, "CAD document supported by Actify detected: {0}", fileName);
+        logger.info("CAD document supported by Actify detected: {0}", fileName);
         String dirPrefix = document.isVersioned() ? "v_" : "a_";
         String dirDestName = dirPrefix + componentId + "_" + id;
         String actifyWorkingPath = getActifySourcePath() + File.separatorChar + dirDestName;
@@ -211,7 +209,7 @@ public class ActifyDocumentProcessor {
         }
       }
     } catch (IOException e) {
-      logger.log(Level.SEVERE, e.getMessage(), e);
+      logger.error(e.getMessage(), e);
     }
   }
 }

@@ -38,6 +38,7 @@ import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -54,8 +55,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class NewsFeedJSONServlet extends HttpServlet {
 
@@ -130,7 +129,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       }
 
     } catch (Exception ex) {
-      Logger.getLogger(NewsFeedJSONServlet.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     response.setCharacterEncoding("UTF-8");
     response.setContentType("application/json");

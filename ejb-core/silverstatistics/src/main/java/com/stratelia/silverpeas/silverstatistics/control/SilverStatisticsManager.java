@@ -146,8 +146,6 @@ public class SilverStatisticsManager {
    * @param currentDate
    */
   public void doGetStatVolume(Date currentDate) {
-    SilverTrace.debug("silverstatistics", "SilverStatisticsManager.doGetStatVolume",
-        "currentDate=" + currentDate);
     try {
       getSilverStatistics().makeVolumeAlimentationForAllComponents();
     } catch (Exception ex) {
@@ -174,8 +172,6 @@ public class SilverStatisticsManager {
    * @param currentDate
    */
   public void doCumulStat(Date currentDate) {
-    SilverTrace.debug("silverstatistics", "SilverStatisticsManager.doCumulStat",
-        "currentDate=" + currentDate);
     try {
       getSilverStatistics().makeStatAllCumul();
     } catch (Exception ex) {
@@ -221,8 +217,6 @@ public class SilverStatisticsManager {
   public void addStatVolume(String userId, long volume, Date dateAccess, String peasType,
       String spaceId, String componentId) {
     if (statsConfig.isRun(Volume)) {
-      SilverTrace.debug("silverstatistics", "SilverStatistics.addStatVolume",
-          " peasType=" + peasType + " spaceId=" + spaceId + " componentId=" + componentId);
       StringBuilder stat = new StringBuilder();
       stat.append(DateUtil.formatAsISO8601Day(dateAccess));
       stat.append(SEPARATOR);
@@ -246,8 +240,6 @@ public class SilverStatisticsManager {
         SilverTrace.info("silverstatistics", "SilverStatisticsManager.sendStatistic",
             "root.MSG_GEN_PARAM_VALUE", "stat=" + type + ' ' + stat.toString());
         mySilverStatisticsSender.send(type, stat.toString());
-        SilverTrace
-            .debug("silverstatistics", "SilverStatisticsManager.sendStatistic", "after send");
       } catch (Exception e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsManager.sendStatistic",
             "SilverStatisticsSender ", e);
@@ -257,8 +249,6 @@ public class SilverStatisticsManager {
       SilverTrace.info("silverstatistics", "SilverStatisticsManager.sendStatistic",
           "root.MSG_GEN_PARAM_VALUE", "stat=" + type + ' ' + stat.toString());
       getSilverStatistics().putStats(type, stat.toString());
-      SilverTrace
-          .debug("silverstatistics", "SilverStatisticsManager.sendStatistic", "after putStats");
     }
   }
 
@@ -274,8 +264,6 @@ public class SilverStatisticsManager {
       String componentId) {
     // should feed Access (see SilverStatistics.properties)
     if (statsConfig.isRun(Access)) {
-      SilverTrace.debug("silverstatistics", "SilverStatistics.addStatAccess",
-          " peasType=" + peasType + " spaceId=" + spaceId + " componentId=" + componentId);
       StringBuilder stat = new StringBuilder();
       stat.append(DateUtil.formatAsISO8601Day(dateAccess));
       stat.append(SEPARATOR);
@@ -302,8 +290,6 @@ public class SilverStatisticsManager {
   public void addStatConnection(String userId, Date dateConnection, int count, long duration) {
     // should feed connexion (see SilverStatistics.properties)
     if (statsConfig.isRun(Connexion)) {
-      SilverTrace.debug("silverstatistics", "SilverStatistics.addStatConnection",
-          " userId=" + userId + " count=" + count);
       StringBuilder stat = new StringBuilder();
       stat.append(DateUtil.formatAsISO8601Day(dateConnection)); // date
       // connexion
@@ -326,8 +312,6 @@ public class SilverStatisticsManager {
    */
   public void addStatSize(Date date, String dirName, long dirSize) {
     if (statsConfig.isRun(Size)) {
-      SilverTrace.debug("silverstatistics", "SilverStatistics.addStatSize",
-          "dirName=" + dirName + " dirSize=" + dirSize);
       StringBuilder stat = new StringBuilder();
       stat.append(DateUtil.formatAsISO8601Day(date));
       stat.append(SEPARATOR);

@@ -108,9 +108,6 @@ public class WebCommonLookAndFeel {
       }
     }
 
-    SilverTrace.info("viewgenerator", "GenericHTMLHeader.getLookStyleSheet()",
-        "root.MSG_GEN_ENTER_METHOD");
-    String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String charset =
         ResourceLocator.getGeneralSettingBundle().getString("charset", CharEncoding.UTF_8);
@@ -126,10 +123,6 @@ public class WebCommonLookAndFeel {
 
     // append default global CSS
     code.append(getCSSLinkTagWithVersion(contextPath + STANDARD_CSS));
-
-    code.append("<!--[if IE]>\n");
-    code.append(getCSSLinkTagWithVersion(contextPath + standardStyleForIE));
-    code.append("<![endif]-->\n");
 
     // define CSS(default and specific) and JS (specific) dedicated to current component
     String defaultComponentCSS = null;

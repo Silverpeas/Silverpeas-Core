@@ -52,8 +52,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource representing user favorite links. It is a web service that provides an access
@@ -299,7 +299,7 @@ public class MyLinksResource extends RESTWebService {
     try {
       uri = new URI(getUriInfo().getBaseUri() + "/mylinks/" + link.getLinkId());
     } catch (URISyntaxException e) {
-      Logger.getLogger(MyLinksResource.class.getName()).log(Level.SEVERE, null, e);
+      getLogger(MyLinksResource.class).error(e.getMessage(), e);
       throw new RuntimeException(e.getMessage(), e);
     }
     return uri;

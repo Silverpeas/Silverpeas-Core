@@ -29,6 +29,7 @@ import com.silverpeas.web.UserPrivilegeValidation;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
 
 import javax.inject.Inject;
@@ -43,8 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A validator of a session token for each incoming request. For each protected web resources, the
@@ -57,8 +56,7 @@ import java.util.logging.Logger;
  */
 public class SessionSynchronizerTokenValidator implements Filter {
 
-  private static final Logger logger = Logger.getLogger(SessionSynchronizerTokenValidator.class.
-      getSimpleName());
+  private static final SilverLogger logger = SilverLogger.getLogger("security");
 
   @Inject
   private SynchronizerTokenService tokenService;
@@ -95,11 +93,11 @@ public class SessionSynchronizerTokenValidator implements Filter {
         tokenService.validate(httpRequest);
         chain.doFilter(request, response);
       } catch (TokenValidationException ex) {
-        logger.log(Level.SEVERE, "The request for path {0} isn''t valid: {1}",
+        logger.error("The request for path {0} isn''t valid: {1}",
             new String[]{pathOf(request), ex.getMessage()});
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
       } catch (UnauthenticatedRequestException ex) {
-        logger.log(Level.SEVERE, "The request for path {0} isn''t sent within an opened session",
+        logger.error("The request for path {0} isn''t sent within an opened session",
             pathOf(request));
         redirectToAuthenticationPage(request, response);
       }

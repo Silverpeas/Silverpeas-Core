@@ -59,9 +59,6 @@ public class SilverStatisticsMessageDriven implements MessageListener {
     TextMessage textMessage = (TextMessage) message;
     try {
       String msg = textMessage.getText();
-      SilverTrace.debug("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
-          "root.MSG_GEN_PARAM_VALUE", "msg=" + msg);
-
       StringTokenizer stData = new StringTokenizer(msg, SEPARATOR);
       if (stData.hasMoreTokens()) {
         String typeOfStats = stData.nextToken();
@@ -70,8 +67,6 @@ public class SilverStatisticsMessageDriven implements MessageListener {
           SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
               "root.MSG_GEN_PARAM_VALUE", "before putStats stat=" + stat);
           getSilverStatistics().putStats(StatType.valueOf(typeOfStats), stat);
-          SilverTrace.debug("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
-              "after putStats");
         } else {
           SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
               "Wrong message", msg);

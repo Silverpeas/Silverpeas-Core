@@ -233,10 +233,6 @@ public class AgendaHtmlView {
    * @see
    */
   public String getHtmlViewByMonth(String startDate) {
-    SilverTrace.debug("agenda",
-        "AgendaHtmView.getHtmlViewByMonth(String startDate)", "schedules"
-        + schedules.size());
-
     if (calendarHtmlView == null) {
       calendarHtmlView = new CalendarHtmlView();
     }

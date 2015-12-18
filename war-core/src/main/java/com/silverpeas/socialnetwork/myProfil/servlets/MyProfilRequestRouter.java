@@ -31,7 +31,6 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
@@ -46,6 +45,7 @@ import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -55,8 +55,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
 
@@ -162,7 +160,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         try {
           request.setAttribute("type", SocialInformationType.EVENT);
         } catch (Exception ex) {
-          Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
+          SilverLogger.getLogger(this).error(ex.getMessage(), ex);
         }
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
       } else if ("ALL".equalsIgnoreCase(function)) {
@@ -271,11 +269,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
           currentUser.getLastName();
       String userEmail =
           updateEmailIsAllowed ? request.getParameter("userEMail") : currentUser.geteMail();
-      SilverTrace.info(getSessionControlBeanName(), "PersoPeasRequestRouter.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "userFirstName=" + userFirstName + " - userLastName=" + userLastName + " userEmail=" +
-              userEmail);
-
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion =
           (userLoginQuestion != null ? EncodeHelper.htmlStringToJavaString(userLoginQuestion) :

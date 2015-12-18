@@ -26,6 +26,7 @@ package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.naming.InitialContext;
@@ -33,8 +34,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * It wraps the access to the data source into which are stored the dynamic values. It uses for
@@ -67,7 +66,7 @@ public class JNDIConnectionPool implements ConnectionPool {
     try {
       dataSource = InitialContext.doLookup(jndiName);
     } catch (NamingException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 

@@ -42,6 +42,11 @@
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
+      <artifactId>api-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -218,6 +223,9 @@
               <filtering>true</filtering>
             </webResource>
           </webResources>
+          <archive>
+            <manifestFile>src/main/webapp/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
         </configuration>
       </plugin>
     </plugins>

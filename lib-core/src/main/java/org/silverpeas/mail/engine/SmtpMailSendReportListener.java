@@ -48,9 +48,6 @@ public class SmtpMailSendReportListener implements TransportListener {
     String logMessage = MessageFormat
         .format("Mail with subject ''{0}'' has been successfully delivered.",
             mailToSend.getSubject());
-    SilverTrace
-        .debug("mail", "SmtpMailSendReportListener.messageDelivered()", "root.MSG_GEN_PARAM_VALUE",
-            logMessage);
     report(e);
   }
 
@@ -90,8 +87,6 @@ public class SmtpMailSendReportListener implements TransportListener {
       for (Address address : e.getValidSentAddresses()) {
         logMessage.append("\t").append(address).append("\n");
       }
-      SilverTrace.debug("mail", "SmtpMailSendReportListener.messageDelivered()",
-          "root.MSG_GEN_PARAM_VALUE", logMessage.toString());
     }
 
     /*

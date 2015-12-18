@@ -1105,11 +1105,6 @@ public interface Administration {
    */
   String getDAPIGeneralAdminId();
 
-  /**
-   * Get the list of connected users
-   */
-  UserLog[] getUserConnected();
-
   // -------------------------------------------------------------------
   // RE-INDEXATION
   // -------------------------------------------------------------------

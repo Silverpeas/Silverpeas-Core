@@ -193,10 +193,6 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceUserRoleRow row)
       throws SQLException {
-    SilverTrace.debug("admin", "SpaceUserRoleTable.prepareInsert",
-        "root.MSG_GEN_ENTER_METHOD", "usr.id = " + row.id + ", usr.spaceId = "
-        + row.spaceId + ", usr.roleName = " + row.roleName
-        + ", usr.isInherited = " + row.isInherited);
     if (row.id == -1) {
       row.id = getNextId();
     }

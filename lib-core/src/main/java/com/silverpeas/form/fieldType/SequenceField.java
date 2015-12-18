@@ -137,10 +137,6 @@ public class SequenceField extends TextField {
         statement.setString(2, componentId + ":" + templateName);
       }
 
-      SilverTrace.debug("form", "SequenceField.getValues", "root.MSG_GEN_PARAM_VALUE",
-          "fieldName = " + fieldName + ", componentId = " + componentId + ", templateName = "
-          + templateName + " ,global=" + global);
-
       rs = statement.executeQuery();
       while (rs.next()) {
         int currentValue = numberToInt(rs.getString(1));

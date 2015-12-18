@@ -25,6 +25,7 @@
 package org.silverpeas.util;
 
 import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,8 +35,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The resource bundles and the properties files and all located into a particular directory
@@ -102,8 +101,7 @@ public class ConfigurationClassLoader extends ClassLoader {
         try {
           resource = file.toURI().toURL();
         } catch (MalformedURLException ex) {
-          Logger.getLogger(ConfigurationClassLoader.class.getName())
-              .log(Level.SEVERE, "Malformed URL for resource " + name, ex);
+          SilverLogger.getLogger(this).error("Malformed URL for resource " + name, ex);
         }
       }
     }
@@ -119,8 +117,7 @@ public class ConfigurationClassLoader extends ClassLoader {
         try {
           inputStream = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
-          Logger.getLogger(ConfigurationClassLoader.class.getName())
-              .log(Level.SEVERE, "Resource " + name + " not found", ex);
+          SilverLogger.getLogger(this).error("Resource " + name + " not found", ex);
         }
       }
     }

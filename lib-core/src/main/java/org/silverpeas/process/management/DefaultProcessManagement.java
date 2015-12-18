@@ -154,12 +154,6 @@ public class DefaultProcessManagement implements ProcessManagement {
       final InternalContext<C> context) throws Exception {
     try {
       process.process(context.getProcessExecutionContext(), context.getSession());
-
-      // LOG
-      SilverTrace.debug("Process", "processManagement.processFiles()",
-          "processManagement.MAIN_PROCESSING_DONE",
-          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
-
     } catch (final Exception exception) {
       handleError(context, ProcessErrorType.DURING_MAIN_PROCESSING, exception, process);
     }
@@ -177,11 +171,6 @@ public class DefaultProcessManagement implements ProcessManagement {
             check.check(context.getProcessExecutionContext());
           }
         }
-
-        // LOG
-        SilverTrace.debug("Process", "ProcessManagement.checks()", "checks.CHECKS_DONE",
-            new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
-
       } catch (final Exception exception) {
         handleError(context, ProcessErrorType.DURING_CHECKS_PROCESSING, exception, null);
       }
@@ -197,12 +186,6 @@ public class DefaultProcessManagement implements ProcessManagement {
       throws Exception {
     try {
       process.onSuccessful();
-
-      // LOG
-      SilverTrace.debug("Process", "processManagement.onSuccessful()",
-          "processManagement.ON_SUCCESSFUL_DONE",
-          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
-
     } catch (final Throwable throwable) {
 
       // LOG
@@ -283,12 +266,6 @@ public class DefaultProcessManagement implements ProcessManagement {
       try {
         ((FileHandler) context.getProcessExecutionContext().getFileHandler())
             .checkinSessionWorkingPath();
-
-        // LOG
-        SilverTrace.debug("Process", "processManagement.commit()",
-            "processManagement.COMMIT_FILES_DONE",
-            new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
-
       } finally {
         clearSession(context);
       }
@@ -303,12 +280,6 @@ public class DefaultProcessManagement implements ProcessManagement {
     if (context.isOpeningFileTransaction()) {
       synchronized (ProcessMonitoring.SYNCHRONIZE) {
         try {
-
-          // LOG
-          SilverTrace.debug("Process", "processManagement.rollback()",
-              "processManagement.ROLLBACK_FILES_DONE",
-              new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
-
         } finally {
           clearSession(context);
         }
@@ -324,11 +295,6 @@ public class DefaultProcessManagement implements ProcessManagement {
     if (context.isOpeningFileTransaction()) {
       ((FileHandler) context.getProcessExecutionContext().getFileHandler())
           .deleteSessionWorkingPath();
-
-      // LOG
-      SilverTrace.debug("Process", "processManagement.clearSession()",
-          "processManagement.SESSION_CLEARED",
-          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
     }
   }
 

@@ -25,10 +25,8 @@ import com.stratelia.silverpeas.notificationManager.model.NotifSchema;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
-import org.silverpeas.util.StringUtil;
 
 import javax.inject.Singleton;
-import java.util.logging.Level;
 
 /**
  * @author mmoquillon
@@ -47,13 +45,13 @@ public class NotificationComponentInstanceEventListener
       schema.notifPreference.dereferenceComponentInstanceId(id);
       schema.commit();
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage(), e);
+      logger.error(e.getMessage(), e);
       try {
         if (schema != null) {
           schema.rollback();
         }
       } catch (Exception ex) {
-        logger.log(Level.WARNING, ex.getMessage(), ex);
+        logger.error(ex.getMessage(), ex);
       }
     } finally {
       try {
@@ -61,7 +59,7 @@ public class NotificationComponentInstanceEventListener
           schema.close();
         }
       } catch (Exception e) {
-        logger.log(Level.WARNING, e.getMessage(), e);
+        logger.error(e.getMessage(), e);
       }
     }
   }

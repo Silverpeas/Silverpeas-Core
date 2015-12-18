@@ -358,20 +358,14 @@ public class XmlSearchForm extends AbstractForm {
   }
 
   private String getParameterValue(List<FileItem> items, String parameterName) {
-    SilverTrace.debug("form", "XmlSearchForm.getParameterValue",
-        "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     FileItem item = getParameter(items, parameterName);
     if (item != null && item.isFormField()) {
-      SilverTrace.debug("form", "XmlSearchForm.getParameterValue",
-          "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + item.getString());
       return item.getString();
     }
     return null;
   }
 
   private String getParameterValues(List<FileItem> items, String parameterName) {
-    SilverTrace.debug("form", "XmlSearchForm.getParameterValues",
-        "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     String values = "";
     List<FileItem> params = getParameters(items, parameterName);
     FileItem item;
@@ -382,8 +376,6 @@ public class XmlSearchForm extends AbstractForm {
         values += "##";
       }
     }
-    SilverTrace.debug("form", "XmlSearchForm.getParameterValues",
-        "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + values);
     return values;
   }
 

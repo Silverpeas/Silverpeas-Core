@@ -420,14 +420,6 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
               File.separator
               + tempFolderName + File.separator + logicalName);
           fileItem.write(fileUploaded);
-
-          // Is a real file ?
-          if (fileSize > 0) {
-            SilverTrace.debug("agenda",
-                "AgendaRequestRouter.processFormUpload()",
-                "root.MSG_GEN_PARAM_VALUE", "fileUploaded = " + fileUploaded
-                + " fileSize=" + fileSize + " fileType=" + fileType);
-          }
         }
       }
     } catch (Exception e) {

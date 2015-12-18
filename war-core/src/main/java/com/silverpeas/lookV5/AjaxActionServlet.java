@@ -75,8 +75,6 @@ public class AjaxActionServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.debug("lookSilverpeasV5", "AjaxActionServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
-
     String action = getAction(req);
 
     String result;
@@ -100,9 +98,6 @@ public class AjaxActionServlet extends HttpServlet {
    * @return JSON action result
    */
   private String addSpace(HttpServletRequest req) {
-    SilverTrace
-        .debug("lookSilverpeasV5", "AjaxActionServlet.addSpace", "root.MSG_GEN_ENTER_METHOD");
-
     // Get current session
     HttpSession session = req.getSession(true);
     // Retrieve user identifier from session
@@ -201,8 +196,6 @@ public class AjaxActionServlet extends HttpServlet {
    * @return JSON action result
    */
   private String removeSpace(HttpServletRequest req) {
-    SilverTrace
-        .debug("lookSilverpeasV5", "AjaxActionServlet.removeSpace", "root.MSG_GEN_ENTER_METHOD");
     // Get current session
     HttpSession session = req.getSession(true);
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
@@ -317,8 +310,6 @@ public class AjaxActionServlet extends HttpServlet {
    * @return JSON action result
    */
   private String getFrame(HttpServletRequest req) {
-    SilverTrace.debug("lookSilverpeasV5", AjaxActionServlet.class.getName() + ".getFrame",
-        "root.MSG_GEN_ENTER_METHOD");
     HttpSession session = req.getSession(true);
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);

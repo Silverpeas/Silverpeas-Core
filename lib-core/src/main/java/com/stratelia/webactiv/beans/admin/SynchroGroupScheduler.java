@@ -87,19 +87,11 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) {
-    String jobName = anEvent.getJobExecutionContext().getJobName();
-    SilverTrace.debug("admin",
-        "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-        + jobName + "' is executed");
     doSynchroGroup();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    String jobName = anEvent.getJobExecutionContext().getJobName();
-    SilverTrace.debug("admin",
-        "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-        + jobName + "' was successfull");
   }
 
   @Override

@@ -178,8 +178,6 @@ public class SimpleDocumentService implements AttachmentService {
    * @param lang
    */
   private void deleteIndex(SimpleDocument document, String lang) {
-    SilverTrace.debug("attachment", "DocumentService.deleteIndex", "root.MSG_GEN_ENTER_METHOD",
-        document.getId());
     String language = lang;
     if (language == null) {
       language = I18NHelper.defaultLanguage;

@@ -108,9 +108,6 @@ public class IndexManager {
    * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
-    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_INDEX_ENGINE_STARTED",
-        "maxFieldLength=" + maxFieldLength + ", mergeFactor=" + mergeFactor + ", maxMergeDocs="
-        + maxMergeDocs);
   }
 
   /**
@@ -124,9 +121,6 @@ public class IndexManager {
     IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
     removeIndexEntry(writer, indexEntry.getPK());
     index(writer, indexEntry);
-    SilverTrace.debug("applicationIndexer", "IndexManager().addIndexEntry()",
-        "applicationIndexer.MSG_INDEXING_COMPONENT_ITEM", "componentId = "
-        + indexEntry.getComponent());
   }
 
   /**
@@ -134,14 +128,9 @@ public class IndexManager {
    */
   public void flush() {
     String writerPath = indexWriter.getKey();
-    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
-        "writerPath = " + writerPath);
-
     if (StringUtil.isDefined(writerPath)) {
       IndexWriter writer = indexWriter.getValue();
       if (writer != null) {
-        SilverTrace.debug("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
-            "try to optimize " + writerPath);
         // Then, close the writer
         try {
           writer.close();
@@ -170,8 +159,6 @@ public class IndexManager {
       SilverTrace.error("indexEngine", "IndexManager", "indexEngine.MSG_REMOVE_REQUEST_FAILED",
           indexEntry.toString(), e);
     }
-    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_REMOVE_REQUEST_SUCCEED",
-        indexEntry.toString());
   }
 
   /**
@@ -184,9 +171,6 @@ public class IndexManager {
     IndexWriter writer = getIndexWriter(indexPath, "");
     if (writer != null) {
       removeIndexEntry(writer, indexEntry);
-    } else {
-      SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.MSG_UNKNOWN_INDEX_FILE",
-          indexPath);
     }
   }
 
@@ -244,15 +228,12 @@ public class IndexManager {
    * @return the reader specific of the file described by the file description
    */
   public Reader getReader(FileDescription file) {
-    SilverTrace.debug("indexEngine", "IndexManager.getReader", "root.MSG_GEN_ENTER_METHOD");
     Reader reader = null;
     Parser parser = ParserManager.getParser(file.getFormat());
 
     if (parser != null) {
       reader = parser.getReader(file.getPath(), file.getEncoding());
     }
-    SilverTrace.debug("indexEngine", "IndexManager.getReader",
-        "root.MSG_GEN_EXIT_METHOD");
     return reader;
   }
 
@@ -546,14 +527,8 @@ public class IndexManager {
     }
     try {
       Reader reader = getReader(fileDescription);
-      SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_PARAM_VALUE",
-          "reader returned");
       if (reader != null) {
-        SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_PARAM_VALUE",
-            "reader is not null");
         Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), reader);
-        SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_PARAM_VALUE",
-            "doc = " + field.name() + ", field = " + field.toString());
         doc.add(field);
       }
     } catch (Throwable e) {

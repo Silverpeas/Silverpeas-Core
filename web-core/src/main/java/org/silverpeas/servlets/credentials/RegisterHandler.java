@@ -23,8 +23,8 @@ package org.silverpeas.servlets.credentials;
 import com.silverpeas.admin.service.UserService;
 import com.silverpeas.admin.service.UserServiceProvider;
 import com.stratelia.webactiv.beans.admin.AdminException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.util.logging.SilverLogger;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -55,9 +55,9 @@ public class RegisterHandler extends FunctionHandler {
       }
       return "/admin/jsp/registrationSuccess.jsp";
     } else {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING,
+      SilverLogger.getLogger(this).warn(
           "A user is trying to register himself although this capability is deactived! Registration information: [firstname: {0}, lastname: {1}, email: {2}]",
-          new Object[]{firstName, lastName, email});
+          firstName, lastName, email);
       return "";
     }
   }

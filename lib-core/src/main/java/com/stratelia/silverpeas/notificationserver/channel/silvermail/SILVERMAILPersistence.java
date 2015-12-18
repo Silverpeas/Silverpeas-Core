@@ -118,9 +118,6 @@ public class SILVERMAILPersistence {
             longTextId = Integer.parseInt(pmb.getBody());
             body = LongText.getLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace.debug("silvermail",
-                "SILVERMAILPersistence.getMessageOfFolder()", "PB converting body id to LongText",
-                "Message Body = " + pmb.getBody());
             body = pmb.getBody();
           }
           silverMailMessage.setBody(body);
@@ -163,9 +160,6 @@ public class SILVERMAILPersistence {
           longTextId = Integer.parseInt(smb.getBody());
           body = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace.debug("silvermail", "SILVERMAILPersistence.getMessage()",
-              "PB converting body id to LongText", "Message Body = "
-              + smb.getBody());
           body = smb.getBody();
         }
         result.setBody(body);
@@ -198,8 +192,6 @@ public class SILVERMAILPersistence {
             int longTextId = Integer.parseInt(toDel.getBody());
             LongText.removeLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace.debug("silvermail", "SILVERMAILPersistence.deleteMessage()",
-                "PB converting body id to LongText", "Message Body = " + msgId);
           }
           repository.delete(toDel);
         } else {

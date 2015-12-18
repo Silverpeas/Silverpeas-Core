@@ -30,6 +30,7 @@ import org.silverpeas.mail.MailToSend;
 import org.silverpeas.mail.ReceiverMailAddressSet;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -43,8 +44,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This is the SMTP implementation of the {@link MailSender} interface.
@@ -118,7 +117,7 @@ public class SmtpMailSender implements MailSender {
       performSend(mail, smtpConfiguration, session, email, toAddresses);
 
     } catch (MessagingException | UnsupportedEncodingException e) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, e.getMessage(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

@@ -151,9 +151,6 @@ public class UserServiceLegacy implements UserService {
     } catch (AdminException e) {
       // An exception is thrown because user is not found
       // so this login is available
-      SilverTrace.debug("admin",
-          "SilverpeasAdminServiceLegacy.generateLogin",
-          "firstTryFailed", "firstName :" + email, e);
       return email;
     }
 

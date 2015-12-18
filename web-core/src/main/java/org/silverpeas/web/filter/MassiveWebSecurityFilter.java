@@ -25,10 +25,11 @@ package org.silverpeas.web.filter;
 
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import org.silverpeas.cache.service.CacheServiceProvider;
-import org.silverpeas.util.DBUtil;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.filter.exception.WebSecurityException;
 import org.silverpeas.web.filter.exception.WebSqlInjectionSecurityException;
@@ -47,8 +48,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,8 +58,7 @@ import java.util.regex.Pattern;
  */
 public class MassiveWebSecurityFilter implements Filter {
 
-  private static final Logger logger = Logger.getLogger(MassiveWebSecurityFilter.class.
-      getSimpleName());
+  private static final SilverLogger logger = SilverLogger.getLogger("security");
 
   private final static String WEB_SERVICES_URI_PREFIX =
       UriBuilder.fromUri(URLManager.getApplicationURL())
@@ -164,10 +162,8 @@ public class MassiveWebSecurityFilter implements Filter {
           }
         } finally {
           long end = System.currentTimeMillis();
-          if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "Massive Web Security Verify duration : " +
+          logger.debug("Massive Web Security Verify duration : " +
                 DurationFormatUtils.formatDurationHMS(end - start));
-          }
         }
       }
 
@@ -176,8 +172,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
     } catch (WebSecurityException wse) {
 
-      logger.log(Level.SEVERE, "The request for path {0} isn''t valid: {1}",
-          new String[]{pathOf(httpRequest), wse.getMessage()});
+      logger.error("The request for path {0} isn''t valid: {1}",
+          pathOf(httpRequest), wse.getMessage());
 
       // An HTTP error is sended to the client
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, wse.getMessage());

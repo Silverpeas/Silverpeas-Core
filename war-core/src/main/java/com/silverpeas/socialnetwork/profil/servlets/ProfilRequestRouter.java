@@ -31,9 +31,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.logging.SilverLogger;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author azzedine
@@ -89,7 +88,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
     try {
       return profileSC.isInMyContact(userId);
     } catch (SocialNetworkException ex) {
-      Logger.getLogger(ProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
     return false;
   }

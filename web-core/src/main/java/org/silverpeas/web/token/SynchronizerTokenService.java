@@ -36,6 +36,7 @@ import org.silverpeas.token.TokenGenerator;
 import org.silverpeas.token.TokenGeneratorProvider;
 import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.synchronizer.SynchronizerToken;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
 
 import javax.inject.Singleton;
@@ -43,8 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A service to manage the synchronizer tokens used in Silverpeas to protect the user sessions or
@@ -67,7 +66,7 @@ public class SynchronizerTokenService {
       "(?i)(?!.*(/qaptcha|rpdcsearch/|rclipboard/|rchat/chat[0-9]+|blockingNews|services/password/)).*";
   private static final String DEFAULT_GET_RULE
       = "(?i)^/\\w+[\\w/]*/jsp/.*(delete|update|creat|block|unblock).*$";
-  private static final Logger logger = Logger.getLogger(SynchronizerTokenService.class.getName());
+  private static final SilverLogger logger = SilverLogger.getLogger("security");
   private static final List<String> DEFAULT_PROTECTED_METHODS = Arrays.asList("POST", "PUT",
       "DELETE");
 
@@ -97,12 +96,12 @@ public class SynchronizerTokenService {
       Token token = session.getAttribute(SESSION_TOKEN_KEY);
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       if (token != null) {
-        logger.log(Level.INFO, "Renew the session token for the user {0} ({1})", new String[]{user.
-          getId(), user.getDisplayedName()});
+        logger.info("Renew the session token for the user {0} ({1})",
+            user.getId(), user.getDisplayedName());
         token = generator.renew(token);
       } else {
-        logger.log(Level.INFO, "Create the session token for the user {0} ({1})", new String[]{user.
-          getId(), user.getDisplayedName()});
+        logger.info("Create the session token for the user {0} ({1})",
+            user.getId(), user.getDisplayedName());
         token = generator.generate();
       }
       session.setAttribute(SESSION_TOKEN_KEY, token);
@@ -120,7 +119,7 @@ public class SynchronizerTokenService {
    */
   public void setUpNavigationTokens(HttpServletRequest request) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
-      logger.log(Level.INFO, "Create a navigation token for path {0}", getRequestPath(request));
+      logger.info("Create a navigation token for path {0}", getRequestPath(request));
       HttpSession session = request.getSession();
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       Token token = generator.generate();
@@ -143,7 +142,7 @@ public class SynchronizerTokenService {
    */
   public void validate(HttpServletRequest request) throws TokenValidationException {
     if (SecuritySettings.isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
-      logger.log(Level.FINE, "Validate the request for path {0}", getRequestPath(request));
+      logger.info("Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
       // is there a user session opened?
       if (expectedToken.isDefined()) {
@@ -155,7 +154,7 @@ public class SynchronizerTokenService {
       // the token is popped from the current session.
       expectedToken = getTokenInSession(NAVIGATION_TOKEN_KEY, request, true);
       if (expectedToken.isDefined()) {
-        logger.log(Level.FINE, "Validate the request origin for path {0}", getRequestPath(request));
+        logger.info("Validate the request origin for path {0}", getRequestPath(request));
         String actualToken = getTokenInRequest(NAVIGATION_TOKEN_KEY, request);
         validate(actualToken, expectedToken);
       }

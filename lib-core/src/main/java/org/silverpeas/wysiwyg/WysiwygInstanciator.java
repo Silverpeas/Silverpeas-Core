@@ -45,7 +45,6 @@ public class WysiwygInstanciator extends SQLRequest {
 
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.debug("wysiwyg", "WysiwygInstanciator.create", "Finished");
   }
 
   /**

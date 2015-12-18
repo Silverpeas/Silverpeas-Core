@@ -155,7 +155,6 @@ public abstract class Table<T> {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getUniqueRow", "root.MSG_QUERY", query + " id: " + id);
       select = schema.getStatement(query);
       select.setInt(1, id);
       rs = select.executeQuery();
@@ -181,8 +180,6 @@ public abstract class Table<T> {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getUniqueRow", "root.MSG_QUERY",
-              query + " id String: " + id);
       select = schema.getStatement(query);
       select.setString(1, id);
       rs = select.executeQuery();
@@ -338,7 +335,6 @@ public abstract class Table<T> {
       message.append(" params[]: ");
       message.append(Arrays.toString(params.toArray()));
     }
-    SilverTrace.debug("admin", "Table." + fromMethodName, "root.MSG_QUERY", message.toString());
   }
 
   /**
@@ -383,7 +379,6 @@ public abstract class Table<T> {
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + " param: " + param);
       select = schema.getStatement(query);
       select.setString(1, param);
       rs = select.executeQuery();
@@ -418,8 +413,6 @@ public abstract class Table<T> {
     PreparedStatement select = null;
 
     try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + " id: " + Integer.
-          toString(id) + " param: " + param);
       select = schema.getStatement(query);
       select.setInt(1, id);
       select.setString(2, param);
@@ -479,8 +472,6 @@ public abstract class Table<T> {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getInteger", "root.MSG_QUERY", query + " ids[]: " + Arrays.
-              toString(ids));
       select = schema.getStatement(query);
       for (int i = 0; i < ids.length; i++) {
         select.setInt(i + 1, ids[i]);

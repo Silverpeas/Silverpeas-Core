@@ -27,13 +27,13 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
@@ -53,13 +53,12 @@ public class ReadMessage implements SILVERMAILRequestHandler {
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
     try {
-      String sId = (String) request.getParameter("ID");
+      String sId = request.getParameter("ID");
       long ID = Long.parseLong(sId);
 
       ((SILVERMAILSessionController) componentSC).setCurrentMessageId(ID);
     } catch (NumberFormatException e) {
-      SilverTrace.error("silvermail", "ReadMessage.handleRequest()",
-          "root.EX_IGNORED", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return "/SILVERMAIL/jsp/readMessage.jsp";
   }

@@ -41,8 +41,6 @@ public class RepositoryIndexer {
   private int count = 0;
 
   public RepositoryIndexer(String spaceId, String componentId) {
-    SilverTrace.debug("indexEngine", "RepositoryIndexer.RepositoryIndexer()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId + " ComponentId=" + componentId);
     this.spaceId = spaceId;
     this.componentId = componentId;
   }
@@ -60,10 +58,6 @@ public class RepositoryIndexer {
   }
 
   public void pathIndexer(File path, String creationDate, String creatorId, String action) {
-    SilverTrace.debug("indexEngine", "RepositoryIndexer.pathIndexer()", "root.MSG_GEN_ENTER_METHOD",
-        "path=" + path);
-    SilverTrace.debug("indexEngine", "RepositoryIndexer.pathIndexer()", "root.MSG_GEN_PARAM_VALUE",
-        "separator = " + File.separator);
     if (path.isDirectory()) {
       // index directory
       indexDirectory(action, creationDate, creatorId, path);

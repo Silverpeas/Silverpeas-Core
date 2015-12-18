@@ -153,17 +153,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     if (!isActivated()) {
       return new Quota();
     }
-
-    SilverTrace
-        .debug("quota", "AbstractQuotaService.verify()", "quota.BEFORE_VERIFY", quota.toString());
-
     if (quota.exists()) {
       long offset = countingOffset.getOffset();
       quota.setCount(getCurrentCount(key) + offset);
-
-      SilverTrace.debug("quota", "AbstractQuotaService.verify()", "quota.AFTER_VERIFY",
-          quota.toString() + ", APPLIED OFFSET=" + offset);
-
       final QuotaLoad quotaLoad = quota.getLoad();
       if (QuotaLoad.OUT_OF_BOUNDS.equals(quotaLoad)) {
         throw new QuotaOutOfBoundsException(quota);

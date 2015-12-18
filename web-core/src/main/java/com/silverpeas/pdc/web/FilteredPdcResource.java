@@ -36,10 +36,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.silverpeas.pdc.web.PdcEntity.*;
+import static org.silverpeas.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC) filtered by some
@@ -106,7 +105,7 @@ public class FilteredPdcResource extends RESTWebService {
           atURI(getUriInfo().getRequestUri()),
           withThesaurusAccordingTo(userPreferences));
     } catch (Exception ex) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage());
+      getLogger(this).error(ex.getMessage(), ex);
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }

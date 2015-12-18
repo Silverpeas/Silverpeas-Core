@@ -162,7 +162,6 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.search.searchEngine.model.ParseException {
-    long startTime = System.nanoTime();
     List<MatchingIndexEntry> results;
 
     IndexSearcher searcher = getSearcher(query);
@@ -230,10 +229,6 @@ public class WAIndexSearcher {
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
       results = new ArrayList<>();
     }
-    long endTime = System.nanoTime();
-
-    SilverTrace.debug("searchEngine", WAIndexSearcher.class.toString(), " search duration in ms "
-        + (endTime - startTime) / 1000000);
     return results.toArray(new MatchingIndexEntry[results.size()]);
   }
 

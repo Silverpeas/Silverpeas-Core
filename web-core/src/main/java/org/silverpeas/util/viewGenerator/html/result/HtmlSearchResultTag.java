@@ -182,9 +182,6 @@ public class HtmlSearchResultTag extends TagSupport {
           // Retrieve the component result displayer class from a CDI provider
           ResultDisplayer resultDisplayer =
               ResultDisplayerProvider.getResultDisplayer(componentName);
-          SilverTrace.debug("viewgenerator", HtmlSearchResultTag.class.getName(),
-              "load specific for current result: instanceid=" + instanceId + ", contentid=" +
-                  gsr.getId());
           if (resultDisplayer != null) {
             addedInformation = resultDisplayer.getResultContent(
                 new SearchResultContentVO(this.userId, this.gsr, this.sortValue,

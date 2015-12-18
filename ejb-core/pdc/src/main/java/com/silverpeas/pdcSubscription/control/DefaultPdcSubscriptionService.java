@@ -37,10 +37,10 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentPeas;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -117,8 +117,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void updatePDCSubscription(PDCSubscription subscription) {
-    SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.updatePDCSubscription()",
-        "root.MSG_GEN_ENTER_METHOD", "subscription = " + subscription);
     try(Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.updatePDCSubscription(conn, subscription);
     } catch (SQLException re) {
@@ -245,10 +243,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   @Override
   public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid) {
-    SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.checkSubscriptions()",
-        "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues + ", componentId = "
-        + componentId + ", silverObjectid = " + silverObjectid);
-
     OrganizationController organizationController = OrganizationControllerProvider
         .getOrganisationController();
 
@@ -280,9 +274,8 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
                     new PdcResourceClassificationUserNotification(subscription,
                         silverContent));
               } else {
-                SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.checkSubscriptions()",
-                    "root.MSG_GEN_PARAM_VALUE", "user #" + userId +
-                        " not allowed to see silverContent #" + silverObjectid);
+                SilverLogger.getLogger(this).warn("User {0} now alloawed to see the content {1}",
+                    userId, silverObjectid);
               }
             }
           }
@@ -402,9 +395,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
    */
   protected boolean isCorrespondingSubscription(PDCSubscription subscription,
       List<? extends Value> classifyValues) {
-    SilverTrace.info("PdcSubscription", "PdcSubscriptionBmEJB.isCorrespondingSubscription()",
-        "root.MSG_GEN_ENTER_METHOD", "subscription = " + subscription + ", classifyValues = "
-        + classifyValues);
     List<? extends Criteria> searchCriterias = subscription.getPdcContext();
     if (searchCriterias == null || classifyValues == null || searchCriterias.isEmpty()
         || classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {

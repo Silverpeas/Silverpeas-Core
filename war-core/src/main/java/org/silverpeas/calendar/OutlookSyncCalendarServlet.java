@@ -111,8 +111,6 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
           default:
             break;
         }
-        SilverTrace.debug("importCalendar", "ImportCalendarServlet.doPost", "xx",
-            element.toString());
       }
 
       // delete no more existing events

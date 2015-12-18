@@ -189,11 +189,7 @@ public class EncodeHelper {
   }
 
   public static String convertHTMLEntities(String text) {
-    SilverTrace.debug("util", "Encode.convertHTMLEntities()", "root.MSG_GEN_PARAM_VALUE",
-        " text recu " + text);
     String result = StringEscapeUtils.escapeHtml4(text);
-    SilverTrace.debug("util", "Encode.convertHTMLEntities()", "root.MSG_GEN_PARAM_VALUE",
-        "text sortant = " + result);
     return result;
   }
 

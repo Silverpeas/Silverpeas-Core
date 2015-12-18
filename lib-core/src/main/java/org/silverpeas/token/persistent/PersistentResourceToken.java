@@ -33,19 +33,16 @@ import org.silverpeas.token.exception.TokenValidationException;
 import org.silverpeas.token.persistent.service.PersistentResourceTokenService;
 import org.silverpeas.token.persistent.service.TokenServiceProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A persistent token used to identify uniquely a resource.
@@ -227,7 +224,7 @@ public class PersistentResourceToken
           ref = null;
         }
       } catch (Exception ex) {
-        Logger.getLogger(PersistentResourceToken.class.getName()).log(Level.SEVERE, null, ex);
+        SilverLogger.getLogger("core").error(ex.getMessage(), ex);
       }
     }
     return ref;

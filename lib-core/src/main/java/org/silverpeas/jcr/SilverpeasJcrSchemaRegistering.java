@@ -24,14 +24,13 @@ package org.silverpeas.jcr;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.silverpeas.initialization.Initialization;
 import org.silverpeas.jcr.provider.JcrSystemCredentialsProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An initialization service whose aims is to register the Silverpeas specific schema into the
@@ -50,8 +49,8 @@ public class SilverpeasJcrSchemaRegistering implements Initialization {
   public void init() throws Exception {
     Session session = null;
     try {
-      Logger.getLogger(getClass().getSimpleName())
-          .log(Level.INFO, "Silverpeas specific JCR schema loading...");
+      SilverLogger.getLogger(this)
+          .info("Silverpeas specific JCR schema loading...");
       session = repository.login(JcrSystemCredentialsProvider.getJcrSystemCredentials());
       InputStreamReader reader =
           new InputStreamReader(getClass().getResourceAsStream(SILVERPEAS_JCR_SCHEMA),

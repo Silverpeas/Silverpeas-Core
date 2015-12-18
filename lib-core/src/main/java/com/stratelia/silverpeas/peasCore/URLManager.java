@@ -26,15 +26,13 @@ import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.util.ComponentHelper;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.silverpeas.util.StringUtil.isDefined;
 
@@ -362,7 +360,7 @@ public class URLManager {
     try {
       encodedUrl = URLEncoder.encode(url, "UTF-8");
     } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(URLManager.class.getSimpleName()).log(Level.WARNING, ex.getMessage());
+      SilverLogger.getLogger(URLManager.class).warn(ex.getMessage());
     }
     return encodedUrl;
   }

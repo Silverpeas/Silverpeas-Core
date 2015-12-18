@@ -97,8 +97,6 @@ public class SearchEngineAjaxServlet extends HttpServlet {
   }
 
   private String markAsRead(HttpServletRequest req) {
-    SilverTrace.debug("SearchEngineAjaxServlet", SearchEngineAjaxServlet.class.getName() +
-        ".markAsRead()", "root.MSG_GEN_ENTER_METHOD");
     HttpSession session = req.getSession(true);
     PdcSearchSessionController pdcSC =
         (PdcSearchSessionController) session.getAttribute(PDC_SESSION_CONTROLLER_ATTRIBUTE_NAME);

@@ -49,7 +49,6 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.coordinates.model.Coordinate;
@@ -67,9 +66,18 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.util.*;
+import org.silverpeas.util.FileRepositoryManager;
+import org.silverpeas.util.FileServerUtils;
+import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.MultiSilverpeasBundle;
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.WAAttributeValuePair;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.logging.SilverLogger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -87,7 +95,15 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import static java.io.File.separator;
 import static org.silverpeas.util.Charsets.UTF_8;
@@ -175,9 +191,6 @@ public class ImportExport extends AbstractExportProcess {
    * @throws ImportExportException
    */
   SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName) throws ImportExportException {
-    SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-        "root.MSG_GEN_ENTER_METHOD", "xmlFileName = " + xmlFileName);
-
     try {
       InputSource xmlInputSource = new InputSource(xmlFileName);
       String xsdPublicId = settings.getString("xsdPublicId");
@@ -206,10 +219,6 @@ public class ImportExport extends AbstractExportProcess {
         xmlReader.parse(xmlInputSource);
 
       } catch (SAXException ex) {
-        SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName).
-                append(" is not valid according to default schema").toString());
-
         // If case the default schema is not the one specified by the XML import file,
         // try to get the right XML-schema and namespace (this is done by parsing without
         // validation)
@@ -237,12 +246,6 @@ public class ImportExport extends AbstractExportProcess {
         if ((altXsdSystemId == null) || (altXsdSystemId.equals(xsdSystemId))) {
           throw ex;
         }
-
-        SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE",
-            (new StringBuilder("Trying again using schema specification located at "))
-                .append(altXsdSystemId).toString());
-
         // Try again to load, parse and validate the XML import file,
         // using the new schema specification
         schema = schemaFactory.newSchema(new StreamSource(altXsdSystemId));
@@ -252,9 +255,6 @@ public class ImportExport extends AbstractExportProcess {
         xmlReader.setErrorHandler(errorHandler);
         xmlReader.parse(xmlInputSource);
       }
-
-      SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-          "root.MSG_GEN_PARAM_VALUE", "XML Validation complete");
 
       // Mapping file for Castor
       String mappingDir = settings.getString("mappingDir");
@@ -271,8 +271,6 @@ public class ImportExport extends AbstractExportProcess {
       // Unmarshall the process model
       SilverPeasExchangeType silverpeasExchange =
           (SilverPeasExchangeType) unmar.unmarshal(xmlInputSource);
-      SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-          "root.MSG_GEN_PARAM_VALUE", "Unmarshalling complete");
       return silverpeasExchange;
 
     } catch (MappingException | IOException me) {
@@ -503,8 +501,7 @@ public class ImportExport extends AbstractExportProcess {
         saveToSilverpeasExchangeFile(silverPeasExch,
             fileExportDir.getPath() + File.separatorChar + "importExport.xml");
       } catch (ImportExportException iex) {
-        SilverTrace
-            .error("ImportExport", "ImportExport.processExport()", "root.EX_CANT_WRITE_FILE", iex);
+        SilverLogger.getLogger(this).error(iex.getMessage(), iex);
       }
       // Création du zip
       createZipFile(fileExportDir, exportReport);
@@ -674,9 +671,8 @@ public class ImportExport extends AbstractExportProcess {
                   fileExportDir.getPath() + File.separatorChar + attDetail.getLogicalName());
             } catch (IOException ioe) {
               // Attached file is not physically present on disk, ignore it and log event
-              SilverTrace.error("importExport", "PublicationTypeManager.processExportPDF",
-                  "CANT_FIND_PDF_FILE",
-                  "PDF file '" + attDetail.getLogicalName() + "' is not present on disk", ioe);
+              SilverLogger.getLogger(this)
+                  .error("Cannot find PDF {0}", new String[]{attDetail.getLogicalName()}, ioe);
             }
             if (reader != null) {
               reader.consolidateNamedDestinations();
@@ -703,8 +699,8 @@ public class ImportExport extends AbstractExportProcess {
                   writer.addPage(page);
                 } catch (Exception e) {
                   // Can't import PDF file, ignore it and log event
-                  SilverTrace.error("importExport", "PublicationTypeManager.processExportPDF",
-                      "CANT_MERGE_PDF_FILE", "PDF file is " + attDetail.getLogicalName(), e);
+                  SilverLogger.getLogger(this)
+                      .error("Cannot merge PDF {0}", new String[]{attDetail.getLogicalName()}, e);
                 }
               }
 
@@ -954,8 +950,6 @@ public class ImportExport extends AbstractExportProcess {
             try {
               fileWriter.close();
             } catch (Exception ex) {
-              SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-                  "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
             }
           }
         }
@@ -1020,10 +1014,6 @@ public class ImportExport extends AbstractExportProcess {
 
           publicationType.getCoordinatesPositionsType()
               .setCoordinatesPositions(listCoordinatesPositions);
-          SilverTrace
-              .debug("importExport", "ImportExport.processExportKmax", "root.MSG_GEN_PARAM_VALUE",
-                  "coordinatePositions added");
-
           publicationFileNameRelativePath =
               componentLabel + separator + pubId + separator + "index.html";
           int nbThemes = pubTypMgr.getNbThemes(gedIE, publicationType, null);
@@ -1034,9 +1024,6 @@ public class ImportExport extends AbstractExportProcess {
 
           for (String filePositions : filesPositionsHTMLToFill) {
             fileHTML = new File(exportSummaryPath + separator + filePositions);
-            SilverTrace
-                .debug("importExport", "ImportExport.processExportKmax", "root.MSG_GEN_PARAM_VALUE",
-                    "pubId = " + pubId);
             fileWriter = null;
             try {
               if (fileHTML.exists()) {
@@ -1065,10 +1052,7 @@ public class ImportExport extends AbstractExportProcess {
   public void writeImportToLog(ImportReport importReport, MultiSilverpeasBundle resource) {
     if (importReport != null) {
       String reportLogFile = settings.getString("importExportLogFile");
-      SettingBundle silverTraceSettings =
-          ResourceLocator.getSettingBundle("org.silverpeas.silvertrace.settings.silverTrace");
-      String reportLogPath = silverTraceSettings.getString("ErrorDir");
-      File file = new File(reportLogPath + separator + reportLogFile);
+      File file = new File(reportLogFile);
       Writer fileWriter = null;
       try {
         if (!file.exists()) {
@@ -1077,9 +1061,7 @@ public class ImportExport extends AbstractExportProcess {
         fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), UTF_8);
         fileWriter.write(importReport.writeToLog(resource));
       } catch (IOException ex) {
-        SilverTrace
-            .error("ImportExport", "ImportExport.writeImportToLog()", "root.EX_CANT_WRITE_FILE",
-                ex);
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       } finally {
         IOUtils.closeQuietly(fileWriter);
       }

@@ -24,10 +24,10 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.LongText;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
 /**
  * @author neysseri
@@ -58,9 +58,6 @@ public class SilverMessageFactory {
           int longTextId = Integer.parseInt(smb.getBody());
           msg = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace.debug("server", "SilverMessageFactory.read()",
-              "PB converting body id to LongText", "Message Body = "
-              + smb.getBody());
           msg = smb.getBody();
         }
         if (msg != null) {
@@ -72,9 +69,8 @@ public class SilverMessageFactory {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("server", "SilverMessageFactory.read()",
-          "server.EX_CANT_READ_MSG", "UserId=" + userId + ", sessionId = "
-          + sessionId, e);
+      SilverLogger.getLogger(SilverMessageFactory.class)
+          .error("Cannot read message for user {0}", new String[]{userId}, e);
     }
 
     return silverMessage;
@@ -93,15 +89,12 @@ public class SilverMessageFactory {
             int longTextId = Integer.parseInt(toDel.getBody());
             LongText.removeLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace
-                .debug("server", "SilverMessageFactory.del()", "PB converting body id to LongText",
-                    "Message Body = " + msgId);
           }
           repository.delete(toDel);
         }
       } catch (Exception e) {
-        SilverTrace.error("server", "SilverMessageFactory.del()", "server.EX_CANT_DEL_MSG",
-            "MsgId=" + msgId, e);
+        SilverLogger.getLogger(SilverMessageFactory.class).error("Cannot delete message {0}",
+            new String[] {msgId}, e);
       }
       return null;
     });
@@ -112,8 +105,8 @@ public class SilverMessageFactory {
       try {
         getRepository().deleteAllMessagesByUserIdAndSessionId(userId, sessionId);
       } catch (Exception e) {
-        SilverTrace.error("server", "SilverMessageFactory.del()", "server.EX_CANT_DEL_MSG",
-            "UserId=" + userId + ", SessionId=" + sessionId, e);
+        SilverLogger.getLogger(SilverMessageFactory.class)
+            .error("Cannot delete all messages for user {0}", new String[]{userId}, e);
       }
       return null;
     });
@@ -131,8 +124,8 @@ public class SilverMessageFactory {
         pmb.setSessionId(sessionId);
         getRepository().save(pmb);
       } catch (Exception e) {
-        SilverTrace.error("server", "SilverMessageFactory.push()", "server.EX_CANT_PUSH_MSG",
-            "UserId=" + userId + ";Msg=" + message, e);
+        SilverLogger.getLogger(SilverMessageFactory.class)
+            .error("Cannot push message {0} for user {1}", new String[]{message, userId}, e);
       }
       return null;
     });

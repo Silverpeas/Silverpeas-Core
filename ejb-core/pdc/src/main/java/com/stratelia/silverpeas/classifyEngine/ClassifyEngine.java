@@ -668,14 +668,7 @@ public class ClassifyEngine {
       } else if (afterDate != null && afterDate.length() > 0) {
         prepStmt.setDate(1, new Date(DateUtil.parseDate(afterDate).getTime()));
       }
-      SilverTrace.debug("classifyEngine",
-          "ClassifyEngine.findSilverOjectByCriterias",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       resSet = prepStmt.executeQuery();
-      SilverTrace.debug("classifyEngine",
-          "ClassifyEngine.findSilverOjectByCriterias",
-          "root.MSG_GEN_PARAM_VALUE", "query executed !");
-
       // Fetch the results
       while (resSet.next()) {
         alObjectIds.add(resSet.getInt(1));

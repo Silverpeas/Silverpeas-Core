@@ -76,11 +76,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
       for (PropertyDescriptor property : properties) {
         String type = property.getPropertyType().getName();
-        SilverTrace.debug("persistence",
-            "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-            "root.MSG_GEN_PARAM_VALUE",
-            "new(" + beanClassName + "), property Name = " + property.getName() + ", type = " +
-                type);
         if (!isTypeValid(type)) {
           SilverTrace.warn("persistence",
               "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
@@ -139,8 +134,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
     try {
       String updateStatement = "delete from " + getTableName(pk) + " where id = ?";
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement + ", id= " + pk.getId());
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       prepStmt.executeUpdate();
     } catch (SQLException e) {
@@ -173,11 +166,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       String updateStatement = "delete from " + getTableName(pk) + " where " + whereClause;
 
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace.debug("persistence",
-          "SilverpeasBeanDAOImpl.removeWhere(WAPrimaryKey pk, String p_WhereClause)",
-          "root.MSG_GEN_PARAM_VALUE",
-          "queryStr = " + updateStatement + ", id= " + pk.getId() + ", whereClause= " +
-              whereClause);
       prepStmt.executeUpdate();
     } catch (Exception e) {
       throw new PersistenceException(
@@ -210,10 +198,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       String statement = null;
       for (PropertyDescriptor property : properties) {
         String type = property.getPropertyType().getName();
-        SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
-            "root.MSG_GEN_PARAM_VALUE",
-            "property Name = " + property.getName() + ", type = " + type);
-
         if (isTypeValid(type) == true) {
           if (statement == null) {
             statement = property.getName() + " = ? ";
@@ -227,10 +211,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           "UPDATE " + getTableName(bean.getPK()) + " SET " + statement + " WHERE id = ?";
 
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
-          "root.MSG_GEN_PARAM_VALUE",
-          "queryStr = " + updateStatement + ", id= " + bean.getPK().getId());
-
       int count = prepareStatementSetProperties(prepStmt, bean);
 
       // for the where clause
@@ -268,9 +248,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       String statement = null;
       for (PropertyDescriptor property : properties) {
         String type = property.getPropertyType().getName();
-        SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
-            "root.MSG_GEN_PARAM_VALUE",
-            "property Name = " + property.getName() + ", type = " + type);
         if (isTypeValid(type)) {
           if (columns == null) {
             columns = property.getName();
@@ -287,10 +264,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           "INSERT INTO " + getTableName(bean.getPK()) + " (" + columns + ") " + " values (" +
               statement + ")";
       prepStmt = con.prepareStatement(insertStatement);
-      SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
-          "root.MSG_GEN_PARAM_VALUE",
-          "queryStr = " + insertStatement + ", id= " + bean.getPK().getId());
-
       int count = prepareStatementSetProperties(prepStmt, bean);
       // for the where clause
       int id = DBUtil.getNextId(getTableName(bean.getPK()), "id");
@@ -329,8 +302,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       String selectStatement =
           "SELECT  " + getColumnNames() + " FROM " + getTableName(pk) + " WHERE id = ?";
 
-      SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement + ", id= " + pk.getId());
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       rs = prepStmt.executeQuery();
@@ -372,11 +343,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
         selectStatement += " WHERE " + whereClause;
       }
 
-      SilverTrace.debug("persistence",
-          "SilverpeasBeanDAOImpl.findByWhereClause(WAPrimaryKey pk, String whereClause)",
-          "root.MSG_GEN_PARAM_VALUE",
-          "queryStr = " + selectStatement + ", id= " + pk.getId() + ", whereClause= " +
-              whereClause);
       prepStmt = con.prepareStatement(selectStatement);
 
       rs = prepStmt.executeQuery();
@@ -445,9 +411,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
     for (PropertyDescriptor property : properties) {
       String type = property.getPropertyType().getName();
-      SilverTrace.debug("persistence", "SilverpeasBeanDAOImpl.getColumnNames()",
-          "root.MSG_GEN_PARAM_VALUE", "property Name = " + property.getName() + ", type = " + type);
-
       if (isTypeValid(type) == true) {
         if (statement == null) {
           statement = property.getName();
@@ -662,9 +625,6 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           prepStmt.setDouble(count, d);
         }
         count++;
-      } else {
-        SilverTrace.debug("persistence", "SilverpeasBeanDAO.prepareStatementSetProperties",
-            "persistence.MSG_WARN_PROPERTIE_NOT_MANAGED", type);
       }
     }
     return count;

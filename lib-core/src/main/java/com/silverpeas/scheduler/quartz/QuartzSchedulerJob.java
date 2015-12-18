@@ -60,8 +60,6 @@ public class QuartzSchedulerJob implements ScheduledJob, Serializable {
 
       @Override
       public void execute(JobExecutionContext context) {
-        SilverTrace.debug(MODULE_NAME, getClass().getSimpleName() + "<init>()",
-            "root.EX_NO_MESSAGE", "Empty job: the job is delegated to an event listener.");
       }
     };
     this.trigger = trigger;

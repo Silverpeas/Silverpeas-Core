@@ -25,11 +25,11 @@
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.LongText;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.Date;
 import java.util.Map;
@@ -72,9 +72,6 @@ public class SilverMessageFactory {
 
           msg = LongText.getLongText(longTextId);
         } catch (Exception e) {
-          SilverTrace
-              .debug("popup", "SilverMessageFactory.read()", "PB converting body id to LongText",
-                  "Message Body = " + pmb.getBody());
           msg = pmb.getBody();
         }
         if (msg != null) {
@@ -93,8 +90,8 @@ public class SilverMessageFactory {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("popup", "SilverMessageFactory.read()", "popup.EX_CANT_READ_MSG",
-          "UserId=" + userId, e);
+      SilverLogger.getLogger(SilverMessageFactory.class)
+          .error("Cannot read message for user {0}", new String[]{userId}, e);
     }
 
     return silverMessage;
@@ -121,16 +118,12 @@ public class SilverMessageFactory {
             // CBO : FIN UPDATE
             LongText.removeLongText(longTextId);
           } catch (Exception e) {
-            SilverTrace
-                .debug("popup", "SilverMessageFactory.del()", "PB converting body id to LongText",
-                    "Message Body = " + msgId);
           }
           repository.delete(toDel);
         }
       } catch (Exception e) {
-        SilverTrace
-            .error("popup", "SilverMessageFactory.del()", "popup.EX_CANT_DEL_MSG", "MsgId=" + msgId,
-                e);
+        SilverLogger.getLogger(SilverMessageFactory.class)
+            .error("Cannot delete message {0}", new String[]{msgId}, e);
       }
       return null;
     });
@@ -141,8 +134,8 @@ public class SilverMessageFactory {
       try {
         getRepository().deleteMessagesByUserIdAndSenderId(userId, "-1");
       } catch (Exception ex) {
-        SilverTrace.error("popup", "SilverMessageFactory.delAll()", "popup.EX_CANT_DEL_MSG",
-            "UserId=" + userId, ex);
+        SilverLogger.getLogger(SilverMessageFactory.class)
+            .error("Cannot delete all messages for user {0}", new String[]{userId}, ex);
       }
       return null;
     });
@@ -155,10 +148,6 @@ public class SilverMessageFactory {
     Transaction.performInOne(() -> {
       POPUPMessageBean pmb = new POPUPMessageBean();
       try {
-        SilverTrace
-            .debug("popup", "SilverMessageFactory.push()", "Message = " + notifMsg.toString());
-        SilverTrace.debug("popup", "SilverMessageFactory.push()",
-            "Message.isAnswerAllowed = " + notifMsg.isAnswerAllowed());
         pmb.setUserId(Long.parseLong(userId));
 
         // CBO : UPDATE
@@ -183,8 +172,8 @@ public class SilverMessageFactory {
         pmb.setMsgTime(DateUtil.getFormattedTime(new Date()));
         getRepository().save(pmb);
       } catch (Exception e) {
-        SilverTrace.error("popup", "SilverMessageFactory.push()", "popup.EX_CANT_PUSH_MSG",
-            "UserId=" + userId + ";Msg=" + notifMsg, e);
+        SilverLogger.getLogger(SilverMessageFactory.class)
+            .error("Cannot push message {0} for user {1}", new Object[]{notifMsg, userId}, e);
       }
       return null;
     });

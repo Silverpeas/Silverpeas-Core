@@ -150,9 +150,6 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
         result.addElement(positionsTables);
         out.println(positionsTables.toString());
       } catch (ContentManagerException | PdcException e) {
-        SilverTrace.debug("form", "PdcPositionsDisplayer.getParameterValues",
-            "form.EX_CANT_READ_VALUE",
-            "axisId = " + axisId + ", objectId=" + context.getObjectId(), e);
       }
     }
 

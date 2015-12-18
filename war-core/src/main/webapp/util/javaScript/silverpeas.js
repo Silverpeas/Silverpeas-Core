@@ -252,7 +252,7 @@ function getWindowScrollBarExistence() {
     // I prefer the first because it resembles more the feature
     // being detected by its functionality than by assumptions
     return {h : (window.innerHeight > r.clientHeight), v : (window.innerWidth > r.clientWidth)};
-    return {h : (window.innerWidth > r.clientWidth), v : (window.innerHeight > r.clientHeight)};
+    //return {h : (window.innerWidth > r.clientWidth), v : (window.innerHeight > r.clientHeight)};
   } else {
     return {h : (r.scrollWidth > r.clientWidth), v : (r.scrollHeight > r.clientHeight)};
   }

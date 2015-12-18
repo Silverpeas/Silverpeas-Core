@@ -23,13 +23,14 @@
  */
 package org.silverpeas.util;
 
+import org.silverpeas.util.logging.SilverLogger;
+
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 /**
  * The resource locator gives access to the resource bundles (bundles of localized resources and of
@@ -168,12 +169,11 @@ public class ResourceLocator {
   private static ResourceBundle loadResourceBundle(String bundleName, Locale locale) {
       try {
         if (!bundleName.startsWith("org.silverpeas.")) {
-          Logger.getLogger(ResourceLocator.class.getSimpleName())
-              .severe("INVALID BUNDLE BASE NAME: " + bundleName);
+          SilverLogger.getLogger(ResourceLocator.class).error("INVALID BUNDLE BASE NAME: " + bundleName);
         }
         return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
       } catch (MissingResourceException mex) {
-        Logger.getLogger(ResourceLocator.class.getName()).severe(mex.getMessage());
+        SilverLogger.getLogger(ResourceLocator.class).error(mex.getMessage());
         throw mex;
       }
   }

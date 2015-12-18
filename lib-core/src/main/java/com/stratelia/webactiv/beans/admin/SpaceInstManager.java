@@ -621,13 +621,6 @@ public class SpaceInstManager {
       changedSpace.id = spaceInstNew.getLocalId();
 
       SpaceRow oldSpace = ddManager.getOrganization().space.getSpace(changedSpace.id);
-
-      SilverTrace.debug("admin",
-          this.getClass().getName() + ".updateSpaceInst",
-          "root.MSG_GEN_PARAM_VALUE", "remove = "
-          + spaceInstNew.isRemoveTranslation() + ", translationId = "
-          + spaceInstNew.getTranslationId());
-
       if (spaceInstNew.isRemoveTranslation()) {
         if (oldSpace.lang.equalsIgnoreCase(spaceInstNew.getLanguage())) {
           List<SpaceI18NRow> translations = ddManager.getOrganization().spaceI18N.getTranslations(

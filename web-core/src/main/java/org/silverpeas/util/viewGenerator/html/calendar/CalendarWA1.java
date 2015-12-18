@@ -223,9 +223,6 @@ public class CalendarWA1 extends AbstractCalendar {
     }
     result.append("</tr></table>\n");
 
-    SilverTrace.debug("viewGenerator", "CalendarWA1.print()", "result="
-        + result);
-
     return result.toString();
   }
 

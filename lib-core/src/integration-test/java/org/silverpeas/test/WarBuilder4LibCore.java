@@ -111,6 +111,11 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     warBuilder.addServiceProviderFeatures();
     warBuilder.addBundleBaseFeatures();
     warBuilder.addClasses(EntityReference.class);
+    warBuilder.addMavenDependencies("org.silverpeas.core:api-core");
+    warBuilder.addPackages(true, "org.silverpeas.util.logging");
+    warBuilder.addAsResource(
+        "META-INF/services/test-org.silverpeas.util.logging.SilverLoggerFactory",
+        "META-INF/services/org.silverpeas.util.logging.SilverLoggerFactory");
     warBuilder.addAsResource("maven.properties");
     return warBuilder;
   }

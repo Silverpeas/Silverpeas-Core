@@ -22,13 +22,13 @@ package org.silverpeas.util.viewGenerator.html;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPane;
 import org.silverpeas.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
 import org.silverpeas.util.viewGenerator.html.board.Board;
@@ -62,7 +62,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -109,8 +108,10 @@ public class GraphicElementFactory {
     lookSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.util.viewGenerator.settings.lookSettings");
     try {
-      lookSettings.getString("dummy");
+      lookSettings.getString("dummy", null);
     } catch (MissingResourceException e) {
+      SilverLogger.getLogger(GraphicElementFactory.class)
+          .warn("lookSettings bundle not found. Load then defaultLookSettings bundle");
       lookSettings = ResourceLocator.getSettingBundle(
           "org.silverpeas.util.viewGenerator.settings.defaultLookSettings");
     }
@@ -161,8 +162,6 @@ public class GraphicElementFactory {
    * @see
    */
   public SettingBundle getLookSettings() {
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
-        "root.MSG_GEN_ENTER_METHOD");
     return lookSettings;
   }
 
@@ -188,8 +187,6 @@ public class GraphicElementFactory {
       selectedLook = defaultLook;
     }
 
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()", "root.MSG_GEN_PARAM_VALUE",
-        " look = " + lookName + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = ResourceLocator.getSettingBundle(selectedLook);
 
     currentLookName = lookName;
@@ -232,9 +229,6 @@ public class GraphicElementFactory {
    * @see
    */
   public String getLookFrame() {
-    SilverTrace
-        .info("viewgenerator", "GraphicElementFactory.getLookFrame()", "root.MSG_GEN_PARAM_VALUE",
-            " FrameJSP = " + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
@@ -255,9 +249,6 @@ public class GraphicElementFactory {
    * @see
    */
   public String getIcon(String iconKey) {
-    SilverTrace
-        .info("viewgenerator", "GraphicElementFactory.getIcon()", "root.MSG_GEN_ENTER_METHOD",
-            "iconKey = " + iconKey);
     return getFavoriteLookSettings().getString(iconKey, null);
   }
 
@@ -287,8 +278,7 @@ public class GraphicElementFactory {
     try {
       button = (Button) Class.forName(buttonClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getFormButton()",
-          "viewgenerator.EX_CANT_GET_BUTTON", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       button = new ButtonSilverpeasV5();
     } finally {
       if (button != null) {
@@ -309,8 +299,7 @@ public class GraphicElementFactory {
     try {
       frame = (Frame) Class.forName(frameClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getFrame()",
-          "viewgenerator.EX_CANT_GET_FRAME", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       frame = new FrameSilverpeasV5();
     }
     return frame;
@@ -327,8 +316,7 @@ public class GraphicElementFactory {
     try {
       board = (Board) Class.forName(boardClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getBoard()",
-          "viewgenerator.EX_CANT_GET_FRAME", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       board = new BoardSilverpeasV5();
     }
     return board;
@@ -345,8 +333,7 @@ public class GraphicElementFactory {
     try {
       navigationList = (NavigationList) Class.forName(navigationListClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getNavigationList()",
-          "viewgenerator.EX_CANT_GET_NAVIGATIONLIST", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       navigationList = new NavigationListSilverpeasV5();
     }
     return navigationList;
@@ -378,8 +365,7 @@ public class GraphicElementFactory {
     try {
       tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getTabbedPane()",
-          "viewgenerator.EX_CANT_GET_TABBED_PANE", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
       if (tabbedPane != null) {
@@ -400,8 +386,7 @@ public class GraphicElementFactory {
     try {
       tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getTabbedPane()",
-          "viewgenerator.EX_CANT_GET_TABBED_PANE", " nbLines = " + nbLines, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
       if (tabbedPane != null) {
@@ -428,8 +413,7 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
-          "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
       if (arrayPane != null) {
@@ -455,8 +439,7 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
-          "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
       if (arrayPane != null) {
@@ -484,8 +467,7 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
-          "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
       if (arrayPane != null) {
@@ -505,8 +487,7 @@ public class GraphicElementFactory {
     try {
       window = (Window) Class.forName(windowClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getWindow()",
-          "viewgenerator.EX_CANT_GET_WINDOW", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       window = new WindowWeb20V5();
     } finally {
       if (window != null) {
@@ -526,8 +507,7 @@ public class GraphicElementFactory {
     try {
       return (ButtonPane) Class.forName(buttonPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getButtonPane()",
-          "viewgenerator.EX_CANT_GET_BUTTON_PANE", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new ButtonPaneWA2();
     }
   }
@@ -541,8 +521,7 @@ public class GraphicElementFactory {
     try {
       return (IconPane) Class.forName(iconPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getIconPane()",
-          "viewgenerator.EX_CANT_GET_ICON_PANE", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new IconPaneWA();
     }
   }
@@ -557,8 +536,7 @@ public class GraphicElementFactory {
     try {
       operationPane = (OperationPane) Class.forName(operationPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getOperationPane()",
-          "viewgenerator.EX_CANT_GET_OPERATION_PANE", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       operationPane = new OperationPaneSilverpeasV5Web20();
     }
     operationPane.setMultilang(getMultilang());
@@ -577,8 +555,7 @@ public class GraphicElementFactory {
       browseBar.setMainSessionController(mainSessionController);
       return browseBar;
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator", "GraphicElementFactory.getBrowseBar()",
-          "viewgenerator.EX_CANT_GET_BROWSE_BAR", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       BrowseBar browseBar = new BrowseBarComplete();
       browseBar.setComponentId(getComponentIdOfCurrentRequest());
       browseBar.setMainSessionController(mainSessionController);
@@ -610,8 +587,7 @@ public class GraphicElementFactory {
     try {
       pagination = (Pagination) Class.forName(paginationClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.info("viewgenerator", "GraphicElementFactory.getPagination()",
-          "viewgenerator.EX_CANT_GET_PAGINATION", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       pagination = new PaginationSP();
     }
     pagination.setMultilang(getMultilang());
@@ -628,8 +604,7 @@ public class GraphicElementFactory {
     try {
       progress = (ProgressMessage) Class.forName(progressClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.info("viewgenerator", "GraphicElementFactory.getProgressMessage()",
-          "viewgenerator.EX_CANT_GET_PROGRESSMESSAGE", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       progress = new ProgressMessageSilverpeasV5();
     }
     progress.init(messages);
@@ -687,8 +662,8 @@ public class GraphicElementFactory {
     String userLookStyle;
     try {
       userLookStyle = mainSessionController.getPersonalization().getLook();
-    } catch (Exception t) {
-      SilverTrace.error("viewgenerator", "GEF", "problem to retrieve user look", t);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       userLookStyle = defaultLookName;
     }
     return userLookStyle;

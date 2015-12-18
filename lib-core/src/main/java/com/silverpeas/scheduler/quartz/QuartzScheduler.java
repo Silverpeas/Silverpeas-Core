@@ -32,7 +32,6 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -40,12 +39,10 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.enterprise.inject.Default;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static com.silverpeas.scheduler.SchedulerProvider.MODULE_NAME;
 import static org.silverpeas.util.AssertArgument.assertDefined;
 import static org.silverpeas.util.AssertArgument.assertNotNull;
 
@@ -78,11 +75,8 @@ public class QuartzScheduler implements Scheduler {
     try {
       backend = quartzSchedulerFactory.getScheduler();
       backend.start();
-      SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".<init>()", "root.EX_NO_MESSAGE",
-          getClass().getSimpleName() + " is started");
     } catch (org.quartz.SchedulerException ex) {
-      SilverTrace.fatal(MODULE_NAME, getClass().getSimpleName() + ".<init>()", "root.EX_NO_MESSAGE",
-          getClass().getSimpleName() + " failed to start", ex);
+      SilverLogger.getLogger(this).error("Quartz Scheduler failed to start!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -99,9 +93,8 @@ public class QuartzScheduler implements Scheduler {
       schedule(job, jobDetail);
       return job;
     } catch (Exception ex) {
-      SilverTrace
-          .error(MODULE_NAME, getClass().getSimpleName() + ".scheduleJob()", "root.EX_NO_MESSAGE",
-              "The scheduling of the job '" + jobName + "' failed!", ex);
+      SilverLogger.getLogger(this).error("The scheduling of the job ''{0}'' failed!",
+          new String[] {jobName}, ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -118,9 +111,8 @@ public class QuartzScheduler implements Scheduler {
       schedule(job, jobDetail);
       return job;
     } catch (Exception ex) {
-      SilverTrace
-          .error(MODULE_NAME, getClass().getSimpleName() + ".scheduleJob()", "root.EX_NO_MESSAGE",
-              "The scheduling of the job '" + theJob.getName() + "' failed!", ex);
+      SilverLogger.getLogger(this).error("The scheduling of the job ''{0}'' failed!",
+          new String[]{theJob.getName()}, ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -136,9 +128,8 @@ public class QuartzScheduler implements Scheduler {
     try {
       this.backend.deleteJob(new JobKey(jobName, org.quartz.Scheduler.DEFAULT_GROUP));
     } catch (org.quartz.SchedulerException ex) {
-      SilverTrace
-          .error(MODULE_NAME, getClass().getSimpleName() + ".unscheduleJob()", "root.EX_NO_MESSAGE",
-              "The unscheduling of the job '" + jobName + "' failed!", ex);
+      SilverLogger.getLogger(this).error("The unscheduling of the job ''{0}'' failed!",
+          new String[]{jobName}, ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -158,14 +149,9 @@ public class QuartzScheduler implements Scheduler {
   @Override
   public void shutdown() throws SchedulerException {
     try {
-      SilverTrace
-          .info(MODULE_NAME, getClass().getSimpleName() + ".shutdown()", "root.EX_NO_MESSAGE",
-              getClass().getSimpleName() + " is shutdown");
       this.backend.shutdown();
     } catch (org.quartz.SchedulerException ex) {
-      SilverTrace
-          .fatal(MODULE_NAME, getClass().getSimpleName() + ".shutdown()", "root.EX_NO_MESSAGE",
-              "The scheduler shutdown failed!", ex);
+      SilverLogger.getLogger(this).error("The scheduler shutdown failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -242,7 +228,7 @@ public class QuartzScheduler implements Scheduler {
         try {
           job.execute(context);
         } catch (Exception ex) {
-          SilverTrace.error(MODULE_NAME, QuartzScheduler.class.getName(), ex.getMessage(), ex);
+          SilverLogger.getLogger(this).error(ex.getMessage(), ex);
         }
       } else {
         try {
@@ -253,8 +239,8 @@ public class QuartzScheduler implements Scheduler {
           try {
             eventListener.jobFailed(SchedulerEvent.jobFailed(context, ex));
           } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE,
-                "Error while executing job " + job.getName() + ": " + e.getMessage(), e);
+            SilverLogger.getLogger(this).error("Error while executing job {0}: {1}",
+                new String[] {job.getName(), e.getMessage()}, e);
           }
         }
       }

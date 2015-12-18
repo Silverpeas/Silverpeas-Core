@@ -2116,14 +2116,6 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     List<Value> pertinentDaughters =
         filterValues(searchContext, axisId, valueId, instanceIds, filter);
 
-    for (Value value : pertinentDaughters) {
-      SilverTrace
-          .debug("pdcPeas", "PdcSearchSessionController.getPertinentDaughterValuesByInstanceIds()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "valueId = " + value.getPK().getId() + ", valueName = " + value.getName() +
-                  ", nbObjects = " + value.getNbObjects());
-    }
-
     return pertinentDaughters;
   }
 
@@ -2145,15 +2137,6 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
     String rootId = getRootId(axisId);
 
     List<Value> pertinentDaughters = filterValues(searchContext, axisId, rootId, instanceIds);
-
-    for (Value value : pertinentDaughters) {
-      SilverTrace
-          .debug("pdcPeas", "PdcSearchSessionController.getFirstLevelAxisValuesByInstanceIds()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "valueId = " + value.getPK().getId() + ", valueName = " + value.getName() +
-                  ", nbObjects = " + value.getNbObjects());
-    }
-
     return pertinentDaughters;
 
   }

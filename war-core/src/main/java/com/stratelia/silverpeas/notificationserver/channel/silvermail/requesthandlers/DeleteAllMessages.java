@@ -27,13 +27,13 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail.requesthandlers;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILException;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
@@ -56,8 +56,7 @@ public class DeleteAllMessages implements SILVERMAILRequestHandler {
       SILVERMAILPersistence.deleteAllMessagesInFolder(componentSC.getUserId(),
           request.getParameter("folder"));
     } catch (NumberFormatException e) {
-      SilverTrace.error("silvermail", "DeleteAllMessages.handleRequest()",
-          "root.EX_IGNORED", "", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
 
     if (request.getParameter("from") == null) {

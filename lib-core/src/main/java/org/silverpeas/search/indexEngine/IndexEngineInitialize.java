@@ -48,12 +48,8 @@ public class IndexEngineInitialize implements Initialization {
         ResourceLocator.getGeneralSettingBundle().getString("removeLocksOnInit", "");
     if (StringUtil.getBooleanValue(removeLocks)) {
       String property = System.getProperty("java.io.tmpdir");
-      SilverTrace.debug("indexEngine", "IndexEngineInitialize.Initialize()",
-          "Removing Locks...(" + property + ")");
       removeLockFiles(new File(property));
       removeLockFiles(new File(indexPath));
-      SilverTrace.debug("indexEngine", "IndexEngineInitialize.Initialize()",
-          "Locks removed !");
     }
   }
 
@@ -71,10 +67,6 @@ public class IndexEngineInitialize implements Initialization {
           SilverTrace.error("indexEngine",
               "IndexEngineInitialize.removeLockFiles",
               "util.EX_DELETE_FILE_ERROR", theFile.getPath());
-        } else {
-          SilverTrace.debug("indexEngine",
-              "IndexEngineInitialize.removeLockFiles", "Lock "
-              + theFile.getPath() + " removed.");
         }
       }
     }

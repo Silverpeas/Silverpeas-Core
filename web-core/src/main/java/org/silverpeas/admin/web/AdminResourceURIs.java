@@ -27,12 +27,11 @@ import org.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Base URIs from which the REST-based ressources representing admin entities are defined.
@@ -167,7 +166,7 @@ public final class AdminResourceURIs {
     try {
       return new URI(buildStringURI(uriBase, uriPathParts));
     } catch (final URISyntaxException ex) {
-      Logger.getLogger(AdminResourceURIs.class.getName()).log(Level.SEVERE, null, ex);
+      SilverLogger.getLogger(AdminResourceURIs.class).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }

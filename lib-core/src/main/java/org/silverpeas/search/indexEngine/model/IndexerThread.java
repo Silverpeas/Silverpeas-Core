@@ -46,7 +46,6 @@ public class IndexerThread extends Thread {
   static public void start(IndexManager indexManager) {
     synchronized (requestList) {
       if (indexerThread == null) {
-        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_STARTS_INDEXER_THREAD");
         indexerThread = new IndexerThread(indexManager);
         indexerThread.start();
       }
@@ -61,8 +60,6 @@ public class IndexerThread extends Thread {
     try {
       queueSemaphore.acquire();
       synchronized (requestList) {
-        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_ADD_REQUEST",
-            indexEntry.toString());
         requestList.add(new AddIndexEntryRequest(indexEntry));
         requestList.notify();
       }
@@ -79,8 +76,6 @@ public class IndexerThread extends Thread {
     try {
       queueSemaphore.acquire();
       synchronized (requestList) {
-        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_REMOVE_REQUEST",
-            indexEntry.toString());
         requestList.add(new RemoveIndexEntryRequest(indexEntry));
         requestList.notify();
       }
@@ -143,8 +138,6 @@ public class IndexerThread extends Thread {
           }
         }
       } catch (InterruptedException e) {
-        SilverTrace
-            .debug("indexEngine", "IndexerThread", "indexEngine.INFO_INTERRUPTED_WHILE_WAITING");
       }
     }
   }

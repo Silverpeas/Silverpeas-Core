@@ -30,6 +30,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.web.RESTWebService;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -48,8 +49,6 @@ import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A REST Web resource representing a given comment. It is a web service that provides an access to
@@ -202,7 +201,7 @@ public class CommentResource extends RESTWebService {
     try {
       commentService().deleteComment(byPK(onCommentId, inComponentId()));
     } catch (CommentRuntimeException ex) {
-      Logger.getLogger(getClass().getName()).log(Level.WARNING, ex.getMessage());
+      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }

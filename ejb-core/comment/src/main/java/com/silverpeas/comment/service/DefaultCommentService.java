@@ -364,9 +364,6 @@ public class DefaultCommentService implements CommentService {
   }
 
   private void createIndex(final Comment cmt) {
-    SilverTrace.debug("comment", getClass().getSimpleName() + ".createIndex", "cmt = "
-        + cmt.toString());
-
     int titleLength = 30;
     String commentMessage = cmt.getMessage();
     String commentTitle = commentMessage;
@@ -393,9 +390,6 @@ public class DefaultCommentService implements CommentService {
   }
 
   private void deleteIndex(final Comment comment) {
-    SilverTrace.debug("comment", getClass().getSimpleName() + ".deleteIndex",
-        "Comment : deleteIndex()", "comment=" + comment.toString());
-
     String component = comment.getCommentPK().getComponentName();
     try {
       IndexEntryPK indexEntry = new IndexEntryPK(component, "Comment"

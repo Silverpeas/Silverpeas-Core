@@ -67,8 +67,6 @@ public class ExcelParser extends PipedParser {
       for (int nbSheet = 0; nbSheet < workbook.getNumberOfSheets(); nbSheet++) {
         // extract sheet's name
         out.write(workbook.getSheetName(nbSheet));
-        SilverTrace.debug("indexEngine", "ExcelParser.outputContent",
-            "root.MSG_GEN_PARAM_VALUE", "sheetName = " + workbook.getSheetName(nbSheet));
         sheet = workbook.getSheetAt(nbSheet);
         Iterator<Row> rows = sheet.rowIterator();
         while (rows.hasNext()) {
@@ -79,8 +77,6 @@ public class ExcelParser extends PipedParser {
             if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
               out.write(cell.getStringCellValue());
               out.write(' ');
-              SilverTrace.debug("indexEngine", "ExcelParser.outputContent",
-                  "root.MSG_GEN_PARAM_VALUE", "cellValue = " + cell.getStringCellValue());
             }
           }
         }

@@ -82,7 +82,7 @@ public class NotificationServerException extends SilverpeasException {
    * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
-    return "notificationServer";
+    return "notificationserver";
   }
 
 }
