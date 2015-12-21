@@ -55,6 +55,9 @@
 <%@ attribute name="includeEmail" required="true" type="java.lang.Boolean"
               description="True if email must be displayed" %>
 
+<%@ attribute name="linear" required="false" type="java.lang.Boolean"
+              description="True if fields must be displayed one per line" %>
+
 <c:set var="isCurrentUserAdmin" value="<%=UserDetail.getCurrentRequester().isAccessAdmin() %>"/>
 
 <view:setConstant var="propertyTypeUser" constant="com.stratelia.webactiv.beans.admin.DomainProperty.PROPERTY_TYPE_USERID"/>
@@ -71,6 +74,9 @@
 <c:set var="listStyleOneFieldPerLine" value="oneFieldPerLine"/>
 
 <c:set var="listStyle" value="${readOnly ? listStyleTwoFieldsPerLine : listStyleOneFieldPerLine}"/>
+<c:if test="${linear}">
+  <c:set var="listStyle" value="${listStyleOneFieldPerLine}"/>
+</c:if>
 
 <script type="text/javascript">
   function removeRelatedUser(propertyName) {
