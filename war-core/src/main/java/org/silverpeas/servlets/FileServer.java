@@ -69,7 +69,7 @@ public class FileServer extends AbstractFileSender {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("util", "FileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
 
     HttpSession session = req.getSession(true);

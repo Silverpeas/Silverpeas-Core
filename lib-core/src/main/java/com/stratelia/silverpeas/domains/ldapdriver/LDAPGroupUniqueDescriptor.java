@@ -128,7 +128,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
                 "USER NOT FOUND : " + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
       }
     }
-    SilverTrace.info("admin", "LDAPGroupUniqueDescriptor.getUserIds()", "root.MSG_GEN_EXIT_METHOD");
+
     return usersVector.toArray(new String[usersVector.size()]);
   }
 

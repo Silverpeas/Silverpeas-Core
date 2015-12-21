@@ -123,7 +123,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
     if (errorLevel == FATAL) {
       SilverTrace.fatal(getModule(), callingClass, message, extraParams, this);
     } else {
-      SilverTrace.info(getModule(), callingClass, message, extraParams, this);
+
     }
   }
 

@@ -287,7 +287,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    */
   protected void checkFieldType(final String typeName, final String contextCall) {
     if (!Field.TYPE_FILE.equals(typeName)) {
-      SilverTrace.info("form", contextCall, "form.INFO_NOT_CORRECT_TYPE", Field.TYPE_FILE);
+
     }
   }
 }

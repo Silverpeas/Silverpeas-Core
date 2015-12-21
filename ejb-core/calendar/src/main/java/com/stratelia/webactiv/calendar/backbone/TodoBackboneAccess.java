@@ -84,7 +84,7 @@ public class TodoBackboneAccess {
 
   public String addEntry(TodoDetail todo, boolean notifyAttendees, String txtTitle,
       String txtMessage) {
-    SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()", "root.MSG_GEN_ENTER_METHOD");
+
     NotificationSender notifSender = new NotificationSender(todo.getComponentId());
     try {
       ToDoHeader header = todoDetailToHeader(todo);

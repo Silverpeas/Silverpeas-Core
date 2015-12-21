@@ -78,7 +78,7 @@ public class UserManager {
   public int getUsersNumberOfDomain(DomainDriverManager ddManager, String domainId) throws
       AdminException {
     try {
-      SilverTrace.info("admin", "UserManager.getUsersNumberOfDomain()", "root.MSG_GEN_ENTER_METHOD");
+
       ddManager.getOrganizationSchema();
       return ddManager.getOrganization().user.getUserNumberOfDomain(idAsInt(domainId));
     } catch (Exception e) {
@@ -91,7 +91,7 @@ public class UserManager {
 
   public int getUserNumber(DomainDriverManager ddManager) throws AdminException {
     try {
-      SilverTrace.info("admin", "UserManager.getUserNumber()", "root.MSG_GEN_ENTER_METHOD");
+
       ddManager.getOrganizationSchema();
       return ddManager.getOrganization().user.getUserNumber();
     } catch (Exception e) {

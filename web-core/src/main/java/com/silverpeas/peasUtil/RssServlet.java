@@ -72,7 +72,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    SilverTrace.info("util", "RssServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     String instanceId = getObjectId(req);
     String userId = getUserId(req);
     String login = getLogin(req);

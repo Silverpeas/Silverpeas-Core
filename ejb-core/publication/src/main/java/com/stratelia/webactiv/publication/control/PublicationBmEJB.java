@@ -1725,7 +1725,7 @@ public class PublicationBmEJB implements PublicationBm {
       }
       coordinate.setCoordinatePoints(surePoints);
     }
-    SilverTrace.info("kmax", "KmeliaBmEJB.getPublicationCoordinates()", "root.MSG_GEN_EXIT_METHOD");
+
     return coordinates;
   }
 

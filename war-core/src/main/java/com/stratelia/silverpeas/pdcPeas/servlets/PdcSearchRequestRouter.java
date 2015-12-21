@@ -1408,7 +1408,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       // on récupère le silverContentId à partir de la recherche classique
       basicSearchList = contentManager.getSilverContentId(docFeature);
     } catch (Exception e) {
-      SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.mixedSearch", "root.MSG_GEN_EXIT_METHOD");
+
     }
 
     // ne garde que les objets communs aux 2 listes basicSearchList - alSilverContentIds

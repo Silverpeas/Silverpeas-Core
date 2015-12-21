@@ -56,7 +56,7 @@ public abstract class Schema {
   }
 
   protected final synchronized void createConnection() throws UtilException {
-    SilverTrace.info("util", "Schema.createConnection()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       if (this.connection != null) {
         DBUtil.close(this.connection);
@@ -78,7 +78,7 @@ public abstract class Schema {
   }
 
   public synchronized void commit() throws UtilException {
-    SilverTrace.info("util", "Schema.commit()", "root.MSG_GEN_ENTER_METHOD");
+
     if (!isManaged()) {
       try {
         this.connection.commit();
@@ -90,7 +90,7 @@ public abstract class Schema {
   }
 
   public synchronized void rollback() throws UtilException {
-    SilverTrace.info("util", "Schema.rollback()", "root.MSG_GEN_ENTER_METHOD");
+
     if (!isManaged()) {
       try {
         this.connection.rollback();
@@ -102,7 +102,7 @@ public abstract class Schema {
   }
 
   public synchronized void close() {
-    SilverTrace.info("util", "Schema.close()", "root.MSG_GEN_ENTER_METHOD");
+
     /*
      * for (Object o : statementsMap.values()) { DBUtil.close((Statement) o); }
      * statementsMap.clear();
@@ -123,7 +123,7 @@ public abstract class Schema {
         return false;
       }
       if (haveToTestConnections) {
-        SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD", "Connection Test");
+
         Statement st = connection.createStatement();
         st.close();
       }

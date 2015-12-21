@@ -787,7 +787,7 @@ public class WysiwygManager {
    */
   public Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
       String objectId, String userId) {
-    SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
+
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
     SimpleDocument copy = null;

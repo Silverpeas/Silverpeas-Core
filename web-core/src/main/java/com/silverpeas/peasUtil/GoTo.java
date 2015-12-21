@@ -60,11 +60,11 @@ public abstract class GoTo extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("util", "GoTo.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     String id = getObjectId(req);
 
     try {
-      SilverTrace.info("util", "GoTo.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+
 
       String redirect = getDestination(id, req, res);
       if (!StringUtil.isDefined(redirect)) {
@@ -131,7 +131,7 @@ public abstract class GoTo extends HttpServlet {
   }
 
   public void displayError(HttpServletResponse res) {
-    SilverTrace.info("util", "GoToFile.displayError()", "root.MSG_GEN_ENTER_METHOD");
+
 
     res.setContentType("text/html");
     OutputStream out = null;

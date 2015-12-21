@@ -69,7 +69,7 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    SilverTrace.info("util", "TempFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     String encodedFileName = req.getPathInfo();
     String fileName = URLDecoder.decode(encodedFileName, "UTF-8");
 

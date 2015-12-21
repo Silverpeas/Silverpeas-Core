@@ -1016,7 +1016,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         pathList.add(nodeTree.getPath() + nodeTree.getPK().getId() + "/");
       }
     } catch (Exception e) {
-      SilverTrace.info("PDC", "GlobalPdcManager.getPathes", "Pdc.CANNOT_RETRIEVE_PATH", e);
+
     }
     return pathList;
   }
@@ -2308,7 +2308,7 @@ public class GlobalPdcManager implements PdcManager, ContainerInterface {
         nextDescendant = null;
       }
 
-      SilverTrace.info("Pdc", "GlobalPdcManager.filterValues", "root.MSG_GEN_EXIT_METHOD");
+
       return descendants;
     } catch (Exception e) {
       throw new PdcException("GlobalPdcManager.getPertinentDaughterValues",

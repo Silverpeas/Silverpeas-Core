@@ -69,7 +69,7 @@ public class MainClipboardService implements Clipboard, Serializable {
   @Override
   public void add(ClipboardSelection objectToCopy) throws ClipboardException {
     try {
-      SilverTrace.info("clipboard", "ClipboardBmEJB.add()", "root.MSG_GEN_ENTER_METHOD");
+
       count += 1;
       boolean failed = false;
       if (objectToCopy != null) {
@@ -108,7 +108,7 @@ public class MainClipboardService implements Clipboard, Serializable {
           }
         }
       }
-      SilverTrace.info("clipboard", "ClipboardBmEJB.add()", "root.MSG_GEN_EXIT_METHOD");
+
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.add()", "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.add()", e);
@@ -346,7 +346,7 @@ public class MainClipboardService implements Clipboard, Serializable {
    * Constructor.
    */
   public MainClipboardService() {
-    SilverTrace.info("clipboard", "ClipboardBmEJB.constructor()", "root.MSG_GEN_ENTER_METHOD");
+
   }
 
   @PostConstruct

@@ -247,7 +247,7 @@ public class AdminController implements java.io.Serializable {
 * Update the space Instance corresponding to the given space name wuth the given SpaceInst
 */
   public String updateSpaceInst(SpaceInst spaceInstNew) {
-    SilverTrace.info("admin", "AdminController.updateSpaceInst", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateSpaceInst(spaceInstNew);
     } catch (Exception e) {
@@ -266,7 +266,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return all the spaces Id available in webactiv */
   public String[] getAllRootSpaceIds() {
-    SilverTrace.info("admin", "AdminController.getAllSpaceIds", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllRootSpaceIds();
     } catch (Exception e) {
@@ -424,7 +424,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Add the given component Instance */
   public String addComponentInst(ComponentInst componentInst) throws QuotaException {
-    SilverTrace.info("admin", "AdminController.addComponentInst", "root.MSG_GEN_ENTER_METHOD");
+
     Exception exceptionCatched = null;
     try {
       return admin.addComponentInst(componentInst.getCreatorUserId(), componentInst);
@@ -448,7 +448,7 @@ public class AdminController implements java.io.Serializable {
 * @return The id of the new component instance.
 */
   public String addComponentInst(ComponentInst componentInst, String userId) throws QuotaException {
-    SilverTrace.info("admin", "AdminController.addComponentInst", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addComponentInst(userId, componentInst);
     } catch (QuotaException e) {
@@ -1377,7 +1377,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Block the given user */
   public void blockUser(String userId) {
-    SilverTrace.info("admin", "AdminController.blockUser", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       admin.blockUser(userId);
     } catch (Exception e) {
@@ -1387,7 +1387,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Unblock the given user */
   public void unblockUser(String userId) {
-    SilverTrace.info("admin", "AdminController.unblockUser", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       admin.unblockUser(userId);
     } catch (Exception e) {
@@ -1399,7 +1399,7 @@ public class AdminController implements java.io.Serializable {
    * Deactivate the given user
    */
   public void deactivateUser(String userId) {
-    SilverTrace.info("admin", "AdminController.deactivateUser", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       admin.deactivateUser(userId);
     } catch (Exception e) {
@@ -1412,7 +1412,7 @@ public class AdminController implements java.io.Serializable {
    * Activate the given user
    */
   public void activateUser(String userId) {
-    SilverTrace.info("admin", "AdminController.activateUser", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       admin.activateUser(userId);
     } catch (Exception e) {
@@ -1465,7 +1465,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Update the given user */
   public String updateUserFull(UserFull userFull) throws AdminException {
-    SilverTrace.info("admin", "AdminController.updateUserFull", "root.MSG_GEN_ENTER_METHOD");
+
     return admin.updateUserFull(userFull);
   }
 

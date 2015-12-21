@@ -82,7 +82,7 @@ public class XmlSearchForm extends AbstractForm {
    */
   @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
-    SilverTrace.info("form", "XmlSearchForm.toString", "root.MSG_GEN_ENTER_METHOD");
+
     StringWriter sw = new StringWriter();
     String language = pagesContext.getLanguage();
     PrintWriter out = new PrintWriter(sw, true);
@@ -211,7 +211,7 @@ public class XmlSearchForm extends AbstractForm {
    */
   @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
-    SilverTrace.info("form", "XmlSearchForm.display", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       String language = pagesContext.getLanguage();
       StringWriter sw = new StringWriter();

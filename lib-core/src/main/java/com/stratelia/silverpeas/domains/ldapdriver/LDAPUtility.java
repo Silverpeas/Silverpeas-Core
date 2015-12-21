@@ -450,7 +450,7 @@ public class LDAPUtility {
    */
   static public LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
       String varToSort, String[] args) throws AdminException {
-    SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_ENTER_METHOD");
+
     LDAPConnection ld = getConnection(lds);
     List<LDAPEntry> entriesVector = new ArrayList<LDAPEntry>();
     int nbReaded = 0;

@@ -67,7 +67,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
   }
 
   public void doSynchro() {
-    SilverTrace.info("admin", "SynchroDomainScheduler.doSynchro()", "root.MSG_GEN_ENTER_METHOD");
+
     if (domainIds != null) {
       for (String domainId : domainIds) {
         try {
@@ -78,7 +78,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
         }
       }
     }
-    SilverTrace.info("admin", "SynchroDomainScheduler.doSynchro()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override

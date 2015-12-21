@@ -670,17 +670,17 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * Dump user values to the trace system
    */
   public void traceUser() {
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Id : " + id);
+
     SilverTrace
         .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : " + specificId);
     SilverTrace
         .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : " + domainId);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Login : " + login);
+
     SilverTrace
         .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : " + firstName);
     SilverTrace
         .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : " + lastName);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "eMail : " + eMail);
+
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER",
         "AccessLevel : " + accessLevel);
   }

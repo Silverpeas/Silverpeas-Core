@@ -153,7 +153,7 @@ public class SynchroReport {
     if (isSynchroActive()) {
       addMessage(msgFormat(TRACE_LEVEL_INFO, classe, message, ex),
           TRACE_LEVEL_INFO);
-      SilverTrace.info(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE", message, ex);
+
     }
   }
 

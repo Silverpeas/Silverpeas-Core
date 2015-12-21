@@ -67,7 +67,7 @@ public class XmlForm extends AbstractForm {
    */
   @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
-    SilverTrace.info("form", "XmlForm.toString", "root.MSG_GEN_ENTER_METHOD");
+
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw, true);
     display(pw, pagesContext, record);
@@ -84,7 +84,7 @@ public class XmlForm extends AbstractForm {
    * </ul>
    */
   private void display(PrintWriter out, PagesContext pageContext, DataRecord record) {
-    SilverTrace.info("form", "XmlForm.display", "root.MSG_GEN_ENTER_METHOD");
+
     String language = pageContext.getLanguage();
 
     String mode = "";

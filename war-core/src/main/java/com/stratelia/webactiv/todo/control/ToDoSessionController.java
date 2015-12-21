@@ -148,7 +148,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public Collection<ToDoHeader> getClosedToDos() throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.getClosedToDos()", "root.MSG_GEN_ENTER_METHOD");
+
     return calendarBm.getClosedToDos(getUserId());
   }
 
@@ -161,10 +161,10 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public ToDoHeader getToDoHeader(String todoId) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.getToDoHeader()", "root.MSG_GEN_ENTER_METHOD");
+
     verifyCurrentUserIsOwner(todoId);
     ToDoHeader result = calendarBm.getToDoHeader(todoId);
-    SilverTrace.info("todo", "ToDoSessionController.getToDoHeader()", "root.MSG_GEN_EXIT_METHOD");
+
     return result;
   }
 
@@ -187,7 +187,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   public void updateToDo(String id, String name, String description,
       String priority, String classification, Date startDay, String startHour,
       Date endDay, String endHour, String percent) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.updateToDo()", "root.MSG_GEN_ENTER_METHOD");
+
     ToDoHeader todo = getToDoHeader(id);
     todo.setName(name);
     todo.setDescription(description);
@@ -274,14 +274,14 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public void closeToDo(String id) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.closeToDo()", "root.MSG_GEN_ENTER_METHOD");
+
     verifyCurrentUserIsOwner(id);
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(new java.util.Date());
     calendarBm.updateToDo(todo);
     notifyAttendees(id, getString("closingTodo") +" '" + todo.getName() + "'",
         getString("todoCalled") +" '" + todo.getName() + "' "+getString("todoClosed")+"\n");
-    SilverTrace.info("todo", "ToDoSessionController.closeToDo()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -292,12 +292,12 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public void reopenToDo(String id) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.reopenToDo()", "root.MSG_GEN_ENTER_METHOD");
+
     verifyCurrentUserIsOwner(id);
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(null);
     calendarBm.updateToDo(todo);
-    SilverTrace.info("todo", "ToDoSessionController.reopenToDo()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -344,7 +344,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       todo.setEndDate(endDay);
       todo.setEndHour(endHour);
       String result = calendarBm.addToDo(todo);
-      SilverTrace.info("todo", "ToDoSessionController.addToDo()", "root.MSG_GEN_EXIT_METHOD");
+
       return result;
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.addToDo()",

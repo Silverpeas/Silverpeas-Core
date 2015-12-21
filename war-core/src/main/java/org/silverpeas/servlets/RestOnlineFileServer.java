@@ -77,7 +77,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
   public void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(req, "");
-    SilverTrace.info("util", "RestOnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       SilverpeasFile file = getWantedFile(restRequest);
       if (file != null) {

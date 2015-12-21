@@ -45,7 +45,7 @@ public class DefaultSimpleService implements SimpleService {
   @Override
   public InterceptorTestFile create(@SourceObject final InterceptorTestFile file,
       @TargetPK final ForeignPK destination) {
-    SilverTrace.info("InterceptorTest", "DefaultSimpleService", "create called");
+
     return null;
   }
 
@@ -53,13 +53,13 @@ public class DefaultSimpleService implements SimpleService {
   @Action(ActionType.DELETE)
   @Override
   public void delete(@SourceObject final InterceptorTestFile file, final ForeignPK destination) {
-    SilverTrace.info("InterceptorTest", "DefaultSimpleService", "delete called");
+
   }
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   @Action(ActionType.MOVE)
   @Override
   public void move(final ForeignPK from, final ForeignPK destination) {
-    SilverTrace.info("InterceptorTest", "DefaultSimpleService", "move called");
+
   }
 }

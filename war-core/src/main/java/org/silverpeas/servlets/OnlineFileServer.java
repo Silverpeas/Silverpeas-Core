@@ -54,7 +54,7 @@ public class OnlineFileServer extends AbstractFileSender {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse response)
       throws ServletException, IOException {
-    SilverTrace.info("util", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+
 
     String mimeType = req.getParameter("MimeType");
     String sourceFile = req.getParameter("SourceFile");

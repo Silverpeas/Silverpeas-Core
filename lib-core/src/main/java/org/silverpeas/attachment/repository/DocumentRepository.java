@@ -405,7 +405,7 @@ public class DocumentRepository {
       deleteContent(documentNode, documentPk.getInstanceId());
       deleteDocumentNode(documentNode);
     } catch (ItemNotFoundException infex) {
-      SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
+
     }
   }
 
@@ -472,7 +472,7 @@ public class DocumentRepository {
       }
       return new SimpleDocumentPK(documentNode.getIdentifier(), documentPk);
     } catch (ItemNotFoundException infex) {
-      SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
+
       return documentPk;
     }
   }
@@ -501,7 +501,7 @@ public class DocumentRepository {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
       document = converter.convertNode(documentNode, lang);
     } catch (ItemNotFoundException infex) {
-      SilverTrace.info("attachment", "DocumentRepository.findDocumentById()", "", infex);
+
     }
     return document;
   }

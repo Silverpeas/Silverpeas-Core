@@ -563,7 +563,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
           }
         }
       } catch (IOException e) {
-        SilverTrace.info("importExport", "GEDImportExport", "importExport.FILE_NOT_FOUND", e);
+
       } finally {
         IOUtils.closeQuietly(reader);
       }

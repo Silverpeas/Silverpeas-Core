@@ -51,7 +51,7 @@ public class ToDoAccess {
    * @throws TodoException
    */
   static public Collection<ToDoHeader> getNotCompletedToDos(String userId) throws TodoException {
-    SilverTrace.info("todo", "ToDoAccess.getNotCompletedToDos()", "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return getEJB().getNotCompletedToDosForUser(userId);
     } catch (Exception e) {

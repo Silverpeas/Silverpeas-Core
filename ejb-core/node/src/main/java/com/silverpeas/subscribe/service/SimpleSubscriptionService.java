@@ -76,7 +76,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public void subscribe(final Collection<? extends Subscription> subscriptions) {
-    SilverTrace.info("subscribe", "SubscriptionService.subscribe", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
     try {
       con = getConnection();
@@ -101,7 +101,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
-    SilverTrace.info("subscribe", "SubscriptionService.unsubscribe", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
     try {
       con = getConnection();
@@ -125,7 +125,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public void unsubscribeBySubscribers(
       final Collection<? extends SubscriptionSubscriber> subscribers) {
-    SilverTrace.info("subscribe", "SubscriptionService.unsubscribe", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
     try {
       con = getConnection();
@@ -148,7 +148,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public void unsubscribeByResources(final Collection<? extends SubscriptionResource> resources) {
-    SilverTrace.info("subscribe", "SubscriptionService.unsubscribe", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
     try {
       con = getConnection();
@@ -189,7 +189,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public SubscriptionList getByResource(final SubscriptionResource resource,
       final SubscriptionMethod method) {
-    SilverTrace.info("subscribe", "SubscriptionService.getByResource", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
 
     try {

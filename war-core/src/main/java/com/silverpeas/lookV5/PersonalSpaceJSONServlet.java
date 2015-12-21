@@ -72,7 +72,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    SilverTrace.info("lookSilverpeasV5", "JSONServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
+
 
     HttpSession session = req.getSession(true);
     LookHelper helper = LookHelper.getLookHelper(session);

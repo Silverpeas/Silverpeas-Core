@@ -73,7 +73,7 @@ public class NodeI18NDAO {
    * @since 1.0
    */
   private static NodeI18NDetail resultSet2NodeDetail(ResultSet rs) throws SQLException {
-    SilverTrace.info("node", "NodeI18NDAO.resultSet2NodeDetail()", "root.MSG_GEN_ENTER_METHOD");
+
     int id = rs.getInt(1);
     String lang = rs.getString("lang");
     String name = rs.getString("nodeName");
@@ -83,7 +83,7 @@ public class NodeI18NDAO {
     }
     NodeI18NDetail nd = new NodeI18NDetail(id, lang, name, description);
 
-    SilverTrace.info("node", "NodeI18NDAO.resultSet2NodeDetail()", "root.MSG_GEN_EXIT_METHOD");
+
     return (nd);
   }
 
@@ -97,7 +97,7 @@ public class NodeI18NDAO {
    * @since 1.0
    */
   public static NodeI18NPK saveTranslation(Connection con, NodeI18NDetail nd) throws SQLException {
-    SilverTrace.info("node", "NodeI18NDAO.saveTranslation()", "root.MSG_GEN_ENTER_METHOD");
+
     NodeI18NPK pk = new NodeI18NPK("useless");
     int newId = DBUtil.getNextId(nd.getTableName(), "id");
     PreparedStatement prepStmt = null;
@@ -113,7 +113,7 @@ public class NodeI18NDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-    SilverTrace.info("node", "NodeI18NDAO.saveTranslation()", "root.MSG_GEN_EXIT_METHOD");
+
     return pk;
   }
 
@@ -128,7 +128,7 @@ public class NodeI18NDAO {
    */
   public static NodeI18NPK updateTranslation(Connection con, NodeI18NDetail nd)
       throws SQLException {
-    SilverTrace.info("node", "NodeI18NDAO.udpateTranslation()", "root.MSG_GEN_ENTER_METHOD");
+
     NodeI18NPK pk = new NodeI18NPK(String.valueOf(nd.getId()));
     PreparedStatement prepStmt = null;
     try {
@@ -141,7 +141,7 @@ public class NodeI18NDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-    SilverTrace.info("node", "NodeI18NDAO.udpateTranslation()", "root.MSG_GEN_EXIT_METHOD");
+
     return pk;
   }
 
@@ -154,7 +154,7 @@ public class NodeI18NDAO {
    * @since 1.0
    */
   public static void removeTranslation(Connection con, int id) throws SQLException {
-    SilverTrace.info("node", "NodeI18NDAO.removeTranslation()", "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_TRANSLATION);
@@ -163,7 +163,7 @@ public class NodeI18NDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-    SilverTrace.info("node", "NodeI18NDAO.removeTranslation()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -175,7 +175,7 @@ public class NodeI18NDAO {
    * @since 1.0
    */
   public static void removeTranslations(Connection con, int nodeId) throws SQLException {
-    SilverTrace.info("node", "NodeI18NDAO.removeTranslations()", "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_TRANSLATIONS);
@@ -184,7 +184,7 @@ public class NodeI18NDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-    SilverTrace.info("node", "NodeI18NDAO.removeTranslations()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

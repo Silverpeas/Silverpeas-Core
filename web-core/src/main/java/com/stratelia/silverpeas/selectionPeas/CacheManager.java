@@ -88,7 +88,7 @@ abstract public class CacheManager {
   abstract public PanelMiniFilterSelect getSelectMiniFilter(CacheType what);
 
   public void resetAll() {
-    SilverTrace.info("selectionPeas", "CacheManager.resetAll", "root.MSG_GEN_PARAM_VALUE");
+
     elementCache.clear();
     setCache.clear();
     selectedElements.clear();

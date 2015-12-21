@@ -47,7 +47,7 @@ public abstract class AbstractIndexer {
 
   public void index(String currentSpaceId, String componentId) throws Exception {
     setSilverTraceLevel();
-    SilverTrace.info(silvertraceModule, "AbstractIndexer.index()", "root.MSG_GEN_ENTER_METHOD");
+
     if (currentSpaceId == null) {
       // index whole application
       String[] spaceIds = OrganizationControllerProvider.getOrganisationController().getAllSpaceIds();
@@ -65,7 +65,7 @@ public abstract class AbstractIndexer {
         indexComponent(currentSpaceId, componentId);
       }
     }
-    SilverTrace.info(silvertraceModule, "AbstractIndexer.index()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

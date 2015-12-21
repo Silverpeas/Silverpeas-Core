@@ -895,7 +895,7 @@ public class NodeDAO {
   public static NodeDetail loadRow(Connection con, NodePK nodePK, boolean getTranslations)
       throws SQLException {
 
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK);
+
     NodeDetail detail = null;
     SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
         "selectQuery = " + SELECT_NODE_BY_ID);
@@ -933,7 +933,7 @@ public class NodeDAO {
 
   public static NodeDetail loadRow(Connection con, NodePK nodePK, String name, int nodeFatherId)
       throws SQLException {
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK);
+
     NodeDetail detail = null;
     StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select * from ").append(nodePK.getTableName());

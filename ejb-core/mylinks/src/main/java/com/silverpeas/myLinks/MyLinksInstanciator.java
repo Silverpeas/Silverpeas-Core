@@ -43,7 +43,7 @@ public class MyLinksInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("myLinks", "MyLinksInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
-    SilverTrace.info("myLinks", "MyLinksInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   public void delete(Connection con, String spaceId, String componentId, String userId)
@@ -65,6 +65,6 @@ public class MyLinksInstanciator implements ComponentsInstanciatorIntf {
       throw new InstanciationException("Can't delete links for component '" + componentId + "'");
     }
 
-    SilverTrace.info("myLinks", "MyLinksInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+
   }
 }

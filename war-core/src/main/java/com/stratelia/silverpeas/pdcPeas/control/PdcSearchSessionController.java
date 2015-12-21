@@ -210,7 +210,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       platformUsesPDC = !getPdcManager().getAxis().isEmpty();
     } catch (PdcException e) {
-      SilverTrace.info("pdcPeas", "PdcSearchSessionController()", "root.MSG_GEN_ERROR", e);
+
     }
 
     includeUsers = getSettings().getBoolean("search.users.included", false);
@@ -383,7 +383,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public MatchingIndexEntry[] search() throws
       org.silverpeas.search.searchEngine.model.ParseException {
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()", "root.MSG_GEN_ENTER_METHOD");
+
     MatchingIndexEntry[] plainSearchResults = null;
     QueryDescription query = null;
     selectedFacetEntries = null;

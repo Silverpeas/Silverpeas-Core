@@ -665,7 +665,7 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public void addJournalAttendee(String journalId, Attendee attendee) {
-    SilverTrace.info("calendar", "CalendarEJB.addJournalAttendee()", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       AttendeeDAO.addJournalAttendee(con, journalId, attendee);
@@ -890,7 +890,7 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public Collection<Category> getAllCategories() {
-    SilverTrace.info("calendar", "CalendarEJB.getAllCategories()", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       return CategoryDAO.getAllCategories(con);

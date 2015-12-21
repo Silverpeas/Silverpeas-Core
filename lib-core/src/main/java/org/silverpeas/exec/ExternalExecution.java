@@ -30,7 +30,7 @@ public class ExternalExecution {
    */
   public static List<String> exec(final CommandLine commandLine, final Config config)
       throws ExternalExecutionException {
-    SilverTrace.info("util", "ExternalExecution.exec", "Command " + commandLine);
+
     final List<String> result = new LinkedList<>();
     final List<String> errors = new LinkedList<>();
     CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);

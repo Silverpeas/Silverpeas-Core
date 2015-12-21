@@ -62,7 +62,7 @@ public class DefaultStatisticService implements StatisticService {
 
   @Override
   public void addStat(String userId, ForeignPK foreignPK, int actionType, String objectType) {
-    SilverTrace.info("statistic", "DefaultStatisticService.addStat", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       HistoryObjectDAO.add(con, userId, foreignPK, actionType, objectType);
@@ -125,7 +125,7 @@ public class DefaultStatisticService implements StatisticService {
   @Override
   public Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
       String objectType) {
-    SilverTrace.info("statistic", "DefaultStatisticService.getHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       return HistoryObjectDAO.getHistoryDetailByObject(con, foreignPK, objectType);
@@ -274,7 +274,7 @@ public class DefaultStatisticService implements StatisticService {
 
   @Override
   public void deleteStats(ForeignPK foreignPK, String objectType) {
-    SilverTrace.info("statistic", "DefaultStatisticService.deleteStat", "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       HistoryObjectDAO.deleteHistoryByObject(con, foreignPK, objectType);

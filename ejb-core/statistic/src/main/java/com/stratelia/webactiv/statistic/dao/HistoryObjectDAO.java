@@ -118,7 +118,7 @@ public class HistoryObjectDAO {
    */
   public static void add(Connection con, String userId, ForeignPK foreignPK, int actionType,
       String objectType) throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.add", "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
 
     try {
@@ -240,7 +240,7 @@ public class HistoryObjectDAO {
   public static int getCount(Connection con, ForeignPK foreignPK, String objectType)
       throws SQLException {
     int nb = 0;
-    SilverTrace.info("statistic", "HistoryObjectDAO.getCount", "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -265,7 +265,7 @@ public class HistoryObjectDAO {
   public static int getCountByPeriod(Connection con, WAPrimaryKey primaryKey, String objectType,
       Date startDate, Date endDate) throws SQLException {
     int nb = 0;
-    SilverTrace.info("statistic", "HistoryObjectDAO.getCountBYPeriod", "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -324,7 +324,7 @@ public class HistoryObjectDAO {
 
   public static void move(Connection con, ForeignPK toForeignPK, int actionType, String objectType)
       throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.move", "root.MSG_GEN_ENTER_METHOD");
+
 
     String insertStatement = "update " + historyTableName +
         " set componentId = ? where resourceId = ? and actionType = ? and resourceType = ?";

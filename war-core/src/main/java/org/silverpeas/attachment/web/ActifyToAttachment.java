@@ -57,7 +57,7 @@ public class ActifyToAttachment extends HttpServlet {
   @Override
   public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    SilverTrace.info("attachment", "ActifyToAttachment.doPost", "root.MSG_GEN_ENTER_METHOD");
+
     if (ActifyDocumentProcessor.isActifySupportEnabled()) {
       try {
         SilverTrace.info("attachment", "ActifyToAttachment.doPost", "req=" + req.getParameter(

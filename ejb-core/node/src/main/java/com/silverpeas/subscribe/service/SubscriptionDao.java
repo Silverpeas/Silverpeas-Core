@@ -104,7 +104,7 @@ public class SubscriptionDao {
    * @see
    */
   public void add(Connection con, Subscription subscription) throws SQLException, AssertionError {
-    SilverTrace.info("subscribe", "SubscriptionDao.add", "root.MSG_GEN_ENTER_METHOD");
+
 
     if (!subscription.getSubscriber().getType().isValid() ||
         !subscription.getSubscriptionMethod().isValid() ||
@@ -142,7 +142,7 @@ public class SubscriptionDao {
    * @see
    */
   public void remove(Connection con, Subscription subscription) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.remove", "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTION);
@@ -366,7 +366,7 @@ public class SubscriptionDao {
   public SubscriptionSubscriberList getSubscribers(Connection con,
       Collection<? extends SubscriptionResource> resources, SubscriptionMethod method)
       throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
+
     Set<SubscriptionSubscriber> result = new HashSet<SubscriptionSubscriber>();
     for (SubscriptionResource resource : resources) {
       findSubscribers(con, resource, result, method);

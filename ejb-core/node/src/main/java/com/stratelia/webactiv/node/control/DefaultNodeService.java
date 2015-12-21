@@ -192,7 +192,7 @@ public class DefaultNodeService implements NodeService {
 
   @Override
   public ArrayList<NodeDetail> getSubTree(NodePK pk) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTree()", "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
+
     return getSubTree(pk, null, 0, null);
   }
 
@@ -1088,7 +1088,7 @@ public class DefaultNodeService implements NodeService {
    */
   @Override
   public void deleteIndex(NodePK pk) {
-    SilverTrace.info("node", "NodeBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
+
     IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node", pk.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }

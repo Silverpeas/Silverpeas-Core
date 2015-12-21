@@ -69,7 +69,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
     if (errorLevel == FATAL) {
       SilverTrace.fatal(getModule(), callingClass, message, extraParams, this);
     } else {
-      SilverTrace.info(getModule(), callingClass, message, extraParams, this);
+
     }
   }
 

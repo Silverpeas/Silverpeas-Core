@@ -204,7 +204,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             dblBackSlashesForDNInFilters(memberFieldValue), e);
       }
     }
-    SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()", "root.MSG_GEN_EXIT_METHOD");
+
     return usersVector;
   }
 

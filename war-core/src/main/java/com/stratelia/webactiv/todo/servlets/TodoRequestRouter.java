@@ -76,7 +76,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
    */
   public String getDestination(String function, ToDoSessionController scc,
       HttpRequest request) {
-    SilverTrace.info("todo", "TodoRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
+
     String destination = "";
 
     try {
