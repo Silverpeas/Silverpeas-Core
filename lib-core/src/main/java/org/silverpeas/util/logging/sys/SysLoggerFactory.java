@@ -23,6 +23,8 @@
  */
 package org.silverpeas.util.logging.sys;
 
+import org.silverpeas.util.logging.LoggerConfigurationManager;
+import org.silverpeas.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.logging.SilverLoggerFactory;
 
@@ -33,33 +35,33 @@ import java.util.Map;
 /**
  * Implementation of the {@code org.silverpeas.util.logging.LoggerFactory} interface to provide
  * a logger wrapping the default Java logger.
+ * </p>
+ * It manages a cache of {@code org.silverpeas.util.logging.sys.SysLogger} instances that were
+ * already previously asked. If a logger isn't in the cache, then it manufactures it,
+ * initializes it from its logging configuration, and puts it into the cache.
  * @author miguel
  */
 public class SysLoggerFactory implements SilverLoggerFactory {
 
   private static Map<String, WeakLoggerReference> loggers = new Hashtable<>();
 
-  /**
-   * Get a {@code org.silverpeas.util.logging.Logger} instance for the specified namespace.
-   * If a logger has already been created with the given namespace it is returned, otherwise a new
-   * logger is manufactured.
-   * </p>
-   * This method should not be invoked directly. It is dedicated to be used by the
-   * {@code org.silverpeas.util.logging.Logger#getLogger(String)} method.
-   * @param namespace the hierarchical dot-separated namespace of the logger mapping the
-   * hierachical relationships between the loggers from the root one.
-   * @return a Silverpeas logger instance.
-   */
   @Override
-  public SilverLogger getLogger(final String namespace) {
+  public SilverLogger getLogger(final String namespace, LoggerConfiguration configuration) {
     WeakLoggerReference weakRef = loggers.get(namespace);
     if (weakRef == null || weakRef.get() == null) {
       if (weakRef != null) {
         loggers.remove(weakRef.getNamespace());
       }
 
-      weakRef = loggers.computeIfAbsent(namespace,
-          n -> new WeakLoggerReference(new SysLogger(namespace)));
+      weakRef = loggers.computeIfAbsent(namespace, n -> {
+        SysLogger logger = new SysLogger(namespace);
+        if (!configuration.getNamespace().equals(SilverLogger.ROOT_NAMESPACE) ||
+            configuration.getLevel() != null) {
+          // we take care to not erase the root logger level
+          logger.setLevel(configuration.getLevel());
+        }
+        return new WeakLoggerReference(logger);
+      });
     }
     return weakRef.get();
   }

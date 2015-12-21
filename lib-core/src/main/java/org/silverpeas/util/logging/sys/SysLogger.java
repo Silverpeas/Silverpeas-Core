@@ -25,33 +25,27 @@ package org.silverpeas.util.logging.sys;
 
 import org.silverpeas.util.logging.Level;
 import org.silverpeas.util.logging.SilverLogger;
+import org.silverpeas.util.logging.SilverLoggerFactory;
 
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.function.Supplier;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 /**
  * This logger implementation uses the Java logging system to log actually the messages.
- * @author mmoquillon
+ * @author miguel
  */
 public class SysLogger implements SilverLogger {
 
   private static final Logger ROOT_LOGGER = Logger.getLogger(ROOT_NAMESPACE);
 
   private final Logger logger;
-  private volatile SilverLogger parent; // to keep strong ref to the parent and then its config
+  private volatile SilverLogger parent; // to keep strong ref to the parent and hence its config
                                         // with logging level and handlers
 
-  /**
-   * Delegates the logger constructions and then, more important, the initialization of the logger
-   * to the SilverLogger class itself (recursive invocation).
-   * @param namespace the namespace of a logger (used to get the logger's parent).
-   * @return the SilverLogger with the specified namespace.
-   */
   private static SilverLogger getLoggerByNamespace(String namespace) {
-    return SilverLogger.getLogger(namespace);
+    return SilverLoggerFactory.get().getLogger(namespace);
   }
 
   protected SysLogger(String namespace) {
