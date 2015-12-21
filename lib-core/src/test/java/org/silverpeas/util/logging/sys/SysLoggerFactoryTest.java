@@ -23,7 +23,12 @@
  */
 package org.silverpeas.util.logging.sys;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.test.rule.CommonAPI4Test;
+import org.silverpeas.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.util.lang.SystemWrapper;
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.logging.SilverLoggerFactory;
 
@@ -44,6 +49,19 @@ import static org.junit.Assert.assertThat;
 public class SysLoggerFactoryTest {
 
   private static String LOGGER_NAMESPACE = "Silverpeas.Test";
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
+
+  @Before
+  public void initEnvVariables() {
+    SystemWrapper.get()
+        .getenv()
+        .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
+  }
 
   @Test
   public void getALogger() {

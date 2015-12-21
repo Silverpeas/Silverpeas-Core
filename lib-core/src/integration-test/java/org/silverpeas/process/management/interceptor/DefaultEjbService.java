@@ -48,7 +48,7 @@ public class DefaultEjbService implements EjbService {
   @Override
   public InterceptorTestFile create(@SourceObject final InterceptorTestFile file,
       @TargetPK final ForeignPK destination) {
-
+    SilverTrace.info("InterceptorTest", "DefaultEjbService", "create called");
     return null;
   }
 
@@ -62,13 +62,13 @@ public class DefaultEjbService implements EjbService {
   @Override
   public void delete(@SourceObject final InterceptorTestFile file,
       @TargetPK final ForeignPK destination) {
-
+    SilverTrace.info("InterceptorTest", "DefaultEjbService", "delete called");
   }
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   @Action(ActionType.MOVE)
   @Override
   public void move(final ForeignPK from, @TargetPK final ForeignPK destination) {
-
+    SilverTrace.info("InterceptorTest", "DefaultEjbService", "move called");
   }
 }
