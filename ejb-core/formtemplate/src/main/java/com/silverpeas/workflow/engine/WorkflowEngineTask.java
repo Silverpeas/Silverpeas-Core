@@ -174,8 +174,7 @@ public class WorkflowEngineTask implements Runnable {
             }
           }
         } catch (InterruptedException e) {
-          SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-              "workflowEngine.INFO_INTERRUPTED_WHILE_WAITING");
+
         }
       }
     } catch (Throwable error) {

@@ -102,8 +102,7 @@ public class AnswerDAO {
    */
   public static Collection<Answer> getAnswersByQuestionPK(Connection con, ForeignPK questionPK)
       throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.getAnswersByQuestionPK()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK);
+
     ResultSet rs = null;
     Answer answer;
     AnswerPK answerPK = new AnswerPK(null, questionPK);
@@ -139,8 +138,7 @@ public class AnswerDAO {
    */
   public static void recordThisAnswerAsVote(Connection con, ForeignPK questionPK, AnswerPK answerPK)
       throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.recordThisAnswerAsVote()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK + ", answerPK =" + answerPK);
+
 
     String updateStatement =
         "update SB_Question_Answer set answerNbVoters = answerNbVoters + 1 where answerId = ? and" +
@@ -167,8 +165,7 @@ public class AnswerDAO {
    */
   public static void addAnswersToAQuestion(Connection con, Collection<Answer> answers,
       ForeignPK questionPK) throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.addAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK);
+
     if (answers != null) {
       for (Answer answer : answers) {
         addAnswerToAQuestion(con, answer, questionPK);
@@ -185,8 +182,7 @@ public class AnswerDAO {
    */
   public static void addAnswerToAQuestion(Connection con, Answer answer, ForeignPK questionPK)
       throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.addAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK);
+
     int newId;
 
     AnswerPK answerPK = new AnswerPK("unknown", questionPK);
@@ -232,8 +228,7 @@ public class AnswerDAO {
    */
   public static void deleteAnswersToAQuestion(Connection con, ForeignPK questionPK)
       throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.deleteAnswersToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK);
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(SQL_DELETE_QUESTION_ANSWERS);
@@ -253,8 +248,7 @@ public class AnswerDAO {
    */
   public static void deleteAnswerToAQuestion(Connection con, ForeignPK questionPK, String answerId)
       throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.deleteAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK + ", answerId = " + answerId);
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(SQL_DELETE_QUESTION_ANSWER);
@@ -275,8 +269,7 @@ public class AnswerDAO {
    */
   public static void updateAnswerToAQuestion(Connection con, ForeignPK questionPK, Answer answer)
       throws SQLException {
-    SilverTrace.info("answer", "AnswerDAO.updateAnswerToAQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK + ", answer = " + answer.toString());
+
 
     String updateStatement =
         "update SB_Question_Answer set questionId = ?," + " set answerLabel = ?," +

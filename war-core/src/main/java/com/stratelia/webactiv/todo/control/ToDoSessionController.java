@@ -121,8 +121,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public Collection<ToDoHeader> getNotCompletedToDos() throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.getNotCompletedToDos()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     return calendarBm.getNotCompletedToDosForUser(getUserId());
   }
 
@@ -134,8 +133,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public Collection<ToDoHeader> getOrganizerToDos() throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.getOrganizerToDos()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     return calendarBm.getOrganizerToDos(getUserId());
 
   }
@@ -210,8 +208,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       todo.setEndDate(endDay);
       todo.setEndHour(endHour);
       calendarBm.updateToDo(todo);
-      SilverTrace.info("todo", "ToDoSessionController.updateToDo()",
-          "root.MSG_GEN_EXIT_METHOD");
+
     } catch (ParseException e) {
       throw new TodoException("ToDoSessionController.updateToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_UPDATE_TODO_DETAIL", e);
@@ -227,8 +224,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public void setToDoPercentCompleted(String id, String percent) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.setToDoPercentCompleted()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     ToDoHeader todo = getToDoHeader(id);
     try {
       todo.setPercentCompleted(Integer.parseInt(percent));
@@ -237,8 +233,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
           "todo.MSG_CANT_SET_TODO_PERCENTCOMPLETED");
     }
     calendarBm.updateToDo(todo);
-    SilverTrace.info("todo", "ToDoSessionController.setToDoPercentCompleted()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -320,8 +315,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       String classification, Date startDay, String startHour, Date endDay,
       String endHour, String percent) throws TodoException {
 
-    SilverTrace.info("todo", "ToDoSessionController.addToDo()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     ToDoHeader todo = new ToDoHeader(name, getUserId());
 
     todo.setDescription(description);
@@ -362,12 +356,10 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public void removeToDo(String id) throws TodoException {
     verifyCurrentUserIsOwner(id);
-    SilverTrace.info("todo", "ToDoSessionController.removeToDo()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       calendarBm.removeToDo(id);
-      SilverTrace.info("todo", "ToDoSessionController.removeToDo()",
-          "root.MSG_GEN_EXIT_METHOD");
+
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.removeToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
@@ -378,8 +370,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * methods for attendees
    */
   public Collection<Attendee> getToDoAttendees(String todoId) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.getToDoAttendees()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return calendarBm.getToDoAttendees(todoId);
     } catch (Exception e) {
@@ -398,12 +389,10 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   public void setToDoAttendees(String todoId, String[] userIds)
       throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.setToDoAttendees()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       calendarBm.setToDoAttendees(todoId, userIds);
-      SilverTrace.info("todo", "ToDoSessionController.setToDoAttendees()",
-          "root.MSG_GEN_EXIT_METHOD");
+
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.setToDoAttendees()",
           SilverpeasException.ERROR, "todo.MSG_CANT_SET_TODO_ATTENDEES", e);
@@ -640,14 +629,12 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public void removeTabToDo(String[] tabTodoId) throws TodoException {
-    SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       for(String todoId : tabTodoId) {
         removeToDo(todoId);
       }
-      SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
-          "root.MSG_GEN_EXIT_METHOD");
+
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.removeTabToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);

@@ -119,10 +119,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
     StringBuilder str = new StringBuilder();
 
     if (message != null) {
-      SilverTrace.info("clipboardPeas",
-          "ClipboardSessionController.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", " message = " + message);
-
       if (message.equals("SHOWCLIPBOARD")) {
         // portage netscape
         str
@@ -158,9 +154,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
             getUserId(), sessionId);
 
         if (serverMessage != null) {
-          SilverTrace.info("clipboardPeas",
-              "ClipboardSessionController.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", " serverMessage = " + serverMessage);
           if (serverMessage.getWhat().equals("ALERT")) {
             str.append("alert ('");
             str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
@@ -177,20 +170,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
           SilverMessage popupMessage = SilverMessageFactory.read(getUserId());
 
           if (popupMessage != null) {
-            SilverTrace.info("clipboardPeas",
-                "ClipboardSessionController.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", " popupMessage = "
-                + popupMessage.getWhat());
             if (popupMessage.getWhat().equals("ALERT")) {
-              SilverTrace.info("clipboardPeas",
-                  "ClipboardSessionController.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  " URLManager.getURL(URLManager.CMP_POPUP) = "
-                  + URLManager.getURL(URLManager.CMP_POPUP));
-              SilverTrace.info("clipboardPeas",
-                  "ClipboardSessionController.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", " MessageID = "
-                  + popupMessage.getID());
               str.append("msgPopup = SP_openWindow('../..").
                   append(URLManager.getURL(URLManager.CMP_POPUP)).
                   append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
@@ -200,15 +180,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
             } else if (popupMessage.getWhat().equals("JAVASCRIPT")) {
               str.append(EncodeHelper.javaStringToJsString(popupMessage.getContent()));
             } else if (popupMessage.getWhat().equals("COMMUNICATION")) {
-              SilverTrace.info("clipboardPeas",
-                  "ClipboardSessionController.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  " URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER) = "
-                  + URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER));
-              SilverTrace.info("clipboardPeas",
-                  "ClipboardSessionController.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", " userId = "
-                  + popupMessage.getSenderId());
               request.setAttribute("MessageID", popupMessage.getID());
               str.append("OpenDiscussion('../..").
                   append(URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER)).
@@ -264,7 +235,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         }
       }
     } catch (Exception e) {
-      SilverTrace.info("clipboardPeas",
+      SilverTrace.error("clipboardPeas",
           "ClipboardSessionController.getMessageError()",
           "clipboardPeas.EX_CANT_GET_MESSAGE", "", e);
     }
@@ -277,9 +248,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @throws java.rmi.RemoteException
    */
   public synchronized Collection<IndexEntry> getIndexEntryObjects() throws ClipboardException {
-    SilverTrace.info("clipboardPeas",
-        "ClipboardSessionController.getStrateliaReferenceObjects()",
-        "root.MSG_GEN_ENTER_METHOD");
     List<IndexEntry> result = new ArrayList<IndexEntry>();
     for (Transferable clipObject : getClipboardObjects()) {
       if ((clipObject != null)
@@ -295,8 +263,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         }
       }
     }
-    SilverTrace.info("clipboardPeas", "ClipboardSessionController.getStrateliaReferenceObjects()",
-        "root.MSG_GEN_EXIT_METHOD");
+
     return result;
   }
 

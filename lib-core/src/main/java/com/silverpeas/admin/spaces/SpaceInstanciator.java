@@ -76,9 +76,6 @@ public class SpaceInstanciator {
           if (fileName.toLowerCase().endsWith(".xml")) {
             String spaceName = fileName.substring(0, fileName.length() - 4);
             String fullPath = xmlPackage + File.separator + fileName;
-            SilverTrace.info("admin", "SpaceInstanciateur.SpaceInstanciateur",
-                "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "space name: '" + spaceName
-                + "', full path: '" + fullPath + "'");
             SpaceTemplate template = (unmarshaller.unmarshal(factory.createXMLStreamReader(
                 new FileInputStream(fullPath)), SpaceTemplate.class)).getValue();
             spaceTemplates.put(spaceName, template);
@@ -123,14 +120,8 @@ public class SpaceInstanciator {
   public SpaceInst getSpaceToInstanciate(String templateName) {
     SpaceTemplate st = spaceTemplates.get(templateName);
     if (st == null) {
-      SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
-          "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-          + templateName + "' NOT FOUND !!!!!!!!!");
       return null;
     }
-    SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
-        "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-        + templateName);
     return makeSpaceInst(st);
   }
 
@@ -162,9 +153,6 @@ public class SpaceInstanciator {
         space.addComponentInst(ci);
       }
     }
-    SilverTrace.info("admin", "SpaceTemplate.makeSpaceInst",
-        "root.MSG_GEN_PARAM_VALUE", "defaultSpaceName : " + space.getName()
-        + " NbCompo: " + space.getNumComponentInst());
     return space;
   }
 }

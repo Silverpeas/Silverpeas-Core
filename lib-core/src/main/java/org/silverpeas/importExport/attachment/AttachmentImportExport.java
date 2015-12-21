@@ -153,8 +153,7 @@ public class AttachmentImportExport {
       updateRule = AttachmentDetail.IMPORT_UPDATE_RULE_ADD;
     }
 
-    SilverTrace.info("attachment", "AttachmentImportExport.addAttachmentToPublication()",
-        "root.MSG_GEN_PARAM_VALUE", "updateRule=" + updateRule);
+
 
     // Verification s'il existe un attachment de meme nom, si oui, ajout
     // d'un suffixe au nouveau fichier

@@ -120,8 +120,7 @@ public class SQLDriver extends AbstractDomainDriver {
    */
   private void openConnection() throws AdminException {
     if (openedConnection == null) {
-      SilverTrace.info("admin", "SQLDriver.openConnection()",
-          "root.MSG_GEN_ENTER_METHOD");
+
       try {
         DataSource dataSource = InitialContext.doLookup(drvSettings.getDataSourceJNDIName());
         openedConnection = dataSource.getConnection();

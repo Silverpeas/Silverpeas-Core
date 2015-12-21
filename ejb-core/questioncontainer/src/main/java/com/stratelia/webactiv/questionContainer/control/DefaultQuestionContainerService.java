@@ -94,8 +94,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public Collection<QuestionContainerHeader> getQuestionContainers(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
@@ -127,8 +126,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   private Collection<QuestionContainerHeader> setNbMaxPoints(
       Collection<QuestionContainerHeader> questionContainerHeaders) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.setNbMaxPoints()",
-        "root.MSG_GEN_ENTER_METHOD", "");
+
     QuestionService questionService = this.questionService;
     Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
     List<QuestionContainerHeader> result = new ArrayList<>();
@@ -156,8 +154,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   }
 
   private QuestionContainerHeader setNbMaxPoint(QuestionContainerHeader questionContainerHeader) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.setNbMaxPoint()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
+
     int nbMaxPoints = 0;
     QuestionService questionService = this.questionService;
     Collection<Question> questions;
@@ -179,9 +176,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public Collection<QuestionContainerHeader> getNotClosedQuestionContainers(
       QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getNotClosedQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getNotClosedQuestionContainers(con, questionContainerPK);
@@ -215,10 +209,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public Collection<QuestionContainerHeader> getOpenedQuestionContainersAndUserScores(
       QuestionContainerPK questionContainerPK, String userId) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getOpenedQuestionContainersAndUserScores()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     try (Connection con = getConnection()) {
     Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getOpenedQuestionContainers(con, questionContainerPK);
@@ -267,10 +257,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public Collection<QuestionContainerHeader> getQuestionContainersWithUserScores(
       QuestionContainerPK questionContainerPK, String userId) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getQuestionContainersWithUserScores()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     try (Connection con = getConnection()) {
       Collection<QuestionContainerHeader> questionContainerHeaders =
           QuestionContainerDAO.getQuestionContainers(con, questionContainerPK);
@@ -406,8 +392,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getScoresByFatherId()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     Collection<ScoreDetail> scores;
     ScoreService scoreService = this.scoreService;
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
@@ -452,9 +437,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public QuestionContainerDetail getQuestionContainer(QuestionContainerPK questionContainerPK,
       String userId) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getQuestionContainer()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     Collection<Question> questions;
     Collection<Comment> comments;
     QuestionContainerHeader questionContainerHeader;
@@ -480,9 +462,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
     userVotes = getUserVotesToQuestionContainer(userId, questionContainerPK);
     comments = getComments(questionContainerPK);
 
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getQuestionContainer()",
-        "root.MSG_GEN_EXIT_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     return new QuestionContainerDetail(questionContainerHeader, questions, comments, userVotes);
   }
 
@@ -509,11 +488,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public QuestionContainerDetail getQuestionContainerByParticipationId(
       QuestionContainerPK questionContainerPK, String userId, int participationId) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getQuestionContainerByParticipationId()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId +
-            ", participationId = " + participationId);
     Collection<Question> questions;
     Collection<Comment> comments;
     QuestionContainerHeader questionContainerHeader;
@@ -544,11 +518,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
     comments = getComments(questionContainerPK);
 
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getQuestionContainerByParticipationId()",
-        "root.MSG_GEN_EXIT_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId +
-            ", participationId = " + participationId);
     return new QuestionContainerDetail(questionContainerHeader, questions, comments, userVotes);
   }
 
@@ -577,8 +546,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void openQuestionContainer(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.openQuestionContainer()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     try (Connection con = getConnection()) {
       // begin PDC integration
       QuestionContainerHeader qc =
@@ -596,9 +564,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public int getNbVotersByQuestionContainer(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getNbVotersByQuestionContainer()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
     int nbVoters;
 
     ScorePK scorePK =
@@ -619,10 +584,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
       String userId, Map<String, List<String>> reply) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     SimpleDateFormat formatterDB = new java.text.SimpleDateFormat("yyyy/MM/dd");
     QuestionPK questionPK;
     AnswerPK answerPK;
@@ -672,9 +633,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
       String openedAnswer = answers.get(vectorSize - 1);
 
       if (openedAnswer.startsWith("OA")) {
-        SilverTrace.info("questionContainer",
-            "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-            "root.MSG_GEN_PARAM_VALUE", "It's an open answer !");
         // It's an open answer, Fetch the matching answerId
         answerId = answers.get(vectorSize - 2);
         openedAnswer = openedAnswer.substring(2, openedAnswer.length());
@@ -689,10 +647,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
             new QuestionResult(null, new ForeignPK(questionPK), answerPK, userId, openedAnswer);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
-        SilverTrace.info("questionContainer",
-            "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-            "root.MSG_GEN_PARAM_VALUE",
-            "answer.getNbPoints(): " + answer.getNbPoints() + ", penaltyValue=" + penaltyValue);
         try {
           questionResultService.setQuestionResultToUser(result);
         } catch (Exception e) {
@@ -714,9 +668,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
       for (int i = vectorBegin; i < newVectorSize; i++) {
         answerId = answers.get(i);
-        SilverTrace.info("questionContainer",
-            "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-            "root.MSG_GEN_PARAM_VALUE", "It's a closed answer " + i);
         answer = question.getAnswer(answerId);
         questionUserScore += answer.getNbPoints() - penaltyValue;
         answerPK = new AnswerPK(answerId, questionContainerPK);
@@ -741,26 +692,14 @@ public class DefaultQuestionContainerService implements QuestionContainerService
               "questionContainer.RECORDING_USER_RESPONSES_TO_QUESTIONCONTAINER_FAILED", e);
         }
       }
-      SilverTrace.info("questionContainer",
-          "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "Question ptsmin =" + question.getNbPointsMin() + " - Question ptsmax =" +
-              question.getNbPointsMax());
       if (question.getNbPointsMax() < questionUserScore) {
         questionUserScore = question.getNbPointsMax();
       } else if (question.getNbPointsMin() > questionUserScore) {
         questionUserScore = question.getNbPointsMin();
       }
       userScore += questionUserScore;
-      SilverTrace.info("questionContainer",
-          "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "questionUserScore =" + questionUserScore + " - userScore =" + userScore);
     }
 
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-        "root.MSG_GEN_PARAM_VALUE", "User Score =" + userScore);
     // Record the UserScore
     ScoreDetail scoreDetail =
         new ScoreDetail(scorePK, questionContainerPK.getId(), userId, participationId,
@@ -783,21 +722,12 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public void recordReplyToQuestionContainerByUser(QuestionContainerPK questionContainerPK,
       String userId, Map<String, List<String>> reply, String comment, boolean isAnonymousComment) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.recordReplyToQuestionContainerByUser()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId +
-            ", comment = " + comment);
     recordReplyToQuestionContainerByUser(questionContainerPK, userId, reply);
     addComment(questionContainerPK, userId, comment, isAnonymousComment);
   }
 
   private void addComment(QuestionContainerPK questionContainerPK, String userId, String comment,
       boolean isAnonymousComment) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.addComment()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId + ", comment = " +
-            comment);
     try (Connection con = getConnection()) {
       Comment c = new Comment(null, questionContainerPK, userId, comment, isAnonymousComment, null);
       QuestionContainerDAO.addComment(con, c);
@@ -855,9 +785,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void updateQuestionContainerHeader(QuestionContainerHeader questionContainerHeader) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.updateQuestionContainerHeader()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
     try (Connection con = getConnection()) {
       QuestionContainerDAO.updateQuestionContainerHeader(con, questionContainerHeader);
       // start PDC integration
@@ -876,8 +803,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public void updateQuestions(QuestionContainerPK questionContainerPK,
       Collection<Question> questions) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.updateQuestions()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     QuestionService questionService = this.questionService;
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
     for (Question question : questions) {
@@ -897,8 +823,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public void deleteVotes(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.deleteVotes()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     ScorePK scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
     QuestionPK questionPK =
@@ -984,8 +909,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   }
 
   private Collection<Comment> getComments(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getComments()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     try (Connection con = getConnection()) {
       return QuestionContainerDAO.getComments(con, questionContainerPK);
     } catch (Exception e) {
@@ -997,8 +921,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getSuggestions()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     Collection<QuestionResult> suggestions;
     QuestionPK questionPK =
         new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
@@ -1017,9 +940,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public QuestionResult getSuggestion(String userId, QuestionPK questionPK, AnswerPK answerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getSuggestion()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "userId=" + userId + ", questionPK = " + questionPK + ", answerPK = " + answerPK);
     QuestionResult suggestion;
     QuestionResultService questionResultService = this.questionResultService;
 
@@ -1036,10 +956,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   private Collection<QuestionResult> getUserVotesToQuestionContainer(String userId,
       QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getUserVotesToQuestionContainer()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     Collection<QuestionResult> votes = null;
     QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK.getSpace(),
         questionContainerPK.getComponentName());
@@ -1074,8 +990,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public float getAveragePoints(QuestionContainerPK questionContainerPK) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getAveragePoints()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     float averagePoints;
     ScorePK scorePK =
         new ScorePK("", questionContainerPK.getSpace(), questionContainerPK.getComponentName());
@@ -1094,10 +1009,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public int getUserNbParticipationsByFatherId(QuestionContainerPK questionContainerPK,
       String userId) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getUserNbParticipationsByFatherId()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId);
     int nbPart;
 
     ScorePK scorePK =
@@ -1119,11 +1030,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
   @Override
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(
       QuestionContainerPK questionContainerPK, String userId, int participationId) {
-    SilverTrace.info("questionContainer",
-        "DefaultQuestionContainerService.getUserScoreByFatherIdAndParticipationId()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", userId = " + userId +
-            ", participationId = " + participationId);
     ScoreDetail scoreDetail;
 
     ScorePK scorePK =
@@ -1145,9 +1051,6 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public void updateScore(QuestionContainerPK questionContainerPK, ScoreDetail scoreDetail) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.updateScore()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionContainerPK = " + questionContainerPK + ", scoreDetail = " + scoreDetail);
     try {
       scoreService.updateScore(scoreDetail);
     } catch (Exception e) {
@@ -1166,8 +1069,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
    * @param header the question container to index.
    */
   private void createIndex(QuestionContainerHeader header) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "header = " + header);
+
     FullIndexEntry indexEntry = null;
 
     if (header != null) {
@@ -1197,8 +1099,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
    */
   @Override
   public void deleteIndex(QuestionContainerPK pk) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.deleteIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + pk);
+
     IndexEntryPK indexEntry =
         new IndexEntryPK(pk.getComponentName(), "QuestionContainer", pk.getId());
 
@@ -1207,8 +1108,7 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   @Override
   public int getSilverObjectId(QuestionContainerPK pk) {
-    SilverTrace.info("questionContainer", "DefaultQuestionContainerService.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk.toString());
+
     int silverObjectId;
     try {
       silverObjectId =

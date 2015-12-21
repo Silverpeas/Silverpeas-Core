@@ -74,8 +74,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     String language = pagesContext.getLanguage();
 
     if (!UserField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
+
     }
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
@@ -102,10 +101,6 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
   @Override
   public void display(PrintWriter out, UserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
-        + ", fieldType = " + field.getTypeName());
-
     String language = pageContext.getLanguage();
     String selectUserImg = Util.getIcon("userPanel");
     String selectUserLab = Util.getString("userPanel", language);
@@ -119,8 +114,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     String fieldName = template.getFieldName();
 
     if (!field.getTypeName().equals(UserField.TYPE)) {
-      SilverTrace.info("form", "UserFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
+
     } else {
       userId = field.getUserId();
     }

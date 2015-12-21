@@ -136,8 +136,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   @Override
   public LocalizationBundle getMultilang() {
-    SilverTrace.info("peasCore", "AbstractComponentSessionController.getMultilang()",
-        "root.MSG_GEN_ENTER_METHOD", "Current Language=" + controller.getFavoriteLanguage());
+
     if (message != null && !message.getLocale().getLanguage().equals(
         controller.getFavoriteLanguage())) {
       setMultilangFileName(messageFile);
@@ -172,8 +171,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
         messageLanguage = getLanguage();
         message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
         // messageLanguage = getLanguage();
-        SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
-            "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
+
       } catch (Exception e) {
         SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile + "|Language="
@@ -206,15 +204,13 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @see
    */
   public final void setResourceFileName(String resourceFileName) {
-    SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
-        "root.MSG_GEN_PARAM_VALUE", "File=" + resourceFileName);
+
     messageFile = resourceFileName;
     if (messageFile != null) {
       try {
         messageLanguage = getLanguage();
         message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
-        SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
-            "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
+
       } catch (Exception e) {
         SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile

@@ -135,8 +135,7 @@ public class SilverStatisticsManager {
       throws SchedulerException, ParseException {
     Scheduler scheduler = SchedulerProvider.getScheduler();
     scheduler.unscheduleJob(jobName);
-    SilverTrace.info("silverstatistics", "SilverStatisticsManager.initSchedulerStatistics",
-        "root.MSG_GEN_PARAM_VALUE", "jobName=" + jobName + ", aCronString=" + aCronString);
+
     JobTrigger trigger = JobTrigger.triggerAt(aCronString);
     Job job = createJobWith(jobName, methodeName);
     scheduler.scheduleJob(job, trigger);
@@ -237,8 +236,7 @@ public class SilverStatisticsManager {
     if (isAsynchronStats(type)) {
       SilverStatisticsSender mySilverStatisticsSender = SilverStatisticsSender.get();
       try {
-        SilverTrace.info("silverstatistics", "SilverStatisticsManager.sendStatistic",
-            "root.MSG_GEN_PARAM_VALUE", "stat=" + type + ' ' + stat.toString());
+
         mySilverStatisticsSender.send(type, stat.toString());
       } catch (Exception e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsManager.sendStatistic",
@@ -246,8 +244,7 @@ public class SilverStatisticsManager {
       }
     } // synchrone
     else {
-      SilverTrace.info("silverstatistics", "SilverStatisticsManager.sendStatistic",
-          "root.MSG_GEN_PARAM_VALUE", "stat=" + type + ' ' + stat.toString());
+
       getSilverStatistics().putStats(type, stat.toString());
     }
   }

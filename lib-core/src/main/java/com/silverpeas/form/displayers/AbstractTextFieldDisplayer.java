@@ -81,8 +81,7 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
     String label = template.getLabel(language);
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
     StringBuilder script = new StringBuilder(10000);
 

@@ -50,25 +50,21 @@ public class ExportXMLThread extends ExportThread {
 
   @Override
   public void run() {
-    SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
-        "------------BEGINNING OF EXPORT THREAD-----------");
+
     try {
       ImportExport importExport = ServiceProvider.getService(ImportExport.class);
       m_ExportReport =
           importExport.processExport(super.m_toAwake.getUserDetail(), language, pksToExport,
           rootPK, mode);
-      SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
-          "------------EXPORT PROCESSING OK-----------");
+
       m_isEncours = false;
       m_toAwake.threadFinished();
-      SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
-          "------------AFTER NOTIFY-----------");
+
     } catch (Exception e) {
       m_ErrorOccured = e;
       m_isEncours = false;
       m_toAwake.threadFinished();
-      SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
-          "------------ERROR-----------", e);
+
     }
   }
 }

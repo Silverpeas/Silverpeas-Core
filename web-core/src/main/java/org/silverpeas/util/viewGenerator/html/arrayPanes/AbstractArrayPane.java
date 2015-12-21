@@ -96,8 +96,7 @@ public class AbstractArrayPane implements ArrayPane {
 
     if (target != null && target.equals(name)) {
       String action = request.getParameter(ACTION_PARAMETER_NAME);
-      SilverTrace.info("viewgenerator", "AbstractArrayPane.init()",
-          "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action + "'");
+
       if ("Sort".equals(action)) {
         String newState = request.getParameter(COLUMN_PARAMETER_NAME);
         if (newState != null) {
@@ -167,8 +166,7 @@ public class AbstractArrayPane implements ArrayPane {
 
   @Override
   public void setColumnToSort(int columnNumber) {
-    SilverTrace.info("viewgenerator", "AbstractArrayPane.setColumnToSort()",
-        "root.MSG_GEN_PARAM_VALUE", " columNumber = '" + columnNumber + "'");
+
     state.setSortColumn(columnNumber);
   }
 

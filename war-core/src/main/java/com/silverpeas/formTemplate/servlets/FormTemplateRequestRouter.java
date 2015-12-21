@@ -83,8 +83,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
   @Override
   public String getDestination(String function, FormTemplateSessionController controller,
       HttpRequest request) {
-    SilverTrace.info("form", "FormTemplateRequestRouter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD", "function = " + function);
+
     String destination = "";
 
 
@@ -104,8 +103,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter<FormTempla
       return "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("form", "FormTemplateRequestRouter.getDestination()",
-        "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
+
     return destination;
   }
 

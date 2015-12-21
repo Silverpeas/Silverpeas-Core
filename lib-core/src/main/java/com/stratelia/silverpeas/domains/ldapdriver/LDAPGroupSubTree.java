@@ -58,8 +58,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     String[] memberDN;
     StringBuffer newDN;
 
-    SilverTrace.info("admin", "LDAPGroupSubTree.getMemberGroupIds()", "root.MSG_GEN_ENTER_METHOD",
-        "MemberId=" + memberId + ", isGroup=" + isGroup);
+
     if (isGroup) {
       memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
           driverSettings.getScope(), driverSettings.getGroupsIdFilter(memberId),
@@ -113,8 +112,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     Vector<String> usersVector = new Vector<>();
     int i;
 
-    SilverTrace.info("admin", "LDAPGroupSubTree.getUserIds()", "root.MSG_GEN_ENTER_METHOD",
-        "GroupDN=" + groupEntry.getDN());
+
     theEntries = LDAPUtility.search1000Plus(lds, groupEntry.getDN(), LDAPConnection.SCOPE_ONE,
         driverSettings.getUsersFullFilter(), driverSettings.getUsersLoginField(),
         driverSettings.getGroupAttributes());
@@ -196,15 +194,13 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     } else {
       searchDN = parentEntry.getDN();
     }
-    SilverTrace.info("admin", "LDAPGroupSubTree.getGroupEntry()", "root.MSG_GEN_ENTER_METHOD",
-        "groupDN=" + searchDN);
+
     theEntries = LDAPUtility.search1000Plus(lds, searchDN, driverSettings.getScope(),
         driverSettings.getGroupsFullFilter(), driverSettings.getGroupsNameField(),
         driverSettings.getGroupAttributes());
     sortResult = sortReversedDN(theEntries);
     for (i = 0; i < sortResult.length; i++) {
-      SilverTrace.info("admin", "LDAPGroupSubTree.getChildGroupsEntryByLDAPEntry()",
-          "root.MSG_GEN_PARAM_VALUE", "GROUP Found  : " + sortResult[i].getDN());
+
       if ((!sortResult[i].getDN().equalsIgnoreCase(searchDN)) &&
           ((!sortResult[i].getDN().endsWith(previousDN)) || (previousDN.length() <= 0))) {
         includeGroup = true;
@@ -222,8 +218,7 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
           }
         }
         if (includeGroup) {
-          SilverTrace.info("admin", "LDAPGroupSubTree.getChildGroupsEntryByLDAPEntry()",
-              "root.MSG_GEN_PARAM_VALUE", "GROUP ADDED !!!");
+
           entryVector.add(sortResult[i]);
           previousDN = sortResult[i].getDN();
         }

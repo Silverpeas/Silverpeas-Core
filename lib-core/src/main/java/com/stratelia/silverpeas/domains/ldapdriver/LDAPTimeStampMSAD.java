@@ -52,8 +52,7 @@ public class LDAPTimeStampMSAD extends AbstractLDAPTimeStamp {
 
   public void initFromServer(String lds, String baseDN, String filter,
       String fallbackSortBy) throws AdminException {
-    SilverTrace.info("admin", "LDAPTimeStampMSAD.initFromServer()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     LDAPEntry[] theEntries = LDAPUtility.search1000Plus(lds, baseDN,
         driverSettings.getScope(), "(&(" + driverSettings.getTimeStampVar()
         + ">=" + timeStamp + ")" + filter + ")", driverSettings

@@ -71,8 +71,7 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public boolean hasTentativeSchedulablesForUser(String userId) {
-    SilverTrace.info("calendar", "CalendarEJB.hasTentativeSchedulablesForUser(userId)",
-        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+
     Connection con = getConnection();
     try {
       return getJournalDAO().hasTentativeJournalsForUser(con, userId);
@@ -88,8 +87,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<JournalHeader> getTentativeSchedulablesForUser(String userId) {
-    SilverTrace.info("calendar", "CalendarEJB.getTentativeSchedulablesForUser(userId)",
-        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+
     Connection con = getConnection();
     try {
       return getJournalDAO().getTentativeJournalHeadersForUser(con, userId);
@@ -108,8 +106,7 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public Collection<ToDoHeader> getNotCompletedToDosForUser(String userId) {
-    SilverTrace.info("calendar", "CalendarEJB.getNotCompletedToDosForUser(userId)",
-        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+
     Connection con = getConnection();
     try {
       return ToDoDAO.getNotCompletedToDoHeadersForUser(con, userId);
@@ -123,8 +120,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public List<String> getAllToDoForUser(final String userId) {
-    SilverTrace.info("calendar", "CalendarEJB.getAllToDoForUser(userId)",
-        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+
     Connection con = getConnection();
     try {
       return ToDoDAO.getAllTodoByUser(con, userId);
@@ -207,8 +203,7 @@ public class CalendarEJB implements SilverpeasCalendar {
   }
 
   private Collection<ToDoHeader> getToDoHeadersByInstanceId(String instanceId) {
-    SilverTrace.info("calendar", "CalendarEJB.getToDoHeadersByInstanceId(String instanceId)",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       return ToDoDAO.getToDoHeadersByInstanceId(con, instanceId);
@@ -292,8 +287,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeToDo(String id) {
-    SilverTrace.info("calendar", "CalendarEJB. removeToDo(String id)", "root.MSG_GEN_ENTER_METHOD",
-        "id=" + id);
+
     Connection con = getConnection();
     try {
       // get the detail for desindexation
@@ -319,8 +313,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeToDoByInstanceId(String instanceId) {
-    SilverTrace.info("calendar", "CalendarEJB. removeToDoByInstanceId(String instanceId)",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     Connection con = getConnection();
     try {
       Collection<ToDoHeader> todosToRemove = getToDoHeadersByInstanceId(instanceId);
@@ -351,10 +344,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) {
-    SilverTrace.info("calendar", "CalendarEJB.getDaySchedulablesForUser(String id)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "day=" + day + "userId=" + userId + "categoryId=" + categoryId + "participation=" +
-            participation);
     Connection con = getConnection();
     try {
       return getJournalDAO()
@@ -372,10 +361,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<JournalHeader> getNextDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) {
-    SilverTrace.info("calendar", "CalendarEJB.getNextDaySchedulablesForUser(String id)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "day=" + day + "userId=" + userId + "categoryId=" + categoryId + "participation=" +
-            participation);
     Connection con = getConnection();
     try {
       return getJournalDAO()
@@ -393,12 +378,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<JournalHeader> getPeriodSchedulablesForUser(String begin, String end,
       String userId, String categoryId, String participation) {
-    SilverTrace.info("calendar",
-        "CalendarEJB. getPeriodSchedulablesForUser(String begin,String end,String userId," +
-            "String categoryId,String participation)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "begin=" + begin + ", end=" + end + ", userId=" + userId + ", categoryId=" + categoryId +
-            ", participation=" + participation);
     Connection con = getConnection();
     try {
       return getJournalDAO()
@@ -416,12 +395,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<SchedulableCount> countMonthSchedulablesForUser(String month, String userId,
       String categoryId, String participation) {
-    SilverTrace.info("calendar",
-        "CalendarEJB.countMonthSchedulablesForUser(String month,String userId,String categoryId," +
-            "String participation)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "month=" + month + ", userId=" + userId + ", categoryId=" + categoryId +
-            ", participation=" + participation);
     Connection con = getConnection();
     try {
       return getJournalDAO()
@@ -441,8 +414,7 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public String addJournal(JournalHeader journal) {
-    SilverTrace.info("calendar", "CalendarEJB.addJournal(JournalHeader journal)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     // verify the journal attributes are correctly set
     validateJournal(journal);
     // write in DB
@@ -468,8 +440,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void updateJournal(JournalHeader journal) {
-    SilverTrace.info("calendar", "CalendarEJB.updateJournal(JournalHeader journal)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     validateJournal(journal);
     Connection con = getConnection();
     try {
@@ -533,8 +504,7 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void removeJournal(String journalId) {
-    SilverTrace.info("calendar", "CalendarEJB.removeJournal(String journalId)",
-        "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId);
+
     Connection con = getConnection();
     try {
       JournalHeader journal = getJournalHeader(journalId);
@@ -563,8 +533,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public JournalHeader getJournalHeader(String journalId) {
-    SilverTrace.info("calendar", "CalendarEJB.getJournalHeader(String journalId)",
-        "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId);
+
     Connection con = getConnection();
     try {
       return getJournalDAO().getJournalHeader(con, journalId);
@@ -584,8 +553,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<JournalHeader> getExternalJournalHeadersForUser(String userId) {
-    SilverTrace.info("calendar", "CalendarEJB.getOutlookJournalHeadersForUser(String userId)",
-        "root.MSG_GEN_ENTER_METHOD", "outlookId=" + userId);
+
     Connection con = getConnection();
     try {
       return getJournalDAO().getOutlookJournalHeadersForUser(con, userId);
@@ -608,9 +576,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<JournalHeader> getExternalJournalHeadersForUserAfterDate(String userId,
       java.util.Date startDate) {
-    SilverTrace.info("calendar",
-        "CalendarEJB.getOutlookJournalHeadersForUserAfterDate(String userId, Date startDate)",
-        "root.MSG_GEN_ENTER_METHOD", "outlookId=" + userId);
     Connection con = getConnection();
     try {
       return getJournalDAO().getOutlookJournalHeadersForUserAfterDate(con, userId, startDate);
@@ -634,10 +599,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userId,
       java.util.Date startDate, int nbReturned) {
-    SilverTrace.info("calendar",
-        "CalendarEJB.getJournalHeadersForUserAfterDate(String userId, Date startDate, " +
-            "int nbReturned)",
-        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
     Connection con = getConnection();
     try {
       return getJournalDAO().getJournalHeadersForUserAfterDate(con, userId, startDate, nbReturned);
@@ -708,8 +669,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<Attendee> getJournalAttendees(String journalId) {
-    SilverTrace.info("calendar", "CalendarEJB.getJournalAttendees(String journalId)",
-        "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId);
+
     Connection con = getConnection();
     try {
       return AttendeeDAO.getJournalAttendees(con, journalId);
@@ -768,11 +728,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void setJournalParticipationStatus(String journalId, String userId, String participation) {
-    SilverTrace.info("calendar",
-        "CalendarEJB.setJournalParticipationStatus(String journalId, String userId," +
-            "String participation)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "journalId=" + journalId + ", userId=" + userId + ", participation=" + participation);
     Attendee attendee = new Attendee(userId, participation);
     Connection con = getConnection();
     try {
@@ -791,8 +746,7 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void addToDoAttendee(String todoId, Attendee attendee) {
-    SilverTrace.info("calendar", "CalendarEJB.addToDoAttendee(String todoId,Attendee attendee)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       AttendeeDAO.addToDoAttendee(con, todoId, attendee);
@@ -809,8 +763,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeToDoAttendee(String todoId, Attendee attendee) {
-    SilverTrace.info("calendar", "CalendarEJB.removeToDoAttendee(String todoId,Attendee attendee)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       AttendeeDAO.removeToDoAttendee(con, todoId, attendee);
@@ -834,8 +787,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<Attendee> getToDoAttendees(String todoId) {
-    SilverTrace.info("calendar", "CalendarEJB.getToDoAttendees(String todoId)",
-        "root.MSG_GEN_ENTER_METHOD", "todoId=" + todoId);
+
     Connection con = getConnection();
     try {
       return AttendeeDAO.getToDoAttendees(con, todoId);
@@ -850,8 +802,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void setToDoAttendees(String todoId, String[] userIds) {
-    SilverTrace.info("calendar", "CalendarEJB.setToDoAttendees(String todoId,String[] userIds)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     Collection<Attendee> current = getToDoAttendees(todoId);
 
     // search for element to remove
@@ -959,8 +910,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<Category> getJournalCategories(String journalId) {
-    SilverTrace.info("calendar", "CalendarEJB.getJournalCategories(String journalId)",
-        "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId);
+
     Connection con = getConnection();
     try {
       return CategoryDAO.getJournalCategories(con, journalId);
@@ -1051,8 +1001,7 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public List<String> getHolidayDates(String userId) {
-    SilverTrace.info("calendar", "calendarBmEJB.getHolidayDates()", "root.MSG_GEN_ENTER_METHOD",
-        "userId=" + userId);
+
     Connection con = getConnection();
     try {
       return HolidaysDAO.getHolidayDates(con, userId);
@@ -1067,8 +1016,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public List<String> getHolidayDates(String userId, Date beginDate, Date endDate) {
-    SilverTrace.info("calendar", "calendarBmEJB.getHolidayDates()", "root.MSG_GEN_ENTER_METHOD",
-        "userId=" + userId);
+
     Connection con = getConnection();
     try {
       return HolidaysDAO.getHolidayDates(con, userId, beginDate, endDate);
@@ -1083,8 +1031,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void addHolidayDate(HolidayDetail holiday) {
-    SilverTrace.info("calendar", "calendarBmEJB.addHolidayDate()", "root.MSG_GEN_ENTER_METHOD",
-        "holidayDate=" + holiday.getDate().toString());
+
     Connection con = getConnection();
     try {
       HolidaysDAO.addHolidayDate(con, holiday);
@@ -1099,8 +1046,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void addHolidayDates(List<HolidayDetail> holidayDates) {
-    SilverTrace.info("calendar", "calendarBmEJB.addHolidayDates()", "root.MSG_GEN_ENTER_METHOD",
-        "holidayDates.size()=" + holidayDates.size());
+
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
@@ -1116,8 +1062,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeHolidayDate(HolidayDetail holiday) {
-    SilverTrace.info("calendar", "calendarBmEJB.removeHolidayDate()", "root.MSG_GEN_ENTER_METHOD",
-        "holidayDate=" + holiday.getDate().toString());
+
     Connection con = getConnection();
     try {
       HolidaysDAO.removeHolidayDate(con, holiday);
@@ -1132,8 +1077,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeHolidayDates(List<HolidayDetail> holidayDates) {
-    SilverTrace.info("calendar", "calendarBmEJB.removeHolidayDates()", "root.MSG_GEN_ENTER_METHOD",
-        "holidayDates.size()=" + holidayDates.size());
+
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
@@ -1240,9 +1184,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
       Date begin, Date end) {
-    SilverTrace.info("calendar", "CalendarEJB.getNextEventsForUser(String id)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "day=" + day + "userId=" + userId + "Classification=" + classification);
     Connection con = getConnection();
     try {
       return getJournalDAO().getNextEventsForUser(con, day, userId, classification, begin, end);

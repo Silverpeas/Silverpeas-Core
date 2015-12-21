@@ -180,8 +180,7 @@ public class FileFolderManager {
    * @throws UtilException
    */
   public static void createFolder(String chemin) throws UtilException {
-    SilverTrace.info("util", "FileFolderManager.createFolder",
-        "root.MSG_GEN_PARAM_VALUE", "chemin=" + chemin);
+
     File directory = new File(chemin);
     if (directory == null || !directory.exists() || directory.isDirectory()) {
       createFolder(directory);
@@ -245,8 +244,7 @@ public class FileFolderManager {
     File directory = new File(chemin);
     boolean result = FileUtils.deleteQuietly(directory);
     if (!result) {
-      SilverTrace.info("util", "FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE",
-          chemin);
+
       if (throwException) {
         throw new UtilException("FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE",
             chemin);

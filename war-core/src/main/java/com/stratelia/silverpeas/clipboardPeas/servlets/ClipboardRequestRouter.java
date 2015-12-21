@@ -81,9 +81,6 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
   @Override
   public String getDestination(String function, ClipboardSessionController clipboardSC,
       HttpRequest request) {
-    SilverTrace.info("clipboardPeas",
-        "ClipboardRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD",
-        " componentName = " + clipboardSC.getClass().getName() + "; function = " + function);
     String destination;
     if (function.startsWith("copyForm")) {
       destination = "/clipboard/jsp/copyForm.jsp";
@@ -94,8 +91,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
       clipboardSC.setJSPPage(request.getParameter("JSPPage"));
       clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
       if (StringUtil.isDefined(clipboardSC.getComponentRooterName())) {
-        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR = " + clipboardSC.getComponentRooterName());
+
         if (StringUtil.isDefined(clipboardSC.getComponentId())) {
           destination = URLManager.getURL(null, request.getParameter("SpaceFrom"),
               clipboardSC.getComponentId()) + "paste.jsp";
@@ -103,8 +99,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
           destination = URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS) + "paste.jsp";
         }
       } else {
-        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR is null");
+
         destination = "/clipboard/jsp/clipboard.jsp";
       }
     } else if (function.startsWith("clipboardRefresh")) {
@@ -123,8 +118,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
         for (int i = 0; i < max; i++) {
           String removedValue = request.getParameter("clipboardId" + i);
           if (removedValue != null) {
-            SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "clipboardId" + i + " = " + removedValue);
+
             clipboardSC.removeClipboardElement(i - removed);
             removed++;
           }
@@ -139,8 +133,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
         String objectIndex = request.getParameter("Id");
         String objectStatus = request.getParameter("Status");
         if ((objectIndex != null) && (objectStatus != null)) {
-          SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "selectObject " + objectIndex + " -> " + objectStatus);
+
           clipboardSC.setClipboardSelectedElement(Integer.parseInt(objectIndex),
               Boolean.parseBoolean(objectStatus));
         }
@@ -162,27 +155,23 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
       }
       String componentName = clipboardSC.getComponentRooterName();
       if (componentName != null) {
-        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR = " + componentName);
+
         destination = URLManager.getURL(null, request.getParameter("SpaceFrom"),
             request.getParameter("ComponentFrom")) + "paste.jsp";
       } else {
-        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR is null");
+
         destination = "/clipboard/jsp/clipboard.jsp";
       }
     } else {
       destination = "/clipboard/jsp/" + function;
     }
-    SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-        "root.MSG_GEN_EXIT_METHOD", "Destination=" + destination);
+
     return destination;
   }
 
   @Override
   public void updateSessionManagement(HttpSession session, String destination) {
-    SilverTrace.info("clipboardPeas", "ClipboardRequestRouter.updateSessionManagement",
-        "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
+
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
     if (sessionInfo.isDefined()) {

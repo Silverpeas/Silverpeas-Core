@@ -413,8 +413,7 @@ public class DefaultStatisticService implements StatisticService {
   @Override
   public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
       int actionType, String objectType, int nbObjects) {
-    SilverTrace.info("statistic", "DefaultStatisticService.getLastHistoryOfObjectsForUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = getConnection();
     try {
       return HistoryObjectDAO

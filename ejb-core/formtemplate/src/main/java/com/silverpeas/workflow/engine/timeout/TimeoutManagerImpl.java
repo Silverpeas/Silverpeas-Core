@@ -37,9 +37,9 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.engine.WorkflowEngineTask;
 import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.util.Date;
@@ -73,8 +73,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
       JobTrigger trigger = JobTrigger.triggerAt(cronString);
       scheduler.scheduleJob(TIMEOUT_MANAGER_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("workflowEngine", "TimeoutManagerImpl.initialize",
-          "workflowEngine.EX_ERR_INITIALIZE", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
 
   }
@@ -101,19 +100,12 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
           TimeoutEvent event = new TimeoutEventImpl(instance, timeoutActionAndState.getState(),
               timeoutActionAndState.getAction());
           WorkflowEngineTask.addTimeoutRequest(event);
-          SilverTrace.info("workflowEngine", "TimeoutManagerImpl.doTimeoutManagement",
-              "workflowEngine.WARN_TIMEOUT_DETECTED",
-              "instance Id : '" + instance.getInstanceId() + "' state : '" +
-                  timeoutActionAndState.getState().getName());
         } catch (WorkflowException e) {
-          SilverTrace.error("workflowEngine", "TimeoutManagerImpl.doTimeoutManagement",
-              "workflowEngine.EX_ERR_TIMEOUT_MANAGEMENT", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("workflowEngine",
-          "TimeoutManagerImpl.doTimeoutManagement",
-          "workflowEngine.EX_ERR_TIMEOUT_MANAGEMENT", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     } finally {
       Date endDate = new Date();
       long delay = (endDate.getTime() - beginDate.getTime()) / 1000;
@@ -131,8 +123,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("workflowEngine",
-        "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverLogger.getLogger(this).error("The job {0} was not successful",
+        anEvent.getJobExecutionContext().getJobName());
   }
 }

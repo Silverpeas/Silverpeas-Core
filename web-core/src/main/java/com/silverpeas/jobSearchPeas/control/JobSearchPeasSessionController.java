@@ -175,8 +175,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private List<SearchResult> searchResultSpaceId(String spaceId) {
-    SilverTrace.info("admin", "JobSearchPeasSessionController.searchResultSpaceId",
-        "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId);
+
     List<SearchResult> result = new ArrayList<SearchResult>();
     SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
     if (null != spaceInstLight) {
@@ -312,8 +311,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private List<SearchResult> searchResultComponentId(String componentId) {
-    SilverTrace.info("admin", "JobSearchPeasSessionController.searchResultComponentId",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
+
     List<SearchResult> result = new ArrayList<SearchResult>();
     ComponentInstLight componentInstLight = getAdminController().getComponentInstLight(componentId);
     if (null != componentInstLight) {

@@ -50,8 +50,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
     if (StringUtil.isDefined(memberId)) {
       LDAPEntry memberEntry;
-      SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
-          "root.MSG_GEN_ENTER_METHOD", "MemberId=" + memberId + ", isGroup=" + isGroup);
+
       if (isGroup) {
         memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.
             getGroupsSpecificGroupsBaseDN(), driverSettings.getScope(),
@@ -81,8 +80,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
             driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
       }
       for (LDAPEntry currentEntry : theEntries) {
-        SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
-            "root.MSG_GEN_PARAM_VALUE", "GroupFound=" + currentEntry.getDN());
+
         groupsVector.add(getGroupId(currentEntry));
       }
     }
@@ -150,8 +148,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
               groupsCur.addAll(getTRUEChildGroupsEntry(lds, curGroup));
             }
           } catch (AdminException e) {
-            SilverTrace.info("admin", "LDAPGroupAllRoot.getUserIds()",
-                "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : " + grId, e);
+
           }
         }
       }
@@ -161,14 +158,12 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
   }
 
   protected List<String> getTRUEUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
-    SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()",
-        "root.MSG_GEN_ENTER_METHOD", "lds = " + lds + ", group = " + groupEntry.getDN());
+
     List<String> usersVector = new ArrayList<>();
     String groupsMemberField = driverSettings.getGroupsMemberField();
     String[] stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
     for (String memberFieldValue : stringVals) {
-      SilverTrace.info("admin", "LDAPGroupAllRoot.getTRUEUserIds()", "root.MSG_GEN_PARAM_VALUE",
-          memberFieldValue);
+
       try {
         LDAPEntry userEntry;
         if ("memberUid".equals(groupsMemberField)) {
@@ -230,8 +225,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
       }
       try {
-        SilverTrace.info("admin", "LDAPGroupAllRoot.getChildGroupsEntry()",
-            "root.MSG_GEN_PARAM_VALUE", "Root Group Search");
+
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(),
             theFilter, driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
@@ -297,18 +291,15 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     while (!groupsIdsSet.isEmpty()) {
       List<LDAPEntry> groupsCur = new ArrayList<>();
       for ( LDAPEntry theGroup : groupsIdsSet) {
-        SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
-            "root.MSG_GEN_PARAM_VALUE", "GroupTraite2=" + theGroup.getDN());
+        
         les = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "("
             + driverSettings.getGroupsMemberField() + "=" + theGroup.getDN()
             + "))", driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
         for (LDAPEntry childGroupEntry : les) {
-          SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
-              "root.MSG_GEN_PARAM_VALUE", "GroupFound2=" + childGroupEntry.getDN());
+
           if (!groupsManaged.containsKey(childGroupEntry.getDN())) {
-            SilverTrace.info("admin", "LDAPGroupAllRoot.getAllChangedGroups()",
-                "root.MSG_GEN_PARAM_VALUE", "GroupAjoute2=" + childGroupEntry.getDN());
+
             groupsCur.add(childGroupEntry);
             groupsManaged.put(childGroupEntry.getDN(), translateGroup(lds, childGroupEntry));
           }

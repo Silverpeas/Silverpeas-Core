@@ -65,8 +65,7 @@ public class EmailFieldDisplayer extends AbstractTextFieldDisplayer {
     String label = template.getLabel(language);
 
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
     if (template.isMandatory() && pageContext.useMandatory()) {
       StringBuilder script = new StringBuilder(10000);

@@ -80,8 +80,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     String language = PagesContext.getLanguage();
 
     if (!template.getTypeName().equals(MultipleUserField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
+
 
     }
     if (template.isMandatory()) {
@@ -111,12 +110,6 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
   @Override
   public void display(PrintWriter out, MultipleUserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    SilverTrace.info("form", "UserFieldDisplayer.display",
-        "root.MSG_GEN_ENTER_METHOD", "fieldName = "
-        + template.getFieldName() + ", value = "
-        + field.getValue() + ", fieldType = "
-        + field.getTypeName());
-
     String language = pageContext.getLanguage();
     String selectUserImg = Util.getIcon("userPanel");
     String selectUserLab = Util.getString("userPanel", language);
@@ -139,8 +132,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     String fieldName = template.getFieldName();
 
     if (!field.getTypeName().equals(MultipleUserField.TYPE)) {
-      SilverTrace.info("form", "UserFieldDisplayer.display",
-          "form.INFO_NOT_CORRECT_TYPE", MultipleUserField.TYPE);
+
     } else {
       userIds = field.getStringValue();
     }

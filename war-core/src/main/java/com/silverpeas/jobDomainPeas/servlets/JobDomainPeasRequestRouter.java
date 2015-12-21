@@ -109,8 +109,7 @@ public class JobDomainPeasRequestRouter extends
   public String getDestination(String function, JobDomainPeasSessionController jobDomainSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobDomainSC.getUserId() + " Function=" + function);
+
 
     try {
       if (!jobDomainSC.isAccessGranted()) {
@@ -509,8 +508,7 @@ public class JobDomainPeasRequestRouter extends
               String strSynchroReport = jobDomainSC.getSynchroReport();
 
               jobDomainSC.refresh();
-              SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", "SynchroReport=" + strSynchroReport);
+
               request.setAttribute("SynchroReport", strSynchroReport);
               destination = "domainSynchroReport.jsp";
             }
@@ -732,10 +730,6 @@ public class JobDomainPeasRequestRouter extends
         if (jobDomainSC.getTargetDomain() != null) {
           long domainRight = jobDomainSC.getDomainActions();
 
-          SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "domainRight=" + domainRight
-              + " & DomainDriver.ACTION_X509_USER = " + DomainDriver.ACTION_X509_USER);
-
           request.setAttribute("isDomainRW",
               ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
               || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
@@ -781,8 +775,7 @@ public class JobDomainPeasRequestRouter extends
       }
     }
 
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

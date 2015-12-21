@@ -257,8 +257,7 @@ public class ArrayColumn implements SimpleGraphicElement {
           }
         }
 
-        SilverTrace.info("viewgenerator", "ArrayColumn.print()",
-            "root.MSG_GEN_PARAM_VALUE", " adresse = '" + address + "'");
+
 
         String sep = "&";
         if (xhtml) {

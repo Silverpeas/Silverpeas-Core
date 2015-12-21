@@ -46,8 +46,7 @@ public class SilverStatisticsPeasDAO {
 
   public static List<AccessPublicationVO> getListPublicationAccess(String startDate, String endDate)
       throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.getListPublicationAccess",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     // retrieve connection
     Connection con = getConnection();
@@ -95,8 +94,7 @@ public class SilverStatisticsPeasDAO {
    * @see
    */
   private static Connection getConnection() {
-    SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAO.getConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     Connection con = null;
     try {

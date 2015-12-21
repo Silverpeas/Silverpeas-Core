@@ -144,9 +144,6 @@ public class SQLRequest {
    * @return the complete SQL query to create a table
    */
   protected String getCreateQuery(String tableName, String tableType) {
-    SilverTrace.info("peasCore", "SQLRequest.getCreateQuery",
-        "root.MSG_GEN_PARAM_VALUE", "tableName=" + tableName + " | tableType="
-        + tableType);
     // set the value for the tableName tag
     internalTag.put("__tableName__", tableName);
 
@@ -176,9 +173,6 @@ public class SQLRequest {
    * @return the complete SQL query to update a table
    */
   protected String getUpdateQuery(String instanceId, String tableType) {
-    SilverTrace.info("peasCore", "SQLRequest.getUpdateQuery",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceId
-        + " | tableType=" + tableType);
     // set the value for the tableName tag
     internalTag.put("__ID__", instanceId);
 
@@ -194,9 +188,6 @@ public class SQLRequest {
    * @return the complete SQL query to insert a table
    */
   protected String getInsertQuery(String instanceId, String tableType) {
-    SilverTrace.info("peasCore", "SQLRequest.getInsertQuery",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceId
-        + " | tableType=" + tableType);
     // set the value for the tableName tag
     internalTag.put("__ID__", instanceId);
 
@@ -250,8 +241,7 @@ public class SQLRequest {
         posTag = localQuery.indexOf(currentTag);
       }
     }
-    SilverTrace.info("peasCore", "SQLRequest.substituteInternalTag",
-        "root.MSG_GEN_PARAM_VALUE", "RequestResult=" + localQuery);
+
 
     return localQuery;
   }
@@ -277,8 +267,7 @@ public class SQLRequest {
       return null;
     }
     String localQuery = allQueries.substring(beginTableType, endTableType);
-    SilverTrace.info("peasCore", "SQLRequest.getSubQuery",
-        "root.MSG_GEN_PARAM_VALUE", "RequestResult=" + localQuery);
+
     return localQuery;
   }
 }

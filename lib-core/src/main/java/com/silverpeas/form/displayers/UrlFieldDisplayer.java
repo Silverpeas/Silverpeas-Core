@@ -72,13 +72,11 @@ public class UrlFieldDisplayer extends AbstractTextFieldDisplayer {
     String html = "";
 
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
-    SilverTrace.info("form", "UrlFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE", "fieldName="
-        + fieldName);
+
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "UrlFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     String defaultValue =

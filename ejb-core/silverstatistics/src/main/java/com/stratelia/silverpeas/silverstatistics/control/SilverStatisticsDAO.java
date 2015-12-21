@@ -71,8 +71,7 @@ public class SilverStatisticsDAO {
     String insertStatement = insertStatementBuf.toString();
 
     try {
-      SilverTrace.info("silverstatistics", "SilverStatisticsDAO.insertDataStats",
-          "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
+
       prepStmt = con.prepareStatement(insertStatement);
       for (String currentKey : theKeys) {
         i++;

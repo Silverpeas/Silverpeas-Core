@@ -83,9 +83,6 @@ public class AxisHeaderI18NDAO {
         translation.setName(rs.getString(4));
         translation.setDescription(rs.getString(5));
 
-        SilverTrace.info("Pdc", "AxisHeaderI18NDAO.getTranslations",
-            "root.MSG_GEN_PARAM_VALUE", "translation " + translation.getId()
-            + " for axisId = " + axisId);
         allTranslations.add(translation);
       }
     } finally {

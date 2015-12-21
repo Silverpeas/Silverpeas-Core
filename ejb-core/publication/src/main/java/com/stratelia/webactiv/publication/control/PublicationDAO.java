@@ -219,14 +219,8 @@ public class PublicationDAO {
         java.util.Date now = new java.util.Date();
         String dateNow = null;
         dateNow = DateUtil.formatDate(now);
-        SilverTrace.info("publication",
-            "PublicationDAO.getNbPubInFatherPKs()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
         String hourNow = null;
         hourNow = DateUtil.formatTime(now);
-        SilverTrace.info("publication",
-            "PublicationDAO.getNbPubInFatherPKs()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
         prepStmt = con.prepareStatement(selectStatement.toString());
 
         prepStmt.setString(1, dateNow);
@@ -296,13 +290,7 @@ public class PublicationDAO {
       try {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
-        SilverTrace.info("publication",
-            "PublicationDAO.getNbPubByFatherPath()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
         String hourNow = DateUtil.formatTime(now);
-        SilverTrace.info("publication",
-            "PublicationDAO.getNbPubByFatherPath()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
         prepStmt = con.prepareStatement(selectStatement.toString());
 
         prepStmt.setString(1, fatherPK.getComponentName());
@@ -369,21 +357,15 @@ public class PublicationDAO {
         .append(
         " WHERE sb_node_node.instanceId = ? GROUP BY sb_node_node.nodeId, sb_node_node.nodefatherid");
 
-    SilverTrace.info("publication", "PublicationDAO.getDistribution()",
-        "root.MSG_GEN_PARAM_VALUE", "sqlStatement = "
-        + selectStatement.toString());
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       java.util.Date now = new java.util.Date();
       String dateNow = DateUtil.formatDate(now);
-      SilverTrace.info("publication", "PublicationDAO.getDistribution()",
-          "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
 
       String hourNow = DateUtil.formatTime(now);
-      SilverTrace.info("publication", "PublicationDAO.getDistribution()",
-          "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
 
       prepStmt = con.prepareStatement(selectStatement.toString());
 
@@ -481,8 +463,7 @@ public class PublicationDAO {
       prepStmt = con.prepareStatement(insertStatement.toString());
       prepStmt.setInt(1, id);
       prepStmt.setString(2, infoId);
-      SilverTrace.info("publication", "PublicationDAO.insertRow()",
-          "root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
+
       prepStmt.setString(3, detail.getName());
       prepStmt.setString(4, detail.getDescription());
       if (detail.getCreationDate() == null) {
@@ -557,8 +538,7 @@ public class PublicationDAO {
 
       prepStmt.setString(26, DateUtil.formatDate(detail.getDraftOutDate()));
 
-      SilverTrace.info("publication", "PublicationDAO.insertRow()",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + detail.toString());
+
 
       prepStmt.executeUpdate();
     } catch (Exception e) {
@@ -638,13 +618,7 @@ public class PublicationDAO {
     String componentId = rs.getString(15);
     PublicationPK pk = new PublicationPK(String.valueOf(id), componentId);
     String infoId = rs.getString("infoid");
-    SilverTrace.info("publication",
-        "PublicationDAO.resultSet2PublicationDetail()",
-        "root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
     String name = rs.getString("pubname");
-    SilverTrace.info("publication",
-        "PublicationDAO.resultSet2PublicationDetail()",
-        "root.MSG_GEN_PARAM_VALUE", "name = " + name);
     String description = rs.getString("pubDescription");
     if (description == null) {
       description = "";
@@ -800,10 +774,6 @@ public class PublicationDAO {
     if (sorting != null) {
       selectStatement.append(", ").append(sorting);
     }
-    SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "selectStatement = " + selectStatement);
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -819,12 +789,10 @@ public class PublicationDAO {
       if (filterOnVisibilityPeriod) {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
         String hourNow = null;
         hourNow = DateUtil.formatTime(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
         prepStmt.setString(index, dateNow);
         prepStmt.setString(++index, dateNow);
         prepStmt.setString(++index, dateNow);
@@ -879,19 +847,16 @@ public class PublicationDAO {
       selectStatement += " order by " + sorting;
     }
 
-    SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
-        "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
+
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       java.util.Date now = new java.util.Date();
       String dateNow = DateUtil.formatDate(now);
-      SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
-          "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
       String hourNow = DateUtil.formatTime(now);
-      SilverTrace.info("publication", "PublicationDAO.selectNotInFatherPK()",
-          "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
 
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, pubPK.getComponentName());
@@ -1007,11 +972,9 @@ public class PublicationDAO {
     try {
       java.util.Date now = new java.util.Date();
       String dateNow = DateUtil.formatDate(now);
-      SilverTrace.info("publication", "PublicationDAO.selectByFatherIds()",
-          "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
       String hourNow = DateUtil.formatTime(now);
-      SilverTrace.info("publication", "PublicationDAO.selectByFatherIds()",
-          "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
 
       prepStmt = con.prepareStatement(selectStatement.toString());
 
@@ -1142,21 +1105,15 @@ public class PublicationDAO {
       selectStatement.append(")");
       selectStatement.append(" order by P.pubUpdateDate desc, P.pubId desc");
 
-      SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-          + selectStatement.toString());
-
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
 
       try {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
         String hourNow = DateUtil.formatTime(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
 
         prepStmt = con.prepareStatement(selectStatement.toString());
 
@@ -1221,20 +1178,14 @@ public class PublicationDAO {
       selectStatement.append(")");
       selectStatement.append(" order by P.pubUpdateDate desc, P.pubId desc");
 
-      SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-          + selectStatement.toString());
-
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
       try {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
         String hourNow = DateUtil.formatTime(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
         prepStmt = con.prepareStatement(selectStatement.toString());
 
         prepStmt.setString(1, status);
@@ -1294,20 +1245,14 @@ public class PublicationDAO {
       selectStatement.append(")");
       selectStatement.append(" ORDER BY P.pubUpdateDate DESC, P.pubId DESC");
 
-      SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "selectStatement = "
-          + selectStatement.toString());
-
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
       try {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+
         String hourNow = DateUtil.formatTime(now);
-        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+
         prepStmt = con.prepareStatement(selectStatement.toString());
         prepStmt.setFetchSize(maxSize);
         prepStmt.setString(1, status);
@@ -1411,13 +1356,7 @@ public class PublicationDAO {
     try {
       java.util.Date now = new java.util.Date();
       String dateNow = DateUtil.formatDate(now);
-      SilverTrace.info("publication",
-          "PublicationDAO.selectByBeginDateDescAndStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
       String hourNow = DateUtil.formatTime(now);
-      SilverTrace.info("publication",
-          "PublicationDAO.selectByBeginDateDescAndStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
 
       prepStmt = con.prepareStatement(selectStatement.toString());
 
@@ -1468,15 +1407,7 @@ public class PublicationDAO {
       try {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
-        SilverTrace.info(
-            "publication",
-            "PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId()",
-            "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
         String hourNow = DateUtil.formatTime(now);
-        SilverTrace.info(
-            "publication",
-            "PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId()",
-            "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
         prepStmt = con.prepareStatement(selectStatement);
 
         prepStmt.setString(1, pubPK.getComponentName());
@@ -1541,13 +1472,7 @@ public class PublicationDAO {
     try {
       java.util.Date now = new java.util.Date();
       String dateNow = DateUtil.formatDate(now);
-      SilverTrace.info("publication",
-          "PublicationDAO.selectByBeginDateDesc()",
-          "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
       String hourNow = DateUtil.formatTime(now);
-      SilverTrace.info("publication",
-          "PublicationDAO.selectByBeginDateDesc()",
-          "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
 
       prepStmt = con.prepareStatement(selectStatement.toString());
 
@@ -1640,13 +1565,7 @@ public class PublicationDAO {
     try {
       java.util.Date now = new java.util.Date();
       String dateNow = DateUtil.formatDate(now);
-      SilverTrace.info("publication",
-          "PublicationDAO.selectByBeginDateDescAndStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
       String hourNow = DateUtil.formatTime(now);
-      SilverTrace.info("publication",
-          "PublicationDAO.selectByBeginDateDescAndStatus()",
-          "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
 
       prepStmt = con.prepareStatement(selectStatement.toString());
 
@@ -1790,8 +1709,7 @@ public class PublicationDAO {
   public static PublicationDetail loadRow(Connection con, PublicationPK pk)
       throws SQLException {
     String selectStatement = QueryStringFactory.getLoadRow(pk.getTableName());
-    SilverTrace.info("publication", "PublicationDAO.loadRow()",
-        "root.MSG_GEN_PARAM_VALUE", "selectStatement = " + selectStatement);
+
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -1817,9 +1735,6 @@ public class PublicationDAO {
   public static void changeInstanceId(Connection con, PublicationPK pubPK,
       String newInstanceId) throws SQLException {
 
-    SilverTrace.info("publication", "PublicationDAO.changeInstanceId()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-        + ", newInstanceId = " + newInstanceId);
     int rowCount = 0;
 
     StringBuilder updateQuery = new StringBuilder(128);
@@ -1857,8 +1772,7 @@ public class PublicationDAO {
     try {
       prepStmt = con.prepareStatement(UPDATE_PUBLICATION);
       prepStmt.setString(1, detail.getInfoId());
-      SilverTrace.info("publication", "PublicationDAO.storeRow()",
-          "root.MSG_GEN_PARAM_VALUE", "InfoId = " + detail.getInfoId());
+
       prepStmt.setString(2, detail.getName());
       prepStmt.setString(3, detail.getDescription());
       prepStmt.setString(4, DateUtil.formatDate(detail.getCreationDate()));
@@ -1970,10 +1884,6 @@ public class PublicationDAO {
 
   public static PublicationDetail selectByNameAndNodeId(Connection con,
       PublicationPK pubPK, String name, int nodeId) throws SQLException {
-    SilverTrace.info("publication", "PublicationDAO.selectByNameAndNodeId()",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = "
-        + pubPK.getComponentName() + ", name = '" + name + "', nodeId = "
-        + nodeId);
     ResultSet rs = null;
     PublicationDetail pub = null;
     String selectStatement = QueryStringFactory.getSelectByNameAndNodeId();

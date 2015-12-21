@@ -63,8 +63,7 @@ public class NavBarManager {
   long m_elmtCounter = 0;
 
   public void resetSpaceCache(String theSpaceId) {
-    SilverTrace.info("jobStartPagePeas", "NavBarManager.resetSpaceCache()",
-        "root.MSG_GEN_PARAM_VALUE", "Reset Cache Space=" + theSpaceId);
+
     String spaceId = getShortSpaceId(theSpaceId);
     DisplaySorted elmt = getSpaceCache(spaceId);
     if (elmt != null) {
@@ -135,8 +134,7 @@ public class NavBarManager {
     String currentSpaceId = m_CurrentSpaceId;
     String currentSubSpaceId = m_CurrentSubSpaceId;
 
-    SilverTrace.info("jobStartPagePeas", "NavBarManager.resetAllCache()",
-        "root.MSG_GEN_PARAM_VALUE");
+
     initWithUser(m_SessionCtrl, m_user);
     if (currentSpaceId != null) {
       setCurrentSpace(currentSpaceId);
@@ -149,8 +147,7 @@ public class NavBarManager {
   public void initWithUser(AbstractComponentSessionController msc, UserDetail user) {
     String sUserId = user.getId();
 
-    SilverTrace.info("jobStartPagePeas", "NavBarManager.initWithUser()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + sUserId);
+
     m_sContext = URLManager.getApplicationURL();
     m_administrationCtrl = ServiceProvider.getService(AdminController.class);
     m_SessionCtrl = msc;
@@ -226,8 +223,7 @@ public class NavBarManager {
     for (DisplaySorted ds : m_Spaces) {
       buildSpaceHTMLLine(ds);
     }
-    SilverTrace.info("jobStartPagePeas", "NavBarManager.setCurrentSpace()",
-        "root.MSG_GEN_PARAM_VALUE", "Set Current Space=" + m_CurrentSpaceId);
+
     return StringUtil.isDefined(m_CurrentSpaceId);
   }
 
@@ -274,9 +270,6 @@ public class NavBarManager {
     } else {
       m_SubSpaceComponents = new DisplaySorted[0];
     }
-    SilverTrace.info("jobStartPagePeas", "NavBarManager.setCurrentSubSpace()",
-        "root.MSG_GEN_PARAM_VALUE", "Set Current SUB Space="
-        + m_CurrentSubSpaceId);
     return StringUtil.isDefined(m_CurrentSubSpaceId);
   }
 
@@ -383,9 +376,6 @@ public class NavBarManager {
     valret.orderNum = spaceInst.getOrderNum();
     valret.deep = spaceInst.getLevel();
     buildSpaceHTMLLine(valret);
-    SilverTrace.info("jobStartPagePeas", "NavBarManager.buildSpaceObject()",
-        "root.MSG_GEN_PARAM_VALUE", "Space=" + valret.id + " Name="
-        + valret.name + " Type=" + valret.type);
     return valret;
   }
 

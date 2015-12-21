@@ -267,8 +267,7 @@ public class SQLDomainService extends AbstractDomainService {
    * @throws DomainCreationException
    */
   private void generateDomainPropertiesFile(Domain domainToCreate) throws DomainCreationException {
-    SilverTrace.info("admin", "SQLDomainService.generateDomainPropertiesFile()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     String domainName = domainToCreate.getName();
     
@@ -306,8 +305,7 @@ public class SQLDomainService extends AbstractDomainService {
    */
   private void generateDomainAuthenticationPropertiesFile(Domain domainToCreate)
       throws DomainCreationException {
-    SilverTrace.info("admin", "SQLDomainService.generateDomainAuthenticationPropertiesFile()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     String domainName = domainToCreate.getName();
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
@@ -348,8 +346,7 @@ public class SQLDomainService extends AbstractDomainService {
    * @throws DomainDeletionException
    */
   private void removeDomainPropertiesFile(Domain domainToRemove) {
-    SilverTrace.info("admin", "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     String domainName = domainToRemove.getName();
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);

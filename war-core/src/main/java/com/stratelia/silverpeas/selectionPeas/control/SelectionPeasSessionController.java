@@ -76,8 +76,7 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void initSC(String selectionType) {
-    SilverTrace.info("selectionPeas", "SelectionPeasSessionController.initSC",
-        "root.MSG_GEN_PARAM_VALUE", "SelectionType=" + selectionType);
+
     searchSetPanel = null;
     searchElementPanel = null;
     selection = getSelection();

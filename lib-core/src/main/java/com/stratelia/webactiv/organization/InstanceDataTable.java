@@ -65,9 +65,6 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
    */
   public void createInstanceData(int componentId, Parameter parameter) throws
       AdminPersistenceException, SQLException {
-    SilverTrace.info("admin", "InstanceDataTable.createInstanceData",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
-        + ", parameter = " + parameter.toString());
     InstanceDataRow idr = new InstanceDataRow();
 
     idr.id = getNextId();

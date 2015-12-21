@@ -67,8 +67,7 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     if (!template.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "UniqueIdFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+
     }
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
@@ -82,8 +81,7 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     }
 
     if (!TextField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "UniqueIdFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     String fieldName = template.getFieldName();

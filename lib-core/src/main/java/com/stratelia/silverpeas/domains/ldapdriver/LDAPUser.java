@@ -93,9 +93,6 @@ public class LDAPUser {
     } else {
       theFilter = driverSettings.getUsersFullFilter();
     }
-    SilverTrace.info("admin", "LDAPUser.getAllUsers()", "root.MSG_GEN_PARAM_VALUE",
-        "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " +
-            Integer.toString(driverSettings.getScope()) + " filter : " + theFilter);
     SynchroReport
         .info("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...",
             null);
@@ -104,11 +101,8 @@ public class LDAPUser {
         .search1000Plus(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             theFilter, driverSettings.getUsersLoginField(), driverSettings.getUserAttributes());
     for (i = 0; i < theEntries.length; i++) {
-      SilverTrace
-          .info("admin", "LDAPUser.getAllUsers()", "root.MSG_GEN_PARAM_VALUE", "User Found !!!");
       usersVector.add(translateUser(lds, theEntries[i]));
-      SilverTrace.info("admin", "LDAPUser.getAllUsers()", "root.MSG_GEN_PARAM_VALUE",
-          "User " + i + " : " + usersVector.get(i).getLogin());
+
       usersVector.get(i).traceUser();// Trace niveau Info ds
       // module 'admin' des infos user courant : ID, domaine, login, e-mail,...
       SynchroReport.debug("LDAPUser.getAllUsers()",
@@ -139,10 +133,6 @@ public class LDAPUser {
         lAttrs.addAll(Arrays.asList(driverParent.getMapParameters()));
       }
     }
-    SilverTrace.info("admin", "LDAPUser.getUser()", "root.MSG_GEN_PARAM_VALUE",
-        "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " +
-            Integer.toString(driverSettings.getScope()) + " filter : " +
-            driverSettings.getUsersIdFilter(id));
     LDAPEntry theEntry = LDAPUtility
         .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs.size()]));
@@ -160,11 +150,6 @@ public class LDAPUser {
    */
   public UserDetail getUser(String lds, String id) throws AdminException {
     LDAPEntry theEntry;
-
-    SilverTrace.info("admin", "LDAPUser.getUser()", "root.MSG_GEN_PARAM_VALUE",
-        "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " +
-            Integer.toString(driverSettings.getScope()) + " filter : " +
-            driverSettings.getUsersIdFilter(id));
     theEntry = LDAPUtility
         .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             driverSettings.getUsersIdFilter(id), driverSettings.getUserAttributes());
@@ -173,11 +158,6 @@ public class LDAPUser {
 
   public UserDetail getUserByLogin(String lds, String loginUser) throws AdminException {
     LDAPEntry theEntry;
-
-    SilverTrace.info("admin", "LDAPUser.getUser()", "root.MSG_GEN_PARAM_VALUE",
-        "User Search : " + driverSettings.getLDAPUserBaseDN() + " scope : " +
-            Integer.toString(driverSettings.getScope()) + " filter : " +
-            driverSettings.getUsersLoginFilter(loginUser));
     theEntry = LDAPUtility
         .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             driverSettings.getUsersLoginFilter(loginUser), driverSettings.getUserAttributes());

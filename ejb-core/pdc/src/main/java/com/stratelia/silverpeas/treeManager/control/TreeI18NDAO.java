@@ -81,9 +81,6 @@ public class TreeI18NDAO {
         translation.setName(rs.getString(5));
         translation.setDescription(rs.getString(6));
 
-        SilverTrace.info("Pdc", "TreeI18NDAO.getTranslations",
-            "root.MSG_GEN_PARAM_VALUE", "translation " + translation.getId()
-            + " for treeId = " + treeId + " and id =" + nodeId);
         allTranslations.add(translation);
       }
     } finally {

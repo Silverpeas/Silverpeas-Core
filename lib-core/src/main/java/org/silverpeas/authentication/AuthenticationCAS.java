@@ -103,8 +103,7 @@ public class AuthenticationCAS extends Authentication {
             "AuthenticationCAS.doAuthentication()",
             SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + credential.getLogin());
       }
-      SilverTrace.info(module, "AuthenticationCAS.doAuthentication()",
-          "authentication.MSG_USER_AUTHENTIFIED", "User=" + credential.getLogin());
+
     } catch (SQLException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);

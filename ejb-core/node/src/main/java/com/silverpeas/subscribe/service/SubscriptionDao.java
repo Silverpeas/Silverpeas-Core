@@ -237,8 +237,7 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsBySubscriber(Connection con,
       SubscriptionSubscriber subscriber) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriber",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -262,8 +261,7 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsBySubscriberAndComponent(Connection con,
       SubscriptionSubscriber subscriber, String instanceId) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriberAndComponent",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -289,8 +287,7 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsByResource",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     String methodQueryPart = "";
@@ -323,8 +320,7 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsBySubscriberAndResource(Connection con,
       SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriberAndResource",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {

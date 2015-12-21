@@ -68,7 +68,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.DomainProperties;
@@ -90,19 +89,10 @@ import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.fileFolder.FileFolderManager;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.ComponentSecurity;
 import org.silverpeas.viewer.ViewerProvider;
 import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -432,8 +422,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // Add external components into QueryDescription
         addExternalComponents(query);
 
-        SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
-            "root.MSG_GEN_PARAM_VALUE", "# component = " + query.getSpaceComponentPairSet().size());
+
 
         String originalQuery = query.getQuery();
         query.setQuery(getSynonymsQueryString(originalQuery));
@@ -452,11 +441,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (query != null) {
         keyword = query.getQuery();
       }
-      SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
-          "pdcPeas.EX_CAN_SEARCH_QUERY", "query : " + keyword, e);
+
     }
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
-        "root.MSG_GEN_EXIT_METHOD");
+
 
     return plainSearchResults;
   }
@@ -492,8 +479,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           FileFolderManager.getAllSubFolder(extServerCfg.getDataPath() + File.separator
           + "index");
     } catch (UtilException e) {
-      SilverTrace.error("pdcPeas", "PdcSearchSessionController.browseExternalServerDirectory()",
-          "I/O exception folder = " + extServerCfg.getDataPath() + File.separator + "index", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     if (!listDir.isEmpty()) {
       for (File file : listDir) {
@@ -540,9 +526,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         return getSecurityIntf().isObjectAvailable(componentId, getUserId(),
             mie.getObjectId(), mie.getObjectType());
       } catch (Exception e) {
-        SilverTrace.info("pdcPeas", "PdcSearchSessionController.isMatchingIndexEntryAvailable()",
-            "pdcPeas.EX_CAN_SEARCH_QUERY", "componentId = " + componentId + ", objectId = "
-            + mie.getObjectId() + ", objectType = " + mie.getObjectType(), e);
+        SilverLogger.getLogger(this)
+            .error("Search query error for componentId = " + componentId + ", objectId = " +
+                mie.getObjectId() + ", objectType = " + mie.getObjectType(), e);
       }
     }
     // contrôle des droits sur les espaces et les composants
@@ -744,8 +730,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           try {
             facet = new Facet(facetId, getFieldLabel(formName, splitted[1]));
           } catch (Exception e) {
-            SilverTrace.error("pdcPeas", "PdcSearchSessionController.processFacetsFormField()",
-                "pdcPeas.CANT_GET_FACET_LABEL", e);
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
           fieldFacetsMap.put(facetId, facet);
         } else {
@@ -758,8 +743,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           try {
             fieldValueLabel = getFieldValue(formName, fieldName, fieldValueKey);
           } catch (Exception e) {
-            SilverTrace.error("pdcPeas", "PdcSearchSessionController.processFacetsFormField()",
-                "pdcPeas.CANT_GET_FACET_ENTRY_LABEL", e);
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
           FacetEntryVO entry = new FacetEntryVO(fieldValueLabel, fieldValueKey);
           // check if this entry have been selected
@@ -819,8 +803,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       form = PublicationTemplateManager.getInstance().loadPublicationTemplate(formName);
       return form.getFieldsForFacets().contains(fieldName);
     } catch (PublicationTemplateException e) {
-      SilverTrace.error("pdcPeas", "PdcSearchSessionController.isFieldStillAFacet()",
-          "pdcPeas.CANT_GET_FIELDS_FOR_FACETS", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return false;
   }
@@ -1087,9 +1070,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             try {
               downloadLink = getAttachmentUrl(result);
             } catch (Exception e) {
-              SilverTrace.warn("pdcPeas",
-                  "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
-                  "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
+              SilverLogger.getLogger(this).error(e.getMessage(), e);
             }
             underLink = getUrl(URLManager.getApplicationURL(), indexEntry);
             int iStart = underLink.indexOf("Attachment");
@@ -1119,9 +1100,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           try {
             downloadLink = getVersioningUrl(result);
           } catch (Exception e) {
-            SilverTrace.error("pdcPeas",
-                "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
-                "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
           underLink = getUrl(URLManager.getApplicationURL(), indexEntry);
           int iStart = underLink.indexOf("Versioning");
@@ -1146,8 +1125,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           String treeId = objectId.substring(objectId.indexOf("_") + 1, objectId.length());
           String valueId = objectId.substring(0, objectId.indexOf("_"));
           String uniqueId = treeId + "_" + valueId;
-          SilverTrace.warn("pdcPeas", "PdcSearchRequestRouter.buildResultList()",
-              "root.MSG_GEN_PARAM_VALUE", "uniqueId= " + uniqueId);
           titleLink = "javascript:" + markAsReadJS + " openGlossary('" + uniqueId + "');";
         } else if (resultType.equals("Space")) {
           // retour sur l'espace
@@ -1288,9 +1265,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   private List<GlobalSilverResult> matchingIndexEntries2GlobalSilverResults(
       List<MatchingIndexEntry> matchingIndexEntries) throws Exception {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
-        "root.MSG_GEN_ENTER_METHOD");
     if (matchingIndexEntries == null || matchingIndexEntries.isEmpty()) {
       return new ArrayList<GlobalSilverResult>();
     }
@@ -1318,10 +1292,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         GlobalSilverResult gsr = new GlobalSilverResult(result);
         gsr.setResultId(i);
-
-        SilverTrace.info("pdcPeas",
-            "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
-            "root.MSG_GEN_PARAM_VALUE", "title= " + title);
 
         // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
         // RESULT PAGE
@@ -1487,11 +1457,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     GlobalSilverResult gsr = new GlobalSilverResult(matchingIndexEntry);
 
-    SilverTrace.info(
-        "pdcPeas",
-        "PdcSearchSessionController.matchingIndexEntry2GlobalSilverResult()",
-        "root.MSG_GEN_PARAM_VALUE", "title= " + title);
-
     // preparation sur l'emplacement du document
     if (componentId.startsWith("user@")) {
       UserDetail user = getOrganisationController().getUserDetail(
@@ -1589,8 +1554,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String getVersioningUrl(GlobalSilverResult gsr) throws Exception {
     String componentId = gsr.getIndexEntry().getComponent();
     String documentId = gsr.getAttachmentId();
-    SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
-        "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
+
     SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(new SimpleDocumentPK(documentId, componentId), null);
     SimpleDocument version = document.getLastPublicVersion();
@@ -1642,9 +1606,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public void setCurrentComponentIds(List<String> componentList) {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.setCurrentComponentIds()",
-        "root.MSG_GEN_ENTER_METHOD", "# componentId = " + componentList.size());
     String componentId;
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
       componentId = componentList.get(i);
@@ -1653,13 +1614,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<String> getCurrentComponentIds() {
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getCurrentComponentIds()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
       String componentId = componentList.get(i);
-      SilverTrace.info("pdcPeas",
-          "PdcSearchSessionController.getCurrentComponentIds()",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
     }
     return this.componentList;
   }
@@ -1729,10 +1686,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public List<Value> getDaughterValues(String axisId, String valueId, AxisFilter filter)
       throws PdcException {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.getDaughterValues()",
-        "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", valueId = "
-        + valueId);
     List<Value> values;
     if (componentList == null || componentList.isEmpty()) {
       values = getPdcManager().getPertinentDaughterValuesByInstanceId(searchContext,
@@ -1745,8 +1698,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         values = setNBNumbersToOne(getPdcManager().getDaughters(axisId, valueId));
       }
     }
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getDaughterValues()",
-        "root.MSG_GEN_EXIT_METHOD");
+
     return values;
   }
 
@@ -1759,8 +1711,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<Value> getFirstLevelAxisValues(String axisId) throws PdcException {
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getFirstLevelAxisValues()",
-        "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId);
+
     List<Value> result;
     if (componentList == null || componentList.isEmpty()) {
       result = getPdcManager().getFirstLevelAxisValuesByInstanceId(searchContext,
@@ -1769,8 +1720,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       result = getPdcManager().getFirstLevelAxisValuesByInstanceIds(searchContext,
           axisId, getCopyOfInstanceIds());
     }
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getFirstLevelAxisValues()",
-        "root.MSG_GEN_EXIT_METHOD", "axisId = " + axisId);
+
     return result;
   }
 
@@ -1871,8 +1821,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public List<String> getInstanceIdsFromComponentName(String componentName) {
     CompoSpace[] compoIds = getOrganisationController().getCompoForUser(getUserId(), componentName);
-    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getInstanceIdsFromComponentName",
-        "root.MSG_GEN_PARAM_VALUE", "compoIds = " + compoIds.toString());
+
     List<String> instanceIds = new ArrayList<String>();
     for (CompoSpace component : compoIds) {
       instanceIds.add(component.getComponentId());
@@ -1966,10 +1915,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
         synonymsString.insert(0, header);
         synonymsQueryString = synonymsString.toString();
-        SilverTrace.info("pdcPeas",
-            "PdcSearchSessionController.getSynonymsQueryString",
-            "root.MSG_GEN_PARAM_VALUE",
-            "queryString = " + queryString + ", with synonyms: " + synonymsQueryString);
       } catch (IOException e) {
         throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
             SilverpeasException.ERROR, "pdcPeas.EX_GET_SYNONYMS", e);
@@ -2023,8 +1968,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         List<String> wordList = new ArrayList<>(resource.keySet());
         KEYWORDS = wordList.toArray(new String[wordList.size()]);
       } catch (MissingResourceException e) {
-        SilverTrace.warn("pdcPeas", "PdcSearchSessionController",
-            "pdcPeas.MSG_MISSING_STOPWORDS_DEFINITION");
+        SilverLogger.getLogger(this)
+            .warn("Missing stop words in org.silverpeas.search.indexEngine.StopWords");
         return new String[0];
       }
     }
@@ -2068,11 +2013,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<Value> getAxisValuesByFilter(String filter_by_name,
       String filter_by_description, boolean search_in_daughters,
       String instanceId) throws PdcException {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.getAxisValuesByFilter",
-        "root.MSG_GEN_PARAM_VALUE", "filter_by_name = " + filter_by_name
-        + ", filter_by_description = " + filter_by_description
-        + ", search_in_daughters = " + search_in_daughters);
     AxisFilter filter;
     if (filter_by_name != null && !"".equals(filter_by_name)) {
       filter_by_name = filter_by_name.replace('*', '%');
@@ -2246,11 +2186,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ******************************************************************************************
    */
   public void buildComponentListWhereToSearch(String space, String component) {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.buildComponentListWhereToSearch()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
-        + component);
-
     componentList = new ArrayList<String>();
 
     if (space == null) {
@@ -2316,11 +2251,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param components a list of selected components
    */
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.buildComponentListWhereToSearch()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
-        + components);
-
     componentList = new ArrayList<String>();
 
     if (space == null) {
@@ -2422,9 +2352,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             componentId);
       }
     } catch (Exception e) {
-      SilverTrace.warn("pdcPeas",
-          "searchEngineSessionController.getComponentLabel()",
-          "pdcPeas.EXE_PREFIX_NULL", "spaceId= " + spaceId);
+      SilverLogger.getLogger(this).warn("Error while getting component label: {0}", e.getMessage());
     }
 
     if (componentInst != null) {
@@ -2503,9 +2431,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
       }
     } catch (MissingResourceException e) {
-      SilverTrace.warn("pdcPeas",
-          "searchEngineSessionController.setSearchDomains()",
-          "pdcPeas.MSG_CANT_FIND_DOMAIN_PROPERTIES", e);
+      SilverLogger.getLogger(this).error("Cannot find domain properties", e);
     }
 
     searchDomains = domains;
@@ -2597,9 +2523,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       getSecurityIntf().enableCache();
     } catch (Exception e) {
-      SilverTrace.info("pdcPeas",
-          "PdcSearchSessionController.filterMatchingIndexEntries()",
-          "pdcPeas.EX_CAN_SEARCH_QUERY", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
 
     for (MatchingIndexEntry result : matchingIndexEntries) {
@@ -2624,8 +2548,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       getSecurityIntf().disableCache();
     } catch (Exception e) {
-      SilverTrace.info("pdcPeas", "PdcSearchSessionController.filterMatchingIndexEntries()",
-          "pdcPeas.EX_CAN_SEARCH_QUERY", e);
+
     }
     return results;
   }

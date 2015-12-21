@@ -84,8 +84,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
     // En effet, la notification peut être utilisée "en même temps" que le
     // client utilises userPanelPeas. Cela mélange les objets selectionnée.
     String destination;
-    SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function=" + function);
+
 
     try {
       request.setCharacterEncoding("UTF-8");
@@ -132,8 +131,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
+
     return destination;
   }
   

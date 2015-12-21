@@ -117,8 +117,7 @@ public class AutoRedirectServlet extends HttpServlet {
         session.setAttribute("RedirectToSpaceId", spaceId);
       }
 
-      SilverTrace.info("authentication", "autoRedirect.jsp", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + ", spaceId = " + spaceId);
+
       MainSessionController mainController = (MainSessionController) session.getAttribute(
           MAIN_SESSION_CONTROLLER_ATT);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

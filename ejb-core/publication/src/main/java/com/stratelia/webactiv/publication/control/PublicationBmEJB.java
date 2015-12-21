@@ -347,8 +347,7 @@ public class PublicationBmEJB implements PublicationBm {
             detail.getLanguage());
         // remove xml content
         String infoId = detail.getInfoId();
-        SilverTrace.info("publication", "PublicationBmEJB.setDetail()", "root.MSG_GEN_PARAM_VALUE",
-            "infoId = " + infoId);
+
         if (StringUtil.isDefined(infoId) && !StringUtil.isInteger(infoId)) {
           PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
               .getPublicationTemplate(detail.getPK().getInstanceId() + ':' + infoId);
@@ -357,8 +356,7 @@ public class PublicationBmEJB implements PublicationBm {
           set.delete(data);
         }
       }
-      SilverTrace.info("publication", "PublicationBmEJB.setDetail()", "root.MSG_GEN_PARAM_VALUE",
-          "indexOperation = " + indexOperation);
+
       if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.READD) {
         createIndex(detail.getPK(), true, indexOperation);
       } else if (indexOperation == IndexManager.REMOVE) {
@@ -575,8 +573,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void addFather(PublicationPK pubPK, NodePK fatherPK) {
-    SilverTrace.info("publication", "PublicationEJB.addFather()", "root.MSG_GEN_ENTER_METHOD",
-        "fatherId = " + fatherPK.getId());
+
     Connection con = getConnection();
     try {
       PublicationFatherDAO.addFather(con, pubPK, fatherPK);
@@ -591,8 +588,7 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void removeFather(PublicationPK pubPK, NodePK fatherPK) {
-    SilverTrace.info("publication", "PublicationEJB.removeFather()", "root.MSG_GEN_ENTER_METHOD",
-        "fatherId = " + fatherPK.getId());
+
     Connection con = getConnection();
     try {
       PublicationFatherDAO.removeFather(con, pubPK, fatherPK);
@@ -1257,8 +1253,7 @@ public class PublicationBmEJB implements PublicationBm {
     PublicationPK pubPK = pubDetail.getPK();
     try {
       if (pubPK != null) {
-        SilverTrace.info("publication", "PublicationBmEJB.updateIndexEntryWithWysiwygContent()",
-            "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry + ", pubPK = " + pubPK);
+
         Iterator<String> languages = pubDetail.getLanguages();
         while (languages.hasNext()) {
           WysiwygController.addToIndex(indexEntry, new ForeignPK(pubPK), languages.next());
@@ -1272,10 +1267,6 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void updateIndexEntryWithXMLFormContent(FullIndexEntry indexEntry,
       PublicationDetail pubDetail) {
-    SilverTrace.info("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "indexEntry = " + indexEntry.toString() + ", pubDetail.getInfoId() = " +
-            pubDetail.getInfoId());
     if (!StringUtil.isInteger(pubDetail.getInfoId())) {
       try {
         PublicationTemplate pub = PublicationTemplateManager.getInstance().getPublicationTemplate(
@@ -1291,12 +1282,10 @@ public class PublicationBmEJB implements PublicationBm {
 
   @Override
   public void createIndex(PublicationDetail pubDetail) {
-    SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "pubDetail.getIndexOperation() = " + pubDetail.getIndexOperation());
+
     if (pubDetail.getIndexOperation() == IndexManager.ADD ||
         pubDetail.getIndexOperation() == IndexManager.READD) {
-      SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_PARAM_VALUE",
-          "pubDetail = " + pubDetail.toString());
+
       try {
         FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
         if (indexEntry != null) {
@@ -1332,11 +1321,9 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
-    SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "processContent = " + processContent + ", indexOperation = " + indexOperation);
+
     if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.READD) {
-      SilverTrace.info("publication", "PublicationBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-          "pubPK = " + pubPK.toString());
+
       try {
         PublicationDetail pubDetail = getDetail(pubPK);
         if (pubDetail != null) {
@@ -1433,8 +1420,7 @@ public class PublicationBmEJB implements PublicationBm {
    */
   @Override
   public void deleteIndex(PublicationPK pubPK) {
-    SilverTrace.info("publication", "PublicationBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "pubPK = " + pubPK);
+
     IndexEntryPK indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
     unindexAlias(pubPK);
@@ -1550,9 +1536,6 @@ public class PublicationBmEJB implements PublicationBm {
   @Override
   public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK, String pubName,
       int nodeId) {
-    SilverTrace.info("publication", "PublicationBmEJB.getDetailByNameAndNodeId()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "pubPK = " + pubPK + ", pubName = " + pubName + ", nodeId=" + nodeId);
     Connection con = getConnection();
     try {
       PublicationDetail publicationDetail =

@@ -723,8 +723,7 @@ public class GroupTable extends Table<GroupRow> {
    */
   public void addUsersInGroup(String[] userIds, int groupId, boolean checkRelation)
       throws AdminPersistenceException {
-    SilverTrace.info("admin", "GroupTable.addUsersInGroup", "root.MSG_GEN_ENTER_METHOD",
-        "groupId = " + groupId + ", userIds = " + Arrays.toString(userIds));
+
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
@@ -793,8 +792,7 @@ public class GroupTable extends Table<GroupRow> {
    */
   public void removeUsersFromGroup(String[] userIds, int groupId, boolean checkRelation)
       throws AdminPersistenceException {
-    SilverTrace.info("admin", "GroupTable.removeUsersFromGroup", "root.MSG_GEN_ENTER_METHOD",
-        "groupId = " + groupId + ", userIds = " + Arrays.toString(userIds));
+
     GroupRow group = getGroup(groupId);
     if (group == null) {
       throw new AdminPersistenceException("GroupTable.removeUsersFromGroup()",

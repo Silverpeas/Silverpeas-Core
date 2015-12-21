@@ -83,8 +83,7 @@ public class GenericPanelPeasRequestRouter extends
   public String getDestination(String function,
       GenericPanelPeasSessionController genericPanelPeasSC, HttpRequest request) {
     String destination = "";
-    SilverTrace.info("genericPanelPeas", "getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "Function=" + function);
+
 
     try {
       if (function.startsWith("Main")) {
@@ -98,8 +97,7 @@ public class GenericPanelPeasRequestRouter extends
               genericPanelPeasSC.getNbMaxDisplayed()));
         }
 
-        SilverTrace.info("genericPanelPeas", "getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "Operation=" + op);
+
         if ("GENERICPANELPREVIOUSUSER".equals(op)) {
           genericPanelPeasSC.previousUserPage();
           destination = "genericPanelPeas.jsp";
@@ -168,8 +166,7 @@ public class GenericPanelPeasRequestRouter extends
       }
     }
 
-    SilverTrace.info("genericPanelPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

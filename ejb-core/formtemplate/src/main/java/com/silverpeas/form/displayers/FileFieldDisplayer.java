@@ -65,17 +65,13 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
    */
   public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId() +
-            ", fieldType = " + field.getTypeName());
     String language = pageContext.getContentLanguage();
     StringBuilder html = new StringBuilder(1024);
     Operation defaultOperation = Operation.ADD;
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
 
     if (!FileField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "FileFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          FileField.TYPE);
+
     }
 
     String attachmentId = field.getAttachmentId();

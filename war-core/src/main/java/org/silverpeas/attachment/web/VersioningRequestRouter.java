@@ -53,8 +53,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
   public String getDestination(String function, VersioningSessionController versioningSC,
       HttpRequest request) {
     String destination;
-    SilverTrace.info("versioningPeas", "VersioningRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + versioningSC.getUserId() + " Function=" + function);
+
     String rootDestination = "/versioningPeas/jsp/";
     try {
       String flag = versioningSC.getProfile();
@@ -90,8 +89,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("versioningPeas", "VersioningRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

@@ -94,9 +94,6 @@ public class WorkflowDesignerRequestRouter extends
       WorkflowDesignerSessionController workflowDesignerSC, HttpRequest request) {
     String destination = null;
     FunctionHandler handler = getHandler(function);
-    SilverTrace.info("workflowDesigner", "WorkflowDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "User=" + workflowDesignerSC.getUserId() + " Function=" + function);
 
     // Check access rights
     if (!workflowDesignerSC.getUserDetail().isAccessAdmin()) {
@@ -125,8 +122,7 @@ public class WorkflowDesignerRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("workflowDesigner", "WorkflowDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

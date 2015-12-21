@@ -265,9 +265,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    * @return true or false
    */
   public boolean isSpinfireDocument() {
-    SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
-        "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = " + SPINFIRE_MIME_TYPE.equals(
-        getMimeType()));
     return SPINFIRE_MIME_TYPE.equals(getMimeType());
   }
 
@@ -280,9 +277,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     boolean isOpenOfficeCompatibleDocument = false;
     if (getLogicalName() != null) {
       isOpenOfficeCompatibleDocument = FileUtil.isOpenOfficeCompatible(getLogicalName());
-      SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
-          "root.MSG_GEN_PARAM_VALUE", "isOpenOfficeCompatibleDocument = "
-          + isOpenOfficeCompatibleDocument);
     }
     return isOpenOfficeCompatibleDocument;
   }

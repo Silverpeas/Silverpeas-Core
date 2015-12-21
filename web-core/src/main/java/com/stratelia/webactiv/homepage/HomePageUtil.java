@@ -135,10 +135,8 @@ public class HomePageUtil {
         && (lastEx.getMessage() != null)
         && (lastEx.getMessage().contains("Connection reset by peer: socket write error"))
         && (!lastEx.getMessage().contains("SQL"))) {
-      SilverTrace.info("util", "HomePageUtil.traceException()",
-          "root.EX_IGNORED", "Deepest", lastEx);
-      SilverTrace.info("util", "HomePageUtil.traceException()",
-          "root.EX_IGNORED", "Highest", exception);
+
+
     } else {
       if (exception instanceof FromModule) {
         ((FromModule) exception).traceException();

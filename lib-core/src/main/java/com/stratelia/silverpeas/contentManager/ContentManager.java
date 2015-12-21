@@ -165,8 +165,7 @@ public class ContentManager implements Serializable {
           "VALUES (" + newInstanceId + ",'" + sComponentId + "','" + sContainerType + "','" +
               sContentType + "')";
       // Execute the insertion
-      SilverTrace.info("contentManager", "ContentManager.registerNewContentInstance",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
       addAsso(sComponentId, newInstanceId);
@@ -221,8 +220,7 @@ public class ContentManager implements Serializable {
               "') AND (contentType = '" + sContentType + "')";
 
       // Execute the insertion
-      SilverTrace.info("contentManager", "ContentManager.unregisterNewContentInstance",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
       removeAsso(sComponentId);
@@ -247,21 +245,17 @@ public class ContentManager implements Serializable {
   public ContentPeas getContentPeas(String sComponentId) throws ContentManagerException {
     // Get the ContentType
     String sContentType = this.getContentType(sComponentId);
-    SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-        "sContentType= " + sContentType + " sComponentId=" + sComponentId);
+
 
     // Get the ContentPeas from the ContentType
     for (ContentPeas s_acContentPea : s_acContentPeas) {
-      SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-          "Type= " + s_acContentPea.getType());
+
       if (s_acContentPea.getType().equals(sContentType)) {
-        SilverTrace.info("contentManager", "ContentManager.getContentPeas", "",
-            "Type Trouvé= " + s_acContentPea.getType() + "   " + sContentType);
+
         return s_acContentPea;
       }
     }
-    SilverTrace.info("contentManager", "ContentManager.getContentPeas",
-        "contentManager.EX_UNKNOWN_CONTENT_PEAS", "sComponentId: " + sComponentId);
+
     return null;
   }
 
@@ -773,8 +767,7 @@ public class ContentManager implements Serializable {
             " WHERE (silverContentId = " + nSilverContentId + ")";
 
         // Execute the search
-        SilverTrace.info("contentManager", "ContentManager.getInternalContentId",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
         prepStmt = connection.prepareStatement(sSQLStatement);
         resSet = prepStmt.executeQuery();
 
@@ -824,8 +817,7 @@ public class ContentManager implements Serializable {
       if (character == '0' || character == '1' || character == '2' || character == '3' ||
           character == '4' || character == '5' || character == '6' || character == '7' ||
           character == '8' || character == '9') {
-        SilverTrace.info("contentManager", "ContentManager.extractComponentNameFromInstanceId",
-            "root.MSG_GEN_PARAM_VALUE", "componentName = " + componentName);
+
         return instanceId.substring(0, i);
       }
     }
@@ -866,8 +858,7 @@ public class ContentManager implements Serializable {
       String sSQLStatement = "SELECT instanceId, componentId FROM " + m_sInstanceTable;
 
       // Execute the insertion
-      SilverTrace.info("contentManager", "ContentManager.loadAsso", "root.MSG_GEN_PARAM_VALUE",
-          "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -1008,9 +999,6 @@ public class ContentManager implements Serializable {
       sSQLStatement += " and I.componentId like ? ";
 
       // Execute the search
-      SilverTrace.info("contentManager", "ContentManager.getSilverContentIdByInstanceId",
-          "root.MSG_GEN_PARAM_VALUE",
-          "sSQLStatement= " + sSQLStatement + " instranceId=" + instanceId);
       prepStmt = con.prepareStatement(sSQLStatement);
       prepStmt.setString(1, instanceId);
 
@@ -1058,8 +1046,7 @@ public class ContentManager implements Serializable {
       sSQLStatement += " where " + where.toString();
 
       // Execute the search
-      SilverTrace.info("contentManager", "ContentManager.getSilverContentBySilverContentIds",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = con.prepareStatement(sSQLStatement);
 
       resSet = prepStmt.executeQuery();
@@ -1096,8 +1083,7 @@ public class ContentManager implements Serializable {
         sSQLStatement.append(" WHERE silverContentId = ").append(silverObjectId);
 
         // Execute the update
-        SilverTrace.info("contentManager", "ContentManager.updateSilverContentVisibilityAttributes",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
         prepStmt = con.prepareStatement(sSQLStatement.toString());
 
         prepStmt.setString(1, scv.getBeginDate());
@@ -1131,8 +1117,7 @@ public class ContentManager implements Serializable {
           .append(m_sSilverContentTable);
       sSQLStatement.append(" WHERE silverContentId = '").append(silverObjectId).append("'");
 
-      SilverTrace.info("contentManager", "ContentManager.getSilverContentVisibility",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement.toString());
       resSet = prepStmt.executeQuery();
 

@@ -196,8 +196,7 @@ public class PublicationTemplateManager {
    */
   public PublicationTemplate loadPublicationTemplate(String xmlFileName) throws
       PublicationTemplateException {
-    SilverTrace.info("form", "PublicationTemplateManager.loadPublicationTemplate",
-        "root.MSG_GEN_ENTER_METHOD", "xmlFileName=" + xmlFileName);
+
     try {
       PublicationTemplateImpl publicationTemplate = templates.get(xmlFileName);
       if (publicationTemplate != null) {
@@ -238,8 +237,7 @@ public class PublicationTemplateManager {
    */
   public void savePublicationTemplate(PublicationTemplate template) throws
       PublicationTemplateException, CryptoException {
-    SilverTrace.info("form", "PublicationTemplateManager.savePublicationTemplate",
-        "root.MSG_GEN_ENTER_METHOD", "template = " + template.getFileName());
+
 
     String xmlFileName = template.getFileName();
     
@@ -460,8 +458,7 @@ public class PublicationTemplateManager {
    * @param fileName the file name of the template to remove from cache
    */
   public void removePublicationTemplateFromCaches(String fileName) {
-    SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
-        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+
     List<String> externalIdsToRemove = new ArrayList<>();
     Collection<PublicationTemplate> publicationTemplates = externalTemplates.values();
     for (PublicationTemplate template : publicationTemplates) {

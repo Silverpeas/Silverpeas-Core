@@ -76,8 +76,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
     String fieldName = template.getFieldName();
 
     if (!template.getTypeName().equals(PdcUserField.TYPE)) {
-      SilverTrace.info("form", "PdcUserFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", PdcUserField.TYPE);
+
 
     }
     if (template.isMandatory() && PagesContext.useMandatory()) {
@@ -117,8 +116,7 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
     String html = "";
 
     String fieldName = template.getFieldName();
-    SilverTrace.info("form", "PdcUserFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE",
-        "fieldName=" + fieldName);
+
 
     if (!field.getTypeName().equals(PdcUserField.TYPE)) {
       SilverTrace

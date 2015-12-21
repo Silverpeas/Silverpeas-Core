@@ -72,11 +72,9 @@ public class DefaultCoordinatesService implements CoordinatesService {
   public Collection<String> getCoordinatesByFatherIds(List<Integer> fatherIds, CoordinatePK pk) {
     Connection con = getConnection();
     try {
-      SilverTrace.info("coordinates", "CoordinatesBmEJB.getCoordinatesByFatherIds()",
-          "root.MSG_GEN_PARAM_VALUE", "fatherIds BEFORE sorting : " + fatherIds);
+
       Collections.sort(fatherIds);
-      SilverTrace.info("coordinates", "CoordinatesBmEJB.getCoordinatesByFatherIds()",
-          "root.MSG_GEN_PARAM_VALUE", "fatherIds AFTER sorting : " + fatherIds);
+
       return CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
     } catch (SQLException e) {
       throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByFatherIds()",
@@ -111,8 +109,7 @@ public class DefaultCoordinatesService implements CoordinatesService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public int addCoordinate(CoordinatePK pk, List<CoordinatePoint> coordinatePoints) {
-    SilverTrace.info("coordinates", "CoordinatesBmEJB.addCoordinate()", "root.MSG_GEN_PARAM_VALUE",
-        "coordinatePoints = " + coordinatePoints);
+
     Connection con = getConnection();
     try {
       return CoordinatesDAO.addCoordinate(con, pk, coordinatePoints);
@@ -136,8 +133,7 @@ public class DefaultCoordinatesService implements CoordinatesService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteCoordinates(CoordinatePK pk, List<String> coordinates) {
-    SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinates()",
-        "root.MSG_GEN_PARAM_VALUE", "coordinates = " + coordinates);
+
     Connection con = getConnection();
     try {
       CoordinatesDAO.removeCoordinates(con, pk, coordinates);
@@ -160,8 +156,7 @@ public class DefaultCoordinatesService implements CoordinatesService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteCoordinatesByPoints(CoordinatePK pk, List<String> coordinatePoints) {
-    SilverTrace.info("coordinates", "CoordinatesBmEJB.deleteCoordinatesByPoints()",
-        "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = " + coordinatePoints);
+
     Connection con = getConnection();
     try {
       CoordinatesDAO.removeCoordinatesByPoints(con, pk, coordinatePoints);
@@ -184,8 +179,7 @@ public class DefaultCoordinatesService implements CoordinatesService {
    */
   @Override
   public List<Coordinate> getCoordinatesByCoordinateIds(List<String> coordinateIds, CoordinatePK pk) {
-    SilverTrace.info("coordinates", "CoordinatesBmEJB.getCoordinatesByCoordinateIds()",
-        "root.MSG_GEN_PARAM_VALUE", "coordinateIds = " + coordinateIds);
+
     Connection con = getConnection();
     try {
       return CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
@@ -208,8 +202,7 @@ public class DefaultCoordinatesService implements CoordinatesService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point) {
-    SilverTrace.info("coordinates", "CoordinatesBmEJB.addPointToAllCoordinates()",
-        "root.MSG_GEN_PARAM_VALUE", "point = " + point);
+
     Connection con = getConnection();
     try {
       CoordinatesDAO.addPointToAllCoordinates(con, pk, point);

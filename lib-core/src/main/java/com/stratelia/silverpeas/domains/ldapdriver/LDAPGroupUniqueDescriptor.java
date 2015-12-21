@@ -71,8 +71,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
             "=" + LDAPUtility.dblBackSlashesForDNInFilters(memberEntry.getDN()) + "))",
         driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
-      SilverTrace.info("admin", "LDAPGroupUniqueDescriptor.getMemberGroupIds()",
-          "root.MSG_GEN_PARAM_VALUE", "GroupFound=" + theEntries[i].getDN());
+
       groupsVector.add(
           LDAPUtility.getFirstAttributeValue(theEntries[i], driverSettings.getGroupsIdField()));
     }
@@ -154,8 +153,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
 
     try {
       if ((parentId != null) && (parentId.length() > 0)) {
-        SilverTrace.info("admin", "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-            "root.MSG_GEN_PARAM_VALUE", "Root Group Search : " + parentId);
+
         theEntry = getGroupEntry(lds, parentId);
         stringVals =
             LDAPUtility.getAttributeValues(theEntry, driverSettings.getGroupsMemberField());
@@ -193,8 +191,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
         } else {
           theFilter = driverSettings.getGroupsFullFilter();
         }
-        SilverTrace.info("admin", "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-            "root.MSG_GEN_PARAM_VALUE", "Root Group Search");
+
         theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), theFilter, driverSettings.getGroupsNameField(),
             driverSettings.getGroupAttributes());

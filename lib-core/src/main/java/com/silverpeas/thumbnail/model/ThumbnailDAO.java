@@ -160,8 +160,7 @@ public class ThumbnailDAO {
 
   public static ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId, int objectType)
       throws SQLException {
-    SilverTrace.info("publication", "ThumbnailDAO.selectByPubId()", "root.MSG_GEN_ENTER_METHOD",
-        "objectId = " + objectId + "objectType" + objectType + "instanceId" + instanceId);
+
     ResultSet rs = null;
     ThumbnailDetail thumbnailDetail = null;
     PreparedStatement prepStmt = null;

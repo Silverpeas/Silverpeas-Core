@@ -82,10 +82,6 @@ public class PersoPeasRequestRouter extends
   @Override
   public String getDestination(final String function,
       final PersonalizationSessionController personalizationScc, final HttpRequest request) {
-    SilverTrace.info(getSessionControlBeanName(),
-        "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "function = " + function);
-
     String destination = "";
 
     try {
@@ -104,9 +100,6 @@ public class PersoPeasRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info(getSessionControlBeanName(),
-        "PersoPeasRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "destination = " + destination);
     return destination;
   }
 

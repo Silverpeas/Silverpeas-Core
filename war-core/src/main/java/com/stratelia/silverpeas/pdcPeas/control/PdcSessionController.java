@@ -215,9 +215,6 @@ public class PdcSessionController extends AbstractComponentSessionController {
   }
 
   public void setValuesToPdcAddAPosteriori(String values) {
-    SilverTrace.info("Pdc",
-        "PdcSessionController.setValuesToPdcAddAPosteriori",
-        "root.MSG_GEN_PARAM_VALUE", "values = " + values);
     this.values = values;
   }
 

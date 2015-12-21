@@ -233,11 +233,6 @@ public class PublicationFatherDAO {
    */
   public static void removeFatherToPublications(Connection con,
       PublicationPK pubPK, NodePK fatherPK) throws SQLException {
-    SilverTrace.info("publication",
-        "PublicationDAO.removeFatherToPublications()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-        + ", fatherPK = " + fatherPK.toString());
-
     // get all publications linked to fatherPK
     List<PublicationPK> pubPKs = (List<PublicationPK>) getPubPKsInFatherPK(con, fatherPK);
 
@@ -249,10 +244,6 @@ public class PublicationFatherDAO {
 
   private static void removeLink(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    SilverTrace.info("publication", "PublicationDAO.removeLink()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-        + ", fatherPK = " + fatherPK.toString());
-
     StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(publicationFatherTableName)
         .append(" where nodeId = ? and pubId = ? ");
@@ -278,11 +269,6 @@ public class PublicationFatherDAO {
    */
   public static void removeFathersToPublications(Connection con,
       PublicationPK pubPK, Collection<String> fatherIds) throws SQLException {
-    SilverTrace.info("publication",
-        "PublicationDAO.removeFathersToPublications()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString()
-        + ", fatherIds = " + fatherIds.toString());
-
     for (final String fatherId : fatherIds) {
       NodePK fatherPK = new NodePK(fatherId, pubPK);
       removeFatherToPublications(con, pubPK, fatherPK);

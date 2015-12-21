@@ -99,9 +99,6 @@ public final class AttachmentDetail extends AbstractBean
    * @version
    */
   public AttachmentDetail(WAPrimaryKey foreignKey) {
-    SilverTrace.info("attachment",
-        "Contructor AttachmentDetail(WAPrimaryKey foreignKey)",
-        "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
     this.foreignKey = foreignKey;
   }
 
@@ -126,11 +123,9 @@ public final class AttachmentDetail extends AbstractBean
       String context, Date creationDate, WAPrimaryKey foreignKey, String author) {
     pk = attachPK;
     if (pk == null) {
-      SilverTrace.info("attachment", "Contructor with author",
-          "root.MSG_GEN_PARAM_VALUE", "pk = null !");
+
     } else {
-      SilverTrace.info("attachment", "Contructor with author",
-          "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+
     }
     this.physicalName = physicalName;
     setLogicalName(logicalName);
@@ -149,9 +144,6 @@ public final class AttachmentDetail extends AbstractBean
       String logicalName, String description, String type, long size,
       String context, Date creationDate, WAPrimaryKey foreignKey) {
     pk = attachPK;
-    SilverTrace.info("attachment",
-        "Contructor without author and without title",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
     this.physicalName = physicalName;
     setLogicalName(logicalName);
     setDescription(description);
@@ -168,8 +160,7 @@ public final class AttachmentDetail extends AbstractBean
       String context, Date creationDate, WAPrimaryKey foreignKey, String title,
       String info, int orderNum) {
     pk = attachPK;
-    SilverTrace.info("attachment", "Contructor without author but with title",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+
     this.physicalName = physicalName;
     setLogicalName(logicalName);
     setDescription(description);
@@ -202,11 +193,9 @@ public final class AttachmentDetail extends AbstractBean
       String author, String title) {
     pk = attachPK;
     if (pk == null) {
-      SilverTrace.info("attachment", "Contructor with author and title",
-          "root.MSG_GEN_PARAM_VALUE", "pk = null !");
+
     } else {
-      SilverTrace.info("attachment", "Contructor with author an title",
-          "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
+
     }
     this.physicalName = physicalName;
     setLogicalName(logicalName);
@@ -231,9 +220,6 @@ public final class AttachmentDetail extends AbstractBean
    */
   public AttachmentDetail(AttachmentPK attachPK) {
     pk = attachPK;
-    SilverTrace.info("attachment",
-        "Contructor AttachmentDetail(AttachmentPK attachPK)",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString());
   }
 
   /**
@@ -252,12 +238,10 @@ public final class AttachmentDetail extends AbstractBean
   public void setPK(AttachmentPK pk) {
     this.pk = pk;
     if (pk == null) {
-      SilverTrace.info("attachment", "AttachmentDetail.setPK()",
-          "root.MSG_GEN_PARAM_VALUE", "pk is null !");
+
     } else {
       this.instanceId = pk.getInstanceId();
-      SilverTrace.info("attachment", "AttachmentDetail.setPK()",
-          "root.MSG_GEN_PARAM_VALUE", "pk is not null = " + pk.toString());
+
     }
 
   }
@@ -300,8 +284,7 @@ public final class AttachmentDetail extends AbstractBean
    * @see
    */
   public void setLogicalName(String logicalName) {
-    SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()",
-        "root.MSG_GEN_PARAM_VALUE", "logicalName = " + logicalName);
+
     setName(logicalName);
   }
 
@@ -549,9 +532,6 @@ public final class AttachmentDetail extends AbstractBean
   public boolean isSpinfireDocument() {
     boolean isSpinfireDocument = false;
     if (getType() != null) {
-      SilverTrace.info("attachment", "AttachmentDetail.isSpinfireDocument()",
-          "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-          + getType().equals(SPINFIRE_MIME_TYPE));
       isSpinfireDocument = getType().equals(SPINFIRE_MIME_TYPE);
     }
     return isSpinfireDocument;

@@ -80,8 +80,7 @@ public class ExplorerField extends AbstractField {
    * Set the node id referenced by this field.
    */
   public void setNodePK(String pk) {
-    SilverTrace.info("form", "ExplorerField.setNodePK",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
+
     this.pk = pk;
   }
 
@@ -108,8 +107,7 @@ public class ExplorerField extends AbstractField {
     if (pk == null) {
       return "";
     }
-    SilverTrace.info("form", "ExplorerField.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "pk = " + pk.toString());
+
 
     return getPath(pk.getInstanceId(), pk.getId(), language);
   }
@@ -184,8 +182,7 @@ public class ExplorerField extends AbstractField {
    * Set this field value from a normalized String : a user id
    */
   public void setStringValue(String value) {
-    SilverTrace.info("form", "ExplorerField.setStringValue",
-        "root.MSG_GEN_ENTER_METHOD", "value = " + value);
+
     setNodePK(value);
   }
 

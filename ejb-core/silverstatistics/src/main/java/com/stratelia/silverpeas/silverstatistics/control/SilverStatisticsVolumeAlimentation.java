@@ -34,6 +34,7 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,24 +122,12 @@ public class SilverStatisticsVolumeAlimentation {
       ComponentInst ci) {
     Collection<UserIdCountVolumeCouple> c = null;
     try {
-      SilverTrace.info("silverstatistics",
-          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-          "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
-      SilverTrace.info(
-          "silverstatistics",
-          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-          "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
       String qualifier = getComponentStatisticsQualifier(ci.getName());
       if (StringUtil.isDefined(qualifier)) {
         ComponentStatisticsProvider statistics = ServiceProvider.getService(qualifier);
         Collection<UserIdCountVolumeCouple> v = statistics.getVolume(spaceId, ci.getId());
         c = agregateUser(v);
       }
-    } catch (IllegalStateException ce) {
-      SilverTrace.info("silverstatistics",
-          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",
-          "component = " + ci.getName(), ce);
     } catch (Exception e) {
       SilverTrace.error("silverstatistics",
           "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",

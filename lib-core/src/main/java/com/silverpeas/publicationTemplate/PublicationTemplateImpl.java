@@ -328,8 +328,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       GenericFieldTemplate dataFieldTemplate;
       for (int i = 0; i < size; i++) {
         fieldName = fieldNames[i];
-        SilverTrace.info("form", "PublicationTemplateImpl.mergeTemplates",
-            "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName);
+
         try {
           formFieldTemplate = (GenericFieldTemplate) formTemplate.getFieldTemplate(fieldName);
           dataFieldTemplate = (GenericFieldTemplate) dataTemplate.getFieldTemplate(fieldName);

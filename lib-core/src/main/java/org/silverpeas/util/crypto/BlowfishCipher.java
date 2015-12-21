@@ -64,8 +64,7 @@ public class BlowfishCipher implements Cipher {
 
   @Override
   public byte[] encrypt(String data, CipherKey keyCode) throws CryptoException {
-    SilverTrace.info("util", "BlowfishCipher.encrypt", "root.MSG_GEN_ENTER_METHOD",
-        "stringUnCrypted = " + data);
+
     byte[] cipherText;
     try {
       byte[] cipherBytes = data.getBytes();
@@ -82,8 +81,7 @@ public class BlowfishCipher implements Cipher {
     } catch (Exception e) {
       throw new CryptoException(CryptoException.ENCRYPTION_FAILURE, e);
     }
-    SilverTrace.info("util", "BlowfishCipher.encrypt", "root.MSG_GEN_EXIT_METHOD",
-        "cipherText = " + Arrays.toString(cipherText));
+
     return cipherText;
   }
 
@@ -109,8 +107,7 @@ public class BlowfishCipher implements Cipher {
     } catch (Exception e) {
       throw new CryptoException(CryptoException.DECRYPTION_FAILURE, e);
     }
-    SilverTrace.info("util", "BlowfishCipher.decrypt",
-        "root.MSG_GEN_EXIT_METHOD", "uncrypted = " + uncrypted);
+
     return uncrypted;
   }
 

@@ -58,8 +58,7 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   public void indexComponent(String spaceId, ComponentInst compoInst) {
-    SilverTrace.info(silvertraceModule, "ApplicationIndexer.indexComponent()",
-        "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + compoInst.getLabel());
+
 
     // index component info
     admin.indexComponent(compoInst.getId());
@@ -77,21 +76,11 @@ public class ApplicationIndexer extends AbstractIndexer {
             "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = "
             + compoInst.getLabel(), e);
       }
-      SilverTrace.info(silvertraceModule, "ApplicationIndexer.indexComponent()",
-          "applicationIndexer.MSG_END_INDEXING_COMPONENT", "component = "
-          + compoInst.getLabel());
-    } else {
-      SilverTrace.info(silvertraceModule, "ApplicationIndexer.indexComponent()",
-          "applicationIndexer.MSG_COMPONENT_INDEXER_NOT_FOUND", "component = "
-          + compoInst.getLabel());
     }
   }
 
   @Override
   public void indexPersonalComponent(String personalComponent) {
-    SilverTrace.info(silvertraceModule, "ApplicationIndexer.indexPersonalComponent()",
-        "applicationIndexer.MSG_START_INDEXING_PERSONAL_COMPONENT",
-        "personalComponent = " + personalComponent);
     String compoName = firstLetterToLowerCase(personalComponent);
     try {
       PersonalToolIndexation personalToolIndexer = ServiceProvider.getService(compoName);
@@ -105,9 +94,6 @@ public class ApplicationIndexer extends AbstractIndexer {
           "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
           "personalComponent = " + personalComponent, e);
     }
-    SilverTrace.info(silvertraceModule, "ApplicationIndexer.indexPersonalComponent()",
-        "applicationIndexer.MSG_END_INDEXING_PERSONAL_COMPONENT",
-        "personalComponent = " + personalComponent);
   }
 
   @Override

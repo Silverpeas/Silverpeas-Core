@@ -438,8 +438,7 @@ public class AuthenticationService {
         + " FROM " + m_DomainTableName + " WHERE " + m_DomainIdColumnName
         + " = " + domainId + "";
 
-    SilverTrace.info(module, "AuthenticationService.getAuthenticationServerName()",
-        "root.MSG_GEN_PARAM_VALUE", "query=" + query);
+
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);

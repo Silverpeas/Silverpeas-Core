@@ -146,8 +146,7 @@ public class HistoryObjectDAO {
    */
   public static Collection<HistoryObjectDetail> getHistoryDetailByObject(Connection con,
       ForeignPK foreignPK, String objectType) throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObject",
-        "root.MSG_GEN_ENTER_METHOD");
+
     String componentName = foreignPK.getComponentName();
     String selectStatement =
         "select dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType " +
@@ -172,8 +171,7 @@ public class HistoryObjectDAO {
 
   public static Collection<HistoryObjectDetail> getHistoryDetailByObjectAndUser(Connection con,
       ForeignPK foreignPK, String objectType, String userId) throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.getHistoryDetailByObjectAndUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     String componentName = foreignPK.getComponentName();
     String selectStatement =
         "select * from " + historyTableName + " where resourceId='" + foreignPK.getId() +
@@ -363,8 +361,7 @@ public class HistoryObjectDAO {
     }
 
     List<String> results = new ArrayList<>();
-    SilverTrace.info("statistic", "HistoryObjectDAO.getListObjectAccessByPeriod",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -407,8 +404,7 @@ public class HistoryObjectDAO {
     }
 
     List<String> results = new ArrayList<>();
-    SilverTrace.info("statistic", "HistoryObjectDAO.getListObjectAccessByPeriod",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -441,8 +437,7 @@ public class HistoryObjectDAO {
    */
   public static Collection<HistoryObjectDetail> getLastHistoryDetailOfObjectsForUser(Connection con,
       String userId, int actionType, String objectType, int nbObjects) throws SQLException {
-    SilverTrace.info("statistic", "HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     String selectStatement =
         "select componentId, resourceId, datestat, heurestat" + " from SB_Statistic_History" +

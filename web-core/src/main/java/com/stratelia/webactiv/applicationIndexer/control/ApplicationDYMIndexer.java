@@ -63,8 +63,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(),  "ApplicationDYMIndexer.indexComponent()",
-        "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + componentId);
+
     try {
       String ComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
           .getAbsoluteIndexPath(null, componentId);
@@ -74,11 +73,6 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
           "ApplicationDYMIndexer.indexComponent()",
           "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = " + componentId, e);
     }
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(),
-        "ApplicationDYMIndexer.indexComponent()",
-        "applicationIndexer.MSG_END_INDEXING_COMPONENT", "component = "
-        + componentId);
-
   }
 
   /**
@@ -88,10 +82,6 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   @Override
   public void indexPersonalComponent(String personalComponent) {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(),
-        "ApplicationDYMIndexer.indexPersonalComponent()",
-        "applicationIndexer.MSG_START_INDEXING_PERSONAL_COMPONENT",
-        "personalComponent = " + personalComponent);
     try {
       File file = new File(
           org.silverpeas.search.indexEngine.IndexFileManager.getIndexUpLoadPath());
@@ -121,10 +111,6 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
           "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
           "personalComponent = " + personalComponent, e);
     }
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(),
-        "ApplicationDYMIndexer.indexPersonalComponent()",
-        "applicationIndexer.MSG_END_INDEXING_PERSONAL_COMPONENT",
-        "personalComponent = " + personalComponent);
   }
 
   /**

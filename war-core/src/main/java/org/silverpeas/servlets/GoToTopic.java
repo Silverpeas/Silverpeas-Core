@@ -48,8 +48,7 @@ public class GoToTopic extends GoTo {
     String componentId = req.getParameter("ComponentId");
     NodePK pk = new NodePK(objectId, componentId);
     NodeDetail node = getNodeBm().getHeader(pk);
-    SilverTrace.info("util", "GoToTopic.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+
     setGefSpaceId(req, componentId);
     String gotoURL = URLManager.getURL(null, componentId) + node.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);

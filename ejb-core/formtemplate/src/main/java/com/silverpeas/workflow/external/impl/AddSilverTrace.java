@@ -39,7 +39,6 @@ public class AddSilverTrace extends ExternalActionImpl {
         message += " by " + getEvent().getUser().getFullName();
       }
     }
-    SilverTrace.info("workflowEngine", "AddSilverTrace.execute",
-        "root.MSG_GEN_PARAM_VALUE", message);
+
   }
 }

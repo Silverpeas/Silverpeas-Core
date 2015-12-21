@@ -64,8 +64,7 @@ public class SilverStatisticsMessageDriven implements MessageListener {
         String typeOfStats = stData.nextToken();
         if (typeOfStats.length() + SEPARATOR.length() < msg.length()) {
           String stat = msg.substring(typeOfStats.length() + SEPARATOR.length(), msg.length());
-          SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
-              "root.MSG_GEN_PARAM_VALUE", "before putStats stat=" + stat);
+
           getSilverStatistics().putStats(StatType.valueOf(typeOfStats), stat);
         } else {
           SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",

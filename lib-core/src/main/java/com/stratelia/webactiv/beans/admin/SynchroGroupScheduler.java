@@ -68,8 +68,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
       }
     }
     SynchroGroupReport.stopSynchro();
-    SilverTrace.info("admin", "SynchroGroupScheduler.doScheduledImport()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   public void addGroup(String groupId) {

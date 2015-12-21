@@ -119,8 +119,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     String language = PagesContext.getLanguage();
 
     if (!TextField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "WysiwygFCKFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+
     }
 
     if (!template.isReadOnly()) {
@@ -159,8 +158,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "WysiwygFCKFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
     if (!field.isNull()) {
       code = field.getValue(pageContext.getLanguage());

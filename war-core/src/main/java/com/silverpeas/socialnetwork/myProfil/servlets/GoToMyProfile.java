@@ -16,8 +16,7 @@ public class GoToMyProfile extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    SilverTrace.info("myProfile", getClass().getSimpleName() + ".getDestination",
-        "root.MSG_GEN_PARAM_VALUE", "objectId = " + objectId);
+
     StringBuilder gotoURL = new StringBuilder();
     gotoURL.append(URLManager.getURL(URLManager.CMP_MYPROFILE, null, null));
     gotoURL.append(objectId);

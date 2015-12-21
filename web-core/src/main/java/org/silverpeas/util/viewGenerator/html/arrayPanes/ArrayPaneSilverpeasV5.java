@@ -87,8 +87,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
     int columnsCount = getColumns().size();
 
     if ((getLines().size() > 0) && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
-      SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV5.print()",
-          "root.MSG_GEN_PARAM_VALUE", "Tri des lignes");
+
       Collections.sort(getLines());
     }
 

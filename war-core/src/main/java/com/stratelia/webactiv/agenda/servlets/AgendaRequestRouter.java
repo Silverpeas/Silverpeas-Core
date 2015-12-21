@@ -100,8 +100,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
    */
   public String getDestination(String function,
       AgendaSessionController scc, HttpRequest request) {
-    SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     String destination = "";
 
     try {
@@ -178,14 +177,12 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         }
         // request.setAttribute("userDetail",selectedUser);
         scc.setAgendaUserDetail(selectedUser);
-        SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", selectedUser.getDisplayedName());
+
 
         setCommonAttributes(request, scc);
         destination = "/agenda/jsp/agenda.jsp";
       } else if (function.startsWith("ViewCurrentAgenda")) {
-        SilverTrace.info("agenda", "AgendaRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", scc.getUserDetail().getDisplayedName());
+
 
         UserDetail userDetail = scc.getUserDetail();
 

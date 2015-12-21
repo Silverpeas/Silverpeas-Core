@@ -97,13 +97,11 @@ public class TempFileServer extends SilverpeasAuthenticatedHttpServlet {
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null; // for the html document generated
-    SilverTrace.info("util", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
-        " htmlFilePath " + htmlFilePath.getPath());
+
     try {
       input = new BufferedInputStream(new FileInputStream(htmlFilePath));
       read = input.read();
-      SilverTrace.info("util", "TempFileServer.write()", "root.MSG_GEN_ENTER_METHOD",
-          " BufferedInputStream read " + read);
+
       if (read == -1) {
         writeWarningMessage(res);
       } else {

@@ -43,8 +43,7 @@ public class QuestionContainerContentManager {
   private final static String nullEndDate = "9999/99/99";
 
   public static int getSilverObjectId(String id, String peasId) throws ContentManagerException {
-    SilverTrace.info("questionContainer", "QuestionContainerContentManager.getSilverObjectId()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + id);
+
     return getContentManager().getSilverContentId(id, peasId);
   }
 
@@ -59,8 +58,7 @@ public class QuestionContainerContentManager {
       boolean isVisible) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible);
     setDateAttributes(scv, qC.getBeginDate(), qC.getEndDate());
-    SilverTrace.info("questionContainer", "QuestionContainerContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+
     return getContentManager()
         .addSilverContent(con, qC.getPK().getId(), qC.getPK().getComponentName(), userId, scv);
   }
@@ -79,9 +77,6 @@ public class QuestionContainerContentManager {
     if (silverContentId != -1) {
       SilverContentVisibility scv = new SilverContentVisibility(isVisible);
       setDateAttributes(scv, qC.getBeginDate(), qC.getEndDate());
-      SilverTrace.info("questionContainer",
-          "QuestionContainerContentManager.updateSilverContentVisibility()",
-          "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
       getContentManager()
           .updateSilverContentVisibilityAttributes(scv, qC.getPK().getComponentName(),
               silverContentId);
@@ -107,8 +102,7 @@ public class QuestionContainerContentManager {
   public static void deleteSilverContent(Connection con, QuestionContainerPK pk)
       throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pk.getId(), pk.getComponentName());
-    SilverTrace.info("questionContainer", "QuestionContainerContentManager.deleteSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = " + contentId);
+
     getContentManager().removeSilverContent(con, contentId, pk.getComponentName());
   }
 

@@ -40,16 +40,14 @@ public class MyLinksInstanciator implements ComponentsInstanciatorIntf {
 
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("myLinks", "MyLinksInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
 
 
   }
 
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("myLinks", "MyLinksInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+
 
     try {
       PreparedStatement prepStmt = null;

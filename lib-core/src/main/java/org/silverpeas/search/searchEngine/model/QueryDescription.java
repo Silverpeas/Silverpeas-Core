@@ -111,8 +111,7 @@ public final class QueryDescription implements Serializable {
     if (this.query.indexOf("not ") == 0) {
       this.query = "NOT " + this.query.substring(4, this.query.length());
     }
-    SilverTrace.info("searchEngine", "QueryDescription.setQuery()", "root.MSG_GEN_PARAM_VALUE",
-        "Query String to Lucence= " + this.query);
+
   }
 
   /**
@@ -145,14 +144,12 @@ public final class QueryDescription implements Serializable {
    * @param component
    */
   public void addSpaceComponentPair(String space, String component) {
-    SilverTrace.info("searchEngine", "QueryDescription.addSpaceComponentPair()",
-        "root.MSG_GEN_PARAM_VALUE", "space = " + space + ", component=" + component);
+
     spaceComponentPairSet.add(new SpaceComponentPair(space, component));
   }
 
   public void addComponent(String component) {
-    SilverTrace.info("searchEngine", "QueryDescription.addComponent()", "root.MSG_GEN_PARAM_VALUE",
-        "component=" + component);
+
     spaceComponentPairSet.add(new SpaceComponentPair(null, component));
   }
 
@@ -354,8 +351,7 @@ public final class QueryDescription implements Serializable {
    * @param url the external url
    */
   public void addExternalComponents(String server, String component, String path, String url) {
-    SilverTrace.info("searchEngine", "QueryDescription.addExternalComponents()",
-        "root.MSG_GEN_PARAM_VALUE", "server = " + server + ", component=" + component);
+
     // add all needed information
     extComponents.add(new ExternalComponent(server, component, path, url));
   }

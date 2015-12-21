@@ -73,8 +73,7 @@ public class GroupField extends AbstractField {
    * Set the group id referenced by this field.
    */
   public void setGroupId(String groupId) {
-    SilverTrace.info("form", "GroupField.setGroupId",
-        "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
+
     this.groupId = groupId;
   }
 
@@ -90,8 +89,7 @@ public class GroupField extends AbstractField {
    */
   @Override
   public String getValue() {
-    SilverTrace.info("form", "GroupField.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "groupId = " + getGroupId());
+
     if (getGroupId() == null) {
       return null;
     }
@@ -194,8 +192,7 @@ public class GroupField extends AbstractField {
    */
   @Override
   public void setStringValue(String value) {
-    SilverTrace.info("form", "GroupField.setStringValue", "root.MSG_GEN_ENTER_METHOD", "value = "
-        + value);
+
     setGroupId(value);
   }
 

@@ -234,8 +234,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public SubscriptionList getBySubscriberAndComponent(final SubscriptionSubscriber subscriber,
       final String instanceId) {
-    SilverTrace.info("subscribe", "SubscriptionService.getBySubscriberAndComponent",
-        "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
     try {
       con = getConnection();
@@ -252,8 +251,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
       SubscriptionResource resource) {
-    SilverTrace.info("subscribe", "SubscriptionService.getBySubscriberAndResource",
-        "root.MSG_GEN_ENTER_METHOD");
+
     Connection con = null;
     try {
       con = getConnection();
@@ -315,15 +313,13 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public boolean isSubscriberSubscribedToResource(final SubscriptionSubscriber subscriber,
       final SubscriptionResource resource) {
-    SilverTrace.info("subscribe", "SubscriptionService.isSubscriberSubscribedToResource",
-        "root.MSG_GEN_ENTER_METHOD");
+
     return !getBySubscriberAndResource(subscriber, resource).isEmpty();
   }
 
   @Override
   public boolean isUserSubscribedToResource(String userId, SubscriptionResource resource) {
-    SilverTrace.info("subscribe", "SubscriptionService.isSubscriberSubscribedToResource",
-        "root.MSG_GEN_ENTER_METHOD");
+
     return getSubscribers(resource).getAllUserIds().contains(userId);
   }
 }

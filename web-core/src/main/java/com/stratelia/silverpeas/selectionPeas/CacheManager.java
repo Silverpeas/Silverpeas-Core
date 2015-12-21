@@ -96,24 +96,13 @@ abstract public class CacheManager {
   }
 
   public void setInfos(CacheType what, String id, PanelLine pl) {
-    SilverTrace.info("selectionPeas", "CacheManager.setInfos", "root.MSG_GEN_PARAM_VALUE",
-        "What = " + what + ", Id=" + id + ", Name = " + pl.m_Values[0] + ", Selected=" +
-        pl.m_Selected);
     getCache(what).put(id, pl);
   }
 
   public PanelLine getInfos(CacheType what, String id) {
     PanelLine valret = getCache(what).get(id);
 
-    if (valret != null) {
-      SilverTrace.info("selectionPeas", "CacheManager.getInfos",
-          "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-          + ", Name = " + valret.m_Values[0] + ", Selected="
-          + valret.m_Selected);
-    } else {
-      SilverTrace.info("selectionPeas", "CacheManager.getInfos",
-          "root.MSG_GEN_PARAM_VALUE", "What = " + what + ", Id=" + id
-          + ", NULL");
+    if (valret == null) {
       valret = getLineFromId(what, id);
       setInfos(what, id, valret);
     }

@@ -93,8 +93,7 @@ public class QuestionDAO {
    * @throws SQLException
    */
   public static Question getQuestion(Connection con, QuestionPK questionPK) throws SQLException {
-    SilverTrace.info("question", "QuestionDAO.getQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK);
+
     ResultSet rs = null;
     Question question = null;
 
@@ -167,8 +166,7 @@ public class QuestionDAO {
    * @throws SQLException
    */
   public static QuestionPK createQuestion(Connection con, Question question) throws SQLException {
-    SilverTrace.info("question", "QuestionDAO.createQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "question = " + question);
+
     int newId;
 
     String insertStatement = "insert into " + (question.getPK()).getTableName() +
@@ -230,8 +228,7 @@ public class QuestionDAO {
    * @throws SQLException
    */
   public static void updateQuestion(Connection con, Question question) throws SQLException {
-    SilverTrace.info("question", "QuestionDAO.updateQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "question = " + question);
+
 
     String insertStatement = "update " + question.getPK().getTableName() +
         " set questionLabel = ?, questionDescription = ?, questionClue = ?," +
@@ -281,8 +278,7 @@ public class QuestionDAO {
    * @throws SQLException
    */
   public static void deleteQuestion(Connection con, QuestionPK questionPK) throws SQLException {
-    SilverTrace.info("question", "QuestionDAO.deleteQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK);
+
 
     String deleteStatement = "DELETE FROM sb_question_question WHERE questionId = ? ";
 

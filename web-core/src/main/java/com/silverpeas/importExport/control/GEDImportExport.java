@@ -669,7 +669,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             existingNode = getNodeService()
                 .getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
           } catch (Exception e) {
-            SilverTrace.info("importExport", "GEDImportExport.getExistingTopics",
+            SilverTrace.warn("importExport", "GEDImportExport.getExistingTopics",
                 "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" + node.
                     getExplicitPath() + "' does not exist");
           }
@@ -856,8 +856,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         pubContent = new PublicationContentType();
         List<XMLField> xmlFields = getFormTemplateBm().getXMLFieldsForExport(publicationDetail.
             getPK().getInstanceId() + ":" + publicationDetail.getInfoId(), pubId);
-        SilverTrace.info("importExport", "GEDImportExport.getPublicationCompleteById()",
-            "root.MSG_GEN_PARAM_VALUE", "# of xmlField = " + xmlFields.size());
+
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);

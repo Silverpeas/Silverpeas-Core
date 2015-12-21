@@ -104,8 +104,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
           creationAllowed = "0";
         }
 
-        SilverTrace.info("Pdc", "PdcRequestRouter.Main",
-            "root.MSG_GEN_PARAM_VALUE", "creationAllowed = " + creationAllowed);
+
         List<AxisHeader> list = pdcSC.getAxis();
         // assign attributes into the request
         request.setAttribute("AxisList", list); // set a sorted list
@@ -116,8 +115,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
           request.setAttribute("ManageableAxis", pdcSC.getAxisManageables());
         }
 
-        SilverTrace.info("Pdc", "PdcRequestRouter.Main", "root.MSG_GEN_PARAM_VALUE",
-            "list.size() = " + list.size());
+
         // create the new destination
         destination = "/pdcPeas/jsp/pdc.jsp";
       } else if (function.equals("ChangeLanguage")) {
@@ -308,8 +306,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         AxisHeader axisHeader = new AxisHeader(new AxisPK("unknown"), axeName,
             axeType, (Integer.parseInt(axeOrder)), null, null, -1,
             axeDescription);
-        SilverTrace.info("Pdc", "PdcRequestRouter.CreateAxis",
-            "root.MSG_GEN_PARAM_VALUE", "Before creation");
+
 
         // ajout de la langue
         axisHeader.setLanguage(I18NHelper.getSelectedContentLanguage(request));
@@ -319,8 +316,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
 
         int status = pdcSC.createAxis(axisHeader);
 
-        SilverTrace.info("Pdc", "PdcRequestRouter.CreateAxis",
-            "root.MSG_GEN_PARAM_VALUE", "After creation");
+
 
         switch (status) {
           case 1:

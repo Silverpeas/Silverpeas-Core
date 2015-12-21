@@ -265,11 +265,9 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager {
           instanceId);
       objectIdList = classifyEngine.getSilverContentIdsByPositionIds(alPositionIds);
     } catch (ClassifyEngineException e) {
-      SilverTrace.info("ClassifyEngine", "PdcClassifyBmImpl.hasAlreadyPositions",
-          "pdcClassify.MSG_CANNOT_GET_SILVEROBJECTID_LIST", "", e);
+
     } catch (ContainerManagerException e) {
-      SilverTrace.info("ClassifyEngine", "PdcClassifyBmImpl.hasAlreadyPositions",
-          "pdcClassify.MSG_CANNOT_GET_SILVEROBJECTID_LIST", "", e);
+
     }
     return objectIdList;
   }

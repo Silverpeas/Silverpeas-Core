@@ -107,8 +107,7 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
       request.setAttribute("javax.servlet.jsp.jspException", exce_all);
       return "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("todo", "TodoRequestRooter.getDestination()",
-        "root.MSG_GEN_EXIT_METHOD");
+
     return destination;
   }
 }

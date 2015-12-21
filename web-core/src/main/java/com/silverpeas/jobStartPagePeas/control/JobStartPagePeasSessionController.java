@@ -152,8 +152,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String spaceId = getShortSpaceId(sId);
     m_ManagedSpaceId = spaceId;
     m_isManagedSpaceRoot = isManagedSpaceRoot;
-    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.setManagedSpaceId()",
-        "root.MSG_GEN_PARAM_VALUE", "Current Space=" + m_ManagedSpaceId);
+
   }
 
   public String getManagedSpaceId() {
@@ -193,8 +192,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   private String getShortSpaceId(String spaceId) {
-    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.getShortSpaceId()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
+
     if (spaceId != null && spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
       return spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length());
     }
@@ -445,9 +443,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         fatherId = spaceint1.getDomainFatherId();
       }
       if (fatherId != null && !fatherId.equals("0")) {// dans un espace
-        SilverTrace.info("jobStartPagePeas",
-            "JobStartPagePeasRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "setDomainFatherId !!");
         spaceInst.setDomainFatherId("WA" + fatherId);
       }
     }
@@ -507,9 +502,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       return res;
     }
 
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasRequestRouter.addSpaceInst()",
-        "root.MSG_GEN_PARAM_VALUE", "SpaceAdded");
     if (templateName != null && templateName.length() > 0) {
       SpaceInst si = adminController.getSpaceInstById(res);
 
@@ -518,9 +510,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       if (acl != null) {
         for (ComponentInst ci : acl) {
           Map<String, ProfileInst> componentProfilesToCreate = new HashMap<String, ProfileInst>();
-          SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.addSpaceInst()",
-              "root.MSG_GEN_PARAM_VALUE", "Looking for component " + ci.getLabel() + " - " + ci.
-              getName());
           // Add profiles
           for (ProfileInst profileInst : componentProfilesToCreate.values()) {
             adminController.addProfileInst(profileInst);
@@ -983,10 +972,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     int j = 0;
     for (ComponentInst theComponent : arc) {
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasSesionController.getBrotherComponents()",
-          "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '"
-          + theComponent.getId() + "'");
       if (isNew || !theComponent.getId().equals(getManagedInstanceId())) {
         m_BrothersComponents[j++] = theComponent;
       }
@@ -1004,10 +989,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     ComponentInst[] m_Components = new ComponentInst[arc.size()];
     int j = 0;
     for (ComponentInst theComponent : arc) {
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasSesionController.getComponentsOfSpace()",
-          "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '"
-          + theComponent.getId() + "'");
       m_Components[j++] = theComponent;
     }
     Arrays.sort(m_BrothersComponents);
@@ -1042,11 +1023,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public void setMoveComponentToSpace(ComponentInst component,
       String destinationSpaceId, String idComponentBefore) throws AdminException {
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.setMoveComponentToSpace()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "component = " + component.getId() + " espace dest:" + destinationSpaceId
-        + " idComponentBefore=" + idComponentBefore);
     String originSpace = component.getDomainFatherId();
     ComponentInst[] m_destBrothersComponents = getDestBrotherComponents(
         destinationSpaceId, true, component.getId());
@@ -1072,10 +1048,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     int j = 0;
     for (ComponentInst theComponent : arc) {
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasSesionController.getDestBrotherComponents()",
-          "root.MSG_GEN_PARAM_VALUE", "Current = '" + componentId + "' Loop = '" + theComponent.
-          getId() + "'");
       if (isNew || !theComponent.getId().equals(componentId)) {
         m_DestBrothersComponents[j++] = theComponent;
       }
@@ -1265,10 +1237,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     // profils dispo
     String[] asAvailProfileNames = adminController.getAllProfilesNames(sComponentName);
     for (String profileName : asAvailProfileNames) {
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasSessionController.getAllProfilesNames()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "asAvailProfileNames = " + profileName);
       boolean bFound = false;
 
       ProfileInst profile = m_FatherComponentInst.getProfileInst(profileName);
@@ -1387,9 +1355,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     if (!StringUtil.isDefined(profileId)) { // creation
       hostUrl = compoURL + "EffectiveCreateInstanceProfile";
     }
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
-        "root.MSG_GEN_PARAM_VALUE", "hostUrl=" + hostUrl);
     selection.setGoBackURL(hostUrl);
     //selection.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
     selection.setPopupMode(true);
@@ -1477,9 +1442,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     ComponentInst componentInst = getComponentInst(id);
     ComponentSelection compoSelect = new ComponentSelection(componentInst);
     compoSelect.setCutted(cut);
-    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copyComponent()",
-        "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
-        + getClipboardCount());
     addClipboardSelection(compoSelect);
   }
 
@@ -1495,9 +1457,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SpaceInst space = getSpaceInstById(id);
     SpaceSelection spaceSelect = new SpaceSelection(space);
     spaceSelect.setCutted(cut);
-    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copyOrCutSpace()",
-        "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
-        + getClipboardCount());
     addClipboardSelection(spaceSelect);
   }
 
@@ -1509,9 +1468,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    */
   public void paste(Map<String, String> options) throws ClipboardException, JobStartPagePeasException {
     try {
-      SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.pasteComponent()",
-          "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + " count="
-          + getClipboardCount());
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       boolean refreshCache = false;
       for (ClipboardSelection clipObject : clipObjects) {

@@ -306,11 +306,9 @@ public class TypeManager {
       SettingBundle properties = ResourceLocator.getSettingBundle("org.silverpeas.form.settings.types");
       Set<String> binds = properties.keySet();
       for(String identifier: binds) {
-        SilverTrace.info("form", "TypeManager.init",
-            "root.MSG_GEN_PARAM_VALUE", "identifier=" + identifier);
+
         String className = properties.getString(identifier);
-        SilverTrace.info("form", "TypeManager.init", "root.MSG_GEN_PARAM_VALUE",
-            "className=" + className);
+
         String typeName = extractTypeName(identifier);
         String classKind = extractClassKind(identifier);
         String displayerName = extractDisplayerName(identifier);

@@ -76,8 +76,7 @@ class Day {
    */
   public Day(Date date, String name, String numbers, boolean isInThisMonth) {
     this.date = date;
-    SilverTrace.info("viewgenerator", "Day()", "root.MSG_GEN_PARAM_VALUE", "date = "
-        + date.toString());
+
     this.name = name;
     this.numbers = numbers;
     this.isInThisMonth = isInThisMonth;
@@ -93,8 +92,7 @@ class Day {
     this.name = null;
     this.numbers = null;
     this.isInThisMonth = false;
-    SilverTrace.info("viewgenerator", "Day(date)", "root.MSG_GEN_PARAM_VALUE",
-        "date = " + date.toString());
+
   }
 
   /**

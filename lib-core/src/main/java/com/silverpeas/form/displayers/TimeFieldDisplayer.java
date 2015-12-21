@@ -79,8 +79,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       throws java.io.IOException {
     String language = PagesContext.getLanguage();
     if (!TextField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "TimeFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     out.println("var " + template.getFieldName()
@@ -123,15 +122,13 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String html = "";
 
     String fieldName = template.getFieldName();
-    SilverTrace.info("form", "TimeFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE",
-        "fieldName=" + fieldName);
+
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
     if (field == null) {
       return;
     }
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TimeFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");

@@ -87,8 +87,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
     String language = pagesContext.getLanguage();
 
     if (!template.getTypeName().equals(LdapField.TYPE)) {
-      SilverTrace.info("form", "LdapFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          LdapField.TYPE);
+
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
@@ -124,8 +123,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
     LdapField ldapField;
 
     if (!field.getTypeName().equals(LdapField.TYPE)) {
-      SilverTrace.info("form", "LdapFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          LdapField.TYPE);
+
       ldapField = new LdapField();
     } else {
       ldapField = field;

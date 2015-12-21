@@ -315,14 +315,10 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
    */
   public int compareTo(final java.lang.Object other) {
     if (pane.getColumnToSort() == 0) {
-      SilverTrace.info("viewgenerator", "ArrayLine.compareTo()",
-          "root.MSG_GEN_PARAM_VALUE", " columnToSort = 0 ");
+
       return 0;
     }
     if (!(other instanceof ArrayLine)) {
-      SilverTrace.info("viewgenerator", "ArrayLine.compareTo()",
-          "root.MSG_GEN_PARAM_VALUE", " other not an ArrayLine : other="
-          + other.toString());
       return 0;
     }
     ArrayLine tmp = (ArrayLine) other;
@@ -337,9 +333,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
       return 0;
 
     if (!(cell instanceof Comparable)) {
-      SilverTrace.info("viewgenerator", "ArrayLine.compareTo()",
-          "root.MSG_GEN_PARAM_VALUE", " cell not Comparable : cell="
-          + cell.toString());
       return 0;
     }
     sort = ((Comparable) cell).compareTo(tmp.getCellAt(sort));

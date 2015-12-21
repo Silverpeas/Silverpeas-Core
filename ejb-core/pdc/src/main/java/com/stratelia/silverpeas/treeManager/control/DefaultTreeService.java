@@ -67,8 +67,7 @@ public class DefaultTreeService implements TreeService {
   @Override
   public TreeNode getRoot(Connection con, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getRoot()",
-        "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
+
     String whereClause = "treeId = " + treeId + " and levelNumber = 0";
     TreeNode root = null;
     try {
@@ -76,8 +75,7 @@ public class DefaultTreeService implements TreeService {
           (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK("useless"),
           whereClause);
       if (roots.size() > 0) {
-        SilverTrace.info("treeManager", "TreeManagerBmImpl.getRoot()",
-            "root.MSG_GEN_PARAM_VALUE", "roots.size() = " + roots.size());
+
         TreeNodePersistence rootPers = roots.get(0);
         root = new TreeNode(rootPers);
 
@@ -92,8 +90,7 @@ public class DefaultTreeService implements TreeService {
 
   public String createRoot(Connection con, TreeNode root)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.createRoot()",
-        "root.MSG_GEN_PARAM_VALUE", "root = " + root.toString());
+
     root.setLevelNumber(0);
     root.setPath("/");
     root.setFatherId("-1");
@@ -116,8 +113,7 @@ public class DefaultTreeService implements TreeService {
 
   public void updateNode(Connection con, TreeNode node)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.updateNode()",
-        "root.MSG_GEN_PARAM_VALUE", "node = " + node.toString());
+
     String nodeId = node.getPK().getId();
     String treeId = node.getTreeId();
     int order = node.getOrderNumber();
@@ -151,8 +147,7 @@ public class DefaultTreeService implements TreeService {
         nodeHasMoved = false;
       }
 
-      SilverTrace.info("treeManager", "TreeManagerBmImpl.updateNode()",
-          "root.MSG_GEN_PARAM_VALUE", "Avant updateNode()");
+
 
       TreeNode oldNode = getNode(con, (TreeNodePK) node.getPK(), treeId);
       // gestion des traductions
@@ -215,8 +210,7 @@ public class DefaultTreeService implements TreeService {
       // createIndex(node);
       createIndex(con, node);
 
-      SilverTrace.info("treeManager", "TreeManagerBmImpl.updateNode()",
-          "root.MSG_GEN_PARAM_VALUE", "Apres updateNode()");
+
 
       // Le noeud a changé de place, on décale les noeuds dont l'ordre est
       // supérieur ou égal
@@ -243,8 +237,7 @@ public class DefaultTreeService implements TreeService {
 
   public void updateRoot(Connection con, TreeNode node)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.updateRoot()",
-        "root.MSG_GEN_PARAM_VALUE", "node = " + node.toString());
+
     try {
       String treeId = node.getTreeId();
       TreeNode oldRoot = getRoot(con, treeId);
@@ -317,10 +310,6 @@ public class DefaultTreeService implements TreeService {
 
   public void deleteSubTree(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.deleteSubTree()",
-        "root.MSG_GEN_PARAM_VALUE", "rootPK = " + rootPK.toString()
-        + ", treeId = " + treeId);
-
     List<TreeNode> subTree = getSubTree(con, rootPK, treeId);
     String rootId = rootPK.getId();
     TreeNode node = getNode(con, rootPK, treeId);
@@ -358,8 +347,7 @@ public class DefaultTreeService implements TreeService {
 
   public void deleteTree(Connection con, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.deleteTree()",
-        "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
+
 
     List<TreeNode> tree = getTree(con, treeId);
 
@@ -384,8 +372,7 @@ public class DefaultTreeService implements TreeService {
 
   public List<TreeNode> getTree(Connection con, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getTree()",
-        "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
+
     return getTree(con, treeId, new AxisFilter());
   }
 
@@ -401,8 +388,7 @@ public class DefaultTreeService implements TreeService {
       sortedList = new ArrayList<TreeNode>();
       root = getRoot(con, treeId);
       if (root != null) {
-        SilverTrace.info("treeManager", "TreeManagerBmImpl.getTree()",
-            "root.MSG_GEN_PARAM_VALUE", "root = " + root.toString());
+
         List<TreeNodePersistence> list = getDescendants(con, root, filter);
 
         // 1 - On parcours la liste list
@@ -462,9 +448,6 @@ public class DefaultTreeService implements TreeService {
 
   public List<TreeNode> getSubTree(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getSubTree()",
-        "root.MSG_GEN_PARAM_VALUE", "rootPK = " + rootPK.toString()
-        + ", treeId = " + treeId);
     TreeNode root = null;
     root = getNode(con, rootPK, treeId);
     List<TreeNodePersistence> list = getDescendants(con, root);
@@ -553,8 +536,7 @@ public class DefaultTreeService implements TreeService {
    */
   private List<TreeNodePersistence> getDescendants(Connection con, TreeNode root)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getDescendants()",
-        "root.MSG_GEN_PARAM_VALUE", "root = " + root.toString());
+
     return getDescendants(con, root, new AxisFilter());
   }
 
@@ -569,9 +551,6 @@ public class DefaultTreeService implements TreeService {
       throws TreeManagerException {
     String rootId = root.getPK().getId();
     String treeId = root.getTreeId();
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getDescendants()",
-        "root.MSG_GEN_PARAM_VALUE", "rootId = " + rootId + ", treeId = "
-        + treeId);
     String path = root.getPath();
     // String whereClause =
     // "path LIKE (SELECT path + '%' FROM SB_Tree_Tree WHERE id = "+rootId+") ORDER BY path ASC, orderNumber ASC";
@@ -619,8 +598,7 @@ public class DefaultTreeService implements TreeService {
 
     whereClause.append(" ORDER BY path ASC, orderNumber ASC");
 
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getDescendants()",
-        "root.MSG_GEN_PARAM_VALUE", "whereClause = " + whereClause.toString());
+
 
     List<TreeNodePersistence> list = null;
     try {
@@ -635,9 +613,6 @@ public class DefaultTreeService implements TreeService {
 
   public TreeNode getNode(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getNode()",
-        "root.MSG_GEN_PARAM_VALUE", "id = " + nodePK.getId() + ", treeId = "
-        + treeId);
     TreeNode node = null;
     try {
       String whereClause = "treeId = " + treeId + " and id = " + nodePK.getId();
@@ -676,8 +651,7 @@ public class DefaultTreeService implements TreeService {
   @SuppressWarnings("unchecked")
   public List<TreeNode> getNodesByName(Connection con, String nodeName)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getNodesByName()",
-        "root.MSG_GEN_PARAM_VALUE", "nodeName = " + nodeName);
+
     List<TreeNodePersistence> nodes = null;
     List<TreeNode> result = null;
     try {
@@ -700,16 +674,12 @@ public class DefaultTreeService implements TreeService {
 
   public String insertFatherToNode(Connection con, TreeNode nodeToInsert,
       TreeNodePK refNodePK, String treeId) throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.insertFatherToNode()",
-        "root.MSG_GEN_PARAM_VALUE", "nodeToInsert = " + nodeToInsert.toString()
-        + ", refNodePK = " + refNodePK.toString() + ", treeId = " + treeId);
     TreeNode refNode = getNode(con, refNodePK, treeId);
 
     // Mémoriser le père actuel P1 de la fille
     String refPath = refNode.getPath();
 
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.insertFatherToNode()",
-        "root.MSG_GEN_PARAM_VALUE", "refPath = " + refPath);
+
 
     // Insérer le nouveau père P2 avec la référence sur P1
     nodeToInsert.setTreeId(treeId);
@@ -731,12 +701,10 @@ public class DefaultTreeService implements TreeService {
     // refNode.setLevelNumber(refNode.getLevelNumber()+1);
     refNode.setFatherId(newFatherPK.getId());
     String newPath = refNode.getPath() + newFatherPK.getId() + "/";
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.insertFatherToNode()",
-        "root.MSG_GEN_PARAM_VALUE", "newPath = " + newPath);
+
     // refNode.setPath(newPath); //Ici ??????
     updateNode(con, refNode);
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.insertFatherToNode()",
-        "root.MSG_GEN_PARAM_VALUE", "Apres updateNode()");
+
 
     // Modifier le chemin de tous les descendants en insérant le nouveau père
     // juste un remplacement de sous chaine
@@ -749,18 +717,9 @@ public class DefaultTreeService implements TreeService {
         // Modifie le niveau et le chemin de chaque descendant
         nodeToUpdate.setLevelNumber(nodeToUpdate.getLevelNumber() + 1);
         pathToUpdate = nodeToUpdate.getPath();
-        SilverTrace.info("treeManager",
-            "TreeManagerBmImpl.insertFatherToNode()",
-            "root.MSG_GEN_PARAM_VALUE", "pathToUpdate = " + pathToUpdate);
         endOfPath = pathToUpdate.substring(refPath.length(), pathToUpdate
             .length());
-        SilverTrace.info("treeManager",
-            "TreeManagerBmImpl.insertFatherToNode()",
-            "root.MSG_GEN_PARAM_VALUE", "endOfPath = " + endOfPath);
         pathToUpdate = newPath + endOfPath;
-        SilverTrace.info("treeManager",
-            "TreeManagerBmImpl.insertFatherToNode()",
-            "root.MSG_GEN_PARAM_VALUE", "pathToUpdate = " + pathToUpdate);
         nodeToUpdate.setPath(pathToUpdate);
 
         updateNode(con, new TreeNode(nodeToUpdate));
@@ -799,10 +758,6 @@ public class DefaultTreeService implements TreeService {
 
     updateNode(con, movedNode);
 
-    SilverTrace.info("treeManager",
-        "TreeManagerBmImpl.moveSubTreeToNewFather()",
-        "root.MSG_GEN_PARAM_VALUE", "newPath = " + newRacine);
-
     // Modifier le chemin de tous les descendants en utilisant newRacine,
     // ainsi que le levelnumber
 
@@ -820,9 +775,6 @@ public class DefaultTreeService implements TreeService {
             + levelNewFather);
         pathToUpdate = nodeToUpdate.getPath();
         pathToUpdate = pathToUpdate.replaceFirst(oldRacine, newRacine);
-        SilverTrace.info("treeManager",
-            "TreeManagerBmImpl.moveSubTreeToNewFather()",
-            "root.MSG_GEN_PARAM_VALUE", "pathToUpdate = " + pathToUpdate);
         nodeToUpdate.setPath(pathToUpdate);
         updateNode(con, new TreeNode(nodeToUpdate));
       }
@@ -832,9 +784,6 @@ public class DefaultTreeService implements TreeService {
 
   public String createSonToNode(Connection con, TreeNode nodeToInsert,
       TreeNodePK refNode, String treeId) throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.createSonToNode()",
-        "root.MSG_GEN_PARAM_VALUE", "nodeToInsert = " + nodeToInsert.toString()
-        + ", refNode = " + refNode.toString() + ", treeId = " + treeId);
     TreeNode father = getNode(con, refNode, treeId);
     nodeToInsert.setLevelNumber(father.getLevelNumber() + 1);
     nodeToInsert.setPath(father.getPath() + father.getPK().getId() + "/");
@@ -864,10 +813,6 @@ public class DefaultTreeService implements TreeService {
       }
       order = i;
       nodeToInsert.setOrderNumber(order);
-      SilverTrace.info("treeManager", "TreeManagerBmImpl.createSonToNode()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "order was equal to -1 so orderId will be " + order
-          + " following the alphabetic order");
     }
 
     // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
@@ -913,9 +858,6 @@ public class DefaultTreeService implements TreeService {
   @SuppressWarnings("unchecked")
   public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getSonsToNode()",
-        "root.MSG_GEN_PARAM_VALUE", "treeNodePK = " + treeNodePK.toString()
-        + ", treeId = " + treeId);
     String whereClause = "treeId = " + treeId + " and fatherId = "
         + treeNodePK.getId();
     Collection<TreeNodePersistence> sons = null;
@@ -932,9 +874,6 @@ public class DefaultTreeService implements TreeService {
 
   public void deleteNode(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.deleteNode()",
-        "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString()
-        + ", treeId = " + treeId);
     String nodeId = nodePK.getId();
     TreeNode nodeToDelete = getNode(con, nodePK, treeId);
     String path = nodeToDelete.getPath();
@@ -985,9 +924,6 @@ public class DefaultTreeService implements TreeService {
 
   public List<TreeNode> getFullPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getFullPath()",
-        "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString()
-        + ", treeId = " + treeId);
     String path = getPath(con, nodePK, treeId);
     ArrayList<TreeNode> list = new ArrayList<TreeNode>();
     try {
@@ -999,8 +935,7 @@ public class DefaultTreeService implements TreeService {
       }
       whereClause += " or id = " + nodePK.getId()
           + ") order by levelNumber ASC";
-      SilverTrace.info("treeManager", "TreeManagerBmImpl.getFullPath()",
-          "root.MSG_GEN_PARAM_VALUE", "whereClause = " + whereClause);
+
       @SuppressWarnings("unchecked")
       Collection<TreeNodePersistence> tree = getDAO().findByWhereClause(con, nodePK, whereClause);
 
@@ -1030,9 +965,6 @@ public class DefaultTreeService implements TreeService {
 
   public String getPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
-    SilverTrace.info("treeManager", "TreeManagerBmImpl.getPath()",
-        "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString()
-        + ", treeId = " + treeId);
     String path = "";
     TreeNode node = null;
     try {
@@ -1061,8 +993,7 @@ public class DefaultTreeService implements TreeService {
   }
 
   private void createIndex(TreeNode node) {
-    SilverTrace.info("treeManager", "TreeBmImpl.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "node = " + node.toString());
+
     FullIndexEntry indexEntry = null;
 
     if (node != null) {
@@ -1089,8 +1020,7 @@ public class DefaultTreeService implements TreeService {
    * Called on : - removeNode()
    */
   private void deleteIndex(TreeNodePK pk, String treeId) {
-    SilverTrace.info("treeManager", "TreeBmImpl.deleteIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
+
     IndexEntryPK indexEntry = new IndexEntryPK("pdc", "TreeNode", pk.getId()
         + "_" + treeId);
 

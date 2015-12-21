@@ -62,14 +62,12 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
       PagesContext pagesContext)
       throws FormException {
     if (!template.getTypeName().equals(SequenceField.TYPE)) {
-      SilverTrace.info("form", "SequenceFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          SequenceField.TYPE);
+
     }
 
     SequenceField sequenceField = null;
     if (!SequenceField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "SequenceFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          SequenceField.TYPE);
+
     } else {
       sequenceField = field;
     }
@@ -118,8 +116,7 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     if (!template.getTypeName().equals(SequenceField.TYPE)) {
-      SilverTrace.info("form", "SequenceFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", SequenceField.TYPE);
+
     }
   }
 

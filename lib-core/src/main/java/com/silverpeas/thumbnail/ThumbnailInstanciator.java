@@ -57,8 +57,7 @@ public class ThumbnailInstanciator extends SQLRequest implements ComponentsInsta
   @Override
   public void delete(Connection connection, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("thumbnail", "ThumbnailInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
+
 
     // 1 - delete data in database
     try {
@@ -78,8 +77,7 @@ public class ThumbnailInstanciator extends SQLRequest implements ComponentsInsta
           InstanciationException.ERROR, "root.DELETING_DATA_DIRECTORY_FAILED",
           e);
     }
-    SilverTrace.info("thumbnail", "ThumbnailInstanciator.delete()",
-        "root.MSG_GEN_EXIT_METHOD");
+
 
   }
 

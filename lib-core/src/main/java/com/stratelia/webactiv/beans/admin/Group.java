@@ -202,23 +202,15 @@ public class Group implements Serializable, Comparable<Group> {
   public void traceGroup() {
     int i;
 
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "id : " + id);
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "specificId : " + specificId);
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "domainId : " + domainId);
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "superGroupId : " + superGroupId);
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "name : " + name);
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "description : " + description);
-    SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-        "rule : " + rule);
+
+
+
+
+
+
+
     for (i = 0; i < userIds.length; i++) {
-      SilverTrace.info("admin", "Group.traceGroup", "admin.MSG_DUMP_GROUP",
-          "userId " + Integer.toString(i) + " : " + userIds[i]);
+
     }
   }
 

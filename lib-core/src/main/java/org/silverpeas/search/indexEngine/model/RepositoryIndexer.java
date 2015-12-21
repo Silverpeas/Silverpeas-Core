@@ -64,8 +64,7 @@ public class RepositoryIndexer {
       // index directory's content
       processFileList(path, creationDate, creatorId, action);
     }
-    SilverTrace.info("indexEngine", "RepositoryIndexer.pathIndexer()",
-        "root.MSG_GEN_PARAM_VALUE", "Fichiers à indexer=" + Integer.toString(count));
+
   }
 
   /**
@@ -73,8 +72,7 @@ public class RepositoryIndexer {
    */
   private void processFileList(File dir, String creationDate, String creatorId, String action) {
     if (count % 10000 == 0) {
-      SilverTrace.info("indexEngine", "RepositoryIndexer.processFileList()",
-          "root.MSG_GEN_PARAM_VALUE", "# of indexed documents =" + count);
+
     }
 
     File[] dirs = dir.listFiles(DirectorySPFilter.getInstance());

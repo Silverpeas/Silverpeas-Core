@@ -74,14 +74,11 @@ public class CoordinateImportExport {
       List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();
       int i = 1;
       for (String nodeId : combination) {
-        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
-            "root.MSG_GEN_PARAM_VALUE", "nodeId = " + nodeId);
+
         NodePK nodePK = new NodePK(nodeId, componentId);
-        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
-            "root.MSG_GEN_PARAM_VALUE", "avant nodeBm.getPath() ! i = " + i);
+
         Collection<NodeDetail> path = nodeService.getPath(nodePK);
-        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
-            "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = " + path.toString());
+
         for (NodeDetail nodeDetail : path) {
           String anscestorId = nodeDetail.getNodePK().getId();
           int nodeLevel = nodeDetail.getLevel();
@@ -292,9 +289,6 @@ public class CoordinateImportExport {
    * @return nodePK
    */
   public NodeDetail addPosition(NodeDetail position, String axisId, String componentId) {
-    SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
-        "root.MSG_GEN_PARAM_VALUE", "fatherId = " + axisId + " And position = "
-        + position.toString());
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(DateUtil.today2SQLDate());
     NodeDetail fatherDetail = null;
@@ -302,18 +296,11 @@ public class CoordinateImportExport {
     NodeDetail positionDetail = null;
 
     fatherDetail = getNodeHeader(axisId, componentId);
-    SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
-        "root.MSG_GEN_PARAM_VALUE", "fatherDetail = "
-        + fatherDetail.toString());
     try {
       fatherDetail = getNodeHeader(axisId, componentId);
       positionPK = getNodeService().createNode(position, fatherDetail);
-      SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
-          "root.MSG_GEN_PARAM_VALUE", "positionPK = " + positionPK.toString());
+
       positionDetail = getNodeHeader(positionPK);
-      SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
-          "root.MSG_GEN_PARAM_VALUE", "positionDetail = "
-          + positionDetail.toString());
     } catch (Exception e) {
       throw new CoordinateRuntimeException(
           "CoordinateImportExport.addPosition()",

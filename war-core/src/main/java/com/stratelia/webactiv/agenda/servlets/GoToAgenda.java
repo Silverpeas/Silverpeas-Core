@@ -41,13 +41,11 @@ public class GoToAgenda extends GoTo {
       HttpServletResponse res) throws Exception {
     String url = "ViewOtherAgenda?Id=" + objectId;
 
-    SilverTrace.info("agenda", "GoToAgenda.getDestination",
-        "root.MSG_GEN_PARAM_VALUE", "Url = " + url);
+
 
     String gotoURL = URLManager.getURL(URLManager.CMP_AGENDA) + url;
 
-    SilverTrace.info("agenda", "GoToAgenda.getDestination",
-        "root.MSG_GEN_PARAM_VALUE", "gotoURL = " + gotoURL);
+
 
     return "goto=" + URLEncoder.encode(gotoURL);
   }

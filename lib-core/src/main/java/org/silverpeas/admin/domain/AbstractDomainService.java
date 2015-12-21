@@ -79,10 +79,6 @@ public abstract class AbstractDomainService implements DomainService {
    * @throws DomainCreationException
    */
   protected String registerDomain(Domain domainToCreate) throws DomainCreationException {
-    SilverTrace.info("admin",
-        "AbstractDomainService.registerDomain()",
-        "root.MSG_GEN_ENTER_METHOD");
-
     if (StringUtil.isNotDefined(domainToCreate.getId())) {
       domainToCreate.setId("-1");
     }
@@ -102,9 +98,6 @@ public abstract class AbstractDomainService implements DomainService {
    * @throws DomainDeletionException
    */
   protected String unRegisterDomain(Domain domainToRemove) throws DomainDeletionException {
-    SilverTrace.info("admin",
-        "AbstractDomainService.unRegisterDomain()",
-        "root.MSG_GEN_ENTER_METHOD");
     try {
       return getAdminService().removeDomain(domainToRemove.getId());
     } catch (AdminException e) {

@@ -71,8 +71,7 @@ public class UserField extends AbstractField {
    * Set the user id referenced by this field.
    */
   public void setUserId(String userId) {
-    SilverTrace.info("form", "UserField.setUserId",
-        "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+
     this.userId = userId;
   }
 
@@ -89,8 +88,7 @@ public class UserField extends AbstractField {
   @Override
   public String getValue() {
     String theUserId = getUserId();
-    SilverTrace.info("form", "UserField.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "userId = " + theUserId);
+
     if (!StringUtil.isDefined(theUserId)) {
       return theUserId;
     }
@@ -190,8 +188,7 @@ public class UserField extends AbstractField {
    */
   @Override
   public void setStringValue(String value) {
-    SilverTrace.info("form", "UserField.setStringValue",
-        "root.MSG_GEN_ENTER_METHOD", "value = " + value);
+
     setUserId(value);
   }
 

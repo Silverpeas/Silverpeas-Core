@@ -125,9 +125,6 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
    * @see
    */
   private String dataSourcePrint() {
-    SilverTrace.info("viewgenerator",
-        "ArrayPaneWithDataSource.dataSourcePrint()",
-        "root.MSG_GEN_ENETR_METHOD");
     int columnsCount = 0;
     int sortCol = 0;
     // load data
@@ -141,52 +138,27 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
         if (sortCol < 0) {
           sortCol = -sortCol;
         }
-        SilverTrace.info("viewgenerator",
-            "ArrayPaneWithDataSource.dataSourcePrint()",
-            "root.MSG_GEN_PARAM_VALUE",
-            " Toggling column sort order on column = " + sortCol);
         m_DataSource.getHeader().toggleFieldSortOrder(sortCol - 1);
         setColumnToSort(0);
       }
       if (getState() != null) {
         if (getState().getFirstVisibleLine() > 0) {
           pageActionString = "next";
-          SilverTrace.info("viewgenerator",
-              "ArrayPaneWithDataSource.dataSourcePrint()",
-              "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-              + pageActionString);
           page = m_DataSource.getNextPage();
         } else if (getState().getFirstVisibleLine() < 0) {
           pageActionString = "previous";
-          SilverTrace.info("viewgenerator",
-              "ArrayPaneWithDataSource.dataSourcePrint()",
-              "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-              + pageActionString);
           page = m_DataSource.getPreviousPage();
         } else {
           pageActionString = "current";
-          SilverTrace.info("viewgenerator",
-              "ArrayPaneWithDataSource.dataSourcePrint()",
-              "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-              + pageActionString);
           page = m_DataSource.getCurrentPage();
           if (page == null) {
             pageActionString = "first";
-            SilverTrace.info("viewgenerator",
-                "ArrayPaneWithDataSource.dataSourcePrint()",
-                "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-                + pageActionString);
             page = m_DataSource.getFirstPage();
           }
         }
         getState().setFirstVisibleLine(0);
       } else {
         pageActionString = "next";
-        SilverTrace.info("viewgenerator",
-            "ArrayPaneWithDataSource.dataSourcePrint()",
-            "root.MSG_GEN_PARAM_VALUE", " pageActionString = "
-            + pageActionString);
-
         page = m_DataSource.getNextPage();
       }
 
@@ -206,10 +178,6 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
     int itemCount = m_DataSource.getItemCount();
     int pageItemCount = page.getItemCount();
 
-    SilverTrace.info("viewgenerator",
-        "ArrayPaneWithDataSource.dataSourcePrint()",
-        "root.MSG_GEN_PARAM_VALUE", " PageNumber=" + pageNumber
-        + ", pageItemCount=" + pageItemCount);
     String result = "";
 
     result +=

@@ -93,8 +93,7 @@ public class SelectionPeasRequestRouter extends
   public String getDestination(String function, SelectionPeasSessionController selectionPeasSC,
       HttpRequest request) {
     String destination;
-    SilverTrace.info("selectionPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
+
 
     try {
       if (function.equals("Main")) {
@@ -272,8 +271,7 @@ public class SelectionPeasRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("selectionPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 
@@ -283,8 +281,7 @@ public class SelectionPeasRequestRouter extends
         "SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
     selectionPeasSC.setCartSelected(CacheType.CM_ELEMENT, getValues(request.getParameter(
         "SelectedElements")), getValues(request.getParameter("NonSelectedElements")));
-    SilverTrace.info("selectionPeas", "doCartOperation()", "root.MSG_GEN_PARAM_VALUE",
-        "Operation=" + op);
+
     if ("GENERICPANELChangePage".equals(op)) {
       return "selectionCart.jsp";
     }
@@ -318,8 +315,7 @@ public class SelectionPeasRequestRouter extends
       selectionPeasSC.setSelected(CacheType.CM_ELEMENT, getValues(request.getParameter(
           "SelectedElements")), getValues(request.getParameter("NonSelectedElements")));
     }
-    SilverTrace.info("selectionPeas", "doBrowseOperation()", "root.MSG_GEN_PARAM_VALUE",
-        "Operation=" + op);
+
 
     if ("GENERICPANELChangePage".equals(op)) {
       return "selectionPeas.jsp";
@@ -347,8 +343,7 @@ public class SelectionPeasRequestRouter extends
       selectionPeasSC.setOneSelected(CacheType.CM_ELEMENT, elementId);
     }
 
-    SilverTrace.info("selectionPeas", "doBrowseOperation()", "root.MSG_GEN_PARAM_VALUE",
-        "htmlFormName = " + selectionPeasSC.getSelection().getHtmlFormName());
+
     if (selectionPeasSC.getSelection().getHtmlFormName() != null) {
       return getDestination("ValidateAndSetOpener", selectionPeasSC, request);
     }

@@ -281,26 +281,22 @@ public class IndexManager {
    * @param indexEntry
    */
   private void index(IndexWriter writer, FullIndexEntry indexEntry) {
-    SilverTrace.info("indexEngine", "IndexManager.index", "root.MSG_GEN_ENTER_METHOD",
-        "IndexEntryPK = " + indexEntry.toString());
+
     try {
       writer.addDocument(makeDocument(indexEntry));
-      SilverTrace.info("indexEngine", "IndexManager.index",
-          "indexEngine.INFO_ADD_REQUEST_SUCCEED", indexEntry.toString());
+
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "IndexManager.index",
             "indexEngine.MSG_ADD_REQUEST_FAILED", indexEntry.toString(), e);
     }
-    SilverTrace.info("indexEngine", "IndexManager.index", "root.MSG_GEN_EXIT_METHOD",
-        "IndexEntryPK = " + indexEntry.toString());
+
   }
 
   /**
    * Create a lucene Document object with the given indexEntry.
    */
   private Document makeDocument(FullIndexEntry indexEntry) {
-    SilverTrace.info("indexEngine", "IndexManager.makeDocument", "root.MSG_GEN_ENTER_METHOD",
-        "IndexEntryPK = " + indexEntry.toString());
+
     Document doc = new Document();
     // fields creation
     doc.add(new Field(KEY, indexEntry.getPK().toString(), YES, NOT_ANALYZED));
@@ -495,8 +491,7 @@ public class IndexManager {
     }
     doc.add(new Field(ALIAS, Boolean.toString(indexEntry.isAlias()), Store.YES, Index.NO));
     
-    SilverTrace.info("indexEngine", "IndexManager.makeDocument", "root.MSG_GEN_EXIT_METHOD",
-        "IndexEntryPK = " + indexEntry.toString());
+
     return doc;
   }
 
@@ -519,8 +514,7 @@ public class IndexManager {
    * Add file to Document
    */
   private void addFile(Document doc, FileDescription fileDescription) {
-    SilverTrace.info("indexEngine", "IndexManager.addFile", "root.MSG_GEN_ENTER_METHOD",
-        "file = " + fileDescription.getPath() + ", type = " + fileDescription.getFormat());
+
     File file = new File(fileDescription.getPath());
     if (!file.exists() || !file.isFile()) {
       return;

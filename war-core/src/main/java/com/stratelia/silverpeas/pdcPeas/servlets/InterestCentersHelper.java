@@ -75,8 +75,7 @@ public class InterestCentersHelper {
 
   private static java.util.Date getDate(String date, PdcSearchSessionController pdcSC) throws
       Exception {
-    SilverTrace.info("pdcPeas", "InterestCentersHelper.getDate()", "root.MSG_GEN_PARAM_VALUE",
-        "date= " + date);
+
     if (StringUtil.isDefined(date)) {
       return DateUtil.stringToDate(date, pdcSC.getLanguage());
     }

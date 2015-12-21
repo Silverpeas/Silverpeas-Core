@@ -52,8 +52,7 @@ public class DefaultAnswerService implements AnswerService {
   @Override
   @Transactional(Transactional.TxType.SUPPORTS)
   public Collection<Answer> getAnswersByQuestionPK(ForeignPK questionPK) {
-    SilverTrace.info("answer", "DefaultAnswerService.getAnswersByQuestionPK()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+
     Connection con = getConnection();
     try {
       Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, questionPK);
@@ -68,8 +67,7 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   public void recordThisAnswerAsVote(ForeignPK questionPK, AnswerPK answerPK) {
-    SilverTrace.info("answer", "DefaultAnswerService.recordThisAnswerAsVote()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK + ", answerPK=" + answerPK);
+
     Connection con = getConnection();
     try {
       AnswerDAO.recordThisAnswerAsVote(con, questionPK, answerPK);
@@ -115,8 +113,7 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   public void deleteAnswersToAQuestion(ForeignPK questionPK) {
-    SilverTrace.info("answer", "DefaultAnswerService.deleteAnswersToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK);
+
     Connection con = getConnection();
     try {
       AnswerDAO.deleteAnswersToAQuestion(con, questionPK);
@@ -130,8 +127,7 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   public void deleteAnswerToAQuestion(ForeignPK questionPK, String answerId) {
-    SilverTrace.info("answer", "DefaultAnswerService.deleteAnswerToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK + ", answerId=" + answerId);
+
     Connection con = getConnection();
     try {
       AnswerDAO.deleteAnswerToAQuestion(con, questionPK, answerId);
@@ -145,8 +141,7 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   public void updateAnswerToAQuestion(ForeignPK questionPK, Answer answer) {
-    SilverTrace.info("answer", "DefaultAnswerService.updateAnswerToAQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK + ", answer=" + answer);
+
     Connection con = getConnection();
     try {
       AnswerDAO.updateAnswerToAQuestion(con, questionPK, answer);

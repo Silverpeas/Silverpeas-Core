@@ -82,8 +82,7 @@ public class CommunicationUserRequestRouter extends
   public String getDestination(String function, CommunicationUserSessionController commUserSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("communicationUser", "CommunicationUserRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function=" + function);
+
     try {
       if (function.startsWith("Main")) {
         request.setAttribute("ConnectedUsersList", commUserSC.getDistinctConnectedUsersList());
@@ -132,8 +131,7 @@ public class CommunicationUserRequestRouter extends
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("communicationUser", "CommunicationUserRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
+
     return destination;
   }
 }

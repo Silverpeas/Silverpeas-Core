@@ -234,9 +234,6 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void setContent(String content, String language) {
-    SilverTrace.info("notificationManager",
-        "NotificationMetaData.setContent()", "root.MSG_GEN_ENTER_METHOD",
-        "language = " + language + ", content = " + content);
     contents.put(language, content);
   }
 
@@ -249,9 +246,6 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public String getContent(String language) {
-    SilverTrace.info("notificationManager",
-        "NotificationMetaData.getContent()", "root.MSG_GEN_ENTER_METHOD",
-        "language = " + language);
     StringBuilder result = new StringBuilder();
     if (templates != null && !templates.isEmpty()) {
       SilverpeasTemplate template = templates.get(language);
@@ -306,8 +300,7 @@ public class NotificationMetaData implements java.io.Serializable {
     // This below TAG permits to next treatments to decorate the message just after this footer
     result.append(AFTER_MESSAGE_FOOTER_TAG);
 
-    SilverTrace.info("notificationManager", "NotificationMetaData.getContent()",
-        "root.MSG_GEN_EXIT_METHOD", "result = " + result);
+
     return EncodeHelper.convertWhiteSpacesForHTMLDisplay(result.toString());
   }
 

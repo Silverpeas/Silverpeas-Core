@@ -27,11 +27,11 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import java.util.Date;
-
 import com.silverpeas.usernotification.model.NotificationResourceData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.util.logging.SilverLogger;
+
+import java.util.Date;
 
 /**
  * This class contents all needed parameters to send a notification with the NotificationManager
@@ -105,126 +105,59 @@ public class NotificationParameters {
   public NotificationResourceData nNotificationResourceData = null;
 
   public void traceObject() {
-    if (SilverTrace.getTraceLevel("notificationManager", true) <= SilverTrace.TRACE_LEVEL_INFO) {
-      switch (iMessagePriority) {
-        case NORMAL:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MessagePriority : NORMAL");
-          break;
-        case URGENT:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MessagePriority : URGENT");
-          break;
-        case ERROR:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MessagePriority : ERROR");
-          break;
-      }
-      switch (iMediaType) {
-        case ADDRESS_DEFAULT:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_DEFAULT");
-          break;
-        case ADDRESS_COMPONENT_DEFINED:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_COMPONENT_DEFINED");
-          break;
-        case ADDRESS_BASIC_POPUP:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_BASIC_POPUP");
-          break;
-        case ADDRESS_BASIC_REMOVE:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_BASIC_REMOVE");
-          break;
-        case ADDRESS_BASIC_SILVERMAIL:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_BASIC_SILVERMAIL");
-          break;
-        case ADDRESS_BASIC_SMTP_MAIL:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_BASIC_SMTP_MAIL");
-          break;
-        case ADDRESS_BASIC_SERVER:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_BASIC_SERVER");
-          break;
-        case ADDRESS_BASIC_COMMUNICATION_USER:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-              "MediaType : ADDRESS_BASIC_COMMUNICATION_USER");
-          break;
-        default:
-          SilverTrace.info("notificationManager",
-              "NotificationParameters.traceObject",
-              "notificationManager.MSG_INFO_DUMPNOTIFICATION", "MediaType : "
-              + Integer.toString(iMediaType));
-          break;
-      }
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION",
-          "ComponentInstance : " + Integer.toString(iComponentInstance));
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Title : " + sTitle);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Message : "
-          + sMessage);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "FromUserId : "
-          + Integer.toString(iFromUserId));
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "FromSenderName : "
-          + senderName);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "AnswerAllowed : "
-          + bAnswerAllowed);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "SendImmediately : "
-          + bSendImmediately);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Source : "
-          + sSource);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "SessionId : "
-          + sSessionId);
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Date : "
-          + dDate.toString());
-      SilverTrace.info("notificationManager",
-          "NotificationParameters.traceObject",
-          "notificationManager.MSG_INFO_DUMPNOTIFICATION", "Action : "
-          + (eAction != null ? eAction.name() : "N/A"));
+    StringBuilder trace = new StringBuilder("Notification Parameters Dump: {");
+    switch (iMessagePriority) {
+      case NORMAL:
+        trace.append("MessagePriority: NORMAL, ");
+        break;
+      case URGENT:
+        trace.append("MessagePriority: URGENT, ");
+        break;
+      case ERROR:
+        trace.append("MessagePriority: ERROR, ");
+        break;
     }
+    switch (iMediaType) {
+      case ADDRESS_DEFAULT:
+        trace.append("MediaType: ADDRESS_DEFAULT, ");
+        break;
+      case ADDRESS_COMPONENT_DEFINED:
+        trace.append("MediaType: ADDRESS_COMPONENT_DEFINED, ");
+        break;
+      case ADDRESS_BASIC_POPUP:
+        trace.append("MediaType: ADDRESS_BASIC_POPUP, ");
+        break;
+      case ADDRESS_BASIC_REMOVE:
+        trace.append("MediaType: ADDRESS_BASIC_REMOVE, ");
+        break;
+      case ADDRESS_BASIC_SILVERMAIL:
+        trace.append("MediaType: ADDRESS_BASIC_SILVERMAIL, ");
+        break;
+      case ADDRESS_BASIC_SMTP_MAIL:
+        trace.append("MediaType: ADDRESS_BASIC_SMTP_MAIL, ");
+        break;
+      case ADDRESS_BASIC_SERVER:
+        trace.append("MediaType: ADDRESS_BASIC_SERVER, ");
+        break;
+      case ADDRESS_BASIC_COMMUNICATION_USER:
+        trace.append("MediaType: ADDRESS_BASIC_COMMUNICATION_USER, ");
+        break;
+      default:
+        trace.append("MediaType: ").append(Integer.toString(iMediaType)).append(", ");
+        break;
+    }
+    trace.append("ComponentInstance: " + Integer.toString(iComponentInstance));
+    trace.append(", Title: " + sTitle);
+    trace.append(", Message: " + sMessage);
+    trace.append(", FromUserId: " + Integer.toString(iFromUserId));
+    trace.append(", FromSenderName: " + senderName);
+    trace.append(", AnswerAllowed: " + bAnswerAllowed);
+    trace.append(", SendImmediately: " + bSendImmediately);
+    trace.append(", Source: " + sSource);
+    trace.append(", SessionId: " + sSessionId);
+    trace.append(", Date: " + dDate.toString());
+    trace.append(", Action: " + (eAction != null ? eAction.name() : "N/A"));
+    trace.append("}");
+    SilverLogger.getLogger(this).info(trace.toString());
   }
 }

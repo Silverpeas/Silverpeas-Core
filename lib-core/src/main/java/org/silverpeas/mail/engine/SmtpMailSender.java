@@ -154,9 +154,6 @@ public class SmtpMailSender implements MailSender {
 
     try {
       if (smtpConfiguration.isAuthenticate()) {
-        SilverTrace.info("mail", "SmtpMailSender.send()", "root.MSG_GEN_PARAM_VALUE",
-            "Host = " + smtpConfiguration.getServer() + " Port=" + smtpConfiguration.getPort() +
-                " User=" + smtpConfiguration.getUsername());
         transport.connect(smtpConfiguration.getServer(), smtpConfiguration.getPort(),
             smtpConfiguration.getUsername(), smtpConfiguration.getPassword());
       } else {

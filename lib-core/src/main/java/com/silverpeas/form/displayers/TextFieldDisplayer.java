@@ -76,8 +76,7 @@ public class TextFieldDisplayer extends AbstractTextFieldDisplayer {
     }
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());

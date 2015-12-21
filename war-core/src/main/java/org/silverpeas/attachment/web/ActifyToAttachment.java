@@ -60,8 +60,7 @@ public class ActifyToAttachment extends HttpServlet {
 
     if (ActifyDocumentProcessor.isActifySupportEnabled()) {
       try {
-        SilverTrace.info("attachment", "ActifyToAttachment.doPost", "req=" + req.getParameter(
-            "AttachmentId"));
+
         long size = Long.parseLong(req.getParameter("FileSize"));
         String attachmentId = req.getParameter("AttachmentId");
         String logicalName = req.getParameter("LogicalName");
@@ -80,8 +79,7 @@ public class ActifyToAttachment extends HttpServlet {
           String actifyWorkingPath = ActifyDocumentProcessor.getActifyResultPath();
           String srcFile = actifyWorkingPath + File.separator + logicalName;
           String destFile = ad.getAttachmentPath();
-          SilverTrace.info("attachment", "ActifyToAttachment", "root.MSG_GEN_PARAM_VALUE",
-              "srcFile = " + srcFile + " and destFile = " + destFile);
+
           FileRepositoryManager.copyFile(srcFile, destFile);
         }
       } catch (Exception e) {

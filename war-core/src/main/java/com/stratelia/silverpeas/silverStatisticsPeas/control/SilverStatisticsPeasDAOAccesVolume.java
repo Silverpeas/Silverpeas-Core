@@ -398,9 +398,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   public static Map<String, String[]> getStatsPublicationsVentil(String dateStat,
       String filterIdGroup, String filterIdUser) throws SQLException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getStatsPublicationsVentil",
-        "root.MSG_GEN_ENTER_METHOD");
     // key=componentId, value=new String[3] {tout, groupe, user}
     Map<String, String[]> resultat = new HashMap<>();
     Map<String, String> hashTout = selectVolumeForAllComponents(dateStat);
@@ -592,10 +589,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   public static Collection<ComponentInstLight> getLastAccessedComponentsUser(String currentUserId,
       int nbObjects) throws SQLException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOAccessVolume.getLastAccessedComponentsUser",
-        "root.MSG_GEN_ENTER_METHOD");
-
     Connection myCon = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;

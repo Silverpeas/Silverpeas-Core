@@ -51,8 +51,7 @@ public abstract class AbstractIndexer {
     if (currentSpaceId == null) {
       // index whole application
       String[] spaceIds = OrganizationControllerProvider.getOrganisationController().getAllSpaceIds();
-      SilverTrace.info(silvertraceModule, "AbstractIndexer.index()",
-          "applicationIndexer.MSG_INDEXING_ALL_SPACES");
+
       for (String spaceId : spaceIds) {
         indexSpace(spaceId);
       }
@@ -76,8 +75,7 @@ public abstract class AbstractIndexer {
    */
   public void indexSpace(String spaceId) throws Exception {
     String currentSpaceId = spaceId;
-    SilverTrace.info(silvertraceModule, "AbstractIndexer.indexSpace()",
-        "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + currentSpaceId);
+
 
     if (currentSpaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
       currentSpaceId = currentSpaceId.substring(2);
@@ -100,8 +98,7 @@ public abstract class AbstractIndexer {
       indexSpace(subSpaceId);
     }
 
-    SilverTrace.info(silvertraceModule, "AbstractIndexer.indexSpace()",
-        "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + currentSpaceId);
+
   }
 
   public void indexPersonalComponents() {

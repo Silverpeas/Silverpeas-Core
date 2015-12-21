@@ -56,12 +56,10 @@ public class NodeInstanciator extends SQLRequest {
 
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "spaceId = " + spaceId + ", componentId = " + componentId);
+
     deleteNodes(con, componentId);
     deleteFavorites(con, componentId);
-    SilverTrace.info("node", "NodeInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD",
-        "spaceId = " + spaceId + ", componentId = " + componentId);
+
   }
 
   private void deleteNodes(Connection connection, String componentId) throws InstanciationException {

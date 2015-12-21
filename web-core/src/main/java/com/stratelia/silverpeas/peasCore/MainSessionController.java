@@ -99,23 +99,20 @@ public class MainSessionController implements Clipboard {
   }
 
   public void setAppModeMaintenance(boolean mode) {
-    SilverTrace.info("peasCore", "MainSessionController.setAppModeMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "mode=" + String.valueOf(mode));
+
     appInMaintenance = mode;
   }
 
   public boolean isSpaceInMaintenance(String spaceId) {
     spaceId = checkSpaceId(spaceId);
     boolean inMaintenance = spacesInMaintenance.contains(spaceId);
-    SilverTrace.info("peasCore", "MainSessionController.isSpaceInMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + ", maintenance = " + inMaintenance);
+
     return inMaintenance;
   }
 
   public void setSpaceModeMaintenance(String spaceId, boolean mode) {
     spaceId = checkSpaceId(spaceId);
-    SilverTrace.info("peasCore", "MainSessionController.setSpaceModeMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + " mode=" + mode);
+
     if (mode) {
       if (!spacesInMaintenance.contains(spaceId)) {
         spacesInMaintenance.add(spaceId);
@@ -155,9 +152,6 @@ public class MainSessionController implements Clipboard {
    * parameter authenticationKey replaced by sUserId
    */
   public MainSessionController(String authenticationKey, String sessionId) throws Exception {
-    SilverTrace.info("peasCore",
-        "MainSessionController.constructor()", "root.MSG_GEN_PARAM_VALUE",
-        "authenticationKey = " + authenticationKey + " sessionId=" + sessionId);
     try {
       // Identify the user
       this.userId = getAdminService().identify(authenticationKey, sessionId, isAppInMaintenance());
@@ -341,9 +335,6 @@ public class MainSessionController implements Clipboard {
    * Return the components ids available for the current user
    */
   public String[] getUserAvailComponentIds() {
-    SilverTrace.info("peasCore",
-        "MainSessionController.getUserAvailComponentIds",
-        "root.MSG_GEN_ENTER_METHOD");
     try {
       return getAdminService().getAvailCompoIds(getUserId());
     } catch (Exception e) {
@@ -358,8 +349,7 @@ public class MainSessionController implements Clipboard {
    * Return the spaces ids available for the current user
    */
   public String[] getUserAvailSpaceIds() {
-    SilverTrace.info("peasCore", "MainSessionController.getUserAvailSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return getAdminService().getClientSpaceIds(getAdminService().getUserSpaceIds(userId));
     } catch (Exception e) {
@@ -374,9 +364,6 @@ public class MainSessionController implements Clipboard {
    * Return the spaces ids manageable by the current user
    */
   public String[] getUserManageableSpaceIds() {
-    SilverTrace.info("peasCore",
-        "MainSessionController.getUserManageableSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
     try {
       UserDetail user = getAdminService().getUserDetail(userId);
       if (user.isAccessAdmin() || userId.equals("0")) {
@@ -424,9 +411,6 @@ public class MainSessionController implements Clipboard {
   }
 
   public List<String> getUserManageableGroupIds() {
-    SilverTrace.info("peasCore",
-        "MainSessionController.getUserManageableGroupIds",
-        "root.MSG_GEN_ENTER_METHOD");
     try {
       return getAdminService().getUserManageableGroupIds(userId);
     } catch (Exception e) {

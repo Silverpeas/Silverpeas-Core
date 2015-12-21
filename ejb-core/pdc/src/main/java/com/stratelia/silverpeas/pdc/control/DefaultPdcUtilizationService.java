@@ -361,14 +361,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService {
   @Override
   public void updateOrDeleteBaseValue(Connection con, int baseValueToUpdate, int newBaseValue,
       int axisId, String treeId) throws PdcException {
-    SilverTrace.info("Pdc", "DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-        "root.MSG_GEN_PARAM_VALUE", "baseValueToUpdate = " + baseValueToUpdate);
-    SilverTrace.info("Pdc", "DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-        "root.MSG_GEN_PARAM_VALUE", "newBaseValue = " + newBaseValue);
-    SilverTrace.info("Pdc", "DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-        "root.MSG_GEN_PARAM_VALUE", "axisId = " + axisId);
-    SilverTrace.info("Pdc", "DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-        "root.MSG_GEN_PARAM_VALUE", "treeId = " + treeId);
+
+
+
+
 
     List<UsedAxis> usedAxisList = getUsedAxisByAxisId(con, axisId);
     // pour chaque instance, on vérifie que la modification est possible
@@ -378,8 +374,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService {
     for (UsedAxis anUsedAxisList : usedAxisList) {
       usedAxis = anUsedAxisList;
       instanceId = usedAxis.getInstanceId();
-      SilverTrace.info("Pdc", "DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-          "root.MSG_GEN_PARAM_VALUE", "instanceId = " + instanceId);
+
 
       if (usedAxis.getBaseValue() == baseValueToUpdate) {
         try {
@@ -392,8 +387,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService {
               SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_USED_AXIS", e);
         }
 
-        SilverTrace.info("Pdc", "DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-            "root.MSG_GEN_PARAM_VALUE", "updateAllowed = " + updateAllowed);
+
 
         if (updateAllowed) {
           updateBaseValue(con, baseValueToUpdate, newBaseValue, axisId, treeId,

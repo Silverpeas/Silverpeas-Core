@@ -122,9 +122,6 @@ public class JobSearchPeasRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("jobSearchPeas",
-        "JobSearchPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 

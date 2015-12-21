@@ -211,8 +211,7 @@ public class WAIndexSearcher {
           }
         }
       }
-      SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
-          "Query = " + booleanQuery.toString());
+
 
       // date range clauses are passed in the filter to optimize search performances
       // but the query cannot be empty : if so, then pass date range in the query
@@ -273,18 +272,9 @@ public class WAIndexSearcher {
 
       QueryParser queryParser = new QueryParser(Version.LUCENE_36, searchField, analyzer);
       queryParser.setDefaultOperator(defaultOperand);
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery",
-          "root.MSG_GEN_PARAM_VALUE",
-          "defaultOperand = " + defaultOperand);
       parsedQuery = queryParser.parse(query.getQuery());
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery",
-          "root.MSG_GEN_PARAM_VALUE",
-          "getOperator() = " + queryParser.getDefaultOperator());
     }
 
-    SilverTrace
-        .info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
-        "parsedQuery = " + parsedQuery.toString());
     return parsedQuery;
   }
 
@@ -308,8 +298,7 @@ public class WAIndexSearcher {
         booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
       }
 
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getXMLQuery",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = " + booleanQuery.toString());
+
       return booleanQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
       throw new org.silverpeas.search.searchEngine.model.ParseException("WAIndexSearcher", e);
@@ -336,8 +325,7 @@ public class WAIndexSearcher {
         booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
       }
 
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getMultiFieldQuery",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = " + booleanQuery.toString());
+
       return booleanQuery;
     } catch (ParseException e) {
       throw new org.silverpeas.search.searchEngine.model.ParseException("WAIndexSearcher", e);

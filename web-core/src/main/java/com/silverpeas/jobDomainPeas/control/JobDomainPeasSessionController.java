@@ -197,8 +197,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       HttpServletRequest req) throws JobDomainPeasException, JobDomainPeasTrappedException {
     UserDetail theNewUser = new UserDetail();
 
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createUser()",
-        "root.MSG_GEN_ENTER_METHOD", userRequestData.toString());
+
 
     String existingUser =
         m_AdminCtrl.getUserIdByLoginAndDomain(userRequestData.getLogin(), targetDomainId);
@@ -852,8 +851,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public void modifyUser(UserRequestData userRequestData, HashMap<String, String> properties,
       HttpServletRequest req)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD", userRequestData.toString());
+
 
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
@@ -890,8 +888,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void modifySynchronizedUser(UserRequestData userRequestData)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifySynchronizedUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + userRequestData.getId());
+
 
     UserDetail theModifiedUser = m_AdminCtrl.getUserDetail(userRequestData.getId());
     if (theModifiedUser == null) {
@@ -916,10 +913,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public void modifyUserFull(UserRequestData userRequestData,
       HashMap<String, String> properties)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyUserFull()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + userRequestData.getId() + " userAccessLevel=" +
-        userRequestData.getAccessLevel());
-
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
       throw new JobDomainPeasException(
@@ -967,10 +960,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void deleteUser(String idUser) throws JobDomainPeasException {
-
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.deleteUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
 
     UserDetail user = getUserDetail(idUser);
 
@@ -1043,8 +1032,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void importUser(String userLogin) throws JobDomainPeasException {
 
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.importUser()",
-        "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin);
+
 
     String idRet = m_AdminCtrl.synchronizeImportUser(targetDomainId, userLogin);
     if (!StringUtil.isDefined(idRet)) {
@@ -1058,9 +1046,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void importUsers(String[] specificIds) throws JobDomainPeasException {
     for (int i = 0; specificIds != null && i < specificIds.length; i++) {
-      SilverTrace.info("jobDomainPeas",
-          "JobDomainPeasSessionController.importUsers()",
-          "root.MSG_GEN_ENTER_METHOD", "specificId=" + specificIds[i]);
       m_AdminCtrl.synchronizeImportUser(targetDomainId, specificIds[i]);
     }
     refresh();
@@ -1068,8 +1053,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public List<UserDetail> searchUsers(Hashtable<String, String> query)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.searchUsers()",
-        "root.MSG_GEN_ENTER_METHOD", "query=" + query.toString());
+
     queryToImport = query;
     usersToImport = m_AdminCtrl.searchUsers(targetDomainId, query);
     return usersToImport;
@@ -1088,8 +1072,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void synchroUser(String idUser) throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.synchroUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
+
     String idRet = m_AdminCtrl.synchronizeUser(idUser);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.synchroUser()",
@@ -1100,8 +1083,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void unsynchroUser(String idUser) throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.unsynchroUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
+
 
     String idRet = m_AdminCtrl.synchronizeRemoveUser(idUser);
     if (!StringUtil.isDefined(idRet)) {
@@ -1324,9 +1306,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public boolean createGroup(String idParent, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
     Group theNewGroup = new Group();
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createGroup()",
-        "root.MSG_GEN_ENTER_METHOD", "ParentId=" + idParent + " Name="
-        + groupName + " Desc=" + groupDescription);
     theNewGroup.setId("-1");
     if (StringUtil.isDefined(targetDomainId)
         && !"-1".equals(targetDomainId)) {
@@ -1347,8 +1326,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean modifyGroup(String idGroup, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyGroup()",
-        "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup + " Desc=" + groupDescription);
+
 
     Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
@@ -1370,8 +1348,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean updateGroupSubUsers(String idGroup, String[] userIds)
       throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.updateGroupSubUsers()",
-        "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
+
 
     Group theModifiedGroup = m_AdminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
@@ -1391,8 +1368,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public boolean deleteGroup(String idGroup) throws JobDomainPeasException {
     boolean haveToRefreshDomain = isGroupRoot(idGroup);
 
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.deleteGroup()",
-        "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
+
 
     String idRet = m_AdminCtrl.deleteGroupById(idGroup);
     if (!StringUtil.isDefined(idRet)) {
@@ -1405,8 +1381,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean synchroGroup(String idGroup) throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.synchroGroup()",
-        "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
+
 
     String idRet = m_AdminCtrl.synchronizeGroup(idGroup);
     if (!StringUtil.isDefined(idRet)) {
@@ -1420,8 +1395,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public boolean unsynchroGroup(String idGroup) throws JobDomainPeasException {
     boolean haveToRefreshDomain = isGroupRoot(idGroup);
 
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.unsynchroGroup()",
-        "root.MSG_GEN_ENTER_METHOD", "GroupId=" + idGroup);
+
 
     String idRet = m_AdminCtrl.synchronizeRemoveGroup(idGroup);
     if (!StringUtil.isDefined(idRet)) {
@@ -1434,8 +1408,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean importGroup(String groupName) throws JobDomainPeasException {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.importGroup()",
-        "root.MSG_GEN_ENTER_METHOD", "groupName=" + groupName);
+
 
     String idRet = m_AdminCtrl.synchronizeImportGroup(targetDomainId,
         groupName);
@@ -1620,8 +1593,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       String domainProperties, String domainAuthentication, String silverpeasServerURL,
       String domainTimeStamp) throws JobDomainPeasException, JobDomainPeasTrappedException {
 
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.createDomain()",
-        "root.MSG_GEN_ENTER_METHOD", "domainName=" + domainName);
+
 
     String newDomainId = null;
 
@@ -1730,9 +1702,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           "JobDomainPeasSessionController.modifyDomain()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
     }
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.modifyDomain()",
-        "root.MSG_GEN_ENTER_METHOD", "domainName=" + domainName);
     theNewDomain.setName(domainName);
     theNewDomain.setDescription(domainDescription);
     theNewDomain.setDriverClassName(domainDriver);
@@ -1778,9 +1747,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           "JobDomainPeasSessionController.modifySQLDomain()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
     }
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.modifySQLDomain()",
-        "root.MSG_GEN_ENTER_METHOD", "domainName=" + domainName);
     theNewDomain.setName(domainName);
     theNewDomain.setDescription(domainDescription);
     theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
@@ -1951,11 +1917,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   // Synchro Management
   // ------------------
   public void synchroSQLDomain() {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.synchroSQLDomain()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-        + targetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_INFO);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -1963,22 +1924,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       m_ErrorOccured = null;
       m_SynchroReport = "";
       m_theThread.startTheThread();
-      SilverTrace.info("jobDomainPeas",
-          "JobDomainPeasSessionController.synchroSQLDomain()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "------------THREAD SYNCHRO SQL DOMAIN LANCE-----------");
-    } else {
-      SilverTrace.info("jobDomainPeas",
-          "JobDomainPeasSessionController.synchroSQLDomain()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "------------!!!! SYNCHRO DOMAIN SQL : DEUXIEME APPEL !!!!!-----------");
     }
   }
 
   protected String synchronizeSilverpeasViaWebService() {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.synchroSQLDomain()",
-        "root.MSG_GEN_PARAM_VALUE", "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-        + targetDomainId);
     StringBuilder sReport = new StringBuilder();
     SynchroUserWebServiceItf synchroUserWebService = null;
     try {
@@ -2081,11 +2030,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void synchroDomain(int traceLevel) {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.synchroDomain()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "------------SYNCHRO DOMAIN APPELE----------- domainId="
-        + targetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(traceLevel);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -2093,15 +2037,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       m_ErrorOccured = null;
       m_SynchroReport = "";
       m_theThread.startTheThread();
-      SilverTrace.info("jobDomainPeas",
-          "JobDomainPeasSessionController.synchroDomain()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "------------THREAD SYNCHRO DOMAIN LANCE-----------");
-    } else {
-      SilverTrace.info("jobDomainPeas",
-          "JobDomainPeasSessionController.synchroDomain()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "------------!!!! SYNCHRO DOMAIN : DEUXIEME APPEL !!!!!-----------");
     }
   }
 
@@ -2155,9 +2090,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * Get list of selected users Ids
    */
   public List<String> getListSelectedUsers() {
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.getListUsersSelected()", "",
-        "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
-        + listSelectedUsers.toString());
     return listSelectedUsers;
   }
 
@@ -2167,9 +2099,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void setListSelectedUsers(List<String> list) {
     listSelectedUsers = list;
-    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.setListSelectedUsers()", "",
-        "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
-        + listSelectedUsers.toString());
   }
 
   public void setIndexOfFirstItemToDisplay(String index) {

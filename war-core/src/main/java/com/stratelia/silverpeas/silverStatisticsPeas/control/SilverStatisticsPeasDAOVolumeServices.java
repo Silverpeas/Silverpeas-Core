@@ -50,9 +50,6 @@ public class SilverStatisticsPeasDAOVolumeServices {
    * @throws SQLException
    */
   public static Collection[] getStatsInstancesServices() throws SQLException, UtilException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOVolumeServices.getStatsInstancesServices",
-        "root.MSG_GEN_ENTER_METHOD");
     String selectQuery =
         " SELECT componentname, count(*) AS nbcomponent FROM st_componentinstance GROUP BY "
         + "componentname ORDER BY nbcomponent DESC";

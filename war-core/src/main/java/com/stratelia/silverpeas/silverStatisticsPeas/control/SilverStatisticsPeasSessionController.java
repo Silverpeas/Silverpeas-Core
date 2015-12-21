@@ -1449,9 +1449,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * This method allow user to search over multiple component selection
    */
   public List<String> buildCustomComponentListWhereToSearch() {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasSessionController.buildComponentListWhereToSearch()",
-        "root.MSG_GEN_ENTER_METHOD");
     List<String> componentList = new ArrayList<String>();
     String[] allowedComponentIds = getUserAvailComponentIds();
     // Il n'y a pas de restriction sur un espace particulier

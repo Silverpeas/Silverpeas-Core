@@ -198,8 +198,7 @@ public class WysiwygManager {
       Iterator<File> i = listPages.iterator();
       int nbPages = listPages.size();
       String[][] pages = new String[nbPages][2];
-      SilverTrace.info("wysiwyg", "WysiwygController.getWebsitePages()", "root.MSG_GEN_PARAM_VALUE",
-          "nbPages=" + nbPages + " path=" + path);
+
       File page;
       for (int j = 0; j < nbPages; j++) {
         page = i.next();
@@ -241,8 +240,7 @@ public class WysiwygManager {
    * @return the path for the nodes.
    */
   String finNode2(String path, String componentId) {
-    SilverTrace.info("wysiwyg", "WysiwygController.finNode2()", "root.MSG_GEN_PARAM_VALUE",
-        "path=" + path);
+
     String finNode = doubleAntiSlash(path);
     finNode = finNode(finNode, componentId);
     int index = finNode.indexOf('\\');
@@ -273,8 +271,7 @@ public class WysiwygManager {
       } else if (pathEnd.contains("\\")) {
         index = pathEnd.indexOf('\\');
       }
-      SilverTrace.info("wysiwyg", "WysiwygController.getNodePath()", "root.MSG_GEN_PARAM_VALUE",
-          "pathEnd = " + pathEnd);
+
 
       if (index == -1) {
         return path;
@@ -754,8 +751,7 @@ public class WysiwygManager {
   public void updateWebsite(String filePath, String fileName, String fileContent)
       throws WysiwygException {
     checkPath(filePath);
-    SilverTrace.info("wysiwyg", "WysiwygController.updateWebsite()", "root.MSG_GEN_PARAM_VALUE",
-        "filePath=" + filePath + " fileName=" + fileName);
+
     createFile(filePath, fileName, fileContent);
   }
 
@@ -769,8 +765,7 @@ public class WysiwygManager {
   protected File createFile(String filePath, String fileName, String fileContent)
       throws WysiwygException {
     checkPath(filePath);
-    SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_ENTER_METHOD",
-        "filePath=" + filePath + " fileName=" + fileName);
+
     FileFolderManager.createFile(filePath, fileName, fileContent);
     File directory = new File(filePath);
     return FileUtils.getFile(directory, fileName);

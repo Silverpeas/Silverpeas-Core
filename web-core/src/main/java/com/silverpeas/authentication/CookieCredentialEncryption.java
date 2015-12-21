@@ -39,8 +39,7 @@ public class CookieCredentialEncryption implements CredentialEncryption {
    * Simple encode for cookie value
    */
   public String encode(String stringToEncode) {
-    SilverTrace.info("authentication", "CustomCredentialEncryption.encode()",
-        "root.MSG_PARAM_ENTER_METHOD", "stringToEncode=" + stringToEncode);
+
     StringBuilder hashString = new StringBuilder();
     char[] uniqueKey = stringToEncode.toCharArray();
     for (char anUniqueKey : uniqueKey) {
@@ -49,8 +48,7 @@ public class CookieCredentialEncryption implements CredentialEncryption {
       hashString.append(lg).append(carInt);
     }
     hashString.reverse();
-    SilverTrace.info("authentication", "CustomCredentialEncryption.encode()",
-        "root.MSG_PARAM_EXIT_METHOD", "encodedString=" + hashString.toString());
+
     return hashString.toString();
   }
 
@@ -59,8 +57,7 @@ public class CookieCredentialEncryption implements CredentialEncryption {
    * @param encodedText : the text to decode.
    */
   public String decode(String encodedText) {
-    SilverTrace.info("authentication", "CustomCredentialEncryption.decode()",
-        "root.MSG_PARAM_ENTER_METHOD", "encodedText=" + encodedText);
+
     int pos = 0;
     String reverseEncodedText = new StringBuffer(encodedText).reverse()
         .toString();
@@ -71,8 +68,7 @@ public class CookieCredentialEncryption implements CredentialEncryption {
       pos = pos + lg;
       hashString.append((char) (Integer.parseInt(car) / 3));
     }
-    SilverTrace.info("authentication", "CustomCredentialEncryption.decode()",
-        "root.MSG_PARAM_EXIT_METHOD", "decodedString=" + hashString.toString());
+
     return hashString.toString();
   }
 
@@ -83,8 +79,7 @@ public class CookieCredentialEncryption implements CredentialEncryption {
    * @param extraCrypt : add simple encode (see decode(String))
    */
   public String decode(String str, String key, boolean extraCrypt) {
-    // SilverTrace.info("authentication", "CustomCredentialEncryption.decode1()",
-    // "root.MSG_PARAM_ENTER_VALUE", "str à décoder="+str+" clé="+key);
+    //
     String asciiChar_string = "";
     for (int i = 0; i < key.length(); i++) {
       int asciiCode = key.charAt(i);

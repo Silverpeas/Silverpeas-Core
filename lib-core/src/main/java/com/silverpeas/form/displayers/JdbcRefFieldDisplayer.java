@@ -30,7 +30,6 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcRefField;
 import org.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.IMG;
 import org.apache.ecs.html.Input;
+import org.silverpeas.util.logging.SilverLogger;
 
 public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> {
 
@@ -53,8 +53,7 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
     String fieldName = template.getFieldName();
 
     if (!JdbcRefField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "JdbcRefFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          JdbcRefField.TYPE);
+
     }
 
     ElementContainer container = new ElementContainer();
@@ -132,9 +131,8 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer<JdbcRefField> 
     String label = template.getLabel(language);
 
     if (!template.getTypeName().equals(JdbcRefField.TYPE)) {
-      SilverTrace.info(
-          "form", "JdbcRefFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          JdbcRefField.TYPE);
+      SilverLogger.getLogger(this).info("{0} isn't of the correct type {1}",
+          template.getFieldName(), JdbcRefField.TYPE);
     }
 
     if (template.isMandatory()) {

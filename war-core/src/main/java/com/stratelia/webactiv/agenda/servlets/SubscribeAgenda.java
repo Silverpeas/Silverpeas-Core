@@ -60,15 +60,13 @@ public class SubscribeAgenda extends HttpServlet {
 
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("agenda", "SubscribeAgenda.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
+
     String userId = getUserId(req);
     String login = getLogin(req);
     String password = getPassword(req);
     FileInputStream fs = null;
     try {
-      SilverTrace.info("agenda", "SubscribeAgenda.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
+
 
       // Check login/pwd must be a identified user
       UserFull user = adminController.getUserFull(userId);
@@ -98,8 +96,7 @@ public class SubscribeAgenda extends HttpServlet {
     } finally {
       IOUtils.closeQuietly(fs);
     }
-    SilverTrace.info("agenda", "SubscribeAgenda.doPost",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   private String getUserId(HttpServletRequest request) {

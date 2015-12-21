@@ -80,8 +80,7 @@ public abstract class RssServlet<T> extends HttpServlet {
     // rechercher si le composant a bien le flux RSS autorisé
     if (isComponentRss(instanceId)) {
       try {
-        SilverTrace.info("util", "RssServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
-            "InstanceId = " + instanceId);
+
 
         // Vérification que le user a droit d'accès au composant
         UserFull user = adminController.getUserFull(userId);

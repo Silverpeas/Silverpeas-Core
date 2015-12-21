@@ -77,9 +77,6 @@ public class WebConnectionsRequestRouter extends
       HttpRequest request) {
     String destination = "";
     String rootDest = "/webConnections/jsp/";
-    SilverTrace.info("webConnections", "WebConnectionsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + webConnectionsSC.getUserId() + " Function=" +
-        function);
 
     try {
       if (function.startsWith("Main")) {
@@ -155,8 +152,7 @@ public class WebConnectionsRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("webConnections", "WebConnectionsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 

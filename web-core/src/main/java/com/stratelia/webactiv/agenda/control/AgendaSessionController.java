@@ -1515,8 +1515,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws ParseException
    */
   public void changeDayOfWeekStatus(String year, String month, String day) throws RemoteException {
-    SilverTrace.info("agenda", "AgendaSessionController.changeDayOfWeekStatus()",
-        "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month + ", day=" + day);
+
 
     int iMonth = Integer.parseInt(month);
 
@@ -1549,8 +1548,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     currentCalendar.set(Calendar.YEAR, Integer.parseInt(year));
     currentCalendar.set(Calendar.MONTH, iMonth);
     currentCalendar.set(Calendar.DATE, 1);
-    SilverTrace.info("agenda", "AgendaSessionController.changeDayOfWeekStatus()",
-        "root.MSG_GEN_EXIT_METHOD", "year=" + year + ", month=" + month + ", day=" + day);
+
   }
 
   /**

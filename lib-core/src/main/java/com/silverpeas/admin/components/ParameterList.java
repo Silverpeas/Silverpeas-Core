@@ -21,8 +21,7 @@ public class ParameterList extends ArrayList<Parameter> {
       Parameter parameter = getParameterByName(parameterToMerge.getName());
       if (parameter == null) {
         // Le parametre existe en base mais plus dans le xmlComponent
-        SilverTrace.info("admin", "ParameterList.setValues", "root.MSG_GEN_PARAM_VALUE",
-            "dbParameter '" + parameterToMerge.getName() + "' is no more use !");
+
       } else {
         parameter.setValue(parameterToMerge.getValue());
       }

@@ -62,8 +62,7 @@ public final class SyncEngine {
    */
   public final String synchronize(File localCalendar, URL remoteCalendar,
       String username, String password) throws Exception {
-    SilverTrace.info("agenda", "SyncEngine.synchronize()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     if (username == null || username.length() == 0) {
       return AUTHENT_LOGIN_FAILED;
@@ -85,8 +84,7 @@ public final class SyncEngine {
       // test if rss feed of file feed
       if (feedBytes != null) {
         if (isRssFeed(feedBytes, remoteCalendar)) {
-          SilverTrace.info("agenda", "SyncEngine.synchronize()",
-              "root.MSG_GEN_PARAM_VALUE", "Feed RSS");
+
           // convert rss feed in SilverpeasCalendar File
           CalendarOutputter outputter = new CalendarOutputter();
           SyndFeed feed = FeedUtilities.parseFeed(feedBytes);
@@ -94,8 +92,7 @@ public final class SyncEngine {
           outputter.output(feedCalendar, fileOutput);
         } else // File feed
         {
-          SilverTrace.info("agenda", "SyncEngine.synchronize()",
-              "root.MSG_GEN_PARAM_VALUE", "Feed File");
+
           fileOutput.write(StringUtils.decodeToString(feedBytes,
               ImportIcalManager.charset));
           fileOutput.flush();
@@ -110,8 +107,7 @@ public final class SyncEngine {
         fileOutput.close();
       }
     }
-    SilverTrace.info("agenda", "SyncEngine.synchronize()",
-        "root.MSG_GEN_EXIT_METHOD");
+
     return returnCode;
   }
 

@@ -131,8 +131,7 @@ public class ClassifyEngine {
             nNextAvailableAxis, nLogicalAxisId);
 
         // Execute the insertion
-        SilverTrace.info("classifyEngine", "ClassifyEngine.registerAxis",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -169,8 +168,7 @@ public class ClassifyEngine {
 
       synchronized (registeredAxis) {
         // Execute the removal
-        SilverTrace.info("classifyEngine", "ClassifyEngine.unregisterAxis",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -211,8 +209,7 @@ public class ClassifyEngine {
       String sSQLStatement = SQLStatement.buildLoadRegisteredAxisStatement();
 
       // Execute the insertion
-      SilverTrace.info("classifyEngine", "ClassifyEngine.loadRegisteredAxis",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       while (resSet.next()) {
@@ -316,8 +313,7 @@ public class ClassifyEngine {
       sSQLStatement = SQLStatement.buildVerifyStatement(nSilverObjectId, position);
 
       // Execute the verification
-      SilverTrace.info("classifyEngine", "ClassifyEngine.classifySilverObject",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       rs = prepStmt.executeQuery();
       int newPositionId = -1;
@@ -367,8 +363,7 @@ public class ClassifyEngine {
           newPositionId);
 
       // Execute the insertion
-      SilverTrace.info("classifyEngine", "ClassifyEngine.classifySilverObject",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -417,9 +412,6 @@ public class ClassifyEngine {
           nSilverObjectId, position);
 
       // Execute the removal
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.unclassifySilverObjectByPosition",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -452,9 +444,6 @@ public class ClassifyEngine {
       String sSQLStatement = SQLStatement.buildRemoveSilverObjectStatement(nSilverObjectId);
 
       // Execute the removal
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.unclassifySilverObject", "root.MSG_GEN_PARAM_VALUE",
-          "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -489,9 +478,6 @@ public class ClassifyEngine {
       String sSQLStatement = SQLStatement.buildRemoveByPositionIdStatement(nPositionId);
 
       // Execute the removal
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.unclassifySilverObjectByPositionId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -540,9 +526,6 @@ public class ClassifyEngine {
       String sSQLStatement = SQLStatement.buildUpdateByPositionIdStatement(newPosition);
 
       // Execute the update
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.updateSilverObjectPosition",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -590,9 +573,6 @@ public class ClassifyEngine {
             value, nSilverObjectId);
 
         // Execute the update
-        SilverTrace.info("classifyEngine",
-            "ClassifyEngine.updateSilverObjectPositions__SEA",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -653,9 +633,6 @@ public class ClassifyEngine {
           recursiveSearch, visibilitySensitive);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.findSilverOjectByCriterias",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
 
       // works on dates
@@ -707,9 +684,6 @@ public class ClassifyEngine {
           alPositionids);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getSilverContentIdsByPositionIds",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
       // Fetch the results and convert them in Positions
@@ -749,8 +723,7 @@ public class ClassifyEngine {
       String sSQLStatement = SQLStatement.buildFindBySilverObjectIdStatement(nSilverObjectId);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine", "ClassifyEngine.findPositionsBySilverOjectId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -794,9 +767,6 @@ public class ClassifyEngine {
       String sSQLStatement = SQLStatement.buildRemoveAllPositionValuesStatement(nAxisId);
 
       // Execute the removal
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.removeAllPositionValuesOnAxis",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -824,8 +794,7 @@ public class ClassifyEngine {
     String sSQLStatement = SQLStatement.buildGetEmptyPositionsStatement(nbMaxAxis);
     ArrayList<Integer> alDeletedPositionIds = new ArrayList<Integer>();
     // Execute the query
-    SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
-        "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     try {
@@ -853,8 +822,7 @@ public class ClassifyEngine {
       sSQLStatement = SQLStatement.buildRemoveEmptyPositionsStatement(nbMaxAxis);
 
       // Execute the removal
-      SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -916,9 +884,6 @@ public class ClassifyEngine {
             oldValue.get(nIndex), newValue.get(nIndex));
 
         // Execute the change
-        SilverTrace.info("classifyEngine",
-            "ClassifyEngine.replaceValuesOnAxis", "root.MSG_GEN_PARAM_VALUE",
-            "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         prepStmt.executeUpdate();
 
@@ -928,9 +893,6 @@ public class ClassifyEngine {
       // Remove empty positions coming from the above change
       String sSQLStatement = SQLStatement.buildRemoveEmptyPositionsStatement(nbMaxAxis);
       // Execute the deletion of empty positions
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.replaceValuesOnAxis", "root.MSG_GEN_PARAM_VALUE",
-          "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
 
@@ -1042,17 +1004,13 @@ public class ClassifyEngine {
         alCriterias, nAxisId, todayFormatted);
 
     // Execute the finding
-    SilverTrace.info("classifyEngine", "ClassifyEngine.getSinglePertinentAxis",
-        "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
     PertinentAxis pAxis = null;
     try {
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getSinglePertinentAxis", "root.MSG_GEN_PARAM_VALUE",
-          "Query executed !");
       // Fetch the results
       pAxis = new PertinentAxis();
       pAxis.setAxisId(this.getLogicalAxisId(nAxisId));
@@ -1127,9 +1085,6 @@ public class ClassifyEngine {
       List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
       JoinStatement joinStatementAllPositions, String todayFormatted)
       throws SQLException, ClassifyEngineException {
-    SilverTrace.info("classifyEngine",
-        "ClassifyEngine.getSinglePertinentAxisByJoin",
-        "root.MSG_GEN_ENTER_METHOD", "axisId = " + nAxisId);
     boolean bCloseConnection = false;
 
     PreparedStatement prepStmt = null;
@@ -1163,14 +1118,8 @@ public class ClassifyEngine {
       PertinentAxis pertinentAxis = m_hSinglePertinentAxis.get(sSQLStatement);
       if (pertinentAxis == null) {
         // Execute the finding
-        SilverTrace.info("classifyEngine",
-            "ClassifyEngine.getSinglePertinentAxisByJoin",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
         prepStmt = connection.prepareStatement(sSQLStatement);
         resSet = prepStmt.executeQuery();
-        SilverTrace.info("classifyEngine",
-            "ClassifyEngine.getSinglePertinentAxisByJoin",
-            "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
         // Fetch the results
         pertinentAxis = new PertinentAxis();
@@ -1197,9 +1146,6 @@ public class ClassifyEngine {
       if (bCloseConnection) {
         DBUtil.close(connection);
       }
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getSinglePertinentAxisByJoin",
-          "root.MSG_GEN_EXIT_METHOD");
     }
   }
 
@@ -1210,8 +1156,7 @@ public class ClassifyEngine {
   public List<PertinentValue> getPertinentValues(List<? extends Criteria> alGivenCriterias,
       int nLogicalAxisId)
       throws ClassifyEngineException {
-    SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentValues",
-        "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
+
 
     Connection connection = null;
 
@@ -1238,8 +1183,7 @@ public class ClassifyEngine {
           alCriterias, this.getPhysicalAxisId(nLogicalAxisId), today);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentValues",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -1272,9 +1216,6 @@ public class ClassifyEngine {
   public List<PertinentValue> getPertinentValuesByJoin(List<? extends Criteria> alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
       throws ClassifyEngineException {
-    SilverTrace.info("classifyEngine",
-        "ClassifyEngine.getPertinentValuesByJoin", "root.MSG_GEN_ENTER_METHOD",
-        "nLogicalAxisId = " + nLogicalAxisId);
     Connection connection = null;
 
     // Check the minimum required
@@ -1301,14 +1242,8 @@ public class ClassifyEngine {
           today);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getPertinentValuesByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getPertinentValuesByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "Query executed !");
 
       // Fetch the results
       ArrayList<PertinentValue> alPertinentValues = new ArrayList<PertinentValue>();
@@ -1339,9 +1274,6 @@ public class ClassifyEngine {
   public List<ObjectValuePair> getObjectValuePairsByJoin(List<? extends Criteria> alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
       throws ClassifyEngineException {
-    SilverTrace.info("classifyEngine",
-        "ClassifyEngine.getObjectValuePairsByJoin",
-        "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
     Connection connection = null;
 
     // Check the minimum required
@@ -1369,15 +1301,8 @@ public class ClassifyEngine {
           today, true);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getObjectValuePairsByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.getObjectValuePairsByJoin",
-          "root.MSG_GEN_PARAM_VALUE", "Query executed !");
-
       // Fetch the results
       List<ObjectValuePair> objectValuePairs = new ArrayList<ObjectValuePair>();
       while (resSet.next()) {
@@ -1407,8 +1332,7 @@ public class ClassifyEngine {
    */
   public List<Integer> getPertinentAxisByInstanceIds(List<String> instanceIds)
       throws ClassifyEngineException {
-    SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentAxisByInstanceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     if (instanceIds == null || instanceIds.isEmpty()) {
       return new ArrayList<Integer>();

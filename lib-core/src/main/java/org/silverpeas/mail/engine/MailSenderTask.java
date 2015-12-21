@@ -104,8 +104,7 @@ public class MailSenderTask implements Runnable {
    */
   @Override
   public void run() {
-    SilverTrace.info("mailSenderEngine", "MailSenderThread",
-        "mailSenderEngine.INFO_STARTS_MAIL_SENDING_THREAD");
+
 
     Request currentRequest = nextRequest();
 
@@ -129,8 +128,7 @@ public class MailSenderTask implements Runnable {
       currentRequest = nextRequest();
     }
 
-    SilverTrace.info("mailSenderEngine", "MailSenderThread",
-        "mailSenderEngine.INFO_STOPS_MAIL_SENDING_THREAD");
+
   }
 
   /**
@@ -141,8 +139,7 @@ public class MailSenderTask implements Runnable {
     synchronized (requestList) {
       final Request nextRequest;
       if (!requestList.isEmpty()) {
-        SilverTrace.info("mailSenderEngine", "MailSenderThread", "root.MSG_GEN_PARAM_VALUE",
-            "# of mails to send = " + requestList.size());
+
         nextRequest = requestList.remove(0);
       } else {
         nextRequest = null;

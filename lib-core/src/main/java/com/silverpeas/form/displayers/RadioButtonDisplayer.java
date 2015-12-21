@@ -84,8 +84,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     String fieldName = template.getFieldName();
 
     if (!TextField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "RadioButtonDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
@@ -126,8 +125,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
     Map<String, String> parameters = template.getParameters(language);
 
     if (!TextField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "RadioButtonDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     if (!field.isNull()) {

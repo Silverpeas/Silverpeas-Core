@@ -119,8 +119,7 @@ public class ContainerManager implements java.io.Serializable {
               sContentType + "')";
 
       // Execute the insertion
-      SilverTrace.info("containerManager", "ContainerManager.registerNewContainerInstance",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
 
       prepStmt.executeUpdate();
@@ -166,8 +165,7 @@ public class ContainerManager implements java.io.Serializable {
               "') AND (contentType = '" + sContentType + "')";
 
       // Execute the insertion
-      SilverTrace.info("containerManager", "ContainerManager.unregisterNewContainerInstance",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
 
       prepStmt.executeUpdate();
@@ -299,8 +297,7 @@ public class ContainerManager implements java.io.Serializable {
           registerNewContainerInstance(null, sComponentId, "containerPDC", componentName);
     }
 
-    SilverTrace.info("containerManager", "ContainerManager.getContainerInstanceId",
-        "root.MSG_GEN_PARAM_VALUE", "getAsso().size() = " + getAsso().size());
+
     return containerInstanceId;
   }
 
@@ -312,8 +309,7 @@ public class ContainerManager implements java.io.Serializable {
       if (character == '0' || character == '1' || character == '2' || character == '3' ||
           character == '4' || character == '5' || character == '6' || character == '7' ||
           character == '8' || character == '9') {
-        SilverTrace.info("containerManager", "ContainerManager.extractComponentNameFromInstanceId",
-            "root.MSG_GEN_PARAM_VALUE", "componentName = " + componentName);
+
         return instanceId.substring(0, i);
       }
     }
@@ -359,8 +355,7 @@ public class ContainerManager implements java.io.Serializable {
       String sSQLStatement = "SELECT instanceId, componentId FROM " + m_sInstanceTable;
 
       // Execute the insertion
-      SilverTrace.info("containerManager", "ContainerManager.loadAsso", "root.MSG_GEN_PARAM_VALUE",
-          "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -419,8 +414,7 @@ public class ContainerManager implements java.io.Serializable {
             sSQLStatement.append(" OR ");
           }
         }
-        SilverTrace.info("containerManager", "ContainerManager.silverContentIsRemoved",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
         prepStmt = connection.prepareStatement(sSQLStatement.toString());
 
         prepStmt.executeUpdate();
@@ -522,8 +516,7 @@ public class ContainerManager implements java.io.Serializable {
       connection = DBUtil.openConnection();
 
       // Execute the query
-      SilverTrace.info("containerManager", "ContainerManager.getFirstStringValue",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
@@ -560,8 +553,7 @@ public class ContainerManager implements java.io.Serializable {
               nPositionId + ", " + nContainerInstanceId + ")";
 
       // Execute the insertion
-      SilverTrace.info("containerManager", "ContainerManager.addContainerContentInstanceLink",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
 
       prepStmt.executeUpdate();
@@ -592,8 +584,7 @@ public class ContainerManager implements java.io.Serializable {
               ") AND (containerInstanceId = " + nContainerInstanceId + ")";
 
       // Execute the delete
-      SilverTrace.info("containerManager", "ContainerManager.removeContainerContentInstanceLink",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement);
 
       prepStmt.executeUpdate();
@@ -628,8 +619,7 @@ public class ContainerManager implements java.io.Serializable {
         }
 
         // Execute the delete
-        SilverTrace.info("containerManager", "ContainerManager.removeAllPositionIdsLink",
-            "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
         prepStmt = connection.prepareStatement(sSQLStatement.toString());
 
         prepStmt.executeUpdate();
@@ -738,8 +728,7 @@ public class ContainerManager implements java.io.Serializable {
       }
 
       // Execute the query
-      SilverTrace.info("containerManager", "ContainerManager.filterPositionsByComponentId",
-          "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
+
       prepStmt = connection.prepareStatement(sSQLStatement.toString());
       resSet = prepStmt.executeQuery();
 

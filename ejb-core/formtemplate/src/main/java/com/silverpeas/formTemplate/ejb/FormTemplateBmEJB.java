@@ -52,8 +52,7 @@ public class FormTemplateBmEJB implements FormTemplateBm {
 
   @Override
   public DataRecord getRecord(String externalId, String id) {
-    SilverTrace.info("form", "FormTemplateBmEJB.getRecord",
-        "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId + ", id = " + id);
+
     PublicationTemplate pub = getPublicationTemplate(externalId);
     return getRecord(id, pub, null);
   }
@@ -75,8 +74,7 @@ public class FormTemplateBmEJB implements FormTemplateBm {
 
   @Override
   public List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) {
-    SilverTrace.info("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_ENTER_METHOD",
-        "externalId = " + externalId + ", id = " + id + ", language = " + language);
+
 
     PublicationTemplateImpl template = (PublicationTemplateImpl) getPublicationTemplate(externalId);
     DataRecord data = getRecord(id, template, language);

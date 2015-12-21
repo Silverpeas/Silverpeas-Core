@@ -288,10 +288,6 @@ public class PdcSearchRequestRouterHelper {
    */
   public static void setPertinentAxis(PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
-    SilverTrace.info("pdcPeas",
-        "PdcPeasRequestRouterHelper.setPertinentAxis()",
-        "root.MSG_GEN_ENTER_METHOD");
-
     String showSecondarySearchAxis = request.getParameter("ShowSndSearchAxis");
 
     // does the user want to see secondary axis ?
@@ -300,10 +296,6 @@ public class PdcSearchRequestRouterHelper {
     } else {
       pdcSC.setSecondaryAxis(showSecondarySearchAxis);
     }
-
-    SilverTrace.info("pdcPeas",
-        "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
-        "root.MSG_GEN_PARAM_VALUE", "avant getAxis(P)");
 
     // we get primary and eventually secondary axis
     List<SearchAxis> primarySearchAxis = pdcSC.getAxis("P");
@@ -316,9 +308,6 @@ public class PdcSearchRequestRouterHelper {
       }
     }
 
-    SilverTrace.info("pdcPeas",
-        "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
-        "root.MSG_GEN_PARAM_VALUE", "avant getAxis(S)");
     List<SearchAxis> secondarySearchAxis = null;
     List<SearchAxis> pertinentSecondaryAxis = new ArrayList<SearchAxis>();
     if ("YES".equals(showSecondarySearchAxis)) {
@@ -338,9 +327,6 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("ShowSecondaryAxis", pertinentSecondaryAxis);
     request.setAttribute("ShowSndSearchAxis", pdcSC.getSecondaryAxis());
 
-    SilverTrace.info("pdcPeas",
-        "PdcPeasRequestRouterHelper.setPertinentAxis()",
-        "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -353,8 +339,7 @@ public class PdcSearchRequestRouterHelper {
    */
   public static void setContext(PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
-    SilverTrace.info("pdcPeas", "PdcPeasRequestRouterHelper.setContext()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     // on retire du searchcontext tous les criteres qui ne sont pas dans
     // l'espace choisi par l'utilisateur.
@@ -418,8 +403,7 @@ public class PdcSearchRequestRouterHelper {
     request.setAttribute("PathCriteria", pathCriteria);
     // on ajoute le contexte de recherche
     request.setAttribute("SearchContext", searchContext);
-    SilverTrace.info("pdcPeas", "PdcPeasRequestRouterHelper.setContext()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   public static String getLastValueOf(String path) {

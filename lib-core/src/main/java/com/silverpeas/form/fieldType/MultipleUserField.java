@@ -77,8 +77,7 @@ public class MultipleUserField extends AbstractField {
    * Set the user ids referenced by this field.
    */
   public void setUserIds(String[] currentUserIds) {
-    SilverTrace.info("form", "MultipleUserField.setUserIds",
-        "root.MSG_GEN_ENTER_METHOD", "userIds = " + Arrays.toString(currentUserIds));
+
     if (currentUserIds != null) {
       this.userIds = Arrays.copyOf(currentUserIds, currentUserIds.length);
     } else {
@@ -98,8 +97,7 @@ public class MultipleUserField extends AbstractField {
    */
   @Override
   public String getValue() {
-    SilverTrace.info("form", "MultipleUserField.getValue",
-        "root.MSG_GEN_PARAM_VALUE", "userIds = " + Arrays.toString(getUserIds()));
+
     if (this.userIds == null) {
       return null;
     }
@@ -218,8 +216,7 @@ public class MultipleUserField extends AbstractField {
    */
   @Override
   public void setStringValue(String value) {
-    SilverTrace.info("form", "MultipleUserField.setStringValue",
-        "root.MSG_GEN_ENTER_METHOD", "value = " + value);
+
     if (value == null) {
       setUserIds(null);
     } else {

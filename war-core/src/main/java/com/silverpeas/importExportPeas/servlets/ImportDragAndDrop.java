@@ -117,13 +117,6 @@ public class ImportDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       boolean onePublicationForAll = StringUtil.isDefined(publicationName);
       String versionType = request.getParameter("VersionType");
 
-      SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId + " topicId = " + topicId + " userId = " +
-              currentUser.getId() + " ignoreFolders = " + ignoreFolders + ", draftUsed = " +
-              draftUsed + ", contentLanguage = " + contentLanguage + ", publicationName = " +
-              publicationName + ", publicationDescription= " + publicationDescription +
-              ", publicationKeywords = " + publicationKeywords + ", versionType = " + versionType);
-
       if (isDescriptionMandatory(uploadSession) &&
           StringUtil.isNotDefined(publicationDescription)) {
         throwHttpPreconditionFailedError();

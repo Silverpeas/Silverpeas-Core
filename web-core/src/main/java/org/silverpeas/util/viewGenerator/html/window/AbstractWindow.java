@@ -208,8 +208,7 @@ public abstract class AbstractWindow implements Window {
       fileName = "welcome_" + language;
       message = getSilverpeasTemplate().applyFileTemplateOnComponent(component.getName(), fileName);
     } catch (Exception e) {
-      SilverTrace.info("viewgenerator", "AbstractWindow.getWelcomeMessage", "CANT_FIND_TEMPLATE",
-          "fileName = " + fileName + ", component = " + component.getName());
+
     }
     if (!StringUtil.isDefined(message)) {
       return null;

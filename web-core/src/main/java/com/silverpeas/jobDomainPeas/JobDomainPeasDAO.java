@@ -71,10 +71,6 @@ public class JobDomainPeasDAO {
    */
   public static Collection<Group> selectGroupSynchroInsertUpdateTableDomain_Group(Domain domain)
       throws SQLException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasDAO.selectGroupSynchroInsertUpdateTableDomain_Group",
-        "root.MSG_GEN_ENTER_METHOD");
-
     String propDomainFileName = domain.getPropFileName();
     String domainName = propDomainFileName.substring(39);
 
@@ -118,10 +114,6 @@ public class JobDomainPeasDAO {
    */
   public static Collection<UserFull> selectUserSynchroInsertUpdateTableDomain_User(
       Domain domain) throws SQLException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasDAO.selectUserSynchroInsertUpdateTableDomain_User",
-        "root.MSG_GEN_ENTER_METHOD");
-
     String propDomainFileName = domain.getPropFileName();
     String domainName = propDomainFileName.substring(39);
 
@@ -164,10 +156,6 @@ public class JobDomainPeasDAO {
    */
   public static Collection<UserDetail> selectUserSynchroDeleteTableDomain_User(Domain domain)
       throws SQLException {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasDAO.selectUserSynchroDeleteTableDomain_User",
-        "root.MSG_GEN_ENTER_METHOD");
-
     AdminController adminCtrl = ServiceProvider.getService(AdminController.class);
 
     // sélectionne les users dans Silverpeas

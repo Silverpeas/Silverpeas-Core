@@ -96,8 +96,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
     String fieldName = template.getFieldName();
     String currentAccessPath = "";
     if (!AccessPathField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "AccessPathFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          AccessPathField.TYPE);
+
     } else {
       currentAccessPath = field
           .getAccessPath(PagesContext.getComponentId(), PagesContext.getNodeId(),

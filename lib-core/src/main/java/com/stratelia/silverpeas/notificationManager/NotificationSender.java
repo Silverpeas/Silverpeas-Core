@@ -107,12 +107,8 @@ public class NotificationSender implements java.io.Serializable {
 
     // All usersId to notify
     Set<String> allUserIds = usersLanguage.keySet();
-    SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
-        "root.MSG_GEN_PARAM_VALUE", "allUserIds = " + allUserIds);
+
     for (String language : languages) {
-      SilverTrace.info("notificationManager",
-          "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
-          "language = " + language);
       params = getNotificationParameters(aMediaType, metaData);
       params.sTitle = metaData.getTitle(language);
       params.sLinkLabel = metaData.getLinkLabel(language);
@@ -124,9 +120,6 @@ public class NotificationSender implements java.io.Serializable {
       List<String> userIds = getUserIds(language, usersLanguage);
       // remove users already notified in their language
       allUserIds.removeAll(userIds);
-      SilverTrace.info("notificationManager",
-          "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
-          "allUserIds apres remove= " + allUserIds);
       notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
     }
     // Notify other users in language of the sender.
@@ -147,8 +140,7 @@ public class NotificationSender implements java.io.Serializable {
       saveNotification(metaData, usersSet);
     }
 
-    SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -190,9 +182,6 @@ public class NotificationSender implements java.io.Serializable {
       }
       u++;
     }
-    SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",
-        "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
-            + lang + "' ");
     return result;
   }
 
@@ -223,9 +212,6 @@ public class NotificationSender implements java.io.Serializable {
         params.iFromUserId = Integer.parseInt(metaData.getSender());
       }
     } else if (StringUtil.isInteger(sender)) {
-      SilverTrace.info("notificationManager",
-          "NotificationSender.getNotificationParameters()",
-          "root.MSG_GEN_PARAM_VALUE", metaData.getSender());
       params.iFromUserId = Integer.parseInt(metaData.getSender());
     } else {
       params.iFromUserId = -1;

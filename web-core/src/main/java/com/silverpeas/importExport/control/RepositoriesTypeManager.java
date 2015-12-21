@@ -269,14 +269,6 @@ public class RepositoriesTypeManager {
     final long fileSize = file.length();
     boolean publicVersion = isComponentVersionActivated && publicVersionRequired;
 
-    SilverTrace.info("importExport", "RepositoriesTypeManager.handleFilesToAttach",
-        "root.MSG_GEN_PARAM_VALUE",
-        "componentId = " + componentId + ", resourceId = " + resourceId + ", userId = " +
-            currentUser.getId() + ", contentLanguage = " + contentLanguage + ", hasToBeIndexed = " +
-            hasToBeIndexed + ", fileName = " + fileName + ", fileSize = " + fileSize +
-            (isComponentVersionActivated ? (", publicVersion = " + publicVersion) : "") +
-            ", oldSilverpeasId = " + oldSilverpeasId);
-
     final String mimeType = FileUtil.getMimeType(fileName);
     final SimpleDocumentPK documentPK = new SimpleDocumentPK(null, componentId);
     if (StringUtil.isDefined(oldSilverpeasId)) {

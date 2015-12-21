@@ -72,18 +72,15 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
 
   public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, int mode)
       throws ImportExportException {
-    SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     if (exportThread == null) {
       exportThread = new ExportXMLThread(this, itemsToExport, getLanguage(), rootPK, mode);
       errorOccured = null;
       exportReport = null;
       exportThread.startTheThread();
-      SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
-          "root.MSG_GEN_PARAM_VALUE", "------------EXPORT THREAD STARTED-----------");
+
     } else {
-      SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
-          "root.MSG_GEN_PARAM_VALUE", "------------!!!! EXPORT : ANOTHER CALL !!!!!-----------");
+
     }
   }
 

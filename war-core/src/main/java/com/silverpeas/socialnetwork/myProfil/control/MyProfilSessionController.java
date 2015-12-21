@@ -131,11 +131,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       String userAccessLevel, String oldPassword, String newPassword, String userLoginQuestion,
       String userLoginAnswer, Map<String, String> properties)
       throws AuthenticationException, AdminException {
-    SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "UserId=" + idUser + " userLastName=" + userLastName + " userFirstName=" + userFirstName +
-            " userEMail=" + userEMail + " userAccessLevel=" + userAccessLevel);
-
     UserDetail user = UserDetail.getById(idUser);
 
     AuthenticationCredential credential =

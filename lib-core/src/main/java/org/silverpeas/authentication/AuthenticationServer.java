@@ -274,10 +274,6 @@ public class AuthenticationServer {
     public void visit(AuthenticationBadCredentialException ex) throws AuthenticationException {
       if (fallbackMode.equals("none") || fallbackMode.equals("ifNotRejected")) {
         throw ex;
-      } else {
-        SilverTrace.info(module, "AuthenticationServer." + operation,
-            "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "Auth server="
-            + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
       }
       continueAuthentication = true;
     }
@@ -286,10 +282,6 @@ public class AuthenticationServer {
     public void visit(AuthenticationHostException ex) throws AuthenticationException {
       if (fallbackMode.equals("none")) {
         throw ex;
-      } else {
-        SilverTrace.info(module, "AuthenticationServer." + operation,
-            "authentication.EX_AUTHENTICATION_HOST_ERROR", "Auth server="
-            + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
       }
       continueAuthentication = true;
     }
@@ -298,19 +290,12 @@ public class AuthenticationServer {
     public void visit(AuthenticationException ex) throws AuthenticationException {
       if (fallbackMode.equals("none")) {
         throw ex;
-      } else {
-        SilverTrace.info(module, "AuthenticationServer." + operation,
-            "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
-            "Auth server=" + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
       }
       continueAuthentication = true;
     }
 
     @Override
     public void visit(AuthenticationPwdNotAvailException ex) throws AuthenticationException {
-      SilverTrace.info(module, "AuthenticationServer." + operation,
-          "authentication.EX_PWD_NOT_AVAILABLE", "Auth server="
-          + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
       continueAuthentication = true;
     }
 
@@ -327,9 +312,6 @@ public class AuthenticationServer {
 
     @Override
     public void visit(AuthenticationPwdChangeNotAvailException ex) throws AuthenticationException {
-      SilverTrace.info(module, "AuthenticationServer." + operation,
-          "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE", "Auth server=" + authentication
-          .getServerName() + ";User=" + credential.getLogin(), ex);
       continueAuthentication = true;
     }
   }

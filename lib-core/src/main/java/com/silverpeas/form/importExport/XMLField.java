@@ -42,8 +42,7 @@ public class XMLField implements Serializable {
   }
 
   public XMLField(String name, String value) {
-    SilverTrace.info("form", "XMLField.contructor", "root.MSG_GEN_ENTER_METHOD",
-        "name = " + name + ", value = " + value);
+
     this.name = name;
     this.value = value;
   }

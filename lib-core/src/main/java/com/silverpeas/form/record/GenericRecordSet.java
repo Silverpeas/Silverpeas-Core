@@ -149,9 +149,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   private void indexRecord(String recordId, String formName,
       FullIndexEntry indexEntry, String language) throws FormException {
-    SilverTrace.info("form", "GenericRecordSet.index()",
-        "root.MSG_GEN_ENTER_METHOD", "recordId = " + recordId + ", language = "
-        + language);
     DataRecord data = getRecord(recordId, language);
     if (data != null) {
       String[] fieldNames = data.getFieldNames();

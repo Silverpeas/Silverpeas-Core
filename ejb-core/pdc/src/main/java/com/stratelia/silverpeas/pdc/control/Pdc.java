@@ -47,11 +47,6 @@ public class Pdc {
 
   public void setSelectedSilverContents(List<GlobalSilverResult> selectedSilverContents) {
     this.selectedSilverContents = selectedSilverContents;
-    for (GlobalSilverContent gsc : selectedSilverContents) {
-      SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()",
-          "root.MSG_GEN_PARAM_VALUE", "new silverContent selected = "
-          + gsc.getName());
-    }
   }
 
   public List<GlobalSilverResult> getSelectedSilverContents() {

@@ -241,8 +241,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
             this);
         break;
       default:
-        SilverTrace.info(getModule(), callingClass, getMessage(), extraParams,
-            this);
+
     }
   }
 

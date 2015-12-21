@@ -41,7 +41,6 @@ public class ComponentIndexerAdapter implements ComponentIndexation {
   @Override
   public void index(ComponentInst componentInst) throws
       Exception {
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.getIndexer()",
-        "Fake indexer when we have problems loading a real one.");
+
   }
 }

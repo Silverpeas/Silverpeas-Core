@@ -80,8 +80,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     String language = PagesContext.getLanguage();
 
     if (!TextField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "TextAreaFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
+
     }
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
@@ -117,8 +116,7 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     Map<String, String> parameters = template.getParameters(language);
 
     if (!TextField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "ListBoxFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     if (!field.isNull()) {

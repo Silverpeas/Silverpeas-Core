@@ -197,9 +197,6 @@ abstract public class AbstractLDAPGroup {
             + groupsProcessed[i].getDescription(), null);
       }
 
-      SilverTrace.info("admin", "AbstractLDAPGroup.getGroups()",
-          "root.MSG_GEN_PARAM_VALUE", "Group " + Integer.toString(i) + " : "
-          + groupsProcessed[i].getName() + " Parent = " + parentId);
       groupsProcessed[i].traceGroup();
     }
 
@@ -418,8 +415,7 @@ abstract public class AbstractLDAPGroup {
    */
   protected LDAPEntry getGroupEntry(String lds, String groupId)
       throws AdminException {
-    SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntry()",
-        "root.MSG_GEN_ENTER_METHOD", "groupId=" + groupId);
+
     return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
         driverSettings.getScope(),
         driverSettings.getGroupsIdFilter(groupId), driverSettings.getGroupAttributes());
@@ -427,8 +423,7 @@ abstract public class AbstractLDAPGroup {
 
   protected LDAPEntry getGroupEntryByName(String lds, String groupName)
       throws AdminException {
-    SilverTrace.info("admin", "AbstractLDAPGroup.getGroupEntryByName()",
-        "root.MSG_GEN_ENTER_METHOD", "groupName=" + groupName);
+
     return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
         driverSettings.getScope(),
         driverSettings.getGroupsNameFilter(groupName), driverSettings.getGroupAttributes());

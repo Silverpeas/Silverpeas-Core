@@ -80,8 +80,7 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
   }
 
   public void doScheduledImport() {
-    SilverTrace.info("importExport", "ScheduledImport.doScheduledImport()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     String userId = resources.getString("userIdAsCreatorId");
     UserDetail user = OrganizationControllerProvider
@@ -95,9 +94,6 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
       if (file.isFile()) {
         String extension = FileRepositoryManager.getFileExtension(file.getName());
         if ("xml".equalsIgnoreCase(extension)) {
-          SilverTrace.info("importExport",
-              "ScheduledImport.doScheduledImport()",
-              "root.MSG_GEN_PARAM_VALUE", "file = " + file.getAbsolutePath());
           try {
             ImportReport importReport = importExport.processImport(user, file.getAbsolutePath());
             importExport.writeImportToLog(importReport, resource);
@@ -115,8 +111,7 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
         }
       }
     }
-    SilverTrace.info("importExport", "ScheduledImport.doScheduledImport()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   @Override

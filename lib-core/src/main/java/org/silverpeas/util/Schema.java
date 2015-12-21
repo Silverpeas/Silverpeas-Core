@@ -69,8 +69,7 @@ public abstract class Schema {
         this.connection.setAutoCommit(false);
       }
       isLocalConnection = true;
-      SilverTrace.info("util", "Schema.createConnection()",
-          "root.MSG_GEN_PARAM_VALUE", "Connection Created !");
+
     } catch (SQLException e) {
       throw new UtilException("Schema.createConnection",
           SilverpeasException.ERROR, "root.EX_DATASOURCE_INVALID", e);
@@ -129,8 +128,7 @@ public abstract class Schema {
       }
       return true;
     } catch (SQLException e) {
-      SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD",
-          "Connection Test Problem !!!", e);
+
       close();
       return false;
     }
@@ -148,26 +146,22 @@ public abstract class Schema {
    * All the statements are prepared and cached
    */
   public synchronized PreparedStatement getStatement(String query) throws SQLException {
-    SilverTrace.info("util", "Schema.getStatement()",
-        "root.MSG_GEN_ENTER_METHOD", query);
+
     PreparedStatement statement = getConnection().prepareStatement(query);
-    SilverTrace.info("util", "Schema.getStatement()",
-        "root.MSG_GEN_PARAM_VALUE", "statement=" + statement);
+
     return statement;
   }
 
   public synchronized Connection getConnection() {
     if (!isOk() && isLocalConnection) {
-      SilverTrace.info("util", "Schema.getConnection", "root.MSG_GEN_ENTER_METHOD",
-          "Connection WAS CLOSED !!!! -> Create new one");
+
       try {
         createConnection();
       } catch (UtilException e) {
         SilverTrace.error("util", "Schema.getConnection", "util.CAN_T_CLOSE_CONNECTION", e);
       }
     } else {
-      SilverTrace.info("util", "Schema.getConnection",
-          "root.MSG_GEN_ENTER_METHOD", "Connection Verified");
+
     }
 
     return connection;

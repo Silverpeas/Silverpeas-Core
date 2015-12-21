@@ -65,8 +65,7 @@ public class DefaultQuestionService implements QuestionService {
   @Override
   @Transactional(Transactional.TxType.SUPPORTS)
   public Question getQuestion(QuestionPK questionPK) {
-    SilverTrace.info("question", "DefaultQuestionService.getQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK);
+
     Connection con = getConnection();
     try {
       Question question = QuestionDAO.getQuestion(con, questionPK);
@@ -118,8 +117,7 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public QuestionPK createQuestion(Question question) {
-    SilverTrace.info("question", "DefaultQuestionService.createQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "question = " + question);
+
     Connection con = getConnection();
     try {
       QuestionPK questionPK = QuestionDAO.createQuestion(con, question);
@@ -135,8 +133,7 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void createQuestions(Collection<Question> questions, String fatherId) {
-    SilverTrace.info("question", "DefaultQuestionService.createQuestions()", "root.MSG_GEN_ENTER_METHOD",
-        "fatherId = " + fatherId);
+
     int displayOrder = 1;
     for (Question question : questions) {
       question.setFatherId(fatherId);
@@ -176,8 +173,7 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void deleteQuestion(QuestionPK questionPK) {
-    SilverTrace.info("question", "DefaultQuestionService.deleteQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionPK = " + questionPK);
+
     Connection con = getConnection();
     try {
       currentQuestionResultService.deleteQuestionResultsToQuestion(new ForeignPK(questionPK));
@@ -195,8 +191,7 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void updateQuestion(Question questionDetail) {
-    SilverTrace.info("question", "DefaultQuestionService.updateQuestion()", "root.MSG_GEN_ENTER_METHOD",
-        "questionDetail = " + questionDetail);
+
     updateQuestionHeader(questionDetail);
     updateAnswersToAQuestion(questionDetail);
   }

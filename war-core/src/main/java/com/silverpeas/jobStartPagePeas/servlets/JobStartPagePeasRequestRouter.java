@@ -275,8 +275,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       if ("0".equals(idFather) || idFather == null) {// l'instance appartient à un espace
         jobStartPageSC.setSpaceId(spaceint1.getId());
       }
-      SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.GoToComponent",
-          "root.MSG_GEN_PARAM_VALUE", "compoId = " + compoId);
+
       destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
     } else if ("SetupComponent".equals(function)) {
       String compoId = request.getParameter("ComponentId");
@@ -647,10 +646,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
       SpaceProfileInst profile = spaceint1.getSpaceProfileInst(role);
       if (profile != null) {
-        SilverTrace.info("jobStartPagePeas",
-            "JobStartPagePeasRequestRouter.SpaceManager()",
-            "root.MSG_GEN_PARAM_VALUE", "profileName=" + profile.getName()
-            + " profileName=" + profile.getLabel());
         request.setAttribute("Profile", profile);
       }
 
@@ -818,9 +813,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   public String getDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
       HttpRequest request) {
     String destination;
-    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobStartPageSC.getUserId() + " Function="
-        + function);
     try {
       destination = getDestinationStartPage(function, jobStartPageSC, request);
       if (destination == null) {
@@ -905,9 +897,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 
@@ -1015,9 +1004,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     }
 
     ParameterList parameters = component.getAllParameters().clone();
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasRequestRouter.EffectiveCreateInstance",
-        "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
     for (Parameter parameter : parameters) {
       String value = request.getParameter(parameter.getName());
       if (parameter.isCheckbox() && !StringUtil.isDefined(value)) {

@@ -595,8 +595,7 @@ public class GenericRecordSetManager {
    */
   private Connection getConnection() throws FormException {
 
-    SilverTrace.info("formTemplate", "GenericRecordSetManager.getConnection()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     try {
       return DBUtil.openConnection();

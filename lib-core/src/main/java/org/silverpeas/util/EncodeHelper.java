@@ -131,8 +131,7 @@ public class EncodeHelper {
    * @return Returns the transformed text without specific codes.
    */
   public static String transformHtmlCode(String text) {
-    SilverTrace.info("util", "Encode.transformHtmlCode()",
-        "root.MSG_GEN_PARAM_VALUE", " text recu " + text);
+
 
     return StringEscapeUtils.unescapeHtml4(text);
   }
@@ -163,8 +162,7 @@ public class EncodeHelper {
       return "";
     }
 
-    SilverTrace.info("util", "Encode.transformStringForBD()",
-        "root.MSG_GEN_ENTER_METHOD", " text = " + sText);
+
 
     int nStringLength = sText.length();
     StringBuilder resSB = new StringBuilder(nStringLength + 10);
@@ -182,8 +180,7 @@ public class EncodeHelper {
           resSB.append(sText.charAt(i));
       }
     }
-    SilverTrace.info("util", "Encode.transformStringForBD()",
-        "root.MSG_GEN_EXIT_METHOD", " new text = " + resSB.toString());
+
 
     return resSB.toString();
   }

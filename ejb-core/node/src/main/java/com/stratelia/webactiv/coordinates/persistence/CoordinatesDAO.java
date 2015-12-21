@@ -172,10 +172,6 @@ public class CoordinatesDAO {
       CoordinatePK pk) throws SQLException {
     // get all points corresponding to fatherIds
     List<CoordinatePoint> points = selectCoordinatePointsByNodeIds(con, fatherIds, pk);
-    SilverTrace.info("coordinates", "CoordinatesDAO.selectByFatherIds()",
-        "root.MSG_GEN_PARAM_VALUE", "fatherIds = " + fatherIds.toString()
-        + " | points = " + points.toString());
-
     List<CoordinatePoint> toCheck = new ArrayList<CoordinatePoint>(points); // toCheck always
     // contains points
     List<String> coordinatePKs = new ArrayList<String>();
@@ -221,28 +217,15 @@ public class CoordinatesDAO {
       Iterator<String> it = fatherPaths.iterator();
       while (it.hasNext()) {
         fatherPath = it.next();
-        SilverTrace.info("coordinates",
-            "CoordinatesDAO.selectCoordinateIdsByNodeIds()",
-            "root.MSG_GEN_PARAM_VALUE", "fatherPath = " + fatherPath);
         // enleve le premier /0/
         fatherPath = fatherPath.substring(1);
         fatherPath = fatherPath.substring(fatherPath.indexOf('/') + 1,
             fatherPath.length());
-        SilverTrace.info("coordinates",
-            "CoordinatesDAO.selectCoordinateIdsByNodeIds()",
-            "root.MSG_GEN_PARAM_VALUE", "fatherPath = " + fatherPath);
         // extrait l'id
         fatherId = fatherPath.substring(fatherPath.lastIndexOf('/') + 1,
             fatherPath.length());
-        SilverTrace.info("coordinates",
-            "CoordinatesDAO.selectCoordinateIdsByNodeIds()",
-            "root.MSG_GEN_PARAM_VALUE", "fatherId = " + fatherId);
         // extrait l'id de la racine
         rootFatherId = fatherPath.substring(0, fatherPath.indexOf('/'));
-        SilverTrace.info("coordinates",
-            "CoordinatesDAO.selectCoordinateIdsByNodeIds()",
-            "root.MSG_GEN_PARAM_VALUE", "rootFatherId = " + rootFatherId);
-
         whereClause += " nodeId = " + fatherId;
         whereClause += " or (nodeId = " + rootFatherId
             + " and coordinatesLeaf = '1') ";
@@ -321,17 +304,10 @@ public class CoordinatesDAO {
   public static int addCoordinate(Connection con, CoordinatePK pk,
       List<CoordinatePoint> coordinatePoints)
       throws SQLException {
-    SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()", "root.MSG_GEN_PARAM_VALUE",
-        "pk = " + pk.toString() + " and coordinatePoints = " + coordinatePoints.toString());
+
     int coordinateId = getMaxCoordinateId(con, pk) + 1;
     for (CoordinatePoint point : coordinatePoints) {
-      SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
-          "root.MSG_GEN_PARAM_VALUE", "Try to insert point = "
-          + point.toString());
       addCoordinatePoint(con, pk, point, coordinateId);
-      SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
-          "root.MSG_GEN_PARAM_VALUE", "insertion of point = "
-          + point.toString() + " succeeded !");
     }
     return coordinateId;
   }
@@ -346,9 +322,6 @@ public class CoordinatesDAO {
    */
   public static void removeCoordinates(Connection con, CoordinatePK pk, List<String> coordinateIds)
       throws SQLException {
-    SilverTrace.info("coordinates", "CoordinatesDAO.removeCoordinates()",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
-        + " and coordinateIds = " + coordinateIds.toString());
     StringBuilder deleteQuery = new StringBuilder("DELETE FROM sb_coordinates_coordinates WHERE ");
     if (coordinateIds != null) {
       Iterator<String> it = coordinateIds.iterator();
@@ -383,10 +356,6 @@ public class CoordinatesDAO {
    */
   public static void removeCoordinatesByPoints(Connection con, CoordinatePK pk,
       List<String> coordinatePoints) throws SQLException {
-    SilverTrace.info("coordinates",
-        "CoordinatesDAO.removeCoordinatesByPoints()",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
-        + " and coordinatePoints = " + coordinatePoints.toString());
     StringBuilder deleteQuery = new StringBuilder("DELETE FROM sb_coordinates_coordinates WHERE ");
     if (coordinatePoints != null) {
       Iterator<String> it = coordinatePoints.iterator();
@@ -546,10 +515,6 @@ public class CoordinatesDAO {
    */
   public static void addPointToAllCoordinates(Connection con, CoordinatePK pk,
       CoordinatePoint point) throws SQLException {
-    SilverTrace.info("coordinates",
-        "CoordinatesDAO.addPointToAllCoordinates()",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString() + " and point = "
-        + point.toString());
     int maxDisplayOrder = getMaxDisplayOrder(con, pk);
     point.setOrder(maxDisplayOrder + 1);
     Collection<String> coordinateIds = getCoordinateIds(con, pk);

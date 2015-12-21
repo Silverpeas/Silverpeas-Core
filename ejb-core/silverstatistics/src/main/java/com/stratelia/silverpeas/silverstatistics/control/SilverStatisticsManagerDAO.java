@@ -77,8 +77,7 @@ public class SilverStatisticsManagerDAO {
 
     try {
 
-      SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.insertDataStatsCumul",
-          "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
+
       prepStmt = con.prepareStatement(insertStatement);
       for (String currentKey : theKeys) {
         i++;
@@ -235,13 +234,11 @@ public class SilverStatisticsManagerDAO {
     try {
       stmt = con.createStatement();
       String selectStatement = selectStatementBuf.toString();
-      SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.putDataStatsCumul",
-          "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
+
 
       rs = stmt.executeQuery(selectStatement);
       String updateStatement = updateStatementBuf.toString();
-      SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.putDataStatsCumul",
-          "root.MSG_GEN_PARAM_VALUE", "updateStatement=" + updateStatement);
+
       pstmt = con.prepareStatement(updateStatement);
       while (rs.next()) {
         rowExist = true;
@@ -304,8 +301,7 @@ public class SilverStatisticsManagerDAO {
     ResultSet rs = null;
 
     String selectStatement = "SELECT * FROM " + conf.getTableName(statsType);
-    SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
-        "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
+
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
@@ -368,8 +364,7 @@ public class SilverStatisticsManagerDAO {
     PreparedStatement prepStmt = null;
 
     try {
-      SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.deleteTablesOfTheDay",
-          "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
+
       prepStmt = con.prepareStatement(deleteStatement);
       prepStmt.executeUpdate();
     } finally {
@@ -396,8 +391,7 @@ public class SilverStatisticsManagerDAO {
         getRequestDate(dateOfTheDay.get(Calendar.YEAR), dateOfTheDay.get(Calendar.MONTH) + 1));
 
     String deleteStatement = deleteStatementBuf.toString();
-    SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.purgeTablesCumul",
-        "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
+
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);

@@ -80,8 +80,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       throws ServletException, IOException {
 
     final String versionType = req.getParameter("Type");
-    SilverTrace.info(StringUtil.isNotDefined(versionType) ? "attachment" : "versioningPeas",
-        "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+
 
     final HttpRequest request = HttpRequest.decorate(req);
     request.setCharacterEncoding(CharEncoding.UTF_8);

@@ -102,9 +102,6 @@ public class TemplateDesignerRequestRouter extends
       HttpRequest request) {
     String destination = "";
     String root = "/templateDesigner/jsp/";
-    SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + templateDesignerSC.getUserId() + " Function=" +
-        function);
     try {
       if (function.startsWith("Main")) {
         List<PublicationTemplate> templates = templateDesignerSC.getTemplates();
@@ -221,9 +218,6 @@ public class TemplateDesignerRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("templateDesigner",
-        "TemplateDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 

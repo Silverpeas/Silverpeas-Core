@@ -81,10 +81,6 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       HttpRequest request) {
     String destination = "";
     String rootDest = "/sharing/jsp/";
-    SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "User=" + fileSharingSC.getUserId() + " Function=" + function);
-
     try {
       if ("Main".equals(function)) {
         destination = getDestination("ViewTickets", fileSharingSC, request);
@@ -140,8 +136,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("fileSharing", "FileSharingRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
 
   }

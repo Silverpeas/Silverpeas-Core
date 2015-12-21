@@ -285,9 +285,6 @@ public class CacheManagerUsersGroups extends CacheManager {
     if (what == CacheType.CM_SET) {
       Group theGroup = m_oc.getGroup(id);
 
-      SilverTrace.info("selectionPeas",
-          "CacheManagerUsersGroups.getSetLineFromId()",
-          "root.GEN_MSG_PARAM_VALUE", "id=" + id);
       if (SelectionPeasSettings.displayNbUsersByGroup) {
         if (SelectionPeasSettings.displayDomains) {
           theValues = new String[4];
@@ -331,9 +328,6 @@ public class CacheManagerUsersGroups extends CacheManager {
     } else if (what == CacheType.CM_ELEMENT) {
       UserDetail theUser = m_oc.getUserDetail(id);
 
-      SilverTrace.info("selectionPeas",
-          "CacheManagerUsersGroups.getElementLineFromId()",
-          "root.GEN_MSG_PARAM_VALUE", "id=" + id);
       if (SelectionPeasSettings.displayDomains) {
         theValues = new String[4];
         theValues[COL_USER_LASTNAME] = EncodeHelper

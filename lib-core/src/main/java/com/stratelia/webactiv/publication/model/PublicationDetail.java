@@ -871,8 +871,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       }
     }
 
-    SilverTrace.info("publication", "PublicationDetail.getModelContent('" + fieldName + "')",
-        "root.MSG_GEN_EXIT_METHOD", "fieldValue = " + fieldValue);
+
     return fieldValue;
   }
 

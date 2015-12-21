@@ -48,8 +48,7 @@ public class SearchContext implements ContainerPositionInterface, java.io.Serial
   }
 
   public void addCriteria(SearchCriteria criteria) {
-    SilverTrace.info("Pdc", "SearchContext.addCriteria()",
-        "root.MSG_GEN_PARAM_VALUE", "criteria = " + criteria.toString());
+
     if (criterias == null) {
       criterias = new ArrayList<SearchCriteria>();
     }
@@ -67,8 +66,7 @@ public class SearchContext implements ContainerPositionInterface, java.io.Serial
   }
 
   public void clearCriterias() {
-    SilverTrace.info("Pdc", "SearchContext.clearCriterias()",
-        "root.MSG_GEN_PARAM_VALUE");
+
     criterias = new ArrayList<SearchCriteria>();
   }
 

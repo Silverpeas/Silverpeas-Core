@@ -265,8 +265,7 @@ public class UserFull extends UserDetail {
   public void traceUser() {
     super.traceUser();
     for (Entry<String, String> entry : m_hInfos.entrySet()) {
-      SilverTrace.info("admin", "UserFull.traceUser", "admin.MSG_DUMP_USER", entry.getKey()
-          + " : " + entry.getValue());
+
     }
   }
 }

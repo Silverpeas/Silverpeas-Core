@@ -23,8 +23,8 @@
  */
 package com.stratelia.silverpeas.notificationserver;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.MapUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -312,45 +312,12 @@ public class NotificationData implements Serializable {
   }
 
   public void traceObject() {
-    if (SilverTrace.getTraceLevel("notificationserver", true) <= SilverTrace.TRACE_LEVEL_INFO) {
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "LoginUser : " + mLoginUser);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "Message : " + mMessage);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA",
-          "NotificationId : " + Long.toString(mNotificationId));
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderId : " + mSenderId);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "Answer allowed : " + mAnswerAllowed);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "SenderName : " + mSenderName);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "Comment : " + mComment);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetChannel : " + mTargetChannel);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetReceipt : " + mTargetReceipt);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "TargetName : " + mTargetName);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "PrioritySpeed : " + mPrioritySpeed);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA",
-          "ReportToSenderStatus : " + mReportToSenderStatus);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA",
-          "ReportToSenderTargetChannel : " + mReportToSenderTargetChannel);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA",
-          "ReportToSenderTargetReceipt : " + mReportToSenderTargetReceipt);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA",
-          "ReportToSenderTargetParam : " + mReportToSenderTargetParam);
-      SilverTrace.info("notificationserver", "NotificationData.traceObject",
-          "notificationServer.INFO_DUMP_NOTIF_DATA", "ReportToLogStatus : " + mReportToLogStatus);
-    }
+    SilverLogger.getLogger(this).info("Notification Data Dump: {" +
+            "NotificationId: {0}, ReportToSenderStatus: {1}, ReportToSenderTargetChannel: {2}," +
+            "ReportToSenderTargetReceipt: {3}, ReportToSenderTargetParam: {4}," +
+            "ReportToLogStatus: {5}", mNotificationId, mReportToSenderStatus,
+        mReportToSenderTargetChannel, mReportToSenderTargetReceipt, mReportToSenderTargetParam,
+        mReportToLogStatus);
   }
 
   @Override

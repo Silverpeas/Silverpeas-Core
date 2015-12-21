@@ -134,8 +134,7 @@ public class ComponentInstManager {
       // Add the parameters if necessary
       List<Parameter> parameters = componentInst.getParameters();
 
-      SilverTrace.info("admin", "ComponentInstManager.createComponentInst",
-          "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
+
 
       for (Parameter parameter : parameters) {
         ddManager.getOrganization().instanceData.createInstanceData(

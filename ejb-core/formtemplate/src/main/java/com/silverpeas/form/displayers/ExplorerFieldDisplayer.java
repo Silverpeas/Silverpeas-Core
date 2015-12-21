@@ -108,10 +108,6 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
   @Override
   public void display(PrintWriter out, ExplorerField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    SilverTrace.info("form", "ExplorerFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getNodePK() +
-            ", fieldType = " + field.getTypeName());
-
     String language = pageContext.getLanguage();
     String selectImg = Util.getIcon("explorer");
     String selectLabel = Util.getString("field.explorer.browse", language);
@@ -125,8 +121,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     String fieldName = template.getFieldName();
 
     if (!field.getTypeName().equals(ExplorerField.TYPE)) {
-      SilverTrace.info("form", "ExplorerFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          ExplorerField.TYPE);
+
     } else {
       nodePK = field.getNodePK();
     }

@@ -130,8 +130,7 @@ public class Instanciateur {
 
   public void instantiateComponent(WAComponent wac) throws InstanciationException {
     try {
-      SilverTrace.info("admin", "Instanciateur.instantiateComponent",
-          "admin.MSG_INFO_INSTANCIATE_COMPONENT", wac.toString());
+
       Class c = Class.forName(wac.getInstanceClassName());
       ComponentsInstanciatorIntf myInstantiator = (ComponentsInstanciatorIntf) c.newInstance();
       myInstantiator.create(connection, spaceId, componentId, userId);
@@ -170,8 +169,7 @@ public class Instanciateur {
 
   public void unInstantiateComponent(WAComponent wac) throws InstanciationException {
     try {
-      SilverTrace.info("admin", "Instanciateur.unInstantiateComponent",
-          "admin.MSG_INFO_UNINSTANCIATE_COMPONENT", wac.toString());
+
       Class c = Class.forName(wac.getInstanceClassName());
       ComponentsInstanciatorIntf myInstantiator = (ComponentsInstanciatorIntf) c.newInstance();
       myInstantiator.delete(connection, spaceId, componentId, userId);
@@ -269,9 +267,6 @@ public class Instanciateur {
     Collection<File> files = getFileList();
     for (File xmlFile : files) {
       String componentName = FilenameUtils.getBaseName(xmlFile.getName());
-      SilverTrace.info("admin", "Instanciateur.buildWAComponentList",
-          "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "component name: '"
-          + componentName + "', full path: '" + xmlFile.getCanonicalPath() + "'");
       componentsByName.put(componentName, loadComponent(xmlFile));
     }
   }

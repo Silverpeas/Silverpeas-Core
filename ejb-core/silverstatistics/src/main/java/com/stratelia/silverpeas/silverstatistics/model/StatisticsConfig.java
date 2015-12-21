@@ -86,8 +86,7 @@ public class StatisticsConfig {
               .setModeCumul(StatisticMode.valueOf(settings.getString(STATS_MODE_CUMUL + currentType.
                   getName())));
         } catch (SilverStatisticsTypeStatisticsException | MissingResourceException e) {
-          SilverTrace.info("silverstatistics", "StatisticsConfig.init",
-              "setIsRun | setPurge | setIsAsynchron | setModeCumul", e);
+
         }
 
         StringTokenizer stKeyName =

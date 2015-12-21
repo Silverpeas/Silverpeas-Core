@@ -165,15 +165,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         currentGroups[iGrp][3] = theCurrentGroup.getDescription();
       }
     }
-    if (currentGroups == null) {
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentUserInfo",
-          "root.MSG_GEN_PARAM_VALUE", "Groups NULL !");
-    } else {
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentUserInfo",
-          "root.MSG_GEN_PARAM_VALUE", "Groups=" + Arrays.deepToString(currentGroups));
-    }
     return currentGroups;
   }
 
@@ -187,15 +178,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       }
       currentUser = getAdminController().getUserFull(getCurrentUserId());
     }
-    if (currentUser == null) {
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentUser",
-          "root.MSG_GEN_PARAM_VALUE", "User NULL !");
-    } else {
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentUser",
-          "root.MSG_GEN_PARAM_VALUE", "User=" + getCurrentUserId());
-    }
     return currentUser;
   }
 
@@ -208,15 +190,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         return null;
       }
       currentGroup = getAdminController().getGroupById(getCurrentGroupId());
-    }
-    if (currentGroup == null) {
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentGroup",
-          "root.MSG_GEN_PARAM_VALUE", "Group NULL !");
-    } else {
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentGroup",
-          "root.MSG_GEN_PARAM_VALUE", "Group=" + getCurrentGroupId());
     }
     return currentGroup;
   }
@@ -338,7 +311,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       }
       return internalName;
     } catch (Exception e) {
-      SilverTrace.info("jobOrganizationPeas",
+      SilverTrace.error("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getComponentOfficialName",
           "root.MSG_GEN_PARAM_VALUE", "!!!!! ERROR getting official name="
           + internalName, e);

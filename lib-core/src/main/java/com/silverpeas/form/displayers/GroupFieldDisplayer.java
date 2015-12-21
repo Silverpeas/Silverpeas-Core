@@ -80,8 +80,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     String language = PagesContext.getLanguage();
 
     if (!GroupField.TYPE.equals(template.getTypeName())) {
-      SilverTrace.info("form", "GroupFieldDisplayer.displayScripts",
-          "form.INFO_NOT_CORRECT_TYPE", GroupField.TYPE);
+
     }
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
@@ -106,10 +105,6 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
   @Override
   public void display(PrintWriter out, GroupField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    SilverTrace.info("form", "GroupFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
-        + ", fieldType = " + field.getTypeName());
-
     String language = pageContext.getLanguage();
     String selectGroupImg = Util.getIcon("groupPanel");
     String selectGroupLab = Util.getString("groupPanel", language);
@@ -123,8 +118,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     String fieldName = template.getFieldName();
 
     if (!GroupField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "GroupFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          GroupField.TYPE);
+
     } else {
       groupId = field.getGroupId();
     }

@@ -79,8 +79,7 @@ public class TextAreaFieldDisplayer extends AbstractTextFieldDisplayer {
     Map<String, String> parameters = template.getParameters(PagesContext.getLanguage());
 
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      SilverTrace.info("form", "TextAreaFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          TextField.TYPE);
+
     }
 
     if (!field.isNull()) {

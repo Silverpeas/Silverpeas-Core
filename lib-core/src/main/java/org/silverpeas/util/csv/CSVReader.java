@@ -154,8 +154,7 @@ public class CSVReader {
         setM_specificNbCols(st.countTokens() - m_nbCols);
       }
       while (theLine != null) {
-        SilverTrace.info("util", "CSVReader.parseStream()",
-            "root.MSG_PARAM_VALUE", "Line=" + lineNumber);
+
         if (theLine.trim().length() > 0) {
           try {
             valret.add(parseLine(theLine, lineNumber));
@@ -215,8 +214,7 @@ public class CSVReader {
         } else {
           valret[i] = new Variant(theValue, m_colTypes[i]);
         }
-        SilverTrace.info("util", "CSVReader.parseLine()",
-            "root.MSG_PARAM_VALUE", "Token=" + theValue);
+
       } catch (UtilException e) {
         listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
             Integer.toString(lineNumber)).append(", ");
@@ -274,8 +272,7 @@ public class CSVReader {
       if (isExtraColumnsControlEnabled()) {
         try {
           valret[j] = new Variant(theValue, m_specificColTypes[i]);
-          SilverTrace.info("util", "CSVReader.parseLine()",
-              "root.MSG_PARAM_VALUE", "Token=" + theValue);
+
           if ((theValue == null) || (theValue.length() <= 0)) {
             if (Boolean.parseBoolean(m_specificColMandatory[i])) {
               listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
@@ -303,8 +300,7 @@ public class CSVReader {
         try {
           valret[j] = new Variant(theValue, "STRING");
         } catch (UtilException e) {
-          SilverTrace.info("util", "CSVReader.parseLine()",
-              "root.MSG_PARAM_VALUE", "Token=" + theValue);
+
         }
       }
       start = end + 1;

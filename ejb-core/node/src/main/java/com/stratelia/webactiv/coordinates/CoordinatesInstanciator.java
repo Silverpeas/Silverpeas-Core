@@ -48,10 +48,6 @@ public class CoordinatesInstanciator extends SQLRequest {
 
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("coordinates", "CoordinatesInstanciator.delete()",
-        "root.MSG_GEN_PARAM_VALUE", "delete called with space = " + spaceId
-        + " and component = " + componentId);
-
     setDeleteQueries();
 
     deleteDataOfInstance(con, componentId, "Coordinates");

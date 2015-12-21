@@ -52,8 +52,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void setQuestionResultToUser(QuestionResult result) {
-    SilverTrace.info("questionResult", "DefaultQuestionResultService.setQuestionResultToUser()",
-        "root.MSG_GEN_ENTER_METHOD", "questionResult =" + result);
+
     Connection con = getConnection();
     try {
       QuestionResultDAO.setQuestionResultToUser(con, result);
@@ -68,8 +67,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
 
   @Override
   public Collection<QuestionResult> getQuestionResultToQuestion(ForeignPK questionPK) {
-    SilverTrace.info("questionResult", "DefaultQuestionResultService.getQuestionResultToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+
     Connection con = getConnection();
     try {
       return QuestionResultDAO.getQuestionResultToQuestion(con, questionPK);
@@ -138,10 +136,6 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   public Collection<QuestionResult> getQuestionResultToQuestionByParticipation(ForeignPK questionPK,
       int participationId) {
-    SilverTrace.info("questionResult",
-        "DefaultQuestionResultService.getQuestionResultToQuestionByParticipation()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK + ", participationId = " + participationId);
     Connection con = getConnection();
     try {
       return QuestionResultDAO
@@ -159,11 +153,6 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   public Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(String userId,
       ForeignPK questionPK, int participationId) {
-    SilverTrace.info("questionResult",
-        "DefaultQuestionResultService.getUserQuestionResultsToQuestionByParticipation()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "userId = " + userId + ", questionPK =" + questionPK + ", participationId = " +
-            participationId);
     Connection con = getConnection();
     try {
       return QuestionResultDAO
@@ -182,8 +171,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void setQuestionResultsToUser(Collection<QuestionResult> results) {
-    SilverTrace.info("questionResult", "DefaultQuestionResultService.setQuestionResultsToUser()",
-        "root.MSG_GEN_ENTER_METHOD", "");
+
     if (results != null) {
       for (QuestionResult questionResult : results) {
         setQuestionResultToUser(questionResult);
@@ -194,9 +182,6 @@ public class DefaultQuestionResultService implements QuestionResultService {
   @Override
   public QuestionResult getUserAnswerToQuestion(String userId, ForeignPK questionPK,
       AnswerPK answerPK) {
-    SilverTrace.info("questionResult", "DefaultQuestionResultService.getUserAnswerToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "userId = " + userId + ", questionPK =" + questionPK + ", answerPK =" + answerPK);
     Connection con = getConnection();
     try {
       return QuestionResultDAO.getUserAnswerToQuestion(con, userId, questionPK, answerPK);

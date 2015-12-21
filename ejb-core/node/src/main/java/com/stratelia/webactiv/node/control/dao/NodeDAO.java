@@ -499,8 +499,7 @@ public class NodeDAO {
 
   public static List<NodeDetail> getSubTree(Connection con, NodePK nodePK, String status)
       throws SQLException {
-    SilverTrace.info("node", "NodeDAO.getSubTree()", "root.MSG_GEN_ENTER_METHOD",
-        "nodePK = " + nodePK + ", status = " + status);
+
     // get the path of the given nodePK
     NodeDetail detail = loadRow(con, nodePK);
 
@@ -768,8 +767,7 @@ public class NodeDAO {
     String language = nd.getLanguage();
 
     int nbBrothers = getChildrenNumber(con, nd.getFatherPK());
-    SilverTrace.info("node", "NodeDAO.insertRow()", "root.MSG_GEN_PARAM_VALUE",
-        "fatherId = " + nd.getFatherPK().getId() + ", nbBrothers = " + nbBrothers);
+
 
     int order = nbBrothers + 1;
 
@@ -897,8 +895,7 @@ public class NodeDAO {
 
 
     NodeDetail detail = null;
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
-        "selectQuery = " + SELECT_NODE_BY_ID);
+
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -940,8 +937,7 @@ public class NodeDAO {
     selectQuery.append(" where lower(nodename)=?");
     selectQuery.append(" and instanceId=?");
     selectQuery.append(" and nodefatherid=?");
-    SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
-        "selectQuery = " + selectQuery.toString());
+
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -1052,8 +1048,7 @@ public class NodeDAO {
 
   public static void updateRightsDependency(Connection con, NodePK pk, int rightsDependsOn)
       throws SQLException {
-    SilverTrace.info("node", "NodeDAO.updateRightsDependency()", "root.MSG_GEN_ENTER_METHOD",
-        "nodePK = " + pk.toString() + ", rightsDependsOn = " + rightsDependsOn);
+
 
     StringBuilder updateStatement = new StringBuilder();
     updateStatement.append("update ").append(pk.getTableName());

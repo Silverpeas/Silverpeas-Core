@@ -681,8 +681,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     SilverTrace
         .info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : " + lastName);
 
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER",
-        "AccessLevel : " + accessLevel);
+
   }
 
   @Override

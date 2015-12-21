@@ -55,8 +55,7 @@ public class QuestionResultDAO {
 
   private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
       throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.getQuestionResultFromResultSet()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+
     String id = Integer.toString(rs.getInt(1));
     String questionId = Integer.toString(rs.getInt(2));
     String userId = rs.getString(3);
@@ -75,8 +74,7 @@ public class QuestionResultDAO {
 
   public static Collection<QuestionResult> getUserQuestionResultsToQuestion(Connection con,
       String userId, ForeignPK questionPK) throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.getUserQuestionResultsToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", questionPK =" + questionPK);
+
     ResultSet rs = null;
     QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
@@ -105,8 +103,7 @@ public class QuestionResultDAO {
 
   public static Collection<String> getUsersByAnswer(Connection con, String answerId)
       throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.getUserQuestionResultsToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "answerId = " + answerId);
+
     ResultSet rs = null;
     String tableName = "SB_Question_QuestionResult";
 
@@ -132,11 +129,6 @@ public class QuestionResultDAO {
   public static Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(
       Connection con, String userId, ForeignPK questionPK, int participationId)
       throws SQLException {
-    SilverTrace.info("questionResult",
-        "QuestionResultDAO.getUserQuestionResultsToQuestionByParticipation()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "userId = " + userId + ", questionPK =" + questionPK + ", participationId = " +
-            participationId);
     ResultSet rs = null;
     QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
@@ -166,8 +158,7 @@ public class QuestionResultDAO {
 
   public static Collection<QuestionResult> getQuestionResultToQuestion(Connection con,
       ForeignPK questionPK) throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.getQuestionResultToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+
     ResultSet rs = null;
     QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
@@ -226,8 +217,7 @@ public class QuestionResultDAO {
 
   public static void setQuestionResultToUser(Connection con, QuestionResult result)
       throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.setQuestionResultToUser()",
-        "root.MSG_GEN_ENTER_METHOD", "questionResult =" + result);
+
 
     int newId;
     String questionId = result.getQuestionPK().getId();
@@ -275,8 +265,7 @@ public class QuestionResultDAO {
 
   public static void deleteQuestionResultToQuestion(Connection con, ForeignPK questionPK)
       throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.deleteQuestionResultToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+
 
     String deleteStatement = "DELETE FROM sb_question_questionresult WHERE questionId = ? ";
     PreparedStatement prepStmt = null;
@@ -291,8 +280,7 @@ public class QuestionResultDAO {
 
   public static QuestionResult getUserAnswerToQuestion(Connection con, String userId,
       ForeignPK questionPK, AnswerPK answerPK) throws SQLException {
-    SilverTrace.info("questionResult", "QuestionResultDAO.AnswerPK()", "root.MSG_GEN_ENTER_METHOD",
-        "userId = " + userId + ", questionPK =" + questionPK + ", answerPK =" + answerPK);
+
     ResultSet rs = null;
     String tableName = "SB_Question_QuestionResult";
 

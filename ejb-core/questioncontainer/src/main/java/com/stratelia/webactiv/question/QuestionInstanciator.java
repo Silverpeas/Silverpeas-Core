@@ -49,8 +49,7 @@ public class QuestionInstanciator extends SQLRequest {
 
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("question", "QuestionInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
-        "spaceId = " + spaceId + ", componentId = " + componentId);
+
     try {
       // Create the images directory on the server disk
       createImagesDirectory(spaceId, componentId);
@@ -58,14 +57,12 @@ public class QuestionInstanciator extends SQLRequest {
       throw new InstanciationException("QuestionInstanciator.create()", SilverpeasException.ERROR,
           "question.CREATING_IMAGES_DIRECTORY_FAILED", e);
     }
-    SilverTrace.info("question", "QuestionInstanciator.create()", "root.MSG_GEN_EXIT_METHOD",
-        "spaceId = " + spaceId + ", componentId = " + componentId);
+
   }
 
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace.info("question", "QuestionInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
-        "spaceId = " + spaceId + ", componentId = " + componentId);
+
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -83,8 +80,7 @@ public class QuestionInstanciator extends SQLRequest {
           "question.DELETING_IMAGES_DIRECTORY_FAILED", e);
     }
 
-    SilverTrace.info("question", "QuestionInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD",
-        "spaceId = " + spaceId + ", componentId = " + componentId);
+
   }
 
   private void createImagesDirectory(String spaceId, String componentId)

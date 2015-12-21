@@ -144,8 +144,7 @@ public class AuthenticationSQL extends Authentication {
         throw new AuthenticationBadCredentialException("AuthenticationSQL.doAuthentication()",
             SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
-      SilverTrace.info(module, "AuthenticationSQL.doAuthentication()",
-          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
+
     } catch (SQLException ex) {
       throw new AuthenticationHostException("AuthenticationSQL.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);

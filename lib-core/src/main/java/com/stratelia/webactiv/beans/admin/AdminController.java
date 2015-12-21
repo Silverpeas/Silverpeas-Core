@@ -68,8 +68,7 @@ public class AdminController implements java.io.Serializable {
   // Space Instances related functions
   // ----------------------------------------------
   public String getGeneralSpaceId() {
-    SilverTrace.info("admin", "AdminController.getGeneralSpaceId",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGeneralSpaceId();
     } catch (Exception e) {
@@ -81,8 +80,7 @@ public class AdminController implements java.io.Serializable {
 
   /* Return true if the given space name exists */
   public boolean isSpaceInstExist(String sClientSpaceId) {
-    SilverTrace.info("admin", "AdminController.isSpaceInstExist",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.isSpaceInstExist(sClientSpaceId);
     } catch (Exception e) {
@@ -94,8 +92,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the space Instance corresponding to the given space id */
   public SpaceInst getSpaceInstById(String sSpaceId) {
-    SilverTrace.info("admin", "AdminController.getSpaceInstById",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getSpaceInstById(sSpaceId);
     } catch (Exception e) {
@@ -106,8 +103,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public SpaceInstLight getSpaceInstLight(String sSpaceId) {
-    SilverTrace.info("admin", "AdminController.getSpaceInstLight",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getSpaceInstLightById(sSpaceId);
     } catch (Exception e) {
@@ -118,8 +114,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) {
-    SilverTrace.info("admin", "AdminController.getTreeView",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getTreeView(userId, spaceId);
     } catch (Exception e) {
@@ -130,8 +125,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public List<SpaceInstLight> getPathToComponent(String componentId) {
-    SilverTrace.info("admin", "AdminController.getPathToComponent",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getPathToComponent(componentId);
     } catch (Exception e) {
@@ -142,8 +136,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public List<SpaceInstLight> getPathToSpace(String spaceId, boolean includeTarget) {
-    SilverTrace.info("admin", "AdminController.getPathToSpace",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getPathToSpace(spaceId, includeTarget);
     } catch (Exception e) {
@@ -155,8 +148,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the space Instance corresponding to the given space id */
   public String[] getUserManageableSpaceRootIds(String sUserId) {
-    SilverTrace.info("admin", "AdminController.getUserManageableSpaceRootIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserManageableSpaceRootIds(sUserId);
     } catch (Exception e) {
@@ -170,8 +162,7 @@ public class AdminController implements java.io.Serializable {
   /** Return the space Instance corresponding to the given space id */
   public String[] getUserManageableSubSpaceIds(String sUserId,
       String sParentSpace) {
-    SilverTrace.info("admin", "AdminController.getUserManageableSubSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserManageableSubSpaceIds(sUserId, sParentSpace);
     } catch (Exception e) {
@@ -186,8 +177,7 @@ public class AdminController implements java.io.Serializable {
 * Return the space Instance corresponding to the given space id : FORMAT EX : 123
 */
   public String[] getUserManageableSpaceIds(String sUserId) {
-    SilverTrace.info("admin", "AdminController.getUserManageableSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserManageableSpaceIds(sUserId);
     } catch (Exception e) {
@@ -202,8 +192,7 @@ public class AdminController implements java.io.Serializable {
 */
   /** If user is Admin, return all space Ids */
   public String[] getUserManageableSpaceClientIds(String sUserId) {
-    SilverTrace.info("admin", "AdminController.getUserManageableSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       UserDetail user = admin.getUserDetail(sUserId);
       if (user.isAccessAdmin() || sUserId.equals("0")) {
@@ -221,8 +210,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Add the given space Instance */
   public String addSpaceInst(SpaceInst spaceInst) {
-    SilverTrace.info("admin", "AdminController.addSpaceInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addSpaceInst(spaceInst.getCreatorUserId(), spaceInst);
     } catch (Exception e) {
@@ -233,8 +221,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Delete the space Instance corresponding to the given space id */
   public String deleteSpaceInstById(UserDetail user, String sSpaceInstId, boolean definitive) {
-    SilverTrace.info("admin", "AdminController.deleteSpaceInstById",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteSpaceInstById(user.getId(), sSpaceInstId, definitive);
     } catch (Exception e) {
@@ -278,8 +265,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return all the spaces Id available in webactiv */
   public String[] getAllSpaceIds() {
-    SilverTrace.info("admin", "AdminController.getAllSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllSpaceIds();
     } catch (Exception e) {
@@ -291,8 +277,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return all the spaces Id available for the given userId */
   public String[] getAllSpaceIds(String userId) {
-    SilverTrace.info("admin", "AdminController.getAllSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD", "userId = " + userId);
+
     try {
       return admin.getAllSpaceIds(userId);
     } catch (Exception e) {
@@ -306,8 +291,7 @@ public class AdminController implements java.io.Serializable {
 * Return all the sub spaces Id available in webactiv given the fatherDomainId
 */
   public String[] getAllSubSpaceIds(String sDomainFatherId) {
-    SilverTrace.info("admin", "AdminController.getAllSubSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllSubSpaceIds(sDomainFatherId);
     } catch (Exception e) {
@@ -321,9 +305,6 @@ public class AdminController implements java.io.Serializable {
 * Return all the sub spaces Id available for the given user and the given fatherDomainId
 */
   public String[] getAllSubSpaceIds(String sDomainFatherId, String userId) {
-    SilverTrace.info("admin", "AdminController.getAllSubSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD", "sDomainFatherId = " + sDomainFatherId
-        + ", userId = " + userId);
     try {
       return admin.getAllSubSpaceIds(sDomainFatherId, userId);
     } catch (Exception e) {
@@ -335,8 +316,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the the spaces name corresponding to the given space ids */
   public String[] getSpaceNames(String[] asSpaceIds) {
-    SilverTrace.info("admin", "AdminController.getSpaceNames",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getSpaceNames(asSpaceIds);
     } catch (Exception e) {
@@ -347,8 +327,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public void updateSpaceOrderNum(String sSpaceId, int orderNum) {
-    SilverTrace.info("admin", "AdminController.updateSpaceOrderNum",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       admin.updateSpaceOrderNum(sSpaceId, orderNum);
     } catch (Exception e) {
@@ -363,8 +342,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Move space in the given space with the given fatherId */
   public void moveSpace(String spaceId, String fatherId) throws AdminException {
-    SilverTrace.info("admin", "AdminController.moveSpace",
-        "root.MSG_GEN_ENTER_METHOD", "moving "+spaceId+" in space "+fatherId);
+
     admin.moveSpace(spaceId, fatherId);
   }
 
@@ -373,8 +351,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   /** Return all the components names available in webactiv */
   public Map<String, String> getAllComponentsNames() {
-    SilverTrace.info("admin", "AdminController.getAllComponentsNames",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllComponentsNames();
     } catch (Exception e) {
@@ -386,8 +363,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return all the components of silverpeas read in the xmlComponent directory */
   public Map<String, WAComponent> getAllComponents() {
-    SilverTrace.info("admin", "AdminController.getAllComponents",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllComponents();
     } catch (Exception e) {
@@ -399,8 +375,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the component Instance corresponding to the given component id */
   public ComponentInst getComponentInst(String sComponentId) {
-    SilverTrace.info("admin", "AdminController.getComponentInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getComponentInst(sComponentId);
     } catch (Exception e) {
@@ -411,8 +386,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public ComponentInstLight getComponentInstLight(String sComponentId) {
-    SilverTrace.info("admin", "AdminController.getComponentInstLight",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getComponentInstLight(sComponentId);
     } catch (Exception e) {
@@ -462,8 +436,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Delete the component Instance corresponding to the given component id */
   public String deleteComponentInst(UserDetail user, String sComponentId, boolean definitive) {
-    SilverTrace.info("admin", "AdminController.deleteComponentInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteComponentInst(user.getId(), sComponentId, definitive);
     } catch (Exception e) {
@@ -478,8 +451,7 @@ public class AdminController implements java.io.Serializable {
 * ComponentInst
 */
   public String updateComponentInst(ComponentInst componentInst) {
-    SilverTrace.info("admin", "AdminController.updateComponentInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateComponentInst(componentInst);
     } catch (Exception e) {
@@ -493,8 +465,7 @@ public class AdminController implements java.io.Serializable {
   public void moveComponentInst(String spaceId, String componentId,
       String idComponentBefore, ComponentInst[] componentInsts)
       throws AdminException {
-    SilverTrace.info("admin", "AdminController.moveComponentInst",
-        "root.MSG_GEN_ENTER_METHOD", "moving "+componentId+" in space "+spaceId);
+
     admin.moveComponentInst(spaceId, componentId, idComponentBefore, componentInsts);
   }
 
@@ -502,8 +473,7 @@ public class AdminController implements java.io.Serializable {
 * Return the component ids available for the cuurent user Id in the given space id
 */
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
-    SilverTrace.info("admin", "AdminController.getAvailCompoIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAvailCompoIds(sClientSpaceId, sUserId);
     } catch (Exception e) {
@@ -514,8 +484,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public boolean isComponentAvailable(String componentId, String userId) {
-    SilverTrace.info("admin", "AdminController.isComponentAvailable",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.isComponentAvailable(componentId, userId);
     } catch (Exception e) {
@@ -532,8 +501,7 @@ public class AdminController implements java.io.Serializable {
 * @return true if the space is accessible - false otherwise.
 */
   public boolean isSpaceAvailable(String userId, String spaceId) {
-    SilverTrace.info("admin", "AdminController.isSpaceAvailable",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.isSpaceAvailable(userId, spaceId);
     } catch (Exception e) {
@@ -544,8 +512,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public void updateComponentOrderNum(String sComponentId, int orderNum) {
-    SilverTrace.info("admin", "AdminController.updateComponentOrderNum",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       admin.updateComponentOrderNum(sComponentId, orderNum);
     } catch (Exception e) {
@@ -604,8 +571,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   /** Return all the profiles names available for the given profile */
   public String[] getAllProfilesNames(String sComponentName) {
-    SilverTrace.info("admin", "AdminController.getAllProfilesNames",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllProfilesNames(sComponentName);
     } catch (Exception e) {
@@ -617,8 +583,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the profile Instance corresponding to the given profile id */
   public ProfileInst getProfileInst(String sProfileId) {
-    SilverTrace.info("admin", "AdminController.getProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getProfileInst(sProfileId);
     } catch (Exception e) {
@@ -630,8 +595,7 @@ public class AdminController implements java.io.Serializable {
 
   public List<ProfileInst> getProfilesByObject(String objectId, String objectType,
       String componentId) {
-    SilverTrace.info("admin", "AdminController.getProfilesByObject",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getProfilesByObject(objectId, objectType, componentId);
     } catch (Exception e) {
@@ -643,8 +607,7 @@ public class AdminController implements java.io.Serializable {
 
   public String[] getProfilesByObjectAndUserId(int objectId, String objectType,
       String componentId, String userId) {
-    SilverTrace.info("admin", "AdminController.getProfilesByObjectAndUserId",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getProfilesByObjectAndUserId(objectId, objectType, componentId, userId);
     } catch (Exception e) {
@@ -656,8 +619,7 @@ public class AdminController implements java.io.Serializable {
 
   public boolean isObjectAvailable(int objectId, String objectType,
       String componentId, String userId) {
-    SilverTrace.info("admin", "AdminController.isObjectAvailable",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.isObjectAvailable(componentId, objectId, objectType, userId);
     } catch (Exception e) {
@@ -673,8 +635,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String addProfileInst(ProfileInst profileInst, String userId) {
-    SilverTrace.info("admin", "AdminController.addProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addProfileInst(profileInst, userId);
     } catch (Exception e) {
@@ -694,8 +655,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String deleteProfileInst(String sProfileId, String userId) {
-    SilverTrace.info("admin", "AdminController.deleteProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteProfileInst(sProfileId, userId);
     } catch (Exception e) {
@@ -713,8 +673,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String updateProfileInst(ProfileInst profileInst, String userId) {
-    SilverTrace.info("admin", "AdminController.updateProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateProfileInst(profileInst, userId);
     } catch (Exception e) {
@@ -728,8 +687,7 @@ public class AdminController implements java.io.Serializable {
 * Get the profile label from its name
 */
   public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
-    SilverTrace.info("admin", "AdminController.getProfileLabelfromName",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getProfileLabelfromName(sComponentName, sProfileName, lang);
     } catch (Exception e) {
@@ -748,8 +706,7 @@ public class AdminController implements java.io.Serializable {
 * @return an array of profile IDs
 */
   public String[] getProfileIds(String sUserId) {
-    SilverTrace.info("admin", "AdminController.getProfileIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getProfileIds(sUserId);
     } catch (Exception e) {
@@ -767,8 +724,7 @@ public class AdminController implements java.io.Serializable {
 * @return an array of profile IDs
 */
   public String[] getProfileIdsOfGroup(String sGroupId) {
-    SilverTrace.info("admin", "AdminController.getProfileIdsOfGroup",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getProfileIdsOfGroup(sGroupId);
     } catch (Exception e) {
@@ -851,8 +807,7 @@ public class AdminController implements java.io.Serializable {
   // User related functions
   // ----------------------------------------------
   public String[] getDirectGroupsIdsOfUser(String userId) {
-    SilverTrace.info("admin", "AdminController.getDirectGroupsIdsOfUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getDirectGroupsIdsOfUser(userId);
     } catch (Exception e) {
@@ -866,8 +821,7 @@ public class AdminController implements java.io.Serializable {
 * Add a new domain
 */
   public String addDomain(Domain theDomain) {
-    SilverTrace.info("admin", "AdminController.addDomain",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addDomain(theDomain);
     } catch (Exception e) {
@@ -881,8 +835,7 @@ public class AdminController implements java.io.Serializable {
 * update a domain
 */
   public String updateDomain(Domain theDomain) {
-    SilverTrace.info("admin", "AdminController.updateDomain",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateDomain(theDomain);
     } catch (Exception e) {
@@ -896,8 +849,7 @@ public class AdminController implements java.io.Serializable {
 * Remove a domain
 */
   public String removeDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.removeDomain",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.removeDomain(domainId);
     } catch (Exception e) {
@@ -911,8 +863,7 @@ public class AdminController implements java.io.Serializable {
 * Get a domain with given id
 */
   public Domain getDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.getDomain",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getDomain(domainId);
     } catch (Exception e) {
@@ -926,8 +877,7 @@ public class AdminController implements java.io.Serializable {
 * Get a domain's possible actions
 */
   public long getDomainActions(String domainId) {
-    SilverTrace.info("admin", "AdminController.getDomainActions",
-        "root.MSG_GEN_ENTER_METHOD", "domainID = " + domainId);
+
     try {
       return admin.getDomainActions(domainId);
     } catch (Exception e) {
@@ -941,8 +891,7 @@ public class AdminController implements java.io.Serializable {
 * Get ALL the domain's groups
 */
   public Group[] getRootGroupsOfDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.getRootGroupsOfDomain",
-        "root.MSG_GEN_ENTER_METHOD", "domainID = " + domainId);
+
     try {
       return admin.getRootGroupsOfDomain(domainId);
     } catch (Exception e) {
@@ -956,8 +905,7 @@ public class AdminController implements java.io.Serializable {
 * Get ALL Group Ids for the domain's groups
 */
   public String[] getRootGroupIdsOfDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.getRootGroupIdsOfDomain",
-        "root.MSG_GEN_ENTER_METHOD", "domainID = " + domainId);
+
     try {
       return admin.getRootGroupIdsOfDomain(domainId);
     } catch (Exception e) {
@@ -971,8 +919,7 @@ public class AdminController implements java.io.Serializable {
 * Get ALL the users that are in a group or his sub groups
 */
   public UserDetail[] getAllUsersOfGroup(String groupId) {
-    SilverTrace.info("admin", "AdminController.getAllUsersOfGroup",
-        "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
+
     try {
       return admin.getAllUsersOfGroup(groupId);
     } catch (Exception e) {
@@ -986,8 +933,7 @@ public class AdminController implements java.io.Serializable {
 * Get ALL the domain's users
 */
   public UserDetail[] getUsersOfDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.getUsersOfDomain",
-        "root.MSG_GEN_ENTER_METHOD", "domainID = " + domainId);
+
     try {
       return admin.getUsersOfDomain(domainId);
     } catch (Exception e) {
@@ -1001,8 +947,7 @@ public class AdminController implements java.io.Serializable {
 * Get ALL the userId of the domain
 */
   public String[] getUserIdsOfDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.getUserIdsOfDomain",
-        "root.MSG_GEN_ENTER_METHOD", "domainID = " + domainId);
+
     try {
       return admin.getUserIdsOfDomain(domainId);
     } catch (Exception e) {
@@ -1016,8 +961,7 @@ public class AdminController implements java.io.Serializable {
 * Get number of the domain's users
 */
   public int getUsersNumberOfDomain(String domainId) {
-    SilverTrace.info("admin", "AdminController.getUsersNumberOfDomain",
-        "root.MSG_GEN_ENTER_METHOD", "domainID = " + domainId);
+
     try {
       return admin.getUsersNumberOfDomain(domainId);
     } catch (Exception e) {
@@ -1031,8 +975,7 @@ public class AdminController implements java.io.Serializable {
 * Get all domains declared in Silverpeas
 */
   public Domain[] getAllDomains() {
-    SilverTrace.info("admin", "AdminController.getAllDomains",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllDomains();
     } catch (Exception e) {
@@ -1049,8 +992,7 @@ public class AdminController implements java.io.Serializable {
   * Return the space profile Instance corresponding to the given space profile id
   */
   public SpaceProfileInst getSpaceProfileInst(String sSpaceProfileId) {
-    SilverTrace.info("admin", "AdminController.getSpaceProfileInst",
-          "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getSpaceProfileInst(sSpaceProfileId);
     } catch (Exception e) {
@@ -1063,8 +1005,7 @@ public class AdminController implements java.io.Serializable {
   /** Add the given Space Profile Instance */
   public String addSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       String userId) {
-    SilverTrace.info("admin", "AdminController.addSpaceProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addSpaceProfileInst(spaceProfileInst, userId);
     } catch (Exception e) {
@@ -1078,8 +1019,7 @@ public class AdminController implements java.io.Serializable {
 * Delete the Space Profile Instance corresponding to the given Space Profile id
 */
   public String deleteSpaceProfileInst(String sSpaceProfileId, String userId) {
-    SilverTrace.info("admin", "AdminController.deleteSpaceProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteSpaceProfileInst(sSpaceProfileId, userId);
     } catch (Exception e) {
@@ -1095,8 +1035,7 @@ public class AdminController implements java.io.Serializable {
 */
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       String userId) {
-    SilverTrace.info("admin", "AdminController.updateSpaceProfileInst",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateSpaceProfileInst(spaceProfileInst, userId);
     } catch (Exception e) {
@@ -1111,8 +1050,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   /** Return all the groups ids available in webactiv */
   public String[] getAllGroupsIds() {
-    SilverTrace.info("admin", "AdminController.getAllGroupsIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllGroupIds();
     } catch (Exception e) {
@@ -1126,8 +1064,7 @@ public class AdminController implements java.io.Serializable {
 * @return all the root groups ids available
 */
   public String[] getAllRootGroupIds() {
-    SilverTrace.info("admin", "AdminController.getAllRootGroupsIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllRootGroupIds();
     } catch (Exception e) {
@@ -1141,8 +1078,7 @@ public class AdminController implements java.io.Serializable {
 * @return all the direct subgroups ids of a given group
 */
   public String[] getAllSubGroupIds(String groupId) {
-    SilverTrace.info("admin", "AdminController.getDirectSubgroupIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllSubGroupIds(groupId);
     } catch (Exception e) {
@@ -1156,8 +1092,7 @@ public class AdminController implements java.io.Serializable {
 * @return all subgroups ids of a given group
 */
   public String[] getAllSubGroupIdsRecursively(String groupId) {
-    SilverTrace.info("admin", "AdminController.getAllSubGroupIdsRecursively",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllSubGroupIdsRecursively(groupId);
     } catch (Exception e) {
@@ -1170,8 +1105,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return all the group names corresponding to the given group Ids */
   public String[] getGroupNames(String[] asGroupIds) {
-    SilverTrace.info("admin", "AdminController.getGroupNames",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGroupNames(asGroupIds);
     } catch (Exception e) {
@@ -1183,8 +1117,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the group name corresponding to the given group Id */
   public String getGroupName(String sGroupId) {
-    SilverTrace.info("admin", "AdminController.getGroupName",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGroupName(sGroupId);
     } catch (Exception e) {
@@ -1196,8 +1129,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return all the user ids available in webactiv */
   public String[] getAllUsersIds() {
-    SilverTrace.info("admin", "AdminController.getAllUsersIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllUsersIds();
     } catch (Exception e) {
@@ -1212,8 +1144,7 @@ public class AdminController implements java.io.Serializable {
 * @return the array of space IDs
 */
   public String[] getGroupManageableSpaceIds(String sGroupId) {
-    SilverTrace.info("admin", "AdminController.getGroupManageableSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGroupManageableSpaceIds(sGroupId);
     } catch (Exception e) {
@@ -1225,8 +1156,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the group profile */
   public GroupProfileInst getGroupProfile(String groupId) {
-    SilverTrace.info("admin", "AdminController.getGroupProfile",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGroupProfileInst(groupId);
     } catch (Exception e) {
@@ -1238,8 +1168,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Delete the Group Profile */
   public String deleteGroupProfile(String groupId) {
-    SilverTrace.info("admin", "AdminController.deleteGroupProfile",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteGroupProfileInst(groupId);
     } catch (Exception e) {
@@ -1251,8 +1180,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Update the Group Profile */
   public String updateGroupProfile(GroupProfileInst profile) {
-    SilverTrace.info("admin", "AdminController.updateGroupProfile",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateGroupProfileInst(profile);
     } catch (Exception e) {
@@ -1267,8 +1195,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   /** Return the general admin id */
   public String getDAPIGeneralAdminId() {
-    SilverTrace.info("admin", "AdminController.getDAPIGeneralAdminId",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getDAPIGeneralAdminId();
     } catch (Exception e) {
@@ -1283,8 +1210,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   /** Return the admin user detail corresponding to the given id */
   public UserDetail getUserDetail(String sId) {
-    SilverTrace.info("admin", "AdminController.getUserDetail",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserDetail(sId);
     } catch (Exception e) {
@@ -1298,8 +1224,7 @@ public class AdminController implements java.io.Serializable {
 * Return the UserFull of the user with the given Id
 */
   public UserFull getUserFull(String sUserId) {
-    SilverTrace.info("admin", "AdminController.getUserFull",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserFull(sUserId);
     } catch (Exception e) {
@@ -1310,8 +1235,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public UserFull getUserFull(String domainId, String specificId) {
-    SilverTrace.info("admin", "AdminController.getUserFull",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserFull(domainId, specificId);
     } catch (Exception e) {
@@ -1322,8 +1246,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String getUserIdByLoginAndDomain(String sLogin, String sDomainId) {
-    SilverTrace.info("admin", "AdminController.getUserIdByLoginAndDomain",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getUserIdByLoginAndDomain(sLogin, sDomainId);
     } catch (Exception e) {
@@ -1335,8 +1258,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return an array of UserDetail corresponding to the given user Id array */
   public UserDetail[] getUserDetails(String[] asUserIds) {
-    SilverTrace.info("admin", "AdminController.getUserDetails",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       if (asUserIds != null) {
         return admin.getUserDetails(asUserIds);
@@ -1351,8 +1273,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Add the given user */
   public String addUser(UserDetail userDetail) {
-    SilverTrace.info("admin", "AdminController.addUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addUser(userDetail);
     } catch (Exception e) {
@@ -1423,8 +1344,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Delete the given user */
   public String deleteUser(String sUserId) {
-    SilverTrace.info("admin", "AdminController.deleteUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteUser(sUserId);
     } catch (Exception e) {
@@ -1436,8 +1356,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Update the given user */
   public String updateUser(UserDetail userDetail) {
-    SilverTrace.info("admin", "AdminController.updateUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateUser(userDetail);
     } catch (Exception e) {
@@ -1452,8 +1371,7 @@ public class AdminController implements java.io.Serializable {
 * updateUser
 */
   public String updateSynchronizedUser(UserDetail userDetail) {
-    SilverTrace.info("admin", "AdminController.updateSynchronizedUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateUser(userDetail);
     } catch (Exception e) {
@@ -1501,8 +1419,7 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   /** Return all the groups Id available in webactiv */
   public String[] getAllGroupIds() {
-    SilverTrace.info("admin", "AdminController.getAllGroupIds",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAllGroupIds();
     } catch (Exception e) {
@@ -1514,8 +1431,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return true if the group with the given name */
   public boolean isGroupExist(String sName) {
-    SilverTrace.info("admin", "AdminController.isGroupExist",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.isGroupExist(sName);
     } catch (Exception e) {
@@ -1527,8 +1443,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the admin group detail corresponding to the given id */
   public Group getGroupById(String sGroupId) {
-    SilverTrace.info("admin", "AdminController.getGroupById",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGroup(sGroupId);
     } catch (Exception e) {
@@ -1540,8 +1455,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the groupIds from root to group */
   public List<String> getPathToGroup(String groupId) {
-    SilverTrace.info("admin", "AdminController.getPathToGroup",
-        "root.MSG_GEN_ENTER_METHOD", "groupId =" + groupId);
+
     try {
       return admin.getPathToGroup(groupId);
     } catch (Exception e) {
@@ -1553,8 +1467,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Return the admin group detail corresponding to the given group Name */
   public Group getGroupByNameInDomain(String sGroupName, String sDomainFatherId) {
-    SilverTrace.info("admin", "AdminController.getGroupByNameInDomain",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getGroupByNameInDomain(sGroupName, sDomainFatherId);
     } catch (Exception e) {
@@ -1566,8 +1479,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Add the given group */
   public String addGroup(Group group) {
-    SilverTrace.info("admin", "AdminController.addGroup",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.addGroup(group);
     } catch (Exception e) {
@@ -1579,8 +1491,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Delete the given group */
   public String deleteGroupById(String sGroupId) {
-    SilverTrace.info("admin", "AdminController.deleteGroupById",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.deleteGroupById(sGroupId);
     } catch (Exception e) {
@@ -1592,8 +1503,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Update the given group */
   public String updateGroup(Group group) {
-    SilverTrace.info("admin", "AdminController.updateGroup",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.updateGroup(group);
     } catch (Exception e) {
@@ -1604,8 +1514,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public AdminGroupInst[] getAdminOrganization() {
-    SilverTrace.info("admin", "AdminController.getAdminOrganization",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.getAdminOrganization();
     } catch (Exception e) {
@@ -1642,9 +1551,6 @@ public class AdminController implements java.io.Serializable {
 * @return String to show as the report of synchronization
 */
   public String synchronizeSilverpeasWithDomain(String domainId) {
-    SilverTrace.info("admin",
-        "AdminController.synchronizeSilverpeasWithDomain",
-        "root.MSG_GEN_ENTER_METHOD");
     try {
       return admin.synchronizeSilverpeasWithDomain(domainId);
     } catch (Exception e) {
@@ -1656,8 +1562,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeUser(String userId) {
-    SilverTrace.info("admin", "AdminController.synchronizeUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.synchronizeUser(userId, true);
     } catch (Exception e) {
@@ -1668,8 +1573,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeImportUser(String domainId, String userLogin) {
-    SilverTrace.info("admin", "AdminController.synchronizeImportUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.synchronizeImportUser(domainId, userLogin, true);
     } catch (Exception e) {
@@ -1681,9 +1585,6 @@ public class AdminController implements java.io.Serializable {
 
   public List<DomainProperty> getSpecificPropertiesToImportUsers(String domainId,
       String language) {
-    SilverTrace.info("admin",
-        "AdminController.getSpecificPropertiesToImportUsers",
-        "root.MSG_GEN_ENTER_METHOD");
     try {
       return admin.getSpecificPropertiesToImportUsers(domainId, language);
     } catch (Exception e) {
@@ -1695,8 +1596,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public List<UserDetail> searchUsers(String domainId, Map<String, String> query) {
-    SilverTrace.info("admin", "AdminController.searchUsers",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return Arrays.asList(admin.searchUsers(domainId, query));
     } catch (Exception e) {
@@ -1707,8 +1607,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeRemoveUser(String userId) {
-    SilverTrace.info("admin", "AdminController.synchronizeRemoveUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.synchronizeRemoveUser(userId);
     } catch (Exception e) {
@@ -1719,8 +1618,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeGroup(String groupId) {
-    SilverTrace.info("admin", "AdminController.synchronizeGroup",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.synchronizeGroup(groupId, true);
     } catch (Exception e) {
@@ -1731,8 +1629,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeImportGroup(String domainId, String groupName) {
-    SilverTrace.info("admin", "AdminController.synchronizeImportGroup",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.synchronizeImportGroup(domainId, groupName, null, true, false);
     } catch (Exception e) {
@@ -1743,8 +1640,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeRemoveGroup(String groupId) {
-    SilverTrace.info("admin", "AdminController.synchronizeRemoveGroup",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       return admin.synchronizeRemoveGroup(groupId);
     } catch (Exception e) {
@@ -1755,8 +1651,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public void resetAllDBConnections(boolean isScheduled) {
-    // SilverTrace.info("admin", "AdminController.resetAllDBConnections",
-    // "root.MSG_GEN_ENTER_METHOD");
+    //
     try {
       admin.resetAllDBConnections(isScheduled);
     } catch (Exception e) {
@@ -1767,8 +1662,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Removes the given user from the given group */
   public void removeUserFromGroup(String sUserId, String sGroupId) {
-    SilverTrace.info("admin", "AdminController.removeUserFromGroup",
-        "root.MSG_GEN_ENTER_METHOD", "userId = " + sUserId + ", groupId = " + sGroupId);
+
     try {
       admin.removeUserFromGroup(sUserId, sGroupId);
     } catch (Exception e) {
@@ -1779,8 +1673,7 @@ public class AdminController implements java.io.Serializable {
 
   /** Removes the given user from the given group */
   public void addUserInGroup(String sUserId, String sGroupId) {
-    SilverTrace.info("admin", "AdminController.addUserInGroup",
-        "root.MSG_GEN_ENTER_METHOD", "userId = " + sUserId + ", groupId = " + sGroupId);
+
     try {
       admin.addUserInGroup(sUserId, sGroupId);
     } catch (Exception e) {
@@ -1804,8 +1697,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   public boolean isDomainManagerUser(String userId, String domainId) {
-    SilverTrace.info("admin", "AdminController.isDomainManagerUser",
-        "userId = " + userId + ", domainId = " + domainId);
+
     try {
       return admin.isDomainManagerUser(userId, domainId);
     } catch (Exception e) {

@@ -198,43 +198,37 @@ public class DefaultNodeService implements NodeService {
 
   @Override
   public ArrayList<NodeDetail> getSubTree(NodePK pk, String sorting) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTree()", "root.MSG_GEN_ENTER_METHOD",
-        "pk = " + pk + " sorting=" + sorting);
+
     return getSubTree(pk, null, 0, sorting);
   }
 
   @Override
   public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
-        "pk = " + pk + ", status = " + status);
+
     return getSubTree(pk, status, 0, null);
   }
 
   @Override
   public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
-        "pk = " + pk + ", status = " + status + ", sorting=" + sorting);
+
     return getSubTree(pk, status, 0, sorting);
   }
 
   @Override
   public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
-        "pk = " + pk + ", level = " + level);
+
     return getSubTree(pk, null, level, null);
   }
 
   @Override
   public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
-        "pk = " + pk + ", level = " + level + ", sorting=" + sorting);
+
     return getSubTree(pk, null, level, sorting);
   }
 
   @Override
   public ArrayList<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting) {
-    SilverTrace.info("node", "NodeBmEJB.getSubTreeByStatus()", "root.MSG_GEN_ENTER_METHOD",
-        "pk = " + pk + ", status = " + status + ", level = " + level + ", sorting=" + sorting);
+
     Connection con = getConnection();
     try {
       List<NodeDetail> headers = NodeDAO.getAllHeaders(con, pk, sorting, level);
@@ -1015,8 +1009,7 @@ public class DefaultNodeService implements NodeService {
   }
 
   private void createIndex(NodeDetail nodeDetail, boolean processWysiwygContent) {
-    SilverTrace.info("node", "NodeBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-        "nodeDetail = " + nodeDetail);
+
     FullIndexEntry indexEntry = null;
 
     if (nodeDetail != null) {
@@ -1068,8 +1061,7 @@ public class DefaultNodeService implements NodeService {
 
   private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry, NodePK nodePK,
       String language) {
-    SilverTrace.info("node", "NodeBmEJB.updateIndexEntryWithWysiwygContent()",
-        "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry + ", nodePK = " + nodePK);
+
     try {
       if (nodePK != null) {
         String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK

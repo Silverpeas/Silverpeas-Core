@@ -76,8 +76,7 @@ public class SilverpeasWebUtil {
     String componentId;
     String function;
     String pathInfo = request.getPathInfo();
-    SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
-        "root.MSG_GEN_PARAM_VALUE", "pathInfo=" + pathInfo);
+
     if (pathInfo != null) {
       spaceId = null;
       pathInfo = pathInfo.substring(1); // remove first '/'
@@ -108,9 +107,6 @@ public class SilverpeasWebUtil {
               getOrganisationController().getComponentInstLight(componentId);
           spaceId = component.getDomainFatherId();
         }
-        SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
-            "root.MSG_GEN_PARAM_VALUE", "componentId=" + componentId
-            + "spaceId=" + spaceId + " pathInfo=" + pathInfo);
       }
     } else {
       spaceId = "-1";
@@ -118,9 +114,6 @@ public class SilverpeasWebUtil {
       function = "Error";
     }
     String[] context = new String[]{spaceId, componentId, function};
-    SilverTrace.info("peasCore", "ComponentRequestRouter.getComponentId",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId + " | componentId="
-        + componentId + " | function=" + function);
     return context;
   }
 

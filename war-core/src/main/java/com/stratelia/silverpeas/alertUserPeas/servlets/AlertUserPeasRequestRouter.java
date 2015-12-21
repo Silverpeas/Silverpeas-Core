@@ -77,8 +77,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
   public String getDestination(String function, AlertUserPeasSessionController scc,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("alertUserPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
+
     try {
       if (!StringUtil.isDefined(request.getCharacterEncoding())) {
         request.setCharacterEncoding("UTF-8");
@@ -125,8 +124,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("alertUserPeas", "getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 }

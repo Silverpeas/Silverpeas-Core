@@ -80,8 +80,7 @@ public final class FeedUtilities {
     GetMethod get = new GetMethod(feedURL);
     get.addRequestHeader("User-Agent", USER_AGENT);
     get.setFollowRedirects(true);
-    SilverTrace.info("agenda", "FeedUtilities.loadFeed()", "root.MSG_GEN_PARAM_VALUE",
-        "username=" + username + " - pwd=" + password);
+
     if (StringUtil.isDefined(username)) {
       // Set username/password
       byte[] auth = StringUtils
@@ -97,8 +96,7 @@ public final class FeedUtilities {
             .warn("agenda", "FeedUtilities.loadFeed()", "Http connection status : " + status);
         if (status == REMOTE_CALENDAR_RETURNCODE_OK) {
           bytes = get.getResponseBody();
-          SilverTrace.info("agenda", "FeedUtilities.loadFeed()", "agenda.FEED_LOADING_SUCCESSFULLY",
-              bytes.length + " bytes.");
+
         } else {
           SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "agenda.FEED_LOADING_FAILED",
               "Status Http Client=" + status + " Content=" + Arrays.toString(bytes));

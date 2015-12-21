@@ -73,9 +73,6 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
   @Override
   public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId()
-        + ", fieldType = " + field.getTypeName());
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
     String language = pageContext.getLanguage();
     Operation originalOperation = Operation.ADD;

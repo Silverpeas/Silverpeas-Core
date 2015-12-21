@@ -91,9 +91,6 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    * @param pageContext the context of the page.
    */
   protected void deleteAttachment(String attachmentId, PagesContext pageContext) {
-    SilverTrace.info("form", "AbstractFileFieldDisplayer.deleteAttachment",
-        "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId + ", componentId = "
-        + pageContext.getComponentId());
     SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
     SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
         pageContext.getContentLanguage());

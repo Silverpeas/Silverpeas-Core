@@ -224,9 +224,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   private boolean isUserInRole(String userId, ProfileInst profile) {
-    SilverTrace.info("versioningPeas", "VersioningSessionController.isUserInRole()",
-        "root.MSG_GEN_ENTER_METHOD", "document = " + document.getPk().getId() + ", userId = "
-        + userId + "profile=" + profile.getName());
     boolean userInRole = false;
     if (profile.getAllUsers() != null) {
       userInRole = profile.getAllUsers().contains(userId);

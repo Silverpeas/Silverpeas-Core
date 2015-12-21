@@ -88,11 +88,9 @@ public class TodoBackboneAccess {
     NotificationSender notifSender = new NotificationSender(todo.getComponentId());
     try {
       ToDoHeader header = todoDetailToHeader(todo);
-      SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()", "root.MSG_GEN_ENTER_METHOD",
-          "apres header");
+
       String id = getCalendarBm().addToDo(header);
-      SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()", "root.MSG_GEN_ENTER_METHOD",
-          "id=" + id);
+
 
       if (todo.getAttendees() != null) {
         Collection<UserRecipient> selectedUsers = new ArrayList<>(todo.getAttendees().size());
@@ -119,8 +117,7 @@ public class TodoBackboneAccess {
   }
 
   public void updateEntry(TodoDetail todo) {
-    SilverTrace.info("calendar", "TodoBackboneAcess.updateEntry(TodoDetail todo)",
-        "root.MSG_GEN_ENTER_METHOD");
+
     try {
       ToDoHeader header = todoDetailToHeader(todo);
       getCalendarBm().updateToDo(header);
@@ -159,11 +156,6 @@ public class TodoBackboneAccess {
 
   public Vector<TodoDetail> getEntriesFromExternal(String spaceId, String componentId,
       String externalId) {
-    SilverTrace.info("calendar",
-        "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, " +
-            "String externalId)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "spaceId=" + spaceId + ", componentId=" + componentId + ", externalId=" + externalId);
     try {
       Collection<ToDoHeader> headers =
           getCalendarBm().getExternalTodos(spaceId, componentId, externalId);
@@ -199,11 +191,6 @@ public class TodoBackboneAccess {
   }
 
   public void removeEntriesFromExternal(String spaceId, String componentId, String externalId) {
-    SilverTrace.info("calendar",
-        "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, " +
-            "String externalId)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "spaceId=" + spaceId + ", componentId=" + componentId + ", externalId=" + externalId);
     try {
       Collection<ToDoHeader> headers =
           getCalendarBm().getExternalTodos(spaceId, componentId, externalId);
@@ -220,11 +207,6 @@ public class TodoBackboneAccess {
 
   public void removeAttendeeToEntryFromExternal(String componentId, String externalId,
       String userId) {
-    SilverTrace.info("calendar",
-        "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, " +
-            "String externalId, String userId)",
-        "root.MSG_GEN_ENTER_METHOD",
-        "componentId=" + componentId + ", externalId=" + externalId + ", userId = " + userId);
     try {
       Attendee attendee = new Attendee();
       attendee.setUserId(userId);
@@ -245,8 +227,7 @@ public class TodoBackboneAccess {
   }
 
   public void removeEntriesByInstanceId(String instanceId) {
-    SilverTrace.info("calendar", "TodoBackboneAcess.removeEntriesByInstanceId(String instanceId)",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
+
     try {
       getCalendarBm().removeToDoByInstanceId(instanceId);
     } catch (Exception e) {

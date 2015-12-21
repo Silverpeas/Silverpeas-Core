@@ -92,19 +92,11 @@ public class SilverStatisticsPeasRequestRouter extends
   public String getDestination(String function, SilverStatisticsPeasSessionController statsSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + statsSC.getUserId()
-        + " Function=" + function);
-
     UserAccessLevel userProfile = statsSC.getUserProfile();
     if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)
         || UserAccessLevel.SPACE_ADMINISTRATOR.equals(userProfile)) {
       request.setAttribute("UserProfile", userProfile);
     } else {
-      SilverTrace.info("silverStatisticsPeas",
-          "SilverStatisticsPeasRequestRouter.getDestination()",
-          "root.MSG_GEN_PARAM_VALUE", "userProfile=" + userProfile);
       return null;
     }
 
@@ -701,9 +693,6 @@ public class SilverStatisticsPeasRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 

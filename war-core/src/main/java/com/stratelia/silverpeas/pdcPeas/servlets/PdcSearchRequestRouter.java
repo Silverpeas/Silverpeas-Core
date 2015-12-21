@@ -130,8 +130,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   @Override
   public String getDestination(String function, PdcSearchSessionController pdcSC,
       HttpRequest request) {
-    SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
+
     String destination = "";
     // controller to inform the request
     try {
@@ -184,8 +183,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // instance list
         List<Integer> alSilverContentIds = containerInterface.findSilverContentIdByPosition(
             pdcSC.getContainerPosition(), alComponentIds);
-        SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "SearchView",
-            "alSilverContentIds = " + alSilverContentIds.toString());
+
 
         ContentInterface contentInterface = contentPeasPDC.getContentInterface();
 
@@ -221,8 +219,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         String sURLContent = URLManager.getURL(contentPeasPDC.getSessionControlBeanName(), pdcSC
             .getSpaceId(), pdcSC.getComponentId());
         destination = sURLContent + destination;
-        SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "",
-            "Container forwarding to: " + destination);
+
 
         // Put the containerContext in the request
         String sURLContainer = URLManager.getURL(containerPeasPDC.getSessionControlBeanName(), pdcSC
@@ -256,10 +253,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         }
 
         request.setAttribute("ToURL", sURLContent + destination);
-        SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "",
-            "GlobalContentForward - Container forwarding to: redirectToComponent.jsp, ToURL = "
-            + sURLContent + destination);
-
         destination = "/pdcPeas/jsp/redirectToComponent.jsp";
 
         if (contentP != null) {
@@ -277,12 +270,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         containerContext.setClassifyURLIcone(containerPeasPDC.getClassifyURLIcone());
         containerContext.setContainerPositionInterface(pdcSC.getContainerPosition());
         containerContext.setContainerPeas(containerPeasPDC);
-
-        SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.GlobalContentForward",
-            "root.MSG_GEN_PARAM_VALUE", "sURLContainer = " + sURLContainer);
-        SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.GlobalContentForward",
-            "root.MSG_GEN_PARAM_VALUE", "containerPeasPDC.getReturnURL() = "
-            + containerPeasPDC.getReturnURL());
 
         // Put the containerWorkspace in the request
         request.setAttribute("containerWorkspace", pdcSC.getContainerWorkspace());
@@ -1304,8 +1291,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   private List<GlobalSilverContent> pdcSearchOnly(List<Integer> alSilverContentIds,
       PdcSearchSessionController pdcSC)
       throws Exception {
-    SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly", "root.MSG_GEN_PARAM_VALUE",
-        "alSilverContentIds = " + alSilverContentIds);
+
     List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
     if (alSilverContentIds == null || alSilverContentIds.isEmpty()) {
       return alSilverContents;
@@ -1317,8 +1303,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     List<String> alInstanceIds = new ArrayList<String>();
     // on récupère la liste de instance contenant tous les documents
     alInstanceIds = contentManager.getInstanceId(alSilverContentIds);
-    SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly", "root.MSG_GEN_PARAM_VALUE",
-        "alInstanceIds = " + alInstanceIds);
+
 
     // une fois la liste des instanceId définie, on parcourt cette liste pour en retirer les
     // SilverContentIds
@@ -1331,9 +1316,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
       // On récupère tous les silverContentId d'un instanceId
       List<Integer> allSilverContentIds = contentManager.getSilverContentIdByInstanceId(instanceId);
-      SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly",
-          "root.MSG_GEN_PARAM_VALUE", "allSilverContentIds = " + allSilverContentIds
-          + " in instance " + instanceId);
 
       // une fois les SilverContentId de l'instanceId récupérés, on ne garde que ceux qui sont
       // dans la liste résultat (alSilverContentIds).
@@ -1351,10 +1333,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         }
       }
     }
-    SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly", "root.MSG_GEN_PARAM_VALUE",
-        "silverContent size= " + alSilverContents.size());
-    SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly", "root.MSG_GEN_PARAM_VALUE",
-        "alSilverContentIds = " + alSilverContentIds.toString());
+
+
 
     return alSilverContents;
   }
@@ -1541,8 +1521,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
       // get the selected object ids
       String selectedObjectIds = request.getParameter("selectedIds");
-      SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination",
-          "ValidateSelectedObjects", "selectedObjectIds = " + selectedObjectIds);
+
 
       // extract the selected objects from the results
       List<GlobalSilverResult> silverContents = pdcSC.getResultsToDisplay();
@@ -1669,8 +1648,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
               String valueId = valueIdAndTreeId.substring(0, indexOfDelimiter);
               String treeId = valueIdAndTreeId.substring(indexOfDelimiter + 1, valueIdAndTreeId
                   .length());
-              SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.searchResult",
-                  "root.MSG_GEN_PARAM_VALUE", "valueId = " + valueId + ", treeId = " + treeId);
+
               // get the value and its path from root to value
               Value value = pdcSC.getAxisValueAndFullPath(valueId, treeId);
               if (component_id != null && !"".equals(component_id)) {

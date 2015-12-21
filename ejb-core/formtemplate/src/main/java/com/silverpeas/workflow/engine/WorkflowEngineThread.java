@@ -55,9 +55,9 @@ import com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
 import com.silverpeas.workflow.external.ExternalAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -106,8 +106,7 @@ class TaskDoneRequest implements Request {
    */
   @Override
   public void process() throws WorkflowException {
-    SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
-        "workflowEngine.INFO_PROCESS_ADD_TASKDONE_REQUEST", event.toString());
+
 
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
@@ -179,9 +178,6 @@ class TaskDoneRequest implements Request {
       try {
         boolean removeInstance = processEvent(instance, step.getId());
         if (removeInstance) {
-          SilverTrace
-              .info("workflowEngine", "workflowEngineThread.process()", "root.MSG_GEN_PARAM_VALUE",
-                  "DELETE INSTANCE " + instance.getInstanceId());
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager).removeProcessInstanceData(instance);
 
@@ -277,8 +273,7 @@ class TaskSavedRequest implements Request {
    */
   @Override
   public void process() throws WorkflowException {
-    SilverTrace.info("workflowEngine", "workflowEngineThread",
-        "workflowEngine.INFO_PROCESS_ADD_TASKSAVED_REQUEST", event.toString());
+
 
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
@@ -434,8 +429,7 @@ class QuestionRequest implements Request {
    */
   @Override
   public void process() throws WorkflowException {
-    SilverTrace.info("workflowEngine", "WorkflowEngineThread",
-        "workflowEngine.INFO_PROCESS_QUESTION_REQUEST");
+
 
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
@@ -603,8 +597,7 @@ class ResponseRequest implements Request {
    * Method declaration
    */
   public void process() throws WorkflowException {
-    SilverTrace.info("workflowEngine", "workflowEngineThread.process",
-        "workflowEngine.INFO_PROCESS_RESPONSE_REQUEST", event.toString());
+
 
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
@@ -773,8 +766,7 @@ class TimeoutRequest implements Request {
    */
   @Override
   public void process() throws WorkflowException {
-    SilverTrace.info("workflowEngine", "workflowEngineThread.process",
-        "workflowEngine.INFO_PROCESS_TIMEOUT_REQUEST", event.toString());
+
 
     // Get the process instance
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
@@ -824,9 +816,6 @@ class TimeoutRequest implements Request {
       try {
         boolean removeInstance = processEvent(instance, step.getId());
         if (removeInstance) {
-          SilverTrace
-              .info("workflowEngine", "workflowEngineThread.process()", "root.MSG_GEN_PARAM_VALUE",
-                  "DELETE INSTANCE " + instance.getInstanceId());
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager).removeProcessInstanceData(instance);
 
@@ -975,11 +964,10 @@ class WorkflowTools {
         }
       }
 
-      SilverTrace.info("workflowEngine",
-          "WorkflowEngineThread.processAction(" + event.getActionName() + ")",
-          "root.MSG_GEN_PARAM_VALUE",
-          "item = " + consequence.getItem() + ", operator = " + consequence.getOperator() +
-              ", value = " + consequence.getValue());
+      SilverLogger.getLogger(WorkflowTools.class)
+          .info("Process action {0}: item = {1}, operator = {2}, value = {3}",
+              event.getActionName(), consequence.getItem(), consequence.getOperator(),
+              consequence.getValue());
 
       // if no consequence is verified, then last one will be used
       if (consequence.getKill()) {
@@ -1031,10 +1019,9 @@ class WorkflowTools {
             try {
               forcedUser = userManager.getUser(senderId);
             } catch (WorkflowException we) {
-              SilverTrace.info("workflowEngine",
-                  "WorkflowEngineThread.processAction(" + event.getActionName() + ")",
-                  "root.EX_ERR_PROCESS_EVENT",
-                  "Impossible de trouver l'expediteur avec le user id : " + senderId);
+              SilverLogger.getLogger(WorkflowTools.class)
+                  .error("Error while processing {0}: impossible to find the sender with id {1}",
+                      event.getActionName(), senderId);
             }
           }
 
@@ -1082,9 +1069,9 @@ class WorkflowTools {
             externalAction.setTrigger(trigger);
             externalAction.execute();
           } catch (Exception e) {
-            SilverTrace.error("workflowEngine", "WorkflowEngineThread.processTriggers()",
-                "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION",
-                "action = " + event.getActionName() + ", trigger = " + trigger.getName(), e);
+            SilverLogger.getLogger(WorkflowTools.class)
+                .error("Error while processing triggers: action = {0}, trigger = {1}",
+                    new String[] {event.getActionName(), trigger.getName()}, e);
           }
         }
       }

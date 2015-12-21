@@ -113,9 +113,6 @@ public class AuthenticationLDAP extends Authentication {
         m_MustAlertPasswordExpiration = false;
       }
     }
-    SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
-        "root.MSG_GEN_PARAM_VALUE", "javax.net.ssl.trustStore = "
-        + System.getProperty("javax.net.ssl.trustStore"));
   }
 
   @Override
@@ -189,8 +186,7 @@ public class AuthenticationLDAP extends Authentication {
     String[] baseDNs = extractBaseDNs(m_UserBaseDN);
     for (String baseDN : baseDNs) {
       try {
-        SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
-            "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDN);
+
         LDAPSearchResults res = ldapConnection.search(baseDN, LDAPConnection.SCOPE_SUB,
             searchString, attrNames, false);
         if (res.hasMore()) {
@@ -225,11 +221,9 @@ public class AuthenticationLDAP extends Authentication {
           SilverpeasException.ERROR, "authentication.EX_PWD_EMPTY", "User=" + login);
     }
     try {
-      SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
-          "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "UserDN=" + userFullDN);
+
       ldapConnection.bind(LDAPConnection.LDAP_V3, userFullDN, password.getBytes(UTF_8));
-      SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
-          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
+
     } catch (LDAPException ex) {
       throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
@@ -320,8 +314,7 @@ public class AuthenticationLDAP extends Authentication {
           .getPassword());
 
       // Get user DN
-      SilverTrace.info(module, "AuthenticationLDAP.changePassword()",
-          "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
+
       LDAPSearchResults res = ldapConnection.search(m_UserBaseDN, LDAPConnection.SCOPE_SUB,
           searchString, strAttributes, false);
       if (!res.hasMore()) {
@@ -420,8 +413,7 @@ public class AuthenticationLDAP extends Authentication {
           .getPassword());
 
       // Get user DN
-      SilverTrace.info(module, "AuthenticationLDAP.changePassword()",
-          "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
+
       LDAPSearchResults res = ldapConnection.search(
           m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
       if (!res.hasMore()) {

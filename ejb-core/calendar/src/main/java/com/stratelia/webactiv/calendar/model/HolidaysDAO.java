@@ -50,8 +50,7 @@ public class HolidaysDAO {
 
   public static void addHolidayDate(Connection con, HolidayDetail holiday)
       throws SQLException, UtilException {
-    SilverTrace.info("calendar", "HolidaysDAO.addHolidayDate()",
-        "root.MSG_GEN_ENTER_METHOD", holiday.getDate().toString());
+
 
     if (!isHolidayDate(con, holiday)) {
       StringBuilder insertStatement = new StringBuilder(128);
@@ -100,8 +99,7 @@ public class HolidaysDAO {
     query.append(" where holidayDate = ? ");
     query.append(" and userId = ? ");
 
-    SilverTrace.info("calendar", "HolidaysDAO.isHolidayDate()",
-        "root.MSG_GEN_PARAM_VALUE", "date = " + holiday.getDate().toString());
+
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -129,8 +127,7 @@ public class HolidaysDAO {
     query.append(" where userId = ? ");
     query.append("order by holidayDate ASC");
 
-    SilverTrace.info("calendar", "HolidaysDAO.getHolidayDates()",
-        "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
+
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -158,10 +155,6 @@ public class HolidaysDAO {
     query.append(" and ? <= holidayDate ");
     query.append(" and holidayDate <= ? ");
     query.append("order by holidayDate ASC");
-
-    SilverTrace.info("calendar", "HolidaysDAO.getHolidayDates()",
-        "root.MSG_GEN_PARAM_VALUE", "userId = " + userId + ", beginDate="
-        + beginDate.toString() + ", endDate=" + endDate.toString());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;

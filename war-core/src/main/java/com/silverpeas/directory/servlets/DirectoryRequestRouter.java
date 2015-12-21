@@ -64,8 +64,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   public String getDestination(String function, DirectorySessionController directorySC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("mytests", "DirectoryRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + directorySC.getUserId() + " Function=" + function);
+
 
     try {
       DirectoryItemList users = new DirectoryItemList();

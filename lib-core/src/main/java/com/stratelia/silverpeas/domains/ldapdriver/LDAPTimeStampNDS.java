@@ -44,15 +44,13 @@ public class LDAPTimeStampNDS extends AbstractLDAPTimeStamp {
 
   public void initFromServer(String lds, String baseDN, String filter,
       String fallbackSortBy) throws AdminException {
-    SilverTrace.info("admin", "LDAPTimeStampNDS.initFromServer()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     String[] ttv = { driverSettings.getTimeStampVar(), fallbackSortBy };
 
     LDAPEntry[] theEntries = LDAPUtility.search1000Plus(lds, baseDN,
         driverSettings.getScope(), "(&(" + driverSettings.getTimeStampVar()
         + ">=" + timeStamp + ")" + filter + ")", fallbackSortBy, ttv);
-    SilverTrace.info("admin", "LDAPTimeStampNDS.initFromServer()",
-        "root.MSG_GEN_PARAM_VALUE", "# entries = " + theEntries.length);
+
 
     String ttCurrent;
     for (LDAPEntry theEntry : theEntries) {

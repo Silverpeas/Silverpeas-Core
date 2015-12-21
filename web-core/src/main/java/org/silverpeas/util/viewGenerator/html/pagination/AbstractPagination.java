@@ -61,10 +61,6 @@ public abstract class AbstractPagination implements Pagination {
     } else {
       this.firstItemIndex = firstItemIndex;
     }
-    SilverTrace.info("viewgenerator", "AbstractPagination.constructor()",
-        "root.MSG_GEN_PARAM_VALUE", "nbItems = " + nbItems
-        + ", nbItemsPerPage = " + nbItemsPerPage + ", firstItemIndex = "
-        + firstItemIndex);
   }
 
   public String getIconsPath() {
@@ -95,8 +91,7 @@ public abstract class AbstractPagination implements Pagination {
 
   public int getCurrentPage() {
     int currentPage = (getFirstItemIndex() + 1) / getNbItemsPerPage();
-    SilverTrace.info("viewgenerator", "AbstractPagination.getCurrentPage()",
-        "root.MSG_GEN_PARAM_VALUE", "currentPage = " + currentPage);
+
     if (currentPage == 0) {
       currentPage = 1;
     } else {
@@ -111,8 +106,7 @@ public abstract class AbstractPagination implements Pagination {
     if ((getNbItems() % getNbItemsPerPage()) != 0) {
       nbPage++;
     }
-    SilverTrace.info("viewgenerator", "AbstractPagination.getNbPage()",
-        "root.MSG_GEN_PARAM_VALUE", "nbPage = " + nbPage);
+
     return nbPage;
   }
 

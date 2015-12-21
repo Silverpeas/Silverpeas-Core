@@ -704,8 +704,7 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public UserDetail[] getAllUsersOfGroup(String groupId) {
-    SilverTrace.info("admin", "OrganizationController.getAllUsersOfGroup",
-        "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
+
     try {
       return getAdminService().getAllUsersOfGroup(groupId);
     } catch (Exception e) {
@@ -717,8 +716,7 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public List<String> getPathToGroup(String groupId) {
-    SilverTrace.info("admin", "OrganizationController.getPathToGroup",
-        "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
+
     try {
       return getAdminService().getPathToGroup(groupId);
     } catch (Exception e) {
@@ -1054,17 +1052,12 @@ public class DefaultOrganizationController implements OrganizationController {
       for (ProfileInst profileInst : profiles) {
         if (profileNames.contains(profileInst.getName())) {
           profileIds.add(profileInst.getId());
-          SilverTrace.info("admin",
-              "OrganizationController.getUsersIdsByRoleNames",
-              "root.MSG_GEN_PARAM_VALUE", "profileName = " + profileInst.getName()
-              + ", profileId = " + profileInst.getId());
         }
       }
 
       if (!profileIds.isEmpty()) {
         String[] pIds = profileIds.toArray(new String[profileIds.size()]);
-        SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
-            "root.MSG_GEN_PARAM_VALUE", "pIds = " + Arrays.toString(pIds));
+
         return getAdminService().searchUsersIds(null, null, pIds, new UserDetail());
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
@@ -1079,8 +1072,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
       List<String> profileNames) {
-    SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId + ", objectId = " + objectId);
+
     try {
       List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, objectType.
           getCode(),
@@ -1091,10 +1083,6 @@ public class DefaultOrganizationController implements OrganizationController {
           profileIds.add(profile.getId());
         }
       }
-
-      SilverTrace.info("admin",
-          "OrganizationController.getUsersIdsByRoleNames",
-          "root.MSG_GEN_PARAM_VALUE", "profileIds = " + profileIds.toString());
 
       if (profileIds.isEmpty()) {
         return EMPTY_STRING_ARRAY;

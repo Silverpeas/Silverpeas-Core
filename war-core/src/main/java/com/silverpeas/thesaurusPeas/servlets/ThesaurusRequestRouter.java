@@ -74,8 +74,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
    */
   public String getDestination(String function, ThesaurusSessionController scc,
       HttpRequest request) {
-    SilverTrace.info("thesaurusPeas", "ThesaurusRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", function);
+
     String destination = "";
     try {
       if (function.startsWith("Main")) {

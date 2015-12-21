@@ -25,11 +25,11 @@
 package com.silverpeas.form;
 
 import com.silverpeas.form.record.GenericFieldTemplate;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
@@ -199,8 +199,8 @@ public abstract class AbstractForm implements Form {
               ((GenericFieldTemplate) fieldTemplate).setFieldName(fieldName);
               ((GenericFieldTemplate) fieldTemplate).setMandatory(mandatory);
             }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "AbstractForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+          } catch (FormException e) {
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
         }
       }
@@ -245,8 +245,8 @@ public abstract class AbstractForm implements Form {
       out.append("</script>\n");
       out.flush();
       jw.write(sw.toString());
-    } catch (java.io.IOException fe) {
-      SilverTrace.error("form", "AbstractForm.display", "form.EXP_CANT_WRITE", null, fe);
+    } catch (java.io.IOException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -319,13 +319,12 @@ public abstract class AbstractForm implements Form {
               }
             }
           } catch (Exception e) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
+            SilverLogger.getLogger(this).error(e.getMessage(), e);
           }
         }
       } else {
-        SilverTrace.info("form", "AbstractForm.update", "root.MSG_GEN_PARAM_VALUE", fieldTemplate
-            .getFieldName() +
-            " : field value is ignored as field is read only");
+        SilverLogger.getLogger(this).info("Field {0} is ignored as it is read only",
+            fieldTemplate.getFieldName());
       }
 
     }
@@ -362,7 +361,7 @@ public abstract class AbstractForm implements Form {
             }
           }
         } catch (Exception e) {
-          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
     }
@@ -401,7 +400,7 @@ public abstract class AbstractForm implements Form {
             }
           }
         } catch (Exception e) {
-          SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
       if (!isEmpty) {
@@ -466,8 +465,8 @@ public abstract class AbstractForm implements Form {
       if (field == null) {
         field = fieldTemplate.getEmptyField(occurrence);
       }
-    } catch (FormException fe) {
-      SilverTrace.error("form", "AbstractForm.display", "form.EX_CANT_GET_FORM", null, fe);
+    } catch (FormException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return field;
   }

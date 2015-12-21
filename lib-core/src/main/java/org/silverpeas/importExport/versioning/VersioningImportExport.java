@@ -85,8 +85,7 @@ public class VersioningImportExport {
    */
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
       int versionType, boolean indexIt, String topicId) throws RemoteException, IOException {
-    SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
-        "root.GEN_PARAM_VALUE", componentId);
+
     int nbFilesProcessed = 0;
     AttachmentImportExport attachmentImportExport =
         new AttachmentImportExport(user);
@@ -153,8 +152,7 @@ public class VersioningImportExport {
 
   public List<SimpleDocument> importDocuments(ForeignPK objectPK, List<Document> documents,
       int userId, boolean indexIt) throws RemoteException, FileNotFoundException {
-    SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
-        "root.GEN_PARAM_VALUE", objectPK.toString());
+
     boolean launchCallback = false;
     int userIdCallback = -1;
 

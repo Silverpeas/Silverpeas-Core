@@ -92,8 +92,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       con = DBUtil.openConnection();
 
       if (role.equals("supervisor")) {
-        SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
-            "root.MSG_GEN_ENTER_METHOD", "peasId = " + peasId + ", role = " + role);
+
         selectQuery.append("SELECT * from SB_Workflow_ProcessInstance instance where modelId = ?");
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
@@ -147,8 +146,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         selectQuery.append(")");
         selectQuery.append("order by I.instanceId desc");
 
-        SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
-            "root.MSG_GEN_PARAM_VALUE", "SQL query = " + selectQuery.toString());
+
 
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
@@ -213,8 +211,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         instance.castor_setActiveStates(states);
       }
 
-      SilverTrace.info("workflowEngine", "ProcessInstanceManagerImpl", "root.MSG_GEN_PARAM_VALUE",
-          " nb instances : " + instances.size());
+
       return instances.toArray(new ProcessInstance[instances.size()]);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
@@ -361,8 +358,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Override
   public synchronized ProcessInstance createProcessInstance(String modelId) throws WorkflowException {
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.createProcessInstance",
-        "root.MSG_GEN_ENTER_METHOD", "modelId=" + modelId);
+
     ProcessInstanceImpl instance = new ProcessInstanceImpl();
     instance.setModelId(modelId);
     instance.create();
@@ -376,8 +372,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Override
   public void removeProcessInstance(String instanceId) throws WorkflowException {
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
-        "root.MSG_GEN_ENTER_METHOD", "InstanceId=" + instanceId);
+
     ProcessInstanceImpl instance;
     Database db = null;
     try {
@@ -398,8 +393,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**
@@ -413,14 +407,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   }
 
   public void removeProcessInstanceData(ProcessInstance instance) throws WorkflowException {
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     ForeignPK foreignPK = new ForeignPK(instance.getInstanceId(), instance.getModelId());
 
     // delete attachments
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = " + foreignPK);
+
     List<SimpleDocument> attachments =
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignPK, null);
     for (SimpleDocument attachment : attachments) {
@@ -428,8 +420,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     // delete folder
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete folder");
+
     try {
       RecordSet folderRecordSet = instance.getProcessModel().getFolderRecordSet();
       folderRecordSet.delete(instance.getFolder());
@@ -439,8 +430,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     // delete history steps
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete history steps");
+
     HistoryStep[] steps = instance.getHistorySteps();
     for (int i = 0; steps != null && i < steps.length; i++) {
       if (!steps[i].getAction().equals("#question#") &&
@@ -450,13 +440,11 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     // delete associated todos
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete associated todos");
+
     todoAccessor
         .removeEntriesFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId() + "##%");
 
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_EXIT_METHOD");
+
   }
 
   /**

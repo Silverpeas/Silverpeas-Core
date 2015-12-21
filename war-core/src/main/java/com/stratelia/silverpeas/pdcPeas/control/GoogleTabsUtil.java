@@ -88,8 +88,7 @@ public class GoogleTabsUtil {
         }
       }
     } catch (Exception e) {
-      SilverTrace.info("pdcPeas", "GoogleTabsUtil.init", "root.MSG_GEN_PARAM_VALUE",
-          "The file google.properties does not exist !");
+
     }
   }
 

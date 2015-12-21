@@ -124,8 +124,7 @@ public class ThumbnailController {
         try {
           ThumbnailController.deleteThumbnail(detail);
         } catch (Exception exp) {
-          SilverTrace.info("thumbnail", "KmeliaRequestRouter.processVignette",
-              "thumbnail_MSG_DELETE_THUMBNAIL_KO", exp);
+
         }
       }
     }

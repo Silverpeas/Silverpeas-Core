@@ -80,8 +80,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     Map<String, String> parameters = template.getParameters(language);
 
     if (!PdcField.TYPE.equals(field.getTypeName())) {
-      SilverTrace.info("form", "PdcFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-          PdcField.TYPE);
+
     }
 
     String axis = parameters.get("pdcAxis");
@@ -98,8 +97,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     if (!template.getTypeName().equals(PdcField.TYPE)) {
-      SilverTrace.info("form", "PdcFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-          PdcField.TYPE);
+
     }
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
@@ -678,8 +676,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       return getPdcManager().getAxisDetail(axisId);
     } catch (PdcException e) {
-      SilverTrace.info("form", "PdcFieldDisplayer.getAxisDetail", "form.EX_CANT_GET_AXIS_DETAIL",
-          axisId);
+
     }
     return null;
   }
@@ -694,8 +691,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       value = getPdcManager().getAxisValue(valueId, axisId);
     } catch (PdcException e) {
-      SilverTrace.info("form", "PdcFieldDisplayer.getAxisValue", "form.EX_CANT_GET_AXIS_VALUE",
-          "(" + valueId + " ; " + axisId + ")");
+
     }
     return value;
   }
@@ -709,8 +705,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       values = getPdcManager().getAxisValues(axisId);
     } catch (PdcException e) {
-      SilverTrace.info("form", "PdcFieldDisplayer.getAxisValues", "form.EX_CANT_GET_AXIS_VALUES",
-          String.valueOf(axisId));
+
     }
     return values;
   }
@@ -726,8 +721,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
     try {
       return getPdcManager().getFullPath(valueId, axisId);
     } catch (PdcException e) {
-      SilverTrace.info("form", "PdcFieldDisplayer.getFullPath", "form.EX_CANT_GET_FULL_PATH",
-          "(" + valueId + " ; " + axisId + ")");
+
     }
     return nodes;
   }

@@ -137,8 +137,7 @@ public class QuestionContainerDAO {
    */
   public static Collection<QuestionContainerHeader> getQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader;
@@ -166,8 +165,7 @@ public class QuestionContainerDAO {
 
   public static Collection<QuestionContainerHeader> getQuestionContainers(Connection con,
       List<QuestionContainerPK> pks) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "pks = " + pks.toString());
+
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader;
@@ -218,8 +216,7 @@ public class QuestionContainerDAO {
    */
   public static Collection<QuestionContainerHeader> getOpenedQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getOpenedQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader;
 
@@ -255,8 +252,7 @@ public class QuestionContainerDAO {
    */
   public static Collection<QuestionContainerHeader> getNotClosedQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getNotClosedQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader;
@@ -290,8 +286,7 @@ public class QuestionContainerDAO {
    */
   public static Collection<QuestionContainerHeader> getClosedQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getClosedQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader;
@@ -326,8 +321,7 @@ public class QuestionContainerDAO {
    */
   public static Collection<QuestionContainerHeader> getInWaitQuestionContainers(Connection con,
       QuestionContainerPK qcPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getInWaitQuestionContainers()",
-        "root.MSG_GEN_ENTER_METHOD", "qcPK = " + qcPK);
+
     ResultSet rs = null;
     QuestionContainerHeader header;
     String selectStatement =
@@ -358,8 +352,7 @@ public class QuestionContainerDAO {
    */
   public static QuestionContainerHeader getQuestionContainerHeader(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getQuestionContainerHeader()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
     PreparedStatement prepStmt = null;
@@ -384,8 +377,7 @@ public class QuestionContainerDAO {
    */
   public static void closeQuestionContainer(Connection con, QuestionContainerPK questionContainerPK)
       throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.closeQuestionContainer()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(SQL_CLOSE_QUESTIONCONTAINER);
@@ -404,8 +396,7 @@ public class QuestionContainerDAO {
    */
   public static void openQuestionContainer(Connection con, QuestionContainerPK questionContainerPK)
       throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.openQuestionContainer()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(SQL_OPEN_QUESTIONCONTAINER);
@@ -425,8 +416,7 @@ public class QuestionContainerDAO {
    */
   public static QuestionContainerPK createQuestionContainerHeader(Connection con,
       QuestionContainerHeader questionContainerHeader) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.createQuestionContainerHeader()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
+
     int newId;
 
     String insertStatement = "insert into " + questionContainerHeader.getPK().getTableName() +
@@ -495,8 +485,7 @@ public class QuestionContainerDAO {
    */
   public static void updateQuestionContainerHeader(Connection con,
       QuestionContainerHeader questionContainerHeader) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.updateQuestionContainerHeader()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = " + questionContainerHeader);
+
 
     String insertStatement =
         "update " + questionContainerHeader.getPK().getTableName() + " set qcTitle = ?," +
@@ -549,8 +538,7 @@ public class QuestionContainerDAO {
    */
   public static void deleteQuestionContainerHeader(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.deleteQuestionContainerHeader()",
-        "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = " + questionContainerPK);
+
 
     String deleteStatement =
         "delete from " + questionContainerPK.getTableName() + " where qcId = ? ";
@@ -600,8 +588,7 @@ public class QuestionContainerDAO {
    */
   private static Comment getCommentFromResultSet(ResultSet rs, QuestionContainerPK qcPK)
       throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getCommentFromResultSet()",
-        "root.MSG_GEN_ENTER_METHOD", "qcPK = " + qcPK);
+
     String id = Integer.toString(rs.getInt(1));
     String userId = rs.getString(3);
     String comment = rs.getString(4);
@@ -664,8 +651,7 @@ public class QuestionContainerDAO {
    */
   public static Collection<Comment> getComments(Connection con, QuestionContainerPK qcPK)
       throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.getComments()",
-        "root.MSG_GEN_ENTER_METHOD", "qcPK = " + qcPK);
+
 
     ResultSet rs = null;
     Comment comment;
@@ -698,8 +684,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    */
   public static void deleteComments(Connection con, QuestionContainerPK qcPK) throws SQLException {
-    SilverTrace.info("questionContainer", "QuestionContainerDAO.deleteComments()",
-        "root.MSG_GEN_ENTER_METHOD", "qcPK = " + qcPK);
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(SQL_DELETE_COMMENT);

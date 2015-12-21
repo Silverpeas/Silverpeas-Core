@@ -213,8 +213,7 @@ public class WebCommonLookAndFeel {
           .append(STR_NEW_LINE);
     }
 
-    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-        "root.MSG_GEN_EXIT_METHOD");
+
     return code.toString();
   }
 

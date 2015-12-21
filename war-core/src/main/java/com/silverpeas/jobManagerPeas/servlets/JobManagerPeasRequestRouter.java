@@ -77,8 +77,7 @@ public class JobManagerPeasRequestRouter extends
   public String getDestination(String function, JobManagerPeasSessionController jobManagerSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace.info("jobManagerPeas", "JobManagerPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobManagerSC.getUserId() + " Function=" + function);
+
 
     try {
       if (function.startsWith("Main")) {
@@ -127,9 +126,6 @@ public class JobManagerPeasRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("jobManagerPeas",
-        "JobManagerPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 

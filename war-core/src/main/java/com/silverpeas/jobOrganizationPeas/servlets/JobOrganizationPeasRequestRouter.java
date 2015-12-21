@@ -78,9 +78,6 @@ public class JobOrganizationPeasRequestRouter extends
   public String getDestination(String function,
       JobOrganizationPeasSessionController jobOrganizationSC, HttpRequest request) {
     String destination = "";
-    SilverTrace.info("jobOrganizationPeas", "JobOrganizationPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "User=" + jobOrganizationSC.getUserId() + " Function=" + function);
 
     request.setAttribute("isRightCopyReplaceActivated",
         jobOrganizationSC.isRightCopyReplaceActivated());
@@ -133,9 +130,6 @@ public class JobOrganizationPeasRequestRouter extends
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("jobOrganizationPeas",
-        "JobOrganizationPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 

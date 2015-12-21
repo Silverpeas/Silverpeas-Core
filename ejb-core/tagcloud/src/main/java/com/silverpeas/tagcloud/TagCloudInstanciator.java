@@ -41,14 +41,12 @@ public class TagCloudInstanciator implements ComponentsInstanciatorIntf {
 
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("tagcloud", "TagCloudInstanciator.create()",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+
   }
 
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("tagcloud", "TagCloudInstanciator.delete()",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+
 
     String query = "DELETE FROM " + TAGCLOUD_TABLENAME
         + " WHERE instanceId = ? ";

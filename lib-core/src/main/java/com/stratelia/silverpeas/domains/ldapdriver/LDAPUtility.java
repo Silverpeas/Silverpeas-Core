@@ -333,9 +333,6 @@ public class LDAPUtility {
               }
             }
             valret[j] = theStr.toString();
-            SilverTrace.info("admin", "LDAPUtility.getAttributeValues()",
-                "root.MSG_GEN_PARAM_VALUE", "Attribute : " + theAttributeName
-                + " PARSED VALUE = " + theStr);
           }
           return valret;
         } else {
@@ -462,11 +459,9 @@ public class LDAPUtility {
 
     try {
       LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
-      SilverTrace.info("admin", "LDAPUtility.search1000Plus()", "root.MSG_GEN_PARAM_VALUE",
-          "LDAPImpl = " + driverSettings.getLDAPImpl());
+
       if (args != null) {
-        SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-            "root.MSG_GEN_PARAM_VALUE", "args = " + Arrays.toString(args));
+
       }
       if (!driverSettings.isSortControlSupported()) {
         // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
@@ -528,9 +523,6 @@ public class LDAPUtility {
             timeLimitReached = false;
             theFullFilter = "(&" + filter + "(" + varToSort + ">="
                 + LDAPUtility.getFirstAttributeValue(entry, varToSort) + "))";
-            SilverTrace.info("admin", "LDAPUtility.search1000Plus()",
-                "root.MSG_GEN_PARAM_VALUE", "SIZE LIMIT REACHED : "
-                + theFullFilter);
           } else if (timeLimitReached
               && (nbRetryTimeLimit > MAX_NB_RETRY_TIMELIMIT)) {
             throw lastException;
@@ -565,8 +557,7 @@ public class LDAPUtility {
   static public AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN,
       int scope, String filter, String timeStampVar, String minTimeStamp)
       throws AdminException {
-    SilverTrace.info("admin", "LDAPUtility.getTimeStamp()",
-        "root.MSG_GEN_ENTER_METHOD");
+
     LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
     LDAPEntry[] theEntries = search1000Plus(lds, baseDN, scope, "(&("
         + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")",

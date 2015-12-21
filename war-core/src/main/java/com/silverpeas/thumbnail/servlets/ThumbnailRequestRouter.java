@@ -235,12 +235,10 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       thumb = saveFile(parameters);
     } catch (ThumbnailRuntimeException e) {
       // only one case -> no .type for the file
-      SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail",
-          "root.MSG_GEN_PARAM_VALUE", e);
+
       return "EX_MSG_NO_TYPE_ERROR";
     } catch (Exception exp) {
-      SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail",
-          "root.MSG_GEN_PARAM_VALUE", exp);
+
       return "EX_MSG_SAVE_FILE_ERROR";
     }
 
@@ -269,31 +267,26 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       try {
         ThumbnailController.deleteThumbnail(thumb);
       } catch (Exception exp) {
-        SilverTrace.info("thumbnail", "ThumbnailRequestRouter.addThumbnail - remove after error",
-            "root.MSG_GEN_PARAM_VALUE", exp);
+
       }
       return "EX_MSG_NOT_AN_IMAGE";
     }
   }
 
   private ThumbnailDetail saveFile(List<FileItem> parameters) throws Exception {
-    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
-        "root.MSG_GEN_ENTER_METHOD");
+
 
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
     boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
 
-    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
-        "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
+
 
     String componentId = FileUploadUtil.getParameter(parameters,
         "ComponentId");
-    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+
     String id = FileUploadUtil.getParameter(parameters, "ObjectId");
-    SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
-        "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+
 
     FileItem item = FileUploadUtil.getFile(parameters, "OriginalFile");
 
@@ -304,10 +297,6 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       if (fullFileName != null && runOnUnix) {
         fullFileName = fullFileName.replace('\\',
             File.separatorChar);
-        SilverTrace.info("thumbnail",
-            "ThumbnailRequestRouter.createAttachment",
-            "root.MSG_GEN_PARAM_VALUE",
-            "fullFileName on Unix = " + fullFileName);
       }
 
       assert fullFileName != null;
@@ -315,14 +304,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
           .substring(
           fullFileName.lastIndexOf(File.separator) + 1,
           fullFileName.length());
-      SilverTrace.info("thumbnail",
-          "ThumbnailRequestRouter.createAttachment",
-          "root.MSG_GEN_PARAM_VALUE", "file = " + fileName);
 
       long size = item.getSize();
-      SilverTrace.info("thumbnail",
-          "ThumbnailRequestRouter.createAttachment",
-          "root.MSG_GEN_PARAM_VALUE", "size = " + size);
 
       String type = null;
       if (fileName.lastIndexOf(".") != -1) {

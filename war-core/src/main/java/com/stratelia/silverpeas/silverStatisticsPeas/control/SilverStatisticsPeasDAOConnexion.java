@@ -170,8 +170,7 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection[] getStatsUser(String startDate, String endDate)
       throws SQLException, ParseException, UtilException {
-    SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUser",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -202,8 +201,7 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection[] getStatsConnexion(String startDate, String endDate)
       throws SQLException, ParseException {
-    SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexion",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -529,8 +527,7 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection[] getStatsUserFq(String startDate, String endDate, int min, int max)
       throws SQLException, ParseException, UtilException {
-    SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUserFq",
-        "root.MSG_GEN_ENTER_METHOD");
+
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;

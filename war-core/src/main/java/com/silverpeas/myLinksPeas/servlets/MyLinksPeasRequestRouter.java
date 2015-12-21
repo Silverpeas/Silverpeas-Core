@@ -75,8 +75,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
    */
   public String getDestination(String function, MyLinksPeasSessionController myLinksSC,
       HttpRequest request) {
-    SilverTrace.info("myLinksPeas", "MyLinksPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + myLinksSC.getUserId() + " Function=" + function);
+
 
     String destination;
     String rootDest = "/myLinksPeas/jsp/";
@@ -153,8 +152,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("myLinks", "MyLinksPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+
     return destination;
   }
 }
