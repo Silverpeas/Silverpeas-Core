@@ -818,12 +818,9 @@ public class AjaxServletLookV5 extends HttpServlet {
             if (!StringUtil.isDefined(label)) {
               label = component.getName();
             }
-            String url = URLManager.getURL(component.getName(), null, component.getName()
-                    + component.getId()) + "Main";
+            String url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
             writer
                 .write("<item id=\""
-                    +
-                    component.getName()
                     +
                     component.getId()
                     +

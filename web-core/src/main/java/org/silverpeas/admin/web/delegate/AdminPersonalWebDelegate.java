@@ -142,7 +142,7 @@ public class AdminPersonalWebDelegate {
 
     // User's component unregistration
     getPersonalSpaceController().removeComponent(getUserId(),
-        component.getName() + component.getId());
+        component.getId());
 
     // Returning the instatiated component
     clearCache();

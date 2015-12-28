@@ -176,7 +176,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         .put("label", getComponentLabel(component.getName(), helper))
         .put("id", component.getId())
         .put("url", URLManager.getURL(component.getName(), "useless",
-            component.getName() + component.getId()) + "Main"));
+            component.getId()) + "Main"));
   }
 
   private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getResult(String componentName,

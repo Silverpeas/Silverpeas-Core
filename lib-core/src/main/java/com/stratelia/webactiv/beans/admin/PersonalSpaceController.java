@@ -141,7 +141,7 @@ public class PersonalSpaceController {
   private ComponentInst getComponent(SpaceInst space, String componentId) {
     List<ComponentInst> components = space.getAllComponentsInst();
     for (ComponentInst component : components) {
-      if ((component.getName() + component.getId()).equalsIgnoreCase(componentId)) {
+      if (component.getId().equalsIgnoreCase(componentId)) {
         return component;
       }
     }
