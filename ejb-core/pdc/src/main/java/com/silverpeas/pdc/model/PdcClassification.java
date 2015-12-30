@@ -35,6 +35,7 @@ import javax.persistence.FetchType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -58,6 +59,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * modified.
  */
 @Entity
+@Table(name = "pdcclassification")
 @NamedQueries({
     @NamedQuery(name = "findByComponentInstanceId", query = "from PdcClassification where " +
         "instanceId=:instanceId and contentId is null and nodeId is null"),

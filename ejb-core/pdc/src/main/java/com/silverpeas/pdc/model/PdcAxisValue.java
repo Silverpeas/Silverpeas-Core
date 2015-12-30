@@ -152,8 +152,12 @@ public class PdcAxisValue extends AbstractJpaCustomEntity<PdcAxisValue, PdcAxisV
     TreeNode node = getTreeNode();
     if (node.hasFather()) {
       int lastNodeIndex = treeNodeParents.size() - 1;
+      TreeNode treeNode = treeNodeParents.get(lastNodeIndex);
+      String valueId = treeNode.getPK().getId();
+      String axisId = getAxisId();
+      PdcAxisValue pdcAxisValue = new PdcAxisValue().setId(valueId + PdcAxisValuePk.COMPOSITE_SEPARATOR + axisId);
       parent =
-          new PdcAxisValue().fromTreeNode(treeNodeParents.get(lastNodeIndex)).inAxisId(getAxisId())
+          pdcAxisValue.fromTreeNode(treeNode).inAxisId(getAxisId())
               .withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
     }
     return parent;
@@ -317,8 +321,7 @@ public class PdcAxisValue extends AbstractJpaCustomEntity<PdcAxisValue, PdcAxisV
 
   @Override
   public String toString() {
-    return "PdcAxisValue{" + "id=" + getId() + ", parent=" + getParentValue() + ", term=" +
-        getTerm() + ", axisId=" + getAxisId() + '}';
+    return "";
   }
 
   /**
