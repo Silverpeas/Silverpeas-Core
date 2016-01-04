@@ -96,8 +96,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       out.println(" }\n");
       out.println(" if(checked == false) {\n");
       out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' "
-          + Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
+          + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("   errorNb++;");
       out.println(" }");
     }
@@ -238,10 +237,10 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
     while (iter.hasNext()) {
       FileItem item = iter.next();
       if (parameterName.equals(item.getFieldName())) {
-        value += item.getString();
-        if (iter.hasNext()) {
+        if (StringUtil.isDefined(value)) {
           value += "##";
         }
+        value += item.getString();
       }
     }
     SilverTrace.debug("form", "AbstractForm.getParameterValues", "root.MSG_GEN_EXIT_METHOD",
