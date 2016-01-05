@@ -62,7 +62,7 @@
   <script type="application/javascript">
     var DEFAULT_LEVEL_TEXT = "<fmt:message key='logging.admin.DefaultLevel'/>";
     var LEVEL_TEXT = "<fmt:message key='logging.admin.level'/> ";
-    var loggerCongigurations = {
+    var loggerConfigurations = {
     <c:forEach var="configuration" items="${configurations}">
       <c:set var="level" value="${configuration.level}"/>
       <c:if test="${configuration.level == null}">
@@ -82,7 +82,7 @@
 
     function changeLoggingLevel() {
       var module = $('#logger').val();
-      var config = loggerCongigurations.configurationOf(module);
+      var config = loggerConfigurations.configurationOf(module);
       config.level = $('#level').val();
       $.ajax({
         url : config.uri,
@@ -91,8 +91,8 @@
         contentType : 'application/json',
         dataType : 'json',
         success : function(configuration) {
-          var $item = $('#logger option[value="' + module + '"]');
-          loggerCongigurations[module] = configuration;
+          var $item = $('#logger').find('option[value="' + module + '"]');
+          loggerConfigurations[module] = configuration;
           var level;
           if (configuration.level === 'PARENT') {
             level = DEFAULT_LEVEL_TEXT;
@@ -119,8 +119,10 @@
         dataType : 'json',
         success : function(records) {
           var size = records.length > 50 ? 50:records.length;
-          $('#log-content').show();
-          $('#log-content').attr('rows', '' + size).text(records.join('\n'));
+          var $logContent = $('#log-content');
+          $logContent.show();
+          $logContent.attr('rows', '' + size).text(records.join('\n'));
+          $logContent.scrollTop($logContent[0].scrollHeight);
         },
         error : function(xhr, status, error) {
           notyError("<fmt:message key='logging.admin.LogError'/>" + ' ' + error);
@@ -209,23 +211,25 @@
 <script type="application/javascript">
   $(document).ready(function() {
     function updateDefaultLevelState(module) {
+      var $parentOptions = $('#level').find('option[value="PARENT"]');
       if (module === 'silverpeas') {
-        $('#level option[value="PARENT"]').attr('disabled', 'disabled');
+        $parentOptions.attr('disabled', 'disabled');
       } else {
-        $('#level option[value="PARENT"]').removeAttr('disabled');
+        $parentOptions.removeAttr('disabled');
       }
     }
 
     TipManager.simpleHelp($('#level-help'), "<fmt:message key='logging.admin.help.LoggingLevels'/>");
     TipManager.simpleHelp($('#record-count-help'), "<fmt:message key='logging.admin.help.LogRecordCount'/>");
 
-    var module = $('#logger option:first-child').attr('selected', 'selected').val();
-    $('#level').val(loggerCongigurations.configurationOf(module).level);
+    var $logger = $('#logger');
+    var module = $logger.find('option:first-child').attr('selected', 'selected').val();
+    $('#level').val(loggerConfigurations.configurationOf(module).level);
     updateDefaultLevelState(module);
 
-    $('#logger').change(function() {
+    $logger.change(function() {
       var module = $(this).val();
-      $('#level').val(loggerCongigurations.configurationOf(module).level);
+      $('#level').val(loggerConfigurations.configurationOf(module).level);
       updateDefaultLevelState(module);
     });
 

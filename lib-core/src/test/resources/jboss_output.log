@@ -1056,3 +1056,4 @@ It's highly recommended that you fix the library with 'execstack -c <libfile>', 
 [0m[0m17:57:45,072 INFO  [org.wildfly.extension.undertow] (MSC service thread 1-7) WFLYUT0004: Undertow 1.2.9.Final stopping
 [0m[0m17:57:45,080 INFO  [org.jboss.as] (MSC service thread 1-8) WFLYSRV0050: WildFly Full 9.0.2.Final (WildFly Core 1.0.2.Final) stopped in 414ms
 [0m
+[0m

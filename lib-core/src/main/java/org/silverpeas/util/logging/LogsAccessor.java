@@ -24,6 +24,7 @@
 package org.silverpeas.util.logging;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.util.ReversedFileLineReader;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.lang.SystemWrapper;
 
@@ -35,8 +36,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+
+import static org.silverpeas.util.ReversedFileLineReader.readLastLines;
 
 /**
  * An accessor to the logs of Silverpeas.
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
 @Singleton
 public class LogsAccessor {
 
-  public static final LogsAccessor get() {
+  public static LogsAccessor get() {
     return ServiceProvider.getService(LogsAccessor.class);
   }
 
@@ -54,15 +55,7 @@ public class LogsAccessor {
    */
   private static final String SILVERPEAS_LOG_DIR = "SILVERPEAS_LOG";
 
-  /**
-   * Estimation of the average size in bytes of a record in a log file by taking into account each
-   * character is encoded in UTF-8 (1 to 4 bytes; we expects the characters are really encoded
-   * in no more that 2 bytes) and that a line is made up of an average of 80 characters.
-   */
-  private static final long LINE_SIZE = 160;
-
   protected LogsAccessor() {
-
   }
 
   /**
@@ -79,7 +72,8 @@ public class LogsAccessor {
   }
 
   /**
-   * Gets the specified last number of records from the specified log.
+   * Gets the specified last number of records from the specified log.<br/>
+   * Empty line at end of file is skipped.
    * @param log the log to access.
    * @param recordCount the number of records to get. O or a negative value means all the records.
    * @return an array of the last log records in the log at the time it was accessed.
@@ -89,39 +83,7 @@ public class LogsAccessor {
   public String[] getLastLogRecords(String log, int recordCount) throws IOException {
     String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
     Path logFile = Paths.get(logPath, log);
-    long estimatedLineNb = Math.round(Files.size(logFile) / LINE_SIZE) - recordCount;
-    List<String> records;
-    try (Stream<String> stream = Files.lines(logFile)) {
-      if (estimatedLineNb <= 0 || recordCount <= 0) {
-        records = stream.collect(Collectors.toList());
-      } else {
-        LinesRingBuffer buffer = new LinesRingBuffer(recordCount);
-        stream.skip(estimatedLineNb).forEach(buffer::put);
-        records = buffer.getLines();
-      }
-    }
+    List<String> records = readLastLines(logFile, recordCount);
     return records.toArray(new String[records.size()]);
-  }
-
-  private static class LinesRingBuffer {
-    private int count = 0;
-    private int threshold;
-    private String[] lines;
-
-    public LinesRingBuffer(int capacity) {
-      this.threshold = capacity;
-      lines = new String[capacity];
-    }
-
-    public void put(String line) {
-      lines[count++ % threshold] = line;
-    }
-
-    public List<String>getLines() {
-      List<String> content = IntStream.range(count < threshold ? 0 : count - threshold, count)
-          .mapToObj(index -> lines[index % threshold])
-          .collect(Collectors.toList());
-      return content;
-    }
   }
 }
