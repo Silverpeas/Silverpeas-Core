@@ -5,12 +5,16 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -41,6 +45,17 @@ public class ReversedFileLineReaderTest {
     Path fileWithAccentInContent = createFileWithContent("éùï" + System.lineSeparator() + "ô\n\n");
     List<String> lastLines = ReversedFileLineReader.readLastLines(fileWithAccentInContent, 0);
     assertThat(lastLines, contains("éùï", "ô", ""));
+  }
+
+  @Test
+  public void readLinesWithAccentInContentWithEncodingConflict() throws Exception {
+    String utf8String = "éùï" + System.lineSeparator() + "ô\n\n";
+    String usAsciiString = new String(utf8String.getBytes(Charsets.US_ASCII));
+    assertThat(utf8String, not(is(usAsciiString)));
+    Path fileWithAccentInContent = createFileWithContent(utf8String, Charsets.US_ASCII);
+    List<String> lastLines = ReversedFileLineReader.readLastLines(fileWithAccentInContent, 0);
+    StringTokenizer tokenizer = new StringTokenizer(usAsciiString, "\r\n");
+    assertThat(lastLines, contains(tokenizer.nextToken(), tokenizer.nextToken(), ""));
   }
 
   @Test
@@ -103,10 +118,15 @@ public class ReversedFileLineReaderTest {
   }
 
   private Path createFileWithContent(String content) throws Exception {
+    return createFileWithContent(content, Charset.defaultCharset());
+  }
+
+  private Path createFileWithContent(String content, Charset charset) throws Exception {
     Path path = Paths.get(temporaryFolder.newFile().toURI());
     if (StringUtil.isDefined(content)) {
-      try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(path.toFile()))) {
-        fileWriter.write(content);
+      try (BufferedOutputStream fileWriter = new BufferedOutputStream(
+          new FileOutputStream(path.toFile()))) {
+        fileWriter.write(content.getBytes(charset));
       }
     }
     return path;
