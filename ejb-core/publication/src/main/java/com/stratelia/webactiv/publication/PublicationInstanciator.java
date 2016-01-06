@@ -34,10 +34,7 @@ import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.notation.control.RatingService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
-import org.silverpeas.wysiwyg.WysiwygInstanciator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,22 +48,10 @@ public class PublicationInstanciator extends SQLRequest {
 
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace
-        .info("publication", "PublicationInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
-
-    // PCH le 8/6/2001
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("org.silverpeas.publication");
-    wysiwygI.create(con, spaceId, componentId, userId);
-
-    SilverTrace
-        .info("publication", "PublicationInstanciator.create()", "root.root.MSG_GEN_EXIT_METHOD");
   }
 
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
-    SilverTrace
-        .info("publication", "PublicationInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
-
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
 
@@ -77,14 +62,8 @@ public class PublicationInstanciator extends SQLRequest {
       // Delete the notations
       RatingService.get().deleteComponentRatings(componentId);
     } catch (Exception e) {
-      // No exceptions are throwed because of those informations are not sensible.
+      // No exceptions are thrown because of those information are not sensible.
     }
-
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("org.silverpeas.publication");
-    wysiwygI.delete(con, spaceId, componentId, userId);
-
-    SilverTrace
-        .info("publication", "PublicationInstanciator.delete()", "root.root.MSG_GEN_EXIT_METHOD");
   }
 
   /**

@@ -1177,9 +1177,6 @@ class Admin implements Administration {
           deleteProfileInst(componentInst.getProfileInst(nI).getId(), false);
         }
 
-        // Delete the component
-        componentManager.deleteComponentInst(componentInst, domainDriverManager);
-
         if (isContentManagedComponent(componentName)) {
           // Create the manager objects
           ContainerManager containerManager = new ContainerManager();
@@ -1192,9 +1189,14 @@ class Admin implements Administration {
               componentName);
         }
 
-        // commit the transactions
+        // commit the deletion of all resources related to the component instance to delete
         connectionProd.commit();
+
+        // Delete the component
+        componentManager.deleteComponentInst(componentInst, domainDriverManager);
       }
+
+      // commit the deletion of the component instance itself
       if (startNewTransaction) {
         domainDriverManager.commit();
       }

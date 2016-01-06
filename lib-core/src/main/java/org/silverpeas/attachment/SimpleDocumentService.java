@@ -64,6 +64,7 @@ import org.silverpeas.util.annotation.TargetPK;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.i18n.I18NHelper;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -106,13 +107,20 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
     try (JcrSession session = openSystemSession()) {
-      List<SimpleDocument> documentsToDelete =
-          repository.listAllDocumentsByComponentId(session, componentInstanceId, null);
-      for (SimpleDocument documentToDelete : documentsToDelete) {
-        deleteAttachment(session, documentToDelete, true);
+      final String componentInstanceNodePath = '/' + componentInstanceId;
+      if (session.nodeExists(componentInstanceNodePath)) {
+        List<SimpleDocument> documentsToDelete =
+            repository.listAllDocumentsByComponentId(session, componentInstanceId, null);
+        for (SimpleDocument documentToDelete : documentsToDelete) {
+          deleteAttachment(session, documentToDelete, true);
+        }
+        session.getNode(componentInstanceNodePath).remove();
+        session.save();
+      } else {
+        SilverLogger.getLogger(this)
+            .warn("Non existing node in JCR matching the component instance {0}",
+                componentInstanceId);
       }
-      session.getNode('/' + componentInstanceId).remove();
-      session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }

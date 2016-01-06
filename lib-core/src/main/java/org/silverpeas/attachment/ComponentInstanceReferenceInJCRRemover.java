@@ -26,7 +26,6 @@ package org.silverpeas.attachment;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
-import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
