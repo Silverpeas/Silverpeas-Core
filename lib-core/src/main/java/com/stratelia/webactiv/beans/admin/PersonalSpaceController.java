@@ -114,7 +114,7 @@ public class PersonalSpaceController {
       component.setDomainFatherId(space.getId());
       getAdminService().addComponentInst(userId, component);
     }
-    return componentName + component.getId();
+    return component.getId();
   }
 
   public String removeComponent(String userId, String componentId) throws AdminException {
