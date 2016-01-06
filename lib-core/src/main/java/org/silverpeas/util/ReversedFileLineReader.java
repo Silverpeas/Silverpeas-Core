@@ -14,13 +14,13 @@ import java.util.List;
 public class ReversedFileLineReader extends ReversedLinesFileReader {
 
   /*
-  By taking into account an average of 160 character per line, this limit represents a file of 15Mb.
+  By taking into account an average of 160 characters per line, this limit represents a file of
+  15Mb.
    */
   static final int FULL_FILE_NB_LINE_LIMIT = 100000;
 
   private ReversedFileLineReader(final Path path) throws IOException {
     super(path.toFile());
-
   }
 
   /**

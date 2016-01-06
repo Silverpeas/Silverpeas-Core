@@ -102,9 +102,9 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       try {
         String componentId = personalSpaceController.addComponent(helper.getUserId(), componentName,
             getComponentLabel(componentName, helper));
-        writer.write(getResult(componentName, componentId, null, helper).toString());
+        writer.write(getResult(componentName, componentId, null, helper));
       } catch (Exception e) {
-        writer.write(getResult(componentName, null, e, helper).toString());
+        writer.write(getResult(componentName, null, e, helper));
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.AddComponent",
             "root.EX_NO_MESSAGE", e);
       }
@@ -112,9 +112,9 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       String componentId = req.getParameter("ComponentId");
       try {
         String componentName = personalSpaceController.removeComponent(userId, componentId);
-        writer.write(getResult(componentName, componentId, null, helper).toString());
+        writer.write(getResult(componentName, componentId, null, helper));
       } catch (AdminException e) {
-        writer.write(getResult(null, componentId, e, helper).toString());
+        writer.write(getResult(null, componentId, e, helper));
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.RemoveComponent",
             "root.EX_NO_MESSAGE", e);
       }
@@ -179,9 +179,9 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
             component.getId()) + "Main"));
   }
 
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getResult(String componentName,
+  private String getResult(String componentName,
       String componentId, Exception e, LookHelper helper) {
-    return (jsonObject -> {
+    return JSONCodec.encodeObject(jsonObject -> {
       jsonObject.put("name", componentName)
           .put("label", getComponentLabel(componentName, helper))
           .put("successfull", e == null);
