@@ -29,6 +29,8 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.servlet.HttpRequest;
+import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 
@@ -55,8 +57,9 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+  protected void doPost(HttpServletRequest request, HttpServletResponse resp)
       throws ServletException, IOException {
+    HttpRequest req = HttpRequest.decorate(request);
 
     String action = getAction(req);
     String result = StringUtil.EMPTY;
@@ -75,11 +78,11 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     writer.write(result);
   }
 
-  private String getAction(HttpServletRequest req) {
+  private String getAction(HttpRequest req) {
     return req.getParameter("Action");
   }
 
-  private ForeignPK getForeignPK(HttpServletRequest req) {
+  private ForeignPK getForeignPK(HttpRequest req) {
     HttpSession session = req.getSession();
 
     String id = (String) session.getAttribute("Silverpeas_Attachment_ObjectId");
@@ -88,22 +91,24 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     return new ForeignPK(id, componentId);
   }
 
-  private String getUserId(HttpServletRequest req) {
-    return getMainSessionController(req).getCurrentUserDetail().getId();
+  private String getUserId(HttpRequest req) {
+    return req.getMainSessionController().getCurrentUserDetail().getId();
   }
 
-  private String checkout(HttpServletRequest req) {
+  private String checkout(HttpRequest req) {
     String idAttachment = req.getParameter("Id");
     String userId = getUserId(req);
     String fileLanguage = req.getParameter("FileLanguage");
     boolean checkOutOK = attachmentService.lock(idAttachment, userId, fileLanguage);
     if (checkOutOK) {
-      return "ok";
+      SimpleDocumentPK docPk = new SimpleDocumentPK(idAttachment);
+      SimpleDocument lockedDocument = attachmentService.searchDocumentById(docPk, fileLanguage);
+      return DateUtil.getOutputDateAndHour(lockedDocument.getReservation(), req.getUserLanguage());
     }
     return "nok";
   }
 
-  private String checkin(HttpServletRequest req) {
+  private String checkin(HttpRequest req) {
     UnlockContext context = new UnlockContext(req.getParameter("Id"), getUserId(req), req.
         getParameter("FileLanguage"));
     if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
@@ -125,7 +130,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     return "ok";
   }
 
-  private String deleteAttachment(HttpServletRequest req) {
+  private String deleteAttachment(HttpRequest req) {
     String id = req.getParameter("id");
     String languagesToRemove = req.getParameter("languagesToDelete");
     boolean indexIt = isIndexable(req);
@@ -164,7 +169,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     }
   }
 
-  private String sort(HttpServletRequest req) {
+  private String sort(HttpRequest req) {
     String orderedList = req.getParameter("orderedList");
     String componentId = getForeignPK(req).getInstanceId();
 
@@ -185,7 +190,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     return "ok";
   }
 
-  private boolean isIndexable(HttpServletRequest req) {
+  private boolean isIndexable(HttpRequest req) {
     return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt"));
   }
 }
