@@ -108,4 +108,11 @@ public interface Form {
   public void setFormName(String name);
 
   public void setData(DataRecord data);
+
+  /**
+   * Defines if this form is a 'view' form (opposite to an 'update' form)
+   * A 'view' form may have some specific behaviors like to not display empty fields
+   * @param viewForm true if this form is a 'view' form
+   */
+  public void setViewForm(boolean viewForm);
 }
