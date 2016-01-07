@@ -52,6 +52,7 @@ public abstract class AbstractForm implements Form {
   private String name = "";
   private String formName = "";
   private DataRecord data;
+  private boolean viewForm = false;
 
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
@@ -495,4 +496,13 @@ public abstract class AbstractForm implements Form {
   public void setData(DataRecord data) {
     this.data = data;
   }
+
+  public void setViewForm(boolean viewForm) {
+    this.viewForm = viewForm;
+  }
+
+  public boolean isViewForm() {
+    return this.viewForm;
+  }
+
 }

@@ -43,8 +43,6 @@ import java.util.Map;
  * @see FieldDisplayer
  */
 public class XmlForm extends AbstractForm {
-  
-  private boolean viewForm = false;
 
   public XmlForm(RecordTemplate template) throws FormException {
     super(template);
@@ -52,7 +50,7 @@ public class XmlForm extends AbstractForm {
   
   public XmlForm(RecordTemplate template, boolean viewForm) throws FormException {
     super(template);
-    this.viewForm = viewForm;
+    setViewForm(viewForm);
   }
 
   /**
@@ -156,7 +154,7 @@ public class XmlForm extends AbstractForm {
         }
         
         boolean displayField = true;
-        if (viewForm && !Util.isEmptyFieldsDisplayed()) {
+        if (isViewForm() && !Util.isEmptyFieldsDisplayed()) {
           displayField = StringUtil.isDefined(field.getStringValue());
           if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
             // special case about WYSIWYG field
