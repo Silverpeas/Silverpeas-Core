@@ -27,7 +27,6 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.profile.web.ProfileResourceBaseURIs;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -38,6 +37,7 @@ import org.silverpeas.util.CollectionUtil;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -48,6 +48,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -300,14 +301,14 @@ public class SpaceResource extends AbstractAdminResource {
   @GET
   @Path("{spaceId}/" + SPACES_CONTENT_URI_PART)
   @Produces(APPLICATION_JSON)
-  public Collection<AbstractTypeEntity> getContent(@PathParam("spaceId") final String spaceId,
+  public Response getContent(@PathParam("spaceId") final String spaceId,
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
-      final Collection<AbstractTypeEntity> content = new ArrayList<>();
+      final List<AbstractTypeEntity> content = new ArrayList<>();
       content.addAll(getSpaces(spaceId, forceGettingFavorite));
       content.addAll(getComponents(spaceId));
-      return content;
+      return Response.ok(content).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -357,7 +358,7 @@ public class SpaceResource extends AbstractAdminResource {
   @GET
   @Path(SPACES_PERSONAL_URI_PART)
   @Produces(APPLICATION_JSON)
-  public Collection<AbstractPersonnalEntity> getPersonals(
+  public Response getPersonals(
       @QueryParam(GET_NOT_USED_COMPONENTS_PARAM) final boolean getNotUsedComponents,
       @QueryParam(GET_USED_COMPONENTS_PARAM) final boolean getUsedComponents,
       @QueryParam(GET_USED_TOOLS_PARAM) final boolean getUsedTools) {
@@ -381,7 +382,7 @@ public class SpaceResource extends AbstractAdminResource {
         personals.addAll(asWebPersonalEntities(PersonalToolEntity.class,
             getAdminPersonalDelegate().getUsedTools()));
       }
-      return personals;
+      return Response.ok(personals).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -407,8 +408,8 @@ public class SpaceResource extends AbstractAdminResource {
     try {
       return asWebPersonalEntity(getAdminPersonalDelegate().useComponent(componentName));
     } catch (final AdminException ex) {
-      SilverTrace.error("admin", "SpaceResource.useComponent",
-          "root.EX_UNKNOWN_COMPONENT_OR_COMPONENT_ALREADY_USED");
+      SilverLogger.getLogger(this)
+          .error("{0} is already instantiated into personal space", componentName);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -436,7 +437,8 @@ public class SpaceResource extends AbstractAdminResource {
     try {
       return asWebPersonalEntity(getAdminPersonalDelegate().discardComponent(componentName));
     } catch (final AdminException ex) {
-      SilverTrace.error("admin", "SpaceResource.discardComponent", "root.EX_UNKNOWN_COMPONENT_ID");
+      SilverLogger.getLogger(this)
+          .error("{0} is not instantiated into personal space", componentName);
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (final WebApplicationException ex) {
       throw ex;
