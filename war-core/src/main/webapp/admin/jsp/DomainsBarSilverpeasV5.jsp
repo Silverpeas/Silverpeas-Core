@@ -67,6 +67,7 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)) {
 } else if (StringUtil.isDefined(subSpaceId)) {
   spaceId = subSpaceId;
 }
+gef.setSpaceIdForCurrentRequest(spaceId);
 
   SettingBundle resourceSearchEngine =
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");

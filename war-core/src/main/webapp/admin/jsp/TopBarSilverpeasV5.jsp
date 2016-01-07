@@ -44,6 +44,7 @@ SettingBundle settings 		= gef.getFavoriteLookSettings();
 
 String currentComponentId 	= helper.getComponentId();
 String currentSpaceId		= helper.getSpaceId();
+gef.setSpaceIdForCurrentRequest(helper.getSubSpaceId());
 
 boolean goToFavoriteSpaceOnHomeLink = settings.getBoolean("home.target.favoriteSpace", false);
 String goToHome = "frameBottomSilverpeasV5.jsp?FromTopBar=1";
