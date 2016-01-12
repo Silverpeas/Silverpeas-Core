@@ -324,7 +324,7 @@ public class DocumentRepositoryTest {
       assertThat(result, is(expResult));
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
-      documentRepository.updateDocument(session, document);
+      documentRepository.updateDocument(session, document, true);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -358,7 +358,7 @@ public class DocumentRepositoryTest {
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.reader);
-      documentRepository.updateDocument(session, document);
+      documentRepository.updateDocument(session, document, true);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -424,7 +424,7 @@ public class DocumentRepositoryTest {
       assertThat(result, is(expResult));
       attachment = createFrenchSimpleAttachment();
       document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
-      documentRepository.updateDocument(session, document);
+      documentRepository.updateDocument(session, document, true);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -1329,7 +1329,7 @@ public class DocumentRepositoryTest {
       assertThat(document.getEditedBy(), nullValue());
 
       document.edit("26");
-      documentRepository.updateDocument(session, document);
+      documentRepository.updateDocument(session, document, true);
       session.save();
 
       document = documentRepository.findDocumentById(session, sourcePk, language);

@@ -462,8 +462,8 @@
     function checkout(id, oldId, webdav, edit, download) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
-        $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(data) {
-          if (data == 'ok') {
+        $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(formattedDateTimeData) {
+          if (formattedDateTimeData !== 'nok') {
             var oMenu = eval("oMenu" + oldId);
             oMenu.getItem(3).cfg.setProperty("disabled", false); // checkin
             oMenu.getItem(0).cfg.setProperty("disabled", true); // checkout
@@ -475,7 +475,7 @@
             oMenu.getItem(3, 1).cfg.setProperty("disabled", true); // delete
             oMenu.getItem(2, 1).cfg.setProperty("disabled", true); // switch
             var $worker = $('#worker' + oldId);
-            $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
+            $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> " + formattedDateTimeData);
             $worker.css({'visibility':'visible'});
             if (edit) {
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
