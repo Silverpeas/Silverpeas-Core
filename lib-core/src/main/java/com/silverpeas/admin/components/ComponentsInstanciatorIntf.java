@@ -31,6 +31,7 @@ import java.sql.Connection;
  * a space for a user.
  * @author Joaquim Vieira
  */
+@Deprecated
 public interface ComponentsInstanciatorIntf {
   /**
    * The name of the component descriptor parameter holding the process file name

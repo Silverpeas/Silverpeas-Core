@@ -627,10 +627,14 @@ public class DefaultNodeService implements NodeService {
   @Transactional
   public NodePK createNode(NodeDetail node) {
     NodePK parentPK = node.getFatherPK();
-    NodeDetail parent = getHeader(parentPK);
-    node.setPath(parent.getFullPath());
-    node.setLevel(parent.getLevel() + 1);
-    node.setFatherPK(parentPK);
+    if (parentPK != null) {
+      NodeDetail parent = getHeader(parentPK);
+      node.setPath(parent.getFullPath());
+      node.setLevel(parent.getLevel() + 1);
+    } else {
+      node.setPath("/");
+    }
+
     if (node.getLanguage() == null) {
       // translation for the first time
       node.setLanguage(I18NHelper.defaultLanguage);

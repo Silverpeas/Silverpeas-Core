@@ -39,6 +39,7 @@ import java.util.Hashtable;
  * property file (create, delete, update, insert), to extract the specific SQL code with specific
  * tag. And to return the complet rigth SQL code.
  */
+@Deprecated
 public class SQLRequest {
 
   /**

@@ -760,15 +760,16 @@ public class NodeDAO {
     String creatorId = nd.getCreatorId();
     String path = nd.getPath();
     int level = nd.getLevel();
-    int fatherId = Integer.parseInt(nd.getFatherPK().getId());
     String modelId = nd.getModelId();
     String status = nd.getStatus();
     String type = nd.getType();
     String language = nd.getLanguage();
-
-    int nbBrothers = getChildrenNumber(con, nd.getFatherPK());
-
-
+    int fatherId = -1;
+    int nbBrothers = 0;
+    if (nd.getFatherPK() != null) {
+      fatherId = Integer.parseInt(nd.getFatherPK().getId());
+      nbBrothers = getChildrenNumber(con, nd.getFatherPK());
+    }
     int order = nbBrothers + 1;
 
     try {

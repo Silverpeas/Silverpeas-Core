@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.ApplicationResourcePasting;
+import com.silverpeas.admin.components.ComponentInstancePostConstruction;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
@@ -45,7 +46,6 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
@@ -1040,8 +1040,10 @@ class Admin implements Administration {
 
       String[] asCompoNames = {componentName};
       String[] asCompoIds = {componentId};
-      instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
-          connectionProd);
+
+      ComponentInstancePostConstruction.get(componentName).ifPresent(c -> c.postConstruct(componentId));
+      /*instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
+          connectionProd);*/
 
       if (isContentManagedComponent(componentName)) {
         // Create the manager objects

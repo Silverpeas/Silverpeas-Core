@@ -47,6 +47,8 @@ public class QuestionInstanciator extends SQLRequest {
     super("org.silverpeas.question");
   }
 
+  // the image directory is no more used for a long time. So, we can skip this (Question doesn't
+  // handle images)
   public void create(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
 
