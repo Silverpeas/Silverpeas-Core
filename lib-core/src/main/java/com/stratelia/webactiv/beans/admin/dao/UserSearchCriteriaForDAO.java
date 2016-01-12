@@ -74,10 +74,11 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   public UserSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
       tables.add("st_user");
+      String normalizedName = name.replaceAll("'", "''");
       getFixedQuery().append("(lower(st_user.firstName) like lower('").
-              append(name).
+              append(normalizedName).
               append("') or lower(st_user.lastName) like lower('").
-              append(name).
+              append(normalizedName).
               append("'))");
     }
     return this;
