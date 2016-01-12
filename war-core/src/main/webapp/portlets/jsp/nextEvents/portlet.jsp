@@ -72,7 +72,7 @@ else
   	while (events.hasNext())
   	{
     	task 		= (Schedulable) events.next();
-    	taskname 	= EncodeHelper.convertHTMLEntities(task.getName());
+    	taskname 	= task.getName();
 
       	// convertir la date de l'évènement
     	Calendar taskDate = Calendar.getInstance();
