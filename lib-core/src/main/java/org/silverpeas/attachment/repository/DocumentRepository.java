@@ -307,16 +307,20 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
+   * @param updateLastModifiedData
    * @throws RepositoryException
    * @throws IOException
    */
-  public void updateDocument(Session session, SimpleDocument document) throws
+  public void updateDocument(Session session, SimpleDocument document,
+      final boolean updateLastModifiedData) throws
       RepositoryException, IOException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    if (StringUtil.isDefined(document.getEditedBy())) {
-      document.setUpdatedBy(document.getEditedBy());
+    if (updateLastModifiedData) {
+      if (StringUtil.isDefined(document.getEditedBy())) {
+        document.setUpdatedBy(document.getEditedBy());
+      }
+      document.setUpdated(new Date());
     }
-    document.setUpdated(new Date());
     converter.fillNode(document, documentNode);
   }
 
@@ -1123,11 +1127,11 @@ public class DocumentRepository {
           return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
         }
       }
-      converter.fillNode(document, documentNode, skipContentMetadataUpdate);
+      converter.fillNode(document, documentNode, (restore || skipContentMetadataUpdate));
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
     if (!document.isVersioned()) {
-      converter.fillNode(document, documentNode, skipContentMetadataUpdate);
+      converter.fillNode(document, documentNode, (restore || skipContentMetadataUpdate));
       converter.releaseDocumentNode(documentNode, document.getLanguage());
       return converter.convertNode(documentNode, document.getLanguage());
     }
