@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -76,7 +77,7 @@ public class PublicationDAO {
   // values : Collection of PublicationDetail
   private static Map<String, Collection<PublicationDetail>> lastPublis =
       new HashMap<String, Collection<PublicationDetail>>();
-  private static final String publicationTableName = "SB_Publication_Publi";
+  static final String publicationTableName = "SB_Publication_Publi";
   private static final String UPDATE_PUBLICATION =
       "UPDATE SB_Publication_Publi SET infoId = ?, "
           + "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, "
@@ -91,6 +92,17 @@ public class PublicationDAO {
    * @since 1.0
    */
   public PublicationDAO() {
+  }
+
+  /**
+   * Deletes all publications linked to the component instance represented by the given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(publicationTableName).where("instanceId = ?", componentInstanceId)
+        .execute();
   }
 
   /**

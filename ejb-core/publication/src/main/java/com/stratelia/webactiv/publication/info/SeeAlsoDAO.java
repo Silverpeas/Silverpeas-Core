@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.WAPrimaryKey;
@@ -49,6 +50,19 @@ public class SeeAlsoDAO {
    * @see
    */
   public SeeAlsoDAO() {
+  }
+
+  /**
+   * Deletes all publication to publication links associated to the component instance represented
+   * by the given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(SEEALSO_TABLENAME)
+        .where("objectinstanceid = ?", componentInstanceId)
+        .or("targetinstanceid = ?", componentInstanceId).execute();
   }
 
   /**

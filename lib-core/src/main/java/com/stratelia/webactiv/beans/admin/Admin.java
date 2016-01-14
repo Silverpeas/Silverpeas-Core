@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.ApplicationResourcePasting;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.admin.components.ComponentInstancePostConstruction;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
@@ -1169,10 +1170,26 @@ class Admin implements Administration {
         connectionProd = openConnection(false);
         // Uninstantiate the components
         String componentName = componentInst.getName();
-        String[] asCompoName = {componentName};
-        String[] asCompoId = {componentId};
-        unInstantiateComponents(userId, asCompoId, asCompoName, getClientSpaceId(sFatherClientId),
-            connectionProd);
+//        String[] asCompoName = {componentName};
+//        String[] asCompoId = {componentId};
+//        unInstantiateComponents(userId, asCompoId, asCompoName, getClientSpaceId(sFatherClientId),
+//            connectionProd);
+
+//        List<Callable<Void>> componentDeletions =
+//            ServiceProvider.getAllServices(ComponentInstanceDeletion.class).stream()
+//                .map(service -> (Callable<Void>) () -> {
+//                  service.delete(componentId);
+//                  return null;
+//                }).collect(Collectors.toList());
+//
+//        List<Future<Void>> componentDeletionProcesses =
+//            ManagedThreadPool.invoke(componentDeletions, maxThreadPoolSizeOf(10));
+//        for (Future<Void> componentDeletionProcess : componentDeletionProcesses) {
+//          componentDeletionProcess.get();
+//        }
+
+        ServiceProvider.getAllServices(ComponentInstanceDeletion.class).stream()
+            .forEach(service -> service.delete(componentId));
 
         // delete the profiles instance
         for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {

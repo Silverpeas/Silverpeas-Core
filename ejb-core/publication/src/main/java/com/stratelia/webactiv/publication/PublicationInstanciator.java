@@ -40,6 +40,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Deprecated
 public class PublicationInstanciator extends SQLRequest {
 
   public PublicationInstanciator(String fullPathName) {

@@ -25,6 +25,7 @@
 package org.silverpeas.test;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
@@ -686,6 +687,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addServiceProviderFeatures() {
     addClasses(CDIContainer.class).addPackages(true, "org.silverpeas.initialization");
+    return this;
+  }
+
+  /**
+   * Sets component instance deletion features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addComponentInstanceDeletionFeatures() {
+    addClasses(ComponentInstanceDeletion.class);
     return this;
   }
 

@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.publication.control;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
@@ -89,7 +90,7 @@ import java.util.*;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class PublicationBmEJB implements PublicationBm {
+public class PublicationBmEJB implements PublicationBm, ComponentInstanceDeletion {
 
   @Inject
   private NodeService nodeService;
@@ -105,6 +106,23 @@ public class PublicationBmEJB implements PublicationBm {
   private PublicationEventNotifier notifier;
 
   private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
+
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try {
+      ValidationStepsDAO.deleteComponentInstanceData(componentInstanceId);
+      PublicationI18NDAO.deleteComponentInstanceData(componentInstanceId);
+      PublicationFatherDAO.deleteComponentInstanceData(componentInstanceId);
+      SeeAlsoDAO.deleteComponentInstanceData(componentInstanceId);
+      PublicationDAO.deleteComponentInstanceData(componentInstanceId);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.delete()",
+          SilverpeasRuntimeException.ERROR,
+          "publication.DELETING_COMPONENT_INSTANCE_PUBLICATIONS_FAILED",
+          "instanceId = " + componentInstanceId, e);
+    }
+  }
 
   @Override
   public PublicationDetail getDetail(PublicationPK pubPK) {

@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.publication.control;
 
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
@@ -56,6 +57,21 @@ public class PublicationFatherDAO {
    * @since 1.0
    */
   public PublicationFatherDAO() {
+  }
+
+  /**
+   * Deletes all locations of publications linked to the component instance represented by the
+   * given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(publicationFatherTableName).where("pubId in (" +
+        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.publicationTableName)
+            .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
+    JdbcSqlQuery.createDeleteFor(publicationFatherTableName)
+        .where("instanceId = ?", componentInstanceId).execute();
   }
 
   /**
