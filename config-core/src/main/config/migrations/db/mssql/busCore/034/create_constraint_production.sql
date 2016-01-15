@@ -28,12 +28,6 @@ ALTER TABLE model WITH NOCHECK ADD
 		id
 	);
 
-ALTER TABLE favorit WITH NOCHECK ADD
-	CONSTRAINT PK_favorit PRIMARY KEY  NONCLUSTERED
-	(
-		actorId, nodeId, space, componentName
-	);
-
 ALTER TABLE calendarJournal WITH NOCHECK ADD
 	CONSTRAINT PK_CalendarJournal PRIMARY KEY  NONCLUSTERED
 	(

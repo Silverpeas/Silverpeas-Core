@@ -9,3 +9,5 @@ SET propfilename = replace(replace(replace(propfilename,
                            'com.silverpeas',
                            'org.silverpeas'
 );
+
+DROP TABLE favorit;

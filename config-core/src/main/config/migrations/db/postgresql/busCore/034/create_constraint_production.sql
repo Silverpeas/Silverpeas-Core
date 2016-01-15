@@ -28,12 +28,6 @@ ALTER TABLE model  ADD
 		id
 	);
 
-ALTER TABLE favorit  ADD
-	CONSTRAINT PK_favorit PRIMARY KEY
-	(
-		actorId, nodeId, space, componentName
-	);
-
 ALTER TABLE calendarJournal  ADD
 	CONSTRAINT PK_CalendarJournal PRIMARY KEY
 	(

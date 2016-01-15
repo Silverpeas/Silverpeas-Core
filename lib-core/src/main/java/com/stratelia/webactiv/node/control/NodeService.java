@@ -47,9 +47,9 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a NodeDetail
    */
-  public NodeDetail getHeader(NodePK pk);
+  NodeDetail getHeader(NodePK pk);
 
-  public NodeDetail getHeader(NodePK pk, boolean getTranslations);
+  NodeDetail getHeader(NodePK pk, boolean getTranslations);
 
   /**
    * Get the attributes of a node and of its children
@@ -57,35 +57,27 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a NodeDetail
    */
-  public NodeDetail getDetail(NodePK pk);
+  NodeDetail getDetail(NodePK pk);
 
-  public NodeDetail getDetailTransactionally(NodePK pk);
+  NodeDetail getDetailTransactionally(NodePK pk);
 
-  public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId);
+  NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId);
 
-  public ArrayList<NodeDetail> getTree(NodePK pk);
+  ArrayList<NodeDetail> getTree(NodePK pk);
 
-  public ArrayList<NodeDetail> getSubTree(NodePK pk);
+  ArrayList<NodeDetail> getSubTree(NodePK pk);
 
-  public ArrayList<NodeDetail> getSubTree(NodePK pk, String sorting);
+  ArrayList<NodeDetail> getSubTree(NodePK pk, String sorting);
 
-  public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status);
+  ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status);
 
-  public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting);
+  ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting);
 
-  public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level);
+  ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level);
 
-  public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting);
+  ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting);
 
-  public ArrayList<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting);
-
-  /**
-   * Method declaration
-   *
-   * @param pk the node primary key.
-   * @return
-   */
-  public NodeDetail getTwoLevelDetails(NodePK pk);
+  ArrayList<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting);
 
   /**
    * Method declaration
@@ -93,7 +85,15 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return
    */
-  public NodeDetail getFrequentlyAskedDetail(NodePK pk);
+  NodeDetail getTwoLevelDetails(NodePK pk);
+
+  /**
+   * Method declaration
+   *
+   * @param pk the node primary key.
+   * @return
+   */
+  NodeDetail getFrequentlyAskedDetail(NodePK pk);
 
   /**
    * Method declaration
@@ -102,7 +102,7 @@ public interface NodeService {
    * @param level
    * @return
    */
-  public List<NodeDetail> getHeadersByLevel(NodePK pk, int level);
+  List<NodeDetail> getHeadersByLevel(NodePK pk, int level);
 
   /**
    * Method declaration
@@ -110,7 +110,7 @@ public interface NodeService {
    * @param nodePK
    * @return
    */
-  public Collection<NodeDetail> getAllNodes(NodePK nodePK);
+  Collection<NodeDetail> getAllNodes(NodePK nodePK);
 
   /**
    * Get the path of this node from this node to root
@@ -118,7 +118,7 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a NodeDetail Collection (only header).
    */
-  public Collection<NodeDetail> getPath(NodePK pk);
+  Collection<NodeDetail> getPath(NodePK pk);
 
   /**
    * Get the header of each child of the node.
@@ -126,7 +126,7 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a NodeDetail collection
    */
-  public Collection<NodeDetail> getChildrenDetails(NodePK pk);
+  Collection<NodeDetail> getChildrenDetails(NodePK pk);
 
   /**
    * Get the header of each child of the node this function is to be used with frequently used nodes
@@ -136,7 +136,7 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a NodeDetail collection
    */
-  public Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk);
+  Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk);
 
   /**
    * Get the children number of this node
@@ -144,7 +144,7 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a int
    */
-  public int getChildrenNumber(NodePK pk);
+  int getChildrenNumber(NodePK pk);
 
   /**
    * Update the attributes of the node
@@ -153,7 +153,7 @@ public interface NodeService {
    * @
    * @since 1.0
    */
-  public void setDetail(NodeDetail nodeDetail);
+  void setDetail(NodeDetail nodeDetail);
 
   /**
    * Create a new Node object
@@ -162,7 +162,7 @@ public interface NodeService {
    * @param fatherDetail the parent of node to be added
    * @return the NodePK of the new Node
    */
-  public NodePK createNode(NodeDetail nodeDetail, NodeDetail fatherDetail);
+  NodePK createNode(NodeDetail nodeDetail, NodeDetail fatherDetail);
 
   /**
    * Create a new Node object
@@ -170,7 +170,7 @@ public interface NodeService {
    * @param nodeDetail the NodeDetail which contains data
    * @return the NodePK of the new Node
    */
-  public NodePK createNode(NodeDetail nodeDetail);
+  NodePK createNode(NodeDetail nodeDetail);
 
   /**
    * Remove a node and its descendants
@@ -178,9 +178,9 @@ public interface NodeService {
    * @param pk the node PK to delete
    * @see com.stratelia.webactiv.node.model.NodePK
    */
-  public void removeNode(NodePK pk);
+  void removeNode(NodePK pk);
 
-  public void moveNode(NodePK nodePK, NodePK toNode);
+  void moveNode(NodePK nodePK, NodePK toNode);
 
   /**
    * On node creation, check if another node have got the same name with same father
@@ -188,7 +188,7 @@ public interface NodeService {
    * @return true if there is already a node with same name with same father false else
    * @param nd A NodeDetail contains new node data to compare
    */
-  public boolean isSameNameSameLevelOnCreation(NodeDetail nd);
+  boolean isSameNameSameLevelOnCreation(NodeDetail nd);
 
   /**
    * On node update, check if another node have got the same name with same father
@@ -196,7 +196,7 @@ public interface NodeService {
    * @return true if there is already a node with same name with same father false else
    * @param nd A NodeDetail contains new node data to compare
    */
-  public boolean isSameNameSameLevelOnUpdate(NodeDetail nd);
+  boolean isSameNameSameLevelOnUpdate(NodeDetail nd);
 
   /**
    * Get children node PKs of a node
@@ -205,7 +205,7 @@ public interface NodeService {
    * @param nodePK A NodePK
    * @see com.stratelia.webactiv.node.model.NodePK
    */
-  public Collection<NodePK> getChildrenPKs(NodePK nodePK);
+  Collection<NodePK> getChildrenPKs(NodePK nodePK);
 
   /**
    * Get descendant node PKs of a node
@@ -215,7 +215,7 @@ public interface NodeService {
    * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
-  public Collection<NodePK> getDescendantPKs(NodePK nodePK);
+  Collection<NodePK> getDescendantPKs(NodePK nodePK);
 
   /**
    * Get descendant nodeDetails of a node
@@ -225,7 +225,7 @@ public interface NodeService {
    * @see com.stratelia.webactiv.node.model.NodePK
    * @since 1.0
    */
-  public List<NodeDetail> getDescendantDetails(NodePK nodePK);
+  List<NodeDetail> getDescendantDetails(NodePK nodePK);
 
   /**
    * Get descendant nodeDetails of a node
@@ -233,7 +233,7 @@ public interface NodeService {
    * @return A List of NodeDetail
    * @param node A NodeDetail
    */
-  public List<NodeDetail> getDescendantDetails(NodeDetail node);
+  List<NodeDetail> getDescendantDetails(NodeDetail node);
 
   /**
    * Get the path from root to a node
@@ -242,7 +242,7 @@ public interface NodeService {
    * @param nodePK A NodePK
    * @see com.stratelia.webactiv.node.model.NodePK
    */
-  public Collection<NodeDetail> getAnotherPath(NodePK nodePK);
+  Collection<NodeDetail> getAnotherPath(NodePK nodePK);
 
   /**
    * A wysiwyg's content has been added or modified to a node. Its content must be added to the
@@ -250,23 +250,23 @@ public interface NodeService {
    *
    * @param nodePK the identifier of the node associated to the wysiwyg
    */
-  public void processWysiwyg(NodePK nodePK);
+  void processWysiwyg(NodePK nodePK);
 
-  public void updateRightsDependency(NodeDetail nodeDetail);
+  void updateRightsDependency(NodeDetail nodeDetail);
 
   /**
    * Method declaration
    *
    * @param nodeDetail
    */
-  public void createIndex(NodeDetail nodeDetail);
+  void createIndex(NodeDetail nodeDetail);
 
   /**
    * Method declaration
    *
    * @param pk
    */
-  public void deleteIndex(NodePK pk);
+  void deleteIndex(NodePK pk);
 
-  public void sortNodes(List<NodePK> nodePKs);
+  void sortNodes(List<NodePK> nodePKs);
 }

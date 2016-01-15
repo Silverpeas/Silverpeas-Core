@@ -36,6 +36,7 @@ import com.stratelia.webactiv.node.control.AnonymousMethodOnNode;
 import com.stratelia.webactiv.node.control.NodeDeletion;
 import com.stratelia.webactiv.node.model.NodePK;
 
+@Deprecated
 public class NodeInstanciator extends SQLRequest {
 
   private static AnonymousMethodOnNode NO_METHOD = null;

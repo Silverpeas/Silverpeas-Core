@@ -21,19 +21,18 @@
 
 package com.stratelia.webactiv.node.control.dao;
 
+import com.stratelia.webactiv.node.model.NodeI18NDetail;
+import com.stratelia.webactiv.node.model.NodeI18NPK;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.StringUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import com.stratelia.webactiv.node.model.NodeI18NDetail;
-import com.stratelia.webactiv.node.model.NodeI18NPK;
 
 /**
  * This is the Node Data Access Object.
@@ -58,6 +57,19 @@ public class NodeI18NDAO {
    * @since 1.0
    */
   public NodeI18NDAO() {
+  }
+
+  /**
+   * Deletes all translations of publications linked to the component instance represented by the
+   * given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor("sb_node_nodeI18N").where("nodeId in (" +
+        JdbcSqlQuery.createSelect("nodeId from sb_node_node").where("instanceId = ?")
+            .getSqlQuery() + ")", componentInstanceId).execute();
   }
 
   /**
