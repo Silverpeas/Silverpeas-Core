@@ -154,7 +154,7 @@ public class DefaultCommentService implements CommentService {
   /**
    * Deletes all of the comments by the component instance identifier. Any indexes on it are
    * removed. All callback interested by the deletion of a comment will be invoked through the
-   * CallBackManager. The callback will recieve as invocation parameters respectively the identifier
+   * CallBackManager. The callback will receive as invocation parameters respectively the identifier
    * of the commented publication, the component instance name, and the deleted comment. If no such
    * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    *
@@ -169,7 +169,7 @@ public class DefaultCommentService implements CommentService {
    * Deletes the specified comment. Any indexes on it are removed. If no such comment exists with
    * the specified identifier, then a CommentRuntimeException is thrown. All callback interested by
    * the deletion of a comment will be invoked through the CallBackManager. The callback will
-   * recieve as invocation parameters respectively the identifier of the commented publication, the
+   * receive as invocation parameters respectively the identifier of the commented publication, the
    * component instance name, and the deleted comment.
    *
    * @param comment the comment to remove.

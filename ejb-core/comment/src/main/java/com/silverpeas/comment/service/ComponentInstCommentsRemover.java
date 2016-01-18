@@ -21,26 +21,28 @@
 
 package com.silverpeas.comment.service;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.StringUtil;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 /**
- * Listens of events about the deletion of component instance in order to remove all the comments
- * from the deleted component instance.
+ * When a component instance is removed from Silverpeas, deletes all the comments that were
+ * published in the context of the component instance.
  * @author mmoquillon
  */
-public class ComponentInstCommentsRemover extends CDIResourceEventListener<ComponentInstanceEvent> {
+@Transactional
+public class ComponentInstCommentsRemover implements ComponentInstanceDeletion {
 
   @Inject
   private CommentService service;
 
   @Override
-  public void onDeletion(final ComponentInstanceEvent event) throws Exception {
-    ComponentInst component = event.getTransition().getBefore();
-    service.deleteAllCommentsByComponentInstanceId(component.getId());
+  public void delete(final String componentInstanceId) {
+    service.deleteAllCommentsByComponentInstanceId(componentInstanceId);
   }
 }

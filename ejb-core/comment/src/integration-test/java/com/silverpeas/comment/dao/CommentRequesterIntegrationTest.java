@@ -46,7 +46,6 @@ import org.junit.runner.RunWith;
 import org.silverpeas.date.Period;
 import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.rule.DbSetupRule;
-import org.silverpeas.test.rule.DbUnitLoadingRule;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.ForeignPK;
@@ -60,12 +59,12 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
-public class CommentRequesterTest {
+public class CommentRequesterIntegrationTest {
 
   private final JDBCCommentRequester commentRequester = new JDBCCommentRequester();
 
-  private static final String TABLE_CREATION_SCRIPT = "create-database.sql";
-  private static final String DATASET_SCRIPT = "comment-dataset.sql";
+  private static final String TABLE_CREATION_SCRIPT = "/com/silverpeas/comment/create-database.sql";
+  private static final String DATASET_SCRIPT = "/com/silverpeas/comment/comment-dataset.sql";
 
   private final String DUMMY_COMMENT_ID = "newCommentId";
   private final String DUMMY_INSTANCE_ID = "newInstanceId";
@@ -79,7 +78,7 @@ public class CommentRequesterTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(CommentRequesterTest.class)
+    return BasicWarBuilder.onWarForTestClass(CommentRequesterIntegrationTest.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
@@ -88,7 +87,8 @@ public class CommentRequesterTest {
         .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
         .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard").testFocusedOn(war -> {
           war.addPackages(true, "com.silverpeas.comment.dao")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+            .addAsResource("com/silverpeas/comment")
+            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
         }).build();
   }
 

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.comment.dao.jdbc;
 
-import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -33,7 +32,6 @@ import org.silverpeas.date.Period;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.WAPrimaryKey;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Named;
 import java.sql.Connection;
@@ -59,15 +57,13 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       commentPK = requester.saveComment(con, cmt);
       if (commentPK == null) {
-        throw new CommentRuntimeException(getClass().getSimpleName() + ".createComment()",
-            SilverpeasRuntimeException.ERROR,
-            "comment.CREATING_NEW_COMMENT_FAILED");
+        throw new RuntimeException("Cannot save comment for resource " +
+            cmt.getForeignKey().getId() + " of type " + cmt.getResourceType() +
+            " in component instance " + cmt.getComponentInstanceId());
       }
       return commentPK;
     } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".createComment()",
-          SilverpeasRuntimeException.ERROR,
-          "comment.CREATING_NEW_COMMENT_FAILED", re);
+      throw new RuntimeException(re.getMessage(), re);
     }
   }
 
@@ -77,8 +73,7 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       requester.deleteComment(con, pk);
     } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".deleteComment()",
-          SilverpeasRuntimeException.ERROR, "comment.DELETE_COMMENT_FAILED", re);
+      throw new RuntimeException(re.getMessage(), re);
     }
   }
 
@@ -88,8 +83,7 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       requester.updateComment(con, cmt);
     } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".updateComment()",
-          SilverpeasRuntimeException.ERROR, "comment.UPDATE_COMMENT_FAILED", re);
+      throw new RuntimeException(re.getMessage(), re);
     }
   }
 
@@ -100,13 +94,12 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       comment = requester.getComment(con, pk);
       if (comment == null) {
-        throw new CommentRuntimeException(getClass().getSimpleName() + ".getComment()",
-            SilverpeasRuntimeException.ERROR, "comment.GET_COMMENT_FAILED");
+        throw new RuntimeException("Cannot get comment " + pk.getId() +
+            " in component instance " + pk.getInstanceId());
       }
       return comment;
     } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".getComment()",
-          SilverpeasRuntimeException.ERROR, "comment.GET_COMMENT_FAILED", re);
+      throw new RuntimeException(re.getMessage(), re);
     }
   }
 
@@ -116,11 +109,7 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getMostCommentedAllPublications(con, null);
     } catch (Exception e) {
-      throw new CommentRuntimeException(getClass().getSimpleName()
-          + ".getMostCommentedAllPublications()",
-          SilverpeasRuntimeException.FATAL,
-          "comment.GET_MOST_COMMENTED_ITEMS",
-          e);
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -133,9 +122,7 @@ public class JDBCCommentDAO implements CommentDAO {
       try (Connection con = openConnection()) {
         commentedPubs = requester.getMostCommentedPublications(con, pks);
       } catch (Exception e) {
-        throw new CommentRuntimeException(getClass().getSimpleName()
-            + ".getMostCommentedPublications()", SilverpeasRuntimeException.ERROR,
-            "comment.GET_MOST_COMMENTED_ITEMS", e);
+        throw new RuntimeException(e.getMessage(), e);
       }
     }
     return (commentedPubs == null ? new ArrayList<CommentedPublicationInfo>() : commentedPubs);
@@ -147,10 +134,8 @@ public class JDBCCommentDAO implements CommentDAO {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       publicationCommentsCount = requester.getCommentsCount(con, resourceType, foreign_pk);
-    } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".getCommentsCount()",
-          SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
-          re);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage(), e);
     }
     return publicationCommentsCount;
   }
@@ -163,14 +148,12 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       vRet = requester.getAllComments(con, resourceType, foreign_pk);
       if (vRet == null) {
-        throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
-            SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED");
+        throw new RuntimeException("Cannot get all comments for resource " + foreign_pk.getId() +
+            " of type " + resourceType + " in component instance " + foreign_pk.getInstanceId());
       }
       return vRet;
-    } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
-          SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
-          re);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -179,10 +162,8 @@ public class JDBCCommentDAO implements CommentDAO {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.deleteAllComments(con, resourceType, foreign_pk);
-    } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
-          SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
-          re);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -197,10 +178,8 @@ public class JDBCCommentDAO implements CommentDAO {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.moveComments(con, fromResourceType, fromPK, toResourceType, toPK);
-    } catch (Exception re) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".moveComments()",
-          SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
-          re);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -210,11 +189,7 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getMostCommentedAllPublications(con, resourceType);
     } catch (Exception e) {
-      throw new CommentRuntimeException(getClass().getSimpleName()
-          + ".getMostCommentedAllPublications()",
-          SilverpeasRuntimeException.FATAL,
-          "comment.GET_COMMENT_FAILED",
-          e);
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -224,11 +199,7 @@ public class JDBCCommentDAO implements CommentDAO {
       JDBCCommentRequester requester = getCommentDAO();
       return requester.getLastComments(con, instanceId, count);
     } catch (Exception e) {
-      throw new CommentRuntimeException(getClass().getSimpleName()
-          + ".getMostCommentedAllPublications()",
-          SilverpeasRuntimeException.FATAL,
-          "comment.GET_COMMENT_FAILED",
-          e);
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -240,9 +211,7 @@ public class JDBCCommentDAO implements CommentDAO {
       return requester.getSocialInformationComments(con, resourceTypes,
           StringUtil.isDefined(userId) ? Collections.singletonList(userId) : null, null, period);
     } catch (Exception e) {
-      throw new CommentRuntimeException(
-          getClass().getSimpleName() + ".getSocialInformationCommentsListByUserId()",
-          SilverpeasRuntimeException.FATAL, "comment.GET_COMMENT_FAILED", e);
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -255,9 +224,7 @@ public class JDBCCommentDAO implements CommentDAO {
       return requester
           .getSocialInformationComments(con, resourceTypes, myContactsIds, instanceIds, period);
     } catch (Exception e) {
-      throw new CommentRuntimeException(
-          getClass().getSimpleName() + ".getSocialInformationCommentsListOfMyContacts()",
-          SilverpeasRuntimeException.FATAL, "comment.GET_COMMENT_FAILED", e);
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 }
