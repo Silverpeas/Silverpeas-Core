@@ -22,9 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.node.control.dao;
+package com.stratelia.webactiv.node.control.dao;
 
-import com.stratelia.webactiv.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import org.jboss.arquillian.container.test.api.Deployment;
