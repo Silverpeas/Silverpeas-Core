@@ -50,7 +50,7 @@ public class WarBuilder4Publication extends BasicWarBuilder {
         .addClasses(PublicationSelection.class)
         .addPackages(true, "org.silverpeas.publication.dateReminder",
             "com.silverpeas.publication.importExport"));
-    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     warBuilder.addAsResource("org/silverpeas/publication/publicationSettings.properties");
     return warBuilder;
   }

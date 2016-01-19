@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.calendar.model;
+package com.stratelia.webactiv.calendar.control;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,9 +34,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.stratelia.webactiv.calendar.model.JournalHeader;
+import com.stratelia.webactiv.calendar.model.ParticipationStatus;
+import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import org.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.control.CalendarException;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;

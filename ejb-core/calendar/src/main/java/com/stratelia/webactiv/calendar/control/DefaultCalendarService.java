@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.calendar.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.webactiv.calendar.model.*;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
@@ -31,8 +31,11 @@ import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.logging.SilverLogger;
 
+import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
@@ -40,6 +43,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +53,7 @@ import java.util.List;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class CalendarEJB implements SilverpeasCalendar {
+public class DefaultCalendarService implements SilverpeasCalendar, ComponentInstanceDeletion {
 
   @Inject
   private JournalDAO journalDAO;
@@ -134,9 +138,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<ToDoHeader> getOrganizerToDos(String organizerId) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.getOrganizerToDos(organizerId)", "root.MSG_GEN_ENTER_METHOD",
-            "organizerId=" + organizerId);
     Connection con = getConnection();
     try {
       return ToDoDAO.getOrganizerToDoHeaders(con, organizerId);
@@ -151,9 +152,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<ToDoHeader> getClosedToDos(String organizerId) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.getClosedToDos(organizerId)", "root.MSG_GEN_ENTER_METHOD",
-            "organizerId=" + organizerId);
     Connection con = getConnection();
     try {
       return ToDoDAO.getClosedToDoHeaders(con, organizerId);
@@ -169,10 +167,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
       String externalId) {
-    SilverTrace
-        .info("calendar", "getExternalTodos(String spaceId, String componentId, String externalId)",
-            "root.MSG_GEN_ENTER_METHOD",
-            "space=" + spaceId + ", component=" + componentId + ", externalId=" + externalId);
     Connection con = getConnection();
     try {
       return ToDoDAO.getToDoHeadersByExternalId(con, spaceId, componentId, externalId);
@@ -188,9 +182,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public ToDoHeader getToDoHeader(String todoId) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.getToDoHeader(String todoId)", "root.MSG_GEN_ENTER_METHOD",
-            "todoId=" + todoId);
     Connection con = getConnection();
     try {
       return ToDoDAO.getToDoHeader(con, todoId);
@@ -202,8 +193,20 @@ public class CalendarEJB implements SilverpeasCalendar {
     }
   }
 
-  private Collection<ToDoHeader> getToDoHeadersByInstanceId(String instanceId) {
+  @Override
+  public TodoDetail getTodoDetail(String id) {
+    try {
+      TodoDetail detail =  TodoDetail.fromToDoHeader(getToDoHeader(id));
+      List<Attendee> attendees = new ArrayList<>(getToDoAttendees(id));
+      detail.setAttendees(attendees);
+      return detail;
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return null;
+    }
+  }
 
+  private Collection<ToDoHeader> getToDoHeadersByInstanceId(String instanceId) {
     Connection con = getConnection();
     try {
       return ToDoDAO.getToDoHeadersByInstanceId(con, instanceId);
@@ -219,8 +222,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void updateToDo(ToDoHeader todo) {
-    SilverTrace
-        .info("calendar", "CalendarEJB. updateToDo(ToDoHeader todo)", "root.MSG_GEN_ENTER_METHOD");
     if (todo.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL");
@@ -255,8 +256,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public String addToDo(ToDoHeader todo) {
-    SilverTrace
-        .info("calendar", "CalendarEJB. addToDo(ToDoHeader todo)", "root.MSG_GEN_ENTER_METHOD");
     if (todo.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL");
@@ -286,8 +285,25 @@ public class CalendarEJB implements SilverpeasCalendar {
   }
 
   @Override
-  public void removeToDo(String id) {
+  @Transactional(Transactional.TxType.REQUIRED)
+  public String addToDo(TodoDetail todo) {
+    try {
+      ToDoHeader header = ToDoHeader.fromTodoDetail(todo);
+      String id = addToDo(header);
+      if (todo.getAttendees() != null) {
+        for (Attendee attendee : todo.getAttendees()) {
+          addToDoAttendee(id, attendee);
+        }
+      }
+      return id;
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return null;
+    }
+  }
 
+  @Override
+  public void removeToDo(String id) {
     Connection con = getConnection();
     try {
       // get the detail for desindexation
@@ -299,8 +315,7 @@ public class CalendarEJB implements SilverpeasCalendar {
       try {
         removeIndex(todo, todo.getDelegatorId());
       } catch (Exception e) {
-        SilverTrace
-            .warn("calendar", "CalendarEJB.removeToDo(String id)", "root.EX_INDEX_FAILED", "", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
 
     } catch (Exception e) {
@@ -311,26 +326,31 @@ public class CalendarEJB implements SilverpeasCalendar {
     }
   }
 
-  @Override
-  public void removeToDoByInstanceId(String instanceId) {
-
-    Connection con = getConnection();
+  public void removeToDoFromExternal(String spaceId, String componentId, String externalId) {
     try {
-      Collection<ToDoHeader> todosToRemove = getToDoHeadersByInstanceId(instanceId);
-      for (ToDoHeader todo : todosToRemove) {
-        ToDoDAO.removeToDo(con, todo.getId());
-        try {
-          removeIndex(todo, todo.getDelegatorId());
-        } catch (Exception e) {
-          SilverTrace.warn("calendar", "CalendarEJB.removeToDoByInstanceId(String instanceId)",
-              "root.EX_INDEX_FAILED", "", e);
+      Collection<ToDoHeader> headers = getExternalTodos(spaceId, componentId, externalId);
+      for (ToDoHeader header : headers) {
+        removeToDo(header.getId());
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
+  public void removeAttendeeInToDoFromExternal(String componentId, String externalId,
+      String userId) {
+    try {
+      Attendee attendee = new Attendee();
+      attendee.setUserId(userId);
+
+      Collection<ToDoHeader> headers = getExternalTodos("useless", componentId, externalId);
+      for (ToDoHeader header : headers) {
+        if (header != null) {
+         removeToDoAttendee(header.getId(), attendee);
         }
       }
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.removeToDoByInstanceId(String instanceId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
-    } finally {
-      DBUtil.close(con);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -414,7 +434,6 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public String addJournal(JournalHeader journal) {
-
     // verify the journal attributes are correctly set
     validateJournal(journal);
     // write in DB
@@ -440,7 +459,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void updateJournal(JournalHeader journal) {
-
     validateJournal(journal);
     Connection con = getConnection();
     try {
@@ -504,7 +522,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void removeJournal(String journalId) {
-
     Connection con = getConnection();
     try {
       JournalHeader journal = getJournalHeader(journalId);
@@ -515,9 +532,7 @@ public class CalendarEJB implements SilverpeasCalendar {
       try {
         removeIndex(journal, journal.getDelegatorId());
       } catch (Exception e) {
-        SilverTrace
-            .warn("calendar", "CalendarEJB.removeJournal(String journalId)", "root.EX_INDEX_FAILED",
-                "", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     } catch (SQLException se) {
       throw new CalendarRuntimeException("CalendarEJB.removeJournal(String journalId)",
@@ -533,7 +548,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public JournalHeader getJournalHeader(String journalId) {
-
     Connection con = getConnection();
     try {
       return getJournalDAO().getJournalHeader(con, journalId);
@@ -553,7 +567,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<JournalHeader> getExternalJournalHeadersForUser(String userId) {
-
     Connection con = getConnection();
     try {
       return getJournalDAO().getOutlookJournalHeadersForUser(con, userId);
@@ -626,7 +639,6 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public void addJournalAttendee(String journalId, Attendee attendee) {
-
     Connection con = getConnection();
     try {
       AttendeeDAO.addJournalAttendee(con, journalId, attendee);
@@ -643,18 +655,13 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeJournalAttendee(String journalId, Attendee attendee) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.removeJournalAttendee(String journalId,Attendee attendee)",
-            "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       AttendeeDAO.removeJournalAttendee(con, journalId, attendee);
       try {
         removeIndex(getJournalHeader(journalId), attendee.getUserId());
       } catch (Exception e) {
-        SilverTrace.warn("calendar",
-            "CalendarEJB.removeJournalAttendee(String journalId,Attendee attendee)",
-            "root.EX_INDEX_FAILED", "", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
 
     } catch (Exception e) {
@@ -669,7 +676,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<Attendee> getJournalAttendees(String journalId) {
-
     Connection con = getConnection();
     try {
       return AttendeeDAO.getJournalAttendees(con, journalId);
@@ -684,9 +690,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void setJournalAttendees(String journalId, String[] userIds) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.setJournalAttendees(String journalId,String[] userIds)",
-            "root.MSG_GEN_ENTER_METHOD");
     Collection<Attendee> current = getJournalAttendees(journalId);
     JournalHeader journalHeader = getJournalHeader(journalId);
     // search for element to remove
@@ -746,7 +749,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void addToDoAttendee(String todoId, Attendee attendee) {
-
     Connection con = getConnection();
     try {
       AttendeeDAO.addToDoAttendee(con, todoId, attendee);
@@ -763,16 +765,13 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeToDoAttendee(String todoId, Attendee attendee) {
-
     Connection con = getConnection();
     try {
       AttendeeDAO.removeToDoAttendee(con, todoId, attendee);
       try {
         removeIndex(getToDoHeader(todoId), attendee.getUserId());
       } catch (Exception e) {
-        SilverTrace
-            .warn("calendar", "CalendarEJB.removeToDoAttendee(String todoId,Attendee attendee)",
-                "root.EX_INDEX_FAILED", "", e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
 
     } catch (Exception e) {
@@ -787,7 +786,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<Attendee> getToDoAttendees(String todoId) {
-
     Connection con = getConnection();
     try {
       return AttendeeDAO.getToDoAttendees(con, todoId);
@@ -802,9 +800,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void setToDoAttendees(String todoId, String[] userIds) {
-
     Collection<Attendee> current = getToDoAttendees(todoId);
-
     // search for element to remove
     for (Attendee attendee : current) {
       boolean toRemove = true;
@@ -841,7 +837,6 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public Collection<Category> getAllCategories() {
-
     Connection con = getConnection();
     try {
       return CategoryDAO.getAllCategories(con);
@@ -856,9 +851,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Category getCategory(String categoryId) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.getCategory(String categoryId)", "root.MSG_GEN_ENTER_METHOD",
-            "categoryId=" + categoryId);
     Connection con = getConnection();
     try {
       return CategoryDAO.getCategory(con, categoryId);
@@ -873,9 +865,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void addJournalCategory(String journalId, String categoryId) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.addJournalCategory(String journalId,String categoryId)",
-            "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId + ", categoryId=" + categoryId);
     Connection con = getConnection();
     try {
       CategoryDAO.addJournalCategory(con, journalId, categoryId);
@@ -892,9 +881,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeJournalCategory(String journalId, String categoryId) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.removeJournalCategory(String journalId,String categoryId)",
-            "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId + ", categoryId=" + categoryId);
     Connection con = getConnection();
     try {
       CategoryDAO.removeJournalCategory(con, journalId, categoryId);
@@ -910,7 +896,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public Collection<Category> getJournalCategories(String journalId) {
-
     Connection con = getConnection();
     try {
       return CategoryDAO.getJournalCategories(con, journalId);
@@ -926,9 +911,6 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void setJournalCategories(String journalId, String[] categoryIds) {
-    SilverTrace
-        .info("calendar", "CalendarEJB.setJournalCategories(String journalId,String[] categoryIds)",
-            "root.MSG_GEN_ENTER_METHOD");
     Collection<Category> current = getJournalCategories(journalId);
     // search for element to remove
     for (Category category : current) {
@@ -966,12 +948,9 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public void indexAllTodo() {
     Connection con = null;
-
     ResultSet rs = null;
-
     String selectStatement = "select " + ToDoDAO.COLUMNNAMES + " from CalendarToDo ";
     PreparedStatement prepStmt = null;
-
     try {
       con = DBUtil.openConnection();
       prepStmt = con.prepareStatement(selectStatement);
@@ -986,8 +965,8 @@ public class CalendarEJB implements SilverpeasCalendar {
         }
       }
 
-    } catch (Exception se) {
-      SilverTrace.warn("calendar", "CalendarEJB.indexAllTodo()", "root.EX_INDEX_FAILED", "", se);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, prepStmt);
       DBUtil.close(con);
@@ -1001,7 +980,6 @@ public class CalendarEJB implements SilverpeasCalendar {
    */
   @Override
   public List<String> getHolidayDates(String userId) {
-
     Connection con = getConnection();
     try {
       return HolidaysDAO.getHolidayDates(con, userId);
@@ -1016,7 +994,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public List<String> getHolidayDates(String userId, Date beginDate, Date endDate) {
-
     Connection con = getConnection();
     try {
       return HolidaysDAO.getHolidayDates(con, userId, beginDate, endDate);
@@ -1031,7 +1008,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void addHolidayDate(HolidayDetail holiday) {
-
     Connection con = getConnection();
     try {
       HolidaysDAO.addHolidayDate(con, holiday);
@@ -1046,7 +1022,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void addHolidayDates(List<HolidayDetail> holidayDates) {
-
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
@@ -1062,7 +1037,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeHolidayDate(HolidayDetail holiday) {
-
     Connection con = getConnection();
     try {
       HolidaysDAO.removeHolidayDate(con, holiday);
@@ -1077,7 +1051,6 @@ public class CalendarEJB implements SilverpeasCalendar {
 
   @Override
   public void removeHolidayDates(List<HolidayDetail> holidayDates) {
-
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
@@ -1110,9 +1083,7 @@ public class CalendarEJB implements SilverpeasCalendar {
   @Override
   public void indexAllJournal() {
     Connection con = null;
-
     ResultSet rs = null;
-
     String selectStatement = "select " + JournalDAO.COLUMNNAMES + " from CalendarJournal ";
     PreparedStatement prepStmt = null;
 
@@ -1131,8 +1102,8 @@ public class CalendarEJB implements SilverpeasCalendar {
         }
       }
 
-    } catch (Exception se) {
-      SilverTrace.warn("calendar", "CalendarEJB.indexAllJournal()", "root.EX_INDEX_FAILED", "", se);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     } finally {
       DBUtil.close(rs, prepStmt);
       DBUtil.close(con);
@@ -1152,8 +1123,7 @@ public class CalendarEJB implements SilverpeasCalendar {
       indexEntry.setCreationUser(detail.getDelegatorId());
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {
-      SilverTrace.warn("calendar", "CalendarEJB.createIndex(Schedulable detail, String userId)",
-          "root.EX_INDEX_FAILED", "id=" + detail.getId() + ", userId=" + userId, e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -1270,6 +1240,33 @@ public class CalendarEJB implements SilverpeasCalendar {
       DBUtil.close(con);
     }
 
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is in deletion.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    Connection con = getConnection();
+    try {
+      Collection<ToDoHeader> todosToRemove = getToDoHeadersByInstanceId(componentInstanceId);
+      for (ToDoHeader todo : todosToRemove) {
+        ToDoDAO.removeToDo(con, todo.getId());
+        AttendeeDAO.removeToDo(con, todo.getId());
+        try {
+          removeIndex(todo, todo.getDelegatorId());
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
+        }
+      }
+    } catch (Exception e) {
+      throw new CalendarRuntimeException("CalendarEJB.removeToDoByInstanceId(String instanceId)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
+    } finally {
+      DBUtil.close(con);
+    }
   }
 
   /**

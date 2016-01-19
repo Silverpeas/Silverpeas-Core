@@ -42,7 +42,7 @@ public class WarBuilder4Node extends BasicWarBuilder {
             "com.silverpeas.coordinates", "com.stratelia.webactiv.coordinates",
             "com.silverpeas.subscribe")
         .addAsResource("create-database.sql"));
-    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
 
     // Stubbed classes which must be set explicitly
     warBuilder.applyManually(

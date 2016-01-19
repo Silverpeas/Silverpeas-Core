@@ -96,7 +96,7 @@ public class AnswerDAOTest extends DataSetTest {
         .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
         .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
         .testFocusedOn(war -> war.addPackages(true, "com.stratelia.webactiv.answer")
-            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF"))
+            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF"))
         .build();
   }
 

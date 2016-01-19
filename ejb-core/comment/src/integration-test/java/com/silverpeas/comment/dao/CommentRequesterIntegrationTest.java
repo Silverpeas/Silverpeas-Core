@@ -32,6 +32,7 @@ import com.silverpeas.comment.dao.jdbc.JDBCCommentRequester;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.comment.test.WarBuilder4Comment;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -78,19 +79,9 @@ public class CommentRequesterIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(CommentRequesterIntegrationTest.class)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
-        .testFocusedOn(war -> {
-          war.addPackages(true, "com.silverpeas.comment")
-            .addAsResource("com/silverpeas/comment")
-            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
-        }).build();
+    return WarBuilder4Comment
+        .onWarForTestClass(CommentRequesterIntegrationTest.class)
+        .build();
   }
 
   @Before

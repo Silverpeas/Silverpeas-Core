@@ -26,9 +26,10 @@
  * Created on 25 oct. 2004
  *
  */
-package com.stratelia.webactiv.calendar.model;
+package com.stratelia.webactiv.calendar.control;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.calendar.model.HolidayDetail;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.exception.UtilException;

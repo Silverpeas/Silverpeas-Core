@@ -36,7 +36,7 @@ public class WarBuilder4MyLinks extends BasicWarBuilder {
     warBuilder.testFocusedOn(war -> war
         .addPackages(true, "com.silverpeas.myLinks")
         .addAsResource("create-database.sql"));
-    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     return warBuilder;
   }
 }

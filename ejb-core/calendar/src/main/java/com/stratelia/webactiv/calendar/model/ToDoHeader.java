@@ -39,6 +39,22 @@ public class ToDoHeader extends Schedulable implements Cloneable {
   private String spaceId = null;
   private int duration = DURATION_UNDEFINED;
 
+  public static ToDoHeader fromTodoDetail(final TodoDetail detail) {
+    ToDoHeader head = new ToDoHeader();
+    head.setName(detail.getName());
+    head.setId(detail.getId());
+    head.setDescription(detail.getDescription());
+    head.setDelegatorId(detail.getDelegatorId());
+    head.setStartDate(detail.getStartDate());
+    head.setEndDate(detail.getEndDate());
+    head.setDuration((int) detail.getDuration());
+    head.setPercentCompleted(detail.getPercentCompleted());
+    head.setComponentId(detail.getComponentId());
+    head.setSpaceId(detail.getSpaceId());
+    head.setExternalId(detail.getExternalId());
+    return head;
+  }
+
   public ToDoHeader() {
   }
 

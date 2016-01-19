@@ -22,8 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.calendar.model;
+package com.stratelia.webactiv.calendar.control;
 
+import com.stratelia.webactiv.calendar.model.Attendee;
 import org.silverpeas.util.DBUtil;
 
 import java.sql.Connection;

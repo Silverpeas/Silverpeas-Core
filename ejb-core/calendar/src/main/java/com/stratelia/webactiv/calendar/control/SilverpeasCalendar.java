@@ -30,6 +30,7 @@ import com.stratelia.webactiv.calendar.model.HolidayDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 
 import java.util.Collection;
@@ -42,35 +43,35 @@ public interface SilverpeasCalendar {
    * getDaySchedulablesForUser() for a particular user returns all the events scheduled on a
    * particular day. This includes all kinds of events
    */
-  public Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
+  Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation);
 
   /**
    * getNextDaySchedulablesForUser() for a particular user returns the next events scheduled. This
    * includes all kinds of events
    */
-  public Collection<JournalHeader> getNextDaySchedulablesForUser(String day, String userId,
+  Collection<JournalHeader> getNextDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation);
 
   /**
    * getNextEventForUser for a particular user returns the next events scheduled. This includes all
    * kinds of events
    */
-  public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
+  List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
       Date begin, Date end);
 
   /**
    * get Next Social Events for a given list of my Contacts returns the next events
    * (SocialInformationEvent). This includes all kinds of events
    */
-  public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
+  List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
       List<String> myContactsIds, Date begin, Date end);
 
   /**
    * get Last Social Events for a given list of my Contacts returns the next events
    * (SocialInformationEvent). This includes all kinds of events
    */
-  public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
+  List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
       List<String> myContactsIds, Date begin, Date end);
 
   /**
@@ -78,162 +79,165 @@ public interface SilverpeasCalendar {
    * kinds
    * of events
    */
-  public List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
+  List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
       Date end);
 
   /**
    * getPeriodSchedulablesForUser() for a particular user returns all the events scheduled during a
    * particular period. This includes all kinds of events
    */
-  public Collection<JournalHeader> getPeriodSchedulablesForUser(String begin, String end,
+  Collection<JournalHeader> getPeriodSchedulablesForUser(String begin, String end,
       String userId, String categoryId, String participation);
 
   /**
    * countMonthSchedulablesForUser() for a particular user, counts the number of schedules for each
    * day in the month
    */
-  public Collection<SchedulableCount> countMonthSchedulablesForUser(String month, String userId,
+  Collection<SchedulableCount> countMonthSchedulablesForUser(String month, String userId,
       String categoryId, String participation);
 
   /**
    * methods for tentative schedules (not yet accepted or declined events)
    */
-  public boolean hasTentativeSchedulablesForUser(String userId);
+  boolean hasTentativeSchedulablesForUser(String userId);
 
-  public Collection<JournalHeader> getTentativeSchedulablesForUser(String userId);
+  Collection<JournalHeader> getTentativeSchedulablesForUser(String userId);
 
-  public Collection<ToDoHeader> getNotCompletedToDosForUser(String userId);
+  Collection<ToDoHeader> getNotCompletedToDosForUser(String userId);
 
-  public List<String> getAllToDoForUser(String userId);
+  List<String> getAllToDoForUser(String userId);
 
-  public Collection<ToDoHeader> getOrganizerToDos(String organizerId);
+  Collection<ToDoHeader> getOrganizerToDos(String organizerId);
 
-  public Collection<ToDoHeader> getClosedToDos(String organizerId);
+  Collection<ToDoHeader> getClosedToDos(String organizerId);
 
-  public Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
+  Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
       String externalId);
 
   /**
    * addJournal() add a journal entry in the database
    */
-  public String addJournal(JournalHeader journal);
+  String addJournal(JournalHeader journal);
 
   /**
    * addToDo() add a todo entry in the database
    */
-  public String addToDo(ToDoHeader todo);
+  String addToDo(ToDoHeader todo);
+
+  String addToDo(TodoDetail todo);
 
   /**
    * updateJournal() update the journal entry, specified by the id, in the database
    */
-  public void updateJournal(JournalHeader journal);
+  void updateJournal(JournalHeader journal);
 
   /**
    * updateToDo() update the todo entry, specified by the id, in the database
    */
   /*
-   * public void updateToDo(ToDoHeader todo) , CreateException;
+   *  void updateToDo(ToDoHeader todo) , CreateException;
    */
-  public void updateToDo(ToDoHeader todo);
+  void updateToDo(ToDoHeader todo);
 
   /**
    * removeJournal() remove the journal entry specified by the id
    */
-  public void removeJournal(String journalId);
+  void removeJournal(String journalId);
 
   /**
    * removeToDo() remove the todo entry specified by the id
    */
-  public void removeToDo(String id);
+  void removeToDo(String id);
 
-  /**
-   * removeToDoByInstanceId remove all todo of the specified instance
-   */
-  public void removeToDoByInstanceId(String instanceId);
+  void removeToDoFromExternal(String spaceId, String componentId, String externalId);
+
+  void removeAttendeeInToDoFromExternal(String componentId, String externalId, String userId);
 
   /**
    * getJournalHeader() returns the journalHeader represented by the journalId
    */
-  public JournalHeader getJournalHeader(String journalId);
+  JournalHeader getJournalHeader(String journalId);
 
   /**
    * getOutlookJournalHeadersForUser() returns the journalHeaders for user represented by the
    * userId
    */
-  public Collection<JournalHeader> getExternalJournalHeadersForUser(String userId);
+  Collection<JournalHeader> getExternalJournalHeadersForUser(String userId);
 
   /**
    * getExternalJournalHeadersForUserAfterDate() returns the journalHeaders for user represented by
    * the userId for which start date after given date
    */
-  public Collection<JournalHeader> getExternalJournalHeadersForUserAfterDate(String userId,
+  Collection<JournalHeader> getExternalJournalHeadersForUserAfterDate(String userId,
       Date startDate);
 
   /**
    * getJournalHeadersForUserAfterDate() returns the journalHeaders for user represented by the
    * userId for which start date after given date
    */
-  public Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userId, Date startDate,
+  Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userId, Date startDate,
       int nbReturned);
 
   /**
    * getToDoHeader() returns the ToDoHeader represented by the todoId
    */
-  public ToDoHeader getToDoHeader(String todoId);
+  ToDoHeader getToDoHeader(String todoId);
+
+  TodoDetail getTodoDetail(String todoId);
 
   /**
    * methods for attendees
    */
-  public void addJournalAttendee(String journalId, Attendee attendee);
+  void addJournalAttendee(String journalId, Attendee attendee);
 
-  public void removeJournalAttendee(String journalId, Attendee attendee);
+  void removeJournalAttendee(String journalId, Attendee attendee);
 
-  public Collection<Attendee> getJournalAttendees(String journalId);
+  Collection<Attendee> getJournalAttendees(String journalId);
 
-  public void setJournalAttendees(String journalId, String[] userIds);
+  void setJournalAttendees(String journalId, String[] userIds);
 
-  public void setJournalParticipationStatus(String journalId, String userId, String participation);
+  void setJournalParticipationStatus(String journalId, String userId, String participation);
 
-  public void addToDoAttendee(String todoId, Attendee attendee);
+  void addToDoAttendee(String todoId, Attendee attendee);
 
-  public void removeToDoAttendee(String todoId, Attendee attendee);
+  void removeToDoAttendee(String todoId, Attendee attendee);
 
-  public Collection<Attendee> getToDoAttendees(String todoId);
+  Collection<Attendee> getToDoAttendees(String todoId);
 
-  public void setToDoAttendees(String todoId, String[] userIds);
+  void setToDoAttendees(String todoId, String[] userIds);
 
   /**
    * methods for categories
    */
-  public Collection<Category> getAllCategories();
+  Collection<Category> getAllCategories();
 
-  public Category getCategory(String categoryId);
+  Category getCategory(String categoryId);
 
-  public Collection<Category> getJournalCategories(String journalId);
+  Collection<Category> getJournalCategories(String journalId);
 
-  public void addJournalCategory(String journalId, String categoryId);
+  void addJournalCategory(String journalId, String categoryId);
 
-  public void removeJournalCategory(String journalId, String categoryId);
+  void removeJournalCategory(String journalId, String categoryId);
 
-  public void setJournalCategories(String journalId, String[] categoryIds);
+  void setJournalCategories(String journalId, String[] categoryIds);
 
   // methods for reindexation
-  public void indexAllTodo();
+  void indexAllTodo();
 
-  public void indexAllJournal();
+  void indexAllJournal();
 
   // Gestion des jours non travailles
-  public boolean isHolidayDate(HolidayDetail date);
+  boolean isHolidayDate(HolidayDetail date);
 
-  public List<String> getHolidayDates(String userId);
+  List<String> getHolidayDates(String userId);
 
-  public List<String> getHolidayDates(String userId, Date beginDate, Date endDate);
+  List<String> getHolidayDates(String userId, Date beginDate, Date endDate);
 
-  public void addHolidayDate(HolidayDetail holiday);
+  void addHolidayDate(HolidayDetail holiday);
 
-  public void addHolidayDates(List<HolidayDetail> holidayDates);
+  void addHolidayDates(List<HolidayDetail> holidayDates);
 
-  public void removeHolidayDate(HolidayDetail holiday);
+  void removeHolidayDate(HolidayDetail holiday);
 
-  public void removeHolidayDates(List<HolidayDetail> holidayDates);
+  void removeHolidayDates(List<HolidayDetail> holidayDates);
 }

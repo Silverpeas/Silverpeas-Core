@@ -21,26 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.comment.test;
+package com.stratelia.webactiv.calendar.test;
 
 import org.silverpeas.test.BasicWarBuilder;
 
 /**
- * A ShrinkWrap War builder for the comment service dedicated to the integration tests.
- * @author mmoquilon
+ * A War archive builder for the integration tests on the Calendar service.
+ * @author mmoquillon
  */
-public class WarBuilder4Comment extends BasicWarBuilder {
+public class WarBuilder4Calendar extends BasicWarBuilder {
 
-  /**
-   * Constructs an instance of the war archive builder for the specified test class.
-   * All the dependencies and resources required by the Comment service are automatically set.
-   * @param test the test class for which a war will be built. Any resources located in the same
-   * package of the test will be loaded into the war.
-   * @param <T> the type of the test.
-   * @return a builder of the war archive with the Comment service embedded within it.
-   */
-  public static <T> WarBuilder4Comment onWarForTestClass(Class<T> test) {
-    return (WarBuilder4Comment) new WarBuilder4Comment(test)
+  public static <T> WarBuilder4Calendar onWarForTestClass(Class<T> test) {
+    return (WarBuilder4Calendar) new WarBuilder4Calendar(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
@@ -49,20 +41,17 @@ public class WarBuilder4Comment extends BasicWarBuilder {
         .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
         .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
         .testFocusedOn(war -> {
-          war.addPackages(true, "com.silverpeas.comment")
-              .addAsResource("com/silverpeas/comment")
+          war.addPackages(true, "com.stratelia.webactiv.calendar")
+              .addAsResource("com/stratelia/webactiv/calendar")
               .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
         });
   }
-
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
    * @param test the class of the test for which a war archive will be build.
    */
-  protected <T> WarBuilder4Comment(final Class<T> test) {
+  protected <T> WarBuilder4Calendar(final Class<T> test) {
     super(test);
   }
-
-
 }

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.calendar.backbone;
+package com.stratelia.webactiv.calendar.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -49,6 +49,23 @@ public class TodoDetail implements Serializable {
   private String spaceId = null;
   private String externalId = null;
   private float duration = DURATION_UNDEFINED;
+
+  public static TodoDetail fromToDoHeader(final ToDoHeader header) {
+    TodoDetail detail = new TodoDetail();
+    detail.setName(header.getName());
+    detail.setId(header.getId());
+    detail.setDescription(header.getDescription());
+    detail.setDelegatorId(header.getDelegatorId());
+    // detail.setPriority(header.getPriority());
+    detail.setStartDate(header.getStartDate());
+    detail.setEndDate(header.getEndDate());
+    detail.setDuration(header.getDuration());
+    detail.setPercentCompleted(header.getPercentCompleted());
+    detail.setComponentId(header.getComponentId());
+    detail.setSpaceId(header.getSpaceId());
+    detail.setExternalId(header.getExternalId());
+    return detail;
+  }
 
   public TodoDetail() {
   }

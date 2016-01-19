@@ -104,7 +104,7 @@ public class QuestionContainerDAOTest extends DataSetTest {
         .testFocusedOn(war -> {
           war.addPackages(true, "com.stratelia.webactiv.questionContainer")
               .addPackages(true, "com.stratelia.webactiv.question")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
         })
         .build();
   }
