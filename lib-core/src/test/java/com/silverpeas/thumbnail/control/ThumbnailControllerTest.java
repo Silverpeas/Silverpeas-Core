@@ -24,7 +24,15 @@
 
 package com.silverpeas.thumbnail.control;
 
-import java.awt.Dimension;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import junit.framework.TestCase;
+import org.junit.Test;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -33,18 +41,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
-
-import junit.framework.TestCase;
-
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
-
 public class ThumbnailControllerTest extends TestCase {
 
-	@org.junit.Test
+	@Test
 	/**
 	 * test a small crop zone to an image
 	 * crop 50*50 -> image 100*100
@@ -53,7 +52,7 @@ public class ThumbnailControllerTest extends TestCase {
 		goTesting(50, 50);
 	}
 
-	@org.junit.Test
+	@Test
 	/**
 	 * test a big crop zone to a image
 	 * crop 101*101 -> image 100*100
@@ -154,7 +153,7 @@ public class ThumbnailControllerTest extends TestCase {
 	}
 
 
-	@org.junit.Test
+	@Test
 	/**
 	 * test crop a non image file
 	 */

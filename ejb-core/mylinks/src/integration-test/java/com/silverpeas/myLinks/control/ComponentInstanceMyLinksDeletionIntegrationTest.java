@@ -69,7 +69,7 @@ public class ComponentInstanceMyLinksDeletionIntegrationTest {
   }
 
   @Test
-  public void deleteKmelia4() throws Exception {
+  public void dataAboutKmelia4ShouldBeDeleted() throws Exception {
     linkService.delete("kmelia4");
 
     assertThat("Links", getLinks(), contains(
@@ -83,6 +83,12 @@ public class ComponentInstanceMyLinksDeletionIntegrationTest {
         "46 | /Publication/381 | null",
         "51 | /Media/9e941fd2-40d3-42b8-8a83-90586b2d87f6 | null",
         "69 | /Component/suggestionBox279 | null"));
+  }
+
+  @Test
+  public void nothingShouldBeDeletedOnDeletionOfUnknownComponentInstanceId() throws Exception {
+    linkService.delete("kmeliaUnknown");
+    verifyingSqlTestData();
   }
 
   /**
