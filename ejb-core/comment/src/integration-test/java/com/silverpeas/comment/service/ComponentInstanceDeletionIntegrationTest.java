@@ -24,6 +24,8 @@
 package com.silverpeas.comment.service;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.notification.CommentEvent;
+import com.silverpeas.comment.service.notification.CommentEventNotifier;
 import com.silverpeas.comment.test.WarBuilder4Comment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -31,7 +33,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.BasicWarBuilder;
 import org.silverpeas.test.rule.DbSetupRule;
 import org.silverpeas.util.ForeignPK;
 
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertThat;
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
-public class ComponentInstCommentsRemoverIntegrationTest {
+public class ComponentInstanceDeletionIntegrationTest {
 
   private static final String TABLE_CREATION_SCRIPT = "/com/silverpeas/comment/create-database.sql";
   private static final String DATASET_SCRIPT = "/com/silverpeas/comment/comment-dataset.sql";
@@ -54,9 +55,7 @@ public class ComponentInstCommentsRemoverIntegrationTest {
   private static final String COMPONENT_INSTANCE_ID = "instanceId10";
 
   @Inject
-  public ComponentInstCommentsRemover remover;
-  @Inject
-  public CommentService service;
+  public DefaultCommentService service;
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -65,7 +64,7 @@ public class ComponentInstCommentsRemoverIntegrationTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4Comment
-        .onWarForTestClass(ComponentInstCommentsRemoverIntegrationTest.class)
+        .onWarForTestClass(ComponentInstanceDeletionIntegrationTest.class)
         .build();
   }
 
@@ -76,7 +75,7 @@ public class ComponentInstCommentsRemoverIntegrationTest {
     assertThat(commentsToDelete.isEmpty(), is(false));
     assertThat(otherComments.isEmpty(), is(false));
 
-    remover.delete(COMPONENT_INSTANCE_ID);
+    service.delete(COMPONENT_INSTANCE_ID);
 
     commentsToDelete = getAllCommentsFor(COMPONENT_INSTANCE_ID);
     List<Comment> otherCommentsAfter = getAllCommentsFor("instanceId20");
@@ -89,7 +88,7 @@ public class ComponentInstCommentsRemoverIntegrationTest {
     List<Comment> comments = getAllCommentsFor("toto");
     assertThat(comments.isEmpty(), is(true));
 
-    remover.delete("toto");
+    service.delete("toto");
   }
 
   private List<Comment> getAllCommentsFor(String instanceId) {

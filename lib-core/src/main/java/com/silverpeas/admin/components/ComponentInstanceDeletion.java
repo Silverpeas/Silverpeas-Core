@@ -43,5 +43,10 @@ package com.silverpeas.admin.components;
  */
 public interface ComponentInstanceDeletion {
 
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is in deletion.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
   void delete(String componentInstanceId);
 }
