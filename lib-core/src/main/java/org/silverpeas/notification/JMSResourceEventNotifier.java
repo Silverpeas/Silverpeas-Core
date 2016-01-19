@@ -28,10 +28,13 @@ import javax.jms.JMSProducer;
 import java.io.Serializable;
 
 /**
- * An asynchronous notifier of resource events based on JMS. The asynchronous notifiers should
- * extend this class; they have just to implement the {@code createResourceEventFrom} and the
- * {@code getDestination} methods. The notification by JMS is performed directly by this abstract
- * class.
+ * An asynchronous notifier of resource events based on JMS. It is dedicated to be used in a
+ * notification implying external or remote software components. It shouldn't be used to notify
+ * Silverpeas inner components.
+ * </p>
+ * The asynchronous notifiers should extend this class; they have just to implement the
+ * {@code createResourceEventFrom} and the {@code getDestination} methods.
+ * The notification by JMS is performed directly by this abstract class.
  * @param <T> the type of the resource event.
  * @author mmoquillon
  */
@@ -65,6 +68,7 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
     // Sending
     JMSOperation.realize(context -> {
       JMSProducer producer = context.createProducer();
+      // TODO the event has to be sent in a text representation. For doing, use JSONCodec to encode the event in JSON.
       producer.send(getDestination(), event);
     });
   }

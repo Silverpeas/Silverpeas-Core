@@ -24,32 +24,50 @@
 
 package com.silverpeas.comment.service;
 
-import javax.inject.Named;
 import com.silverpeas.comment.model.Comment;
-import java.util.List;
-import javax.inject.Inject;
+import com.silverpeas.comment.test.CommentBuilder;
+import com.silverpeas.comment.test.MyCommentActionListener;
+import com.silverpeas.comment.test.WarBuilder4Comment;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.test.rule.DbSetupRule;
+
+import javax.inject.Inject;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
- * Unit tests on the DefaultCommentService behaviour.
+ * Integration tests on the DefaultCommentService behaviour.
  */
+@RunWith(Arquillian.class)
+public class DefaultCommentServiceTest {
 
-public class DefaultCommentServiceTest extends AbstractCommentTest {
-
-  public static final String TEST_RESOURCE_TYPE = "RtypeTest";
+  private static final String TABLE_CREATION_SCRIPT = "/com/silverpeas/comment/create-database.sql";
+  private static final String DATASET_SCRIPT = "/com/silverpeas/comment/comment-dataset.sql";
+  private static final String TEST_RESOURCE_TYPE = "RtypeTest";
 
   @Inject
   private MyCommentActionListener listener;
-
   @Inject
-  @Named("commentServiceForTest")
-  private CommentService commentService;
+  public CommentService commentService;
 
-  public DefaultCommentServiceTest() {
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT).loadInitialDataSetFrom(DATASET_SCRIPT);
+
+  @Deployment
+  public static Archive<?> createTestArchive() {
+    return WarBuilder4Comment
+        .onWarForTestClass(DefaultCommentServiceTest.class)
+        .build();
   }
 
   @Before
@@ -109,10 +127,10 @@ public class DefaultCommentServiceTest extends AbstractCommentTest {
    */
   @Test
   public void subscribersShouldBeInvokedAtSeveralCommentsDeletion() throws Exception {
-    CommentService commentController = getCommentService();
-    List<Comment> allComments = commentController.getAllCommentsOnPublication(TEST_RESOURCE_TYPE,
+    CommentService service = getCommentService();
+    List<Comment> allComments = service.getAllCommentsOnPublication(TEST_RESOURCE_TYPE,
         CommentBuilder.getResourcePrimaryPK());
-    commentController.deleteAllCommentsOnPublication(TEST_RESOURCE_TYPE,
+    service.deleteAllCommentsOnPublication(TEST_RESOURCE_TYPE,
         CommentBuilder.getResourcePrimaryPK());
     assertThat(listener.isInvoked(), is(true));
     assertEquals(allComments.size(), listener.getInvocationCount());
@@ -125,7 +143,6 @@ public class DefaultCommentServiceTest extends AbstractCommentTest {
    * @return a DefaultCommentService object to test.
    */
   protected CommentService getCommentService() {
-    // return new MyDefaultCommentService();
     return commentService;
   }
 

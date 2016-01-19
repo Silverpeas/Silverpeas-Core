@@ -24,13 +24,17 @@ package org.silverpeas.notification;
 import java.io.Serializable;
 
 /**
- * A notifier of an event about a resource in Silverpeas. A notification can be either synchronous
- * or asynchronous. For each of these two different notification way, an abstract class is defined:
+ * A notifier of an event about a resource in Silverpeas. A notification can be performed either
+ * within or off the Silverpeas runtime context. According to the need, the
+ * implementation will be different and as such an abstract class is defined for each of these two
+ * different notification ways:
  * <ul>
- *   <li>{@code org.silverpeas.notification.SynchronousResourceEventNotifier} for the synchronous
- *   notification,</li>
- *   <li>{@code org.silverpeas.notification.JMSResourceEventNotifier} for the asynchronous
- *   notification.</li>
+ *   <li>{@code org.silverpeas.notification.CDIResourceEventNotifier} for a notification within
+ *   the runtime context of Silverpeas; this notification is based upon the CDI Event mechanism and
+ *   as such it is by default synchronous.</li>
+ *   <li>{@code org.silverpeas.notification.JMSResourceEventNotifier} for a notification off the
+ *   runtime context of Silverpeas; it uses a JMS backend and as such it is naturally asynchronous.
+ *   </li>
  * </ul>
  * @author mmoquillon
  */
@@ -40,7 +44,7 @@ public interface ResourceEventNotifier<R extends Serializable, T extends Resourc
    * Notify about the specified event.
    * @param event the event to fire.
    */
-  public void notify(T event);
+  void notify(T event);
 
   /**
    * Notify about an event of the specified type and on the specified resource.
@@ -49,5 +53,5 @@ public interface ResourceEventNotifier<R extends Serializable, T extends Resourc
    * the same resource is expected: the first being the resource before the update, the second
    * being the resource after the update.
    */
-  public void notifyEventOn(ResourceEvent.Type type, R... resource);
+  void notifyEventOn(ResourceEvent.Type type, R... resource);
 }

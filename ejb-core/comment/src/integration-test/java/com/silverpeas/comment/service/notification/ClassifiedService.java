@@ -59,6 +59,19 @@ public class ClassifiedService implements ApplicationService<Classified> {
         "org.silverpeas.classifieds.multilang.classifiedsBundle", language);
   }
 
+  /**
+   * Is this service related to the specified component instance. The service is related to the
+   * specified instance if it is a service defined by the application from which the instance
+   * was spawned.
+   * @param instanceId the unique instance identifier of the component.
+   * @return true if the instance is spawn from the application to which the service is related.
+   * False otherwise.
+   */
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("classified");
+  }
+
   public void putContent(final Classified classified) {
     classifieds.put(classified.getId(), classified);
   }

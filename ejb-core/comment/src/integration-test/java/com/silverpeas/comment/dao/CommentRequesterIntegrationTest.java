@@ -85,8 +85,9 @@ public class CommentRequesterIntegrationTest {
         .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
         .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
         .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard").testFocusedOn(war -> {
-          war.addPackages(true, "com.silverpeas.comment.dao")
+        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
+        .testFocusedOn(war -> {
+          war.addPackages(true, "com.silverpeas.comment")
             .addAsResource("com/silverpeas/comment")
             .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
         }).build();

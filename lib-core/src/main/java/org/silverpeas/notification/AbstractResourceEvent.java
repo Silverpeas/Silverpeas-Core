@@ -39,7 +39,8 @@ import java.util.Set;
  * basic properties without to implement them by itself.
  * <p>
  * The properties of this abstract class are all annotated with JAXB annotations so that they are
- * ready to be serialized into a text stream (in XML or in JSON).
+ * ready to be serialized into a text stream (in XML or in JSON). This is particularly useful when
+ * the event has to be delivered to external/remote software components.
  * </p>
  * @author mmoquillon
  */

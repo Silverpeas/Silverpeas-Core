@@ -22,16 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.service;
+package com.silverpeas.comment.test;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.notification.CommentEvent;
+import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.notification.CDIResourceEventNotifier;
+
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * The listener of actions on comments to use within the unit tests.
  */
 @Named
-public class MyCommentActionListener extends CommentActionListener {
+@Singleton
+public class MyCommentActionListener extends CDIResourceEventListener<CommentEvent> {
 
   private int invocation = 0;
   private boolean commentAdded = false;
@@ -69,14 +75,25 @@ public class MyCommentActionListener extends CommentActionListener {
     return invocation;
   }
 
+  /**
+   * An event on the creation of a resource has be listened.
+   * @param event the event on the creation of a resource.
+   * @throws Exception if an error occurs while treating the event.
+   */
   @Override
-  public synchronized void commentAdded(Comment addedComment) {
+  public synchronized void onCreation(final CommentEvent event) throws Exception {
     invocation++;
     commentAdded = true;
   }
 
+  /**
+   * An event on the deletion of a resource has be listened. A deleted resource is nonexistent and
+   * nonrecoverable.
+   * @param event the event on the deletion of a resource.
+   * @throws Exception if an error occurs while treating the event.
+   */
   @Override
-  public synchronized void commentRemoved(Comment removedComment) {
+  public synchronized void onDeletion(final CommentEvent event) throws Exception {
     invocation++;
     commentRemoved = true;
   }

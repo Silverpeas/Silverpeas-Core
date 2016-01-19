@@ -21,6 +21,7 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentUserNotification;
 import org.silverpeas.util.i18n.I18NHelper;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -69,7 +70,7 @@ public final class NotificationMatchers {
           return false;
         }
         Comment theComment = (Comment) template.getAttributes().get(
-            DefaultCommentUserNotificationService.NOTIFICATION_COMMENT_ATTRIBUTE);
+            CommentUserNotification.NOTIFICATION_COMMENT_ATTRIBUTE);
         if (theComment == null || !theComment.equals(expectedComment)) {
           return false;
         }

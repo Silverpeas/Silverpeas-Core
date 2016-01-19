@@ -24,6 +24,7 @@
 package com.silverpeas.comment.service;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.test.WarBuilder4Comment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -63,19 +64,8 @@ public class ComponentInstCommentsRemoverIntegrationTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(ComponentInstCommentsRemover.class)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
-        .testFocusedOn(war -> {
-          war.addPackages(true, "com.silverpeas.comment")
-              .addAsResource("com/silverpeas/comment")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
-        })
+    return WarBuilder4Comment
+        .onWarForTestClass(ComponentInstCommentsRemoverIntegrationTest.class)
         .build();
   }
 

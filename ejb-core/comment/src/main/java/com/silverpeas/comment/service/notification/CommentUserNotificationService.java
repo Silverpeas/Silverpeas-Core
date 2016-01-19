@@ -32,14 +32,12 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.notification.JMSResourceEventListener;
+import org.silverpeas.notification.CDIResourceEventListener;
 import org.silverpeas.util.ForeignPK;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.WAPrimaryKey;
 import org.silverpeas.util.logging.SilverLogger;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -59,14 +57,7 @@ import static org.silverpeas.util.StringUtil.isDefined;
  * contribution.
  * @author mmoquillon
  */
-@MessageDriven(name = "CommentUserNotification",
-    activationConfig = {@ActivationConfigProperty(propertyName = "destinationLookup",
-        propertyValue = "topic/comments"),
-        @ActivationConfigProperty(propertyName = "destinationType",
-            propertyValue = "javax.jms.Topic"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode",
-            propertyValue = "Auto-acknowledge")})
-public class CommentUserNotificationService extends JMSResourceEventListener<CommentEvent> {
+public class CommentUserNotificationService extends CDIResourceEventListener<CommentEvent> {
 
   /**
    * The suffix of the property valued with the subject of the notification message to send to the
@@ -80,11 +71,6 @@ public class CommentUserNotificationService extends JMSResourceEventListener<Com
 
   @Inject
   private CommentService commentService;
-
-  @Override
-  protected Class<CommentEvent> getResourceEventClass() {
-    return CommentEvent.class;
-  }
 
   @Override
   public void onCreation(final CommentEvent event) throws Exception {

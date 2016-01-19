@@ -22,10 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.service;
+package com.silverpeas.comment.test;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import org.silverpeas.util.ForeignPK;
+
 import java.util.Date;
 
 /**
@@ -33,10 +35,10 @@ import java.util.Date;
  */
 public class CommentBuilder {
 
-  private static final String RESOURCE_TYPE = "kmelia_pub";
-  private static final String RESOURCE_ID = "1";
+  private static final String RESOURCE_TYPE = "RtypeTest";
+  private static final String RESOURCE_ID = "500";
   private static final String SPACE_ID = "Toto";
-  private static final String COMPONENT_ID = "kmelia3";
+  private static final String COMPONENT_ID = "instanceId10";
 
   private int i = 0;
 
@@ -75,8 +77,8 @@ public class CommentBuilder {
    * CommentBuilder instances.
    * @return the primary key of the commented resource.
    */
-  public static CommentPK getResourcePrimaryPK() {
-    return new CommentPK(RESOURCE_ID, SPACE_ID, COMPONENT_ID);
+  public static ForeignPK getResourcePrimaryPK() {
+    return new ForeignPK(RESOURCE_ID, COMPONENT_ID);
   }
 
   private CommentBuilder() {
