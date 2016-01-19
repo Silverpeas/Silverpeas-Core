@@ -20,7 +20,9 @@
  */
 package com.silverpeas.myLinks.control;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.myLinks.MyLinksRuntimeException;
+import com.silverpeas.myLinks.dao.LinkDAO;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.myLinks.model.LinkDetailComparator;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
@@ -28,6 +30,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static com.silverpeas.myLinks.dao.LinkDAO.getLinkDao;
@@ -35,7 +38,19 @@ import static org.silverpeas.util.DBUtil.openConnection;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class MyLinksBmImpl implements MyLinksBm {
+public class MyLinksBmImpl implements MyLinksBm, ComponentInstanceDeletion {
+
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try {
+      LinkDAO.deleteComponentInstanceData(componentInstanceId);
+    } catch (SQLException e) {
+      throw new MyLinksRuntimeException("MyLinksBmEJB.delete()", SilverpeasRuntimeException.ERROR,
+          "node.DELETING_COMPONENT_INSTANCE_MYLINKS_FAILED", "instanceId = " + componentInstanceId,
+          e);
+    }
+  }
 
   @Override
   public List<LinkDetail> getAllLinks(String userId) {

@@ -25,6 +25,7 @@
 package com.silverpeas.myLinks.dao;
 
 import com.silverpeas.myLinks.model.LinkDetail;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.StringUtil;
 
@@ -51,6 +52,17 @@ public class LinkDAO {
    * Hide constructor of utility class
    */
   private LinkDAO() {
+  }
+
+  /**
+   * Deletes all links linked to the component instance represented by the given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor("SB_MyLinks_Link").where("instanceId = ?", componentInstanceId)
+        .or("url like ?", "%" + componentInstanceId).execute();
   }
 
   /**
@@ -230,30 +242,6 @@ public class LinkDAO {
       String query = "delete from SB_MyLinks_Link where linkId = ? ";
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.valueOf(linkId));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  public void deleteLinksOfComponent(Connection con, String instanceId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      String query = "delete from SB_MyLinks_Link where instanceId = ? ";
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  public void deleteLinksOfObject(Connection con, String objectId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      String query = "delete from SB_MyLinks_Link where objectId = ? ";
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, objectId);
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
