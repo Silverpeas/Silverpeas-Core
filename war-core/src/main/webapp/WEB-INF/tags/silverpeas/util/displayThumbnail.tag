@@ -157,7 +157,12 @@ function updateThumbnail() {
   function choixImageInGalleryThumbnail(url) {
     $("#thumbnailPreviewAndActions").css("display", "block");
     $("#thumbnailActions").css("display", "none");
-    $("#thumbnail").attr("src", url);
+    if ($("#thumbnail").length) {
+      $("#thumbnail").attr("src", url);
+    } else {
+      // No thumbnail defined yet, insert element
+      $("#thumbnailPreview").append("<img src=\""+url+"\" id=\"thumbnail\" alt=\"\"/>")
+    }
     $("#valueImageGallery").attr("value", url);
   }
   
