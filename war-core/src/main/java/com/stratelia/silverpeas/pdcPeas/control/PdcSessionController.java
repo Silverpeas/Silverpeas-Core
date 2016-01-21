@@ -723,8 +723,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       valueId = getCurrentValue().getPK().getId();
     }
 
-    getPdcBm().setManagers(null, null, getCurrentAxis().getAxisHeader().getPK()
-        .getId(), valueId);
+    getPdcBm().razManagers(getCurrentAxis().getAxisHeader().getPK().getId(), valueId);
   }
 
   private AdminController getAdmin() {
