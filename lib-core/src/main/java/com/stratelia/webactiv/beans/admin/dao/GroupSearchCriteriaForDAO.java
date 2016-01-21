@@ -110,6 +110,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public GroupSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
     // Not handled for now
+    removeLastOperatorIfAny();
     return this;
   }
 
@@ -117,8 +118,10 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
     if (userStates != null && userStates.length > 0) {
       Collections.addAll(userStatesToExclude, userStates);
-      // It is only used in order to transport the criterion
+      // It is only used in order to transport the criterion which will be given to the
+      // UserSearchCriteriaForDAO when getting the number of users linked to the group
     }
+    removeLastOperatorIfAny();
     return this;
   }
 
@@ -279,13 +282,21 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onPagination(PaginationPage page) {
+    removeLastOperatorIfAny();
+    this.page = page;
+    return this;
+  }
+
+  /**
+   * Removes from the query the last operator if any.<br/>
+   * It is useful to use it on a criteria that is not yet handled (for example).
+   */
+  private void removeLastOperatorIfAny() {
     if (filter.toString().endsWith(" and ")) {
       filter.delete(filter.toString().lastIndexOf(" and "), filter.length());
     } else if (filter.toString().endsWith(" or ")) {
       filter.delete(filter.toString().lastIndexOf(" or "), filter.length());
     }
-    this.page = page;
-    return this;
   }
 
   /**
