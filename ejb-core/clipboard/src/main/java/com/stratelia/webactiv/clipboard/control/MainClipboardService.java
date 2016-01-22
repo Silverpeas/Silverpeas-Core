@@ -89,6 +89,7 @@ public class MainClipboardService implements Clipboard, Serializable {
                 IndexEntry indexEntry = (IndexEntry) clipObject.getTransferData(IndexFlavor);
                 if (indexEntry.equals(MainIndexEntry)) {
                   clipObject.setSelected(true);
+                  clipObject.setCutted(objectToCopy.isCutted());
                   throw new Exception("");
                 }
               }
