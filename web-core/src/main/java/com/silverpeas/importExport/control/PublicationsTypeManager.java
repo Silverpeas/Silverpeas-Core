@@ -588,10 +588,9 @@ public class PublicationsTypeManager {
               pubDetailToCreate =
                   PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
             } else {/* TODO: jeter exception ou trouver une autre solution de nommage */
-
-              pubDetailToCreate =
-                  new PublicationDetail("unknown", "pub temp", "description", new Date(),
-                      new Date(), null, userDetail.getId(), "5", null, null, null);
+              pubDetailToCreate = new PublicationDetail("unknown", "pub temp", "description",
+                  new Date(),
+                  new Date(), null, userDetail.getId(), "1", null, null, null);
             }
           } else {
             // C'est une publication à mettre à jour par id
