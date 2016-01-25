@@ -66,6 +66,7 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)) {
 } else if (StringUtil.isDefined(subSpaceId)) {
   spaceId = subSpaceId;
 }
+gef.setSpaceIdForCurrentRequest(spaceId);
 
 ResourceLocator resourceSearchEngine = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
 int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.minChars", 3);
