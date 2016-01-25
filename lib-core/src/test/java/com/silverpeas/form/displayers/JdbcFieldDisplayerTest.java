@@ -89,7 +89,7 @@ public class JdbcFieldDisplayerTest {
     instance.displayScripts(printer, template, pagesContext);
     assertThat(new String(out.toByteArray(), Charsets.UTF_8).trim(), is(
         "if (isWhitespace(stripInitialWhitespace(field.value))) {" + lineSeparator
-        + "\t\terrorMsg+=\"  - 'Mon champs JDBC' doit être renseigné\\n \";" + lineSeparator
+        + "\t\terrorMsg+=\"  - 'Mon champs JDBC' doit être renseigné\\n\";" + lineSeparator
         + "\t\terrorNb++;" + lineSeparator + "\t}" + lineSeparator + " try { " + lineSeparator
         + "if (typeof(checkmonChamps) == 'function')" + lineSeparator + " 	checkmonChamps('fr');"
         + lineSeparator + " } catch (e) { " + lineSeparator + " 	//catch all exceptions"
