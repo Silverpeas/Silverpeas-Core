@@ -142,7 +142,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
               "') {\n")
           .append("     errorMsg+=\"  - '")
           .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
-          .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
+          .append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n")
           .append("     errorNb++;\n")
           .append("   }\n")
           .append(" }\n");

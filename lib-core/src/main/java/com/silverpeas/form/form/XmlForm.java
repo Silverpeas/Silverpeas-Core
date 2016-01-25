@@ -21,9 +21,11 @@
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.*;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.JdbcRefField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.servlet.jsp.JspWriter;
@@ -41,8 +43,6 @@ import java.util.Map;
  * @see FieldDisplayer
  */
 public class XmlForm extends AbstractForm {
-  
-  private boolean viewForm = false;
 
   public XmlForm(RecordTemplate template) throws FormException {
     super(template);
@@ -50,7 +50,7 @@ public class XmlForm extends AbstractForm {
   
   public XmlForm(RecordTemplate template, boolean viewForm) throws FormException {
     super(template);
-    this.viewForm = viewForm;
+    setViewForm(viewForm);
   }
 
   /**
@@ -154,8 +154,12 @@ public class XmlForm extends AbstractForm {
         }
         
         boolean displayField = true;
-        if (viewForm && !Util.isEmptyFieldsDisplayed()) {
+        if (isViewForm() && !Util.isEmptyFieldsDisplayed()) {
           displayField = StringUtil.isDefined(field.getStringValue());
+          if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+            // special case about WYSIWYG field
+            displayField = isWYSIWYGFieldDefined(fieldName, pageContext);
+          }
         }
 
         if (displayField && (record == null || (record != null && field != null))) {
@@ -323,5 +327,12 @@ public class XmlForm extends AbstractForm {
 
   private TypeManager getTypeManager() {
     return TypeManager.getInstance();
+  }
+
+  private boolean isWYSIWYGFieldDefined(String fieldName, PagesContext pc) {
+    String contentLanguage = I18NHelper.checkLanguage(pc.getContentLanguage());
+    String content = WysiwygFCKFieldDisplayer
+        .getContentFromFile(pc.getComponentId(), pc.getObjectId(), fieldName, contentLanguage);
+    return StringUtil.isDefined(content);
   }
 }
