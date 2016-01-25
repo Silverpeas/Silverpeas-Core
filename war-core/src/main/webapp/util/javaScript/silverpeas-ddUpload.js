@@ -261,6 +261,11 @@ var dragAndDropUploadEnabled = window.File;
    */
   var UploadSession = function(uploadInstance) {
     this.uploadInstance = uploadInstance;
+    this.onCompleted = extendsObject({}, {
+      "url" : uploadInstance.context.onCompletedUrl,
+      "urlHeaders" : uploadInstance.context.onCompletedUrlHeaders,
+      "urlSuccess" : uploadInstance.context.onCompletedUrlSuccess
+    });
     uploadInstance.monitor.reset();
 
     var firstDropPerformed = false;
@@ -314,27 +319,25 @@ var dragAndDropUploadEnabled = window.File;
       for (var i = 0; i < uploadInstance.context.onAllFilesProcessed.length; i++) {
         uploadInstance.context.onAllFilesProcessed[i].call(this);
       }
-      if (uploadInstance.context.onCompletedUrl) {
-        __logDebug("performUploadEnd - performing ajax call on '" +
-            uploadInstance.context.onCompletedUrl + "'");
+      if (this.onCompleted.url) {
+        __logDebug("performUploadEnd - performing ajax call on '" + this.onCompleted.url + "'");
         var onCompletedUrlHeaders = {
           "X-UPLOAD-SESSION" : this.id
         };
-        if (typeof uploadInstance.context.onCompletedUrlHeaders === 'object') {
-          onCompletedUrlHeaders =
-              extendsObject(onCompletedUrlHeaders, uploadInstance.context.onCompletedUrlHeaders);
+        if (typeof this.onCompleted.urlHeaders === 'object') {
+          onCompletedUrlHeaders = extendsObject(onCompletedUrlHeaders, this.onCompleted.urlHeaders);
         }
         silverpeasAjax({
           method : 'POST',
-          url : uploadInstance.context.onCompletedUrl,
+          url : this.onCompleted.url,
           headers : onCompletedUrlHeaders
         }).then(function(request) {
-          if (typeof uploadInstance.context.onCompletedUrlSuccess === 'function') {
+          if (typeof this.onCompleted.urlSuccess === 'function') {
             __logDebug("performUploadEnd - calling onCompletedUrlSuccess callback");
-            uploadInstance.context.onCompletedUrlSuccess.call(this, request.response);
+            this.onCompleted.urlSuccess.call(this, request.response);
             jQuery.closeProgressMessage();
           }
-        }, function(request) {
+        }.bind(this), function(request) {
           __logDebug("performUploadEnd - error for session '" + this.id);
           console.log(Error(request.statusText));
           jQuery.closeProgressMessage();

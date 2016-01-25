@@ -628,7 +628,7 @@ public class PublicationsTypeManager {
 
               pubDetailToCreate = new PublicationDetail("unknown", "pub temp", "description",
                   new Date(),
-                  new Date(), null, userDetail.getId(), "5", null, null, null);
+                  new Date(), null, userDetail.getId(), "1", null, null, null);
             }
           } else {
             // C'est une publication à mettre à jour par id

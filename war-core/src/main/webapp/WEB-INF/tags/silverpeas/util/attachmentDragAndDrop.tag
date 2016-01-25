@@ -159,8 +159,7 @@
           callback : function(userResponse) {
             rejectOnClose = false;
             var ajaxOptions = userResponse.applyOnAjaxOptions();
-            fileUpload.uploadSession.uploadInstance.context.onCompletedUrlHeaders =
-                ajaxOptions.headers;
+            fileUpload.uploadSession.onCompleted.urlHeaders = ajaxOptions.headers;
             resolve();
           },
           callbackOnClose : function() {
@@ -199,7 +198,7 @@
               var version = jQuery('input[name=versionType${domIdSuffix}]:checked', this).val();
               uploadCompletedUrl += '&Type=' + version;
               </c:if>
-              fileUpload.uploadSession.uploadInstance.context.onCompletedUrl = uploadCompletedUrl;
+              fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;
               _performDdWithPotentialNotification.call(this, fileUpload, resolve, reject);
               return true;
             },
