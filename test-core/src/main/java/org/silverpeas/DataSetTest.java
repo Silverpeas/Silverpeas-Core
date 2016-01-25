@@ -24,8 +24,10 @@
 package org.silverpeas;
 
 import com.ninja_squad.dbsetup.operation.Operation;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Rule;
 import org.silverpeas.test.rule.DbSetupRule;
+import org.silverpeas.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,18 +37,70 @@ import java.sql.SQLException;
  */
 public abstract class DataSetTest {
 
-  @Rule
-  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table.sql")
-      .loadInitialDataSetFrom(getDbSetupOperations());
+  /**
+   * Gets the path of sql script that contains the creation of the tables.
+   * @return a string that represents a path.
+   */
+  protected String getDbSetupTableCreationSqlScript() {
+    return "create_table.sql";
+  }
 
-  protected abstract Operation getDbSetupOperations();
+  /**
+   * Gets the necessary to initialize the data into the database.<br/>
+   * @param <T> {@link Operation}, array of {@link Operation}, {@link String} or array of {@link
+   * String}.
+   * @return Must return an {@link Operation}, an array of {@link Operation}, a dataset path or
+   * an array of dataset path (.sql or .xml), otherwise an exception is thrown during the
+   * database loading.
+   */
+  protected abstract <T> T getDbSetupInitializations();
+
+  @Rule
+  public DbSetupRule getDbSetupRule() {
+    Object dbSetupInitializations = getDbSetupInitializations();
+    if (dbSetupInitializations instanceof Operation) {
+
+      return loadFrom(new Operation[]{(Operation) dbSetupInitializations});
+
+    } else if (dbSetupInitializations instanceof Operation[]) {
+
+      return loadFrom((Operation[]) dbSetupInitializations);
+
+    } else if (dbSetupInitializations instanceof String) {
+
+      return loadFrom(new String[]{(String) dbSetupInitializations});
+
+    } else if (dbSetupInitializations instanceof String[]) {
+
+      return loadFrom((String[]) dbSetupInitializations);
+
+    } else {
+      throw new IllegalArgumentException(
+          "getDbSetupInitializations method returns an unexpected result. Please consult the " +
+              "method documentation.");
+    }
+  }
+
+  private DbSetupRule loadFrom(Operation[] operations) {
+    return DbSetupRule.createTablesFrom(getDbSetupTableCreationSqlScript())
+        .loadInitialDataSetFrom(operations);
+  }
+
+  private DbSetupRule loadFrom(String[] dataset) {
+    if (dataset.length == 1 && FilenameUtils.getExtension(dataset[0]).equals("xml")) {
+      return new DbUnitLoadingRule(getDbSetupTableCreationSqlScript(), dataset[0]);
+    } else {
+      return DbSetupRule.createTablesFrom(getDbSetupTableCreationSqlScript())
+          .loadInitialDataSetFrom(dataset);
+    }
+  }
 
   /**
    * Gets the database connection.
    * @return the database connection.
    * @throws java.sql.SQLException
    */
-  public Connection getConnection() throws SQLException {
+  protected Connection getConnection() throws SQLException {
     return DbSetupRule.getSafeConnection();
   }
 }

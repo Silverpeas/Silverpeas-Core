@@ -23,6 +23,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.ApplicationResourcePasting;
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.admin.components.ComponentInstancePostConstruction;
+import com.silverpeas.admin.components.ComponentInstancePreDestruction;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
@@ -1042,7 +1043,8 @@ class Admin implements Administration {
       String[] asCompoNames = {componentName};
       String[] asCompoIds = {componentId};
 
-      ComponentInstancePostConstruction.get(componentName).ifPresent(c -> c.postConstruct(componentId));
+      ComponentInstancePostConstruction.get(componentName)
+          .ifPresent(c -> c.postConstruct(componentId));
       /*instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
           connectionProd);*/
 
@@ -1187,6 +1189,9 @@ class Admin implements Administration {
 //        for (Future<Void> componentDeletionProcess : componentDeletionProcesses) {
 //          componentDeletionProcess.get();
 //        }
+
+        ComponentInstancePreDestruction.get(componentName)
+            .ifPresent(c -> c.preDestroy(componentId));
 
         ServiceProvider.getAllServices(ComponentInstanceDeletion.class).stream()
             .forEach(service -> service.delete(componentId));
