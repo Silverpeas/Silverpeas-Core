@@ -23,7 +23,11 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
+import com.silverpeas.util.EncodeHelper;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.util.Function;
+
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * Class declaration
@@ -32,6 +36,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Comparable {
 
   private String text;
+  private Object lazyInstance;
+  private Function<Object, String> lazyText;
   private String alignement = null;
   private String color = null;
   private String valignement = null;
@@ -51,9 +57,32 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
+   * The text of the cell is computed from a {@link Function<T,String>} applied to the given
+   * instance parameter.<br/>
+   * The function takes in input the given instance and the result must be a {@link String}.<br/>
+   * The advantage of this way of use is that the text is computed only when the line is displayed.
+   * So that can be see as a lazy computation.<br/>
+   * Once the text computation is done, it is cached so that the computation is performed at most
+   * one time.
+   * @param instance the instance in input of the function.
+   * @param lazyText the function to apply to the instance.
+   * @param line the line of the array.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> ArrayCellText(T instance, Function<T, String> lazyText, ArrayLine line) {
+    super(line);
+    this.lazyInstance = instance;
+    this.lazyText = (Function) lazyText;
+  }
+
+  /**
    * @return
    */
   public String getText() {
+    if (text == null && lazyInstance != null && lazyText != null) {
+      text = defaultStringIfNotDefined(
+          EncodeHelper.javaStringToHtmlString(lazyText.apply(lazyInstance)));
+    }
     return text;
   }
 
@@ -65,7 +94,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
-   * @param textAlign
+   * @param alignement
    */
   public void setAlignement(String alignement) {
     this.alignement = alignement;
@@ -93,7 +122,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
-   * @param textAlign
+   * @param color
    */
   public void setColor(String color) {
     this.color = color;
@@ -104,7 +133,7 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
   }
 
   /**
-   * @param textValign
+   * @param valignement
    */
   public void setValignement(String valignement) {
     this.valignement = valignement;
