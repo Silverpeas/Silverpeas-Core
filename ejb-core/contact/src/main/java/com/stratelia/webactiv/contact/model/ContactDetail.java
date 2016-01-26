@@ -26,6 +26,7 @@ package com.stratelia.webactiv.contact.model;
 
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.contact.model.Contact;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.StringUtil;
 
 import java.io.Serializable;
@@ -37,6 +38,7 @@ import java.util.Date;
  * @version 1.0
  */
 public class ContactDetail implements Contact, Serializable {
+  private static final long serialVersionUID = 2773600943308714640L;
 
   private ContactPK pk;
   private String firstName;
@@ -47,6 +49,9 @@ public class ContactDetail implements Contact, Serializable {
   private String userId;
   private Date creationDate;
   private String creatorId;
+
+  private boolean userExtraDataRequired = false;
+  private boolean userExtraDataLoaded = false;
   private UserFull userFull;
 
   public ContactDetail(ContactPK pk, String firstName, String lastName,
@@ -130,7 +135,7 @@ public class ContactDetail implements Contact, Serializable {
 
   @Override
   public String getFax() {
-    if (StringUtil.isDefined(phone)) {
+    if (StringUtil.isDefined(fax)) {
       return fax;
     } else if (getUserFull() != null) {
       return getUserFull().getValue("fax");
@@ -170,12 +175,21 @@ public class ContactDetail implements Contact, Serializable {
     this.creatorId = creatorId;
   }
 
-  public void setUserFull(UserFull userFull) {
-    this.userFull = userFull;
+  /**
+   * Sets the indicator that permits to handle the loading of user extra data when necessary. (lazy
+   * loading).
+   * @param userExtraDataRequired true if required, false otherwise.
+   */
+  public void setUserExtraDataRequired(final boolean userExtraDataRequired) {
+    this.userExtraDataRequired = userExtraDataRequired;
   }
 
   @Override
   public UserFull getUserFull() {
+    if (userExtraDataRequired && !userExtraDataLoaded && getUserId() != null && userFull == null) {
+      userFull = OrganizationController.get().getUserFull(getUserId());
+      userExtraDataLoaded = true;
+    }
     return userFull;
   }
 
