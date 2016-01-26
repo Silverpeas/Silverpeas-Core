@@ -31,7 +31,6 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
-import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
 
 import javax.inject.Inject;
@@ -91,15 +90,13 @@ public class UserGroupProfileResource extends RESTWebService {
    * this parameter is computed the part of groups to sent back: those between ((page number - 1)
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
-   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON representation of the array of the groups matching the pattern.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAllRootGroups(@QueryParam("ids") Set<String> groupIds,
       @QueryParam("name") String name, @QueryParam("page") String page,
-      @QueryParam("domain") String domain,
-      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
+      @QueryParam("domain") String domain) {
     UserGroupsSearchCriteriaBuilder criteriaBuilder = UserGroupsSearchCriteriaBuilder.
         aSearchCriteria();
 
@@ -116,12 +113,6 @@ public class UserGroupProfileResource extends RESTWebService {
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
       criteriaBuilder.withMixedDomainId();
-    }
-
-    // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
     }
 
     // Common parameters
@@ -155,7 +146,6 @@ public class UserGroupProfileResource extends RESTWebService {
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
    * @param domain the unique identifier of the domain the groups has to be related.
-   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON representation of the array with the parent groups having access the
    * application instance.
    */
@@ -165,8 +155,7 @@ public class UserGroupProfileResource extends RESTWebService {
   public Response getGroupsInApplication(@PathParam("instanceId") String instanceId,
       @QueryParam("roles") String roles, @QueryParam("resource") String resource,
       @QueryParam("name") String name, @QueryParam("page") String page,
-      @QueryParam("domain") String domain,
-      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
+      @QueryParam("domain") String domain) {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     UserGroupsSearchCriteriaBuilder criteriaBuilder;
@@ -188,12 +177,6 @@ public class UserGroupProfileResource extends RESTWebService {
           withDomainId(domainId).
           withName(name).
           withPaginationPage(fromPage(page));
-    }
-
-    // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
     }
 
     ListSlice<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
@@ -230,15 +213,13 @@ public class UserGroupProfileResource extends RESTWebService {
    * this parameter is computed the part of groups to sent back: those between ((page number - 1)
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
-   * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return a JSON representation of the array of the direct subgroups.
    */
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getSubGroups(@PathParam("path") String groups, @QueryParam("name") String name,
-      @QueryParam("page") String page,
-      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
+      @QueryParam("page") String page) {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
     profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -256,12 +237,6 @@ public class UserGroupProfileResource extends RESTWebService {
           withSuperGroupId(groupId).
           withName(name).
           withPaginationPage(fromPage(page));
-    }
-
-    // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
     }
 
     ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
