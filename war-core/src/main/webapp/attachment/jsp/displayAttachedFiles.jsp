@@ -1193,7 +1193,7 @@
     $('#checkin_oldId').val('');
     $('#force').val('false');
     $('#webdav').val('false');
-    $('#comment').val('false');
+    $('#comment').val('');
   }
 
   function loadAttachment(id, lang) {
