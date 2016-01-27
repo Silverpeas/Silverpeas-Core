@@ -634,7 +634,7 @@ public class SPDesktopServlet extends HttpServlet {
       String defaultSpaceHomepageURL = getDefaultSpaceHomepageURL(request);
       if (StringUtil.isDefined(defaultSpaceHomepageURL)) {
         defaultSpaceHomepageURL =
-            URLManager.getApplicationURL() + defaultSpaceHomepageURL + "?SpaceId=" + spaceId;
+            addSpaceIdToURL(URLManager.getApplicationURL() + defaultSpaceHomepageURL, spaceId);
       }
       
       // Default home page
@@ -701,10 +701,14 @@ public class SPDesktopServlet extends HttpServlet {
             (String) request.getSession().
             getAttribute("Silverpeas_pwdForHyperlink"));
 
-        return destination;
+        return addSpaceIdToURL(destination, spaceId);
       }
     }
     return null;
+  }
+
+  private String addSpaceIdToURL(String url, String spaceId) {
+    return url + (!url.contains("?") ? "?" : "&") + "SpaceId=" + spaceId;
   }
 
   private String getParsedDestination(String sDestination, String sKeyword, String sValue) {
