@@ -90,6 +90,9 @@ public class XmlForm extends AbstractForm {
     SilverTrace.info("form", "XmlForm.display", "root.MSG_GEN_ENTER_METHOD");
     String language = pageContext.getLanguage();
 
+    // content language is the one of the record
+    pageContext.setContentLanguage(record.getLanguage());
+
     String mode = "";
     if (pageContext.isDesignMode()) {
       mode = "mode-design";
