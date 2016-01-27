@@ -4343,7 +4343,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   width: 12px;
 }
 
-#validation.field  {
+#admin-component .parameters #validation.field  {
   background-color:inherit;
   border:0;
   padding-left: 0;
