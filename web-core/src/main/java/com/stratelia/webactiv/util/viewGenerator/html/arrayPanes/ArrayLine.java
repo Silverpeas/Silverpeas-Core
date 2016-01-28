@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
+import org.silverpeas.util.Function;
 
 /**
  * @author squere
@@ -80,19 +81,58 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   /**
-   * Method declaration
-   * @param text
-   * @return
-   * @see
+   * The text of the cell is computed from:
+   * <ul>
+   *   <li>a text if it is defined</li>
+   *   <li>a {@link Function<T,String>} applied to the given instance parameter otherwise.</li>
+   * </ul>
+   * About the function, it takes in input the given instance and the result must be a
+   * {@link String}.<br/>
+   * The advantage of this way of use is that the text is computed only when the line is
+   * displayed. So that can be see as a lazy computation.<br/>
+   * Once the text
+   * computation is done, it is cached so that the computation is performed at most one time.
+   * @param text a text.
+   * @param instance the instance in input of the function, ignored if text is not null.
+   * @param lazyText the function to apply to the instance,  ignored if text is not null.
+   * @return itself.
    */
-  public ArrayCellText addArrayCellText(String text) {
-    ArrayCellText cell = new ArrayCellText(text, this);
+  private <T> ArrayCellText addArrayCellText(String text, T instance,
+      Function<T, String> lazyText) {
+    ArrayCellText cell = (text == null && instance != null && lazyText != null) ?
+        new ArrayCellText(instance, lazyText, this) : new ArrayCellText(text, this);
 
     if (pane != null) {
       cell.setSortMode(pane.getSortMode());
     }
     cells.add(cell);
     return cell;
+  }
+
+  /**
+   * The text of the cell is computed from a {@link Function<T,String>} applied to the given
+   * instance parameter.<br/>
+   * The function takes in input the given instance and the result must be a {@link String}.<br/>
+   * The advantage of this way of use is that the text is computed only when the line is displayed.
+   * So that can be see as a lazy computation.<br/>
+   * Once the text computation is done, it is cached so that the computation is performed at most
+   * one time.
+   * @param instance the instance in input of the function.
+   * @param lazyText the function to apply to the instance.
+   * @return
+   */
+  public <T> ArrayCellText addArrayCellText(T instance, Function<T, String> lazyText) {
+    return addArrayCellText(null, instance, lazyText);
+  }
+
+  /**
+   * Method declaration
+   * @param text
+   * @return
+   * @see
+   */
+  public ArrayCellText addArrayCellText(String text) {
+    return addArrayCellText(text, null, null);
   }
 
   public ArrayCellText addArrayCellText(int number) {
@@ -295,7 +335,6 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   /**
    * This method works like the {@link #print()} method, but inserts pseudocolumns after each
    * column. This is useful when a 0 cellspacing is used.
-   * @see printPseudoColumn()
    */
   public String printWithPseudoColumns() {
     String result = "";
