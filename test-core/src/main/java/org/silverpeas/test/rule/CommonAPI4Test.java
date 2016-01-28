@@ -96,6 +96,15 @@ public class CommonAPI4Test implements TestRule {
       clazz = (Class<T>) bean.getClass();
     }
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz)).thenReturn(bean);
+    if (!clazz.isInterface()) {
+      Class[] interfaces = clazz.getInterfaces();
+      if (interfaces != null) {
+        for(Class anInterface : interfaces) {
+          when(TestBeanContainer.getMockedBeanContainer().getBeanByType(anInterface))
+              .thenReturn(bean);
+        }
+      }
+    }
     return bean;
   }
 

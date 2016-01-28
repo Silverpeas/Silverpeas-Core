@@ -87,6 +87,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     this.classOfTest = classOfTest;
     testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
+    logInfo("Adding resources from path: " + resourcePath);
     war.addAsResource(resourcePath);
   }
 

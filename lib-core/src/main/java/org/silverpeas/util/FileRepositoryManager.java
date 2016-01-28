@@ -21,7 +21,6 @@
 package org.silverpeas.util;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.util.fileFolder.FileFolderManager;
@@ -31,9 +30,11 @@ import org.silverpeas.util.memory.MemoryUnit;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 
 import static java.io.File.separatorChar;
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Norbert CHAIX
@@ -176,21 +177,6 @@ public class FileRepositoryManager {
     FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
-  /**
-   * @param spaceId
-   * @param componentId
-   * @param directoryName
-   * @deprecated
-   */
-  @Deprecated
-  public static void createTempPath(String spaceId, String componentId, String directoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(componentId));
-  }
-
-  public static void createTempPath(String sComponentId, String sDirectoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(sComponentId));
-  }
-
   public static void createGlobalTempPath(String sDirectoryName) {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
@@ -199,49 +185,22 @@ public class FileRepositoryManager {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId) + sDirectoryName);
   }
 
-  public static void deleteTempPath(String sSpaceId, String sComponentId, String sDirectoryName) {
-    FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
-  }
-
-  public static String getFileIcon(boolean small, String extension) {
-    return getFileIcon(small, extension, false);
-  }
-
   public static String getFileIcon(String extension) {
     return getFileIcon(false, extension);
   }
 
-  /**
-   * Get File icon
-   *
-   * @param extension
-   * @param isReadOnly
-   * @return
-   */
-  public static String getFileIcon(String extension, boolean isReadOnly) {
-    return getFileIcon(false, extension, isReadOnly);
-  }
-
-  public static String getFileIcon(boolean small, String filename, boolean isReadOnly) {
+  public static String getFileIcon(boolean small, String filename) {
     String path = URLManager.getApplicationURL() + uploadSettings.getString("FileIconsPath");
-    String extension = FilenameUtils.getExtension(filename);
-    if (!StringUtil.isDefined(extension)) {
-      extension = filename;
-    }
-    if (extension == null) {
-      extension = "";
-    }
-    String fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
-    if (fileIcon == null) {
+    String extension = defaultStringIfNotDefined(FilenameUtils.getExtension(filename), filename);
+    extension = defaultStringIfNotDefined(extension);
+    String fileIcon;
+    try {
+      fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
+    } catch (MissingResourceException mre) {
       fileIcon = uploadSettings.getString("unknown");
-    } else {
-      if (isReadOnly) {
-        fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Lock.gif";
-      }
     }
     if (small && fileIcon != null) {
-      String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
-      fileIcon = newFileIcon;
+      fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
     }
 
     return path + fileIcon;

@@ -58,6 +58,7 @@ import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.notification.WysiwygEventNotifier;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -75,6 +76,7 @@ import java.util.regex.Pattern;
 /**
  * Central service to manage Wysiwyg.
  */
+@Singleton
 public class WysiwygManager {
 
   protected WysiwygManager() {

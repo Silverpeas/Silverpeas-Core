@@ -30,9 +30,12 @@ import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
+import com.silverpeas.form.FormException;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.usernotification.builder.UserSubscriptionNotificationSendingHandler;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
@@ -46,11 +49,15 @@ import org.silverpeas.EntityReference;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.repository.JcrContext;
 import org.silverpeas.contribution.model.Contribution;
+import org.silverpeas.contribution.model.ContributionContent;
+import org.silverpeas.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.jcr.JcrRepositoryProvider;
 import org.silverpeas.persistence.Transaction;
 import org.silverpeas.persistence.TransactionProvider;
 import org.silverpeas.persistence.TransactionRuntimeException;
@@ -60,6 +67,9 @@ import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.service.QuotaService;
+import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.test.jcr.JcrIntegrationTest;
 import org.silverpeas.util.*;
 import org.silverpeas.util.comparator.AbstractComparator;
 import org.silverpeas.util.comparator.AbstractComplexComparator;
@@ -72,11 +82,13 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.time.TimeConversionBoardKey;
 import org.silverpeas.util.time.TimeData;
 import org.silverpeas.util.time.TimeUnit;
+import org.silverpeas.wysiwyg.control.WysiwygManager;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -201,6 +213,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(ListSlice.class)) {
       addClasses(ListSlice.class);
     }
+    if (!contains(StringDataExtractor.class)) {
+      addClasses(StringDataExtractor.class);
+    }
     if (!contains(UnitUtil.class)) {
       addClasses(UnitUtil.class);
       addClasses(TimeData.class);
@@ -263,7 +278,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(ResourceLocator.class, DisplayI18NHelper.class, ConfigurationClassLoader.class,
           ConfigurationControl.class, VariableResolver.class, PropertiesWrapper.class,
           SilverpeasBundle.class, LocalizationBundle.class, SettingBundle.class, FileUtil.class,
-          MimeTypes.class, RelativeFileAccessException.class, MetadataExtractor.class);
+          Mail.class, MimeTypes.class, RelativeFileAccessException.class, MetadataExtractor.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
       addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
@@ -284,6 +299,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   public WarBuilder4LibCore addSilverpeasUrlFeatures() {
     if (!contains(URLManager.class)) {
       addClasses(URLManager.class);
+    }
+    if (!contains(URLUtils.class)) {
+      addClasses(URLUtils.class);
     }
     return this;
   }
@@ -374,6 +392,109 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
+   * Sets JCR features.<br/>
+   * This method must be used with {@link JcrContext} junit rule.<br/>
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addJpaPersistenceFeatures()}</li>
+   * <li>{@link #addProcessFeatures()}</li>
+   * <li>{@link #addSilverpeasExceptionBases()}</li>
+   * <li>{@link #addNotificationFeatures()}</li>
+   * <li>{@link #addOrganisationFeatures()}</li>
+   * <li>{@link #addIndexEngineFeatures()}</li>
+   * <li>{@link #addFileRepositoryFeatures()}</li>
+   * <li>{@link #addSynchAndAsynchResourceEventFeatures()}</li>
+   * <li>{@link #addPublicationTemplateFeatures()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addJcrFeatures() {
+    addJpaPersistenceFeatures();
+    addProcessFeatures();
+    addSilverpeasExceptionBases();
+    addNotificationFeatures();
+    addOrganisationFeatures();
+    addIndexEngineFeatures();
+    addFileRepositoryFeatures();
+    addSynchAndAsynchResourceEventFeatures();
+    addPublicationTemplateFeatures();
+    addMavenDependencies("javax.jcr:jcr");
+    addMavenDependencies("org.apache.jackrabbit:jackrabbit-core");
+    addMavenDependencies("commons-beanutils:commons-beanutils");
+    if (!contains(JcrRepositoryProvider.class)) {
+      addClasses(FormException.class, JcrIntegrationTest.class, JcrContext.class,
+          FileServerUtils.class);
+      addPackages(true, "org.silverpeas.jcr");
+      addPackages(true, "org.silverpeas.attachment");
+      addPackages(true, "org.silverpeas.importExport.attachment");
+      addAsResource("org/silverpeas/util/attachment/Attachment.properties");
+      addAsResource("silverpeas-jcr.cnd");
+      addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
+      applyManually(war -> war.deletePackages(true, "org.silverpeas.attachment.mock"));
+    }
+    return this;
+  }
+
+  /**
+   * Sets Index Engine features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addIndexEngineFeatures() {
+    if (!contains(FullIndexEntry.class)) {
+      addMavenDependencies("org.apache.lucene:lucene-core");
+      addMavenDependencies("org.apache.lucene:lucene-analyzers");
+      addMavenDependencies("org.apache.lucene:lucene-spellchecker");
+      addPackages(true, "org.silverpeas.search.indexEngine");
+      addAsResource("org/silverpeas/search/indexEngine");
+      addClasses(IndexFileManager.class);
+    }
+    return this;
+  }
+
+  /**
+   * Sets Wysiwyg features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addWysiwygFeatures() {
+    if (!contains(WysiwygManager.class)) {
+      addClasses(ContributionIdentifier.class, ContributionContent.class);
+      addPackages(true, "org.silverpeas.wysiwyg");
+      addMavenDependencies("net.htmlparser.jericho:jericho-html");
+    }
+    return this;
+  }
+
+  /**
+   * Sets Publication Template features.
+   * Calls automatically:
+   * <ul>
+   * <li>{@link #addSecurityFeatures()}</li>
+   * </ul>
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addPublicationTemplateFeatures() {
+    addSecurityFeatures();
+    if (!contains(PublicationTemplate.class)) {
+      addPackages(true, "com.silverpeas.publicationTemplate");
+      addPackages(true, "com.silverpeas.form");
+      addAsResource("org/silverpeas/publicationTemplate/settings");
+    }
+    return this;
+  }
+
+  /**
+   * Sets Security features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addSecurityFeatures() {
+    if (!contains(PublicationTemplate.class)) {
+      addPackages(true, "org.silverpeas.util.security");
+      addPackages(true, "org.silverpeas.util.crypto");
+    }
+    return this;
+  }
+
+  /**
    * Sets stubbed administration features.
    * @return the instance of the war builder.
    */
@@ -456,7 +577,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "com.stratelia.silverpeas.notificationManager");
       addPackages(true, "com.stratelia.silverpeas.notificationserver");
       addAsResource("org/silverpeas/notificationManager");
-      addClasses(JNDINames.class, AbstractTable.class);
+      addClasses(JNDINames.class, AbstractTable.class,
+          UserSubscriptionNotificationSendingHandler.class);
       addAsResource("org/silverpeas/util/jndi.properties");
       // Centralized features
       addSilverpeasUrlFeatures();
@@ -594,6 +716,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addLDAPFeatures() {
     addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
+    return this;
+  }
+
+  /**
+   * Add process feature in web archive (war)
+   * @return the instance of the war builder with process features
+   */
+  public WarBuilder4LibCore addProcessFeatures() {
+    addPackages(true, "org.silverpeas.process");
     return this;
   }
 
