@@ -4014,6 +4014,16 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   width: 12px;
 }
 
+#admin-component .parameters #validation.field  {
+  background-color:inherit;
+  border:0;
+  padding-left: 0;
+  margin:inherit;
+  width: 46%;
+  margin:0;
+  line-height:100%;
+}
+
 #admin-component #parameters-header {
   border: 2px solid #CCC;
   background-color: #EDEDED;

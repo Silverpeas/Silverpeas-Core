@@ -134,6 +134,10 @@ fieldset.skinFieldset {
 	padding:5px 3% 5px 0px;
 }
 
+#admin-component .parameters .field {
+  min-height: 20px;
+}
+
 .oneFieldPerLine .field,
 .field.entireWidth {
 	width:97%;
