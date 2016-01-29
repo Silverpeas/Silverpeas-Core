@@ -28,6 +28,8 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.util.StringUtil;
@@ -80,7 +82,7 @@ public class ContributionContentResource extends AbstractContributionResource {
   @Path("form")
   @Produces(APPLICATION_JSON)
   public FormEntity getFormContent(@QueryParam("lang") final String lang) {
-    return getFormContent(getDefaultFormId(), lang);
+    return getFormContent(getDefaultFormId(), lang, false);
   }
 
   /**
@@ -97,16 +99,20 @@ public class ContributionContentResource extends AbstractContributionResource {
   @Path("form/{formId}")
   @Produces(APPLICATION_JSON)
   public FormEntity getFormContent(@PathParam("formId") final String formId,
-      @QueryParam("lang") final String lang) {
+      @QueryParam("lang") final String lang, @QueryParam("renderView") final boolean renderView) {
     try {
       String language =
           (StringUtil.isDefined(lang) ? lang : getDefaultPublicationTemplateLanguage());
 
       RecordTemplate recordTemplate = null;
       DataRecord data = null;
+      Form formView = null;
       if (StringUtil.isDefined(formId)) {
         PublicationTemplate publicationTemplate = getPublicationTemplate(formId);
         if (publicationTemplate != null) {
+          if (renderView) {
+            formView = publicationTemplate.getViewForm();
+          }
           recordTemplate = publicationTemplate.getRecordTemplate();
           data = publicationTemplate.getRecordSet().getRecord(contributionId, language);
         }
@@ -133,6 +139,14 @@ public class ContributionContentResource extends AbstractContributionResource {
 
         // Adding field to the form entity
         form.addFormField(fieldEntity);
+      }
+
+      if (formView != null) {
+        PagesContext context =
+            new PagesContext("myForm", "0", getUserPreferences().getLanguage(), false,
+                getComponentId(), getUserDetail().getId());
+        context.setObjectId(contributionId);
+        form.withRenderedView(formView.toString(context, data));
       }
 
       // Returning the contribution content entity

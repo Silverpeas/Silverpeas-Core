@@ -30,6 +30,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -69,7 +70,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getAttachmentId() +
             ", fieldType = " + field.getTypeName());
-    String language = pageContext.getContentLanguage();
+    String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
     StringBuilder html = new StringBuilder(1024);
     Operation defaultOperation = Operation.ADD;
     String fieldName = Util.getFieldOccurrenceName(template.getFieldName(), field.getOccurrence());
@@ -86,7 +87,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
       attachment = AttachmentServiceFactory.getAttachmentService().
-          searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
+          searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), contentLanguage);
       if (attachment != null) {
         defaultOperation = Operation.UPDATE;
       }
@@ -110,15 +111,15 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
             html.append("<img onclick=\"javascript:previewFormFile(this, '").
                 append(attachment.getId()).append("');\" class=\"preview-file\" src=\"").
                 append(webContext).append("/util/icons/preview.png\" alt=\"").
-                append(Util.getString("GML.preview", language)).append("\" title=\"").
-                append(Util.getString("GML.preview", language)).append("\"/>");
+                append(Util.getString("GML.preview", contentLanguage)).append("\" title=\"").
+                append(Util.getString("GML.preview", contentLanguage)).append("\"/>");
           }
           if (ViewerFactory.isViewable(attachmentFile)) {
             html.append("<img onclick=\"javascript:viewFormFile(this, '").append(attachment.getId()).
                 append("');\" class=\"view-file\" src=\"").append(webContext).append(
-                    "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", language))
+                    "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", contentLanguage))
                 .append(
-                    "\" title=\"").append(Util.getString("GML.view", language)).append("\"/>");
+                    "\" title=\"").append(Util.getString("GML.view", contentLanguage)).append("\"/>");
           }
           if (attachment.isSharingAllowedForRolesFrom(UserDetail.getById(pageContext.getUserId()))) {
             html.append("<img onclick=\"javascript:createSharingTicketPopup({ componentId : '")
@@ -127,8 +128,8 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                 .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
                 .append("'});\" class=\"share-file\" src=\"").append(webContext)
                 .append("/util/icons/share.png\" alt=\"")
-                .append(Util.getString("GML.share.file", language))
-                .append("\" title=\"").append(Util.getString("GML.share.file", language))
+                .append(Util.getString("GML.share.file", contentLanguage))
+                .append("\" title=\"").append(Util.getString("GML.share.file", contentLanguage))
                 .append("\"/>");
           }
         }
@@ -145,7 +146,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
-        String deleteLab = Util.getString("removeFile", language);
+        String deleteLab = Util.getString("removeFile", contentLanguage);
 
         html.append("&nbsp;<span id=\"div").append(fieldName).append("\">");
         html.append("<img alt=\"\" align=\"top\" src=\"").append(attachment.getDisplayIcon()).

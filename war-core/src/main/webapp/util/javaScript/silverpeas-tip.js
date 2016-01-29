@@ -32,7 +32,19 @@
   window.TipManager = new function () {
     var _computeParams = function(parameters) {
       var params = parameters ? parameters : {};
-      return extendsObject({
+      params = extendsObject({
+        common : {
+          style : {
+            zindex : -1
+          }
+        },
+        prerender : true,
+        style : {
+          classes : "qtip-shadow"
+        },
+        content : {
+          title : ''
+        },
         position : {
           my : "center left",
           at : "center right",
@@ -40,27 +52,58 @@
             method : "flipinvert"
           },
           viewport : jQuery(window)
+        },
+        show : {
+          solo: true,
+          delay : 250
+        },
+        hide : {
+          event : 'mouseleave'
         }
       }, params);
+
+      if (params.common.style.zindex !== -1) {
+        $.fn.qtip.zindex = params.common.style.zindex;
+      }
+
+      return params;
     };
 
     /**
-     * Displays a simple help.
+     * Displays as a simple way an help represented as a tip.
      * @param element the element on which the qtip must be applied.
      * @param message the text message.
      * @param options TipManager options, see _computeParams private method.
      */
     this.simpleHelp = function(element, message, options) {
-      var params = _computeParams(options);
-      var qtipOptions = {
-        prerender : true, style : {
-          classes : "qtip-shadow qtip-yellow"
-        }, content : {
+      var params = options ? options : {};
+      var qtipOptions = _computeParams(extendsObject(params, {
+        style : {
+          classes : "qtip-shadow qtip-default-silverpeas"
+        },
+        content : {
           text : message
-        }, position : params.position, show : {
-          delay : 250
         }
-      };
+      }));
+      jQuery(element).qtip(qtipOptions);
+    };
+
+    /**
+     * Displays a simple way information into represented as a tip.
+     * @param element the element on which the qtip must be applied.
+     * @param message the text message.
+     * @param options TipManager options, see _computeParams private method.
+     */
+    this.simpleInfo = function(element, message, options) {
+      var params = options ? options : {};
+      var qtipOptions = _computeParams(extendsObject(params, {
+        style : {
+          classes : "qtip-shadow qtip-default-silverpeas qtip-info"
+        },
+        content : {
+          text : message
+        }
+      }));
       jQuery(element).qtip(qtipOptions);
     };
   };

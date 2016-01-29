@@ -590,6 +590,26 @@
 }
 
 /* ADDED BY SILVERPEAS TEAM */
+
+.qtip-default-silverpeas {
+  border-color: #F9E98E;
+  background-color: #FBF7AA;
+}
+
+.qtip-default-silverpeas .qtip-titlebar {
+  background-color: #F17A11;
+  color: #FFF;
+}
+
 .qtip-title {
 	margin-right: 15px;
+}
+
+.qtip-info {
+  background-color: #EEEEEE;
+  border-color: #CCCCCC;
+}
+
+.qtip .forms {
+  min-width: 500px;
 }
