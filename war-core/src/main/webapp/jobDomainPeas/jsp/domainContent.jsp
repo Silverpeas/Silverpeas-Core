@@ -25,6 +25,7 @@
 --%>
 
 <%@page import="org.silverpeas.admin.user.constant.UserState"%>
+<%@ page import="org.apache.commons.lang3.tuple.Pair" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -203,18 +204,20 @@ out.println(window.printBefore());
   arrayPane.setSortable(false);
 
   if (subGroups != null) {
+    final String groupCommonLinkPart = request.getAttribute("myComponentURL") + "groupContent?Idgroup=";
+    IconPane iconPanelSynchronized = gef.getIconPane();
+    iconPanelSynchronized.addIcon().setProperties(resource.getIcon("JDP.groupSynchronized"), resource.getString("GML.groupe"), "");
+    IconPane iconPanel = gef.getIconPane();
+    iconPanel.addIcon().setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
       for(Group group : subGroups){
     	  if (group != null) {
 	          ArrayLine arrayLine = arrayPane.addArrayLine();
-	          IconPane iconPane1 = gef.getIconPane();
-	          Icon groupIcon = iconPane1.addIcon();
 	          if (group.isSynchronized()) {
-	        	  groupIcon.setProperties(resource.getIcon("JDP.groupSynchronized"), resource.getString("GML.groupe"), "");
+              arrayLine.addArrayCellIconPane(iconPanelSynchronized);
 	          } else {
-	        	  groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
+              arrayLine.addArrayCellIconPane(iconPanel);
 	          }
-	          arrayLine.addArrayCellIconPane(iconPane1);
-	          arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
+            arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), groupCommonLinkPart + group.getId());
 	          arrayLine.addArrayCellText(group.getTotalNbUsers());
 	          arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
     	  }
@@ -239,13 +242,22 @@ out.println(window.printBefore());
 	  }
 
 	  if (subUsers != null) {
+      Map<UserState, Pair<String, String>> bundleCache = new HashMap<UserState, Pair<String, String>>(UserState.values().length);
+      for (UserState userState : UserState.values()) {
+        bundleCache.put(userState, Pair.of(
+            resource.getIcon("JDP.user.state."+userState.getName()),
+            resource.getString("GML.user.account.state."+userState.getName())
+        ));
+      }
+      final String userCommonLinkPart = request.getAttribute("myComponentURL") + "userContent?Iduser=";
 	      for(UserDetail user : subUsers){
 	          ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-            String icon = resource.getIcon("JDP.user.state."+user.getState().getName());
-            String iconAltText = resource.getString("GML.user.account.state."+user.getState().getName());
+            Pair<String, String> iconAndLabel = bundleCache.get(user.getState());
+            String icon = iconAndLabel.getLeft();
+            String iconAltText = iconAndLabel.getRight();
 	          ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\""+icon+"\" alt=\""+iconAltText+"\" title=\""+iconAltText+"\"/>");
 	          cellIcon.setCompareOn(user.getState().name());
-	          arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
+            arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), userCommonLinkPart + user.getId());
 	          arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
 	          if (JobDomainSettings.lastConnectionColumnEnabled) {
 		          Date lastConnection = user.getLastLoginDate();
