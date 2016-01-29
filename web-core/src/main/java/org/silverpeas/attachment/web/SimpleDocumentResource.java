@@ -441,7 +441,11 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     SimpleDocument document = getSimpleDocument(defaultLanguage);
     SimpleDocumentPK pk = new SimpleDocumentPK(getSimpleDocumentId());
     if (document.isVersioned() && useMajor) {
-      pk = document.getLastPublicVersion().getPk();
+      final SimpleDocument lastPublicVersion = document.getLastPublicVersion();
+      if (lastPublicVersion == null) {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+      pk = lastPublicVersion.getPk();
     }
     pk = AttachmentServiceProvider.getAttachmentService().changeVersionState(pk, comment);
     document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
