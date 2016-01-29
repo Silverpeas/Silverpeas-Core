@@ -158,8 +158,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     if (attachment.isVersioned()) {
       message = resources.getString("attachment.switchState.toSimple");
     }
-    prepareMenuItem(builder, "switchState('" + attachment.getId() + "', " + attachment.isVersioned()
-        + ");", message);
+    final boolean isLastPublicVersion = attachment.getLastPublicVersion() != null;
+    prepareMenuItem(builder,
+        "switchState('" + attachment.getId() + "', " + attachment.isVersioned() + ", " +
+            isLastPublicVersion + ");", message);
     prepareMenuItem(builder, "deleteAttachment('" + attachment.getId() + "','" + StringEscapeUtils
         .escapeEcmaScript(attachment.getFilename()) + "');", resources.getString("GML.delete"));
     message = resources.getString("attachment.download.allowReaders");

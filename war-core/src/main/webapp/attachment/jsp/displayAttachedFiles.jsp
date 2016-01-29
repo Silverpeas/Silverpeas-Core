@@ -507,21 +507,27 @@
       checkout(id, oldId, true, true, false);
     }
 
-    function switchState(id, isVersioned) {
+    function switchState(id, isVersioned, isLastPublicVersion) {
       <fmt:message key="attachment.switch.warning.simple" var="warningSimple"/>
       <fmt:message key="attachment.switch.warning.versioned" var="warningVersioned"/>
       <fmt:message key="attachment.switchState.toVersioned" var="warningTitleSimple"/>
       <fmt:message key="attachment.switchState.toSimple" var="warningTitleVersioned"/>
+      var $attachmentSwitchVersioned = $("#attachment-switch-versioned");
+      var $attachmentSwitchSimple = $("#attachment-switch-simple");
+      $attachmentSwitchVersioned.hide();
+      $attachmentSwitchSimple.hide();
       if(isVersioned) {
         $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleVersioned)}" />' );
         $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningSimple)}" />');
-        $("#attachment-switch-versioned").hide();
-        $("#attachment-switch-simple").show();
+        if (isLastPublicVersion) {
+          $attachmentSwitchSimple.show();
+        } else {
+          $("#switch-version-last").prop( "checked", true );
+        }
       } else {
         $("#dialog-attachment-switch").dialog( "option" , 'title' , '<c:out value="${silfn:escapeJs(warningTitleSimple)}" />' );
         $("#attachment-switch-warning-message").empty().append('<c:out value="${silfn:escapeJs(warningVersioned)}" />');
-        $("#attachment-switch-simple").hide();
-        $("#attachment-switch-versioned").show();
+        $attachmentSwitchVersioned.show();
       }
       $("#dialog-attachment-switch").data("id", id).dialog("open");
       pageMustBeReloadingAfterSorting = true;
