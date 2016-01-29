@@ -223,26 +223,34 @@ public class CalendarViewContext {
     LocalizationBundle bundle = getBundle(language);
     StringBuilder periodLabel = new StringBuilder();
     boolean displayWeek = DISPLAY_WEEK_PERIODS.contains(period.getPeriodType());
-    // Month of the begin date of the period
-    periodLabel.append(bundle.getString("GML.mois" + period.getBeginDate().getMonth()));
-    // Verifies if months are differents between the beginning and the end of the period
-    if (period.getBeginDate().getMonth() != period.getEndDate().getMonth()) {
-      displayWeek = true;
-      // Verifies if years are differents between the beginning and the end of the period
-      if (period.getBeginDate().getYear() != period.getEndDate().getYear()) {
-        // Appends the year of the beginning date after the month of this same date
-        periodLabel.append(" ").append(period.getBeginDate().getYear());
+    if (period.getPeriodType().isWeek()) {
+      // Month of the begin date of the period
+      periodLabel.append(bundle.getString("GML.mois" + period.getBeginDate().getMonth()));
+      // Verifies if months are different between the beginning and the end of the period
+      if (period.getBeginDate().getMonth() != period.getEndDate().getMonth()) {
+        displayWeek = true;
+        // Verifies if years are different between the beginning and the end of the period
+        if (period.getBeginDate().getYear() != period.getEndDate().getYear()) {
+          // Appends the year of the beginning date after the month of this same date
+          periodLabel.append(" ").append(period.getBeginDate().getYear());
+        }
+        // Appends the month of the end date of the period
+        periodLabel.append(" / ").append(bundle.getString("GML.mois" + period.getEndDate().getMonth()));
       }
-      // Appends the month of the end date of the period
-      periodLabel.append(" / ")
-          .append(bundle.getString("GML.mois" + period.getEndDate().getMonth()));
-    }
-    // Appends the year of the end date after the month of this same date
-    periodLabel.append(" ").append(period.getEndDate().getYear());
-    // Appends the week number if it is necessary
-    if (displayWeek) {
-      periodLabel.append(" - ").append(bundle.getString("GML.week")).append(' ')
-          .append(period.getBeginDate().getWeekOfYear());
+      // Appends the year of the end date after the month of this same date
+      periodLabel.append(" ").append(period.getEndDate().getYear());
+      // Appends the week number if it is necessary
+      if (displayWeek) {
+        periodLabel.append(" - ")
+            .append(bundle.getString("GML.week"))
+            .append(' ')
+            .append(period.getBeginDate().getWeekOfYear());
+      }
+    } else if (period.getPeriodType().isMonth()) {
+      periodLabel.append(bundle.getString("GML.mois" + period.getBeginDate().getMonth()))
+          .append(" ").append(period.getBeginDate().getYear());
+    } else if (period.getPeriodType().isYear()) {
+      periodLabel.append(period.getBeginDate().getYear());
     }
     // Result
     return periodLabel.toString();
