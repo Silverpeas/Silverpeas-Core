@@ -36,6 +36,7 @@ import org.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import org.silverpeas.attachment.AttachmentServiceProvider;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -77,7 +78,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
    * @return
    */
   private String createExternalId(String formId) {
-    return getComponentId() + ":" + formId;
+    return getComponentId() + ":" + FilenameUtils.getBaseName(formId);
   }
 
   /**

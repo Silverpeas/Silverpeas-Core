@@ -359,3 +359,11 @@ if (typeof window.silverpeasAjax === 'undefined') {
     });
   }
 }
+
+if(typeof window.whenSilverpeasReady === 'undefined') {
+  function whenSilverpeasReady(callback) {
+    document.addEventListener('DOMContentLoaded', function() {
+      callback.call(this);
+    }.bind(this));
+  }
+}
