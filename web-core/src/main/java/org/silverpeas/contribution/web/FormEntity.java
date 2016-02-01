@@ -46,6 +46,10 @@ public class FormEntity extends AbstractContentEntity {
   @XmlElement(defaultValue = "")
   private Map<String, FormFieldEntity> fields = new LinkedHashMap<String, FormFieldEntity>();
 
+  /* List of form fields indexed by their names */
+  @XmlElement(defaultValue = "")
+  private String renderedView = "";
+
   /**
    * Creates a new form entity from the specified form.
    *
@@ -71,12 +75,21 @@ public class FormEntity extends AbstractContentEntity {
     return formId;
   }
 
+  protected String getRenderedView() {
+    return renderedView;
+  }
+
   protected Map<String, FormFieldEntity> getFields() {
     return fields;
   }
 
   public FormEntity addFormField(FormFieldEntity formField) {
     fields.put(formField.getName(), formField);
+    return this;
+  }
+
+  public FormEntity withRenderedView(String renderedView) {
+    this.renderedView = renderedView;
     return this;
   }
 }
