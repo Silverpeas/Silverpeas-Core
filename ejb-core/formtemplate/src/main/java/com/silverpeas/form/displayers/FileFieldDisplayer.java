@@ -85,78 +85,120 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
       attachmentId = "";
     }
 
-    if (template.isReadOnly() && !template.isHidden()) {
-      if (attachment != null) {
-        html.append("<img alt=\"\" src=\"").append(attachment.getDisplayIcon())
-            .append("\"/>&nbsp;");
-        String url = webContext + attachment.getAttachmentURL();
-        if (pageContext.isSharingContext()) {
-          url = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
+    if (!template.isHidden()) {
+      if (template.isReadOnly()) {
+        if (attachment != null) {
+          html.append("<img alt=\"\" src=\"")
+              .append(attachment.getDisplayIcon())
+              .append("\"/>&nbsp;");
+          String url = webContext + attachment.getAttachmentURL();
+          if (pageContext.isSharingContext()) {
+            url = pageContext.getSharingContext().getSharedUriOf(attachment).toString();
+          }
+          html.append("<a href=\"")
+              .append(url)
+              .append("\" target=\"_blank\">")
+              .append(attachment.getFilename())
+              .append("</a>");
+          if (!pageContext.isSharingContext()) {
+            File attachmentFile = new File(attachment.getAttachmentPath());
+            if (ViewerProvider.isPreviewable(attachmentFile)) {
+              html.append("<img onclick=\"javascript:previewFormFile(this, '")
+                  .append(attachment.getId())
+                  .append("');\" class=\"preview-file\" src=\"")
+                  .append(webContext)
+                  .append("/util/icons/preview.png\" alt=\"")
+                  .append(Util.getString("GML.preview", contentLanguage))
+                  .append("\" title=\"")
+                  .append(Util.getString("GML.preview", contentLanguage))
+                  .append("\"/>");
+            }
+            if (ViewerProvider.isViewable(attachmentFile)) {
+              html.append("<img onclick=\"javascript:viewFormFile(this, '")
+                  .append(attachment.getId())
+                  .append("');\" class=\"view-file\" src=\"")
+                  .append(webContext)
+                  .append("/util/icons/view.png\" alt=\"")
+                  .append(Util.getString("GML.view", contentLanguage))
+                  .append("\" title=\"")
+                  .append(Util.getString("GML.view", contentLanguage))
+                  .append("\"/>");
+            }
+            if (attachment.isSharingAllowedForRolesFrom(
+                UserDetail.getById(pageContext.getUserId()))) {
+              html.append("<img onclick=\"javascript:createSharingTicketPopup({ componentId : '")
+                  .append(attachment.getInstanceId())
+                  .append("',type : 'Attachment', id: '")
+                  .append(attachment.getOldSilverpeasId())
+                  .append("', name : '")
+                  .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
+                  .append("'});\" class=\"share-file\" src=\"")
+                  .append(webContext)
+                  .append("/util/icons/share.png\" alt=\"")
+                  .append(Util.getString("GML.share.file", contentLanguage))
+                  .append("\" title=\"")
+                  .append(Util.getString("GML.share.file", contentLanguage))
+                  .append("\"/>");
+            }
+          }
         }
-        html.append("<a href=\"").append(url).append("\" target=\"_blank\">")
-            .append(attachment.getFilename()).append("</a>");
-        if (!pageContext.isSharingContext()) {
-          File attachmentFile = new File(attachment.getAttachmentPath());
-          if (ViewerProvider.isPreviewable(attachmentFile)) {
-            html.append("<img onclick=\"javascript:previewFormFile(this, '").
-                append(attachment.getId()).append("');\" class=\"preview-file\" src=\"").
-                append(webContext).append("/util/icons/preview.png\" alt=\"").
-                append(Util.getString("GML.preview", contentLanguage)).append("\" title=\"").
-                append(Util.getString("GML.preview", contentLanguage)).append("\"/>");
-          }
-          if (ViewerProvider.isViewable(attachmentFile)) {
-            html.append("<img onclick=\"javascript:viewFormFile(this, '").append(attachment.getId()).
-                append("');\" class=\"view-file\" src=\"").append(webContext).append(
-                    "/util/icons/view.png\" alt=\"").append(Util.getString("GML.view", contentLanguage))
-                .append(
-                    "\" title=\"").append(Util.getString("GML.view", contentLanguage)).append("\"/>");
-          }
-          if (attachment.isSharingAllowedForRolesFrom(UserDetail.getById(pageContext.getUserId()))) {
-            html.append("<img onclick=\"javascript:createSharingTicketPopup({ componentId : '")
-                .append(attachment.getInstanceId()).append("',type : 'Attachment', id: '")
-                .append(attachment.getOldSilverpeasId()).append("', name : '")
-                .append(EncodeHelper.javaStringToJsString(attachment.getFilename()))
-                .append("'});\" class=\"share-file\" src=\"").append(webContext)
-                .append("/util/icons/share.png\" alt=\"")
-                .append(Util.getString("GML.share.file", contentLanguage))
-                .append("\" title=\"").append(Util.getString("GML.share.file", contentLanguage))
-                .append("\"/>");
-          }
+      } else if (!template.isDisabled()) {
+        html.append("<input type=\"file\" size=\"50\" id=\"")
+            .append(fieldName)
+            .append("\" name=\"")
+            .append(fieldName)
+            .append("\"/>")
+            .append("<input type=\"hidden\" id=\"")
+            .append(fieldName + FileField.PARAM_ID_SUFFIX)
+            .append("\" name=\"")
+            .append(fieldName + Field.FILE_PARAM_NAME_SUFFIX)
+            .append("\" value=\"")
+            .append(attachmentId)
+            .append("\"/>")
+            .append("<input type=\"hidden\" id=\"")
+            .append(fieldName)
+            .append(OPERATION_KEY + "\" name=\"")
+            .append(fieldName)
+            .append(OPERATION_KEY + "\" value=\"")
+            .append(defaultOperation.name())
+            .append("\"/>");
+
+        if (attachment != null) {
+          String deleteImg = Util.getIcon("delete");
+          String deleteLab = Util.getString("removeFile", contentLanguage);
+          html.append("&nbsp;<span id=\"div")
+              .append(fieldName)
+              .append("\">")
+              .append("<img alt=\"\" align=\"top\" src=\"")
+              .append(attachment.getDisplayIcon())
+              .append("\"/>&nbsp;")
+              .append("<a href=\"")
+              .append(webContext)
+              .append(attachment.getAttachmentURL())
+              .append("\" target=\"_blank\">")
+              .append(attachment.getFilename())
+              .append("</a>")
+              .append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('div")
+              .append(fieldName)
+              .append("').style.display='none';" + "document.")
+              .append(pageContext.getFormName())
+              .append(".")
+              .append(fieldName)
+              .append(OPERATION_KEY + ".value='")
+              .append(Operation.DELETION.name())
+              .append("';" + "\">")
+              .append("<img src=\"")
+              .append(deleteImg)
+              .append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"")
+              .append(deleteLab)
+              .append("\" align=\"top\" title=\"")
+              .append(deleteLab)
+              .append("\"/></a>")
+              .append("</span>");
         }
-      }
-    } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-      html.append("<input type=\"file\" size=\"50\" id=\"").append(fieldName).append("\" name=\"").
-          append(fieldName).append("\"/>");
-      html.append("<input type=\"hidden\" id=\"").append(fieldName + FileField.PARAM_ID_SUFFIX)
-          .append("\" name=\"").append(fieldName + Field.FILE_PARAM_NAME_SUFFIX)
-          .append("\" value=\"").append(attachmentId).append("\"/>");
-      html.append("<input type=\"hidden\" id=\"").append(fieldName).
-          append(OPERATION_KEY + "\" name=\"").append(fieldName).
-          append(OPERATION_KEY + "\" value=\"").append(defaultOperation.name()).append("\"/>");
-
-      if (attachment != null) {
-        String deleteImg = Util.getIcon("delete");
-        String deleteLab = Util.getString("removeFile", contentLanguage);
-
-        html.append("&nbsp;<span id=\"div").append(fieldName).append("\">");
-        html.append("<img alt=\"\" align=\"top\" src=\"").append(attachment.getDisplayIcon()).
-            append("\"/>&nbsp;");
-        html.append("<a href=\"").append(webContext).append(attachment.getAttachmentURL()).append(
-            "\" target=\"_blank\">").append(attachment.getFilename()).append("</a>");
-
-        html.append("&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('div").
-            append(fieldName).append("').style.display='none';" + "document.").
-            append(pageContext.getFormName()).append(".").append(fieldName).
-            append(OPERATION_KEY + ".value='").append(Operation.DELETION.name()).append(
-                "';" + "\">");
-        html.append("<img src=\"").append(deleteImg).
-            append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).
-            append("\" align=\"top\" title=\"").append(deleteLab).append(
-                "\"/></a>");
-        html.append("</span>");
-      }
-      if (template.isMandatory() && pageContext.useMandatory()) {
-        html.append(Util.getMandatorySnippet());
+        if (template.isMandatory() && pageContext.useMandatory()) {
+          html.append(Util.getMandatorySnippet());
+        }
       }
     }
 
