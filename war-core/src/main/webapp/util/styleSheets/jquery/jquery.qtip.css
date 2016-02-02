@@ -610,6 +610,10 @@
   border-color: #CCCCCC;
 }
 
-.qtip .forms {
-  min-width: 500px;
+.qtip .resource-info-extra .forms .fields {
+  width: auto;
+}
+
+.qtip .resource-info-description {
+  margin-bottom: 1em;
 }
