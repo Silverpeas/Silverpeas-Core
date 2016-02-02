@@ -872,7 +872,7 @@ public class WysiwygManager {
           }
           AttachmentServiceFactory.getAttachmentService()
               .updateAttachment(copy, new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
-                  true, true);
+                  false, false);
         } else {
           languagesWithEmptyContent.add(language);
         }
