@@ -30,23 +30,23 @@ import java.util.Optional;
 /**
  * <p>
  * It is a process implied within the deletion of a component instance in Silverpeas. Usually such
- * process is about deleting some specific resources of the component instance being deleted.
- * It could be also useful for component instances which some data deletion must be performed
- * before
- * the transverse ones.
+ * process is about the deletion of some specific resources related to the component instance that
+ * is being deleted. This process is invoked before any cleaning up of the transverses data used
+ * by the component instance and before the effective deletion of the component instance. This
+ * interface is dedicated to be implemented by the Silverpeas applications.
  * </p>
  * <p>
- * When a component instance is deleted, the direct data are first deleted, then the decoration
- * data are deleted, and finally the component instance is unregistered from Silverpeas.
- * In some circumstances, according to the application, some actions have to be
- * performed in the behalf of the deleted application instance. The application instantiation is
- * unaware of these circumstances and it cannot know what actions to perform; It is the
- * responsibility of the application to perform such actions. This is why an implementation of this
- * interface qualified by a name that satisfies the following convention
- * <code>[COMPONENT NAME]InstancePreDestruction</code> is looked for by the component instance
- * deletion process and then invoked if it is has been found.
+ * When a component instance is being deleted, the resources that are specific to this component
+ * instance should be deleted first before going further in the deletion. That's why this interface
+ * is for. Once done, the transverses resources that were used by the component instance are then
+ * deleted and finally the component instance is unregistered from Silverpeas. As the generic
+ * component instance deletion mechanism is unaware of the specific resources that are managed
+ * by the component instance, it delegates the task to delete them to the implementation of this
+ * interface that should be provided by the Silverpeas application. In order to be found by the
+ * deletion mechanism, the implementation has to be qualified by a name satisfying the following
+ * convention: <code>[COMPONENT NAME]InstancePreDestruction</code>
  * </p>
- * Any application that requires specific actions when a component instance is deleted
+ * Any application that requires specific actions when a component instance is being deleted
  * has to implement this interface and the implementation has to be qualified with the @Named
  * annotation by a name satisfying the following convention
  * <code>[COMPONENT NAME]InstancePreDestruction</code>. For example, for an application Kmelia,
