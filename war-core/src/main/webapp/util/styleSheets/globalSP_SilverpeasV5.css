@@ -6660,9 +6660,6 @@ blockquote {
 	padding: 10px 0px 0px 10px;
 }
 
-.forms .fields .fieldInput {
-	display:inline-block;
-}
 
 .forms.mode-design .fields label {
 	background: url("../icons/grippy_large.png") repeat-y scroll 0 0 rgba(0, 0, 0, 0);
@@ -6670,11 +6667,18 @@ blockquote {
 }
 
 .forms .fields label {
-	display: inline-block;
-  float: left;
-  padding-left: 15px;
-  width:180px;
-  white-space: normal;
+	display:table-cell;
+	padding:15px 2% 10px 2%;
+	width:180px;
+	white-space: normal;
+}
+.forms .fields .fieldInput {
+	display:table-cell;
+	padding:15px 2% 10px 2%;
+}
+.forms .fields .fieldInput > p:first-child {
+	padding-top:0;
+	margin-top:0;
 }
 
 #richContent .fields {
@@ -6691,37 +6695,40 @@ blockquote {
 	clear: none;
 	margin: 0;
 	padding: 0;
+	display:table;
+	border-collapse: separate;
+	width:100%;
 }
 .forms .fields > li{
-	padding:10px 0 5px 2%;
 	margin:0;
 	position:relative;
-	display:block;
-	float:inherit;
-	width:98%;
+	display: inline-table;
+	width:100%;
 	min-height: 28px;
 }
 
 /* design and edition modes */
 form .forms .fields > li:nth-child(odd) {
 	background-color:#fffce7;
-	border-bottom:1px solid #ccc;
 }
 form .forms .fields > li:nth-child(even) {
 	background-color:#f6f6f6;
+}
+
+form .forms .fields > li{
 	border-bottom:1px solid #ccc;
 }
 
 /* view mode */
 .forms .fields > li:nth-child(odd) {
 	background-color:#f9f9f9;
-	border-bottom:1px solid #ddd;
 }
 .forms .fields > li:nth-child(even) {
 	background-color:#f6f6f6;
+}
+.forms .fields > li  {
 	border-bottom:1px solid #ddd;
 }
-
 .forms .field .actions {
 	position:absolute;
 	top:10px;
