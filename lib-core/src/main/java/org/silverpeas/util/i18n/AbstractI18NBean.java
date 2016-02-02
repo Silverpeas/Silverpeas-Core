@@ -161,6 +161,20 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
     return translations;
   }
 
+  /**
+   * Gets cloned translations.<br/>
+   * This is useful on copy/paste operations.
+   * @return a clone of {@link #getTranslations()} result.
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String, T> getClonedTranslations() {
+    Map<String, T> clonedTranslations = new HashMap<String, T>(3);
+    for (Map.Entry<String, T> entry : translations.entrySet()) {
+      clonedTranslations.put(entry.getKey(), (T) entry.getValue().clone());
+    }
+    return clonedTranslations;
+  }
+
   public void setTranslations(Map<String, T> translations) {
     this.translations = translations;
   }
