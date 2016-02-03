@@ -739,15 +739,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
-   * Add process feature in web archive (war)
-   * @return the instance of the war builder with process features
-   */
-  public WarBuilder4LibCore addProcessFeatures() {
-    addPackages(true, "org.silverpeas.process");
-    return this;
-  }
-
-  /**
    * Add image tool features. ImageMagick must be installed on machine.
    * @return the instance of the war with image tool feature.
    */

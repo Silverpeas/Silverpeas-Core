@@ -87,7 +87,7 @@ public class ConnexionSilverStatisticsManagerDAOTest extends DataSetTest {
   }
 
   @Override
-  protected Operation getDbSetupOperations() {
+  protected Operation getDbSetupInitializations() {
     return Operations.sequenceOf(DROP_ALL, TABLES_CREATION);
   }
 

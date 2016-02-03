@@ -81,7 +81,7 @@ public class AnswerDAOTest extends DataSetTest {
       .values(1023, 179, "Patate", 3, 1, "", 1, 0, null, null).build();
 
   @Override
-  protected Operation getDbSetupOperations() {
+  protected Operation getDbSetupInitializations() {
     return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, INSERT_DATA);
   }
 
