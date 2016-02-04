@@ -48,6 +48,8 @@ public class TagCloudDAO {
   private static final String ALL_COLUMNS = COLUMN_ID + ", " + COLUMN_TAG
       + ", " + COLUMN_LABEL + ", " + COLUMN_INSTANCEID + ", "
       + COLUMN_EXTERNALID + ", " + COLUMN_EXTERNALTYPE;
+  private static final String DELETE_ALL =  "DELETE FROM " + TABLE_NAME
+      + " WHERE " + COLUMN_INSTANCEID + " = ? ";
 
   private TagCloudDAO() {
   }
@@ -108,6 +110,19 @@ public class TagCloudDAO {
   }
 
   /**
+   * Deletes all the tag clouds registered for the specified component instance.
+   * @param con the connection to the database.
+   * @param instanceId the unique identifier of the component instance.
+   * @throws SQLException if an error occurs while deleting the tag clouds.
+   */
+  public static void deleteAllTagClouds(Connection con, String instanceId) throws SQLException {
+    try (PreparedStatement deletion = con.prepareStatement(DELETE_ALL)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
+  }
+
+  /**
    * @param con The database connection.
    * @param instanceId The id of the instance which the tagclouds are searched for.
    * @return The list of tagclouds corresponding to the instance id.
@@ -138,7 +153,7 @@ public class TagCloudDAO {
 
   /**
    * @param con The database connection.
-   * @param externalId The id of the element which the tagclouds are searched for.
+   * @param pk The id of the element which the tagclouds are searched for.
    * @return The list of tagclouds corresponding to the element id.
    * @throws SQLException
    */

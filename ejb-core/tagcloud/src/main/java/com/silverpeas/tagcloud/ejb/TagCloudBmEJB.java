@@ -32,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudDAO;
 import com.silverpeas.tagcloud.model.TagCloudPK;
@@ -44,7 +45,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 @Stateless(name = "TagCloud", description = "EJB to manage tags")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-public class TagCloudBmEJB implements TagCloudBm {
+public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
 
   private Connection openConnection() {
     try {
@@ -219,6 +220,20 @@ public class TagCloudBmEJB implements TagCloudBm {
           SilverpeasRuntimeException.ERROR, "tagCloud.GET_TAGCLOUD_FAILED", e);
     } finally {
       DBUtil.close(con);
+    }
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    try (Connection connection = DBUtil.openConnection()) {
+      TagCloudDAO.deleteAllTagClouds(connection, componentInstanceId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 }
