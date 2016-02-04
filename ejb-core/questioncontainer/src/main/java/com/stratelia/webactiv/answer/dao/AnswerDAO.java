@@ -24,6 +24,13 @@
 
 package com.stratelia.webactiv.answer.dao;
 
+import com.stratelia.webactiv.answer.model.Answer;
+import com.stratelia.webactiv.answer.model.AnswerPK;
+import com.stratelia.webactiv.answer.model.AnswerRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,14 +38,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import com.stratelia.webactiv.answer.model.Answer;
-import com.stratelia.webactiv.answer.model.AnswerPK;
-import com.stratelia.webactiv.answer.model.AnswerRuntimeException;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 /**
  * This class is made to access database only (table SB_Question_Answer)
@@ -58,6 +57,10 @@ public class AnswerDAO {
 
   private static final String SQL_INSERT_ANSWER =
       "insert into SB_Question_Answer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String SQL_DELETE_ALL_QUESTION_ANSWERS =
+      "DELETE FROM SB_Question_Answer  WHERE questionId in (SELECT questionId FROM " +
+          "SB_Question_Question WHERE instanceId = ?)";
 
   /**
    * Build an Answer objet with data containing in the Resulset
@@ -257,6 +260,20 @@ public class AnswerDAO {
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Deletes all the answers of all the questions relative to the specified component instance.
+   * @param con the connection to the database.
+   * @param instanceId the unique identifier of the component instance.
+   * @throws SQLException if an error occurs while deleting the answers.
+   */
+  public static void deleteAnswersToAllQuestions(Connection con, String instanceId)
+      throws SQLException {
+    try(PreparedStatement deletion = con.prepareStatement(SQL_DELETE_ALL_QUESTION_ANSWERS)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 

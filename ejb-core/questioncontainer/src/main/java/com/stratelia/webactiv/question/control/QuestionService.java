@@ -49,7 +49,7 @@ public interface QuestionService {
    * @param questionPK the question id
    * @return a Question
    */
-  public Question getQuestion(QuestionPK questionPK);
+  Question getQuestion(QuestionPK questionPK);
 
   /**
    * Get all questions for a given father
@@ -57,77 +57,77 @@ public interface QuestionService {
    * @param fatherId the father id
    * @return a Collection of Question
    */
-  public Collection<Question> getQuestionsByFatherPK(QuestionPK questionPK, String fatherId);
+  Collection<Question> getQuestionsByFatherPK(QuestionPK questionPK, String fatherId);
 
   /**
    * Create a new question
    * @param question the question to create
    * @return the id of the new question
    */
-  public QuestionPK createQuestion(Question question);
+  QuestionPK createQuestion(Question question);
 
   /**
    * Create some questions to a given father
    * @param questions a Collection of Question to create
    * @param fatherId the father id
    */
-  public void createQuestions(Collection<Question> questions, String fatherId);
+  void createQuestions(Collection<Question> questions, String fatherId);
 
   /**
    * Delete the questions of a father
    * @param questionPK the question context
    * @param fatherId the father id
    */
-  public void deleteQuestionsByFatherPK(QuestionPK questionPK, String fatherId);
+  void deleteQuestionsByFatherPK(QuestionPK questionPK, String fatherId);
 
   /**
    * Delete a question
    * @param questionPK the question id to delete
    */
-  public void deleteQuestion(QuestionPK questionPK);
+  void deleteQuestion(QuestionPK questionPK);
 
   /**
    * Update a question
    * @param questionDetail the question to update
    */
-  public void updateQuestion(Question questionDetail);
+  void updateQuestion(Question questionDetail);
 
   /**
    * Update a question header (self attributes)
    * @param questionDetail the question attributes
    */
-  public void updateQuestionHeader(Question questionDetail);
+  void updateQuestionHeader(Question questionDetail);
 
   /**
    * Update the answers to a question
    * @param questionDetail the question containing the answers
    */
-  public void updateAnswersToAQuestion(Question questionDetail);
+  void updateAnswersToAQuestion(Question questionDetail);
 
   /**
    * Update an answer to a question
    * @param answerDetail the answer to update
    */
-  public void updateAnswerToAQuestion(Answer answerDetail);
+  void updateAnswerToAQuestion(Answer answerDetail);
 
   /**
    * Delete all answers to a question
    * @param questionPK the question
    */
-  public void deleteAnswersToAQuestion(QuestionPK questionPK);
+  void deleteAnswersToAQuestion(QuestionPK questionPK);
 
   /**
    * Delete an answer to a question
    * @param answerPK the answer id to delete
    * @param questionPK the question id
    */
-  public void deleteAnswerToAQuestion(AnswerPK answerPK, QuestionPK questionPK);
+  void deleteAnswerToAQuestion(AnswerPK answerPK, QuestionPK questionPK);
 
   /**
    * Create some answers to a question
    * @param questionDetail the question which contains the answers
    */
-  public void createAnswersToAQuestion(Question questionDetail);
+  void createAnswersToAQuestion(Question questionDetail);
 
   /**
    * Add an answer to a question
@@ -135,5 +135,5 @@ public interface QuestionService {
    * @param questionPK the question id
    * @return the PK of the new answer
    */
-  public AnswerPK createAnswerToAQuestion(Answer answerDetail, QuestionPK questionPK);
+  AnswerPK createAnswerToAQuestion(Answer answerDetail, QuestionPK questionPK);
 }

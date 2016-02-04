@@ -24,6 +24,15 @@
 
 package com.stratelia.webactiv.questionContainer.dao;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.questionContainer.model.Comment;
+import com.stratelia.webactiv.questionContainer.model.CommentPK;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
+import com.stratelia.webactiv.questionContainer.model.QuestionContainerRuntimeException;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,15 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.questionContainer.model.Comment;
-import com.stratelia.webactiv.questionContainer.model.CommentPK;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
-import com.stratelia.webactiv.questionContainer.model.QuestionContainerRuntimeException;
 
 /**
  * This class is made to access database only (table SB_QuestionContainer_QC and
@@ -69,6 +69,13 @@ public class QuestionContainerDAO {
 
   private static final String SQL_DELETE_COMMENT =
       "DELETE FROM SB_QuestionContainer_Comment WHERE commentFatherId = ? ";
+
+  private static final String SQL_DELETE_ALL_QUESTIONCONTAINERS =
+      "DELETE FROM SB_QuestionContainer_QC WHERE instanceId = ?";
+
+  private static final String SQL_DELETE_ALL_COMMENTS =
+      "DELETE FROM SB_QuestionContainer_Comment WHERE commentFatherId in (SELECT qcId FROM " +
+          "SB_QuestionContainer_QC WHERE instanceId = ?)";
 
   // the date format used in database to represent a date
   private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
@@ -692,6 +699,27 @@ public class QuestionContainerDAO {
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Deletes all the question containers and as well their comments that were created for the
+   * specified component instance.
+   * @param con the connection to the data source in which are stored both the question containers
+   * and the comments.
+   * @param instanceId the unique identifier of the component instance.
+   * @throws SQLException if an error occurs while deleting the question containers or their
+   * comments.
+   */
+  public static void deleteAllQuestionContainersByInstanceId(Connection con, String instanceId)
+      throws SQLException {
+    try (PreparedStatement deletion = con.prepareStatement(SQL_DELETE_ALL_COMMENTS)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
+    try (PreparedStatement deletion = con.prepareStatement(SQL_DELETE_ALL_QUESTIONCONTAINERS)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 
