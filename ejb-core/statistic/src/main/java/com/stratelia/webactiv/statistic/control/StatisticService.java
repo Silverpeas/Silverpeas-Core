@@ -38,39 +38,37 @@ import com.stratelia.webactiv.statistic.model.HistoryObjectDetail;
  */
 public interface StatisticService {
 
-  public void addStat(String userId, ForeignPK foreignPK, int action, String objectType);
+  void addStat(String userId, ForeignPK foreignPK, int action, String objectType);
 
-  public void addStat(String userId, SilverpeasContent content);
+  void addStat(String userId, SilverpeasContent content);
 
-  public Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
+  Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
       String objectType);
 
-  public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
+  Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
       String objectType, String userId);
 
-  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType);
 
-  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType, List<String> userIds);
 
-  public void deleteStats(ForeignPK foreignPK, String objectType);
+  void deleteStats(ForeignPK foreignPK, String objectType);
 
-  public void deleteStats(SilverpeasContent content);
+  void deleteStats(SilverpeasContent content);
 
-  public void deleteStatsOfComponent(String componentId);
+  int getCount(List<ForeignPK> foreignPKs, int action, String objectType);
 
-  public int getCount(List<ForeignPK> foreignPKs, int action, String objectType);
+  int getCount(SilverpeasContent content, int action);
 
-  public int getCount(SilverpeasContent content, int action);
+  int getCount(ForeignPK foreignPK, int action, String objectType);
 
-  public int getCount(ForeignPK foreignPK, int action, String objectType);
+  int getCount(ForeignPK foreignPK, String objectType);
 
-  public int getCount(ForeignPK foreignPK, String objectType);
+  int getCount(SilverpeasContent content);
 
-  public int getCount(SilverpeasContent content);
-
-  public void moveStat(ForeignPK toForeignPK, int actionType, String objectType);
+  void moveStat(ForeignPK toForeignPK, int actionType, String objectType);
 
   /**
    * @param primaryKeys
@@ -80,7 +78,7 @@ public interface StatisticService {
    * @param endDate the end date
    * @return the number of access over a list of publications between startDate and endDate
    */
-  public int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+  int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
       Date startDate, Date endDate);
 
   /**
@@ -92,7 +90,7 @@ public interface StatisticService {
    * @return the number of access over a list of publications between startDate and endDate for
    * specific user
    */
-  public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
+  int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
       Date startDate, Date endDate, List<String> userIds);
 
   /**
@@ -104,10 +102,10 @@ public interface StatisticService {
    * @return the number of access over a list of publications between startDate and endDate
    * @
    */
-  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
+  int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
       String objectType, Date startDate, Date endDate);
 
-  public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
+  int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
       String objectType, Date startDate, Date endDate, List<String> userIds);
 
 
@@ -121,8 +119,8 @@ public interface StatisticService {
    * @param nbObjects
    * @return ordered list of unique objects used by the user
    */
-  public Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
+  Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
       int actionType, String objectType, int nbObjects);
 
-  public boolean isRead(SilverpeasContent content, String userId);
+  boolean isRead(SilverpeasContent content, String userId);
 }
