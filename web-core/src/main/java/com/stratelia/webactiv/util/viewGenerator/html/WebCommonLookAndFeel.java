@@ -178,8 +178,13 @@ public class WebCommonLookAndFeel {
     if (specificComponentCSS != null) {
       code.append(specificComponentCSS);
     }
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/array.generics.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/es6-promise.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/classList.min.js"));
+    code.append(
+        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/eventListenerIEPolyfill.min.js"));
+    code.append(
+        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-polyfills.js"));
 
     // append javascript
     code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append

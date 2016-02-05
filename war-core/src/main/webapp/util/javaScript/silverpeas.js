@@ -322,6 +322,28 @@ if (typeof extendsObject === 'undefined') {
   }
 }
 
+if (typeof SilverpeasClass === 'undefined') {
+  window.SilverpeasClass = function() {
+    this.initialize && this.initialize.apply(this, arguments);
+  };
+  SilverpeasClass.extend = function(childPrototype) {
+    var parent = this;
+    var child = function() {
+      return parent.apply(this, arguments);
+    };
+    child.extend = parent.extend;
+    var Surrogate = function() {
+      this.parent = parent.prototype;
+    };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = new Surrogate();
+    for (var key in childPrototype) {
+      child.prototype[key] = childPrototype[key];
+    }
+    return child;
+  };
+}
+
 if (typeof window.silverpeasAjax === 'undefined') {
   function silverpeasAjax(options) {
     if (typeof options === 'string') {
@@ -330,40 +352,94 @@ if (typeof window.silverpeasAjax === 'undefined') {
     var params = extendsObject({"method" : "GET", url : '', headers : {}}, options);
     return new Promise(function(resolve, reject) {
 
-      var xhr = new XMLHttpRequest();
-      xhr.onload = function() {
-        notySetupRequestComplete.call(this, xhr);
-        if (xhr.status == 200) {
-          resolve(xhr);
-        } else {
-          reject(xhr);
-          console.log("HTTP request error: " + xhr.status);
+      if (Object.getOwnPropertyNames) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          notySetupRequestComplete.call(this, xhr);
+          if (xhr.status == 200) {
+            resolve(xhr);
+          } else {
+            reject(xhr);
+            console.log("HTTP request error: " + xhr.status);
+          }
+        };
+
+        xhr.onerror = function() {
+          reject(Error("Network error..."));
+        };
+
+        if (typeof params.onprogress === 'function') {
+          xhr.upload.addEventListener("progress", params.onprogress, false);
         }
-      };
 
-      xhr.onerror = function() {
-        reject(Error("Network error..."));
-      };
+        xhr.open(params.method, params.url);
+        var headerKeys = Object.getOwnPropertyNames(params.headers);
+        for (var i = 0; i < headerKeys.length; i++) {
+          var headerKey = headerKeys[i];
+          xhr.setRequestHeader(headerKey, params.headers[headerKey]);
+        }
+        xhr.send(params.data);
 
-      if (typeof params.onprogress === 'function') {
-        xhr.upload.addEventListener("progress", params.onprogress, false);
+      } else {
+
+        // little trick for old browsers
+        var options = {
+          url : params.url,
+          type : params.method,
+          cache : false,
+          success : function(data, status, jqXHR) {
+            resolve({
+              readyState : jqXHR.readyState,
+              responseText : jqXHR.responseText,
+              status : jqXHR.status,
+              statusText : jqXHR.statusText
+            });
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            reject(Error("Network error: " + errorThrown));
+          }
+        };
+
+        // Adding settings
+        if (params.data) {
+          options.data = $.toJSON(params.data);
+          options.contentType = "application/json";
+        }
+
+        // Ajax request
+        jQuery.ajax(options);
       }
-
-      xhr.open(params.method, params.url);
-      var headerKeys = Object.getOwnPropertyNames(params.headers);
-      for (var i = 0; i < headerKeys.length; i++) {
-        var headerKey = headerKeys[i];
-        xhr.setRequestHeader(headerKey, params.headers[headerKey]);
-      }
-      xhr.send(params.data);
     });
   }
 }
 
 if(typeof window.whenSilverpeasReady === 'undefined') {
   function whenSilverpeasReady(callback) {
-    document.addEventListener('DOMContentLoaded', function() {
-      callback.call(this);
-    }.bind(this));
+    if (window.bindPolyfillDone) {
+      jQuery(document).ready(function() {
+        callback.call(this);
+      }.bind(this));
+    } else {
+      if (document.readyState !== 'interactive' && document.readyState !== 'loaded') {
+        document.addEventListener('DOMContentLoaded', function() {
+          callback.call(this);
+        }.bind(this));
+      } else {
+        callback.call(this);
+      }
+    }
+  }
+
+  function applyReadyBehaviorOn(instance) {
+    var promise = new Promise(function(resolve, reject) {
+      this.notifyReady = resolve;
+      this.notifyError = reject;
+    }.bind(instance));
+    instance.ready = function(callback) {
+      promise.then(function() {
+        callback.call(this);
+      }.bind(instance));
+    };
+    return promise;
   }
 }
