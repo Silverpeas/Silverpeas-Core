@@ -145,6 +145,15 @@ public class InfoDAO {
       DBUtil.close(rs, prepStmt);
     }
   }
+
+  public static void deleteAllInfoByInstanceId(Connection con, String instanceId)
+      throws SQLException {
+    final String sql = "DELETE FROM SB_Contact_Info WHERE instanceId = ?";
+    try (PreparedStatement deletion = con.prepareStatement(sql)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
+  }
   
   public static List<String> getInfo(Connection con, ContactPK pubPK) throws SQLException {
     List<String> modelIds = new ArrayList<String>();

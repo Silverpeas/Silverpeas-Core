@@ -303,7 +303,7 @@ public class ContactDAO {
     }
   }
 
-  public static void deleteRow(Connection con, ContactPK pk) throws SQLException {
+  public static void deleteContact(Connection con, ContactPK pk) throws SQLException {
     removeAllFather(con, pk); // Delete associations between pub and nodes
     String deleteStatement =
         "delete from " + pk.getTableName() + " where contactId = ? and instanceId = ?";
@@ -317,6 +317,21 @@ public class ContactDAO {
 
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  public static void deleteAllContacts(Connection con, String instanceId) throws SQLException {
+    final String allFatherDeletion =
+        "DELETE FROM SB_Contact_ContactFather WHERE contactId in (SELECT contactId FROM " +
+            "SB_Contact_Contact WHERE instanceId = ?)";
+    final String allContactsDeletion = "DELETE FROM SB_Contact_Contact WHERE instanceId = ?";
+    try (PreparedStatement deletion = con.prepareStatement(allFatherDeletion)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
+    try (PreparedStatement deletion = con.prepareStatement(allContactsDeletion)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 
