@@ -173,5 +173,10 @@ public enum SupportedJavaScriptPlugins {
   /**
    * External plugin to display various charts on client-side
    */
-  chart
+  chart,
+  /**
+   * External plugin to centralize the management of lists of users and groups on client-side<br/>
+   * Please take a look on displayListOfUsersAndGroups.tag
+   */
+  listOfUsersAndGroups
 }

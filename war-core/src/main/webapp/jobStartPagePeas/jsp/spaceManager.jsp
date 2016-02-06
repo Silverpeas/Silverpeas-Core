@@ -102,15 +102,16 @@ out.println(tabbedPane.print());
     <c:if test="${m_SpaceExtraInfos.admin}">
       <c:set var="callback" value="SelectUsersGroupsSpace"/>
     </c:if>
-    <viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>" label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>" id="roleItems" updateCallback="${callback}" displayAvatar="false"/>
+    <viewTags:displayListOfUsersAndGroups users="<%=m_listUser%>" groups="<%=m_listGroup%>"
+                                          label="<%=labelLocalRights%>" displayLabel="<%=isInHeritanceEnable%>"
+                                          id="roleItems" updateCallback="${callback}" displayAvatar="false"
+                                          formSaveSelector="form[name=roleList]"/>
     <input type="hidden" name="Role" value="<%=role%>"/>
   </form>
 
   <view:buttonPane>
-    <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <fmt:message var="buttonOK" key="GML.validate"/>
-    <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
-    <view:button label="${buttonCancel}" action="StartPageInfo"/>
+    <fmt:message var="backButton" key="GML.back"/>
+    <view:button label="${backButton}" action="StartPageInfo"/>
   </view:buttonPane>
 
 </view:frame>

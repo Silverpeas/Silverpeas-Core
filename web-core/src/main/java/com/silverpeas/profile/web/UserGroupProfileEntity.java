@@ -236,6 +236,7 @@ public class UserGroupProfileEntity extends Group implements WebEntity {
   }
 
   @Override
+  @XmlElement
   public boolean isSynchronized() {
     return group.isSynchronized();
   }

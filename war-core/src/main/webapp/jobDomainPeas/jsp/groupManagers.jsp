@@ -65,13 +65,13 @@ out.println(tabbedPane.print());
 <view:frame>
 <form name="roleList" action="groupManagersUpdate">
   <fmt:message var="fieldsetLabel" key="JDP.roleManager"/>
-  <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>" id="roleItems" updateCallback="groupManagersChoose" label="${fieldsetLabel}"/>
+  <viewTags:displayListOfUsersAndGroups users="<%=users%>" groups="<%=groups%>"
+                                        id="roleItems" updateCallback="groupManagersChoose" label="${fieldsetLabel}"
+                                        formSaveSelector="form[name=roleList]"/>
 </form>
   <view:buttonPane>
-    <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <fmt:message var="buttonOK" key="GML.validate"/>
-    <view:button label="${buttonOK}" action="javascript:document.roleList.submit()"/>
-    <view:button label="${buttonCancel}" action="groupContent?Idgroup=<%=grObject.getId()%>"/>
+    <fmt:message var="backButton" key="GML.back"/>
+    <view:button label="${backButton}" action="groupContent?Idgroup=<%=grObject.getId()%>"/>
   </view:buttonPane>
 </view:frame>
 <%
