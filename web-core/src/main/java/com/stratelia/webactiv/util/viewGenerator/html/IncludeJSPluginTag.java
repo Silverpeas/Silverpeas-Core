@@ -148,6 +148,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case chart:
           includeChart(xhtml, getLanguage());
           break;
+        case listOfUsersAndGroups:
+          includeListOfUsersAndGroups(xhtml, getLanguage());
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore
