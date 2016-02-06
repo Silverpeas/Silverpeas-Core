@@ -332,11 +332,10 @@ if (typeof SilverpeasClass === 'undefined') {
       return parent.apply(this, arguments);
     };
     child.extend = parent.extend;
-    var Surrogate = function() {
-      this.parent = parent.prototype;
-    };
+    var Surrogate = function() {};
     Surrogate.prototype = parent.prototype;
     child.prototype = new Surrogate();
+    child.prototype.parent = parent.prototype;
     for (var key in childPrototype) {
       child.prototype[key] = childPrototype[key];
     }

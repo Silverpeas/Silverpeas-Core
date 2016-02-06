@@ -236,6 +236,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
   }
 
   @Override
+  @XmlElement
   public boolean isSynchronized() {
     return group.isSynchronized();
   }
