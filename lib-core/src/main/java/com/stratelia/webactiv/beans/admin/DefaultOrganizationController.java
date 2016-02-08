@@ -202,32 +202,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<String, String> getAllComponentsNames() {
-    try {
-      return getAdminService().getAllComponentsNames();
-    } catch (Exception e) {
-      if (!(e instanceof AdminException && ((AdminException) e).isAlreadyPrinted())) {
-        SilverTrace.error("admin",
-            "OrganizationController.getAvailDriverCompoIds",
-            "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", null, e);
-      }
-      return new HashMap<String, String>();
-    }
-  }
-
-  @Override
-  public String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId) {
-    try {
-      return getAdminService().getAvailDriverCompoIds(sClientSpaceId, sUserId);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getAvailDriverCompoIds",
-          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '" + sClientSpaceId
-          + "', user Id: '" + sUserId + "'", e);
-      return EMPTY_STRING_ARRAY;
-    }
-  }
-
-  @Override
   public CompoSpace[] getCompoForUser(String sUserId, String sCompoName) {
     try {
       return getAdminService().getCompoForUser(sUserId, sCompoName);

@@ -24,6 +24,7 @@
 
 package com.silverpeas.treeMenu.taglib;
 
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
@@ -31,6 +32,7 @@ import org.silverpeas.core.admin.OrganizationControllerProvider;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
@@ -121,12 +123,12 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
           StringBuilder iconStyleBuilder = new StringBuilder();
           OrganizationController controller =
               OrganizationControllerProvider.getOrganisationController();
-          Map<String, String> componentsNames = controller.getAllComponentsNames();
-
-          if (!componentsNames.isEmpty()) {
+          Collection<WAComponent> components = WAComponent.getAll();
+          if (!components.isEmpty()) {
             iconStyleBuilder.append("<style type=\"text/css\">");
           }
-          for (String name : componentsNames.keySet()) {
+          for (WAComponent component : components) {
+            String name = component.getName();
             iconStyleBuilder.append(".").append(ICON_STYLE_PREFIX).append(name).append(
                 "{ display:block; height: 15px; padding-left: 20px; background: transparent url(").
                 append(contextName).append(

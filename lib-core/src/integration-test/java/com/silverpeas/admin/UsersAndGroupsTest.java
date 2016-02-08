@@ -20,7 +20,6 @@
  */
 package com.silverpeas.admin;
 
-import com.stratelia.webactiv.almanach.AlmanachInstanciator;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Administration;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -94,7 +93,7 @@ public class UsersAndGroupsTest {
         .addPackages(true, "com.stratelia.silverpeas.notificationManager")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
-            AttachmentServiceProvider.class, AlmanachInstanciator.class, ParseException.class,
+            AttachmentServiceProvider.class, ParseException.class,
             SearchEngineException.class, WAIndexSearcher.class, TokenException.class,
             SearchEnginePropertiesManager.class, TokenRuntimeException.class, AbstractTable.class)
         .build();

@@ -37,21 +37,25 @@ import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.lang.SystemWrapper;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Unit test on the services provided by the WAComponentRegistry.
  * @author ehugonnet
+ * @author mmoquillon
  */
-public class InstanciateurTest {
+public class WAComponentRegistryTest {
 
   public static final String XML_COMPONENTS_PATH = "xmlcomponents";
   public File MAPPINGS_PATH;
@@ -64,7 +68,7 @@ public class InstanciateurTest {
   @Before
   public void setUpClass() throws Exception {
     TARGET_DIR = getFile(
-        InstanciateurTest.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+        WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation().getFile());
     MAPPINGS_PATH = getFile(TARGET_DIR, "templateRepository", "mapping");
     TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
 
@@ -72,28 +76,28 @@ public class InstanciateurTest {
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
   }
 
-  /**
-   * Test of loadComponent method, of class Instanciateur.
-   * @throws Exception
-   */
   @Test
   public void testLoadComponent() throws Exception {
-    File path = getFile(TARGET_DIR, XML_COMPONENTS_PATH, "almanach.xml");
-    WAComponent result = Instanciateur.loadComponent(path);
-    assertNotNull(result);
-    assertThat(result.getName(), is("almanach"));
-    assertThat(result.getDescription(), hasKey("fr"));
-    assertThat(result.getDescription(), hasKey("en"));
+    WAComponentRegistry registry = new WAComponentRegistry();
+    registry.init();
 
-    assertThat(result.getInstanceClassName(), is(
+    Optional<WAComponent> result = registry.getWAComponent("almanach");
+    assertThat(result.isPresent(), is(true));
+
+    WAComponent almanach = result.get();
+    assertThat(almanach.getName(), is("almanach"));
+    assertThat(almanach.getDescription(), hasKey("fr"));
+    assertThat(almanach.getDescription(), hasKey("en"));
+
+    assertThat(almanach.getInstanceClassName(), is(
         "com.stratelia.webactiv.almanach.AlmanachInstanciator"));
-    assertThat(result.isPortlet(), is(true));
-    assertThat(result.isVisible(), is(true));
-    assertThat(result.isVisibleInPersonalSpace(), is(false));
-    assertThat(result.getSuite().get("fr"), is("02 Gestion Collaborative"));
-    assertThat(result.getParameters().size(), is(5));
+    assertThat(almanach.isPortlet(), is(true));
+    assertThat(almanach.isVisible(), is(true));
+    assertThat(almanach.isVisibleInPersonalSpace(), is(false));
+    assertThat(almanach.getSuite().get("fr"), is("02 Gestion Collaborative"));
+    assertThat(almanach.getParameters().size(), is(5));
     Parameter paramWithOption = null;
-    for (Parameter parameter : result.getParameters()) {
+    for (Parameter parameter : almanach.getParameters()) {
       if ("directAccess".equals(parameter.getName())) {
         paramWithOption = parameter;
       }
@@ -102,28 +106,28 @@ public class InstanciateurTest {
     assertThat(paramWithOption.getOptions().size(), is(4));
   }
 
-  /**
-   * Test of loadComponent method, of class Instanciateur.
-   * @throws Exception
-   */
   @Test
   public void testLoadComponentWithXmlTemplates() throws Exception {
-    File path = getFile(TARGET_DIR, XML_COMPONENTS_PATH, "kmelia.xml");
-    WAComponent result = Instanciateur.loadComponent(path);
-    assertNotNull(result);
-    assertThat(result.getName(), is("kmelia"));
-    assertThat(result.getDescription(), hasKey("fr"));
-    assertThat(result.getDescription(), hasKey("en"));
+    WAComponentRegistry registry = new WAComponentRegistry();
+    registry.init();
 
-    assertThat(result.getInstanceClassName(), is(
+    Optional<WAComponent> result = registry.getWAComponent("kmelia");
+    assertThat(result.isPresent(), is(true));
+    WAComponent kmelia = result.get();
+
+    assertThat(kmelia.getName(), is("kmelia"));
+    assertThat(kmelia.getDescription(), hasKey("fr"));
+    assertThat(kmelia.getDescription(), hasKey("en"));
+
+    assertThat(kmelia.getInstanceClassName(), is(
         "com.stratelia.webactiv.kmelia.KmeliaInstanciator"));
-    assertThat(result.isPortlet(), is(true));
-    assertThat(result.isVisible(), is(true));
-    assertThat(result.isVisibleInPersonalSpace(), is(true));
-    assertThat(result.getSuite().get("fr"), is("01 Gestion Documentaire"));
-    assertThat(result.getParameters().size(), is(42));
+    assertThat(kmelia.isPortlet(), is(true));
+    assertThat(kmelia.isVisible(), is(true));
+    assertThat(kmelia.isVisibleInPersonalSpace(), is(true));
+    assertThat(kmelia.getSuite().get("fr"), is("01 Gestion Documentaire"));
+    assertThat(kmelia.getParameters().size(), is(42));
     Parameter paramWithXMLTemplate = null;
-    for (Parameter parameter : result.getParameters()) {
+    for (Parameter parameter : kmelia.getParameters()) {
       if ("XmlFormForFiles".equals(parameter.getName())) {
         paramWithXMLTemplate = parameter;
       }
@@ -152,14 +156,17 @@ public class InstanciateurTest {
 
   @Test
   public void testLoadComponentWithOneTemplate() throws Exception {
-    File path = getFile(TARGET_DIR, XML_COMPONENTS_PATH, "classifieds.xml");
-    WAComponent result = Instanciateur.loadComponent(path);
-    assertNotNull(result);
-    assertThat(result.getName(), is("classifieds"));
+    WAComponentRegistry registry = new WAComponentRegistry();
+    registry.init();
 
-    assertThat(result.isVisibleInPersonalSpace(), is(false));
+    Optional<WAComponent> result = registry.getWAComponent("classifieds");
+    assertThat(result.isPresent(), is(true));
+    WAComponent classifieds = result.get();
+
+    assertThat(classifieds.getName(), is("classifieds"));
+    assertThat(classifieds.isVisibleInPersonalSpace(), is(false));
     Parameter paramWithXMLTemplate = null;
-    for (Parameter parameter : result.getParameters()) {
+    for (Parameter parameter : classifieds.getParameters()) {
       if ("XMLFormName".equals(parameter.getName())) {
         paramWithXMLTemplate = parameter;
       }
@@ -187,31 +194,31 @@ public class InstanciateurTest {
   }
 
   @Test
-  public void testSaveAndLoadComponent() throws Exception {
-    String componentName = "newApplication";
-    String xmlComponentFileName = "newApplication.xml";
-    String label = "Nouvelle application";
+  public void testSaveWorkflow() throws Exception {
+    WAComponentRegistry registry = new WAComponentRegistry();
+    registry.init();
+
+    String componentName = "newWorkflow";
+    String label = "Nouveau Workflow";
+
     WAComponent component = new WAComponent();
     component.setName(componentName);
     component.getLabel().put("fr", label);
-    component.getDescription().put("fr", "La nouvelle application");
+    component.getDescription().put("fr", "Le nouveau workflow");
     component.getSuite().put("fr", "80 Nouvelles applications");
     component.setVisible(true);
     component.setPortlet(false);
     component.setInstanceClassName("org.silverpeas.components.newly.Instanciator");
-    Instanciateur.saveComponent(component, xmlComponentFileName);
 
-    Instanciateur.rebuildWAComponentCache();
+    registry.putWorkflow(component);
+    Optional<WAComponent> result = registry.getWAComponent(componentName);
+    assertThat(result.isPresent(), is(true));
+    assertThat(result.get().getLabel().get("fr"), is(label));
+    assertThat(registry.getAllWAComponents().size(), is(5));
 
-    String path = Instanciateur.getDescriptorFullPath(componentName);
-    Instanciateur instance = new Instanciateur();
-    WAComponent loadedComponent = instance.loadComponent(path);
-    assertEquals(label, loadedComponent.getLabel().get("fr"));
-
-    Map<String, WAComponent> components = Instanciateur.getWAComponents();
-    assertEquals(4, components.size());
-    component = Instanciateur.getWAComponent(componentName);
-    assertEquals(label, component.getLabel().get("fr"));
+    Path descriptor = Paths.get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "xmlcomponents",
+        "workflows", componentName + ".xml");
+    assertThat(Files.exists(descriptor), is(true));
   }
 
   private class OptionComparator implements Comparator<Option> {

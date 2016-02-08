@@ -174,11 +174,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<String, String> getAllComponentsNames() {
-    return null;
-  }
-
-  @Override
   public Map<String, WAComponent> getAllComponents() {
     return null;
   }

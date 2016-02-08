@@ -210,13 +210,6 @@ public interface Administration {
   SpaceInst getSpaceInstFromTemplate(String templateName);
 
   /**
-   * Return all the components name available in Silverpeas.
-   * @return all the components name available in Silverpeas
-   * @throws AdminException
-   */
-  Map<String, String> getAllComponentsNames();
-
-  /**
    * Return all the components of silverpeas read in the xmlComponent directory.
    * @return all the components of silverpeas read in the xmlComponent directory.
    */

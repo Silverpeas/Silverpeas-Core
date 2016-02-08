@@ -32,13 +32,19 @@ import com.silverpeas.workflow.api.model.ProcessModel;
  * The workflow engine services related to process model management.
  */
 public interface ProcessModelManager {
+
+  /**
+   * The name of the parameter holding the process file name in a workflow application descriptor.
+   */
+  String PROCESS_XML_FILE_NAME = "XMLFileName";
+
   /**
    * List all the ProcessModels that are stored in the process model directory Retrieves all the
    * files in the directory tree below the process model directory.
    * @return list of strings containing ProcesModel XML descriptor filenames with relative paths.
    * @throws WorkflowException when something goes wrong
    */
-  public List<String> listProcessModels() throws WorkflowException;
+  List<String> listProcessModels() throws WorkflowException;
 
   /**
    * Get a ProcessModel from its modelId. Retrieves the xml descriptor filename from the model Id
@@ -47,7 +53,7 @@ public interface ProcessModelManager {
    * @return ProcessModel object
    * @throws WorkflowException when something goes wrong
    */
-  public ProcessModel getProcessModel(String modelId) throws WorkflowException;
+  ProcessModel getProcessModel(String modelId) throws WorkflowException;
 
   /**
    * Create a ProcessModel from xml descriptor filename. Generate an id for this model and load
@@ -57,7 +63,7 @@ public interface ProcessModelManager {
    * @return ProcessModel object
    * @throws WorkflowException when something goes wrong
    */
-  public ProcessModel createProcessModel(String fileName, String peasId)
+  ProcessModel createProcessModel(String fileName, String peasId)
       throws WorkflowException;
 
   /**
@@ -65,27 +71,27 @@ public interface ProcessModelManager {
    * @return ProcessModel object
    * @throws WorkflowException when something goes wrong
    */
-  public ProcessModel createProcessModelDescriptor() throws WorkflowException;
+  ProcessModel createProcessModelDescriptor() throws WorkflowException;
 
   /**
    * Delete a ProcessModel with given model id
    * @param instanceId component instance identifier
    * @throws WorkflowException when something goes wrong
    */
-  public void deleteProcessModel(String instanceId) throws WorkflowException;
+  void deleteProcessModel(String instanceId) throws WorkflowException;
 
   /**
    * Delete a ProcessModelDescriptor XML with given path
    * @param strProcessModelFileName the relative path and file name of the process file
    * @throws WorkflowException when something goes wrong or the file cannot be found
    */
-  public void deleteProcessModelDescriptor(String strProcessModelFileName)
+  void deleteProcessModelDescriptor(String strProcessModelFileName)
       throws WorkflowException;
 
   /**
    * Get the directory where are stored the models
    */
-  public String getProcessModelDir();
+  String getProcessModelDir();
 
   /**
    * load a process model definition from xml file to java objects
@@ -95,13 +101,13 @@ public interface ProcessModelManager {
    * @return a ProcessModel object
    * @throws WorkflowException when something goes wrong or the file cannot be found
    */
-  public ProcessModel loadProcessModel(String processFileName,
+  ProcessModel loadProcessModel(String processFileName,
       boolean absolutePath) throws WorkflowException;
 
   /**
    * Get all the "process manager" peas ids
    */
-  public String[] getAllPeasIds() throws WorkflowException;
+  String[] getAllPeasIds() throws WorkflowException;
 
   /**
    * Saves a process model definition from java objects to an XML file
@@ -109,9 +115,9 @@ public interface ProcessModelManager {
    * @param process A processModel object to be saved
    * @throws WorkflowException when something goes wrong
    */
-  public void saveProcessModel(ProcessModel process, String processFileName)
+  void saveProcessModel(ProcessModel process, String processFileName)
       throws WorkflowException;
 
-  public void clearProcessModelCache() throws WorkflowException;
+  void clearProcessModelCache() throws WorkflowException;
 
 }

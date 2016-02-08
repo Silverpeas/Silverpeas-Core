@@ -78,16 +78,6 @@ public interface OrganizationController extends java.io.Serializable {
   Map<String, WAComponent> getAllComponents();
 
   /**
-   * Return all the components names available in webactiv
-   */
-  Map<String, String> getAllComponentsNames();
-
-  /**
-   * Return the driver component ids available for the cuurent user Id in the given space id
-   */
-  String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId);
-
-  /**
    * Return the tuples (space id, compo id) allowed for the given user and given component name
    *
    * @param sUserId

@@ -23,10 +23,9 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.peasCore.URLManager;
-
 import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.i18n.AbstractI18NBean;
@@ -401,7 +400,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public boolean isWorkflow() {
-    return Instanciateur.isWorkflow(getName());
+    return WAComponent.get(getName()).get().isWorkflow();
   }
   
   public String getPermalink() {

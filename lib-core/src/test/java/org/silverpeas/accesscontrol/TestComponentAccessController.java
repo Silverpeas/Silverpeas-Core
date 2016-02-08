@@ -26,7 +26,6 @@ package org.silverpeas.accesscontrol;
 
 import com.silverpeas.accesscontrol.AccessControlContext;
 import com.silverpeas.accesscontrol.AccessControlOperation;
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -41,8 +40,6 @@ import org.silverpeas.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.test.rule.MockByReflectionRule;
 import org.silverpeas.util.ComponentHelper;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;

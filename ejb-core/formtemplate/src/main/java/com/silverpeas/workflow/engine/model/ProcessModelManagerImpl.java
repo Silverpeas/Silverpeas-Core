@@ -24,7 +24,6 @@
 
 package com.silverpeas.workflow.engine.model;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordSetManager;
@@ -170,7 +169,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
     // The model is not cached, we must build it.
     String fileName = AdministrationServiceProvider.getAdminService()
-        .getComponentParameterValue(modelId, ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
+        .getComponentParameterValue(modelId, PROCESS_XML_FILE_NAME);
 
     // if file name not found, throw exception
     if (fileName == null) {

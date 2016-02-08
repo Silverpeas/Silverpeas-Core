@@ -644,9 +644,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.admin.user.constant");
       addPackages(true, "org.silverpeas.admin.user.notification");
       addPackages(true, "org.silverpeas.util.clipboard");
+      addAsResource("xmlcomponents");
       addAsResource("org/silverpeas/admin/roleMapping.properties");
       addAsResource("org/silverpeas/beans/admin/admin.properties");
-      addAsResource("org/silverpeas/beans/admin/instance/control/instanciator.properties");
       // Exclusions
       applyManually(war -> war.deleteClass(StubbedAdministration.class));
       // Centralized features

@@ -97,16 +97,6 @@ public class OrganizationControllerMock implements
   }
 
   @Override
-  public Map<String, String> getAllComponentsNames() {
-    return null;
-  }
-
-  @Override
-  public String[] getAvailDriverCompoIds(final String sClientSpaceId, final String sUserId) {
-    return new String[0];
-  }
-
-  @Override
   public CompoSpace[] getCompoForUser(final String sUserId, final String sCompoName) {
     return new CompoSpace[0];
   }

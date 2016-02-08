@@ -23,12 +23,10 @@
 */
 package com.silverpeas.workflowdesigner.control;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.components.WAComponentRegistry;
 import com.silverpeas.form.TypeManager;
-import org.silverpeas.util.ArrayUtil;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
@@ -41,6 +39,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.FileServerUtils;
 import org.silverpeas.util.FileUtil;
 import org.silverpeas.util.StringUtil;
@@ -210,7 +209,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // remove xmlcomponent
       String componentName = findComponentDescriptor(strProcessModelFileName);
       if (componentName != null) {
-        Instanciateur.removeWorkflow(componentName + ".xml");
+        WAComponentRegistry registry = WAComponentRegistry.get();
+        registry.getWAComponent(componentName).ifPresent(wa -> registry.removeWorkflow(wa));
       }
     } catch (Exception e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeProcesModel",
@@ -2788,7 +2788,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         new ArrayList<com.silverpeas.admin.components.Parameter>();
     com.silverpeas.admin.components.Parameter spParameter =
         new com.silverpeas.admin.components.Parameter();
-    spParameter.setName(ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
+    spParameter.setName(ProcessModelManager.PROCESS_XML_FILE_NAME);
     spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
         "componentDescriptor.parameterLabel"));
     spParameter.getHelp().put(I18NHelper.defaultLanguage, "");
@@ -2854,7 +2854,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     waComponent.setParameters(spParameters);
 
     try {
-      Instanciateur.saveComponent(waComponent, waComponent.getName() + ".xml", true);
+      WAComponentRegistry.get().putWorkflow(waComponent);
       referencedInComponent = processModel.getName();
     } catch (Exception e) {
       throw new WorkflowDesignerException(
@@ -2890,20 +2890,17 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 * no components reference the given model.
 */
   private String findComponentDescriptor(String strProcessModelFileName) {
-    Map<String, WAComponent> waComponents = Instanciateur.getWAComponents();
-    Set<Map.Entry<String, WAComponent>> enumWAComponent = waComponents.entrySet();
+    Collection<WAComponent> waComponents = WAComponent.getAll();
     if (strProcessModelFileName != null) {
       strProcessModelFileName = strProcessModelFileName.replaceAll("\\\\", "/");
       // Look for the descriptor in the cache, return the key if found.
-      for (Map.Entry<String, WAComponent> componentEntry : enumWAComponent) {
-        String strComponentName = componentEntry.getKey();
-        WAComponent waComponent = componentEntry.getValue();
+      for (WAComponent waComponent : waComponents) {
         if (waComponent.getParameters() != null) {
           for (com.silverpeas.admin.components.Parameter spParameter : waComponent
               .getParameters()) {
-            if (ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME.equals(spParameter.getName())
+            if (ProcessModelManager.PROCESS_XML_FILE_NAME.equals(spParameter.getName())
                 && strProcessModelFileName.equals(spParameter.getValue())) {
-              return strComponentName;
+              return waComponent.getName();
             }
           }
         }
