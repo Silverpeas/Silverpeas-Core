@@ -56,6 +56,13 @@ import java.util.Optional;
 public interface ComponentInstancePreDestruction {
 
   /**
+   * The predefined suffix that must compound the name of each implementation of this interface.
+   * An implementation of this interface by a Silverpeas application named Kmelia must be named
+   * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+   */
+  String NAME_SUFFIX = "InstancePreConstruction";
+
+  /**
    * Gets the implementation of this interface with the specified qualified name.
    * @param destructionName the qualified name of the implementation as specified by a
    * <code>@Named</code> annotation.
@@ -63,7 +70,8 @@ public interface ComponentInstancePreDestruction {
    */
   static Optional<ComponentInstancePreDestruction> get(String destructionName) {
     try {
-      String name = destructionName.substring(0, 1).toLowerCase() + destructionName.substring(1);
+      String name = destructionName.substring(0, 1).toLowerCase() + destructionName.substring(1) +
+          NAME_SUFFIX;
       return Optional.of(ServiceProvider.getService(name));
     } catch (IllegalStateException ex) {
       return Optional.empty();

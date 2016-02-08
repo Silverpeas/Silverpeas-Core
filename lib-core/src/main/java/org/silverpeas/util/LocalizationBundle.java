@@ -92,6 +92,17 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   }
 
   /**
+   * Returns a <code>Set</code> of the specific keys contained in this <code>ResourceBundle</code>.
+   * The <code>keys</code> from the general resource bundle aren't taken into account.
+   * @return a <code>Set</code> of specific keys contained in this <code>ResourceBundle</code>.
+   */
+  public Set<String> specificKeySet() {
+    ResourceBundle bundle = getWrappedBundle();
+    Set<String> keys = bundle.keySet();
+    return keys;
+  }
+
+  /**
    * Determines whether the given <code>key</code> is contained in
    * this <code>ResourceBundle</code> or its parent bundles.
    * @param key the resource <code>key</code>
@@ -138,6 +149,15 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   @Override
   public Enumeration<String> getKeys() {
     return Collections.enumeration(keySet());
+  }
+
+  /**
+   * Gets the specific keys of this bundle. The keys from the general resource bundle aren't taken
+   * into account.
+   * @return an enumaration with the specific keys of this bundle.
+   */
+  public Enumeration<String> getSpecificKeys() {
+    return Collections.enumeration(specificKeySet());
   }
 
   /**
