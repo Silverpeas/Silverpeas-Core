@@ -2396,6 +2396,11 @@ class Admin implements Administration {
       if (group.getDomainId() != null && !onlyInSilverpeas) {
         domainDriverManager.startTransaction(group.getDomainId(), false);
       }
+
+      // Delete group managers
+      deleteGroupProfileInst(sGroupId, false);
+
+      // Delete group itself
       String sReturnGroupId = groupManager.deleteGroupById(domainDriverManager, group,
           onlyInSilverpeas);
       domainDriverManager.commit();
