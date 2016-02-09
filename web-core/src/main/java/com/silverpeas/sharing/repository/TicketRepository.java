@@ -35,7 +35,9 @@ import java.util.List;
  */
 public interface TicketRepository extends BasicEntityRepository<Ticket, UuidIdentifier> {
 
-  public List<Ticket> findAllTicketForSharedObjectId(Long sharedObjectId, String ticketType);
+  List<Ticket> findAllTicketForSharedObjectId(Long sharedObjectId, String ticketType);
 
-  public List<Ticket> findAllReservationsForUser(String userId);
+  List<Ticket> findAllReservationsForUser(String userId);
+
+  void deleteAllTicketsForComponentInstance(String instanceId);
 }

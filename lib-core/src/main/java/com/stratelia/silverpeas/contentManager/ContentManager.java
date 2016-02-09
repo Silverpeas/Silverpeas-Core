@@ -114,7 +114,7 @@ public class ContentManager implements Serializable {
   // Datebase properties
   private static String m_sInstanceTable = "SB_ContentManager_Instance";
   private static final long serialVersionUID = 7069917496138130066L;
-  private String m_sSilverContentTable = "SB_ContentManager_Content";
+  private static String m_sSilverContentTable = "SB_ContentManager_Content";
 
   static {
     try {
@@ -213,16 +213,26 @@ public class ContentManager implements Serializable {
         bCloseConnection = true;
       }
 
-      // Remove the association container - content
-      String sSQLStatement = "DELETE FROM " + m_sInstanceTable + " WHERE (";
-      sSQLStatement +=
-          "componentId = '" + sComponentId + "') AND (containerType = '" + sContainerType +
-              "') AND (contentType = '" + sContentType + "')";
+      String contentDeletion = "DELETE FROM " + m_sSilverContentTable + " WHERE " +
+          "contentInstanceId IN (SELECT instanceId from " + m_sInstanceTable + " WHERE componentId = ? AND " +
+          "containerType = ? AND contentType = ?)";
 
-      // Execute the insertion
+      String instanceDeletion = "DELETE FROM " + m_sInstanceTable + " WHERE componentId = ?" +
+          " AND containerType = ? AND contentType = ?";
 
-      prepStmt = connection.prepareStatement(sSQLStatement);
-      prepStmt.executeUpdate();
+      try(PreparedStatement deletion = connection.prepareStatement(contentDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
+      try(PreparedStatement deletion = connection.prepareStatement(instanceDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
+
       removeAsso(sComponentId);
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.unregisterNewContentInstance",

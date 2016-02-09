@@ -24,6 +24,7 @@
 
 package com.silverpeas.subscribe.service;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -48,7 +49,7 @@ import java.util.Collections;
  * @author
  */
 @Named("subscriptionService")
-public class SimpleSubscriptionService implements SubscriptionService {
+public class SimpleSubscriptionService implements SubscriptionService, ComponentInstanceDeletion {
 
   @Inject
   private SubscriptionDao subscriptionDao;
@@ -321,5 +322,19 @@ public class SimpleSubscriptionService implements SubscriptionService {
   public boolean isUserSubscribedToResource(String userId, SubscriptionResource resource) {
 
     return getSubscribers(resource).getAllUserIds().contains(userId);
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    try(Connection connection = getConnection()) {
+      subscriptionDao.removeByInstanceId(connection, componentInstanceId);
+    } catch (SQLException ex) {
+      throw new RuntimeException(ex.getMessage(), ex);
+    }
   }
 }
