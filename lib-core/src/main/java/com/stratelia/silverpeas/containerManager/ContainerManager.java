@@ -26,8 +26,8 @@
 package com.stratelia.silverpeas.containerManager;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -149,7 +149,6 @@ public class ContainerManager implements java.io.Serializable {
 
     // Check the minimum required
     this.checkParameters(sComponentId, sContainerType, sContentType);
-    PreparedStatement prepStmt = null;
     try {
       if (connection == null) {
         // Open connection
@@ -158,17 +157,24 @@ public class ContainerManager implements java.io.Serializable {
       }
 
       // Remove the association container - content
-      String sSQLStatement = "DELETE FROM " + m_sInstanceTable + " WHERE (";
+      final String instanceDeletion = "DELETE FROM " + m_sInstanceTable +
+          " WHERE componentId = ? AND containerType = ? AND contentType = ?";
+      final String linkDeletion = "DELETE FROM " + m_sLinksTable +
+          " WHERE containerInstanceId in (SELECT instanceId FROM " + m_sInstanceTable +
+          " WHERE componentId = ? AND containerType = ? AND contentType = ?)";
 
-      sSQLStatement +=
-          "componentId = '" + sComponentId + "') AND (containerType = '" + sContainerType +
-              "') AND (contentType = '" + sContentType + "')";
-
-      // Execute the insertion
-
-      prepStmt = connection.prepareStatement(sSQLStatement);
-
-      prepStmt.executeUpdate();
+      try (PreparedStatement deletion = connection.prepareStatement(linkDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
+      try (PreparedStatement deletion = connection.prepareStatement(instanceDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
 
       removeAsso(sComponentId);
     } catch (Exception e) {
@@ -176,7 +182,6 @@ public class ContainerManager implements java.io.Serializable {
           SilverpeasException.ERROR, "containerManager.EX_CANT_UNREGISTER_CONTAINER_INSTANCE",
           "componentId: " + sComponentId + "    sContainerType: " + sContainerType, e);
     } finally {
-      DBUtil.close(prepStmt);
       if (bCloseConnection) {
         closeConnection(connection);
       }

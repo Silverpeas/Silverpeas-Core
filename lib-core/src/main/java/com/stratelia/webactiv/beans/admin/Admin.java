@@ -1092,8 +1092,9 @@ class Admin implements Administration {
 
   boolean isContentManagedComponent(String componentName) {
     return "expertLocator".equals(componentName) || "questionReply".equals(componentName)
-        || "whitePages".equals(componentName) || "kmelia".equals(componentName) || "survey".equals(
-            componentName) || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
+        || "whitePages".equals(componentName) || "kmelia".equals(componentName)
+        || "kmax".equals(componentName) || "survey".equals(componentName)
+        || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
         || "almanach".equals(componentName) || "quizz".equals(componentName) || "forums".equals(
             componentName) || "pollingStation".equals(componentName) || "bookmark".equals(
             componentName) || "chat".equals(componentName) || "infoLetter".equals(componentName)

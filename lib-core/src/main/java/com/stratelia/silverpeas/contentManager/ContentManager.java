@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Named;
@@ -206,18 +207,17 @@ public class ContentManager implements Serializable {
       String sContainerType, String sContentType) throws ContentManagerException {
     boolean bCloseConnection = false;
     this.checkParameters(sComponentId, sContainerType, sContentType);
-    PreparedStatement prepStmt = null;
     try {
       if (connection == null) {
         connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
-      String contentDeletion = "DELETE FROM " + m_sSilverContentTable + " WHERE " +
+      final String contentDeletion = "DELETE FROM " + m_sSilverContentTable + " WHERE " +
           "contentInstanceId IN (SELECT instanceId from " + m_sInstanceTable + " WHERE componentId = ? AND " +
           "containerType = ? AND contentType = ?)";
 
-      String instanceDeletion = "DELETE FROM " + m_sInstanceTable + " WHERE componentId = ?" +
+      final String instanceDeletion = "DELETE FROM " + m_sInstanceTable + " WHERE componentId = ?" +
           " AND containerType = ? AND contentType = ?";
 
       try(PreparedStatement deletion = connection.prepareStatement(contentDeletion)) {
@@ -239,7 +239,6 @@ public class ContentManager implements Serializable {
           SilverpeasException.ERROR, "contentManager.EX_CANT_UNREGISTER_CONTENT_INSTANCE",
           "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
     } finally {
-      DBUtil.close(prepStmt);
       if (bCloseConnection) {
         closeConnection(connection);
       }

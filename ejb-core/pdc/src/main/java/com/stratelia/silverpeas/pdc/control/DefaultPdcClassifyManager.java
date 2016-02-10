@@ -20,6 +20,7 @@
  */
 package com.stratelia.silverpeas.pdc.control;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngineException;
 import com.stratelia.silverpeas.classifyEngine.ObjectValuePair;
@@ -31,6 +32,7 @@ import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -39,15 +41,17 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.exception.SilverpeasException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
-public class DefaultPdcClassifyManager implements PdcClassifyManager {
+public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentInstanceDeletion {
 
   @Inject
   private ClassifyEngine classifyEngine;
@@ -489,5 +493,26 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager {
       List<String> alComponentId) throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId,
         null, null, null);
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    try (Connection connection = DBUtil.openConnection()) {
+      ContentManager contentManager = new ContentManager();
+      List<Integer> contentIds = contentManager.getSilverContentIdByInstanceId(componentInstanceId);
+      for (Integer contentId : contentIds) {
+        classifyEngine.unclassifySilverObject(connection, contentId);
+      }
+    } catch (ContentManagerException | SQLException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    } catch (ClassifyEngineException e) {
+      SilverLogger.getLogger(this)
+          .warn("[Deletion of {0}] {1}", componentInstanceId, e.getMessage());
+    }
   }
 }

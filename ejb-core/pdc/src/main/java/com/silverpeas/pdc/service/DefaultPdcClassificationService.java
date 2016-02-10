@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.service;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.pdc.dao.PdcAxisValueRepository;
 import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
@@ -53,7 +54,8 @@ import static org.silverpeas.util.StringUtil.isDefined;
  */
 @Transactional
 @Singleton
-public class DefaultPdcClassificationService implements PdcClassificationService {
+public class DefaultPdcClassificationService implements PdcClassificationService,
+    ComponentInstanceDeletion {
 
   @Inject
   private PdcClassificationRepository classificationRepository;
@@ -333,5 +335,15 @@ public class DefaultPdcClassificationService implements PdcClassificationService
       }
     }
     return false;
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    classificationRepository.deleteAllClassificationsByComponentInstanceId(componentInstanceId);
   }
 }

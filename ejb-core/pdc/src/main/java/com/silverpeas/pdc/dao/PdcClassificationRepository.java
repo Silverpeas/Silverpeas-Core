@@ -79,4 +79,17 @@ public class PdcClassificationRepository
     parameters.add("values", values);
     return findByNamedQuery("findByPdcAxisValues", parameters);
   }
+
+  /**
+   * Deletes all the classifications (both the predefined ones and the content's ones) that were
+   * set in the specified component instance. This method is generally used when a component
+   * instance is being deleted.
+   * @param instanceId the unique identifier of the component instance.
+   */
+  public void deleteAllClassificationsByComponentInstanceId(String instanceId) {
+    NamedParameters parameters = newNamedParameters();
+    parameters.add("instanceId", instanceId);
+    deleteFromJpqlQuery("delete from PdcClassification c where c.instanceId = :instanceId",
+        parameters);
+  }
 }
