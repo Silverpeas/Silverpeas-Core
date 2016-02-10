@@ -4448,9 +4448,6 @@ html:not([lang*=""]) .add_position:hover {
 
 .classification .field {
   width: 98%;
-  clear:both;
-  display:block;
-  float:none;
 }
 
 .classification .field img {
