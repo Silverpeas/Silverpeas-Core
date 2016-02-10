@@ -112,7 +112,9 @@ fieldset.skinFieldset {
 }
 
 .champs {
-	margin-left:180px;
+	display: table-cell;
+  padding: 15px 15px 10px;
+	min-width:180px;
 }
 
 .oneFieldPerLine,
@@ -126,7 +128,7 @@ fieldset.skinFieldset {
 
 .field {
 	height: auto;
-	display:inline;
+	display: inline-table;
 	position:relative;
 	float:left;
 	width:46%;
@@ -144,7 +146,10 @@ padding-right:0;
 }
 
 .field label {
-	width:180px;
+	display: table-cell;
+  padding: 15px 15px 10px;
+  width: 180px;
+  white-space: normal;
 }
 .row {
 	clear:both ;
@@ -290,10 +295,10 @@ fieldset.parameters {
 }
 
 .parameters  .parameterInfo {
-    left: -17px;
-    position: absolute;
-    top: 7px;
-    width: 12px;
+	left: -17px;
+  position: absolute;
+  top: 17px;
+  width: 12px;
 }
 
 .group-field-description {
