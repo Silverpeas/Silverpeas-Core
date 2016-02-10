@@ -26,7 +26,7 @@ package com.silverpeas.util.i18n;
 
 import java.io.Serializable;
 
-public class Translation implements Serializable {
+public class Translation implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -3879515108587719162L;
   private int id = -1;
@@ -98,5 +98,14 @@ public class Translation implements Serializable {
 
   public final void setDescription(String description) {
     this.description = description;
+  }
+
+  @Override
+  protected Translation clone() {
+    try {
+      return (Translation) super.clone();
+    } catch (CloneNotSupportedException e) {
+      return null;
+    }
   }
 }

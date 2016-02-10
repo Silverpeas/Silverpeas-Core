@@ -103,11 +103,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     for (Parameter param : this.parameters) {
       ci.parameters.add(param.clone());
     }
-
-    for (String lang : getTranslations().keySet()) {
-      ComponentI18N translation = (ComponentI18N) getTranslation(lang);
-      ci.addTranslation(translation);
-    }
+    ci.setTranslations(getClonedTranslations());
     return ci;
   }
 
