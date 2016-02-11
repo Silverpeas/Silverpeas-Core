@@ -193,7 +193,8 @@ public class FileServerUtils {
       }
       if (StringUtil.isDefined(size) && size.length() > 1 && size.contains("x")) {
         // image handled by the old FileServer service
-        if (originalImageURL.contains("/FileServer/")) {
+        if (originalImageURL.contains("/FileServer/") ||
+            originalImageURL.contains("/GalleryInWysiwyg/")) {
           resizedImagePath = originalImageURL + "&Size=" + size;
         } else {
           int lastSepIndex = originalImageURL.lastIndexOf("/");
