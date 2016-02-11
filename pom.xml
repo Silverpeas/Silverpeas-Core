@@ -29,12 +29,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas</groupId>
-    <artifactId>parent</artifactId>
-    <version>28-SNAPSHOT</version>
+    <artifactId>silverpeas-project</artifactId>
+    <version>1-SNAPSHOT</version>
   </parent>
 
   <description>
-    The fondation of Silverpeas
+    The foundation of Silverpeas. It defines the transverse service and the core objects of
+    Silverpeas upon which any business-specific components can be built.
   </description>
 
   <scm>
