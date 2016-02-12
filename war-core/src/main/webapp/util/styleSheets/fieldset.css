@@ -112,7 +112,9 @@ fieldset.skinFieldset {
 }
 
 .champs {
-	margin-left:180px;
+	display: table-cell;
+  padding: 5px 15px 5px 0;
+	min-width:180px;
 }
 
 .oneFieldPerLine,
@@ -126,16 +128,16 @@ fieldset.skinFieldset {
 
 .field {
 	height: auto;
-	display:inline;
+	display: inline-table;
 	position:relative;
 	float:left;
 	width:46%;
-	padding:5px 0 0 0px;
+	padding:0;
 }
 
 .oneFieldPerLine .field,
 .field.entireWidth {
-	width:97%;
+	width:98%;
 }
 
 
@@ -144,7 +146,10 @@ padding-right:0;
 }
 
 .field label {
-	width:180px;
+  display: table-cell;
+  padding: 5px 15px 5px 0;
+  width: 180px;
+  white-space: normal;
 }
 .row {
 	clear:both ;
@@ -239,9 +244,6 @@ input.inputHour{
   background: url("../icons/email.gif") no-repeat scroll 11px 1px transparent;
 }
 #send-notification #recipientsArea, #subjectArea, #messageArea {
-  clear: both;
-  display: block;
-  float: none;
   width: 98%;
 }
 #send-notification #recipientsArea ul.tagit {
@@ -290,10 +292,10 @@ fieldset.parameters {
 }
 
 .parameters  .parameterInfo {
-    left: -17px;
-    position: absolute;
-    top: 7px;
-    width: 12px;
+  left:-17px;
+  position: absolute;
+  top:7px;
+  width: 12px;
 }
 
 .group-field-description {

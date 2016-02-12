@@ -6190,7 +6190,7 @@ class Admin implements Administration {
     String label = renameComponentName(newCompo.getLabel(lang), destinationSpace.
         getAllComponentsInst());
     newCompo.setLabel(label);
-    ComponentI18N translation = (ComponentI18N) newCompo.getTranslation(lang);
+    ComponentI18N translation = newCompo.getTranslation(lang);
     if (translation != null) {
       translation.setName(label);
     }

@@ -24,6 +24,7 @@
 
 package com.silverpeas.admin.components;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PasteDetail {
@@ -76,6 +77,13 @@ public class PasteDetail {
 
   public void setUserId(String userId) {
     this.userId = userId;
+  }
+
+  public void addOption(String key, String value) {
+    if (getOptions() == null) {
+      setOptions(new HashMap<>());
+    }
+    getOptions().put(key, value);
   }
 
   public void setOptions(Map<String, String> options) {

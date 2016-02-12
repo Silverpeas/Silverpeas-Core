@@ -497,7 +497,11 @@ public class PublicationDAO {
         }
       }
       prepStmt.setString(15, detail.getPK().getComponentName());
-      prepStmt.setString(16, detail.getCreatorId());
+      if (detail.isUpdateDateMustBeSet() && StringUtil.isDefined(detail.getUpdaterId())) {
+        prepStmt.setString(16, detail.getUpdaterId());
+      } else {
+        prepStmt.setString(16, detail.getCreatorId());
+      }
       if (detail.getValidateDate() == null) {
         prepStmt.setString(17, null);
       } else {
