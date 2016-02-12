@@ -216,6 +216,12 @@ CREATE TABLE SB_ContainerManager_Instance
 	contentType		varchar(100) NOT NULL
 );
 
+CREATE TABLE SB_ContainerManager_Links
+(
+  positionId						int NOT NULL ,
+  containerInstanceId		int NOT NULL
+);
+
 CREATE TABLE SB_ContentManager_Instance
 (
 	instanceId	int		NOT NULL ,
