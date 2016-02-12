@@ -60,7 +60,7 @@ public interface ComponentInstancePreDestruction {
    * An implementation of this interface by a Silverpeas application named Kmelia must be named
    * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
    */
-  String NAME_SUFFIX = "InstancePreConstruction";
+  String NAME_SUFFIX = "InstancePreDestruction";
 
   /**
    * Gets the implementation of this interface with the specified qualified name.
