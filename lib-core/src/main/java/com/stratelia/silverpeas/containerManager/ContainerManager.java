@@ -294,15 +294,7 @@ public class ContainerManager implements java.io.Serializable {
 
     if (sContainerInstanceId != null) {
       containerInstanceId = Integer.parseInt(sContainerInstanceId);
-    } else {
-      // the given instance is not registered. This code is used to maintains
-      // compatibility with previous versions.
-      String componentName = extractComponentNameFromInstanceId(sComponentId);
-      containerInstanceId =
-          registerNewContainerInstance(null, sComponentId, "containerPDC", componentName);
     }
-
-
     return containerInstanceId;
   }
 
@@ -642,7 +634,7 @@ public class ContainerManager implements java.io.Serializable {
    */
   public JoinStatement getFilterPositionsByComponentIdStatement(List<Integer> alPositions,
       List<String> alComponentId) throws ContainerManagerException {
-    StringBuffer sSQLStatement = new StringBuffer(1000);
+    StringBuilder sSQLStatement = new StringBuilder(1000);
 
     JoinStatement joinStatement = new JoinStatement();
 
@@ -661,7 +653,7 @@ public class ContainerManager implements java.io.Serializable {
 
     // works on the componentId List
     if (alComponentId != null && alComponentId.size() > 0) {
-      sSQLStatement.append(" CML.containerInstanceId IN (");
+      StringBuilder componentIdList = new StringBuilder();
       boolean first = true;
       for (String component : alComponentId) {
         // Get the containerInstanceId corresponding to the given componentId
@@ -669,15 +661,19 @@ public class ContainerManager implements java.io.Serializable {
         // We need only components in a container
         if (nContainerInstanceId != -1) {
           if (!first) {
-            sSQLStatement.append(", ");
+            componentIdList.append(", ");
           } else {
             first = false;
           }
 
-          sSQLStatement.append(nContainerInstanceId);
+          componentIdList.append(nContainerInstanceId);
         }
       }
-      sSQLStatement.append(") ");
+      if (!componentIdList.toString().isEmpty()) {
+        sSQLStatement.append(" CML.containerInstanceId IN (")
+            .append(componentIdList.toString())
+            .append(") ");
+      }
     }
 
     if (alPositions != null && alPositions.size() > 0) {
