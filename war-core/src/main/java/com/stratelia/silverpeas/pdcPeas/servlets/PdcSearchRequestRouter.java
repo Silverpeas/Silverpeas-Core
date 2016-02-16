@@ -573,7 +573,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             ie = pdcSC.search(); // launch the classical research
           } catch (org.silverpeas.search.searchEngine.model.ParseException pex) {
             ie = new MatchingIndexEntry[0];
-            request.setAttribute("parseException", pex.getMessage());
+            request.setAttribute("parseException", "pdcPeas.badRequest");
           }
 
           if (pdcUsedDuringSearch) {
