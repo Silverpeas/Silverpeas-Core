@@ -518,6 +518,7 @@ public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
       ContactDAO.deleteAllContacts(connection, componentInstanceId);

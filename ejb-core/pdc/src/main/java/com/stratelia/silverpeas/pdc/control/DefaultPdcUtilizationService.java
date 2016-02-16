@@ -52,6 +52,7 @@ import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 /**
  * @author
@@ -407,6 +408,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
       utilizationDAO.deleteAllAxisUsedByInstanceId(connection, componentInstanceId);

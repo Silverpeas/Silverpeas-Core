@@ -441,6 +441,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     Connection con = getConnection();
     try {

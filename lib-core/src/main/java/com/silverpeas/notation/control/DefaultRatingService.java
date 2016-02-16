@@ -42,6 +42,7 @@ public class DefaultRatingService implements RatingService, ComponentInstanceDel
   private RatingRepository repository;
 
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try {
       // Delete the notations

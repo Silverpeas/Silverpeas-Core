@@ -39,6 +39,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -330,6 +331,7 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try(Connection connection = getConnection()) {
       subscriptionDao.removeByInstanceId(connection, componentInstanceId);

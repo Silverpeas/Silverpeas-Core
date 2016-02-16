@@ -45,6 +45,7 @@ import org.silverpeas.util.WAPrimaryKey;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -454,6 +455,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
    * @param componentInstanceId the identifier of the component instance that is in deletion.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     getCommentDAO().removeAllCommentsByForeignPk(null, new ForeignPK(null, componentInstanceId));
   }

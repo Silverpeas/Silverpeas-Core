@@ -343,6 +343,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     classificationRepository.deleteAllClassificationsByComponentInstanceId(componentInstanceId);
   }

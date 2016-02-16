@@ -1248,6 +1248,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     Connection con = getConnection();
     try {

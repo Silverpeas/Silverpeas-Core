@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.transaction.Transactional;
 
 import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.tagcloud.model.TagCloud;
@@ -229,6 +230,7 @@ public class TagCloudBmEJB implements TagCloudBm, ComponentInstanceDeletion {
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
       TagCloudDAO.deleteAllTagClouds(connection, componentInstanceId);

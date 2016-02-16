@@ -1309,6 +1309,7 @@ public class DefaultQuestionContainerService
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
       AnswerDAO.deleteAnswersToAllQuestions(connection, componentInstanceId);

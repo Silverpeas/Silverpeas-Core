@@ -45,6 +45,7 @@ import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -501,6 +502,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
    * @param componentInstanceId the unique identifier of a component instance.
    */
   @Override
+  @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
       ContentManager contentManager = new ContentManager();
