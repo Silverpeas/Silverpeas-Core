@@ -31,13 +31,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -50,6 +55,7 @@ import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.ContentEncryptionServiceProvider;
 import org.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -65,9 +71,9 @@ import org.silverpeas.core.admin.OrganizationController;
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
  * singleton.
  */
-public class PublicationTemplateManager {
+@Singleton
+public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
-  private static final PublicationTemplateManager instance = new PublicationTemplateManager();
   // PublicationTemplates instances associated to silverpeas components. Theses templates should
   // already exist and be loaded.
   // map externalId -> PublicationTemplate
@@ -77,7 +83,7 @@ public class PublicationTemplateManager {
   private final Map<String, PublicationTemplateImpl> templates = new HashMap<>();
   public static String templateDir = null;
   public static String defaultTemplateDir = null;
-  private static JAXBContext JAXB_CONTEXT = null;
+  private JAXBContext JAXB_CONTEXT = null;
 
   static {
     SettingBundle templateSettings =
@@ -86,15 +92,16 @@ public class PublicationTemplateManager {
     templateDir = templateSettings.getString("templateDir");
     defaultTemplateDir =
         SystemWrapper.get().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
-    
-    try {
-      JAXB_CONTEXT = JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);
-    } catch (JAXBException e) {
-      SilverTrace.fatal("form", "PublicationTemplateManager.init", "CANT_GET_JAXB_CONTEXT", e);
-    }
   }
 
-  private PublicationTemplateManager() {
+  @PostConstruct
+  private void setup() {
+    try {
+      JAXB_CONTEXT =
+          JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);
+    } catch (JAXBException e) {
+      SilverLogger.getLogger(this).error("can not initialize JAXB_CONTEXT", e);
+    }
   }
 
   /**
@@ -102,7 +109,7 @@ public class PublicationTemplateManager {
    * @return the single instance of PublicationTemplateManager.
    */
   public static PublicationTemplateManager getInstance() {
-    return instance;
+    return ServiceProvider.getService(PublicationTemplateManager.class);
   }
 
   public static String makePath(String dirName, String fileName) {
@@ -185,6 +192,22 @@ public class PublicationTemplateManager {
       throw new PublicationTemplateException(
           "PublicationTemplateManager.removePublicationTemplate",
           "form.EXP_DELETE_FAILED", "externalId=" + externalId, e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try {
+      List<String> externalIds =
+          getGenericRecordSetManager().getExternalIdOfComponentInstanceId(componentInstanceId);
+      for (String externalId : externalIds) {
+        removePublicationTemplate(externalId);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(
+          "error during deletion of data of component instance identifier " + componentInstanceId,
+          e);
     }
   }
 

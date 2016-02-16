@@ -23,6 +23,8 @@
  */
 package com.silverpeas.util;
 
+import org.junit.Rule;
+import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.ExecutionAttempts.Job;
 import static org.silverpeas.util.ExecutionAttempts.retry;
 import static org.hamcrest.Matchers.is;
@@ -34,8 +36,8 @@ import org.junit.Test;
  */
 public class ExecutionAttemptsTest {
 
-  public ExecutionAttemptsTest() {
-  }
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   /**
    * Test of retry method, of class ExecutionAttempts.

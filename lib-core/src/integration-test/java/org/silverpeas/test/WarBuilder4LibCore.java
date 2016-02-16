@@ -217,6 +217,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(StringDataExtractor.class)) {
       addClasses(StringDataExtractor.class);
     }
+    if (!contains(GlobalContext.class)) {
+      addClasses(GlobalContext.class);
+    }
     if (!contains(UnitUtil.class)) {
       addClasses(UnitUtil.class);
       addClasses(TimeData.class);
