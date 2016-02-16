@@ -29,6 +29,7 @@
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
 <%@ page import="com.silverpeas.thesaurus.control.ThesaurusManager"%>
 <%@ page import="com.silverpeas.thesaurus.*"%>
+<%@ page import="com.silverpeas.pdc.PdcServiceProvider" %>
 
 <%@ include file="checkPdc.jsp"%>
 <%!
@@ -52,7 +53,7 @@ String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, String axisId
 		if (jargon != null && activeThesaurus.booleanValue()) {//active
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
-			ThesaurusManager thesaurus = new ThesaurusManager();
+			ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager());
 			Collection listSynonyms = thesaurus.getSynonymsAxis(axisId, idUser);
 			Iterator it = listSynonyms.iterator();
 			synonyms += "<i>";
@@ -76,7 +77,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 		if (jargon != null && activeThesaurus.booleanValue()) {//active
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
-			ThesaurusManager thesaurus = new ThesaurusManager();
+			ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
 			Collection listSynonyms = thesaurus.getSynonyms(new Long(idTree).longValue(), new Long(idTerm).longValue(), idUser);
 			Iterator it = listSynonyms.iterator();
 			synonyms += "<i>";
