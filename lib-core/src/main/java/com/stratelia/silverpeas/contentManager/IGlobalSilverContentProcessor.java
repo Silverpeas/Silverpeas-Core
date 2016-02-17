@@ -28,7 +28,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public interface IGlobalSilverContentProcessor {
 
-  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
-      UserDetail creatorDetail, String location);
+  String PROCESSOR_NAME_SUFFIX = "GlobalSilverContentProcessor";
 
+  GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
+      UserDetail creatorDetail, String location);
 }

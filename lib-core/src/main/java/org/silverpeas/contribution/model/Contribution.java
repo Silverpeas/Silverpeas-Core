@@ -37,7 +37,7 @@ public interface Contribution extends IdentifiableResource {
    * Gets the unique identifier of this contribution.
    * @return the unique identifier of the contribution.
    */
-  public ContributionIdentifier getId();
+  ContributionIdentifier getId();
 
   /**
    * Gets the content of this contribution. A contribution can support several type of contents.
@@ -45,14 +45,14 @@ public interface Contribution extends IdentifiableResource {
    * @return the content of this contribution or null if this contribution has not yet a content or
    * it doesn't support any content.
    */
-  public <T extends ContributionContent> T getContent();
+  <T extends ContributionContent> T getContent();
 
   /**
    * Does this contribution have a content?
    * @return true of this contribution has a content. False if this contribution has not yet a
    * content or doesn't support any content.
    */
-  public default boolean hasContent() {
+  default boolean hasContent() {
     return getContent() != null;
   }
 
@@ -60,20 +60,20 @@ public interface Contribution extends IdentifiableResource {
    * Gets the user that has created this content.
    * @return the detail about the user that has created this content.
    */
-  public UserDetail getCreator();
+  UserDetail getCreator();
 
   /**
    * Gets the date at which this content was created.
    * @return the date at which this content was created.
    */
-  public Date getCreationDate();
+  Date getCreationDate();
 
   /**
    * Gets the title of this contribution if any. By default returns an empty String.
    * @return the contribution's title in the specified language.
    * Can be empty if no title was set or no title is defined for a such contribution.
    */
-  public default String getTitle() {
+  default String getTitle() {
     return "";
   }
 
@@ -82,7 +82,7 @@ public interface Contribution extends IdentifiableResource {
    * @return the description on this contribution. Can be empty if no description was set or no
    * description is defined for a such contribution.
    */
-  public default String getDescription() {
+  default String getDescription() {
     return "";
   }
 
@@ -97,7 +97,7 @@ public interface Contribution extends IdentifiableResource {
    * @param user a user in Silverpeas.
    * @return true if the user can access this content, false otherwise.
    */
-  public boolean canBeAccessedBy(UserDetail user);
+  boolean canBeAccessedBy(UserDetail user);
 
   /**
    * Gets the type of this contribution. The type is a label that identifies uniquely a kind of
@@ -105,7 +105,7 @@ public interface Contribution extends IdentifiableResource {
    * By default, this method returns the simple name of the class implementing this interface.
    * @return the label of the type of this contribution.
    */
-  public default String getContributionType() {
+  default String getContributionType() {
     return getClass().getSimpleName();
   }
 }

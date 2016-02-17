@@ -35,6 +35,6 @@ public interface I18nContribution extends Contribution {
    * @param language the ISO 639-1 code of the language.
    * @return a translation of the contribution in the specified language.
    */
-  public <T extends ContributionTranslation> T getTranslation(String language);
+  <T extends ContributionTranslation> T getTranslation(String language);
 
 }

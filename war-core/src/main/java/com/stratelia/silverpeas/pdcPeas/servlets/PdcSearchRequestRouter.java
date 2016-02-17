@@ -85,6 +85,9 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import static com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor
+    .PROCESSOR_NAME_SUFFIX;
+
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
   private static final long serialVersionUID = 1L;
@@ -170,7 +173,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // Get the SilverContents to display
         ContainerInterface containerInterface = containerPeasPDC.getContainerInterface();
 
-        List<String> alComponentIds = new ArrayList<String>();
+        List<String> alComponentIds = new ArrayList<>();
         // if we are in selection mode, we get silverContent from all available instances of the
         // specific component
         if (pdcSC.isSelectionActivated()) {
@@ -516,7 +519,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           }
         }
 
-        pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
+        pdcSC.setSelectedSilverContents(new ArrayList<>());
         // This is the main function of global search
         boolean pdcUsedDuringSearch = false;
         // recupere les parametres (Only for a global search in advanced mode)
@@ -770,7 +773,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         } else {
           pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
         }
-        pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
+        pdcSC.setSelectedSilverContents(new ArrayList<>());
         // Use pdc search only if user has selected an axis value
         boolean pdcUsedDuringSearch = false;
         String listAxis = request.getParameter("listAxis");
@@ -930,7 +933,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   }
 
   private List<WAAttributeValuePair> getItemPks(List<GlobalSilverResult> listGR) {
-    List<WAAttributeValuePair> itemPKs = new ArrayList<WAAttributeValuePair>();
+    List<WAAttributeValuePair> itemPKs = new ArrayList<>();
     Iterator<GlobalSilverResult> itListGR = listGR.iterator();
     while (itListGR.hasNext()) {
       GlobalSilverResult gb = itListGR.next();
@@ -1114,7 +1117,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // WHEN it would be instanciable !! String[] asUserGenericRoles = componentSC.getUserRoles();
     // Instead
     String[] asUserGenericRoles = pdcSC.getUserRoles();
-    List<String> asUserContainerRoles = new ArrayList<String>();
+    List<String> asUserContainerRoles = new ArrayList<>();
     for (int nI = 0; nI < asUserGenericRoles.length; nI++) {
       if (asUserGenericRoles[nI].equals("user")) {
         asUserContainerRoles.add("containerPDC_user");
@@ -1124,7 +1127,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       }
     }
 
-    List<String> asUserContentRoles = new ArrayList<String>();
+    List<String> asUserContentRoles = new ArrayList<>();
     if (!bOnlyContainer) {
       if (contentPeasPDC.getType().equals("fileBoxPlus")
           || contentPeasPDC.getType().equals("whitePages")
@@ -1169,7 +1172,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // on prepare le chemin complet pour l'affichage dans le cadre du contexte
     SearchContext searchContext = pdcSC.getSearchContext();
     List<SearchCriteria> c = searchContext.getCriterias();
-    List<List> pathCriteria = new ArrayList<List>(c.size());
+    List<List> pathCriteria = new ArrayList<>(c.size());
     if (c.size() > 0) {
       for (int i = 0; i < c.size(); i++) {
         SearchCriteria sc = c.get(i);
@@ -1184,7 +1187,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           treeId = String.valueOf(axis.getRootId());
         }
 
-        List<Value> fullPath = new ArrayList<Value>();
+        List<Value> fullPath = new ArrayList<>();
         if (searchValue != null && treeId != null) {
           fullPath = pdcSC.getFullPath(searchValue, treeId);
         }
@@ -1292,7 +1295,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       PdcSearchSessionController pdcSC)
       throws Exception {
 
-    List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
+    List<GlobalSilverContent> alSilverContents = new ArrayList<>();
     if (alSilverContentIds == null || alSilverContentIds.isEmpty()) {
       return alSilverContents;
     }
@@ -1300,7 +1303,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // la recherche PDC à des résultats. La liste qui contient les silverContentId n'est pas vide
     // recherche des componentId a partir de silverContentId
     // attention cette methode ne fonctionne que si l'on classe un document dans son instance.
-    List<String> alInstanceIds = new ArrayList<String>();
+    List<String> alInstanceIds = new ArrayList<>();
     // on récupère la liste de instance contenant tous les documents
     alInstanceIds = contentManager.getInstanceId(alSilverContentIds);
 
@@ -1343,13 +1346,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       List<SilverContentInterface> silverContentTempo, String instanceId,
       PdcSearchSessionController pdcSC)
       throws Exception {
-    List<GlobalSilverContent> alSilverContents =
-        new ArrayList<GlobalSilverContent>(silverContentTempo.size());
-    String contentProcessorId = "defaultGlobalSilverContentProcessor";
+    List<GlobalSilverContent> alSilverContents = new ArrayList<>(silverContentTempo.size());
+    String contentProcessorPrefixId = "default";
     if (instanceId.startsWith("gallery")) {
-      contentProcessorId = "galleryGlobalSilverContentProcessor";
+      contentProcessorPrefixId = "gallery";
     }
-    IGlobalSilverContentProcessor processor = ServiceProvider.getService(contentProcessorId);
+    IGlobalSilverContentProcessor processor =
+        ServiceProvider.getService(contentProcessorPrefixId + PROCESSOR_NAME_SUFFIX);
 
     for (SilverContentInterface sci : silverContentTempo) {
       UserDetail creatorDetail = pdcSC.getOrganisationController().getUserDetail(sci.getCreatorId());
@@ -1376,8 +1379,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       throws Exception {
 
     // On créait une liste triée d'indexEntry
-    SortedSet<Integer> basicSearchList = new TreeSet<Integer>();
-    List<String> docFeature = new ArrayList<String>();
+    SortedSet<Integer> basicSearchList = new TreeSet<>();
+    List<String> docFeature = new ArrayList<>();
     for (int i = 0; ie != null && i < ie.length; i++) {
       String instanceId = ie[i].getComponent(); // recupere l'instanceId
       String objectId = ie[i].getObjectId(); // recupere l'id du document
@@ -1402,7 +1405,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // trouvés
     // mais ces documents sont également dans le tableau résultat de la recherche classique
     // il faut donc créer un tableau de MatchingIndexEntry pour afficher le resultat
-    List<MatchingIndexEntry> result = new ArrayList<MatchingIndexEntry>();
+    List<MatchingIndexEntry> result = new ArrayList<>();
 
     if (basicSearchList != null && basicSearchList.size() > 0) {
       // la liste contient bien des résultats
@@ -1528,7 +1531,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       String objectId = null;
       List<GlobalSilverResult> selectedSilverContents = pdcSC.getSelectedSilverContents();
       if (selectedSilverContents == null) {
-        selectedSilverContents = new ArrayList<GlobalSilverResult>();
+        selectedSilverContents = new ArrayList<>();
       }
       for (int i = 0; i < silverContents.size(); i++) {
         GlobalSilverResult gsr = silverContents.get(i);
@@ -1581,7 +1584,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
       String component_id = request.getParameter("component_id");
       String unique_id = request.getParameter("uniqueId");
-      List<Axis> allAxis = new ArrayList<Axis>();
+      List<Axis> allAxis = new ArrayList<>();
       if (component_id != null && !"".equals(component_id)) {
         // we are in the localResourceLocator search (localResourceLocator to a component instance)
         // only axis used by this instance must be shown
@@ -1638,7 +1641,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           MatchingIndexEntry[] ie = pdcSC.glossarySearch(query);
           // get results from searchEngine
           // for each result, get corresponding AxisValue
-          List<Value> values = new ArrayList<Value>();
+          List<Value> values = new ArrayList<>();
           List<String> usedTreeIds = null;
           for (int i = 0; i < ie.length; i++) {
             MatchingIndexEntry oneResult = ie[i];

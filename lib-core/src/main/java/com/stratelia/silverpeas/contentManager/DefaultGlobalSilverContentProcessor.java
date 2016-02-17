@@ -28,7 +28,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import javax.inject.Named;
 
-@Named("defaultGlobalSilverContentProcessor")
+import static com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor
+    .PROCESSOR_NAME_SUFFIX;
+
+@Named("default" + PROCESSOR_NAME_SUFFIX)
 public class DefaultGlobalSilverContentProcessor implements IGlobalSilverContentProcessor {
 
   @Override
