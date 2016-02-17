@@ -502,7 +502,7 @@
                         <view:icon iconName="${moveDownIcon}" altText="${moveDownIconMsg}" action="javascript:moveAttachmentDown(\'${varAttachment.id}\');"/>
                       </c:when>
                       <c:otherwise>
-                        <view:icon iconName="${ArrayPnoColorPix} "altText="" action=""/>
+                        <view:icon iconName="${ArrayPnoColorPix}" altText="" action=""/>
                       </c:otherwise>
                     </c:choose>
                    <c:choose>
@@ -510,7 +510,7 @@
                         <view:icon iconName="${moveUpIcon}" altText="${moveUpIconMsg}" action="javascript:moveAttachmentUp(\'${varAttachment.id}\');"/>
                       </c:when>
                       <c:otherwise>
-                        <view:icon iconName="${ArrayPnoColorPix} "altText="" action=""/>
+                        <view:icon iconName="${ArrayPnoColorPix}" altText="" action=""/>
                       </c:otherwise>
                     </c:choose>
                   </view:icons>
