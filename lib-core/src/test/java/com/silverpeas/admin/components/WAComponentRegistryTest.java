@@ -29,13 +29,17 @@
 package com.silverpeas.admin.components;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import org.jglue.cdiunit.CdiRunner;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.silverpeas.test.rule.CommonAPI4Test;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.lang.SystemWrapper;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,32 +52,43 @@ import java.util.Optional;
 
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit test on the services provided by the WAComponentRegistry.
  * @author ehugonnet
  * @author mmoquillon
  */
+@RunWith(CdiRunner.class)
 public class WAComponentRegistryTest {
 
   public static final String XML_COMPONENTS_PATH = "xmlcomponents";
-  public File MAPPINGS_PATH;
-  public File TEMPLATES_PATH;
-  public File TARGET_DIR;
+  private File MAPPINGS_PATH;
+  private File TEMPLATES_PATH;
+  private File TARGET_DIR;
+
+  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPI4Test getCommonAPI4Test() {
+    return commonAPI4Test;
+  }
+
+  @Inject
+  private Provider<PublicationTemplateManager> managerProvider;
 
   @Before
-  public void setUpClass() throws Exception {
+  public void setup() throws Exception {
     TARGET_DIR = getFile(
-        WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+        WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
+            .getFile());
     MAPPINGS_PATH = getFile(TARGET_DIR, "templateRepository", "mapping");
     TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
 
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
+
+    commonAPI4Test.injectIntoMockedBeanContainer(managerProvider.get());
   }
 
   @Test
