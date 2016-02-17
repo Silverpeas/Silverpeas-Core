@@ -20,7 +20,6 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,6 +31,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.util.exception.RelativeFileAccessException;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.mail.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -84,8 +84,9 @@ public class FileUtil implements MimeTypes {
       try {
         mimeType = MetadataExtractor.get().detectMimeType(file);
       } catch (Exception ex) {
-        SilverTrace.warn("attachment", "FileUtil",
-            "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", ex.getMessage(), ex);
+        SilverLogger.getLogger("file")
+            .warn("File exists ({0}), but mime-type has been detected: {1}", file.getName(),
+                ex.getMessage());
       }
     }
     if (!StringUtil.isDefined(mimeType)) {
@@ -96,8 +97,7 @@ public class FileUtil implements MimeTypes {
           }
         }
       } catch (final MissingResourceException e) {
-        SilverTrace.warn("attachment", "FileUtil",
-            "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
+        SilverLogger.getLogger("file").warn("Unknown mime-type: {0}", e.getMessage());
       }
     }
     if (!StringUtil.isDefined(mimeType)) {
@@ -133,16 +133,13 @@ public class FileUtil implements MimeTypes {
   /**
    * Create the array of strings this array represents the repertories where the files must be
    * stored.
-   *
-   * @param context
-   * @return
    */
   public static String[] getAttachmentContext(final String context) {
     if (!StringUtil.isDefined(context)) {
       return new String[]{BASE_CONTEXT};
     }
     final StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
-    final List<String> folders = new ArrayList<String>(10);
+    final List<String> folders = new ArrayList<>(10);
     folders.add(BASE_CONTEXT);
     while (strToken.hasMoreElements()) {
       folders.add(strToken.nextToken().trim());
@@ -285,7 +282,7 @@ public class FileUtil implements MimeTypes {
   /**
    * Checking that the path doesn't contain relative navigation between pathes.
    *
-   * @param path
+   * @param path the path to check
    * @throws RelativeFileAccessException
    */
   public static void checkPathNotRelative(String path) throws RelativeFileAccessException {
@@ -385,7 +382,7 @@ public class FileUtil implements MimeTypes {
   /**
    * Convert a path to the current OS path format.
    *
-   * @param undeterminedOsPath
+   * @param undeterminedOsPath a path
    * @return server OS pah.
    */
   public static String convertPathToServerOS(String undeterminedOsPath) {
@@ -498,7 +495,7 @@ public class FileUtil implements MimeTypes {
       validateFilename(fileName, intendedDir);
       result = true;
     } catch (Exception e) {
-      SilverTrace.warn("fileutil", "FileUtil.isFileSecure", "Security alert on " + fileName);
+      SilverLogger.getLogger("file").warn("Security alert on " + fileName);
     }
     return result;
   }

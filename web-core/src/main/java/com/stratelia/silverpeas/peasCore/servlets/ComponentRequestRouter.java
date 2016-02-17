@@ -41,7 +41,6 @@ import org.silverpeas.token.Token;
 import org.silverpeas.util.MultiSilverpeasBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
-import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
@@ -60,6 +59,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import static org.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.util.StringUtil.isDefined;
+
 public abstract class ComponentRequestRouter<T extends ComponentSessionController>
     extends SilverpeasAuthenticatedHttpServlet {
 
@@ -71,7 +73,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   private static final Collection<Pattern> SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS;
 
   static {
-    SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS = new ArrayList<Pattern>();
+    SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS = new ArrayList<>();
     SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS.add(Pattern.compile("^(?i)(main)"));
   }
 
@@ -114,10 +116,13 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    * Indicates if the session security token has to be renewed from the given requested function?
    * The answer depends first on the <code>security.web.protection.sessiontoken.renew</code>
    * parameter defined in <code>org/silverpeas/util/security.properties</code> and secondly on the
-   * choice made by some of the component request router.
+   * choice made by some of the component request router.<br/>
+   * The Referer information from headers is verified. If the referer is equals to the current
+   * request URI, then the session security token is never renewed.
    * @return true if the token has to be renewed
    */
-  protected final boolean hasTheSessionSecurityTokenToBeRenewed(String function) {
+  protected final boolean hasTheSessionSecurityTokenToBeRenewed(final HttpServletRequest request,
+      final String function) {
     boolean hasToBeRenewed = SecuritySettings.isSessionTokenRenewEnabled();
     if (hasToBeRenewed) {
       for (Pattern sessionSecurityTokenPattern : SESSION_SECURITY_GENERATION_FUNCTION_PATTERNS) {
@@ -127,6 +132,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         }
       }
     }
+    if (hasToBeRenewed) {
+      final String referer = defaultStringIfNotDefined(request.getHeader("Referer"), "");
+      hasToBeRenewed = !request.getRequestURL().toString().equals(referer);
+    }
     return hasToBeRenewed;
   }
 
@@ -134,7 +143,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
     String destination = computeDestination(request);
-    if (!StringUtil.isDefined(destination)) {
+    if (!isDefined(destination)) {
       throwHttpNotFoundError();
     }
     redirectService(request, response, destination);
@@ -222,7 +231,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     if (selectionProcessor.isComeFromSelectionPanel(request)) {
       destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
-      if (StringUtil.isDefined(destination)) {
+      if (isDefined(destination)) {
         return destination;
       }
     }
@@ -242,7 +251,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
 
     // Session security token management
-    if (StringUtil.isDefined(componentId) && hasTheSessionSecurityTokenToBeRenewed(function)) {
+    if (isDefined(componentId) && hasTheSessionSecurityTokenToBeRenewed(request, function)) {
       renewSessionSecurityToken(request);
     }
 
@@ -368,16 +377,16 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     LookHelper helper = LookHelper.getLookHelper(session);
-    if (StringUtil.isDefined(componentId)) {
+    if (isDefined(componentId)) {
       if (gef != null && helper != null) {
         helper.setComponentIdAndSpaceIds(null, null, componentId);
         String helperSpaceId = helper.getSubSpaceId();
-        if (!StringUtil.isDefined(helperSpaceId)) {
+        if (!isDefined(helperSpaceId)) {
           helperSpaceId = helper.getSpaceId();
         }
         gef.setSpaceIdForCurrentRequest(helperSpaceId);
       }
-    } else if (StringUtil.isDefined(spaceId)) {
+    } else if (isDefined(spaceId)) {
       if (gef != null && helper != null) {
         helper.setSpaceId(spaceId);
         gef.setSpaceIdForCurrentRequest(spaceId);
