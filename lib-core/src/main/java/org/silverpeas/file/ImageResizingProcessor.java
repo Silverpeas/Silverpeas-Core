@@ -11,6 +11,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 
+import static org.silverpeas.image.ImageToolDirective.GEOMETRY_SHRINK;
+
 /**
  * A processor dedicated to resize an image on the demand. If the image is already resized, then
  * nothing the resized image is just returned.
@@ -97,7 +99,7 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
             DimensionOption dimension =
                 DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
             imageTool
-                .convert(sourceImage, resizedImage, dimension);
+                .convert(sourceImage, resizedImage, dimension, GEOMETRY_SHRINK);
             ImageCache.putImage(sourceImage.getAbsolutePath(), resizedImage.getAbsolutePath());
           }
         }

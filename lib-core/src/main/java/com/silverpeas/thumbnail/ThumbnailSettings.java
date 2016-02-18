@@ -26,9 +26,9 @@ import org.silverpeas.util.StringUtil;
 
 public class ThumbnailSettings {
   
-  private static final int DEFAULT_SIZE = 150;
-  private static final String APP_PARAM_WIDTH = "thumbnailWidthSize";
-  private static final String APP_PARAM_HEIGHT = "thumbnailHeightSize";
+  protected static final int DEFAULT_SIZE = 150;
+  protected static final String APP_PARAM_WIDTH = "thumbnailWidthSize";
+  protected static final String APP_PARAM_HEIGHT = "thumbnailHeightSize";
   private static final String APP_PARAM_MANDATORY = "thumbnailMandatory";
 
   private boolean mandatory;
