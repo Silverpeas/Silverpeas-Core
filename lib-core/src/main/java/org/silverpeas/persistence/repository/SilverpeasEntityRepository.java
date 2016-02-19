@@ -118,6 +118,15 @@ public interface SilverpeasEntityRepository<ENTITY extends Entity<ENTITY, ENTITY
   long deleteById(final Collection<String> ids);
 
   /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param componentInstanceId the unique component instance identifier.
+   * @return the number of deleted entities.
+   */
+  default long deleteByComponentInstanceId(final String componentInstanceId) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
    * Does this repository contains the specified entity? It contains the entity if its persistence
    * context is taken in charge by the instances of the repository class.
    * @param entity an entity.

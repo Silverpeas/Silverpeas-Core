@@ -106,7 +106,9 @@ public interface BasicEntityRepository<ENTITY extends IdentifiableEntity, ENTITY
    * @param instanceId the unique instance identifier.
    * @return the number of deleted entities.
    */
-  long deleteByComponentInstanceId(final String instanceId);
+  default long deleteByComponentInstanceId(final String instanceId) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Synchronizes the persistence context to the underlying data source. Within a transactional

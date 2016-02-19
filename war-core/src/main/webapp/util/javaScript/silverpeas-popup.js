@@ -68,7 +68,7 @@
     },
     confirm: function(message, params) {
       var options = params;
-      var $confirm = $('<div>').append(message);
+      var $confirm = $('<div>').append($('<p>').append(message));
       if (typeof params === 'function') {
         options = {
           callback: params

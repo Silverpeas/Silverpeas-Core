@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import static org.silverpeas.util.StringUtil.isNotDefined;
+
 /**
  * A Silverpeas bundle represents a bundle containing data required by the different features
  * of Silverpeas. Each data is defined by a pair of key-value.
@@ -69,9 +71,9 @@ public interface SilverpeasBundle {
    * The resource is a list of objects. Gets the value(s) of the specified property of one or more
    * objects in the list. The objects in the list are identified by their index in the list (from
    * 1 to n). The key used to find the asked value(s) is composed first by the list identifier,
-   * then by the index of the object in the list and finally ends with the object's property name
-   * (with the dot as separator). If the computed key isn't defined in the bundle, then no
-   * {@code java.util.MissingResourceException} exception is thrown (for compatibility reason with
+   * then by the index of the object in the list and finally ends with the object's property name.
+   * If the computed key isn't defined in the bundle, then no
+   * {@link java.util.MissingResourceException} exception is thrown (for compatibility reason with
    * Silverpeas versions lesser than 6).
    * @param list the identifier of the list in the bundle.
    * @param property the object's property for which the value will be fetch.
@@ -90,9 +92,9 @@ public interface SilverpeasBundle {
     List<String> valret = new ArrayList<>();
     while ((i <= max) || (max == -1)) {
       try {
-        String key = list + "." + Integer.toString(i) + "." + property;
+        String key = list + Integer.toString(i) + property;
         String s = getString(key);
-        if (!s.trim().isEmpty()) {
+        if (isNotDefined(s)) {
           throw new MissingResourceException(getBaseBundleName(), getClass().getName(), key);
         }
         valret.add(s);

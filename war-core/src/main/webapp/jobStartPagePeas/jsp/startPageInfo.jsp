@@ -190,14 +190,16 @@ function openPopup(action, larg, haut) {
 
 <% if (m_SpaceExtraInfos.isAdmin) {
     if (isUserAdmin || (m_SubSpace != null)) { %>
-		function deleteSpace() {
-		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+EncodeHelper.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
-			$('#spaceForm').attr('action', 'DeleteSpace');
+  function deleteSpace() {
+    jQuery.popup.confirm(
+        "<%=resource.getStringWithParams("JSPP.MessageSuppressionSpace", EncodeHelper.escapeXml(m_SpaceName))%>",
+        function() {
+          $('#spaceForm').attr('action', 'DeleteSpace');
           $('#Id').val('<%=space.getId()%>');
           $.progressMessage();
-			setTimeout("jQuery('#spaceForm').submit();", 500);
-			}
-		}
+          setTimeout("jQuery('#spaceForm').submit();", 500);
+        });
+  }
 	<% } %>
 		function updateSpace() {
       $('#Translation').val(currentLanguage);
