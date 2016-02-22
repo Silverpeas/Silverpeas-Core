@@ -29,6 +29,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.cache.service.CacheServiceProvider;
 import org.silverpeas.servlet.HttpRequest;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.security.SecuritySettings;
 import org.silverpeas.web.filter.exception.WebSecurityException;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +66,10 @@ public class MassiveWebSecurityFilter implements Filter {
       UriBuilder.fromUri(URLManager.getApplicationURL())
           .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).build().toString();
 
-  private final static List<Pattern> SKIPED_PARAMETER_PATTERNS;
+  private final static String WEB_PAGES_URI_PREFIX =
+      UriBuilder.fromUri(URLManager.getApplicationURL()).path("RwebPages").build().toString();
+
+  private final static List<Pattern> SKIPPED_PARAMETER_PATTERNS;
 
   private final static List<Pattern> SQL_PATTERNS;
   private final static List<Pattern> XSS_PATTERNS;
@@ -85,8 +90,8 @@ public class MassiveWebSecurityFilter implements Filter {
 
     // In treatments each sequence of spaces is replaced by one space
 
-    SKIPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
-    SKIPED_PARAMETER_PATTERNS.add(Pattern.compile("(?i)^(editor|sqlreq)"));
+    SKIPPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
+    SKIPPED_PARAMETER_PATTERNS.add(Pattern.compile("(?i)^(editor|sqlreq)"));
 
     SQL_PATTERNS = new ArrayList<Pattern>(6);
     SQL_PATTERNS.add(Pattern.compile("(?i)(grant|revoke)" +
@@ -112,17 +117,17 @@ public class MassiveWebSecurityFilter implements Filter {
       boolean isWebServiceMultipart =
           httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
               httpRequest.isContentInMultipart();
+      boolean isWebPageMultiPart =
+          httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
+              httpRequest.isContentInMultipart();
       boolean isWebSqlInjectionSecurityEnabled =
           SecuritySettings.isWebSqlInjectionSecurityEnabled();
       boolean isWebXssInjectionSecurityEnabled =
           SecuritySettings.isWebXssInjectionSecurityEnabled();
 
-      // Verifying security only if following rules are verified:
-      // - request must not be a REST Web Service multipart one
-      // - one web security mechanism is at least enabled
-      if (!isWebServiceMultipart &&
+      // Verifying security only if all the prerequisite are satisfied
+      if (!(isWebServiceMultipart || isWebPageMultiPart) &&
           (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled)) {
-
         long start = System.currentTimeMillis();
         try {
 
@@ -273,7 +278,7 @@ public class MassiveWebSecurityFilter implements Filter {
    * @return
    */
   private boolean mustTheParameterBeVerified(String parameterName) {
-    return findPatternMatcherFromString(SKIPED_PARAMETER_PATTERNS, parameterName, false) == null;
+    return findPatternMatcherFromString(SKIPPED_PARAMETER_PATTERNS, parameterName, false) == null;
   }
 
   /**
