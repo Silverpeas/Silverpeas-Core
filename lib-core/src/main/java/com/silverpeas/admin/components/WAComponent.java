@@ -266,7 +266,7 @@ public class WAComponent {
    * Gets the value of the instanceClassName property.
    * @return possible object is {@link String }
    */
-  public String getInstanceClassName() {
+  String getInstanceClassName() {
     return instanceClassName;
   }
 

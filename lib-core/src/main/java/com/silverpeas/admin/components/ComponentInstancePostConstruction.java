@@ -58,15 +58,28 @@ public interface ComponentInstancePostConstruction {
   String NAME_SUFFIX = "InstancePostConstruction";
 
   /**
+   * Each workflow is an application but all of them uses the same post construction process.<br/>
+   * So, when the name of a workflow component is detected, the post constructor implementation
+   * retrieved will be the one named like this constant value.
+   */
+  String WORKFLOW_POST_CONSTRUCTION = "processManager" + NAME_SUFFIX;
+
+  /**
    * Gets the implementation of this interface with the specified qualified name.
    * @param constructionName the qualified name of the implementation as specified by a
    * <code>@Named</code> annotation.
    * @return either an implementation of this interface or nothing.
    */
+  @SuppressWarnings("Duplicates")
   static Optional<ComponentInstancePostConstruction> get(String constructionName) {
     try {
-      String name = constructionName.substring(0, 1).toLowerCase() + constructionName.substring(1) +
-          NAME_SUFFIX;
+      final String name;
+      if (WAComponent.get(constructionName).get().isWorkflow()) {
+        name = WORKFLOW_POST_CONSTRUCTION;
+      } else {
+        name = constructionName.substring(0, 1).toLowerCase() + constructionName.substring(1) +
+            NAME_SUFFIX;
+      }
       return Optional.of(ServiceProvider.getService(name));
     } catch (IllegalStateException ex) {
       return Optional.empty();
