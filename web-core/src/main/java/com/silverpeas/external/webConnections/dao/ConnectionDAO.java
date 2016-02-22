@@ -28,6 +28,7 @@ import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.silverpeas.core.admin.OrganizationControllerProvider;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
@@ -297,4 +298,12 @@ public class ConnectionDAO {
     }
   }
 
+  /**
+   * Deletes all connection data linked to the given component instance.
+   * @param componentInstanceId the identifier of the component instance.
+   * @throws SQLException
+   */
+  public void deleteByComponentInstanceId(final String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(tableName).where("componentId = ?", componentInstanceId).execute();
+  }
 }

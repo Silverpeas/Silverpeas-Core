@@ -24,10 +24,16 @@
 
 package com.silverpeas.external.webConnections.model;
 
+import org.silverpeas.util.ServiceProvider;
+
 import java.rmi.RemoteException;
 import java.util.List;
 
 public interface WebConnectionsInterface {
+
+  static WebConnectionsInterface get() {
+    return ServiceProvider.getService(WebConnectionsInterface.class);
+  }
 
   /**
    * get the connection corresponding to componentId and userId

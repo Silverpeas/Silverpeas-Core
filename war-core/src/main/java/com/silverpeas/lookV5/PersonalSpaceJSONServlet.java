@@ -308,7 +308,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       LocalizationBundle message) {
     // mes connexions
     if (helper.getSettings("webconnectionsVisible", true)) {
-      WebConnectionsInterface webConnections = new WebConnectionService();
+      WebConnectionsInterface webConnections = WebConnectionsInterface.get();
       try {
         if (!webConnections.listWebConnectionsOfUser(helper.getUserId()).isEmpty()) {
           addTool(jsonArray, helper, "webconnectionsVisible", "webConnections",

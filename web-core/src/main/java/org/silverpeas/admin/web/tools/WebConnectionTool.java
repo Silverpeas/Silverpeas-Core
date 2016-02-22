@@ -24,6 +24,7 @@
 package org.silverpeas.admin.web.tools;
 
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
+import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -51,7 +52,7 @@ public class WebConnectionTool extends AbstractTool {
       if (isVisible) {
         try {
           isVisible =
-              !new WebConnectionService().listWebConnectionsOfUser(getLookHelper().getUserId())
+              !WebConnectionsInterface.get().listWebConnectionsOfUser(getLookHelper().getUserId())
                   .isEmpty();
         } catch (final Exception e) {
           SilverTrace.error("admin", "FileSharingTool.isVisible", "root.CANT_GET_CONNECTIONS", e);

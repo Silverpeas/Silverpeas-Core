@@ -154,6 +154,6 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @return WebConnectionsInterface
    */
   private WebConnectionsInterface getWebConnectionsInterface() {
-    return new WebConnectionService();
+    return WebConnectionsInterface.get();
   }
 }
