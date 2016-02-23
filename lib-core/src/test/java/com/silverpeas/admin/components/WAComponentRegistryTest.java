@@ -62,8 +62,6 @@ import static org.junit.Assert.assertThat;
 @RunWith(CdiRunner.class)
 public class WAComponentRegistryTest {
 
-  public static final String XML_COMPONENTS_PATH = "xmlcomponents";
-  private File MAPPINGS_PATH;
   private File TEMPLATES_PATH;
   private File TARGET_DIR;
 
@@ -82,7 +80,6 @@ public class WAComponentRegistryTest {
     TARGET_DIR = getFile(
         WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
             .getFile());
-    MAPPINGS_PATH = getFile(TARGET_DIR, "templateRepository", "mapping");
     TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
 
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
