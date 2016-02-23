@@ -446,9 +446,6 @@ public class SpacesAndComponentsTest {
 
   @Test
   public void testCopyAndPasteComponent() throws AdminException, QuotaException {
-    WAComponent waComponent = WAComponentRegistry.get().getAllWAComponents().get("almanach");
-    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
-
     String targetSpaceId = "WA3";
     PasteDetail pasteDetail = new PasteDetail("almanach2", userId);
     pasteDetail.setToSpaceId(targetSpaceId);
@@ -471,9 +468,6 @@ public class SpacesAndComponentsTest {
 
   @Test
   public void testCopyAndPasteRootSpace() throws AdminException, QuotaException {
-    WAComponent waComponent = WAComponentRegistry.get().getAllWAComponents().get("kmelia");
-    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
-
     String[] rootSpaceIds = adminController.getAllRootSpaceIds();
     assertThat(rootSpaceIds.length, is(4));
     String targetSpaceId = null;
@@ -514,9 +508,6 @@ public class SpacesAndComponentsTest {
 
   @Test
   public void testCopyAndPasteSubSpaceInSpace() throws AdminException, QuotaException {
-    WAComponent waComponent = WAComponentRegistry.get().getAllWAComponents().get("almanach");
-    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
-
     String copiedSpaceId = "WA2";
     String targetSpaceId = "WA3";
     PasteDetail pasteDetail = new PasteDetail(userId);

@@ -2844,8 +2844,6 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
     waComponent.setVisible(true);
     waComponent.setPortlet(false);
-    waComponent.setInstanceClassName(getSettings().getString(
-        "componentDescriptor.managerInstanciator"));
     waComponent.getSuite().put(I18NHelper.defaultLanguage,
         getSettings().getString("componentDescriptor.suite"));
     waComponent.setProfiles(listSPProfile);

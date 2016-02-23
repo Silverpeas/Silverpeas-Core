@@ -54,7 +54,7 @@ import java.util.Optional;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = { "name", "label", "description", "suite",
-    "visible", "visibleInPersonalSpace", "portlet", "router", "instanceClassName", "profiles",
+    "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
     "groupsOfParameters", "parameters" })
 public class WAComponent {
 
@@ -94,8 +94,6 @@ public class WAComponent {
   protected boolean visibleInPersonalSpace = false;
   protected boolean portlet;
   protected String router;
-  @XmlElement(required = true)
-  protected String instanceClassName;
   @XmlElementWrapper(name = "profiles")
   @XmlElement(name = "profile", required = true)
   protected List<Profile> profiles;
@@ -260,22 +258,6 @@ public class WAComponent {
    */
   public void setRouter(String value) {
     this.router = value;
-  }
-
-  /**
-   * Gets the value of the instanceClassName property.
-   * @return possible object is {@link String }
-   */
-  String getInstanceClassName() {
-    return instanceClassName;
-  }
-
-  /**
-   * Sets the value of the instanceClassName property.
-   * @param value allowed object is {@link String }
-   */
-  public void setInstanceClassName(String value) {
-    this.instanceClassName = value;
   }
 
   /**

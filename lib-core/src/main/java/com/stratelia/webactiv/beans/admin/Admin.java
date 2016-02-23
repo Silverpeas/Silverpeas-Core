@@ -1161,23 +1161,6 @@ class Admin implements Administration {
         connectionProd = openConnection(false);
         // Uninstantiate the components
         String componentName = componentInst.getName();
-//        String[] asCompoName = {componentName};
-//        String[] asCompoId = {componentId};
-//        unInstantiateComponents(userId, asCompoId, asCompoName, getClientSpaceId(sFatherClientId),
-//            connectionProd);
-
-//        List<Callable<Void>> componentDeletions =
-//            ServiceProvider.getAllServices(ComponentInstanceDeletion.class).stream()
-//                .map(service -> (Callable<Void>) () -> {
-//                  service.delete(componentId);
-//                  return null;
-//                }).collect(Collectors.toList());
-//
-//        List<Future<Void>> componentDeletionProcesses =
-//            ManagedThreadPool.invoke(componentDeletions, maxThreadPoolSizeOf(10));
-//        for (Future<Void> componentDeletionProcess : componentDeletionProcesses) {
-//          componentDeletionProcess.get();
-//        }
 
         ComponentInstancePreDestruction.get(componentName)
             .ifPresent(c -> c.preDestroy(componentId));

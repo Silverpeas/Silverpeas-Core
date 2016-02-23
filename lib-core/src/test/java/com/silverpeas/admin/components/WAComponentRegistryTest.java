@@ -103,9 +103,6 @@ public class WAComponentRegistryTest {
     assertThat(almanach.getName(), is("almanach"));
     assertThat(almanach.getDescription(), hasKey("fr"));
     assertThat(almanach.getDescription(), hasKey("en"));
-
-    assertThat(almanach.getInstanceClassName(), is(
-        "com.stratelia.webactiv.almanach.AlmanachInstanciator"));
     assertThat(almanach.isPortlet(), is(true));
     assertThat(almanach.isVisible(), is(true));
     assertThat(almanach.isVisibleInPersonalSpace(), is(false));
@@ -133,9 +130,6 @@ public class WAComponentRegistryTest {
     assertThat(kmelia.getName(), is("kmelia"));
     assertThat(kmelia.getDescription(), hasKey("fr"));
     assertThat(kmelia.getDescription(), hasKey("en"));
-
-    assertThat(kmelia.getInstanceClassName(), is(
-        "com.stratelia.webactiv.kmelia.KmeliaInstanciator"));
     assertThat(kmelia.isPortlet(), is(true));
     assertThat(kmelia.isVisible(), is(true));
     assertThat(kmelia.isVisibleInPersonalSpace(), is(true));
@@ -223,7 +217,6 @@ public class WAComponentRegistryTest {
     component.getSuite().put("fr", "80 Nouvelles applications");
     component.setVisible(true);
     component.setPortlet(false);
-    component.setInstanceClassName("org.silverpeas.components.newly.Instanciator");
 
     registry.putWorkflow(component);
     Optional<WAComponent> result = registry.getWAComponent(componentName);

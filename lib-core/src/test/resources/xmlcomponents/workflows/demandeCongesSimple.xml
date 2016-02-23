@@ -43,7 +43,6 @@
   <visible>true</visible>
   <portlet>false</portlet>
   <router>RprocessManager</router>
-  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
   <profiles>
     <profile name="Employe">
       <label>
