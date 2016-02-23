@@ -137,12 +137,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
-function ConfirmAndSend(textToDisplay,targetURL) {
-    if (window.confirm(textToDisplay)) {
-        jQuery('#deletionForm').attr('action', targetURL).submit();
-    }
-}
+  function ConfirmAndSend(textToDisplay, targetURL) {
+    jQuery.popup.confirm(textToDisplay, function() {
+      jQuery('#deletionForm').attr('action', targetURL).submit();
+    });
+  }
 
 function DomainSQLSynchro(){
 	top.IdleFrame.SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Integer.toString(SynchroReport.TRACE_LEVEL_DEBUG)%>', 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');

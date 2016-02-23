@@ -122,7 +122,7 @@ public class SQLDomainServiceTest extends DataSetTest {
           "0", "autDomainCustomers").build();
 
   @Override
-  protected Operation getDbSetupOperations() {
+  protected Operation getDbSetupInitializations() {
     return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, DEFAULT_DOMAIN_SET_UP);
   }
 

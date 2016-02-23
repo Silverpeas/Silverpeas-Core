@@ -29,20 +29,20 @@ import java.util.Collection;
 @Local
 public interface TagCloudBm {
 
-  public void createTagCloud(TagCloud tagCloud);
+  void createTagCloud(TagCloud tagCloud);
 
-  public void deleteTagCloud(TagCloudPK pk, int type);
+  void deleteTagCloud(TagCloudPK pk, int type);
 
-  public Collection<TagCloud> getInstanceTagClouds(String instanceId);
+  Collection<TagCloud> getInstanceTagClouds(String instanceId);
 
-  public Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount);
+  Collection<TagCloud> getInstanceTagClouds(String instanceId, int maxCount);
 
-  public Collection<TagCloud> getElementTagClouds(TagCloudPK pk);
+  Collection<TagCloud> getElementTagClouds(TagCloudPK pk);
 
-  public Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type);
+  Collection<TagCloud> getTagCloudsByTags(String tags, String instanceId, int type);
 
-  public Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
+  Collection<TagCloud> getTagCloudsByElement(String instanceId, String externalId,
       int type);
 
-  public String getTagsByElement(TagCloudPK pk);
+  String getTagsByElement(TagCloudPK pk);
 }

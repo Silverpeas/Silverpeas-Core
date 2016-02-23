@@ -23,11 +23,10 @@
  */
 package com.silverpeas.admin;
 
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.components.WAComponentRegistry;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.almanach.AlmanachInstanciator;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Administration;
@@ -63,7 +62,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -71,6 +69,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(Arquillian.class)
 public class SpacesAndComponentsTest {
 
+  @Inject
+  private WAComponentRegistry registry;
   @Inject
   private AdminController adminController;
   @Inject
@@ -103,15 +103,16 @@ public class SpacesAndComponentsTest {
         .addPackages(false, "com.stratelia.silverpeas.contentManager")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
-            AttachmentServiceProvider.class, AlmanachInstanciator.class)
+            AttachmentServiceProvider.class)
         .build();
   }
 
   @Before
-  public void reloadCache() {
+  public void reloadCache() throws Exception {
     File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
     adminController.reloadAdminCache();
+    registry.init();
   }
 
   @Test
@@ -445,9 +446,6 @@ public class SpacesAndComponentsTest {
 
   @Test
   public void testCopyAndPasteComponent() throws AdminException, QuotaException {
-    WAComponent waComponent = Instanciateur.getWAComponents().get("almanach");
-    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
-
     String targetSpaceId = "WA3";
     PasteDetail pasteDetail = new PasteDetail("almanach2", userId);
     pasteDetail.setToSpaceId(targetSpaceId);
@@ -470,9 +468,6 @@ public class SpacesAndComponentsTest {
 
   @Test
   public void testCopyAndPasteRootSpace() throws AdminException, QuotaException {
-    WAComponent waComponent = Instanciateur.getWAComponents().get("kmelia");
-    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
-
     String[] rootSpaceIds = adminController.getAllRootSpaceIds();
     assertThat(rootSpaceIds.length, is(4));
     String targetSpaceId = null;
@@ -513,9 +508,6 @@ public class SpacesAndComponentsTest {
 
   @Test
   public void testCopyAndPasteSubSpaceInSpace() throws AdminException, QuotaException {
-    WAComponent waComponent = Instanciateur.getWAComponents().get("almanach");
-    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
-
     String copiedSpaceId = "WA2";
     String targetSpaceId = "WA3";
     PasteDetail pasteDetail = new PasteDetail(userId);

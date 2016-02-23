@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.node.control;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -61,13 +61,26 @@ import java.util.Map;
  */
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class DefaultNodeService implements NodeService {
+public class DefaultNodeService implements NodeService, ComponentInstanceDeletion {
 
   /**
    * Database name where is stored nodes
    */
   private static final SettingBundle nodeSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
+
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try {
+      NodeI18NDAO.deleteComponentInstanceData(componentInstanceId);
+      NodeDAO.deleteComponentInstanceData(componentInstanceId);
+    } catch (SQLException e) {
+      throw new NodeRuntimeException("DefaultNodeService.delete()",
+          SilverpeasRuntimeException.ERROR, "node.DELETING_COMPONENT_INSTANCE_PUBLICATIONS_FAILED",
+          "instanceId = " + componentInstanceId, e);
+    }
+  }
 
   /**
    * Method declaration
@@ -627,10 +640,14 @@ public class DefaultNodeService implements NodeService {
   @Transactional
   public NodePK createNode(NodeDetail node) {
     NodePK parentPK = node.getFatherPK();
-    NodeDetail parent = getHeader(parentPK);
-    node.setPath(parent.getFullPath());
-    node.setLevel(parent.getLevel() + 1);
-    node.setFatherPK(parentPK);
+    if (parentPK != null) {
+      NodeDetail parent = getHeader(parentPK);
+      node.setPath(parent.getFullPath());
+      node.setLevel(parent.getLevel() + 1);
+    } else {
+      node.setPath("/");
+    }
+
     if (node.getLanguage() == null) {
       // translation for the first time
       node.setLanguage(I18NHelper.defaultLanguage);

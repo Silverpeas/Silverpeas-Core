@@ -57,6 +57,7 @@ import org.silverpeas.search.SearchEngineProvider;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.util.DateUtil;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.template.SilverpeasTemplate;
 import org.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -482,7 +483,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     int priorityId = 0;
     NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
-    notifMetaData.setSource(getString("manualNotification"));
+    notifMetaData.setSource(ResourceLocator
+        .getLocalizationBundle("org.silverpeas.notificationUser.multilang.notificationUserBundle")
+        .getString("manualNotification"));
     notifMetaData.addUserRecipients(selectedUsers);
     notifMetaData.addGroupRecipients(null);
     notifSender.notifyUser(notifTypeId, notifMetaData);

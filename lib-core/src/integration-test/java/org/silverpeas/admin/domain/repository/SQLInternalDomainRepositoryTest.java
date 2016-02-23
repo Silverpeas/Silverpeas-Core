@@ -95,7 +95,7 @@ public class SQLInternalDomainRepositoryTest extends DataSetTest {
           .values(1, 1).build());
 
   @Override
-  protected Operation getDbSetupOperations() {
+  protected Operation getDbSetupInitializations() {
     return Operations
         .sequenceOf(DROP_ALL, TABLES_CREATION, DEFAULT_DOMAIN_SET_UP, TEST_DELETION_TABLES);
   }

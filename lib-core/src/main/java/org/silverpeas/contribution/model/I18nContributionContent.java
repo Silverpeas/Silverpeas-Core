@@ -29,5 +29,5 @@ package org.silverpeas.contribution.model;
  */
 public interface I18nContributionContent {
 
-  public <T extends ContributionContentTranslation> T getTranslation(String language);
+  <T extends ContributionContentTranslation> T getTranslation(String language);
 }

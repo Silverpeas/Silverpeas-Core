@@ -26,7 +26,6 @@ package com.stratelia.silverpeas.pdc.control;
 
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.AxisFilterNode;
 import org.silverpeas.util.DBUtil;
@@ -399,6 +398,14 @@ public class PdcUtilizationDAO {
       DBUtil.close(rs, prepStmt);
     }
     return axisUsed;
+  }
+
+  public void deleteAllAxisUsedByInstanceId(Connection con, String instanceId) throws SQLException {
+    final String sqlDeletion = "DELETE FROM " + PdcUtilizationTable + " WHERE instanceId = ?";
+    try (PreparedStatement deletion = con.prepareStatement(sqlDeletion)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
+    }
   }
 
   /**

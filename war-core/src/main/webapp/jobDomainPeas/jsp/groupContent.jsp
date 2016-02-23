@@ -108,14 +108,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
 function ConfirmAndSend(textToDisplay,groupId)
 {
-    if (window.confirm(textToDisplay))
-    {
-        jQuery('#Idgroup').val(groupId);
-        jQuery('#deletionForm').submit();
-    }
+  jQuery.popup.confirm(textToDisplay, function() {
+    jQuery('#Idgroup').val(groupId);
+    jQuery('#deletionForm').submit();
+  });
 }
 </script>
 </head>

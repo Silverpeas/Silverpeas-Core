@@ -456,13 +456,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     CSVReader csvReader = new CSVReader(getLanguage());
     csvReader.initCSVFormat("org.silverpeas.jobDomainPeas.settings.usersCSVFormat", "User", ";",
-        getTargetDomain().getPropFileName(), "property_");
+        getTargetDomain().getPropFileName(), "property");
 
     // spécifique domaine Silverpeas (2 colonnes en moins (password et
     // passwordValid)
     if ("-1".equals(getTargetDomain().getId())
         || "0".equals(getTargetDomain().getId())) {// domaine Silverpeas
-      csvReader.setM_specificNbCols(csvReader.getM_specificNbCols() - 2);
+      csvReader.setSpecificNbCols(csvReader.getSpecificNbCols() - 2);
     }
 
     Variant[][] csvValues;
@@ -573,7 +573,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
 
-      if (csvReader.getM_specificNbCols() > 0) {
+      if (csvReader.getSpecificNbCols() > 0) {
         if ("-1".equals(getTargetDomain().getId())
             || "0".equals(getTargetDomain().getId())) {// domaine Silverpeas
 
@@ -651,14 +651,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           }
         } else {// domaine SQL
 
-          for (int j = 0; j < csvReader.getM_specificNbCols(); j++) {
-            if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
+          for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
+            if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
               informationSpecifiqueString = csvValues[i][j + 6].getValueString();
               // verify the length
-              if (informationSpecifiqueString.length() > csvReader.getM_specificColMaxLength(j)) {
+              if (informationSpecifiqueString.length() > csvReader.getSpecificColMaxLength(j)) {
                 listErrors.append(getErrorMessage(i + 1, j + 6, informationSpecifiqueString));
                 listErrors.append(getString("JDP.nbCarMax")).append(" ")
-                    .append(csvReader.getM_specificColMaxLength(j)).append(" ")
+                    .append(csvReader.getSpecificColMaxLength(j)).append(" ")
                     .append(getString("JDP.caracteres")).append("<br/>");
               }
             }
@@ -711,60 +711,60 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       // données spécifiques
       properties = new HashMap<String, String>();
-      if (csvReader.getM_specificNbCols() > 0) {
+      if (csvReader.getSpecificNbCols() > 0) {
         if ("-1".equals(getTargetDomain().getId())
             || "0".equals(getTargetDomain().getId())) {// domaine Silverpeas
 
           // title
           title = csvValue[6].getValueString();
-          properties.put(csvReader.getM_specificParameterName(0), title);
+          properties.put(csvReader.getSpecificParameterName(0), title);
 
           // company
           company = csvValue[7].getValueString();
-          properties.put(csvReader.getM_specificParameterName(1), company);
+          properties.put(csvReader.getSpecificParameterName(1), company);
 
           // position
           position = csvValue[8].getValueString();
-          properties.put(csvReader.getM_specificParameterName(2), position);
+          properties.put(csvReader.getSpecificParameterName(2), position);
 
           // boss
           boss = csvValue[9].getValueString();
-          properties.put(csvReader.getM_specificParameterName(3), boss);
+          properties.put(csvReader.getSpecificParameterName(3), boss);
 
           // phone
           phone = csvValue[10].getValueString();
-          properties.put(csvReader.getM_specificParameterName(4), phone);
+          properties.put(csvReader.getSpecificParameterName(4), phone);
 
           // homePhone
           homePhone = csvValue[11].getValueString();
-          properties.put(csvReader.getM_specificParameterName(5), homePhone);
+          properties.put(csvReader.getSpecificParameterName(5), homePhone);
 
           // fax
           fax = csvValue[12].getValueString();
-          properties.put(csvReader.getM_specificParameterName(6), fax);
+          properties.put(csvReader.getSpecificParameterName(6), fax);
 
           // cellularPhone
           cellularPhone = csvValue[13].getValueString();
-          properties.put(csvReader.getM_specificParameterName(7), cellularPhone);
+          properties.put(csvReader.getSpecificParameterName(7), cellularPhone);
 
           // address
           address = csvValue[14].getValueString();
-          properties.put(csvReader.getM_specificParameterName(8), address);
+          properties.put(csvReader.getSpecificParameterName(8), address);
 
         } else {// domaine SQL
 
           // informations spécifiques
-          for (int j = 0; j < csvReader.getM_specificNbCols(); j++) {
-            if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
+          for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
+            if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
               informationSpecifiqueString = csvValue[j + 6].getValueString();
-              properties.put(csvReader.getM_specificParameterName(j),
+              properties.put(csvReader.getSpecificParameterName(j),
                   informationSpecifiqueString);
-            } else if (Variant.TYPE_BOOLEAN.equals(csvReader.getM_specificColType(j))) {
+            } else if (Variant.TYPE_BOOLEAN.equals(csvReader.getSpecificColType(j))) {
               informationSpecifiqueBoolean = csvValue[j + 6].getValueBoolean();
               if (informationSpecifiqueBoolean) {
-                properties.put(csvReader.getM_specificParameterName(j), "1");
+                properties.put(csvReader.getSpecificParameterName(j), "1");
               } else {
-                properties.put(csvReader.getM_specificParameterName(j), "0");
+                properties.put(csvReader.getSpecificParameterName(j), "0");
               }
             }
           }

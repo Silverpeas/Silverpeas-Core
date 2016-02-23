@@ -72,6 +72,11 @@ public class ServiceProviderIntegrationTest {
     assertThat(bean, notNullValue());
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void fetchAManagedBeanByItsNameByTheServiceProviderShouldSucceed() {
+    TestManagedBean bean = ServiceProvider.getService("testManagedBean");
+  }
+
   @Test
   public void fetchAManagedBeanTypeByTheServiceProviderShouldSucceed() {
     org.silverpeas.util.Test bean = ServiceProvider.getService(org.silverpeas.util.Test.class);

@@ -20,7 +20,6 @@
  */
 package com.silverpeas.admin;
 
-import com.stratelia.webactiv.almanach.AlmanachInstanciator;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -73,7 +72,7 @@ public class SpacesManagersTest {
         .addPackages(false, "com.stratelia.silverpeas.contentManager")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
-            AttachmentServiceProvider.class, AlmanachInstanciator.class)
+            AttachmentServiceProvider.class)
         .build();
   }
 

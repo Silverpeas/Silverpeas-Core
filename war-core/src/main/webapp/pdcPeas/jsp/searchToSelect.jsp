@@ -1,4 +1,4 @@
-<%--
+<%@ page import="com.silverpeas.pdc.PdcServiceProvider" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -48,7 +48,7 @@ String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, String axisId
 		if (jargon != null && activeThesaurus.booleanValue()) {//activ�
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
-			ThesaurusManager thesaurus = new ThesaurusManager();
+			ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
 			Collection listSynonyms = thesaurus.getSynonymsAxis(axisId, idUser);
 			Iterator it = listSynonyms.iterator();
 			synonyms += "<i>";
@@ -74,7 +74,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTre
 		if (jargon != null && activeThesaurus.booleanValue()) {//activ�
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
-			ThesaurusManager thesaurus = new ThesaurusManager();
+			ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
 			Collection listSynonyms = thesaurus.getSynonyms(new Long(idTree).longValue(), new Long(idTerm).longValue(), idUser);
 			Iterator it = listSynonyms.iterator();
 			synonyms += "<i>";

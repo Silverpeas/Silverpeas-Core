@@ -24,6 +24,11 @@
 
 package com.stratelia.webactiv.coordinates.persistence;
 
+import com.stratelia.webactiv.coordinates.model.Coordinate;
+import com.stratelia.webactiv.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
+import org.silverpeas.util.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,12 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.DBUtil;
-import com.stratelia.webactiv.coordinates.model.Coordinate;
-import com.stratelia.webactiv.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.coordinates.model.CoordinatePoint;
 
 /**
  * Class declaration
@@ -64,6 +63,8 @@ public class CoordinatesDAO {
       "INSERT INTO sb_coordinates_coordinates ("
           + "coordinatesid, nodeid, coordinatesleaf, coordinatesdisplayorder, instanceid) VALUES ( ? , "
           + "? , ? , ? , ?)";
+  private static final String DELETE_COORDINATES_BY_INSTANCEID =
+      "DELETE FROM sb_coordinates_coordinates where instanceId = ?";
 
   /**
    * Method declaration
@@ -377,6 +378,14 @@ public class CoordinatesDAO {
       stmt.executeUpdate(deleteQuery.toString());
     } finally {
       DBUtil.close(stmt);
+    }
+  }
+
+  public static void removeCoordinatesByInstanceId(Connection con, String instanceId)
+      throws SQLException {
+    try (PreparedStatement deletion = con.prepareStatement(DELETE_COORDINATES_BY_INSTANCEID)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 

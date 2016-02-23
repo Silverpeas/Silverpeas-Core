@@ -762,7 +762,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       }
       // mes connexions
       if (settings.getBoolean("webconnectionsVisible", true)) {
-        WebConnectionsInterface webConnections = new WebConnectionService();
+        WebConnectionsInterface webConnections = WebConnectionsInterface.get();
         if (webConnections.listWebConnectionsOfUser(userId).size() > 0) {
           writer.write("<item id=\"webConnections\" name=\""
                   + EncodeHelper.escapeXml(message.getString("WebConnections"))

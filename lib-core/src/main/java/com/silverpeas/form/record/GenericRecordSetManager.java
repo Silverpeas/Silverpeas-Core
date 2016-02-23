@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.persistence.jdbc.ResultSetWrapper;
+import org.silverpeas.persistence.jdbc.SelectResultRowProcess;
 import org.silverpeas.util.crypto.CryptoException;
 
 import com.silverpeas.form.DataRecord;
@@ -78,6 +81,16 @@ public class GenericRecordSetManager {
    */
   public static GenericRecordSetManager getInstance() {
     return instance;
+  }
+
+  public List<String> getExternalIdOfComponentInstanceId(String componentInstanceId)
+      throws FormException {
+    try {
+      return JdbcSqlQuery.createSelect("externalId from " + TEMPLATE_TABLE)
+          .where("externalId like ?", componentInstanceId + ":%").execute(row -> row.getString(1));
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager", "form.EXP_SELECT_FAILED", e);
+    }
   }
 
   /**

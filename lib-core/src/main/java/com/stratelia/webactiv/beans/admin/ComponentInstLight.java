@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import org.silverpeas.util.StringUtil;
@@ -288,7 +288,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N> implemen
   }
   
   public boolean isWorkflow() {
-    return Instanciateur.isWorkflow(getName());
+    return WAComponent.get(getName()).get().isWorkflow();
   }
   
   public String getIcon(boolean bigOne) {

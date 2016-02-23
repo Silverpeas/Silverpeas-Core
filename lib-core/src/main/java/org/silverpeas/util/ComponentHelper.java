@@ -24,7 +24,6 @@
 
 package org.silverpeas.util;
 
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
 
 import javax.inject.Singleton;
@@ -62,7 +61,7 @@ public class ComponentHelper {
       return null;
     }
     String componentName = extractComponentName(componentId);
-    return Instanciateur.getWAComponent(componentName);
+    return WAComponent.get(componentName).get();
   }
 
   public boolean isThemeTracker(WAComponent component) {

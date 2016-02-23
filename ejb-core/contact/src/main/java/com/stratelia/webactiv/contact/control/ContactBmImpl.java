@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.contact.control;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.webactiv.contact.info.InfoDAO;
 import com.stratelia.webactiv.contact.model.CompleteContact;
 import com.stratelia.webactiv.contact.model.ContactDetail;
@@ -46,7 +47,7 @@ import java.util.List;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class ContactBmImpl implements ContactBm {
+public class ContactBmImpl implements ContactBm, ComponentInstanceDeletion {
 
   private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -114,7 +115,7 @@ public class ContactBmImpl implements ContactBm {
       InfoDAO.deleteInfoDetailByContactPK(con, contactPK);
       
       // remove contact itself
-      ContactDAO.deleteRow(con, contactPK);
+      ContactDAO.deleteContact(con, contactPK);
       
       // remove contact index
       deleteIndex(contactPK);
@@ -510,5 +511,20 @@ public class ContactBmImpl implements ContactBm {
 
   public ContactBmImpl() {
   }
-  
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try (Connection connection = DBUtil.openConnection()) {
+      ContactDAO.deleteAllContacts(connection, componentInstanceId);
+      InfoDAO.deleteAllInfoByInstanceId(connection, componentInstanceId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
+  }
 }

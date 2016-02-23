@@ -62,37 +62,40 @@ public class SubscriptionDao {
       "subscriberId, subscriberType, subscriptionMethod, resourceId, resourceType, space, " +
           "instanceId, creatorId, creationDate";
 
-  public static final String ADD_SUBSCRIPTION =
+  private static final String ADD_SUBSCRIPTION =
       "INSERT INTO subscribe (" + SUBSCRIBE_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )";
 
-  public static final String REMOVE_SUBSCRIPTION =
+  private static final String REMOVE_SUBSCRIPTION =
       "DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod" +
           " = ? AND resourceId = ? AND resourceType = ? AND instanceId = ?";
 
-  public static final String REMOVE_SUBSCRIPTIONS_BY_SUBSCRIBER =
+  private static final String REMOVE_SUBSCRIPTIONS_BY_SUBSCRIBER =
       "DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
 
-  public static final String REMOVE_SUBSCRIPTIONS_BY_RESOURCE =
+  private static final String REMOVE_SUBSCRIPTIONS_BY_RESOURCE =
       "DELETE FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
 
-  public static final String SELECT_SUBSCRIBERS_BY_RESOURCE =
+  private static final String REMOVE_SUBSCRIPTIONS_BY_INSTANCEID =
+      "DELETE FROM subscribe WHERE instanceId = ?";
+
+  private static final String SELECT_SUBSCRIBERS_BY_RESOURCE =
       "SELECT subscriberId, subscriberType FROM subscribe " +
           "WHERE resourceId = ? AND resourceType = ? AND instanceId = ?";
 
-  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION = "SELECT " + SUBSCRIBE_COLUMNS +
+  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION = "SELECT " + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod = ? " +
       "AND resourceId = ? AND resourceType = ? AND instanceId = ?";
 
-  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER = "SELECT " + SUBSCRIBE_COLUMNS +
+  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER = "SELECT " + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
 
-  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_COMPONENT =
+  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_COMPONENT =
       SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER + " AND instanceId = ?";
 
-  public static final String SELECT_SUBSCRIPTIONS_BY_RESOURCE = "SELECT " + SUBSCRIBE_COLUMNS +
+  private static final String SELECT_SUBSCRIPTIONS_BY_RESOURCE = "SELECT " + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
 
-  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE =
+  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE =
       SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER +
           "  AND instanceId = ? AND resourceId = ? AND resourceType = ?";
 
@@ -196,6 +199,13 @@ public class SubscriptionDao {
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  public void removeByInstanceId(Connection con, String instanceId) throws SQLException {
+    try(PreparedStatement deletion = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_INSTANCEID)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 

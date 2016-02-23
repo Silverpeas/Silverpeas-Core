@@ -88,7 +88,7 @@ function isCorrectForm() {
      var errorNb = 0;
      var name = stripInitialWhitespace(document.editValue.Name.value);
      if (isWhitespace(name)) {
-       errorMsg+="  - <%=resource.getString("TheField")%> '<%=resource.getString("ValueName")%>' <%=resource.getString("MustContainsText")%>\n";
+       errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '" + value + "' <%=resource.getString("pdcPeas.MustContainsText")%>\n";
        errorNb++; 
      }
      switch(errorNb)
@@ -97,12 +97,12 @@ function isCorrectForm() {
             result = validDescr();
             break;
         case 1 :
-            errorMsg = "<%=resource.getString("ThisFormContains")%> 1 <%=resource.getString("Error")%> : \n" + errorMsg;
+            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;
         default :
-            errorMsg = "<%=resource.getString("ThisFormContains")%> " + errorNb + " <%=resource.getString("Errors")%> :\n" + errorMsg;
+            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;

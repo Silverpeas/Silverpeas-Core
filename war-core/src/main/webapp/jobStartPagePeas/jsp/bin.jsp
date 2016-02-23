@@ -45,26 +45,27 @@ boolean emptyBin = true;
 <HEAD>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="qtip"/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
 <!--
-function removeItem(id) {	
-    if (window.confirm("<%=resource.getString("JSPP.BinDeleteConfirm")%>")) { 
-    	location.href = "RemoveDefinitely?ItemId="+id;
-	}
+function removeItem(id) {
+  jQuery.popup.confirm("<%=resource.getString("JSPP.BinDeleteConfirm")%>", function() {
+    location.href = "RemoveDefinitely?ItemId=" + id;
+  });
 }
 
-function remove() {	
-    if (window.confirm("<%=resource.getString("JSPP.BinDeleteConfirmSelected")%>")) {
-    	window.document.binForm.action = "RemoveDefinitely";
-    	window.document.binForm.submit();
-	}
+function remove() {
+  jQuery.popup.confirm("<%=resource.getString("JSPP.BinDeleteConfirmSelected")%>", function() {
+    window.document.binForm.action = "RemoveDefinitely";
+    window.document.binForm.submit();
+  });
 }
 
 function restore() {
-	if (window.confirm("<%=resource.getString("JSPP.BinRestoreSelected")%>")) {
-    	window.document.binForm.action = "RestoreFromBin";
-    	window.document.binForm.submit();
-	}
+  jQuery.popup.confirm("<%=resource.getString("JSPP.BinRestoreSelected")%>", function() {
+    window.document.binForm.action = "RestoreFromBin";
+    window.document.binForm.submit();
+  });
 }
 
 function jqCheckAll2(id, name)

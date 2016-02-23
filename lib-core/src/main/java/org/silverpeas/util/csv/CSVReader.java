@@ -1,34 +1,32 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.silverpeas.util.csv;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
-import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
@@ -43,22 +41,22 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class CSVReader {
-  protected int m_nbCols = 0;
-  protected String[] m_colNames;
-  protected String[] m_colTypes;
-  protected String[] m_colDefaultValues;
-  protected String[] m_colMandatory;
+  protected int nbCols = 0;
+  protected List<String> colNames;
+  protected List<String> colTypes;
+  protected List<String> colDefaultValues;
+  protected List<String> colMandatory;
 
-  protected String m_separator;
-  protected LocalizationBundle m_utilMessages;
+  protected String separator;
+  protected LocalizationBundle utilMessages;
 
   // properties specifiques eventuellement en plus
-  protected int m_specificNbCols = 0;
-  protected String[] m_specificColNames;
-  protected int[] m_specificColMaxLengthes;
-  protected String[] m_specificColTypes;
-  protected String[] m_specificColMandatory;
-  protected String[] m_specificParameterNames;
+  protected int specificNbCols = 0;
+  protected List<String> specificColNames;
+  protected List<Integer> specificColMaxLengths;
+  protected List<String> specificColTypes;
+  protected List<String> specificColMandatory;
+  protected List<String> specificParameterNames;
 
   // Active control file columns/object columns
   private boolean columnNumberControlEnabled = true;
@@ -82,82 +80,73 @@ public class CSVReader {
   }
 
   /**
-   * Constructeur
-   * @param language
+   * @param language the language of the UI
    */
   public CSVReader(String language) {
-    m_utilMessages =
+    utilMessages =
         ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
   }
 
-  public void initCSVFormat(String propertiesFile, String rootPropertyName,
-      String separator) {
-    SettingBundle rs = ResourceLocator.getSettingBundle(propertiesFile);
+  public void initCSVFormat(String propertiesFile, String rootPropertyName, String separator) {
+    SettingBundle p = ResourceLocator.getSettingBundle(propertiesFile);
 
-    m_colNames = rs.getStringArray(rootPropertyName, ".Name", -1);
-    m_nbCols = m_colNames.length;
-    m_colTypes = rs.getStringArray(rootPropertyName, ".Type", m_nbCols);
-    m_colDefaultValues = rs.getStringArray(rootPropertyName, ".Default",
-        m_nbCols);
-    m_colMandatory = rs.getStringArray(rootPropertyName, ".Mandatory",
-        m_nbCols);
-    m_separator = separator;
+    colNames = p.getStringList(rootPropertyName, "Name");
+    nbCols = colNames.size();
+
+    colTypes = p.getStringList(rootPropertyName, "Type", nbCols);
+    colDefaultValues = p.getStringList(rootPropertyName, "Default", nbCols);
+    colMandatory = p.getStringList(rootPropertyName, "Mandatory", nbCols);
+    this.separator = separator;
   }
 
-  public void initCSVFormat(String propertiesFile, String rootPropertyName,
-      String separator, String specificPropertiesFile,
-      String specificRootPropertyName) {
+  public void initCSVFormat(String propertiesFile, String rootPropertyName, String separator,
+      String specificPropertiesFile, String specificRootPropertyName) {
     initCSVFormat(propertiesFile, rootPropertyName, separator);
 
-    SettingBundle specificRs = ResourceLocator.getSettingBundle(specificPropertiesFile);
-    m_specificColNames = specificRs.getStringArray(specificRootPropertyName,
-        ".Name", -1);
-    m_specificNbCols = m_specificColNames.length;
+    SettingBundle sP = ResourceLocator.getSettingBundle(specificPropertiesFile);
+    specificColNames = sP.getStringList(specificRootPropertyName, "Name", -1);
+    specificNbCols = specificColNames.size();
 
-    m_specificColTypes = specificRs.getStringArray(specificRootPropertyName,
-        ".Type", m_specificNbCols);
-    m_specificColMaxLengthes = new int[m_specificNbCols];
-    for (int i = 0; i < m_specificNbCols; i++) {
-      // Type
-      if (!Variant.TYPE_STRING.equals(m_specificColTypes[i])
-          && !Variant.TYPE_INT.equals(m_specificColTypes[i])
-          && !Variant.TYPE_BOOLEAN.equals(m_specificColTypes[i])
-          && !Variant.TYPE_FLOAT.equals(m_specificColTypes[i])
-          && !Variant.TYPE_DATEFR.equals(m_specificColTypes[i])
-          && !Variant.TYPE_DATEUS.equals(m_specificColTypes[i])
-          && !Variant.TYPE_STRING_ARRAY.equals(m_specificColTypes[i])
-          && !Variant.TYPE_LONG.equals(m_specificColTypes[i])) {
+    specificColTypes = sP.getStringList(specificRootPropertyName, "Type", specificNbCols);
+    specificColMaxLengths = sP.getStringList(specificRootPropertyName, "MaxLength", specificNbCols)
+        .asIntegerList(DomainProperty.DEFAULT_MAX_LENGTH);
+    for (int i = 0; i < specificNbCols; i++) {
+      // Adjusting the type if necessary (so, set default one if necessary)
+      final String specificColType = specificColTypes.get(i);
+      if (!Variant.TYPE_STRING.equals(specificColType) &&
+          !Variant.TYPE_INT.equals(specificColType) &&
+          !Variant.TYPE_BOOLEAN.equals(specificColType) &&
+          !Variant.TYPE_FLOAT.equals(specificColType) &&
+          !Variant.TYPE_DATEFR.equals(specificColType) &&
+          !Variant.TYPE_DATEUS.equals(specificColType) &&
+          !Variant.TYPE_STRING_ARRAY.equals(specificColType) &&
+          !Variant.TYPE_LONG.equals(specificColType)) {
 
-        m_specificColTypes[i] = Variant.TYPE_STRING;
+        specificColTypes.set(i, Variant.TYPE_STRING);
       }
-      // Max Length
-      m_specificColMaxLengthes[i] = specificRs
-          .getInteger(specificRootPropertyName + (i + 1) + ".MaxLength",
-              DomainProperty.DEFAULT_MAX_LENGTH);
     }
 
-    m_specificColMandatory = specificRs.getStringArray(specificRootPropertyName, ".Mandatory",
-        m_specificNbCols);
+    specificColMandatory = sP.getStringList(specificRootPropertyName, "Mandatory", specificNbCols);
 
-    m_specificParameterNames = m_specificColNames;
+    specificParameterNames = specificColNames;
   }
 
   public Variant[][] parseStream(InputStream is) throws UtilTrappedException {
-    List<Variant[]> valret = new ArrayList<Variant[]>();
+    List<Variant[]> finalResult = new ArrayList<>();
     int lineNumber = 1;
     StringBuilder listErrors = new StringBuilder("");
     try {
       BufferedReader rb = new BufferedReader(new InputStreamReader(is));
       String theLine = rb.readLine();
       if (theLine != null && !isExtraColumnsControlEnabled()) {
-        StringTokenizer st = new StringTokenizer(theLine, m_separator);
-        setM_specificNbCols(st.countTokens() - m_nbCols);
+        StringTokenizer st = new StringTokenizer(theLine, separator);
+        setSpecificNbCols(st.countTokens() - nbCols);
       }
       while (theLine != null) {
 
         if (theLine.trim().length() > 0) {
           try {
-            valret.add(parseLine(theLine, lineNumber));
+            finalResult.add(parseLine(theLine, lineNumber));
           } catch (UtilTrappedException u) {
             listErrors.append(u.getExtraInfos()).append('\n');
           }
@@ -169,100 +158,91 @@ public class CSVReader {
         throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR,
             "util.EX_PARSING_CSV_VALUE", listErrors.toString());
       }
-      return valret.toArray(new Variant[0][0]);
+      return finalResult.toArray(new Variant[0][0]);
     } catch (IOException e) {
       throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR,
-          "util.EX_TRANSMITING_CSV", m_utilMessages.getString("util.ligne") + " = "
-          + Integer.toString(lineNumber) + "\n" + listErrors.toString(), e);
+          "util.EX_TRANSMITING_CSV",
+          utilMessages.getString("util.ligne") + " = " + Integer.toString(lineNumber) + "\n" +
+              listErrors.toString(), e);
     }
   }
 
-  public Variant[] parseLine(String theLine, int lineNumber)
-      throws UtilTrappedException {
-    int nbColsTotal = m_nbCols + m_specificNbCols;
-    Variant[] valret = new Variant[nbColsTotal];
+  public Variant[] parseLine(String theLine, int lineNumber) throws UtilTrappedException {
+    int nbColsTotal = nbCols + specificNbCols;
+    Variant[] finalResult = new Variant[nbColsTotal];
     int i, j;
     StringBuilder listErrors = new StringBuilder("");
 
     int start = 0;
-    int end = theLine.indexOf(m_separator, start);
+    int end = theLine.indexOf(separator, start);
     String theValue;
-    for (i = 0; i < m_nbCols; i++) {
+    for (i = 0; i < nbCols; i++) {
       if (end == -1) {
         theValue = theLine.substring(start).trim();
       } else {
         theValue = theLine.substring(start, end).trim();
       }
+      final String colType = colTypes.get(i);
       try {
-        if ((theValue == null) || (theValue.length() <= 0)) {
-          if (Boolean.parseBoolean(m_colMandatory[i])) {
-            listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-                Integer.toString(lineNumber)).append(", ");
-            listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
-                Integer.toString(i + 1)).append(", ");
-            listErrors.append(m_utilMessages.getString("util.errorMandatory")).append(
-                m_utilMessages.getString("util.valeur")).append(" = ").append(theValue)
+        if (theValue.length() <= 0) {
+          if (Boolean.parseBoolean(colMandatory.get(i))) {
+            listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+                .append(Integer.toString(lineNumber)).append(", ");
+            listErrors.append(utilMessages.getString("util.colonne")).append(" = ")
+                .append(Integer.toString(i + 1)).append(", ");
+            listErrors.append(utilMessages.getString("util.errorMandatory"))
+                .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
                 .append(", ");
-            listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
-                m_colTypes[i]).append("<br/>");
+            listErrors.append(utilMessages.getString("util.type")).append(" = ").append(colType)
+                .append("<br/>");
           } else {
-            theValue = m_colDefaultValues[i];
+            theValue = colDefaultValues.get(i);
           }
         }
-        if (Variant.isArrayType(m_colTypes[i])) {
-          valret[i] = new Variant(parseArrayValue(theValue), m_colTypes[i]);
+        if (Variant.isArrayType(colType)) {
+          finalResult[i] = new Variant(parseArrayValue(theValue), colType);
         } else {
-          valret[i] = new Variant(theValue, m_colTypes[i]);
+          finalResult[i] = new Variant(theValue, colType);
         }
 
       } catch (UtilException e) {
-        listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-            Integer.toString(lineNumber)).append(", ");
-        listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
-            Integer.toString(i + 1)).append(", ");
-        listErrors.append(m_utilMessages.getString("util.errorType")).append(
-            m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(", ");
-        listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
-            m_colTypes[i]).append("<br/>");
+        listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+            .append(Integer.toString(lineNumber)).append(", ");
+        listErrors.append(utilMessages.getString("util.colonne")).append(" = ")
+            .append(Integer.toString(i + 1)).append(", ");
+        listErrors.append(utilMessages.getString("util.errorType"))
+            .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
+            .append(", ");
+        listErrors.append(utilMessages.getString("util.type")).append(" = ").append(colType)
+            .append("<br/>");
       }
       start = end + 1;
       if (start == 0) {
         start = -1;
       }
 
-      if ((i < m_nbCols - 1) && (Variant.isArrayType(m_colTypes[i + 1]))) { // End
-        // the
-        // parse
-        // putting
-        // the
-        // rest
-        // of
-        // the
-        // line
-        // into
-        // an
-        // array
+      if ((i < nbCols - 1) && (Variant.isArrayType(colTypes.get(i + 1)))) {
+        // End the parse putting the rest of the line into an array
         end = -1;
       } else {
-        end = theLine.indexOf(m_separator, start);
+        end = theLine.indexOf(separator, start);
       }
-      if (isColumnNumberControlEnabled() && (i < m_nbCols - 2) && (end == -1)) { // Not enough
-        // columns
-        listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-            Integer.toString(lineNumber)).append(", ");
-        listErrors.append(Integer.toString(i + 2)).append(" ").append(
-            m_utilMessages.getString("util.colonnesAttendues")).append(" ").append(
-            Integer.toString(m_nbCols)).append(" ").append(m_utilMessages.getString(
-            "util.attendues")).append("<br/>");
+      if (isColumnNumberControlEnabled() && (i < nbCols - 2) && (end == -1)) {
+        // Not enough columns
+        listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+            .append(Integer.toString(lineNumber)).append(", ");
+        listErrors.append(Integer.toString(i + 2)).append(" ")
+            .append(utilMessages.getString("util.colonnesAttendues")).append(" ")
+            .append(Integer.toString(nbCols)).append(" ")
+            .append(utilMessages.getString("util.attendues")).append("<br/>");
       }
     }
 
-    // traitement des donnees specifiques
-    j = m_nbCols;
-    for (i = 0; i < m_specificNbCols; i++) {
+    // Processing specific data
+    j = nbCols;
+    for (i = 0; i < specificNbCols; i++) {
       if (start == -1) {
-        theValue = ""; // remplace la donnee specifique manquante par une valeur
-        // vide
+        theValue = ""; // empty value as default
         end = -2;
       } else if (end == -1) {
         theValue = theLine.substring(start).trim();
@@ -270,105 +250,101 @@ public class CSVReader {
         theValue = theLine.substring(start, end).trim();
       }
       if (isExtraColumnsControlEnabled()) {
+        final String specificColType = specificColTypes.get(i);
         try {
-          valret[j] = new Variant(theValue, m_specificColTypes[i]);
+          finalResult[j] = new Variant(theValue, specificColType);
 
-          if ((theValue == null) || (theValue.length() <= 0)) {
-            if (Boolean.parseBoolean(m_specificColMandatory[i])) {
-              listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-                  Integer.toString(lineNumber)).append(", ");
-              listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
-                  Integer.toString(i + 1)).append(", ");
-              listErrors.append(m_utilMessages.getString("util.errorMandatory")).append(
-                  m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(
-                  ", ");
-              listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
-                  m_colTypes[i]).append("<br/>");
+          if (theValue.length() <= 0) {
+            final String specificColMandatory = this.specificColMandatory.get(i);
+            if (Boolean.parseBoolean(specificColMandatory)) {
+              listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+                  .append(Integer.toString(lineNumber)).append(", ");
+              listErrors.append(utilMessages.getString("util.colonne")).append(" = ")
+                  .append(Integer.toString(i + 1)).append(", ");
+              listErrors.append(utilMessages.getString("util.errorMandatory"))
+                  .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
+                  .append(", ");
+              listErrors.append(utilMessages.getString("util.type")).append(" = ")
+                  .append(specificColType).append("<br/>");
             }
           }
         } catch (UtilException e) {
-          listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-              Integer.toString(lineNumber)).append(", ");
-          listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
-              Integer.toString(j + 1)).append(", ");
-          listErrors.append(m_utilMessages.getString("util.errorType")).append(
-              m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(", ");
-          listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
-              m_specificColTypes[i]).append("<br/>");
+          listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+              .append(Integer.toString(lineNumber)).append(", ");
+          listErrors.append(utilMessages.getString("util.colonne")).append(" = ")
+              .append(Integer.toString(j + 1)).append(", ");
+          listErrors.append(utilMessages.getString("util.errorType"))
+              .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
+              .append(", ");
+          listErrors.append(utilMessages.getString("util.type")).append(" = ")
+              .append(specificColType).append("<br/>");
         }
       } else {
         try {
-          valret[j] = new Variant(theValue, "STRING");
-        } catch (UtilException e) {
-
+          finalResult[j] = new Variant(theValue, "STRING");
+        } catch (UtilException ignored) {
         }
       }
       start = end + 1;
       if (start == 0) {
         start = -1;
       }
-      if (isExtraColumnsControlEnabled() && (i < m_specificNbCols - 1)
-          && (Variant.isArrayType(m_specificColTypes[i + 1]))) { // End the
-        // parse
-        // putting the
-        // rest of the
-        // line into an
-        // array
+      if (isExtraColumnsControlEnabled() && (i < specificNbCols - 1) &&
+          (Variant.isArrayType(specificColTypes.get(i + 1)))) {
+        // End the parse putting the rest of the line into an array
         end = -1;
       } else {
-        end = theLine.indexOf(m_separator, start);
+        end = theLine.indexOf(separator, start);
       }
-      if (isColumnNumberControlEnabled() && (i < m_specificNbCols - 2) && (end == -1)) { // Not
-        // enough
-        // columns
-        listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-            Integer.toString(lineNumber)).append(", ");
-        listErrors.append(Integer.toString(i + 2 + m_nbCols)).append(" ").append(
-            m_utilMessages.getString("util.colonnesAttendues")).append(" ").append(
-            Integer.toString(nbColsTotal)).append(" ").append(
-            m_utilMessages.getString("util.attendues")).append("<br/>");
+      if (isColumnNumberControlEnabled() && (i < specificNbCols - 2) && (end == -1)) {
+        // Not enough columns
+        listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+            .append(Integer.toString(lineNumber)).append(", ");
+        listErrors.append(Integer.toString(i + 2 + nbCols)).append(" ")
+            .append(utilMessages.getString("util.colonnesAttendues")).append(" ")
+            .append(Integer.toString(nbColsTotal)).append(" ")
+            .append(utilMessages.getString("util.attendues")).append("<br/>");
       }
 
       j++;
     }
 
-    // compte le nbre de colonnes en trop
-    int nbColonnes = nbColsTotal;
+    // counting the number of not necessary column
+    int nbColumns = nbColsTotal;
     while (start > -1) {
-      nbColonnes++;
+      nbColumns++;
       start = end + 1;
       if (start == 0) {
         start = -1;
       }
-      end = theLine.indexOf(m_separator, start);
+      end = theLine.indexOf(separator, start);
     }
 
-    if (isColumnNumberControlEnabled() && nbColonnes > nbColsTotal) {
-      listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
-          Integer.toString(lineNumber)).append(", ");
-      listErrors.append(nbColonnes).append(" ").append(
-          m_utilMessages.getString("util.colonnesAttendues")).append(" ").append(
-          Integer.toString(nbColsTotal)).append(" ").append(
-          m_utilMessages.getString("util.attendues")).append("<br/>");
+    if (isColumnNumberControlEnabled() && nbColumns > nbColsTotal) {
+      listErrors.append(utilMessages.getString("util.ligne")).append(" = ")
+          .append(Integer.toString(lineNumber)).append(", ");
+      listErrors.append(nbColumns).append(" ")
+          .append(utilMessages.getString("util.colonnesAttendues")).append(" ")
+          .append(Integer.toString(nbColsTotal)).append(" ")
+          .append(utilMessages.getString("util.attendues")).append("<br/>");
     }
 
     if (listErrors.length() > 0) {
-      throw new UtilTrappedException("CSVReader.parseLine",
-          SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors
-          .toString());
+      throw new UtilTrappedException("CSVReader.parseLine", SilverpeasException.ERROR,
+          "util.EX_PARSING_CSV_VALUE", listErrors.toString());
     }
-    return valret;
+    return finalResult;
   }
 
   protected String[] parseArrayValue(String arrayValue) {
     int start, end;
     String theValue;
-    ArrayList<String> ar = new ArrayList<String>();
+    ArrayList<String> ar = new ArrayList<>();
     boolean haveToContinue = true;
 
     start = 0;
     while (haveToContinue) {
-      end = arrayValue.indexOf(m_separator, start);
+      end = arrayValue.indexOf(separator, start);
 
       if (end == -1) {
         theValue = arrayValue.substring(start).trim();
@@ -376,7 +352,7 @@ public class CSVReader {
       } else {
         theValue = arrayValue.substring(start, end).trim();
       }
-      if ((theValue == null) || (theValue.length() <= 0)) {
+      if ((theValue.length() <= 0)) {
         theValue = "";
       }
 
@@ -388,118 +364,44 @@ public class CSVReader {
   }
 
   /**
-   * @return Returns the m_nbCols.
+   * @return the number of standard column.
    */
-  public int getM_nbCols() {
-    return m_nbCols;
+  public int getNbCols() {
+    return nbCols;
   }
 
   /**
-   * @return Returns the m_separator.
+   * @return the number of specific columns.
    */
-  public String getM_separator() {
-    return m_separator;
+  public int getSpecificNbCols() {
+    return specificNbCols;
   }
 
   /**
-   * @return Returns the m_colDefaultValues.
+   * @param specificNbCols the number of specific columns to set.
    */
-  public String[] getM_colDefaultValues() {
-    return m_colDefaultValues;
-  }
-
-  public String[] getM_colMandatory() {
-    return m_colMandatory;
+  public void setSpecificNbCols(int specificNbCols) {
+    this.specificNbCols = specificNbCols;
   }
 
   /**
-   * @return Returns the m_colDefaultValues[i]
+   * @return the type of specific column i.
    */
-  public String getM_colDefaultValues(int i) {
-    return m_colDefaultValues[i];
+  public String getSpecificColType(int i) {
+    return specificColTypes.get(i);
   }
 
   /**
-   * @return Returns the m_colTypes.
+   * @return the parameter name of specific column i.
    */
-  public String[] getM_colTypes() {
-    return m_colTypes;
+  public String getSpecificParameterName(int i) {
+    return specificParameterNames.get(i);
   }
 
   /**
-   * @return Returns the m_colTypes[i]
+   * @return the maximum length of specific column i.
    */
-  public String getM_colTypes(int i) {
-    return m_colTypes[i];
-  }
-
-  /**
-   * @return Returns the m_specificNbCols.
-   */
-  public int getM_specificNbCols() {
-    return m_specificNbCols;
-  }
-
-  /**
-   * @param cols The m_specificNbCols to set.
-   */
-  public void setM_specificNbCols(int cols) {
-    m_specificNbCols = cols;
-  }
-
-  /**
-   * @return Returns the m_specificColNames.
-   */
-  public String[] getM_specificColNames() {
-    return m_specificColNames;
-  }
-
-  /**
-   * @return Returns the m_specificColName index i.
-   */
-  public String getM_specificColName(int i) {
-    return m_specificColNames[i];
-  }
-
-  /**
-   * @return Returns the m_specificColTypes.
-   */
-  public String[] getM_specificColTypes() {
-    return m_specificColTypes;
-  }
-
-  /**
-   * @return Returns the m_specificColName index i.
-   */
-  public String getM_specificColType(int i) {
-    return m_specificColTypes[i];
-  }
-
-  /**
-   * @return Returns the m_specificParameterNames.
-   */
-  public String[] getM_specificParameterNames() {
-    return m_specificParameterNames;
-  }
-
-  /**
-   * @return Returns the m_specificParameterNames.
-   */
-  public String getM_specificParameterName(int i) {
-    return m_specificParameterNames[i];
-  }
-
-  /**
-   * @return Returns the m_specificColMaxLengthes.
-   */
-  public int[] getM_specificColMaxLengthes() {
-    return m_specificColMaxLengthes;
-  }
-
-  /**
-   * @return Returns the m_specificColMaxLengthes[i].
-   */
-  public int getM_specificColMaxLength(int i) {
-    return m_specificColMaxLengthes[i];
+  public int getSpecificColMaxLength(int i) {
+    return specificColMaxLengths.get(i);
   }
 }

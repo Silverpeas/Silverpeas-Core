@@ -23,6 +23,7 @@
  */
 package com.silverpeas.sharing.services;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.repository.DownloadDetailRepository;
@@ -41,7 +42,7 @@ import java.util.List;
  */
 @Singleton
 @Transactional
-public class JpaSharingTicketService implements SharingTicketService {
+public class JpaSharingTicketService implements SharingTicketService, ComponentInstanceDeletion {
 
   @Inject
   TicketRepository repository;
@@ -93,5 +94,16 @@ public class JpaSharingTicketService implements SharingTicketService {
   @Override
   public void deleteTicket(String key) {
     repository.delete(repository.getById(key));
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    repository.deleteAllTicketsForComponentInstance(componentInstanceId);
   }
 }

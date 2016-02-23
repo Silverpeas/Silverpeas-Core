@@ -25,6 +25,7 @@ import com.stratelia.webactiv.node.model.NodeDetail;
 import com.stratelia.webactiv.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.node.model.NodePK;
 import com.stratelia.webactiv.node.model.NodeRuntimeException;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.DateUtil;
 import org.silverpeas.util.StringUtil;
@@ -72,6 +73,17 @@ public class NodeDAO {
    * @since 1.0
    */
   public NodeDAO() {
+  }
+
+  /**
+   * Deletes all nodes linked to the component instance represented by the given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor("sb_node_node").where("instanceId = ?", componentInstanceId)
+        .execute();
   }
 
   public static ArrayList<NodeDetail> getTree(Connection con, NodePK nodePK) throws SQLException {
@@ -760,15 +772,16 @@ public class NodeDAO {
     String creatorId = nd.getCreatorId();
     String path = nd.getPath();
     int level = nd.getLevel();
-    int fatherId = Integer.parseInt(nd.getFatherPK().getId());
     String modelId = nd.getModelId();
     String status = nd.getStatus();
     String type = nd.getType();
     String language = nd.getLanguage();
-
-    int nbBrothers = getChildrenNumber(con, nd.getFatherPK());
-
-
+    int fatherId = -1;
+    int nbBrothers = 0;
+    if (nd.getFatherPK() != null) {
+      fatherId = Integer.parseInt(nd.getFatherPK().getId());
+      nbBrothers = getChildrenNumber(con, nd.getFatherPK());
+    }
     int order = nbBrothers + 1;
 
     try {

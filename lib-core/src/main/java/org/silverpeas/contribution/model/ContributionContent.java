@@ -37,13 +37,13 @@ public interface ContributionContent<T> extends Serializable {
    * type of the data should be represented by a Java type.
    * @return the data of the content.
    */
-  public T getData();
+  T getData();
 
   /**
    * Does the content is empty?
    * @return true if this content doesn't contain any data, false otherwise.
    */
-  public default boolean isEmpty() {
+  default boolean isEmpty() {
     return getData() != null;
   }
 }

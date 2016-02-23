@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.JoinStatement;
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Named;
@@ -114,7 +115,7 @@ public class ContentManager implements Serializable {
   // Datebase properties
   private static String m_sInstanceTable = "SB_ContentManager_Instance";
   private static final long serialVersionUID = 7069917496138130066L;
-  private String m_sSilverContentTable = "SB_ContentManager_Content";
+  private static String m_sSilverContentTable = "SB_ContentManager_Content";
 
   static {
     try {
@@ -206,30 +207,38 @@ public class ContentManager implements Serializable {
       String sContainerType, String sContentType) throws ContentManagerException {
     boolean bCloseConnection = false;
     this.checkParameters(sComponentId, sContainerType, sContentType);
-    PreparedStatement prepStmt = null;
     try {
       if (connection == null) {
         connection = DBUtil.openConnection();
         bCloseConnection = true;
       }
 
-      // Remove the association container - content
-      String sSQLStatement = "DELETE FROM " + m_sInstanceTable + " WHERE (";
-      sSQLStatement +=
-          "componentId = '" + sComponentId + "') AND (containerType = '" + sContainerType +
-              "') AND (contentType = '" + sContentType + "')";
+      final String contentDeletion = "DELETE FROM " + m_sSilverContentTable + " WHERE " +
+          "contentInstanceId IN (SELECT instanceId from " + m_sInstanceTable + " WHERE componentId = ? AND " +
+          "containerType = ? AND contentType = ?)";
 
-      // Execute the insertion
+      final String instanceDeletion = "DELETE FROM " + m_sInstanceTable + " WHERE componentId = ?" +
+          " AND containerType = ? AND contentType = ?";
 
-      prepStmt = connection.prepareStatement(sSQLStatement);
-      prepStmt.executeUpdate();
+      try(PreparedStatement deletion = connection.prepareStatement(contentDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
+      try(PreparedStatement deletion = connection.prepareStatement(instanceDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
+
       removeAsso(sComponentId);
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.unregisterNewContentInstance",
           SilverpeasException.ERROR, "contentManager.EX_CANT_UNREGISTER_CONTENT_INSTANCE",
           "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
     } finally {
-      DBUtil.close(prepStmt);
       if (bCloseConnection) {
         closeConnection(connection);
       }

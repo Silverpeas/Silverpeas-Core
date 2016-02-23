@@ -287,6 +287,18 @@ public class JpaBasicEntityManager<ENTITY extends IdentifiableEntity, ENTITY_IDE
     return deleteByIdentifier(convertToEntityIdentifiers(ids));
   }
 
+  /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param instanceId the unique instance identifier.
+   * @return the number of deleted entities.
+   */
+  @Override
+  public long deleteByComponentInstanceId(final String instanceId) {
+    Query deleteQuery = getEntityManager().createQuery(
+        "delete from " + getEntityClass().getName() + " a where a.instanceId = :instanceId");
+    return newNamedParameters().add("instanceId", instanceId).applyTo(deleteQuery).executeUpdate();
+  }
+
   private long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     long nbDeletes = 0;
     Query deleteQuery = getEntityManager()

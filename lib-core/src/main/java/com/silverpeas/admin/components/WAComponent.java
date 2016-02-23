@@ -35,64 +35,47 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>
- * Java class for WAComponentType complex type.
+ * WAComponent stands for Web Application Component and it represents an application that is
+ * available in Silverpeas and that can be instantiated to a {@code ComponentInst} object.
  * <p>
- * The following schema fragment specifies the expected content contained within this class.
- * 
- * <pre>
- * &lt;complexType name=&quot;WAComponentType&quot;&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *       &lt;sequence&gt;
- *         &lt;element name=&quot;name&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;description&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;suite&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
- *         &lt;element name=&quot;visible&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
- *         &lt;element name=&quot;visibleInPersonalSpace&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot; minOccurs=&quot;0&quot;/&gt;
- *         &lt;element name=&quot;portlet&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
- *         &lt;element name=&quot;router&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; minOccurs=&quot;0&quot;/&gt;
- *         &lt;element name=&quot;instanceClassName&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
- *         &lt;element name=&quot;profiles&quot;&gt;
- *           &lt;complexType&gt;
- *             &lt;complexContent&gt;
- *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *                 &lt;sequence&gt;
- *                   &lt;element name=&quot;profile&quot; type=&quot;{http://silverpeas.org/xml/ns/component}ProfileType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
- *                 &lt;/sequence&gt;
- *               &lt;/restriction&gt;
- *             &lt;/complexContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
- *         &lt;element name=&quot;parameters&quot; minOccurs=&quot;0&quot;&gt;
- *           &lt;complexType&gt;
- *             &lt;complexContent&gt;
- *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
- *                 &lt;sequence&gt;
- *                   &lt;element name=&quot;parameter&quot; type=&quot;{http://silverpeas.org/xml/ns/component}ParameterType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
- *                 &lt;/sequence&gt;
- *               &lt;/restriction&gt;
- *             &lt;/complexContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * The Web Application components available in Silverpeas are loaded by the
+ * {@code com.silverpeas.admin.components.WAComponentRegistry} registry. They can be the accessed
+ * either by the registry itself or by the WAComponent class (it delegates the access to the
+ * registry).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = { "name", "label", "description", "suite",
-    "visible", "visibleInPersonalSpace", "portlet", "router", "instanceClassName", "profiles",
+    "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
     "groupsOfParameters", "parameters" })
 public class WAComponent {
+
+  /**
+   * Gets the WAComponent instance with the specified name.
+   * @param componentName the unique name of the WAComponent to return.
+   * @return optionally a WAComponent instance with the given name.
+   */
+  public static Optional<WAComponent> get(String componentName) {
+    return WAComponentRegistry.get().getWAComponent(componentName);
+  }
+
+  /**
+   * Gets all the available WAComponent instances.
+   * @return a collection of WAComponent instance.
+   */
+  public static Collection<WAComponent> getAll() {
+    return WAComponentRegistry.get().getAllWAComponents().values();
+  }
+
+
   @XmlTransient
   private ParameterSorter sorter = new ParameterSorter();
 
@@ -111,8 +94,6 @@ public class WAComponent {
   protected boolean visibleInPersonalSpace = false;
   protected boolean portlet;
   protected String router;
-  @XmlElement(required = true)
-  protected String instanceClassName;
   @XmlElementWrapper(name = "profiles")
   @XmlElement(name = "profile", required = true)
   protected List<Profile> profiles;
@@ -280,22 +261,6 @@ public class WAComponent {
   }
 
   /**
-   * Gets the value of the instanceClassName property.
-   * @return possible object is {@link String }
-   */
-  public String getInstanceClassName() {
-    return instanceClassName;
-  }
-
-  /**
-   * Sets the value of the instanceClassName property.
-   * @param value allowed object is {@link String }
-   */
-  public void setInstanceClassName(String value) {
-    this.instanceClassName = value;
-  }
-
-  /**
    * Gets the value of the profiles property.
    * @return list of {@link Profile }
    */
@@ -399,6 +364,15 @@ public class WAComponent {
   public List<GroupOfParameters> getSortedGroupsOfParameters() {
     Collections.sort(getGroupsOfParameters(), new GroupOfParametersSorter());
     return this.groupsOfParameters;
+  }
+
+  /**
+   * Is this WAComponent is a workflow?
+   * @return true if this component defines a workflow, false if it is a regular Silverpeas
+   * application.
+   */
+  public boolean isWorkflow() {
+    return "RprocessManager".equalsIgnoreCase(getRouter());
   }
 
 }

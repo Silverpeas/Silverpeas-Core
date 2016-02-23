@@ -24,7 +24,14 @@
 
 package org.silverpeas.util.lang;
 
+import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.SettingBundle;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -35,6 +42,23 @@ import java.util.Properties;
  */
 @Singleton
 public class DefaultSystemWrapper implements SystemWrapper {
+
+  @PostConstruct
+  protected void preloadSystemSettings() {
+    // we don't use the ResourceLocator API here in order to avoid cyclic dependency between
+    // SystemWrapper and ResourceLocator
+    Properties systemSettings = new Properties();
+    try {
+      systemSettings.load(new FileReader(
+          Paths.get(System.getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
+              "systemSettings.properties").toFile()));
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
+    systemSettings.stringPropertyNames()
+        .stream()
+        .forEach(key -> setProperty(key, systemSettings.getProperty(key)));
+  }
 
   @Override
   public String getenv(final String name) {

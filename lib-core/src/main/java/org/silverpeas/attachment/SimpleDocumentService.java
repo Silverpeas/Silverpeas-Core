@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -91,7 +92,7 @@ import static org.silverpeas.jcr.JcrRepositoryConnector.openSystemSession;
  * @author ehugonnet
  */
 @Singleton
-public class SimpleDocumentService implements AttachmentService {
+public class SimpleDocumentService implements AttachmentService, ComponentInstanceDeletion {
 
   private static final int STEP = 5;
   @Inject
@@ -1026,5 +1027,15 @@ public class SimpleDocumentService implements AttachmentService {
         throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
       }
     }
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    deleteAllAttachments(componentInstanceId);
   }
 }

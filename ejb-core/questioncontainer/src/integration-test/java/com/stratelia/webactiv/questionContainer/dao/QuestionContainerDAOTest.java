@@ -87,7 +87,7 @@ public class QuestionContainerDAOTest extends DataSetTest {
           "2012-01-12", "9999-99-99", 1, 2, 1, 1, 1, 0, "quizz83", 0, 1, 4).build();
 
   @Override
-  protected Operation getDbSetupOperations() {
+  protected Operation getDbSetupInitializations() {
     return Operations.sequenceOf(DROP_ALL, TABLES_CREATION, INSERT_DATA);
   }
 
@@ -104,7 +104,7 @@ public class QuestionContainerDAOTest extends DataSetTest {
         .testFocusedOn(war -> {
           war.addPackages(true, "com.stratelia.webactiv.questionContainer")
               .addPackages(true, "com.stratelia.webactiv.question")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF");
+              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
         })
         .build();
   }

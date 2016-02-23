@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.statistic.control;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.statistic.dao.HistoryObjectDAO;
@@ -44,7 +45,7 @@ import java.util.*;
 
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
-public class DefaultStatisticService implements StatisticService {
+public class DefaultStatisticService implements StatisticService, ComponentInstanceDeletion {
 
   public final static int ACTION_ACCESS = 1;
 
@@ -293,19 +294,6 @@ public class DefaultStatisticService implements StatisticService {
   }
 
   @Override
-  public void deleteStatsOfComponent(String componentId) {
-    Connection con = getConnection();
-    try {
-      HistoryObjectDAO.deleteStatsOfComponent(con, componentId);
-    } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().deleteStatsOfComponent",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_DELETE_HISTORY_STATISTICS", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
   public void moveStat(ForeignPK toForeignPK, int actionType, String objectType) {
     SilverTrace
         .info("statistic", "DefaultStatisticService.deleteHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
@@ -445,5 +433,25 @@ public class DefaultStatisticService implements StatisticService {
 
   private ForeignPK getForeignPK(SilverpeasContent content) {
     return new ForeignPK(content.getId(), content.getComponentInstanceId());
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    Connection con = getConnection();
+    try {
+      HistoryObjectDAO.deleteStatsOfComponent(con, componentInstanceId);
+    } catch (Exception e) {
+      throw new RuntimeException(
+          "A failure occurred when deleting the statistics relative to the component instance " +
+              componentInstanceId, e);
+    } finally {
+      DBUtil.close(con);
+    }
   }
 }

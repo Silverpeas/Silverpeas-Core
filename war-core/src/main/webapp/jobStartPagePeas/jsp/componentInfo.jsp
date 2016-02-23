@@ -144,6 +144,7 @@ window.setPopup(popupMode);
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
 <view:includePlugin name="qtip"/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript">
 var currentLanguage = "<%=compoInst.getLanguage()%>";
@@ -168,12 +169,14 @@ function openPopup(action, larg, haut) {
 	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
 }
 
-function deleteInstance() {	
-    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+EncodeHelper.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
-      var $form = jQuery('#infoInstance');
-      jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
-      $form.attr('action', 'DeleteInstance').submit();
-	}
+function deleteInstance() {
+  jQuery.popup.confirm(
+      "<%=resource.getStringWithParams("JSPP.MessageSuppressionInstance", EncodeHelper.escapeXml(compoInst.getLabel()))%>",
+      function() {
+        var $form = jQuery('#infoInstance');
+        jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
+        $form.attr('action', 'DeleteInstance').submit();
+      });
 }
 
 function updateInstance() {

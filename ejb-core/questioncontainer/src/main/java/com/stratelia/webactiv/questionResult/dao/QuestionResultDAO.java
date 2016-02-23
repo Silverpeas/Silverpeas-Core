@@ -52,6 +52,9 @@ public class QuestionResultDAO {
       "qrId, questionId, userId, answerId, qrOpenAnswer, qrNbPoints, qrPollDate, qrElapsedTime, " +
           "qrParticipationId";
   private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+  private static final String DELETE_ALL_QUESTION_RESULTS =
+      "DELETE FROM SB_Question_QuestionResult  WHERE questionId in (SELECT questionId FROM " +
+          "SB_Question_Question WHERE instanceId = ?)";
 
   private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
       throws SQLException {
@@ -275,6 +278,14 @@ public class QuestionResultDAO {
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  public static void setDeleteAllQuestionResultsByInstanceId(Connection con, String instanceId)
+      throws SQLException {
+    try (PreparedStatement deletion = con.prepareStatement(DELETE_ALL_QUESTION_RESULTS)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 

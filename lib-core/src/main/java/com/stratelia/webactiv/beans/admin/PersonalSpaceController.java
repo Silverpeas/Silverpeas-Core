@@ -20,20 +20,21 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.WAComponent;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.util.LocalizationBundle;
+import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.StringUtil;
-import org.silverpeas.util.ResourceLocator;
+import org.silverpeas.util.logging.SilverLogger;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.util.logging.SilverLogger;
+import java.util.Optional;
 
 import static com.stratelia.webactiv.beans.admin.AdministrationServiceProvider.getAdminService;
 
@@ -69,14 +70,14 @@ public class PersonalSpaceController {
     component.setLabel(componentLabel);
     component.setName(componentName);
 
-    WAComponent baseComponent = Instanciateur.getWAComponent(componentName);
-    if (baseComponent == null || !baseComponent.isVisibleInPersonalSpace()) {
+    Optional<WAComponent> wac = WAComponent.get(componentName);
+    if (!wac.isPresent() || !wac.get().isVisibleInPersonalSpace()) {
       UserDetail user = UserDetail.getById(userId);
       LocalizationBundle messages = getMessages(user.getUserPreferences().getLanguage());
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");
       throw new AdminException(MessageFormat.format(errorText, componentName), false);
     }
-    List<Parameter> parameters = baseComponent.getAllParameters();
+    List<Parameter> parameters = wac.get().getAllParameters();
 
     // set specific parameter values for personal space context
     for (Parameter parameter : parameters) {

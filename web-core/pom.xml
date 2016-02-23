@@ -130,12 +130,6 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core.ejb-core</groupId>
-      <artifactId>notation</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
       <artifactId>searchengine</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

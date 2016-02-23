@@ -35,8 +35,7 @@ import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -45,6 +44,7 @@ import org.silverpeas.attachment.AttachmentServiceProvider;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.ForeignPK;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -70,7 +70,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
 
   @Inject
-  private TodoBackboneAccess todoAccessor;
+  private SilverpeasCalendar calendar;
 
   @Override
   public ProcessInstance[] getProcessInstances(String peasId, User user, String role)
@@ -302,9 +302,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           ProcessInstance instance = (ProcessInstance) results.next();
           instances.add(instance);
         }
-      } catch (Exception ex) {
-        SilverTrace.warn("workflowEngine", "ProcessInstanceManagerImpl",
-            "workflowEngine.EX_PROBLEM_GETTING_INSTANCES", ex);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
 
       db.commit();
@@ -440,11 +439,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     // delete associated todos
-
-    todoAccessor
-        .removeEntriesFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId() + "##%");
-
-
+    calendar
+        .removeToDoFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId() + "##%");
   }
 
   /**
@@ -598,9 +594,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           ProcessInstance instance = (ProcessInstance) results.next();
           instances.add(instance);
         }
-      } catch (Exception ex) {
-        SilverTrace.warn("workflowEngine", "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
-            "workflowEngine.EX_PROBLEM_GETTING_INSTANCES", ex);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
       db.commit();
       return instances.toArray(new ProcessInstance[instances.size()]);

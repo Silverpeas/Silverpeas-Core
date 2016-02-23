@@ -48,10 +48,6 @@ public class LocalizedComponent {
     return realComponent.getDescription().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
-  public String getInstanceClassName() {
-    return realComponent.getInstanceClassName();
-  }
-
   public String getLabel() {
     if (realComponent.getLabel().containsKey(lang)) {
       return realComponent.getLabel().get(lang);

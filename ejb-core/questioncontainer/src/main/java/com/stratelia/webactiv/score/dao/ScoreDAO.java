@@ -59,6 +59,10 @@ public class ScoreDAO {
   private static final String SELECT_SCORE_BY_FATHER_ID = "SELECT " + SCORECOLUMNNAMES +
       " FROM SB_Question_Score WHERE qcId = ? ORDER BY scoreScore DESC";
 
+  private static final String DELETE_SCORES_FOR_ALL_QUESTIONS =
+      "DELETE FROM SB_Question_Score WHERE qcId in (SELECT QC.qcId FROM SB_Question_Question Q, " +
+          "SB_QuestionContainer_QC QC WHERE QC.qcId = Q.qcId AND Q.instanceId = ?)";
+
   /**
    * @param rs
    * @param scorePK the score identifier
@@ -180,6 +184,20 @@ public class ScoreDAO {
       prepStmt.close();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Deletes the scores of all the questions in the specified component instance.
+   * @param con a connection to the data source into which are stored the scores.
+   * @param instanceId the unique identifier of the component instance.
+   * @throws SQLException if an error occurs while deleting the scores.
+   */
+  public static void deleteAllScoresByInstanceId(Connection con, String instanceId)
+      throws SQLException {
+    try (PreparedStatement deletion = con.prepareStatement(DELETE_SCORES_FOR_ALL_QUESTIONS)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 

@@ -23,8 +23,11 @@
  */
 package org.silverpeas.util.logging;
 
+import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.lang.SystemWrapper;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,6 +56,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * be located in the <code>SILVERPEAS_HOME/properties/org/silverpeas/util/logging</code> directory.
  * @author miguel
  */
+@Singleton
 public class LoggerConfigurationManager {
 
   private static final String THIS_LOGGER_NAMESPACE = "Silverpeas.Core.Logging";
@@ -77,7 +81,7 @@ public class LoggerConfigurationManager {
     return path.toFile();
   }
 
-  private LoggerConfigurationManager() {
+  protected LoggerConfigurationManager() {
 
   }
 
@@ -89,7 +93,10 @@ public class LoggerConfigurationManager {
     return confByLogger;
   }
 
+  @PostConstruct
   protected void loadAllConfigurationFiles() {
+    java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
+        .log(java.util.logging.Level.INFO, "Silverpeas Logging Engine initialization...");
     File configurationHome = getConfigurationHome();
     File[] configurationFiles =
         configurationHome.listFiles((dir, name) -> name.endsWith(".properties"));
@@ -116,13 +123,14 @@ public class LoggerConfigurationManager {
   }
 
   public static LoggerConfigurationManager get() {
-    if (instance == null) {
+    /*if (instance == null) {
       java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
           .log(java.util.logging.Level.INFO, "Silverpeas Logging Engine initialization...");
       instance = new LoggerConfigurationManager();
       instance.loadAllConfigurationFiles();
-    }
-    return instance;
+    }*
+    return instance;*/
+    return ServiceProvider.getService(LoggerConfigurationManager.class);
   }
 
   /**

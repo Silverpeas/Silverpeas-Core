@@ -347,19 +347,6 @@ public class AdminController implements java.io.Serializable {
   }
 
   // ----------------------------------------------
-  // Component Instances related functions
-  // ----------------------------------------------
-  /** Return all the components names available in webactiv */
-  public Map<String, String> getAllComponentsNames() {
-
-    try {
-      return admin.getAllComponentsNames();
-    } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllComponentsNames",
-          "admin.MSG_ERR_GET_ALL_COMPONENT_NAMES", e);
-      return new HashMap<String, String>();
-    }
-  }
 
   /** Return all the components of silverpeas read in the xmlComponent directory */
   public Map<String, WAComponent> getAllComponents() {

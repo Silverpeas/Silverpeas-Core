@@ -102,6 +102,15 @@ public interface BasicEntityRepository<ENTITY extends IdentifiableEntity, ENTITY
   long deleteById(final Collection<String> ids);
 
   /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param instanceId the unique instance identifier.
+   * @return the number of deleted entities.
+   */
+  default long deleteByComponentInstanceId(final String instanceId) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
    * Synchronizes the persistence context to the underlying data source. Within a transactional
    * context, the persistence context is directly put to the data source but will be effective
    * only when the transaction will be committed. The consequence of the synchronization within

@@ -61,6 +61,7 @@ public class SQLUserTable {
     try {
       nextId = DBUtil.getNextId(drvSettings.getUserTableName(), drvSettings
           .getUserSpecificIdColumnName());
+      statement = c.prepareStatement(theQuery);
       statement.setInt(1, nextId);
       statement.setString(2, drvSettings.trunc(user.getFirstName(), 100));
       statement.setString(3, drvSettings.trunc(user.getLastName(), 100));

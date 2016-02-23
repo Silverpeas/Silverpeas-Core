@@ -44,6 +44,8 @@ import java.util.logging.Logger;
 import static java.lang.String.valueOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.defaultConfig;
+import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
 import static org.silverpeas.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 
 public class ManagedThreadPoolTest {
@@ -228,6 +230,44 @@ public class ManagedThreadPoolTest {
       assertThat(future.get() - getResultTime, lessThan(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     }
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(callables.size()));
+    log("... OK");
+  }
+
+  @Test
+  public void invokeCallablesAndSpecifyPoolSize() throws Exception {
+    final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
+    final List<TestCallable> callablesWithPoolSize = fiveCallablesOf1SecondOfTreatment();
+
+    log("[without pool size] Processing the invocation...");
+    long beforeTime = System.currentTimeMillis();
+    Pair<TimeData, List<Future<Long>>> result =
+        executeInvokeCallableTest(() -> ManagedThreadPool.invoke(callables));
+    List<Future<Long>> futures = result.getRight();
+    for (Future<Long> future : futures) {
+      log("[without pool size]\tprocess ended at {0}", valueOf(future.get()));
+    }
+    long afterTime = System.currentTimeMillis();
+    TimeData duration = UnitUtil.getTimeData(afterTime - beforeTime);
+    log("[without pool size] Invocation duration of {0}ms", valueOf(duration.getTimeAsLong()));
+
+    log("[with pool size of 1] Processing the invocation...");
+    long beforeTimeWithPoolSize = System.currentTimeMillis();
+    Pair<TimeData, List<Future<Long>>> resultWithPoolSize = executeInvokeCallableTest(
+        () -> ManagedThreadPool.invoke(callablesWithPoolSize, maxThreadPoolSizeOf(1)));
+    List<Future<Long>> futuresWithPoolSize = resultWithPoolSize.getRight();
+    for (Future<Long> future : futuresWithPoolSize) {
+      log("[with pool size of 1]\tprocess ended at {0}", valueOf(future.get()));
+    }
+    long afterTimeWithPoolSize = System.currentTimeMillis();
+    TimeData durationWithPoolSize =
+        UnitUtil.getTimeData(afterTimeWithPoolSize - beforeTimeWithPoolSize);
+    log("[with pool size of 1] Invocation duration of {0}ms",
+        valueOf(durationWithPoolSize.getTimeAsLong()));
+
+    assertThat(threadEndTag.getThreadIdCalls(),
+        hasSize(callables.size() + callablesWithPoolSize.size()));
+    assertThat(durationWithPoolSize.getTimeAsLong(),
+        greaterThan((duration.getTimeAsLong() * (callablesWithPoolSize.size() - 1))));
     log("... OK");
   }
 

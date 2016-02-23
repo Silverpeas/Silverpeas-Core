@@ -29,7 +29,8 @@ import javax.jms.MessageListener;
 
 /**
  * An asynchronous event listener. Asynchronous events are carried by JMS and are collected by this
- * abstract class.
+ * abstract class. It is dedicated to notify asynchronously external or remote software components;
+ * the asynchronous notification between Silverpeas inner components shouldn't use this mechanism.
  * <p>
  * All concrete listeners have just to extend this abstract class and to implement
  * first the {@code org.silverpeas.notification.JMSResourceEventListener#getResourceEventClass()}

@@ -312,6 +312,17 @@ public class SilverpeasJpaEntityManager<ENTITY extends Entity<ENTITY, ENTITY_IDE
     return deleteByIdentifier(convertToEntityIdentifiers(ids));
   }
 
+  /**
+   * Deletes all entities belonging to the specified component instance.
+   * @param componentInstanceId the unique instance identifier.
+   * @return the number of deleted entities.
+   */
+  @Override
+  public long deleteByComponentInstanceId(final String componentInstanceId) {
+    Query deleteQuery = getEntityManager().createQuery(
+        "delete from " + getEntityClass().getName() + " a where a.componentInstanceId = :id");
+    return newNamedParameters().add("id", componentInstanceId).applyTo(deleteQuery).executeUpdate();
+  }
 
   private long deleteByIdentifier(final Collection<ENTITY_IDENTIFIER_TYPE> ids) {
     long nbDeletes = 0;

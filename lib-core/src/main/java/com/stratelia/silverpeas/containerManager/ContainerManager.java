@@ -26,8 +26,8 @@
 package com.stratelia.silverpeas.containerManager;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.JoinStatement;
 import org.silverpeas.util.exception.SilverpeasException;
 
 import java.sql.Connection;
@@ -149,7 +149,6 @@ public class ContainerManager implements java.io.Serializable {
 
     // Check the minimum required
     this.checkParameters(sComponentId, sContainerType, sContentType);
-    PreparedStatement prepStmt = null;
     try {
       if (connection == null) {
         // Open connection
@@ -158,17 +157,24 @@ public class ContainerManager implements java.io.Serializable {
       }
 
       // Remove the association container - content
-      String sSQLStatement = "DELETE FROM " + m_sInstanceTable + " WHERE (";
+      final String instanceDeletion = "DELETE FROM " + m_sInstanceTable +
+          " WHERE componentId = ? AND containerType = ? AND contentType = ?";
+      final String linkDeletion = "DELETE FROM " + m_sLinksTable +
+          " WHERE containerInstanceId in (SELECT instanceId FROM " + m_sInstanceTable +
+          " WHERE componentId = ? AND containerType = ? AND contentType = ?)";
 
-      sSQLStatement +=
-          "componentId = '" + sComponentId + "') AND (containerType = '" + sContainerType +
-              "') AND (contentType = '" + sContentType + "')";
-
-      // Execute the insertion
-
-      prepStmt = connection.prepareStatement(sSQLStatement);
-
-      prepStmt.executeUpdate();
+      try (PreparedStatement deletion = connection.prepareStatement(linkDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
+      try (PreparedStatement deletion = connection.prepareStatement(instanceDeletion)) {
+        deletion.setString(1, sComponentId);
+        deletion.setString(2, sContainerType);
+        deletion.setString(3, sContentType);
+        deletion.execute();
+      }
 
       removeAsso(sComponentId);
     } catch (Exception e) {
@@ -176,7 +182,6 @@ public class ContainerManager implements java.io.Serializable {
           SilverpeasException.ERROR, "containerManager.EX_CANT_UNREGISTER_CONTAINER_INSTANCE",
           "componentId: " + sComponentId + "    sContainerType: " + sContainerType, e);
     } finally {
-      DBUtil.close(prepStmt);
       if (bCloseConnection) {
         closeConnection(connection);
       }
@@ -289,15 +294,7 @@ public class ContainerManager implements java.io.Serializable {
 
     if (sContainerInstanceId != null) {
       containerInstanceId = Integer.parseInt(sContainerInstanceId);
-    } else {
-      // the given instance is not registered. This code is used to maintains
-      // compatibility with previous versions.
-      String componentName = extractComponentNameFromInstanceId(sComponentId);
-      containerInstanceId =
-          registerNewContainerInstance(null, sComponentId, "containerPDC", componentName);
     }
-
-
     return containerInstanceId;
   }
 
@@ -637,7 +634,7 @@ public class ContainerManager implements java.io.Serializable {
    */
   public JoinStatement getFilterPositionsByComponentIdStatement(List<Integer> alPositions,
       List<String> alComponentId) throws ContainerManagerException {
-    StringBuffer sSQLStatement = new StringBuffer(1000);
+    StringBuilder sSQLStatement = new StringBuilder(1000);
 
     JoinStatement joinStatement = new JoinStatement();
 
@@ -656,7 +653,7 @@ public class ContainerManager implements java.io.Serializable {
 
     // works on the componentId List
     if (alComponentId != null && alComponentId.size() > 0) {
-      sSQLStatement.append(" CML.containerInstanceId IN (");
+      StringBuilder componentIdList = new StringBuilder();
       boolean first = true;
       for (String component : alComponentId) {
         // Get the containerInstanceId corresponding to the given componentId
@@ -664,15 +661,19 @@ public class ContainerManager implements java.io.Serializable {
         // We need only components in a container
         if (nContainerInstanceId != -1) {
           if (!first) {
-            sSQLStatement.append(", ");
+            componentIdList.append(", ");
           } else {
             first = false;
           }
 
-          sSQLStatement.append(nContainerInstanceId);
+          componentIdList.append(nContainerInstanceId);
         }
       }
-      sSQLStatement.append(") ");
+      if (!componentIdList.toString().isEmpty()) {
+        sSQLStatement.append(" CML.containerInstanceId IN (")
+            .append(componentIdList.toString())
+            .append(") ");
+      }
     }
 
     if (alPositions != null && alPositions.size() > 0) {

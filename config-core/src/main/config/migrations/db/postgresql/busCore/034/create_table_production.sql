@@ -54,13 +54,6 @@ CREATE TABLE model (
 	partId int default 1 NOT NULL
 );
 
-CREATE TABLE favorit (
-	actorId varchar(100) NOT NULL ,
-	nodeId int NOT NULL ,
-	space varchar(50) NOT NULL ,
-	componentName varchar(50) NOT NULL
-);
-
 CREATE TABLE calendarJournal (
 	id int NOT NULL ,
 	name varchar(2000) NOT NULL ,

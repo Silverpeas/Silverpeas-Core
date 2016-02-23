@@ -25,11 +25,13 @@
 package com.stratelia.silverpeas.pdc.control;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 
 import org.silverpeas.util.CollectionUtil;
@@ -50,12 +52,14 @@ import org.silverpeas.util.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 /**
  * @author
  */
 @Singleton
-public class DefaultPdcUtilizationService implements PdcUtilizationService {
+public class DefaultPdcUtilizationService implements PdcUtilizationService,
+    ComponentInstanceDeletion {
 
   @Inject
   private ClassifyEngine classifyEngine;
@@ -396,5 +400,20 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService {
       }
     }
     deleteUsedAxisByValueId(con, baseValueToUpdate, axisId);
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try (Connection connection = DBUtil.openConnection()) {
+      utilizationDAO.deleteAllAxisUsedByInstanceId(connection, componentInstanceId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
   }
 }

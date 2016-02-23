@@ -24,6 +24,7 @@
 
 package com.silverpeas.thumbnail.control;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -49,6 +50,7 @@ import org.silverpeas.file.SilverpeasFileProvider;
 import org.silverpeas.servlet.FileUploadUtil;
 
 import javax.imageio.ImageIO;
+import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -56,7 +58,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-public class ThumbnailController {
+public class ThumbnailController implements ComponentInstanceDeletion {
 
   private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.publication.publicationSettings");
@@ -69,6 +71,27 @@ public class ThumbnailController {
 
   private static ThumbnailService getThumbnailService() {
     return ThumbnailServiceProvider.getThumbnailService();
+  }
+
+  @Transactional
+  @Override
+  public void delete(final String componentInstanceId) {
+
+    // 1 - delete data in database
+    try {
+      getThumbnailService().deleteAllThumbnail(componentInstanceId);
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailServiceImpl.delete()",
+          SilverpeasException.ERROR, "root.EX_RECORD_DELETE_FAILED", e);
+    }
+
+    // 2 - delete directory where files are stored
+    try {
+      FileFolderManager.deleteFolder(getImageDirectory(componentInstanceId));
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException("ThumbnailServiceImpl.delete()",
+          SilverpeasException.ERROR, "root.DELETING_DATA_DIRECTORY_FAILED", e);
+    }
   }
   
   public static boolean processThumbnail(ForeignPK pk, String objectType, List<FileItem> parameters)

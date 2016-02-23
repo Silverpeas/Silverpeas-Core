@@ -48,7 +48,6 @@
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
-  <instanceClassName>com.silverpeas.classifieds.ClassifiedsInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>

@@ -28,6 +28,7 @@ import org.silverpeas.media.video.ThumbnailPeriod;
 import org.silverpeas.media.video.VideoThumbnailExtractor;
 import org.silverpeas.util.MetaData;
 import org.silverpeas.util.MetadataExtractor;
+import org.silverpeas.util.logging.SilverLogger;
 import org.silverpeas.util.time.TimeData;
 
 import java.io.File;
@@ -56,8 +57,8 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
               new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
         }
       } else {
-        SilverTrace.warn("VideoTool", getClass().getSimpleName(),
-            "Problem to retrieve video duration, process video thumbnails has failed");
+        SilverLogger.getLogger(this)
+            .warn("Problem to retrieve video duration, process video thumbnails has failed");
       }
     }
   }

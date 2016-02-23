@@ -21,6 +21,7 @@
 package com.silverpeas.notation.control;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.notation.model.Rating;
 import com.silverpeas.notation.model.RatingRepository;
 import org.silverpeas.rating.ContributionRating;
@@ -28,15 +29,28 @@ import org.silverpeas.rating.ContributionRatingPK;
 import org.silverpeas.rating.RaterRatingPK;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
 @Transactional
-public class DefaultRatingService implements RatingService {
+@Singleton
+public class DefaultRatingService implements RatingService, ComponentInstanceDeletion {
 
   @Inject
   private RatingRepository repository;
+
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try {
+      // Delete the notations
+      RatingService.get().deleteComponentRatings(componentInstanceId);
+    } catch (Exception e) {
+      // No exceptions are thrown because of those information are not sensible.
+    }
+  }
 
   @Override
   public void updateRating(RaterRatingPK pk, int note) {

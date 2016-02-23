@@ -22,36 +22,17 @@
 package com.silverpeas.comment.service.notification;
 
 import com.silverpeas.comment.model.Comment;
-import org.silverpeas.notification.JMSResourceEventNotifier;
+import org.silverpeas.notification.CDIResourceEventNotifier;
 import org.silverpeas.notification.ResourceEvent;
 
-import javax.annotation.Resource;
-import javax.jms.Destination;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
-import javax.jms.Topic;
-
 /**
- * A notifier of events about the comments. The notifications are sent asynchronously by JMS to
- * the dedicated topic <code>topic/comments</code>.
+ * A notifier of events about the comments. The notifications are sent synchronously by using
+ * the CDI event mechanism.
  * @author mmoquillon
  */
-@JMSDestinationDefinitions(
-    value = {@JMSDestinationDefinition(
-        name = "java:/topic/comments",
-        interfaceName = "javax.jms.Topic",
-        destinationName = "CommentEventNotification")})
-public class CommentEventNotifier extends JMSResourceEventNotifier<Comment, CommentEvent> {
-
-  @Resource(lookup = "java:/topic/comments")
-  private Topic topic;
+public class CommentEventNotifier extends CDIResourceEventNotifier<Comment, CommentEvent> {
 
   private CommentEventNotifier() {
-  }
-
-  @Override
-  protected Destination getDestination() {
-    return topic;
   }
 
   @Override

@@ -25,6 +25,7 @@
 package org.silverpeas.test;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.admin.components.PasteDetailFromToPK;
@@ -215,6 +216,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(StringDataExtractor.class)) {
       addClasses(StringDataExtractor.class);
+    }
+    if (!contains(GlobalContext.class)) {
+      addClasses(GlobalContext.class);
     }
     if (!contains(UnitUtil.class)) {
       addClasses(UnitUtil.class);
@@ -643,9 +647,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.admin.user.constant");
       addPackages(true, "org.silverpeas.admin.user.notification");
       addPackages(true, "org.silverpeas.util.clipboard");
+      addAsResource("xmlcomponents");
       addAsResource("org/silverpeas/admin/roleMapping.properties");
       addAsResource("org/silverpeas/beans/admin/admin.properties");
-      addAsResource("org/silverpeas/beans/admin/instance/control/instanciator.properties");
       // Exclusions
       applyManually(war -> war.deleteClass(StubbedAdministration.class));
       // Centralized features
@@ -686,6 +690,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addServiceProviderFeatures() {
     addClasses(CDIContainer.class).addPackages(true, "org.silverpeas.initialization");
+    return this;
+  }
+
+  /**
+   * Sets component instance deletion features.
+   * @return the instance of the war builder.
+   */
+  public WarBuilder4LibCore addComponentInstanceDeletionFeatures() {
+    addClasses(ComponentInstanceDeletion.class);
     return this;
   }
 
@@ -738,4 +751,14 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addPackages(true, "org.silverpeas.image");
     return this;
   }
+
+  /**
+   * Add apache file upload libraries in web archive (war)
+   * @return the instance of the war builder with apache file upload
+   */
+  public WarBuilder4LibCore addApacheFileUploadFeatures() {
+    addMavenDependencies("commons-fileupload:commons-fileupload");
+    return this;
+  }
+
 }

@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Created-By: Silverpeas
+Dependencies: org.jboss.as.naming, org.apache.xerces, com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider, org.apache.commons.codec

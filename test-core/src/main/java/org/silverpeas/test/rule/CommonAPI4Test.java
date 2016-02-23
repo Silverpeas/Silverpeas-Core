@@ -27,22 +27,21 @@ package org.silverpeas.test.rule;
 import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
 import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.util.lang.TestSystemWrapper;
+import org.silverpeas.test.util.log.TestLoggerConfigurationManager;
 import org.silverpeas.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.lang.SystemWrapper;
+import org.silverpeas.util.logging.LoggerConfigurationManager;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
-
 import java.io.File;
 
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -79,6 +78,7 @@ public class CommonAPI4Test implements TestRule {
   protected void beforeEvaluate(final TestContext context) {
     reset(TestBeanContainer.getMockedBeanContainer());
     systemWrapper();
+    loggerConfigurationManager();
     silverTrace();
     managedThreadFactory();
   }
@@ -118,6 +118,12 @@ public class CommonAPI4Test implements TestRule {
     testSystemWrapper.setupDefaultParameters();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SystemWrapper.class))
         .thenReturn(testSystemWrapper);
+  }
+
+  private void loggerConfigurationManager() {
+    LoggerConfigurationManager testManager = new TestLoggerConfigurationManager();
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(LoggerConfigurationManager.class))
+        .thenReturn(testManager);
   }
 
   private void managedThreadFactory() {

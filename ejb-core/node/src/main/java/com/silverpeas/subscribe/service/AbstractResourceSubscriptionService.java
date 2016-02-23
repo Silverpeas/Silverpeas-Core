@@ -47,8 +47,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
 
   @Override
   public void init() throws Exception {
-    ResourceSubscriptionProvider
-        .registerResourceSubscriptionService(this);
+    ResourceSubscriptionProvider.registerResourceSubscriptionService(this);
   }
 
   /**

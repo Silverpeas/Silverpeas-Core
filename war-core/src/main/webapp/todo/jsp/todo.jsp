@@ -281,7 +281,7 @@ function deleteSelectedToDo() {
 				}
 				//Trick for workflow
 				String externalId = todoHeader.getExternalId().replace('#', '_');
-				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLManager.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','com.stratelia.webactiv.calendar.backbone.TodoDetail','"+todoHeader.getComponentId()+"')");
+				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLManager.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','com.stratelia.webactiv.calendar.model.TodoDetail','"+todoHeader.getComponentId()+"')");
 			}
 			
             ArrayCellText cellText = arrayLine.addArrayCellText(todo.getString("priorite"+todoHeader.getPriority().getValue()));

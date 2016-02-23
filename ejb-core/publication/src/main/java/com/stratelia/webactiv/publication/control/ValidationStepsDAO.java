@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.UtilException;
 import com.stratelia.webactiv.publication.model.PublicationPK;
@@ -40,6 +41,18 @@ import com.stratelia.webactiv.publication.model.ValidationStep;
 public class ValidationStepsDAO {
 
   private static String publicationValidationTableName = "SB_Publication_Validation";
+
+  /**
+   * Deletes all validation data of publications linked to the component instance represented by
+   * the given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(publicationValidationTableName)
+        .where("instanceId = ?", componentInstanceId).execute();
+  }
 
   /*
    * id int NOT NULL, pubId int NOT NULL, instanceId varchar(50) NOT NULL, userId int NOT NULL,

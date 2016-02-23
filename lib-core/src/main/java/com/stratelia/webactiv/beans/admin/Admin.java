@@ -20,12 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.ApplicationResourcePasting;
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.admin.components.PasteDetail;
-import com.silverpeas.admin.components.Profile;
-import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.components.*;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
@@ -45,7 +40,6 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.admin.space.SpaceServiceProvider;
 import org.silverpeas.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
@@ -124,7 +118,7 @@ class Admin implements Administration {
   private static transient boolean cacheLoaded = false;
 
   @Inject
-  private Instanciateur componentInstanciator;
+  private WAComponentRegistry componentRegistry;
   @Inject
   private UserManager userManager;
   @Inject
@@ -830,14 +824,10 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   // COMPONENT RELATED FUNCTIONS
   // -------------------------------------------------------------------------
-  @Override
-  public Map<String, String> getAllComponentsNames() {
-    return Instanciateur.getAllComponentsNames();
-  }
 
   @Override
   public Map<String, WAComponent> getAllComponents() {
-    return Instanciateur.getWAComponents();
+    return componentRegistry.getAllWAComponents();
   }
 
   @Override
@@ -1040,8 +1030,11 @@ class Admin implements Administration {
 
       String[] asCompoNames = {componentName};
       String[] asCompoIds = {componentId};
-      instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
-          connectionProd);
+
+      ComponentInstancePostConstruction.get(componentName)
+          .ifPresent(c -> c.postConstruct(componentId));
+      /*instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
+          connectionProd);*/
 
       if (isContentManagedComponent(componentName)) {
         // Create the manager objects
@@ -1099,8 +1092,9 @@ class Admin implements Administration {
 
   boolean isContentManagedComponent(String componentName) {
     return "expertLocator".equals(componentName) || "questionReply".equals(componentName)
-        || "whitePages".equals(componentName) || "kmelia".equals(componentName) || "survey".equals(
-            componentName) || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
+        || "whitePages".equals(componentName) || "kmelia".equals(componentName)
+        || "kmax".equals(componentName) || "survey".equals(componentName)
+        || "toolbox".equals(componentName) || "quickinfo".equals(componentName)
         || "almanach".equals(componentName) || "quizz".equals(componentName) || "forums".equals(
             componentName) || "pollingStation".equals(componentName) || "bookmark".equals(
             componentName) || "chat".equals(componentName) || "infoLetter".equals(componentName)
@@ -1167,10 +1161,12 @@ class Admin implements Administration {
         connectionProd = openConnection(false);
         // Uninstantiate the components
         String componentName = componentInst.getName();
-        String[] asCompoName = {componentName};
-        String[] asCompoId = {componentId};
-        unInstantiateComponents(userId, asCompoId, asCompoName, getClientSpaceId(sFatherClientId),
-            connectionProd);
+
+        ComponentInstancePreDestruction.get(componentName)
+            .ifPresent(c -> c.preDestroy(componentId));
+
+        ServiceProvider.getAllServices(ComponentInstanceDeletion.class).stream()
+            .forEach(service -> service.delete(componentId));
 
         // delete the profiles instance
         for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
@@ -1414,7 +1410,7 @@ class Admin implements Administration {
   @Override
   public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space,
       boolean startNewTransaction) throws AdminException {
-    WAComponent waComponent = Instanciateur.getWAComponent(component.getName());
+    WAComponent waComponent = componentRegistry.getWAComponent(component.getName()).get();
     List<Profile> componentRoles = waComponent.getProfiles();
 
     if (space == null) {
@@ -1672,11 +1668,10 @@ class Admin implements Administration {
 
   @Override
   public String getRequestRouter(String sComponentName) {
-    WAComponent wac = Instanciateur.getWAComponent(sComponentName);
-    if (wac == null || !StringUtil.isDefined(wac.getRouter())) {
-      return "R" + sComponentName;
-    }
-    return wac.getRouter();
+    return componentRegistry.getWAComponent(sComponentName)
+        .filter(wac -> StringUtil.isDefined(wac.getRouter()))
+        .map(WAComponent::getRouter)
+        .orElse("R" + sComponentName);
   }
 
   // --------------------------------------------------------------------------------------------------------
@@ -1684,37 +1679,29 @@ class Admin implements Administration {
   // --------------------------------------------------------------------------------------------------------
   @Override
   public String[] getAllProfilesNames(String sComponentName) {
-    String[] asProfiles = null;
-    WAComponent wac = Instanciateur.getWAComponent(sComponentName);
-    if (wac != null) {
+    List<String> asProfiles = new ArrayList<>();
+    componentRegistry.getWAComponent(sComponentName).ifPresent(wac -> {
       List<Profile> profiles = wac.getProfiles();
       List<String> profileNames = new ArrayList<>(profiles.size());
       for (Profile profile : profiles) {
         profileNames.add(profile.getName());
       }
-      asProfiles = profileNames.toArray(new String[profileNames.size()]);
-    }
-
-    if (asProfiles != null) {
-      return asProfiles;
-    }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+      asProfiles.addAll(profileNames);
+    });
+    return asProfiles.toArray(new String[asProfiles.size()]);
   }
 
   @Override
   public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
-    WAComponent wac = Instanciateur.getWAComponent(sComponentName);
-    if (wac != null) {
+    return componentRegistry.getWAComponent(sComponentName).map(wac -> {
       List<Profile> profiles = wac.getProfiles();
-      String sProfileLabel = sProfileName;
       for (Profile profile : profiles) {
         if (profile.getName().equals(sProfileName)) {
           return profile.getLabel().get(lang);
         }
       }
-      return sProfileLabel;
-    }
-    return sProfileName;
+      return sProfileName;
+    }).orElse(sProfileName);
   }
 
   @Override
@@ -3141,51 +3128,6 @@ class Admin implements Administration {
         domainDriverManager.releaseOrganizationSchema();
       }
     }
-  }
-
-  // -------------------------------------------------------------------------
-  // COMPONENT RELATED FUNCTIONS
-  // -------------------------------------------------------------------------
-  /**
-   * Instantiate the space Components
-   */
-  private void instantiateComponents(String userId, String[] asComponentIds,
-      String[] asComponentNames, String sSpaceId, Connection connectionProd)
-      throws AdminException {
-    try {
-      for (int nI = 0; nI < asComponentIds.length; nI++) {
-        componentInstanciator.setConnection(connectionProd);
-        componentInstanciator.setSpaceId(sSpaceId);
-        componentInstanciator.setComponentId(asComponentIds[nI]);
-        componentInstanciator.setUserId(userId);
-        componentInstanciator.instantiateComponentName(asComponentNames[nI]);
-      }
-    } catch (Exception e) {
-      throw new AdminException("Admin.instantiateComponents",
-          SilverpeasException.ERROR, "admin.EX_ERR_INSTANTIATE_COMPONENTS", e);
-    }
-  }
-
-  /**
-   * Uninstantiate the space Components
-   */
-  private void unInstantiateComponents(String userId, String[] asComponentIds,
-      String[] asComponentNames, String sSpaceId, Connection connectionProd) {
-
-    for (int nI = 0; nI < asComponentIds.length; nI++) {
-      try {
-        componentInstanciator.setConnection(connectionProd);
-        componentInstanciator.setSpaceId(sSpaceId);
-        componentInstanciator.setComponentId(asComponentIds[nI]);
-        componentInstanciator.setUserId(userId);
-        componentInstanciator.unInstantiateComponentName(asComponentNames[nI]);
-      } catch (Exception e) {
-        SilverTrace.warn("admin", "Admin.unInstantiateComponents",
-            "admin.EX_ERR_UNINSTANTIATE_COMPONENTS", "Deleting data from component '"
-            + asComponentNames[nI] + "' failed", e);
-      }
-    }
-
   }
 
   // -------------------------------------------------------------------------

@@ -62,15 +62,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel withFieldsetStyle="true"/>
+<view:includePlugin name="popup"/>
 <title><%=userObject.getDisplayedName()%></title>
 <script type="text/javascript">
-function ConfirmAndSend(textToDisplay,targetURL)
-{
-    if (window.confirm(textToDisplay))
-    {
-        window.location.href = targetURL;
-    }
-}
+  function ConfirmAndSend(textToDisplay, targetURL) {
+    jQuery.popup.confirm(textToDisplay, function() {
+      window.location.href = targetURL;
+    });
+  }
 
 function resizeMe() {
 	<% 

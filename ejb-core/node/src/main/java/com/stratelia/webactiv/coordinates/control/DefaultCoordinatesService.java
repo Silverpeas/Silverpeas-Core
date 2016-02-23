@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.DBUtil;
 import com.stratelia.webactiv.coordinates.persistence.CoordinatesDAO;
@@ -44,7 +45,7 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
  * @version %I%, %G%
  */
 @Transactional
-public class DefaultCoordinatesService implements CoordinatesService {
+public class DefaultCoordinatesService implements CoordinatesService, ComponentInstanceDeletion {
 
   protected DefaultCoordinatesService() {
   }
@@ -234,6 +235,21 @@ public class DefaultCoordinatesService implements CoordinatesService {
           e);
     } finally {
       DBUtil.close(con);
+    }
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try (Connection connection = DBUtil.openConnection()) {
+      CoordinatesDAO.removeCoordinatesByInstanceId(connection, componentInstanceId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 }

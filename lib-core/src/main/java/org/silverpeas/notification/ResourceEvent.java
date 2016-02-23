@@ -48,7 +48,7 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
    * the related resource. It defines then the state in the life-cycle of the resource.
    * @return the type of the event (creation, update, deletion, ...)
    */
-  public Type getType();
+  Type getType();
 
   /**
    * Gets the state transition implying by a change on the resource. The transition carries two
@@ -68,13 +68,13 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
    * @return a state transition with two instances of the resource related by this event: one being
    * the resource before the change, the second being the resource after the change.
    */
-  public StateTransition<T> getTransition();
+  StateTransition<T> getTransition();
 
   /**
    * Is the event on the creation of a resource.
    * @return true if the event is about a resource creation. False otherwise.
    */
-  public default boolean isOnCreation() {
+  default boolean isOnCreation() {
     return getType() == Type.CREATION;
   }
 
@@ -82,7 +82,7 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
    * Is the event on the update of a resource.
    * @return true if the event is about a resource update. False otherwise.
    */
-  public default boolean isOnUpdate() {
+  default boolean isOnUpdate() {
     return getType() == Type.UPDATE;
   }
 
@@ -90,14 +90,14 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
    * Is the event on the removing of a resource.
    * @return true if the event is about a resource removing. False otherwise.
    */
-  public default boolean isOnRemoving() {
+  default boolean isOnRemoving() {
     return getType() == Type.REMOVING;
   }
 
   /**Is the event on the deletion of a resource.
    * @return true if the event is about a resource deletion. False otherwise.
    */
-  public default boolean isOnDeletion() {
+  default boolean isOnDeletion() {
     return getType() == Type.DELETION;
   }
 

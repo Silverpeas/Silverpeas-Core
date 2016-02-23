@@ -24,6 +24,13 @@
 
 package com.stratelia.webactiv.publication.control;
 
+import com.stratelia.webactiv.publication.model.PublicationI18N;
+import com.stratelia.webactiv.publication.model.PublicationPK;
+import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
+import org.silverpeas.persistence.jdbc.JdbcSqlQuery;
+import org.silverpeas.util.DBUtil;
+import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,19 +38,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.util.exception.UtilException;
-import com.stratelia.webactiv.publication.model.PublicationI18N;
-import com.stratelia.webactiv.publication.model.PublicationPK;
-import com.stratelia.webactiv.publication.model.PublicationRuntimeException;
-
 /**
  * This is the Publication Data Access Object.
  * @author Nicolas Eysseric
  */
 public class PublicationI18NDAO {
   private static String TABLENAME = "SB_Publication_PubliI18N";
+
+  /**
+   * Deletes all translations of publications linked to the component instance represented by the
+   * given identifier.
+   * @param componentInstanceId the identifier of the component instance for which the resources
+   * must be deleted.
+   * @throws SQLException
+   */
+  public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(TABLENAME).where("pubId in (" +
+        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.publicationTableName)
+            .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
+  }
 
   public static List<PublicationI18N> getTranslations(Connection con, PublicationPK pubPK)
       throws SQLException {

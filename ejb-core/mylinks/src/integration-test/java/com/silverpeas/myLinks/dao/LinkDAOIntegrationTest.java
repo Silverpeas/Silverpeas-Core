@@ -7,7 +7,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.test.BasicWarBuilder;
+import org.silverpeas.myLinks.test.WarBuilder4MyLinks;
 import org.silverpeas.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
@@ -26,23 +26,16 @@ public class LinkDAOIntegrationTest {
   private static final String USER_ID_WITHOUT_POSITION = "user_2";
   private static final Integer UNIQUE_ID = 25;
 
+  private static final String TABLE_CREATION_SCRIPT = "/create-database.sql";
+  private static final String DATASET_XML_SCRIPT = "test-mylinks-dataset.xml";
+
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "test-mylinks-dataset.xml");
+      new DbUnitLoadingRule(TABLE_CREATION_SCRIPT, DATASET_XML_SCRIPT);
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(LinkDAOIntegrationTest.class)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
-        .testFocusedOn(war -> war.addPackages(true, "com.silverpeas.myLinks.dao")
-            .addPackages(true, "com.silverpeas.myLinks.model")
-            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST-MF")).build();
+    return WarBuilder4MyLinks.onWarForTestClass(LinkDAOIntegrationTest.class).build();
   }
 
   @Test

@@ -1646,7 +1646,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     hiddenParam.setType(ParameterInputType.checkbox.toString());
     hiddenParam.setValue(isHidden);
     hiddenParam.getLabel().put(getLanguage(), getString("JSPP.hiddenComponent"));
-    hiddenParam.getHelp().put(getLanguage(), getString("Help.hiddenComponent"));
+    hiddenParam.getHelp().put(getLanguage(), null);
     hiddenParam.getWarning().put(getLanguage(), getString("Warning.hiddenComponent"));
 
     return new LocalizedParameter(hiddenParam, getLanguage());
@@ -1666,7 +1666,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     publicParam.setValue(isPublic);
 
     publicParam.getLabel().put(getLanguage(), getString("JSPP.publicComponent"));
-    publicParam.getHelp().put(getLanguage(), getString("Help.publicComponent"));
+    publicParam.getHelp().put(getLanguage(), null);
     publicParam.getWarning().put(getLanguage(), getString("Warning.publicComponent"));
 
     return new LocalizedParameter(publicParam, getLanguage());

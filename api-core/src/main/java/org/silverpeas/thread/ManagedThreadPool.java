@@ -24,8 +24,8 @@
 
 package org.silverpeas.thread;
 
-import com.stratelia.silverpeas.silvertrace.SilverpeasTrace;
 import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedThreadFactory;
@@ -100,8 +100,7 @@ public class ManagedThreadPool {
   public static void invokeAndAwaitTermination(List<? extends Runnable> runnables,
       ExecutionConfig config) throws ManagedThreadPoolException {
     try {
-      ManagedThreadPool me = ServiceProvider.getService(ManagedThreadPool.class);
-      ExecutorService executorService = Executors.newCachedThreadPool(me.managedThreadFactory);
+      ExecutorService executorService = getExecutorService(config);
       List<Future<?>> threadExecutionResults = new ArrayList<>();
       try {
         threadExecutionResults
@@ -115,8 +114,8 @@ public class ManagedThreadPool {
         if (!allRunnablesAreTerminated && !config.isRunningInBackgroundAfterTimeout()) {
           List<Runnable> notExecutedRunnables = executorService.shutdownNow();
           for (Runnable noExecutedRunnable : notExecutedRunnables) {
-            SilverpeasTrace.get().error("thread", "ManagedThreadPool", "NA",
-                "Runnable " + noExecutedRunnable.getClass().getName() + " has not been processed.");
+            SilverLogger.getLogger(config).error("Runnable {0} has not been processed.",
+                noExecutedRunnable.getClass().getName());
           }
         }
       } else {
@@ -176,8 +175,7 @@ public class ManagedThreadPool {
    */
   public static <V> List<Future<V>> invoke(List<? extends Callable<V>> callables,
       ExecutionConfig config) throws InterruptedException {
-    ManagedThreadPool me = ServiceProvider.getService(ManagedThreadPool.class);
-    ExecutorService executorService = Executors.newCachedThreadPool(me.managedThreadFactory);
+    ExecutorService executorService = getExecutorService(config);
     List<Future<V>> futures = new ArrayList<>();
     try {
       for (Callable<V> callable : callables) {
@@ -192,8 +190,8 @@ public class ManagedThreadPool {
       if (!allRunnablesAreTerminated && !config.isRunningInBackgroundAfterTimeout()) {
         List<Runnable> notExecutedRunnables = executorService.shutdownNow();
         for (Runnable noExecutedRunnable : notExecutedRunnables) {
-          SilverpeasTrace.get().error("thread", "ManagedThreadPool", "NA",
-              "Runnable " + noExecutedRunnable.getClass().getName() + " has not been processed.");
+          SilverLogger.getLogger(config).error("Runnable {0} has not been processed.",
+              noExecutedRunnable.getClass().getName());
         }
       }
     }
@@ -201,13 +199,40 @@ public class ManagedThreadPool {
   }
 
   /**
+   * Gets a new executor service according to the given configuration.
+   * @param config the configuration of thread execution.
+   * @return the new {@link ExecutorService} instance.
+   */
+  private static ExecutorService getExecutorService(ExecutionConfig config) {
+    ManagedThreadPool me = ServiceProvider.getService(ManagedThreadPool.class);
+    final ExecutorService executorService;
+    if (config.getMaxThreadPoolSize() > 0) {
+      int maxThreadPoolSize = config.getMaxThreadPoolSize();
+      executorService = Executors.newFixedThreadPool(maxThreadPoolSize, me.managedThreadFactory);
+    } else {
+      executorService = Executors.newCachedThreadPool(me.managedThreadFactory);
+    }
+    return executorService;
+  }
+
+  /**
    * Class that permits to specify the execution configuration.
    */
   public static class ExecutionConfig {
+    private int maxThreadPoolSize = 0;
     private boolean isTimeout = false;
     private long timeout = 0;
     private TimeUnit timeUnit = TimeUnit.MILLISECONDS;
     private boolean runInBackgroundAfterTimeout = true;
+
+    /**
+     * Gets an instance of an execution configuration with a specified maximum pool of thread.<br/>
+     * This is only useful when invoking {@link Callable} instances.
+     * @return an instance of an execution configuration with a specified maximum pool of thread.
+     */
+    public static ExecutionConfig maxThreadPoolSizeOf(int maxThreadPoolSize) {
+      return defaultConfig().withMaxThreadPoolSizeOf(maxThreadPoolSize);
+    }
 
     /**
      * Gets an instance of an execution configuration with a specified timeout in milliseconds.
@@ -229,6 +254,14 @@ public class ManagedThreadPool {
      * Hidden constructor.
      */
     private ExecutionConfig() {
+    }
+
+    /**
+     * Gets the maximum size of the pool of thread.<br/>
+     * @return Zero or negative value indicates an undefined pool size.
+     */
+    int getMaxThreadPoolSize() {
+      return maxThreadPoolSize;
     }
 
     /**
@@ -254,6 +287,18 @@ public class ManagedThreadPool {
     TimeUnit getTimeUnit() {
       return timeUnit;
     }
+
+    /**
+     * Sets a maximum size of the pool of threads.<br/>
+     * This is only useful when invoking {@link Callable} instances.
+     * @param maxThreadPoolSize the maximum size of the pool of threads.
+     * @return the instance of {@link ExecutionConfig}.
+     */
+    public ExecutionConfig withMaxThreadPoolSizeOf(final int maxThreadPoolSize) {
+      this.maxThreadPoolSize = maxThreadPoolSize;
+      return this;
+    }
+
 
     /**
      * Sets a timeout in milliseconds after that the invocation process will give back hand.

@@ -45,7 +45,7 @@ public interface BeanContainer {
   <T> T getBeanByName(String name) throws IllegalStateException;
 
   /**
-   * Gets a bean managed in this container by its type and optionnaly by some qualifiers.
+   * Gets a bean managed in this container by its type and optionally by some qualifiers.
    * If no such bean exists in the bean container, then an IllegalStateException exception is
    * thrown.
    * @param type the type of the bean.

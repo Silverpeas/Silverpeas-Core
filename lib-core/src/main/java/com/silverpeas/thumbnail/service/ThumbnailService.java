@@ -31,17 +31,17 @@ import javax.ejb.Local;
 
 @Local
 public interface ThumbnailService {
-  public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
+  ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
 
-  public void updateThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
+  void updateThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
 
-  public void deleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
+  void deleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
 
-  public ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
+  ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
       throws ThumbnailException;
 
-  public void deleteAllThumbnail(String componentId) throws ThumbnailException;
+  void deleteAllThumbnail(String componentId) throws ThumbnailException;
 
-  public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId)
+  void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId)
       throws ThumbnailException;
 }

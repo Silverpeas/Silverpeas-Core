@@ -24,6 +24,8 @@
 
 package com.stratelia.silverpeas.contentManager;
 
+import org.silverpeas.util.ServiceProvider;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -137,11 +139,12 @@ public class ContentPeas {
     return contentInterfaceClassName;
   }
 
+  @SuppressWarnings("unchecked")
   public ContentInterface getContentInterface() throws Exception {
     if (contentInterface == null) {
-      Class<ContentInterface> contentInterfaceClass = (Class<ContentInterface>) Class.forName(this.
-          getContentInterfaceClass());
-      this.contentInterface = contentInterfaceClass.newInstance();
+      Class<ContentInterface> contentInterfaceClass =
+          (Class<ContentInterface>) Class.forName(this.getContentInterfaceClass());
+      this.contentInterface = ServiceProvider.getService(contentInterfaceClass);
     }
 
     return contentInterface;

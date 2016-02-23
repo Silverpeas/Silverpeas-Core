@@ -25,42 +25,61 @@
 package com.silverpeas.external.webConnections.dao;
 
 import com.silverpeas.accesscontrol.ForbiddenRuntimeException;
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
-import org.silverpeas.util.DBUtil;
-import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.silverpeas.util.DBUtil.openConnection;
+
 /**
  * @author
  */
-public class WebConnectionService implements WebConnectionsInterface {
+@Singleton
+public class WebConnectionService implements WebConnectionsInterface, ComponentInstanceDeletion {
   private ConnectionDAO dao;
 
-  public WebConnectionService() {
+  /**
+   * Hidden constructor
+   */
+  protected WebConnectionService() {
+  }
+
+  @PostConstruct
+  private void initialize() {
     dao = new ConnectionDAO();
   }
 
-  public ConnectionDetail getWebConnection(String componentId, String userId) {
-    Connection con = initCon();
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
     try {
+      dao.deleteByComponentInstanceId(componentInstanceId);
+    } catch (SQLException e) {
+      throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnection()",
+          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
+    }
+  }
+
+  public ConnectionDetail getWebConnection(String componentId, String userId) {
+    try (Connection con = openConnection()) {
       return dao.getConnection(con, componentId, userId);
     } catch (SQLException e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
-    } finally {
-      closeCon(con);
     }
   }
 
   public ConnectionDetail getWebConnectionById(String connectionId, String userId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       
       ConnectionDetail connectionDetail = dao.getConnectionById(con, connectionId);
       
@@ -74,26 +93,22 @@ public class WebConnectionService implements WebConnectionsInterface {
     } catch (Exception e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnectionById()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
-    } finally {
-      closeCon(con);
     }
   }
 
+  @Transactional
   public void createWebConnection(ConnectionDetail connection) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       dao.createConnection(con, connection);
     } catch (Exception e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.createConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_CREATE", e);
-    } finally {
-      closeCon(con);
     }
   }
 
+  @Transactional
   public void deleteWebConnection(String connectionId, String userId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       
       //check rights : check that the current user has the rights to delete the web connection
       getWebConnectionById(connectionId, userId);
@@ -103,14 +118,12 @@ public class WebConnectionService implements WebConnectionsInterface {
     } catch (Exception e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.deleteConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_DELETE", e);
-    } finally {
-      closeCon(con);
     }
   }
 
+  @Transactional
   public void updateWebConnection(String connectionId, String login, String password, String userId) {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       
       //check rights : check that the current user has the rights to update the web connection
       getWebConnectionById(connectionId, userId);
@@ -120,42 +133,15 @@ public class WebConnectionService implements WebConnectionsInterface {
     } catch (Exception e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.updateConnection()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_UPDATE", e);
-    } finally {
-      closeCon(con);
     }
   }
 
   public List<ConnectionDetail> listWebConnectionsOfUser(String userId) throws RemoteException {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       return dao.getConnectionsByUser(con, userId);
     } catch (Exception e) {
       throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnectionsByUser()",
           SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTIONS_NOT_EXIST", e);
-    } finally {
-      closeCon(con);
-    }
-  }
-
-  private Connection initCon() {
-    Connection con;
-    try {
-      con = DBUtil.openConnection();
-    } catch (SQLException e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.initCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-    return con;
-  }
-
-  private void closeCon(Connection con) {
-    try {
-      if (con != null) {
-        con.close();
-      }
-    } catch (SQLException e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.closeCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
     }
   }
 }

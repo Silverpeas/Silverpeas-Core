@@ -27,6 +27,7 @@ package com.silverpeas.sharing.repository;
 import com.silverpeas.sharing.model.Ticket;
 import org.silverpeas.persistence.model.identifier.UuidIdentifier;
 import org.silverpeas.persistence.repository.jpa.JpaBasicEntityManager;
+import org.silverpeas.persistence.repository.jpa.NamedParameters;
 
 import java.util.List;
 
@@ -47,5 +48,11 @@ public class TicketJpaManager extends JpaBasicEntityManager<Ticket, UuidIdentifi
   public List<Ticket> findAllReservationsForUser(final String userId) {
     return listFromNamedQuery("Ticket.findAllReservationsForUser",
         newNamedParameters().add("userId", userId));
+  }
+
+  @Override
+  public void deleteAllTicketsForComponentInstance(final String instanceId) {
+    NamedParameters parameters = newNamedParameters().add("instanceId", instanceId);
+    deleteFromJpqlQuery("delete from Ticket t where t.componentId = :instanceId", parameters);
   }
 }

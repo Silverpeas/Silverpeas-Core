@@ -20,6 +20,7 @@
  */
 package com.silverpeas.comment.service;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -44,6 +45,7 @@ import org.silverpeas.util.WAPrimaryKey;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -57,7 +59,7 @@ import java.util.List;
  */
 @Singleton
 @Named("commentService")
-public class DefaultCommentService implements CommentService {
+public class DefaultCommentService implements CommentService, ComponentInstanceDeletion {
 
   private static final String SETTINGS_PATH = "org.silverpeas.util.comment.Comment";
   private static final String MESSAGES_PATH = "org.silverpeas.util.comment.multilang.comment";
@@ -152,24 +154,10 @@ public class DefaultCommentService implements CommentService {
   }
 
   /**
-   * Deletes all of the comments by the component instance identifier. Any indexes on it are
-   * removed. All callback interested by the deletion of a comment will be invoked through the
-   * CallBackManager. The callback will recieve as invocation parameters respectively the identifier
-   * of the commented publication, the component instance name, and the deleted comment. If no such
-   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
-   *
-   * @param instanceId the identifier of the component instance.
-   */
-  @Override
-  public void deleteAllCommentsByComponentInstanceId(String instanceId) {
-    deleteAllCommentsOnPublication(null, new ForeignPK(null, instanceId));
-  }
-
-  /**
    * Deletes the specified comment. Any indexes on it are removed. If no such comment exists with
    * the specified identifier, then a CommentRuntimeException is thrown. All callback interested by
    * the deletion of a comment will be invoked through the CallBackManager. The callback will
-   * recieve as invocation parameters respectively the identifier of the commented publication, the
+   * receive as invocation parameters respectively the identifier of the commented publication, the
    * component instance name, and the deleted comment.
    *
    * @param comment the comment to remove.
@@ -459,5 +447,16 @@ public class DefaultCommentService implements CommentService {
     return getCommentDAO()
         .getSocialInformationCommentsListOfMyContacts(resourceTypes, myContactsIds, instanceIds,
             period);
+  }
+
+  /**
+   * Deletes all of the comments related to the specified the component instance. If there is no
+   * comments for the specified component instance, then nothing is done.
+   * @param componentInstanceId the identifier of the component instance that is in deletion.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    getCommentDAO().removeAllCommentsByForeignPk(null, new ForeignPK(null, componentInstanceId));
   }
 }

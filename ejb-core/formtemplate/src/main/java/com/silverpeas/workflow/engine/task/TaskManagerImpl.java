@@ -34,14 +34,14 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdministrationServiceProvider;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
-import com.stratelia.webactiv.calendar.backbone.TodoDetail;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
+import com.stratelia.webactiv.calendar.model.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import org.silverpeas.util.StringUtil;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +59,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<>();
 
   @Inject
-  private TodoBackboneAccess todoAccessor;
+  private SilverpeasCalendar calendar;
 
   /**
    * Adds a new task in the user's todos. Returns the external id given by the external todo system.
@@ -86,8 +85,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     if (delegator != null) {
       todo.setDelegatorId(delegator.getUserId());
     } else {
-      SilverTrace.error("workflowEngine", "TaskManagerImpl.assignTask", "root.MSG_GEN_PARAM_VALUE",
-          "Undefined delegator for new task : " + todo.getName());
+      SilverLogger.getLogger(this).error("Undefined delegator for new task {0}", todo.getName());
     }
 
     List<Attendee> attendees = new ArrayList<>();
@@ -96,7 +94,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
       attendees.add(new Attendee(task.getUser().getUserId()));
       todo.setAttendees(attendees);
       todo.setExternalId(getExternalId(task));
-      todoAccessor.addEntry(todo);
+      calendar.addToDo(todo);
     } else {
       List<User> users;
       if (StringUtil.isDefined(task.getGroupId())) {
@@ -111,7 +109,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         attendees.add(new Attendee(user.getUserId()));
         todo.setAttendees(attendees);
         todo.setExternalId(getExternalId(task, user.getUserId()));
-        todoAccessor.addEntry(todo);
+        calendar.addToDo(todo);
       }
     }
   }
@@ -132,7 +130,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     }
 
     if (task.getUser() != null) {
-      todoAccessor.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
+      calendar.removeToDoFromExternal(compoInst.getDomainFatherId(), componentId,
           getExternalId(task));
     } else {
       String role = task.getUserRoleName();
@@ -140,7 +138,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
       for (User userInRole : usersInRole) {
         TaskImpl taskImpl =
             new TaskImpl(userInRole, role, task.getProcessInstance(), task.getState());
-        todoAccessor.removeEntriesFromExternal(compoInst.getDomainFatherId(), componentId,
+        calendar.removeToDoFromExternal(compoInst.getDomainFatherId(), componentId,
             getExternalId(taskImpl, userInRole.getUserId()));
       }
     }
@@ -211,8 +209,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         notifMetaData.setLink(link);
         notifSender.notifyUser(notifMetaData);
       } catch (WorkflowException | NotificationManagerException e) {
-        SilverTrace.warn("workflowEngine", "TaskManagerImpl.notifyUser()",
-            "workflowEngine.EX_ERR_NOTIFY", "user = " + userId, e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }

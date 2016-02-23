@@ -24,13 +24,16 @@
 
 package com.stratelia.webactiv.questionContainer.control;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.answer.control.AnswerService;
+import com.stratelia.webactiv.answer.dao.AnswerDAO;
 import com.stratelia.webactiv.answer.model.Answer;
 import com.stratelia.webactiv.answer.model.AnswerPK;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.question.control.QuestionService;
+import com.stratelia.webactiv.question.dao.QuestionDAO;
 import com.stratelia.webactiv.question.model.Question;
 import com.stratelia.webactiv.question.model.QuestionPK;
 import com.stratelia.webactiv.questionContainer.dao.QuestionContainerDAO;
@@ -40,8 +43,10 @@ import com.stratelia.webactiv.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.questionContainer.model.QuestionContainerRuntimeException;
 import com.stratelia.webactiv.questionResult.control.QuestionResultService;
+import com.stratelia.webactiv.questionResult.dao.QuestionResultDAO;
 import com.stratelia.webactiv.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.score.control.ScoreService;
+import com.stratelia.webactiv.score.dao.ScoreDAO;
 import com.stratelia.webactiv.score.model.ScoreDetail;
 import com.stratelia.webactiv.score.model.ScorePK;
 import org.silverpeas.core.admin.OrganizationController;
@@ -73,7 +78,8 @@ import java.util.Map;
  */
 @Singleton
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
-public class DefaultQuestionContainerService implements QuestionContainerService {
+public class DefaultQuestionContainerService
+    implements QuestionContainerService, ComponentInstanceDeletion {
 
   private QuestionService questionService;
   private QuestionResultService questionResultService;
@@ -1295,5 +1301,24 @@ public class DefaultQuestionContainerService implements QuestionContainerService
 
   private OrganizationController getOrganisationController() {
     return OrganizationControllerProvider.getOrganisationController();
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  @Transactional
+  public void delete(final String componentInstanceId) {
+    try (Connection connection = DBUtil.openConnection()) {
+      AnswerDAO.deleteAnswersToAllQuestions(connection, componentInstanceId);
+      QuestionResultDAO.setDeleteAllQuestionResultsByInstanceId(connection, componentInstanceId);
+      ScoreDAO.deleteAllScoresByInstanceId(connection, componentInstanceId);
+      QuestionDAO.deleteAllQuestionsByInstanceId(connection, componentInstanceId);
+      QuestionContainerDAO.deleteAllQuestionContainersByInstanceId(connection, componentInstanceId);
+    } catch (Exception e) {
+
+    }
   }
 }

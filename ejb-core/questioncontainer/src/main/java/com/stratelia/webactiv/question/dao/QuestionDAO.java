@@ -24,13 +24,20 @@
 
 package com.stratelia.webactiv.question.dao;
 
-import java.sql.*;
-import java.util.*;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.question.model.Question;
+import com.stratelia.webactiv.question.model.QuestionPK;
+import com.stratelia.webactiv.question.model.QuestionRuntimeException;
 import org.silverpeas.util.DBUtil;
-import com.stratelia.webactiv.question.model.*;
-import com.stratelia.silverpeas.silvertrace.*;
 import org.silverpeas.util.exception.SilverpeasRuntimeException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This class is made to access database only (table SB_Question_Question)
@@ -42,6 +49,8 @@ public class QuestionDAO {
       "questionId, qcId, questionLabel, questionDescription, questionClue, questionImage, " +
           "questionIsQCM, questionType, questionIsOpen, questionCluePenalty, questionMaxTime, " +
           "questionDisplayOrder, questionNbPointsMin, questionNbPointsMax, instanceId, style";
+  private static final String DELETE_ALL_QUESTIONS =
+      "DELETE FROM SB_Question_Question WHERE instanceId = ?";
 
   /**
    * Build a Question object with data from the resultset
@@ -317,6 +326,20 @@ public class QuestionDAO {
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Deletes all the questions relative to the specified component instance.
+   * @param con the connection to the database.
+   * @param instanceId the unique identifier of the component instance.
+   * @throws SQLException if an error occurs while deleting the questions.
+   */
+  public static void deleteAllQuestionsByInstanceId(Connection con, String instanceId)
+      throws SQLException {
+    try(PreparedStatement deletion = con.prepareStatement(DELETE_ALL_QUESTIONS)) {
+      deletion.setString(1, instanceId);
+      deletion.execute();
     }
   }
 
