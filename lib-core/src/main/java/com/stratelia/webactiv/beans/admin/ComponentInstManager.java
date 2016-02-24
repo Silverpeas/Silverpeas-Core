@@ -27,7 +27,6 @@ import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.SpaceRow;
 import org.silverpeas.admin.component.notification.ComponentInstanceEventNotifier;
-import org.silverpeas.notification.ResourceEvent;
 import org.silverpeas.util.ArrayUtil;
 import org.silverpeas.util.DBUtil;
 import org.silverpeas.util.exception.SilverpeasException;
@@ -41,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.notification.ResourceEvent.Type.DELETION;
 import static org.silverpeas.notification.ResourceEvent.Type.UPDATE;
 
 @Singleton
@@ -116,7 +114,6 @@ public class ComponentInstManager {
       newInstance.spaceId = spaceLocalId;
       ddManager.getOrganization().instance.createComponentInstance(newInstance);
       componentInst.setLocalId(newInstance.id);
-      notifier.notifyEventOn(ResourceEvent.Type.CREATION, componentInst);
 
       // duplicates existing translations
       Map<String, ComponentI18N> translations = componentInst.getTranslations();
@@ -133,8 +130,6 @@ public class ComponentInstManager {
 
       // Add the parameters if necessary
       List<Parameter> parameters = componentInst.getParameters();
-
-
 
       for (Parameter parameter : parameters) {
         ddManager.getOrganization().instanceData.createInstanceData(
@@ -391,7 +386,6 @@ public class ComponentInstManager {
 
       // delete the component node
       ddManager.getOrganization().instance.removeComponentInstance(componentInst.getLocalId());
-      notifier.notifyEventOn(DELETION, componentInst);
     } catch (Exception e) {
       throw new AdminException("ComponentInstManager.deleteComponentInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_COMPONENT",

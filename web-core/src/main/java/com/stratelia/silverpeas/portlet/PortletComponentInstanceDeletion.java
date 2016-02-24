@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2014 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -21,10 +21,12 @@
 
 package com.stratelia.silverpeas.portlet;
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.silverpeas.portlet.model.PortletRowRow;
 import com.stratelia.silverpeas.portlet.model.PortletSchema;
-import org.silverpeas.admin.component.notification.ComponentInstanceEvent;
-import org.silverpeas.notification.CDIResourceEventListener;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.util.ServiceProvider;
+import org.silverpeas.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 
@@ -32,13 +34,19 @@ import javax.inject.Singleton;
  * @author mmoquillon
  */
 @Singleton
-public class PortletComponentInstanceEventListener
-    extends CDIResourceEventListener<ComponentInstanceEvent> {
+public class PortletComponentInstanceDeletion implements ComponentInstanceDeletion {
 
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
   @Override
-  public void onDeletion(final ComponentInstanceEvent event) throws Exception {
+  public void delete(final String componentInstanceId) {
     PortletSchema schema = null;
-    int id = event.getTransition().getBefore().getLocalId();
+    int id = ServiceProvider.getService(OrganizationController.class)
+        .getComponentInst(componentInstanceId)
+        .getLocalId();
     try {
       schema = new PortletSchema();
       PortletRowRow[] portletRowDeleted = schema.portletRow.dereferenceInstanceId(id);
@@ -48,13 +56,13 @@ public class PortletComponentInstanceEventListener
       }
       schema.commit();
     } catch (Exception e) {
-      logger.error(e.getMessage(), e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       try {
         if (schema != null) {
           schema.rollback();
         }
       } catch (Exception ex) {
-        logger.error(e.getMessage(), e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     } finally {
       try {
@@ -62,7 +70,7 @@ public class PortletComponentInstanceEventListener
           schema.close();
         }
       } catch (Exception e) {
-        logger.error(e.getMessage(), e);
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }
   }

@@ -1033,8 +1033,6 @@ class Admin implements Administration {
 
       ComponentInstancePostConstruction.get(componentName)
           .ifPresent(c -> c.postConstruct(componentId));
-      /*instantiateComponents(userId, asCompoIds, asCompoNames, spaceInstFather.getId(),
-          connectionProd);*/
 
       if (isContentManagedComponent(componentName)) {
         // Create the manager objects
