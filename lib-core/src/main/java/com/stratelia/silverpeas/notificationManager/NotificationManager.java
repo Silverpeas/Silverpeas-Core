@@ -30,6 +30,7 @@ package com.stratelia.silverpeas.notificationManager;
  * @version 1.0
  */
 
+import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.silverpeas.usernotification.delayed.delegate.DelayedNotificationDelegate;
 import com.silverpeas.usernotification.delayed.model.DelayedNotificationData;
 import com.silverpeas.usernotification.model.NotificationResourceData;
@@ -55,11 +56,13 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganizationController;
 import org.silverpeas.util.LocalizationBundle;
 import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.exception.SilverpeasException;
 import org.silverpeas.util.exception.UtilException;
+import org.silverpeas.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +77,7 @@ import java.util.Properties;
  * @version %I%, %G%
  */
 public class NotificationManager extends AbstractNotification
-    implements NotificationParameterNames {
+    implements NotificationParameterNames, ComponentInstanceDeletion {
 
   static public final String FROM_NO = " ";
   static public final String FROM_UID = "I";
@@ -92,6 +95,46 @@ public class NotificationManager extends AbstractNotification
     }
     m_Multilang = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationManager.multilang.notificationManagerBundle", safeLanguage);
+  }
+
+  /**
+   * This hidden constructor permits to IoC to create an instance of
+   * {@link ComponentInstanceDeletion} of this implementation.
+   */
+  protected NotificationManager() {
+  }
+
+  /**
+   * Deletes the resources belonging to the specified component instance. This method is invoked
+   * by Silverpeas when a component instance is being deleted.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  @Override
+  public void delete(final String componentInstanceId) {
+    NotifSchema schema = null;
+    int id = OrganizationController.get().getComponentInst(componentInstanceId).getLocalId();
+    try {
+      schema = new NotifSchema();
+      schema.notifPreference.dereferenceComponentInstanceId(id);
+      schema.commit();
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      try {
+        if (schema != null) {
+          schema.rollback();
+        }
+      } catch (Exception ex) {
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      }
+    } finally {
+      try {
+        if (schema != null) {
+          schema.close();
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+    }
   }
 
   /**

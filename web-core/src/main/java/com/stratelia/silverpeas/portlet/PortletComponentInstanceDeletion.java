@@ -25,15 +25,11 @@ import com.silverpeas.admin.components.ComponentInstanceDeletion;
 import com.stratelia.silverpeas.portlet.model.PortletRowRow;
 import com.stratelia.silverpeas.portlet.model.PortletSchema;
 import org.silverpeas.core.admin.OrganizationController;
-import org.silverpeas.util.ServiceProvider;
 import org.silverpeas.util.logging.SilverLogger;
-
-import javax.inject.Singleton;
 
 /**
  * @author mmoquillon
  */
-@Singleton
 public class PortletComponentInstanceDeletion implements ComponentInstanceDeletion {
 
   /**
@@ -44,9 +40,7 @@ public class PortletComponentInstanceDeletion implements ComponentInstanceDeleti
   @Override
   public void delete(final String componentInstanceId) {
     PortletSchema schema = null;
-    int id = ServiceProvider.getService(OrganizationController.class)
-        .getComponentInst(componentInstanceId)
-        .getLocalId();
+    int id = OrganizationController.get().getComponentInst(componentInstanceId).getLocalId();
     try {
       schema = new PortletSchema();
       PortletRowRow[] portletRowDeleted = schema.portletRow.dereferenceInstanceId(id);
