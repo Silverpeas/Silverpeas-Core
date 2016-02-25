@@ -18,7 +18,7 @@
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>api-core</artifactId>
+      <artifactId>silverpeas-core-api</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>

@@ -33,13 +33,13 @@ public class WarBuilder4Calendar extends BasicWarBuilder {
 
   public static <T> WarBuilder4Calendar onWarForTestClass(Class<T> test) {
     return (WarBuilder4Calendar) new WarBuilder4Calendar(test)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:clipboard")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.services:node")
+        .createMavenDependencies("org.silverpeas.core.services:tagcloud")
+        .createMavenDependencies("org.silverpeas.core.services:publication")
+        .createMavenDependencies("org.silverpeas.core.services:clipboard")
         .testFocusedOn(war -> {
           war.addPackages(true, "com.stratelia.webactiv.calendar")
               .addAsResource("com/stratelia/webactiv/calendar")

@@ -29,13 +29,13 @@ public class WarBuilder4Node extends BasicWarBuilder {
    */
   public static <T> WarBuilder4Node onWarForTestClass(Class<T> test) {
     WarBuilder4Node warBuilder = new WarBuilder4Node(test);
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
-    warBuilder.createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-    warBuilder.createMavenDependencies("org.silverpeas.core.ejb-core:publication");
-    warBuilder.createMavenDependencies("org.silverpeas.core.ejb-core:calendar");
+    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:tagcloud");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:publication");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:calendar");
     warBuilder.testFocusedOn(war -> war
         .addClasses(NodeOrderComparator.class, NodeRuntimeException.class, NodeSelection.class)
         .addPackages(true, "com.stratelia.webactiv.node.control", "com.silverpeas.node",

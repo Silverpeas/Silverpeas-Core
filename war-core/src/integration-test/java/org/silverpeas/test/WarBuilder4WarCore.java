@@ -44,7 +44,7 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
    * following common stuffs:
    * <ul>
    * <li>ws-test-core</li>
-   * <li>lib-core</li>
+   * <li>silverpeas-core</li>
    * <li>all the necessary to handle http request ({@link org.silverpeas.servlet.HttpRequest} for example)</li>
    * </ul>
    * @return the instance of the war archive builder.
@@ -52,23 +52,23 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
   public static <T> WarBuilder4WarCore onWarForTestClass(Class<T> test) {
     WarBuilder4WarCore warBuilder = new WarBuilder4WarCore(test);
     warBuilder.addMavenDependencies("javax.jcr:jcr");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc");
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:node");
     warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:web-core");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:comment");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:personalization");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:clipboard");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:statistic");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:silverstatistics");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:searchengine");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:formtemplate");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:publication");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:calendar");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:contact");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:mylinks");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:importExport");
-    warBuilder.addMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:comment");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:personalization");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:clipboard");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:statistic");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:silverstatistics");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:searchengine");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:formtemplate");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:publication");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:calendar");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:contact");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:mylinks");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:importExport");
+    warBuilder.addMavenDependencies("org.silverpeas.core.services:tagcloud");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
     warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");

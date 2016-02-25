@@ -74,7 +74,7 @@ public class PublicationTemplateImplTest {
   public void testGetRecordTemplateSimple() throws Exception {
     String xmlFileName = "template" + SEPARATOR + "data.xml";
     // Pay attention to not declare com.silverpeas.form.displayers.PdcPositionsFieldDisplayer
-    // inside types.properties cause this class is not available inside lib-core project
+    // inside types.properties cause this class is not available inside silverpeas-core project
     RecordTemplate expectedTemplate = getExpectedRecordTemplate(xmlFileName);
     PublicationTemplateImpl instance = new PublicationTemplateImpl();
     instance.setDataFileName(xmlFileName);

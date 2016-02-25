@@ -42,14 +42,14 @@ public class WorkflowTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(WorkflowTest.class)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core")
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
         .addMavenDependencies("org.apache.tika:tika-core")
         .addMavenDependencies("org.apache.tika:tika-parsers")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node")
-        .createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:pdc")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:publication")
-        .createMavenDependencies("org.silverpeas.core.ejb-core:calendar")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.services:node")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.services:pdc")
+        .createMavenDependencies("org.silverpeas.core.services:tagcloud")
+        .createMavenDependencies("org.silverpeas.core.services:publication")
+        .createMavenDependencies("org.silverpeas.core.services:calendar")
         .testFocusedOn(war -> war.addPackages(true, "com.silverpeas.workflow")
             .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF"))
         .build();

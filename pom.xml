@@ -224,12 +224,12 @@
   </profiles>
 
   <modules>
-    <module>api-core</module>
+    <module>core-api</module>
     <module>test-core</module>
-    <module>lib-core</module>
+    <module>core-library</module>
     <module>it-test-core</module>
     <module>ws-test-core</module>
-    <module>ejb-core</module>
+    <module>core-services</module>
     <module>web-core</module>
     <module>war-core</module>
     <module>config-core</module>

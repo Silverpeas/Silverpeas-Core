@@ -45,7 +45,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * Tests on the scheduler that take longer time to run are gathering in this test class.
  * Theses tests are mainly tests with a cron expression; the mininal time set in a Silverpeas cron
  * expression is minute.
- * The others tests on the scheduler are among the other unit tests in lib-core.
+ * The others tests on the scheduler are among the other unit tests in silverpeas-core.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-scheduling.xml")

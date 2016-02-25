@@ -60,7 +60,7 @@ public final class ServiceProvider {
   }
 
   /**
-   * @see org.silverpeas.util.BeanContainer#getAllBeansByType(Class, java.lang.annotation.Annotation...) 
+   * @see org.silverpeas.util.BeanContainer#getAllBeansByType(Class, java.lang.annotation.Annotation...)
    */
   public static <T> Set<T> getAllServices(Class<T> type, Annotation... qualifiers) {
     return beanContainer().getAllBeansByType(type, qualifiers);

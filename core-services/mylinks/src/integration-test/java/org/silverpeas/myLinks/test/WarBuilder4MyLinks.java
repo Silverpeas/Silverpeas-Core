@@ -26,13 +26,13 @@ public class WarBuilder4MyLinks extends BasicWarBuilder {
    */
   public static <T> WarBuilder4MyLinks onWarForTestClass(Class<T> test) {
     WarBuilder4MyLinks warBuilder = new WarBuilder4MyLinks(test);
-    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:lib-core");
+    warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-core");
     warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.ejb-core:node");
-    warBuilder.createMavenDependencies("org.silverpeas.core.ejb-core:tagcloud");
-    warBuilder.createMavenDependencies("org.silverpeas.core.ejb-core:publication");
-    warBuilder.createMavenDependencies("org.silverpeas.core.ejb-core:clipboard");
+    warBuilder.createMavenDependenciesWithPersistence("org.silverpeas.core.services:node");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:tagcloud");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:publication");
+    warBuilder.createMavenDependencies("org.silverpeas.core.services:clipboard");
     warBuilder.testFocusedOn(war -> war
         .addPackages(true, "com.silverpeas.myLinks")
         .addAsResource("create-database.sql"));
