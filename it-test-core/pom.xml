@@ -31,25 +31,25 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>pdc</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>publication</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>node</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>tagcloud</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

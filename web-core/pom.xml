@@ -69,73 +69,73 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>personalization</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>clipboard</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverstatistics</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>pdc</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>publication</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>node</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>calendar</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>formtemplate</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>importExport</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>comment</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>searchengine</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>mylinks</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -165,7 +165,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.silverpeas.core.ejb-core</groupId>
+      <groupId>org.silverpeas.core.services</groupId>
       <artifactId>tagcloud</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
