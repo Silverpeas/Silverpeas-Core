@@ -22,7 +22,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
+      <artifactId>silverpeas-core</artifactId>
       <version>${project.parent.version}</version>
       <scope>compile</scope>
     </dependency>

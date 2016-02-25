@@ -1,0 +1,46 @@
+dn: cn=admin data
+objectClass: top
+objectClass: ds-cfg-branch
+cn: admin data
+entryUUID: 46e489f6-1f92-3120-990f-54a178e95b21
+
+dn: cn=instance keys,cn=admin data
+objectClass: top
+objectClass: ds-cfg-branch
+cn: instance keys
+entryUUID: 66ceef12-f0d6-355e-9e9b-9bdcfe536d8c
+
+dn: cn=secret keys,cn=admin data
+objectClass: top
+objectClass: ds-cfg-branch
+cn: secret keys
+entryUUID: 26176404-8825-3f77-9efd-c52bd4061f3b
+
+dn: cn=Administrators,cn=admin data
+objectClass: top
+objectClass: groupofurls
+description: Group of identities which have full access.
+cn: Administrators
+memberURL: ldap:///cn=Administrators,cn=admin data??one?(objectclass=*)
+entryUUID: 80faa47a-77d6-3c78-a3c1-ea6ccbd2f735
+
+dn: cn=Server Groups,cn=admin data
+objectClass: top
+objectClass: ds-cfg-branch
+cn: Server Groups
+entryUUID: 9ee2aa25-d738-31fc-9fde-145fe9a53ae0
+
+dn: cn=all-servers,cn=Server Groups,cn=admin data
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: all-servers
+entryUUID: 00450d2d-26b0-3d92-b9e8-f616539697fa
+
+dn: ds-cfg-key-id=5117359E58B4713A1FF1572E2A61DA0D,cn=instance keys,cn=admin data
+objectClass: top
+objectClass: ds-cfg-instance-key
+ds-cfg-key-id: 5117359E58B4713A1FF1572E2A61DA0D
+ds-cfg-public-key-certificate;binary:: MIIB1TCCAT6gAwIBAgIEVD/U/zANBgkqhkiG9w0BAQUFADAvMRswGQYDVQQKExJPcGVuREogQ2VydGlmaWNhdGUxEDAOBgNVBAMTB3BvcnRlYm8wHhcNMTQxMDE2MTQyMzU5WhcNMzQxMDExMTQyMzU5WjAvMRswGQYDVQQKExJPcGVuREogQ2VydGlmaWNhdGUxEDAOBgNVBAMTB3BvcnRlYm8wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAIxnMiVl9+Y4Vk2Vpqk9lDH/+vK5ev0xHczk6A9yIJFzGToTyYJFgD3Tkuaj7+MhuzqZohinGBptZDdMNAqdnWhFb9Hct7T+c2tJAwcvhQFnv6jcKvMS4yV7nBuHBrv7yeFcU3LgkaypYogftsVTaB/7q3lVqPDkTUZ+lpAJtd+HAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAH6PiwtBLZ8IatcJVMx1z9wYDG/YlY77wJChYbTweaAvZbV3WPMm40dVIoC24Wh9OYdMHCcACw72r8kCQio2rV7Pi3g9CIpYIJgcymu8OuKYvRbVFFquLjWfzjxRJtOND4LhHV8fYO6GQk7GJOJYcEkGZXHq213acTsL19MWI8Nk=
+creatorsName: cn=Internal Client,cn=Root DNs,cn=config
+createTimestamp: 20141016142359Z
+entryUUID: 65abc16c-8584-4619-85a8-6a7e91265ec8

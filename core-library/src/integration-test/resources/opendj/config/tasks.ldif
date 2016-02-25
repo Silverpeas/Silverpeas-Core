@@ -1,0 +1,19 @@
+# Ce fichier contient les données utilisées par le backend du planificateur de
+# tâches de Directory Server.  N'éditez pas directement ce fichier car il
+# existe un risque de perte de ces modifications.  Les définitions de tâches
+# planifiées et récurrentes doivent uniquement être modifiées au moyen des
+# utilitaires d'administration fournis avec Directory Server
+dn: cn=tasks
+objectClass: top
+objectClass: untypedObject
+cn: tasks
+
+dn: cn=Scheduled Tasks,cn=tasks
+objectClass: top
+objectClass: untypedObject
+cn: Scheduled Tasks
+
+dn: cn=Recurring Tasks,cn=tasks
+objectClass: top
+objectClass: untypedObject
+cn: Recurring Tasks
