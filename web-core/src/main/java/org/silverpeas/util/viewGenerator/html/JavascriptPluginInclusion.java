@@ -23,9 +23,9 @@
  */
 package org.silverpeas.util.viewGenerator.html;
 
-import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerSettings;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.viewGenerator.html.JavascriptBundleProducer;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
@@ -35,8 +35,6 @@ import org.silverpeas.util.ResourceLocator;
 import org.silverpeas.util.SettingBundle;
 import org.silverpeas.util.StringUtil;
 import org.silverpeas.util.security.SecuritySettings;
-import org.silverpeas.util.template.SilverpeasTemplate;
-import org.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.silverpeas.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag;
 
 import java.text.MessageFormat;
@@ -86,7 +84,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
   private static final String SILVERPEAS_BREADCRUMB = "silverpeas-breadcrumb.js";
-  private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST = "ddUploadBundle_";
+  private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST = "ddUploadBundle";
   private static final String SILVERPEAS_DRAG_AND_DROP_UPLOAD = "silverpeas-ddUpload.js";
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
@@ -144,7 +142,9 @@ public class JavascriptPluginInclusion {
   private static final String CHART_AXISLABEL_JS = "flot/jquery.flot.axislabels.js";
   private static final String CHART_TOOLTIP_JS = "flot/jquery.flot.tooltip.min.js";
   private static final String SILVERPEAS_CHART_JS = "silverpeas-chart.js";
-  private static final String SILVERPEAS_CHART_I18N_ST = "chartBundle_";
+  private static final String SILVERPEAS_CHART_I18N_ST = "chartBundle";
+  private static final String SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS =
+      "silverpeas-user-group-list.js";
 
   static {
     SettingBundle wysiwygSettings =
@@ -518,9 +518,8 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent("var defaultChartColors = " + getDefaultPieChartColorsAsJson() +
         "; var chartPieCombinationThreshold = " + getThresholdOfPieCombination() +
         ";"));
-    SilverpeasTemplate bundle = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("chart");
-    xhtml.addElement(scriptContent(bundle
-        .applyFileTemplate(SILVERPEAS_CHART_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
+    xhtml.addElement(scriptContent(
+        JavascriptBundleProducer.fromCoreTemplate("chart", SILVERPEAS_CHART_I18N_ST, language)));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_CHART_JS));
     return xhtml;
   }
@@ -562,11 +561,34 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includeDragAndDropUpload(final ElementContainer xhtml,
       final String language) {
     includeQTip(xhtml);
-    SilverpeasTemplate bundle =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("ddUpload");
-    xhtml.addElement(scriptContent(bundle.applyFileTemplate(
-        SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST + DisplayI18NHelper.verifyLanguage(language))));
+    xhtml.addElement(scriptContent(JavascriptBundleProducer
+        .fromCoreTemplate("ddUpload", SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST, language)));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas Plugin that handles list of users and groups.
+   * @return the completed parent container.
+   */
+  public static ElementContainer includeListOfUsersAndGroups(final ElementContainer xhtml,
+      final String language) {
+    includePopup(xhtml);
+    xhtml.addElement(scriptContent(JavascriptBundleProducer
+        .bundleVariableName("UserGroupListBundle")
+        .add(ResourceLocator.getGeneralLocalizationBundle(language),
+            "GML.delete",
+            "GML.deleteAll",
+            "GML.action.remove",
+            "GML.action.removeAll",
+            "GML.action.keep",
+            "GML.confirmation.delete",
+            "GML.confirmation.deleteAll",
+            "GML.modify",
+            "GML.action.select",
+            "GML.list.changed.message")
+        .produce()));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS));
     return xhtml;
   }
 

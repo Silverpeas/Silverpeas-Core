@@ -7199,35 +7199,40 @@ a.navigation-button {
   clear:left;
 }
 
+.fields .buttonPanel {
+  width: auto;
+  display:inline-block;
+  position:absolute;
+  right:0;
+  top:-38px;
+}
+
+.fields .contentWithButtonPanel {
+   margin-top: 2px;
+ }
+
 .fields .explorePanel, .fields .emptyList {
-    background-color: #f4f4f4;
-    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    color: #4c4c4c;
-    font-size: 100%;
-    padding: 5px 10px;
-    width: auto;
-	display:inline-block;
-	margin-top:5px;
-	position:absolute;
-	right:0;
-	top:-38px;
+  background-color: #f4f4f4;
+  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #4c4c4c;
+  font-size: 100%;
+  padding: 5px 10px;
+  width: auto;
+  display: inline-block;
+  margin-left: 5px;
 }
 
-.fields .emptyList { 
-	right:100px;
+.fields .explorePanel span, .fields .emptyList span {
+  background: transparent url("/silverpeas/util/icons/create-action/add-existing-user.png") 0 0 no-repeat;
+  display: inline-block;
+  line-height: 23px;
+  padding-left: 23px;
 }
 
-.fields .explorePanel  span, .fields .emptyList span{
-	background:transparent url("/silverpeas/util/icons/create-action/add-existing-user.png") 0 0 no-repeat;
-	display: inline-block;
-    line-height: 23px;
-    padding-left: 23px;
-}
-
-.fields  .emptyList span{
-	background:transparent url("/silverpeas/util/icons/trashcan.gif") 0 3px no-repeat;
+.fields .emptyList span {
+  background: transparent url("/silverpeas/util/icons/trashcan.gif") 0 3px no-repeat;
 }
 
 /*responsive design */
