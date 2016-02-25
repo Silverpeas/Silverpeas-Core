@@ -83,6 +83,8 @@ import org.silverpeas.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.util.exception.UtilException;
 import org.silverpeas.util.exception.WithNested;
 import org.silverpeas.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.logging.LogAnnotationProcessor;
+import org.silverpeas.util.logging.LogsAccessor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.pool.ConnectionPool;
 import org.silverpeas.util.template.SilverpeasTemplate;
@@ -125,7 +127,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     warBuilder.addBundleBaseFeatures();
     warBuilder.addClasses(EntityReference.class);
     warBuilder.addMavenDependencies("org.silverpeas.core:api-core");
-    warBuilder.addPackages(true, "org.silverpeas.util.logging");
+    warBuilder.addPackages(true, "org.silverpeas.util.logging.sys");
+    warBuilder.addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     warBuilder.addAsResource(
         "META-INF/services/test-org.silverpeas.util.logging.SilverLoggerFactory",
         "META-INF/services/org.silverpeas.util.logging.SilverLoggerFactory");

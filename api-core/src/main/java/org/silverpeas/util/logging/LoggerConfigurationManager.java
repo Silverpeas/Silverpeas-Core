@@ -72,8 +72,6 @@ public class LoggerConfigurationManager {
   private static Map<String, Properties> confByModule = new ConcurrentHashMap<>(INITIAL_CAPACITY);
   private static Map<String, Properties> confByLogger = new ConcurrentHashMap<>(INITIAL_CAPACITY);
 
-  private static LoggerConfigurationManager instance;
-
   private static File getConfigurationHome() {
     Path path =
         Paths.get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
@@ -82,7 +80,6 @@ public class LoggerConfigurationManager {
   }
 
   protected LoggerConfigurationManager() {
-
   }
 
   protected Map<String, Properties> getLoggerConfigurationsByModule() {
@@ -123,13 +120,6 @@ public class LoggerConfigurationManager {
   }
 
   public static LoggerConfigurationManager get() {
-    /*if (instance == null) {
-      java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
-          .log(java.util.logging.Level.INFO, "Silverpeas Logging Engine initialization...");
-      instance = new LoggerConfigurationManager();
-      instance.loadAllConfigurationFiles();
-    }*
-    return instance;*/
     return ServiceProvider.getService(LoggerConfigurationManager.class);
   }
 

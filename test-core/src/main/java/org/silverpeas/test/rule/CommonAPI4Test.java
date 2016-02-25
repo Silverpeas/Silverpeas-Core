@@ -33,7 +33,6 @@ import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
 import org.silverpeas.test.TestBeanContainer;
 import org.silverpeas.test.util.lang.TestSystemWrapper;
-import org.silverpeas.test.util.log.TestLoggerConfigurationManager;
 import org.silverpeas.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.thread.ManagedThreadPool;
 import org.silverpeas.util.lang.SystemWrapper;
@@ -121,9 +120,9 @@ public class CommonAPI4Test implements TestRule {
   }
 
   private void loggerConfigurationManager() {
-    LoggerConfigurationManager testManager = new TestLoggerConfigurationManager();
+    StubbedLoggerConfigurationManager stub = new StubbedLoggerConfigurationManager();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(LoggerConfigurationManager.class))
-        .thenReturn(testManager);
+        .thenReturn(stub);
   }
 
   private void managedThreadFactory() {
@@ -153,6 +152,13 @@ public class CommonAPI4Test implements TestRule {
 
     public File getTempData() {
       return tempData;
+    }
+  }
+
+  private class StubbedLoggerConfigurationManager extends LoggerConfigurationManager {
+    public StubbedLoggerConfigurationManager() {
+      super();
+      loadAllConfigurationFiles();
     }
   }
 }
