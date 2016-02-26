@@ -26,15 +26,13 @@ package com.silverpeas.thumbnail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.test.rule.MockByReflectionRule;
+import org.silverpeas.core.admin.OrganizationController;
+import org.silverpeas.test.rule.CommonAPI4Test;
 
-import static com.silverpeas.thumbnail.ThumbnailSettings.APP_PARAM_HEIGHT;
-import static com.silverpeas.thumbnail.ThumbnailSettings.APP_PARAM_WIDTH;
-import static com.silverpeas.thumbnail.ThumbnailSettings.DEFAULT_SIZE;
+import static com.silverpeas.thumbnail.ThumbnailSettings.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -46,18 +44,17 @@ public class ThumbnailSettingsTest {
 
   private static final String COMPONENT_INSTANCE_ID = "componentInstanceId";
 
-  private OrganisationController mockedOrganisationController;
+  private OrganizationController mockedOrganisationController;
 
   @Rule
-  public MockByReflectionRule mockByReflectionRule = new MockByReflectionRule();
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Before
   public void setup() {
-    mockedOrganisationController = mockByReflectionRule
-        .mockField(OrganisationControllerFactory.class, OrganisationController.class,
-            "instance.organisationController");
+    mockedOrganisationController = mock(OrganizationController.class);
     when(mockedOrganisationController
         .getComponentParameterValue(COMPONENT_INSTANCE_ID, APP_PARAM_WIDTH)).thenReturn("");
+    commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganisationController);
     // the height about component instance parameters is not handled with the mock in order to
     // verify the behavior when null is returned instead of ""
   }
