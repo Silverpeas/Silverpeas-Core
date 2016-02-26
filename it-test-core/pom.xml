@@ -56,7 +56,7 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
+      <artifactId>silverpeas-core-test</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

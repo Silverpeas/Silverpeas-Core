@@ -52,7 +52,7 @@ public class HtmlExportGeneratorTest {
 //            WAPrimaryKey.class, ForeignPK.class);
 //    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
 //        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-//            "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:test-core",
+//            "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:silverpeas-core-test",
 //            "org.quartz-scheduler:quartz").withTransitivity().asFile());
 //    war.addClasses(WithNested.class, FromModule.class, SilverpeasException.class,
 //        SilverpeasRuntimeException.class, UtilException.class);

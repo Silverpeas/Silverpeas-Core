@@ -225,7 +225,7 @@
 
   <modules>
     <module>core-api</module>
-    <module>test-core</module>
+    <module>core-test</module>
     <module>core-library</module>
     <module>it-test-core</module>
     <module>ws-test-core</module>
