@@ -82,11 +82,12 @@ public class SchedulerTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(SchedulerTest.class)
+        .addCommonBasicUtilities()
         .addSchedulerFeatures()
         .addMavenDependencies("com.jayway.awaitility:awaitility", "org.antlr:stringtemplate")
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.initialization");
-          warBuilder.addPackages(true, "org.silverpeas.util");
+          //warBuilder.addPackages(true, "org.silverpeas.util");
         }).build();
   }
 

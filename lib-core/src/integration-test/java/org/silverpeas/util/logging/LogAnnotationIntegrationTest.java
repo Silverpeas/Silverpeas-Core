@@ -67,7 +67,6 @@ public class LogAnnotationIntegrationTest {
         .addCommonBasicUtilities()
         .addCacheFeatures()
         .addCommonUserBeans()
-        .testFocusedOn((warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.util.logging"))
         .build();
   }
 
